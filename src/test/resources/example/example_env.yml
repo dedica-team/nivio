@@ -1,0 +1,4 @@
+identifier: nivio:example
+name: Environment example
+sources:
+  - "./wordpress.yml"

@@ -1,4 +1,4 @@
-package de.bonndan.nivio.applayer;
+package de.bonndan.nivio.input;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,7 +7,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.File;
 import java.io.IOException;
 
-public class ServiceFactory {
+public class EnvironmentFactory {
 
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
@@ -15,11 +15,13 @@ public class ServiceFactory {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
-    public static Service fromYaml(File file) {
+    public static Environment fromYaml(File file) {
         try {
-            return mapper.readValue(file, Service.class);
+            Environment environment = mapper.readValue(file, Environment.class);
+            environment.setPath(file.toString());
+            return environment;
         } catch (IOException e) {
-            throw new ServiceReadingException("Failed to create service from " + file.getAbsolutePath(), e);
+            throw new ReadingException("Failed to create input from " + file.getAbsolutePath(), e);
         }
     }
 }

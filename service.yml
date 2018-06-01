@@ -5,7 +5,7 @@ short_name: PSRV
 type: service
 owner: Pivio
 description: Manages all Pivio documents. Backend by Elasticsearch.
-type: Service
+type: ServiceDescription
 team: pivio
 
 contact: team@pivio.io
