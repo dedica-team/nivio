@@ -1,6 +1,10 @@
 package de.bonndan.nivio.input;
 
 import javax.persistence.*;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 @Entity
 @Table(name = "sources")
@@ -28,5 +32,19 @@ public class Source {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getFullUrl() {
+        try {
+            URL url = new URL(getUrl());
+            return url.toURI().toString();
+        } catch (MalformedURLException | URISyntaxException e) {
+            File file = new File(environment.getPath());
+            return file.getParent() + "/" + getUrl();
+        }
+    }
+
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
     }
 }

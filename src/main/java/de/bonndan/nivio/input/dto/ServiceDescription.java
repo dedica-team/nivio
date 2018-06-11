@@ -2,7 +2,6 @@ package de.bonndan.nivio.input.dto;
 
 
 import de.bonndan.nivio.landscape.LandscapeItem;
-import de.bonndan.nivio.landscape.Service;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
@@ -38,11 +37,16 @@ public class ServiceDescription implements LandscapeItem {
     private String scale;
     private String host_type;
 
-    private Set<DataFlow> incoming = new HashSet<>();
+    private Set<DataFlow> interfaces = new HashSet<>();
 
-    private Set<DataFlow> outgoing = new HashSet<>();
+    private Set<DataFlow> dataFlow = new HashSet<>();
 
     private List<ServiceDescription> infrastructure = new ArrayList<>();
+    private String protocol;
+    private Integer port;
+
+    public ServiceDescription() {
+    }
 
     public ServiceDescription(String identifier) {
         this.identifier = identifier;
@@ -200,20 +204,20 @@ public class ServiceDescription implements LandscapeItem {
         this.host_type = host_type;
     }
 
-    public Set<DataFlow> getIncoming() {
-        return incoming;
+    public Set<DataFlow> getInterfaces() {
+        return interfaces;
     }
 
-    public void setIncoming(Set<DataFlow> incoming) {
-        this.incoming = incoming;
+    public void setInterfaces(Set<DataFlow> interfaces) {
+        this.interfaces = interfaces;
     }
 
-    public Set<DataFlow> getOutgoing() {
-        return outgoing;
+    public Set<DataFlow> getDataFlow() {
+        return dataFlow;
     }
 
-    public void setOutgoing(Set<DataFlow> outgoing) {
-        this.outgoing = outgoing;
+    public void setDataFlow(Set<DataFlow> dataFlow) {
+        this.dataFlow = dataFlow;
     }
 
     public List<ServiceDescription> getInfrastructure() {
@@ -222,5 +226,21 @@ public class ServiceDescription implements LandscapeItem {
 
     public void setInfrastructure(List<ServiceDescription> infrastructure) {
         this.infrastructure = infrastructure;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
+    public Integer getPort() {
+        return port;
     }
 }

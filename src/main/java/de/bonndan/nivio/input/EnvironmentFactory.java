@@ -19,6 +19,7 @@ public class EnvironmentFactory {
         try {
             Environment environment = mapper.readValue(file, Environment.class);
             environment.setPath(file.toString());
+            environment.getSources().forEach(source -> source.setEnvironment(environment));
             return environment;
         } catch (IOException e) {
             throw new ReadingException("Failed to create input from " + file.getAbsolutePath(), e);

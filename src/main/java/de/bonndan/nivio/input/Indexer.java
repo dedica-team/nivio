@@ -69,7 +69,8 @@ public class Indexer implements ApplicationListener<FSChangeEvent> {
         );
 
         //insert new ones
-        LandscapeItems.added(environment.getServiceDescriptions(), existingServices).forEach(
+        List<LandscapeItem> added = LandscapeItems.added(environment.getServiceDescriptions(), existingServices);
+        added.forEach(
                 serviceDescription -> {
                     logger.info("Creating new service " + serviceDescription.getIdentifier() + " in env " + environment.getIdentifier());
                     Service created = new Service();
