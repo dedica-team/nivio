@@ -7,7 +7,6 @@ import de.bonndan.nivio.landscape.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +15,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
@@ -42,7 +40,7 @@ public class IndexerTest {
 
         Indexer indexer = new Indexer(environmentRepo, serviceRepository);
 
-        Landscape landscape = indexer.reindex(environment);
+        Landscape landscape = indexer.reIndex(environment);
 
         Assertions.assertNotNull(landscape);
         Assertions.assertNotNull(landscape.getServices());

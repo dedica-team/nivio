@@ -3,8 +3,6 @@ package de.bonndan.nivio;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.EnvironmentFactory;
-import de.bonndan.nivio.input.dto.ServiceDescription;
-import de.bonndan.nivio.input.dto.ServiceDescriptionFactory;
 import de.bonndan.nivio.landscape.LandscapeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +46,7 @@ public class Application {
             File file = new File(currentRelativePath.toAbsolutePath().toString() + "/src/test/resources/example/example_env.yml");
             Environment environment = EnvironmentFactory.fromYaml(file);
 
-            indexer.reindex(environment);
+            indexer.reIndex(environment);
 		};
 	}
 

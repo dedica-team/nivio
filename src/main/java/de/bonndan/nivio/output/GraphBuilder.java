@@ -2,20 +2,29 @@ package de.bonndan.nivio.output;
 
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeItem;
+import de.bonndan.nivio.landscape.Service;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GraphBuilder {
 
-    private final Landscape landscape;
+    private Graph<LandscapeItem, DefaultEdge> graph;
 
-    public GraphBuilder(Landscape landscape) {
-        this.landscape = landscape;
+    public Graph build(Landscape landscape) {
+        graph = new SimpleGraph<>(DefaultEdge.class);
+
+        landscape.getServices().forEach(this::addService);
+        return graph;
     }
 
-    public Graph build() {
-        Graph<LandscapeItem, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
-        return graph;
+    private void addService(Service service) {
+        graph.addVertex(service);
+        service.getProvidedBy().forEach(infra -> {
+            addService(infra);
+            graph.addEdge(infra, service);
+        });
     }
 }

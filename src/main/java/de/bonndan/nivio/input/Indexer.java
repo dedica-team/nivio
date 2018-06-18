@@ -2,20 +2,16 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.ServiceDescription;
-import de.bonndan.nivio.input.dto.ServiceDescriptionFactory;
 import de.bonndan.nivio.landscape.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.util.HashSet;
 import java.util.List;
 
 @Component
-public class Indexer implements ApplicationListener<FSChangeEvent> {
+public class Indexer {
 
     private static final Logger logger = LoggerFactory.getLogger(Indexer.class);
 
@@ -28,22 +24,7 @@ public class Indexer implements ApplicationListener<FSChangeEvent> {
         this.serviceRepo = serviceRepo;
     }
 
-    @Override
-    public void onApplicationEvent(FSChangeEvent fsChangeEvent) {
-        String s = (fsChangeEvent.getEvent().context()).toString();
-        try {
-            Environment environment = EnvironmentFactory.fromYaml(
-                    new File(DirectoryWatcher.NIVIO_ENV_DIRECTORY + "/" + s)
-            );
-
-            reindex(environment);
-
-        } catch (ReadingException e) {
-            logger.error("Failed to read " + DirectoryWatcher.NIVIO_ENV_DIRECTORY + "/" + s, e);
-        }
-    }
-
-    public Landscape reindex(final Environment input) {
+    public Landscape reIndex(final Environment input) {
         Landscape landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier());
         if (landscape == null) {
             logger.info("Creating new landscape " + input.getIdentifier());

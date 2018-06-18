@@ -69,4 +69,20 @@ public class Landscape {
         service.getProvidedBy().forEach(s -> s.setLandscape(this));
         services.add(service);
     }
+
+    /**
+     * Returns a service or infrastructure item by its identifier.
+     */
+    public Service getService(String identifier) {
+
+        for (Service s : services) {
+            if (s.getIdentifier().equals(identifier))
+                return s;
+            for (Service i : s.getProvidedBy())
+                if (i.getIdentifier().equals(identifier))
+                    return i;
+        }
+
+        return null;
+    }
 }
