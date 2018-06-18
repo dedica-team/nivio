@@ -1,6 +1,6 @@
 package de.bonndan.nivio.input.dto;
 
-public class DataFlow {
+public class DataFlowDescription {
     private String description;
     private String format;
     private String target;

@@ -38,9 +38,9 @@ public class ServiceDescription implements LandscapeItem {
 
     private Map<String, String> statuses = new HashMap<>();
 
-    private Set<DataFlow> interfaces = new HashSet<>();
+    private Set<DataFlowDescription> interfaces = new HashSet<>();
 
-    private Set<DataFlow> dataFlow = new HashSet<>();
+    private Set<DataFlowDescription> dataFlow = new HashSet<>();
 
     private List<ServiceDescription> infrastructure = new ArrayList<>();
     private String protocol;
@@ -213,19 +213,19 @@ public class ServiceDescription implements LandscapeItem {
         this.host_type = host_type;
     }
 
-    public Set<DataFlow> getInterfaces() {
+    public Set<DataFlowDescription> getInterfaces() {
         return interfaces;
     }
 
-    public void setInterfaces(Set<DataFlow> interfaces) {
+    public void setInterfaces(Set<DataFlowDescription> interfaces) {
         this.interfaces = interfaces;
     }
 
-    public Set<DataFlow> getDataFlow() {
+    public Set<DataFlowDescription> getDataFlow() {
         return dataFlow;
     }
 
-    public void setDataFlow(Set<DataFlow> dataFlow) {
+    public void setDataFlow(Set<DataFlowDescription> dataFlow) {
         this.dataFlow = dataFlow;
     }
 

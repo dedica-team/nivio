@@ -65,7 +65,7 @@ public class Indexer {
 
                     createInfrastructure((ServiceDescription) serviceDescription, existingServices, landscape);
                     linkInfrastructure((ServiceDescription) serviceDescription, landscape);
-                    assignDataflows(created);
+                    assignDataflows(created, (ServiceDescription) serviceDescription);
 
                     landscape.addService(created);
                 }
@@ -184,7 +184,17 @@ public class Indexer {
         service.setScale(serviceDescription.getScale());
     }
 
-    public void assignDataflows(Service service) {
-
+    public void assignDataflows(Service service, ServiceDescription serviceDescription) {
+        serviceDescription.getDataFlow().forEach(description -> {
+            Service target = service.getLandscape().getService(description.getTarget());
+            if (target == null) {
+                logger.warn("Dataflow target service " + description.getTarget() + " not found");
+                return;
+            }
+            DataFlow dataFlow = new DataFlow(service, target);
+            dataFlow.setDescription(description.getDescription());
+            dataFlow.setFormat(description.getFormat());
+            service.getDataFlow().add(dataFlow);
+        });
     }
 }
