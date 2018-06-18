@@ -1,53 +1,78 @@
 package de.bonndan.nivio.landscape;
 
-
-import org.neo4j.ogm.annotation.*;
-import org.springframework.stereotype.Indexed;
-
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.*;
 
-@NodeEntity
+@Entity
 public class Service implements LandscapeItem {
 
     @Id
-    @GeneratedValue
-    private Long id;
-
-    @NotNull
-    private String environment;
-
     @NotNull
     @Pattern(regexp = LandscapeItem.IDENTIFIER_VALIDATION)
     private String identifier;
 
     @NotNull
+    @ManyToOne
+    private Landscape landscape;
+
+    @NotNull
     private String type;
 
     private String name;
-    private String short_name;
-    private String version;
-    private String software;
+
     private String owner;
-    private String description;
+
     private String team;
     private String contact;
     private String homepage;
+
+    /*
+     * Following fields are used for graph generation only.
+     */
+    @Transient
+    private String description;
+    @Transient
+    private String short_name;
+    @Transient
+    private String version;
+    @Transient
+    private String software;
+    @Transient
     private String repository;
+    @Transient
     private String bounded_context;
+    @Transient
     private String visibility;
+    @Transient
     private String[] tags;
+    @Transient
     private String network_zone;
+    @Transient
     private String machine;
+    @Transient
     private String scale;
+    @Transient
     private String host_type;
 
-    @Relationship(type = "DATAFLOW")
+    @Transient
     Set<DataFlow> dataFlow = new HashSet<>();
 
-    @Relationship(type = "PROVIDED_BY", direction = Relationship.INCOMING)
-    Set<Service> providedBy = new HashSet<>();
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(name="INFRASTRUCTURE",
+            joinColumns={@JoinColumn(name="service_identifier")},
+            inverseJoinColumns={@JoinColumn(name="infrastructure_identifier")})
+    private Set<Service> providedBy = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinTable(name="INFRASTRUCTURE",
+            joinColumns={@JoinColumn(name="infrastructure_identifier")},
+            inverseJoinColumns={@JoinColumn(name="service_identifier")})
+    private Set<Service> provides = new HashSet<>();
+
+    @Transient
+    private String note;
 
     public String getIdentifier() {
         return identifier;
@@ -57,12 +82,12 @@ public class Service implements LandscapeItem {
         this.identifier = identifier.toLowerCase();
     }
 
-    public String getEnvironment() {
-        return environment;
+    public Landscape getLandscape() {
+        return landscape;
     }
 
-    public void setEnvironment(String environment) {
-        this.environment = environment;
+    public void setLandscape(Landscape landscape) {
+        this.landscape = landscape;
     }
 
     public String getName() {
@@ -221,16 +246,48 @@ public class Service implements LandscapeItem {
         this.type = type;
     }
 
+
     /**
      * Check if service provides any other.
-     *
-     * Returns false if an infrasttructure item has no "providedBy" relationship.
+     * <p>
+     * Returns false if an infrastructure item has no "providedBy" relationship.
      */
     public boolean providesAny() {
         if (LandscapeItem.APPLICATION.equals(type)) {
             return true;
         }
 
-        return !providedBy.isEmpty();
+        return !provides.isEmpty();
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public Set<Service> getProvides() {
+        return provides;
+    }
+
+    public void setProvides(Set<Service> provides) {
+        this.provides = provides;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Service service = (Service) o;
+        return Objects.equals(identifier, service.identifier) &&
+                Objects.equals(landscape, service.landscape);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(identifier, landscape);
     }
 }

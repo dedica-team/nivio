@@ -18,6 +18,13 @@ network_zone: content
 machine: s
 scale: 5
 host_type: docker
+note: to be replaced
+
+statuses:
+  lifecycle: green
+  security: red
+  stability: green
+  business_capability: yellow
 
 interfaces:
   - description: posts

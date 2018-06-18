@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.landscape.LandscapeItem;
+import de.bonndan.nivio.landscape.LandscapeItems;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

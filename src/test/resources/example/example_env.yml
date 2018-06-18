@@ -1,4 +1,4 @@
 identifier: nivio:example
-name: Environment example
+name: Landscape example
 sources:
   - "./services/wordpress.yml"

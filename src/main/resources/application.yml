@@ -16,3 +16,8 @@ spring:
     username: nivio
     password: nivio
     driver-class-name: org.h2.Driver
+
+  data:
+    neo4j:
+      username: neo4j
+      password: test

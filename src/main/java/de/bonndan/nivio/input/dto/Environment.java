@@ -1,8 +1,8 @@
-package de.bonndan.nivio.input;
+package de.bonndan.nivio.input.dto;
 
-import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.input.Source;
+import de.bonndan.nivio.landscape.Landscape;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,15 +11,8 @@ import java.util.List;
  *
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  *
- * This is persisted in a H2 db just for keeping track of the environments.
  */
-@Entity
-@Table(name = "environments")
 public class Environment {
-
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
 
     /**
      * Immutable unique identifier. Maybe use an URN.
@@ -36,10 +29,8 @@ public class Environment {
     /**
      * List of configuration sources.
      */
-    @OneToMany
     private List<Source> sources = new ArrayList<>();
 
-    @Transient
     private List<ServiceDescription> serviceDescriptions = new ArrayList<>();
 
     public String getIdentifier() {
@@ -74,7 +65,7 @@ public class Environment {
         this.path = path;
     }
 
-    public void addService(ServiceDescription serviceDescription) {
+    public void addServiceDescription(ServiceDescription serviceDescription) {
         serviceDescription.setEnvironment(this.identifier);
         serviceDescription.getInfrastructure().forEach(s -> s.setEnvironment(this.identifier));
         serviceDescriptions.add(serviceDescription);
@@ -82,5 +73,13 @@ public class Environment {
 
     public List<ServiceDescription> getServiceDescriptions() {
         return serviceDescriptions;
+    }
+
+    public Landscape toLandscape() {
+        Landscape landscape = new Landscape();
+        landscape.setIdentifier(identifier);
+        landscape.setName(name);
+        landscape.setPath(path);
+        return landscape;
     }
 }

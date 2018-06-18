@@ -1,18 +1,15 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.input.dto.Environment;
+import de.bonndan.nivio.landscape.Landscape;
+
 import javax.persistence.*;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-@Entity
-@Table(name = "sources")
 public class Source {
-
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
 
     private String url;
 

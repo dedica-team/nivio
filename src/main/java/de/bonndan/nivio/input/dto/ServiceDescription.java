@@ -4,10 +4,7 @@ package de.bonndan.nivio.input.dto;
 import de.bonndan.nivio.landscape.LandscapeItem;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ServiceDescription implements LandscapeItem {
 
@@ -19,6 +16,8 @@ public class ServiceDescription implements LandscapeItem {
 
     @NotEmpty
     private String name;
+
+    private String note;
 
     private String short_name;
     private String version;
@@ -36,6 +35,8 @@ public class ServiceDescription implements LandscapeItem {
     private String machine;
     private String scale;
     private String host_type;
+
+    private Map<String, String> statuses = new HashMap<>();
 
     private Set<DataFlow> interfaces = new HashSet<>();
 
@@ -74,6 +75,14 @@ public class ServiceDescription implements LandscapeItem {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public String getShort_name() {
@@ -242,5 +251,13 @@ public class ServiceDescription implements LandscapeItem {
 
     public Integer getPort() {
         return port;
+    }
+
+    public Map<String, String> getStatuses() {
+        return statuses;
+    }
+
+    public void setStatuses(Map<String, String> statuses) {
+        this.statuses = statuses;
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 @Repository
 public interface ServiceRepository extends CrudRepository<Service, Long> {
 
-    List<Service> findAllByEnvironment(String identifier);
+    List<Service> findAllByLandscape(Landscape landscape);
 
-    List<Service> findAllByEnvironmentAndType(String identifier, String infrastructure);
+    List<Service> findAllByLandscapeAndType(Landscape landscape, String type);
 }

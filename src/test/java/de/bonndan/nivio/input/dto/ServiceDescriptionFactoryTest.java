@@ -21,6 +21,7 @@ class ServiceDescriptionFactoryTest {
         File file = new File(getRootPath() + "/src/test/resources/example/services/wordpress.yml");
         ServiceDescription service = ServiceDescriptionFactory.fromYaml(file);
         assertEquals("Demo Blog", service.getName());
+        assertEquals("to be replaced", service.getNote());
         assertEquals("blog-server", service.getIdentifier());
         assertEquals("blog", service.getShort_name());
         assertEquals("1.0", service.getVersion());
@@ -37,6 +38,17 @@ class ServiceDescriptionFactoryTest {
         assertEquals("docker", service.getHost_type());
         assertEquals(1, service.getTags().length);
         assertTrue(Arrays.asList(service.getTags()).contains("CMS"));
+
+        assertNotNull(service.getStatuses());
+        assertEquals(4, service.getStatuses().size());
+        service.getStatuses().forEach((status, color) -> {
+            if (status.equals("security")) {
+                Assert.assertEquals("red", color);
+            }
+            if (status.equals("business_capability")) {
+                Assert.assertEquals("yellow", color);
+            }
+        });
 
         assertNotNull(service.getInterfaces());
         assertEquals(3, service.getInterfaces().size());
