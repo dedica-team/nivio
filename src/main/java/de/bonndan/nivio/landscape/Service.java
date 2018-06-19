@@ -59,7 +59,7 @@ public class Service implements LandscapeItem {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "source")
     private Set<DataFlow> dataFlow = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name="INFRASTRUCTURE",
             joinColumns={@JoinColumn(name="service_identifier")},
             inverseJoinColumns={@JoinColumn(name="infrastructure_identifier")})

@@ -46,7 +46,7 @@ public class DirectoryWatcher implements Runnable {
         }
 
         WatchKey key;
-        logger.info("Starting directory watcher");
+        logger.info("Starting directory watcher on " + path.toAbsolutePath());
         try {
             while ((key = watchService.take()) != null) {
                 for (WatchEvent<?> event : key.pollEvents()) {

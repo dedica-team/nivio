@@ -11,12 +11,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class GraphBuilder {
 
-    private Graph<LandscapeItem, DefaultEdge> graph;
+    private Graph<LandscapeItem, LabeledEdge> graph;
 
     public Graph build(Landscape landscape) {
-        graph = new SimpleGraph<>(DefaultEdge.class);
+        graph = new SimpleGraph<>(LabeledEdge.class);
 
         landscape.getServices().forEach(this::addService);
+        landscape.getServices().forEach(this::addLinks);
         return graph;
     }
 
@@ -24,7 +25,13 @@ public class GraphBuilder {
         graph.addVertex(service);
         service.getProvidedBy().forEach(infra -> {
             addService(infra);
-            graph.addEdge(infra, service);
+            graph.addEdge(infra, service, new LabeledEdge("provides"));
+        });
+    }
+
+    private void addLinks(Service service) {
+        service.getDataFlow().forEach(flow -> {
+            graph.addEdge(service, flow.getTarget(), new LabeledEdge(flow.getDescription()));
         });
     }
 }

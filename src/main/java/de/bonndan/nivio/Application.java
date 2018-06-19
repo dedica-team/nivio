@@ -3,7 +3,11 @@ package de.bonndan.nivio;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.EnvironmentFactory;
+import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
+import de.bonndan.nivio.output.GraphBuilder;
+import de.bonndan.nivio.output.GraphRenderer;
+import org.jgrapht.Graph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -27,34 +31,38 @@ import java.nio.file.Paths;
 @EnableAsync
 public class Application {
 
-	private final static Logger log = LoggerFactory.getLogger(Application.class);
+    private final static Logger log = LoggerFactory.getLogger(Application.class);
 
-	@Bean
-	public TaskExecutor taskExecutor() {
-		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(5);
-		executor.setMaxPoolSize(10);
-		executor.setQueueCapacity(25);
-		return executor;
-	}
+    @Bean
+    public TaskExecutor taskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(25);
+        return executor;
+    }
 
-	//TODO remove after alpha phase
-	@Bean
-	CommandLineRunner demo(LandscapeRepository environmentRepo, Indexer indexer) {
-		return args -> {
+    //TODO remove after alpha phase
+    @Bean
+    CommandLineRunner demo(LandscapeRepository environmentRepo, Indexer indexer) {
+        return args -> {
             Path currentRelativePath = Paths.get("");
             File file = new File(currentRelativePath.toAbsolutePath().toString() + "/src/test/resources/example/example_env.yml");
             Environment environment = EnvironmentFactory.fromYaml(file);
 
-            indexer.reIndex(environment);
-		};
-	}
+            Landscape landscape = indexer.reIndex(environment);
+            log.info("Rendering graph for landscape " + landscape.getPath());
+            GraphBuilder graphBuilder = new GraphBuilder();
+            Graph g = graphBuilder.build(landscape);
+            GraphRenderer.render(g);
+        };
+    }
 
 
-	public static void main(String[] args) throws Exception {
-		ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
-		ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) context.getBean("taskExecutor");
-		taskExecutor.execute(context.getBean(DirectoryWatcher.class));
-	}
+    public static void main(String[] args) throws Exception {
+        ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
+        ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) context.getBean("taskExecutor");
+        taskExecutor.execute(context.getBean(DirectoryWatcher.class));
+    }
 
 }
