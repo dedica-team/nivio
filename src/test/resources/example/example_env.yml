@@ -2,3 +2,4 @@ identifier: nivio:example
 name: Landscape example
 sources:
   - "./services/wordpress.yml"
+  - "./services/dashboard.yml"

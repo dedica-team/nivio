@@ -56,7 +56,7 @@ public class Service implements LandscapeItem {
     @Transient
     private String host_type;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "source")
     private Set<DataFlow> dataFlow = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)

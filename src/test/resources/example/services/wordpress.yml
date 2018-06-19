@@ -35,8 +35,9 @@ interfaces:
     format: json
 
 dataflow:
-  - description: kpis
-    target: content-kpi-dashboard
+  - description: push
+    target: kpi-dashboard
+    format: json
   - description: in-app purchases
     target: external-billing
 

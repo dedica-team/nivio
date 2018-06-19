@@ -15,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
@@ -33,10 +34,6 @@ public class IndexerTest {
     public void testIndexing() {
         File file = new File(getRootPath() + "/src/test/resources/example/example_env.yml");
         Environment environment = EnvironmentFactory.fromYaml(file);
-        for (Source source : environment.getSources()) {
-            ServiceDescription serviceDescription = ServiceDescriptionFactory.fromYaml(new File(source.getFullUrl()));
-            environment.addServiceDescription(serviceDescription);
-        }
 
         Indexer indexer = new Indexer(environmentRepo, serviceRepository);
 
@@ -44,7 +41,7 @@ public class IndexerTest {
 
         Assertions.assertNotNull(landscape);
         Assertions.assertNotNull(landscape.getServices());
-        Assertions.assertEquals(1, landscape.getServices().size());
+        Assertions.assertEquals(2, landscape.getServices().size());
         Optional<Service> matchingObject = landscape.getServices().stream().
                 filter(p -> p.getIdentifier().equals("blog-server")).
                 findFirst();
@@ -57,6 +54,15 @@ public class IndexerTest {
                 findFirst();
         Assertions.assertNotNull(webserver.get());
         Assertions.assertEquals(1, webserver.get().getProvides().size());
+
+        Iterator<DataFlow> iterator = blog.getDataFlow().iterator();
+        Assertions.assertTrue(iterator.hasNext());
+        DataFlow df = iterator.next();
+        Assertions.assertNotNull(df);
+        Assertions.assertEquals("push", df.getDescription());
+        Assertions.assertEquals("json", df.getFormat());
+        Assertions.assertEquals(blog.getIdentifier(), df.getSource().getIdentifier());
+        Assertions.assertEquals("kpi-dashboard", df.getTarget().getIdentifier());
     }
 
     private String getRootPath() {

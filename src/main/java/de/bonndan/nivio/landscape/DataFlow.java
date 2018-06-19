@@ -1,39 +1,44 @@
 package de.bonndan.nivio.landscape;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Indication of an incoming or outgoing data flow.
- *
+ * <p>
  * Outgoing flows having a target which matches a service identifier will cause a relation to be created.
  */
 @Entity
-@IdClass(DataFlowId.class)
-public class DataFlow {
+public class DataFlow implements Serializable {
 
     @Id
-    @Column(insertable = false, updatable = false)
-    private String source_identifier;
+    @GeneratedValue
+    private Long id;
 
-    @Id
-    @Column(insertable = false, updatable = false)
-    private String target_identifier;
 
     @ManyToOne
-    @PrimaryKeyJoinColumn(name="source_identifier", referencedColumnName="identifier")
-    Service source;
+    @JoinColumn(name = "source_identifier", referencedColumnName = "identifier")
+    private Service source;
 
     @ManyToOne
-    @PrimaryKeyJoinColumn(name="target_identifier", referencedColumnName="identifier")
-    Service target;
+    @JoinColumn(name = "target_identifier", referencedColumnName = "identifier")
+    private Service target;
 
     private String description;
 
     private String format;
 
+    public DataFlow() {
+    }
+
     public DataFlow(Service origin, Service target) {
         this.source = origin;
         this.target = target;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getDescription() {
@@ -66,5 +71,19 @@ public class DataFlow {
 
     public void setTarget(Service target) {
         this.target = target;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DataFlow dataFlow = (DataFlow) o;
+        return Objects.equals(source.getIdentifier(), dataFlow.source.getIdentifier()) &&
+                Objects.equals(target.getIdentifier(), dataFlow.target.getIdentifier());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(source.getIdentifier(), target.getIdentifier());
     }
 }

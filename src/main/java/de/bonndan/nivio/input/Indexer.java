@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Iterator;
 import java.util.List;
 
 @Component
@@ -34,6 +35,7 @@ public class Indexer {
         }
         landscapeRepo.save(landscape);
         diff(input, landscape);
+        link(input, landscape);
         return landscape;
     }
 
@@ -65,7 +67,6 @@ public class Indexer {
 
                     createInfrastructure((ServiceDescription) serviceDescription, existingServices, landscape);
                     linkInfrastructure((ServiceDescription) serviceDescription, landscape);
-                    assignDataflows(created, (ServiceDescription) serviceDescription);
 
                     landscape.addService(created);
                 }
@@ -93,6 +94,41 @@ public class Indexer {
                 }
         );
         cleanupInfrastructure(landscape);
+    }
+
+    private void link(final Environment input, final Landscape landscape) {
+        input.getServiceDescriptions().forEach(serviceDescription -> {
+            Service service = landscape.getService(serviceDescription.getIdentifier());
+            serviceDescription.getDataFlow().forEach(description -> {
+                Service target = landscape.getService(description.getTarget());
+                if (target == null) {
+                    logger.warn("Dataflow target service " + description.getTarget() + " not found");
+                    return;
+                }
+                Iterator<DataFlow> iterator = service.getDataFlow().iterator();
+                DataFlow existing = null;
+                DataFlow dataFlow = new DataFlow(service, target);
+                while (iterator.hasNext()) {
+                    existing = iterator.next();
+                    if (existing.equals(dataFlow)) {
+                        existing.setDescription(description.getDescription());
+                        existing.setFormat(description.getFormat());
+                        break;
+                    }
+                    existing = null;
+                }
+
+                if (existing != null) {
+                    dataFlow.setDescription(description.getDescription());
+                    dataFlow.setFormat(description.getFormat());
+
+                    service.getDataFlow().add(dataFlow);
+                }
+
+                logger.info("Creating dataflow between " + service.getIdentifier() + " and " + target.getIdentifier());
+                serviceRepo.save(service);
+            });
+        });
     }
 
     private void cleanupInfrastructure(Landscape landscape) {
@@ -182,19 +218,5 @@ public class Indexer {
         service.setNetwork_zone(serviceDescription.getNetwork_zone());
         service.setMachine(serviceDescription.getMachine());
         service.setScale(serviceDescription.getScale());
-    }
-
-    public void assignDataflows(Service service, ServiceDescription serviceDescription) {
-        serviceDescription.getDataFlow().forEach(description -> {
-            Service target = service.getLandscape().getService(description.getTarget());
-            if (target == null) {
-                logger.warn("Dataflow target service " + description.getTarget() + " not found");
-                return;
-            }
-            DataFlow dataFlow = new DataFlow(service, target);
-            dataFlow.setDescription(description.getDescription());
-            dataFlow.setFormat(description.getFormat());
-            service.getDataFlow().add(dataFlow);
-        });
     }
 }
