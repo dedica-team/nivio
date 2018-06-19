@@ -156,10 +156,10 @@ public class Indexer {
                     .findFirst()
                     .ifPresent(
                             service1 -> {
-                                service.getProvidedBy().add(service1);
-                                service1.getProvides().add(service);
-                                logger.info("Adding provider " + service1.getIdentifier() + " to " + service.getIdentifier());
-
+                                if (!service.getProvidedBy().contains(service1)) {
+                                    service.getProvidedBy().add(service1);
+                                    logger.info("Adding provider " + service1.getIdentifier() + " to " + service.getIdentifier());
+                                }
                             }
                     );
         });
