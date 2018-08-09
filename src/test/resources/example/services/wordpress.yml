@@ -10,7 +10,7 @@ team: alphateam
 contact: alphateam@acme.io
 homepage: https://acme.io
 repository: https://git.acme.io/blog-server
-bounded_context: content
+group: content
 visibility: public
 tags:
  - CMS
@@ -56,6 +56,7 @@ infrastructure:
     team: ops guys
     network_zone: content
     host_type: docker
+    group: content
 
   - description: Database for Wordpress
     software: MySQL

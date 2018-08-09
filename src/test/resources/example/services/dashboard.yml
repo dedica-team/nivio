@@ -10,7 +10,7 @@ team: alphateam
 contact: alphateam@acme.io
 homepage: https://acme.io
 repository: https://git.acme.io/dashboard
-bounded_context: content
+group: dashboard
 visibility: public
 network_zone: content
 machine: s
@@ -39,5 +39,6 @@ infrastructure:
     team: ops guys
     network_zone: content
     host_type: docker
+    group: dashboard
 
 

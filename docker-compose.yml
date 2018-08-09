@@ -2,19 +2,9 @@ version: '3'
 
 services:
 
-  neo4j:
-    image: neo4j:3.4
+  dld4e-headless:
+    image: bonndan/dld4e-headless:latest
     ports:
-      - 7474:7474
-      - 7687:7687
+      - 3030:3030
 
-  #structr:
-  #  image: structr/structr:2.3.5
-  #  ports:
-  #    - 8080:8082
-
-  #nivio:
-  #  depends_on:
-  #    - neo4j
-  #  build: .
 

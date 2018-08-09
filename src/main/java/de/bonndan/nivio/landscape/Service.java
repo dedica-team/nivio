@@ -25,53 +25,51 @@ public class Service implements LandscapeItem {
     private String owner;
 
     private String team;
+
     private String contact;
+
     private String homepage;
 
-    /*
-     * Following fields are used for graph generation only.
-     */
-    @Transient
     private String description;
-    @Transient
+
     private String short_name;
-    @Transient
+
     private String version;
-    @Transient
+
     private String software;
-    @Transient
+
     private String repository;
-    @Transient
-    private String bounded_context;
-    @Transient
+
+    @Column(name = "`group`")
+    private String group;
+
     private String visibility;
-    @Transient
+
     private String[] tags;
-    @Transient
+
     private String network_zone;
-    @Transient
+
     private String machine;
-    @Transient
+
     private String scale;
-    @Transient
+
     private String host_type;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "source")
     private Set<DataFlow> dataFlow = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name="INFRASTRUCTURE",
-            joinColumns={@JoinColumn(name="service_identifier")},
-            inverseJoinColumns={@JoinColumn(name="infrastructure_identifier")})
+    @JoinTable(name = "INFRASTRUCTURE",
+            joinColumns = {@JoinColumn(name = "service_identifier")},
+            inverseJoinColumns = {@JoinColumn(name = "infrastructure_identifier")})
     private Set<Service> providedBy = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    @JoinTable(name="INFRASTRUCTURE",
-            joinColumns={@JoinColumn(name="infrastructure_identifier")},
-            inverseJoinColumns={@JoinColumn(name="service_identifier")})
+    @JoinTable(name = "INFRASTRUCTURE",
+            joinColumns = {@JoinColumn(name = "infrastructure_identifier")},
+            inverseJoinColumns = {@JoinColumn(name = "service_identifier")})
     private Set<Service> provides = new HashSet<>();
 
-    @Transient
     private String note;
 
     public String getIdentifier() {
@@ -170,12 +168,12 @@ public class Service implements LandscapeItem {
         this.repository = repository;
     }
 
-    public String getBounded_context() {
-        return bounded_context;
+    public String getGroup() {
+        return group;
     }
 
-    public void setBounded_context(String bounded_context) {
-        this.bounded_context = bounded_context;
+    public void setGroup(String group) {
+        this.group = group;
     }
 
     public String getVisibility() {
@@ -289,5 +287,10 @@ public class Service implements LandscapeItem {
     public int hashCode() {
 
         return Objects.hash(identifier, landscape);
+    }
+
+    @Override
+    public String toString() {
+        return identifier + " (" + type + ", group: " + group + ")";
     }
 }

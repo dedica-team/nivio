@@ -34,7 +34,7 @@ class ServiceDescriptionFactoryTest {
         assertEquals("content", service.getNetwork_zone());
         assertEquals("alphateam", service.getTeam());
         assertEquals("alphateam@acme.io", service.getContact());
-        assertEquals("content", service.getBounded_context());
+        assertEquals("content", service.getGroup());
         assertEquals("docker", service.getHost_type());
         assertEquals(1, service.getTags().length);
         assertTrue(Arrays.asList(service.getTags()).contains("CMS"));

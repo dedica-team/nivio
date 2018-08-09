@@ -1,13 +1,6 @@
 package de.bonndan.nivio;
 
 import de.bonndan.nivio.input.*;
-import de.bonndan.nivio.input.dto.Environment;
-import de.bonndan.nivio.input.EnvironmentFactory;
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.LandscapeRepository;
-import de.bonndan.nivio.output.GraphBuilder;
-import de.bonndan.nivio.output.GraphRenderer;
-import org.jgrapht.Graph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -44,17 +37,11 @@ public class Application {
 
     //TODO remove after alpha phase
     @Bean
-    CommandLineRunner demo(LandscapeRepository environmentRepo, Indexer indexer) {
+    CommandLineRunner demo(FileChangeProcessor processor) {
         return args -> {
             Path currentRelativePath = Paths.get("");
             File file = new File(currentRelativePath.toAbsolutePath().toString() + "/src/test/resources/example/example_env.yml");
-            Environment environment = EnvironmentFactory.fromYaml(file);
-
-            Landscape landscape = indexer.reIndex(environment);
-            log.info("Rendering graph for landscape " + landscape.getPath());
-            GraphBuilder graphBuilder = new GraphBuilder();
-            Graph g = graphBuilder.build(landscape);
-            GraphRenderer.render(g);
+            processor.process(file);
         };
     }
 

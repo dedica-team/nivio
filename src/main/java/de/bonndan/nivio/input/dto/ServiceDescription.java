@@ -28,7 +28,7 @@ public class ServiceDescription implements LandscapeItem {
     private String contact;
     private String homepage;
     private String repository;
-    private String bounded_context;
+    private String group;
     private String visibility;
     private String[] tags;
     private String network_zone;
@@ -157,12 +157,12 @@ public class ServiceDescription implements LandscapeItem {
         this.repository = repository;
     }
 
-    public String getBounded_context() {
-        return bounded_context;
+    public String getGroup() {
+        return group;
     }
 
-    public void setBounded_context(String bounded_context) {
-        this.bounded_context = bounded_context;
+    public void setGroup(String group) {
+        this.group = group;
     }
 
     public String getVisibility() {

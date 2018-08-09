@@ -5,9 +5,9 @@ spring:
   jpa:
     properties.hibernate.dialect: org.hibernate.dialect.H2Dialect
     generate-ddl: true
-    show-sql: true
+    show-sql: false
     hibernate.ddl-auto: update
-    properties.hibernate.show_sql: true
+    properties.hibernate.show_sql: false
     properties.hibernate.use_sql_comments: false
     properties.hibernate.format_sql: false
 
@@ -16,8 +16,3 @@ spring:
     username: nivio
     password: nivio
     driver-class-name: org.h2.Driver
-
-  data:
-    neo4j:
-      username: neo4j
-      password: test

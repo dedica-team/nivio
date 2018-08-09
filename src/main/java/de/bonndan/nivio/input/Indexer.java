@@ -65,7 +65,7 @@ public class Indexer {
                     assignAllValues(created, (ServiceDescription) serviceDescription);
                     serviceRepo.save(created);
 
-                    createInfrastructure((ServiceDescription) serviceDescription, existingServices, landscape);
+                    createInfrastructure((ServiceDescription) serviceDescription, landscape);
                     linkInfrastructure((ServiceDescription) serviceDescription, landscape);
 
                     landscape.addService(created);
@@ -86,7 +86,7 @@ public class Indexer {
                         throw new RuntimeException("Could not find service description for service " + service.getIdentifier());
 
                     assignAllValues((Service) service, description);
-                    createInfrastructure(description, existingServices, landscape);
+                    createInfrastructure(description, landscape);
                     linkInfrastructure(description, landscape);
 
                     serviceRepo.save((Service) service);
@@ -166,8 +166,9 @@ public class Indexer {
         serviceRepo.save(service);
     }
 
-    private void createInfrastructure(ServiceDescription serviceDescription, List<Service> existingServices, Landscape landscape) {
+    private void createInfrastructure(ServiceDescription serviceDescription, Landscape landscape) {
 
+        List<Service> existingServices = serviceRepo.findAllByLandscapeAndType(landscape, LandscapeItem.INFRASTRUCTURE);
         //not deleting infrastructure, will keep it until no more relations exist
 
         //insert new ones
@@ -176,6 +177,7 @@ public class Indexer {
                     logger.info("Creating new infrastructure item " + infraItem.getIdentifier() + " in env " + ((ServiceDescription) infraItem).getEnvironment());
                     Service created = new Service();
                     created.setIdentifier(infraItem.getIdentifier());
+                    logger.info("Creating infrastructure item " + created.getIdentifier());
                     assignAllValues(created, (ServiceDescription) infraItem);
                     created.setType(LandscapeItem.INFRASTRUCTURE);
                     created.setLandscape(landscape);
@@ -189,6 +191,7 @@ public class Indexer {
                     ServiceDescription description = serviceDescription.getInfrastructure().stream()
                             .filter(s -> s.getIdentifier().equals(service.getIdentifier()))
                             .findFirst().orElse(null);
+                    logger.info("Updating infrastructure item " + service.getIdentifier());
                     assignAllValues((Service) service, description);
                     serviceRepo.save((Service) service);
                 }
@@ -197,6 +200,10 @@ public class Indexer {
 
     public void assignAllValues(Service service, ServiceDescription serviceDescription) {
 
+        if (serviceDescription == null) {
+            logger.warn("ServiceDescription for service " + service.getIdentifier() + " is null in assignAllValues");
+            return;
+        }
         service.setName(serviceDescription.getName());
         service.setNote(serviceDescription.getNote());
         service.setShort_name(serviceDescription.getName());
@@ -212,7 +219,7 @@ public class Indexer {
         service.setTeam(serviceDescription.getTeam());
 
         service.setVisibility(serviceDescription.getVisibility());
-        service.setBounded_context(serviceDescription.getBounded_context());
+        service.setGroup(serviceDescription.getGroup());
 
         service.setHost_type(serviceDescription.getHost_type());
         service.setNetwork_zone(serviceDescription.getNetwork_zone());
