@@ -52,7 +52,7 @@ infrastructure:
     protocol: https
     port: 443
     machine: Pentium 1 512MB RAM
-    type: application
+    type: webserver
     team: ops guys
     network_zone: content
     host_type: docker

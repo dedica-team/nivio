@@ -26,13 +26,17 @@ public class Dld4eRenderer implements Renderer {
     @Override
     public String render(Landscape landscape) {
 
-        ymlSource = new StringBuilder("");
+        landscape.getServices().forEach(this::addService);
+        landscape.getServices().forEach(this::addLinks);
 
+        layouter.arrange(icons, groups);
+
+        ymlSource = new StringBuilder("");
         ymlSource.append(
                 new DiagramItem("diagram")
                         .set("fill", "\"snow\"")
-                        .set("columns", 5)
-                        .set("rows", 5)
+                        .set("columns", layouter.getColumns())
+                        .set("rows", Layouter.APPLICATION_LEVEL +1)
                         .set("gridLines", "false")
                         .set("gridPaddingInner", "0.25")
                         .set("groupPadding", "0.75")
@@ -55,7 +59,7 @@ public class Dld4eRenderer implements Renderer {
                         .set("iconFill", "darkslategrey")
                         .set("iconStroke", "lightgrey")
                         .set("iconStrokeWidth", ".25")
-                        .set("iconFamily", "\"cisco\"")
+                        .set("iconFamily", "\"" + IconFamily.AzureEnterprise.name + "\"")
                         .set("fill", "none")
                         .set("preserveWhite", "true")
         );
@@ -78,10 +82,8 @@ public class Dld4eRenderer implements Renderer {
                         .set("strokeWidth", ".5")
                         .set("strokeDashArray", "[3,3]")
         );
-        landscape.getServices().forEach(this::addService);
-        landscape.getServices().forEach(this::addLinks);
 
-        layouter.arrange(icons, groups);
+
         ymlSource.append(icons);
         ymlSource.append(groups);
         ymlSource.append(connections);

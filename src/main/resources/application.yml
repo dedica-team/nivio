@@ -1,7 +1,9 @@
 spring:
   application:
     name: nivio
-    
+  main:
+    web-application-type: servlet
+
   jpa:
     properties.hibernate.dialect: org.hibernate.dialect.H2Dialect
     generate-ddl: true

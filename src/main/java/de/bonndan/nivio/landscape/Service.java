@@ -244,6 +244,10 @@ public class Service implements LandscapeItem {
         this.type = type;
     }
 
+    public String getType() {
+        return type;
+    }
+
 
     /**
      * Check if service provides any other.

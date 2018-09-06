@@ -15,7 +15,7 @@ public class Icons {
     public void add(Service service) {
         Icon icon = new Icon(service);
         icon.merge("service");
-        icon.set("icon", "\"file_server\"");
+        icon.set("icon", "\"" + IconFamily.AzureEnterprise.iconFor(service) + "\"");
         icons.add(icon);
     }
 

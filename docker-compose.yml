@@ -6,5 +6,6 @@ services:
     image: bonndan/dld4e-headless:latest
     ports:
       - 3030:3030
+      - 9229:9229
 
 
