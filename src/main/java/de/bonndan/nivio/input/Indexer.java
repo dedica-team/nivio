@@ -33,9 +33,10 @@ public class Indexer {
         } else {
             landscape.setName(input.getName());
         }
-        landscapeRepo.save(landscape);
+        //landscapeRepo.save(landscape);
         diff(input, landscape);
         link(input, landscape);
+        landscapeRepo.save(landscape);
         return landscape;
     }
 
@@ -89,8 +90,7 @@ public class Indexer {
                     createInfrastructure(description, landscape);
                     linkInfrastructure(description, landscape);
 
-                    serviceRepo.save((Service) service);
-                    landscape.addService((Service)service);
+                    //landscape.addService((Service)service);
                 }
         );
         cleanupInfrastructure(landscape);
@@ -126,7 +126,6 @@ public class Indexer {
                 }
 
                 logger.info("Creating dataflow between " + service.getIdentifier() + " and " + target.getIdentifier());
-                serviceRepo.save(service);
             });
         });
     }
@@ -163,7 +162,6 @@ public class Indexer {
                             }
                     );
         });
-        serviceRepo.save(service);
     }
 
     private void createInfrastructure(ServiceDescription serviceDescription, Landscape landscape) {
@@ -181,7 +179,6 @@ public class Indexer {
                     assignAllValues(created, (ServiceDescription) infraItem);
                     created.setType(LandscapeItem.INFRASTRUCTURE);
                     created.setLandscape(landscape);
-                    serviceRepo.save(created);
                 }
         );
 
@@ -193,7 +190,6 @@ public class Indexer {
                             .findFirst().orElse(null);
                     logger.info("Updating infrastructure item " + service.getIdentifier());
                     assignAllValues((Service) service, description);
-                    serviceRepo.save((Service) service);
                 }
         );
     }

@@ -1,5 +1,7 @@
 package de.bonndan.nivio.landscape;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -15,6 +17,7 @@ public class Service implements LandscapeItem {
 
     @NotNull
     @ManyToOne
+    @JsonIgnore
     private Landscape landscape;
 
     @NotNull
@@ -55,15 +58,18 @@ public class Service implements LandscapeItem {
 
     private String host_type;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "source")
     private Set<DataFlow> dataFlow = new HashSet<>();
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "INFRASTRUCTURE",
             joinColumns = {@JoinColumn(name = "service_identifier")},
             inverseJoinColumns = {@JoinColumn(name = "infrastructure_identifier")})
     private Set<Service> providedBy = new HashSet<>();
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(name = "INFRASTRUCTURE",
             joinColumns = {@JoinColumn(name = "infrastructure_identifier")},

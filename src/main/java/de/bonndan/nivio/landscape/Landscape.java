@@ -7,7 +7,6 @@ import java.util.List;
 /**
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  *
- * This is persisted in a H2 db just for keeping track of the landscapes.
  */
 @Entity
 @Table(name = "landscapes")
