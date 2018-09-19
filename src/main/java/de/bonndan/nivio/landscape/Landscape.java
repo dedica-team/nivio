@@ -28,7 +28,7 @@ public class Landscape {
     /**
      * List of configuration services.
      */
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Service> services = new ArrayList<>();
 
     public String getIdentifier() {

@@ -16,19 +16,19 @@ public class GraphBuilderTest {
     @Before
     public void setUp() {
         Service a = new Service();
-        a.setType(LandscapeItem.APPLICATION);
+        a.setType(LandscapeItem.TYPE_APPLICATION);
         a.setIdentifier("a");
         landscape.addService(a);
 
         Service a1 = new Service();
-        a1.setType(LandscapeItem.INFRASTRUCTURE);
+        a1.setType(LandscapeItem.TYPE_INFRASTRUCTURE);
         a1.setIdentifier("a1");
         a.getProvidedBy().add(a1);
 
 
 
         Service b = new Service();
-        b.setType(LandscapeItem.APPLICATION);
+        b.setType(LandscapeItem.TYPE_APPLICATION);
         b.setIdentifier("b");
         landscape.addService(b);
 

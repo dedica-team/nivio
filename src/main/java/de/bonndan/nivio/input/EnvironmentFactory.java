@@ -9,6 +9,7 @@ import de.bonndan.nivio.input.dto.ServiceDescriptionFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class EnvironmentFactory {
 
@@ -22,10 +23,15 @@ public class EnvironmentFactory {
         try {
             Environment environment = mapper.readValue(file, Environment.class);
             environment.setPath(file.toString());
-            environment.getSources().forEach(source -> source.setEnvironment(environment));
+            environment.getSources().forEach(s -> {
+                        s.setEnvironment(environment);
+                        List<ServiceDescription> serviceDescriptions = ServiceDescriptionFactory.fromYaml(new File(s.getFullUrl()));
+                        environment.addServices(serviceDescriptions);
+                    }
+            );
+
             for (Source source : environment.getSources()) {
-                ServiceDescription serviceDescription = ServiceDescriptionFactory.fromYaml(new File(source.getFullUrl()));
-                environment.addServiceDescription(serviceDescription);
+
             }
             return environment;
         } catch (IOException e) {

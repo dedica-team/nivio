@@ -64,14 +64,14 @@ public class Service implements LandscapeItem {
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "INFRASTRUCTURE",
+    @JoinTable(name = "TYPE_INFRASTRUCTURE",
             joinColumns = {@JoinColumn(name = "service_identifier")},
             inverseJoinColumns = {@JoinColumn(name = "infrastructure_identifier")})
     private Set<Service> providedBy = new HashSet<>();
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    @JoinTable(name = "INFRASTRUCTURE",
+    @JoinTable(name = "TYPE_INFRASTRUCTURE",
             joinColumns = {@JoinColumn(name = "infrastructure_identifier")},
             inverseJoinColumns = {@JoinColumn(name = "service_identifier")})
     private Set<Service> provides = new HashSet<>();
@@ -261,7 +261,7 @@ public class Service implements LandscapeItem {
      * Returns false if an infrastructure item has no "providedBy" relationship.
      */
     public boolean providesAny() {
-        if (LandscapeItem.APPLICATION.equals(type)) {
+        if (LandscapeItem.TYPE_APPLICATION.equals(type)) {
             return true;
         }
 

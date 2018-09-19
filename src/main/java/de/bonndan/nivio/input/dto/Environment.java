@@ -65,12 +65,6 @@ public class Environment {
         this.path = path;
     }
 
-    public void addServiceDescription(ServiceDescription serviceDescription) {
-        serviceDescription.setEnvironment(this.identifier);
-        serviceDescription.getInfrastructure().forEach(s -> s.setEnvironment(this.identifier));
-        serviceDescriptions.add(serviceDescription);
-    }
-
     public List<ServiceDescription> getServiceDescriptions() {
         return serviceDescriptions;
     }
@@ -81,5 +75,12 @@ public class Environment {
         landscape.setName(name);
         landscape.setPath(path);
         return landscape;
+    }
+
+    public void addServices(List<ServiceDescription> serviceDescriptions) {
+        serviceDescriptions.forEach(serviceDescription -> {
+            serviceDescription.setEnvironment(this.identifier);
+            this.serviceDescriptions.add(serviceDescription);
+        });
     }
 }

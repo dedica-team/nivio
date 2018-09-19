@@ -6,10 +6,16 @@ import de.bonndan.nivio.landscape.LandscapeItem;
 import javax.validation.constraints.NotEmpty;
 import java.util.*;
 
+/**
+ * This is representation of a service in the textual form as described in a source file.
+ */
 public class ServiceDescription implements LandscapeItem {
 
     @NotEmpty
     private String environment;
+
+    @NotEmpty
+    private String type;
 
     @NotEmpty
     private String identifier;
@@ -42,7 +48,7 @@ public class ServiceDescription implements LandscapeItem {
 
     private Set<DataFlowDescription> dataFlow = new HashSet<>();
 
-    private List<ServiceDescription> infrastructure = new ArrayList<>();
+    private List<String> provided_by = new ArrayList<>();
     private String protocol;
     private Integer port;
 
@@ -67,6 +73,15 @@ public class ServiceDescription implements LandscapeItem {
 
     public void setEnvironment(String environment) {
         this.environment = environment;
+    }
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getName() {
@@ -229,12 +244,12 @@ public class ServiceDescription implements LandscapeItem {
         this.dataFlow = dataFlow;
     }
 
-    public List<ServiceDescription> getInfrastructure() {
-        return infrastructure;
+    public List<String> getProvided_by() {
+        return provided_by;
     }
 
-    public void setInfrastructure(List<ServiceDescription> infrastructure) {
-        this.infrastructure = infrastructure;
+    public void setProvided_by(List<String> provided_by) {
+        this.provided_by = provided_by;
     }
 
     public void setProtocol(String protocol) {

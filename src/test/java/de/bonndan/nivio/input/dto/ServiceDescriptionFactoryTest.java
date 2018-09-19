@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input.dto;
 
 
+import de.bonndan.nivio.landscape.LandscapeItem;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +9,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,10 +18,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ServiceDescriptionFactoryTest {
 
     @Test
-    public void read() {
+    public void readServiceAndInfra() {
 
         File file = new File(getRootPath() + "/src/test/resources/example/services/wordpress.yml");
-        ServiceDescription service = ServiceDescriptionFactory.fromYaml(file);
+        List<ServiceDescription> services = ServiceDescriptionFactory.fromYaml(file);
+        ServiceDescription service = services.get(0);
+        assertEquals(LandscapeItem.TYPE_APPLICATION, service.getType());
         assertEquals("Demo Blog", service.getName());
         assertEquals("to be replaced", service.getNote());
         assertEquals("blog-server", service.getIdentifier());
@@ -66,18 +70,29 @@ class ServiceDescriptionFactoryTest {
             }
         });
 
-        assertFalse(service.getInfrastructure().isEmpty());
-        ServiceDescription first = service.getInfrastructure().get(0);
-        assertEquals("wordpress-web", first.getIdentifier());
-        assertEquals("Webserver", first.getDescription());
-        assertEquals("Apache", first.getSoftware());
-        assertEquals("2.4", first.getVersion());
-        assertEquals("https", first.getProtocol());
-        assertEquals(443, (int)first.getPort());
-        assertEquals("Pentium 1 512MB RAM", first.getMachine());
-        assertEquals("ops guys", first.getTeam());
-        assertEquals("content", first.getNetwork_zone());
-        assertEquals("docker", first.getHost_type());
+        ServiceDescription infra = services.get(1);
+        assertEquals(LandscapeItem.TYPE_INFRASTRUCTURE, infra.getType());
+        assertEquals("wordpress-web", infra.getIdentifier());
+        assertEquals("Webserver", infra.getDescription());
+        assertEquals("Apache", infra.getSoftware());
+        assertEquals("2.4", infra.getVersion());
+        assertEquals("https", infra.getProtocol());
+        assertEquals(443, (int)infra.getPort());
+        assertEquals("Pentium 1 512MB RAM", infra.getMachine());
+        assertEquals("ops guys", infra.getTeam());
+        assertEquals("content", infra.getNetwork_zone());
+        assertEquals("docker", infra.getHost_type());
+    }
+
+    @Test
+    public void readIngress() {
+
+        File file = new File(getRootPath() + "/src/test/resources/example/services/dashboard.yml");
+        List<ServiceDescription> services = ServiceDescriptionFactory.fromYaml(file);
+        ServiceDescription service = services.get(0);
+        assertEquals(LandscapeItem.TYPE_INGRESS, service.getType());
+        assertEquals("Keycloak SSO", service.getName());
+        assertEquals("keycloak", service.getIdentifier());
     }
 
     private String getRootPath() {

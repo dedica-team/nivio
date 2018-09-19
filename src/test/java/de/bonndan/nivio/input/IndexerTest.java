@@ -41,7 +41,7 @@ public class IndexerTest {
 
         Assertions.assertNotNull(landscape);
         Assertions.assertNotNull(landscape.getServices());
-        Assertions.assertEquals(2, landscape.getServices().size());
+        Assertions.assertEquals(7, landscape.getServices().size());
         Optional<Service> matchingObject = landscape.getServices().stream().
                 filter(p -> p.getIdentifier().equals("blog-server")).
                 findFirst();

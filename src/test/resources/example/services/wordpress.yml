@@ -1,45 +1,48 @@
 document_version: 1.0
-identifier: blog-server
-name: Demo Blog
-short_name: blog
-version: 1.0
-software: Wordpress
-owner: Marketing
-description: Company blog
-team: alphateam
-contact: alphateam@acme.io
-homepage: https://acme.io
-repository: https://git.acme.io/blog-server
-group: content
-visibility: public
-tags:
- - CMS
-network_zone: content
-machine: s
-scale: 5
-host_type: docker
-note: to be replaced
 
-statuses:
-  lifecycle: green
-  security: red
-  stability: green
-  business_capability: yellow
-
-interfaces:
-  - description: posts
-    format: form
-  - description: user data
-    format: form
-  - description: api calls
-    format: json
-
-dataflow:
-  - description: push
-    target: kpi-dashboard
-    format: json
-  - description: in-app purchases
-    target: external-billing
+services:
+  - identifier: blog-server
+    name: Demo Blog
+    short_name: blog
+    version: 1.0
+    software: Wordpress
+    owner: Marketing
+    description: Company blog
+    team: alphateam
+    contact: alphateam@acme.io
+    homepage: https://acme.io
+    repository: https://git.acme.io/blog-server
+    group: content
+    visibility: public
+    tags:
+      - CMS
+    network_zone: content
+    machine: s
+    scale: 5
+    host_type: docker
+    note: to be replaced
+    statuses:
+      lifecycle: green
+      security: red
+      stability: green
+      business_capability: yellow
+    interfaces:
+      - description: posts
+        format: form
+      - description: user data
+        format: form
+      - description: api calls
+        format: json
+    dataflow:
+      - description: push
+        target: kpi-dashboard
+        format: json
+      - description: in-app purchases
+        target: external-billing
+    provided_by:
+      - wordpress-web
+      - wordpress-mysql
+      - wordpress-redis
 
 #
 # auxiliary services which do not provide business value
