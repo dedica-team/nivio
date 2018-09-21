@@ -18,4 +18,43 @@ public interface LandscapeItem {
      * @return the type (ingress, service, infrastructure)
      */
     String getType();
+
+    String getName();
+    String getShort_name();
+
+    String getGroup();
+
+    String getSoftware();
+
+    String getVersion();
+
+    String getHomepage();
+
+    String getRepository();
+
+    String getContact();
+
+    String getTeam();
+
+    String getVisibility();
+
+    String getMachine();
+
+    String getScale();
+
+    String getHost_type();
+
+    String getNetwork();
+
+    String getDescription();
+
+    String[] getTags();
+
+    String getNote();
+
+    Integer getPort();
+
+    String getProtocol();
+
+    String getOwner();
 }

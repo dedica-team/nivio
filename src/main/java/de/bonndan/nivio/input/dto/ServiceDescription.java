@@ -37,7 +37,7 @@ public class ServiceDescription implements LandscapeItem {
     private String group;
     private String visibility;
     private String[] tags;
-    private String network_zone;
+    private String network;
     private String machine;
     private String scale;
     private String host_type;
@@ -196,12 +196,12 @@ public class ServiceDescription implements LandscapeItem {
         this.tags = tags;
     }
 
-    public String getNetwork_zone() {
-        return network_zone;
+    public String getNetwork() {
+        return network;
     }
 
-    public void setNetwork_zone(String network_zone) {
-        this.network_zone = network_zone;
+    public void setNetwork(String network) {
+        this.network = network;
     }
 
     public String getMachine() {

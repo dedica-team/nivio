@@ -1,6 +1,7 @@
 package de.bonndan.nivio.landscape;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -50,7 +51,7 @@ public class Service implements LandscapeItem {
 
     private String[] tags;
 
-    private String network_zone;
+    private String network;
 
     private String machine;
 
@@ -77,12 +78,17 @@ public class Service implements LandscapeItem {
     private Set<Service> provides = new HashSet<>();
 
     private String note;
+    private Integer port;
+    private String protocol;
 
     public String getIdentifier() {
         return identifier;
     }
 
     public void setIdentifier(String identifier) {
+        if (StringUtils.isEmpty(identifier)) {
+            throw new RuntimeException("Identifier must not be empty");
+        }
         this.identifier = identifier.toLowerCase();
     }
 
@@ -198,12 +204,12 @@ public class Service implements LandscapeItem {
         this.tags = tags;
     }
 
-    public String getNetwork_zone() {
-        return network_zone;
+    public String getNetwork() {
+        return network;
     }
 
-    public void setNetwork_zone(String network_zone) {
-        this.network_zone = network_zone;
+    public void setNetwork(String network) {
+        this.network = network;
     }
 
     public String getMachine() {
@@ -274,6 +280,23 @@ public class Service implements LandscapeItem {
 
     public String getNote() {
         return note;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
+    @Override
+    public Integer getPort() {
+        return port;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+    @Override
+    public String getProtocol() {
+        return protocol;
     }
 
     public Set<Service> getProvides() {

@@ -29,7 +29,7 @@ service:
  talks_to:
   - pivio-elasticsearch
 
-network_zone: development
+network: development
 
 context:
  belongs_to_bounded_context: pivio

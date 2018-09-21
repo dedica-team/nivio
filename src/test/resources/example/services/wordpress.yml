@@ -16,7 +16,7 @@ services:
     visibility: public
     tags:
       - CMS
-    network_zone: content
+    network: content
     machine: s
     scale: 5
     host_type: docker
@@ -57,7 +57,7 @@ infrastructure:
     machine: Pentium 1 512MB RAM
     type: webserver
     team: ops guys
-    network_zone: content
+    network: content
     host_type: docker
     group: content
 
@@ -70,7 +70,7 @@ infrastructure:
     machine: Pentium 1 512MB RAM
     type: database
     team: ops guys
-    network_zone: content
+    network: content
     host_type: docker
 
   - description: Cache for Wordpress
@@ -82,6 +82,6 @@ infrastructure:
     machine: Pentium 1 1GB RAM
     type: cache
     team: ops guys
-    network_zone: content
+    network: content
     host_type: native
 

@@ -21,7 +21,7 @@ services:
     repository: https://git.acme.io/dashboard
     group: dashboard
     visibility: public
-    network_zone: content
+    network: content
     machine: s
     scale: 1
     host_type: docker
@@ -46,7 +46,7 @@ infrastructure:
     machine: Pentium 1 512MB RAM
     type: database
     team: ops guys
-    network_zone: content
+    network: content
     host_type: docker
     group: dashboard
 

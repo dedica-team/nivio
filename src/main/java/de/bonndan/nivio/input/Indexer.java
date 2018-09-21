@@ -52,11 +52,7 @@ public class Indexer {
         newItems.forEach(
                 serviceDescription -> {
                     logger.info("Creating new service " + serviceDescription.getIdentifier() + " in env " + environment.getIdentifier());
-                    Service created = new Service();
-                    created.setLandscape(landscape);
-                    created.setIdentifier(serviceDescription.getIdentifier());
-                    created.setType(serviceDescription.getType());
-                    assignAllValues(created, (ServiceDescription) serviceDescription);
+                    Service created = ServiceFactory.fromDescription(serviceDescription, landscape);
                     serviceRepo.save(created);
 
                     landscape.addService(created);
@@ -71,7 +67,7 @@ public class Indexer {
                     logger.info("Updating service " + service.getIdentifier() + " in landscape " + environment.getIdentifier());
                     ServiceDescription description = getDescription(service, environment);
 
-                    assignAllValues((Service) service, description);
+                    ServiceFactory.assignAll((Service) service, description);
                     inLandscape.add((Service) service);
                 }
         );
@@ -161,34 +157,5 @@ public class Indexer {
                 logger.info("Creating dataflow between " + service.getIdentifier() + " and " + target.getIdentifier());
             });
         });
-    }
-
-    public void assignAllValues(Service service, ServiceDescription serviceDescription) {
-
-        if (serviceDescription == null) {
-            logger.warn("ServiceDescription for service " + service.getIdentifier() + " is null in assignAllValues");
-            return;
-        }
-        service.setName(serviceDescription.getName());
-        service.setNote(serviceDescription.getNote());
-        service.setShort_name(serviceDescription.getName());
-        service.setDescription(serviceDescription.getDescription());
-        service.setTags(serviceDescription.getTags());
-
-        service.setSoftware(serviceDescription.getSoftware());
-        service.setVersion(serviceDescription.getVersion());
-
-        service.setHomepage(serviceDescription.getHomepage());
-        service.setRepository(serviceDescription.getRepository());
-        service.setContact(serviceDescription.getContact());
-        service.setTeam(serviceDescription.getTeam());
-
-        service.setVisibility(serviceDescription.getVisibility());
-        service.setGroup(serviceDescription.getGroup());
-
-        service.setHost_type(serviceDescription.getHost_type());
-        service.setNetwork_zone(serviceDescription.getNetwork_zone());
-        service.setMachine(serviceDescription.getMachine());
-        service.setScale(serviceDescription.getScale());
     }
 }
