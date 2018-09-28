@@ -56,5 +56,6 @@ public class ServiceFactoryTest {
         assertEquals(landscapeItem.getPort(), created.getPort());
         assertEquals(landscapeItem.getProtocol(), created.getProtocol());
         assertEquals(landscapeItem.getRepository(), created.getRepository());
+        assertEquals(landscapeItem.getNetwork(), created.getNetwork());
     }
 }

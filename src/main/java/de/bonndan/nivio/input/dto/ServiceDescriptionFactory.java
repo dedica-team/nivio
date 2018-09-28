@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.bonndan.nivio.input.ReadingException;
 import de.bonndan.nivio.landscape.LandscapeItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +16,7 @@ import java.util.List;
 
 public class ServiceDescriptionFactory {
 
+    private static final Logger logger = LoggerFactory.getLogger(ServiceDescriptionFactory.class);
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
     static {
@@ -21,27 +24,34 @@ public class ServiceDescriptionFactory {
         mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
     }
 
-    public static List<ServiceDescription> fromYaml(File file) {
+    public static List<ServiceDescription> fromYaml(String yml) {
 
         List<ServiceDescription> services = new ArrayList<>();
-        try {
-            Source source = mapper.readValue(file, Source.class);
-            source.ingress.forEach(serviceDescription -> {
-                serviceDescription.setType(LandscapeItem.TYPE_INGRESS);
-                services.add(serviceDescription);
-            });
-            source.services.forEach(serviceDescription -> {
-                serviceDescription.setType(LandscapeItem.TYPE_APPLICATION);
-                services.add(serviceDescription);
-            });
-            source.infrastructure.forEach(serviceDescription -> {
-                serviceDescription.setType(LandscapeItem.TYPE_INFRASTRUCTURE);
-                services.add(serviceDescription);
-            });
 
-            return services;
+        Source source = null;
+        try {
+            source = mapper.readValue(yml, Source.class);
         } catch (IOException e) {
-            throw new ReadingException("Failed to create service description from " + file.getAbsolutePath(), e);
+            logger.error("Failed to read yml", e);
         }
+        if (source == null) {
+            logger.warn("Got null out of yml string " + yml);
+            return services;
+        }
+        source.ingress.forEach(serviceDescription -> {
+            serviceDescription.setType(LandscapeItem.TYPE_INGRESS);
+            services.add(serviceDescription);
+        });
+        source.services.forEach(serviceDescription -> {
+            serviceDescription.setType(LandscapeItem.TYPE_APPLICATION);
+            services.add(serviceDescription);
+        });
+        source.infrastructure.forEach(serviceDescription -> {
+            serviceDescription.setType(LandscapeItem.TYPE_INFRASTRUCTURE);
+            services.add(serviceDescription);
+        });
+
+        return services;
+
     }
 }

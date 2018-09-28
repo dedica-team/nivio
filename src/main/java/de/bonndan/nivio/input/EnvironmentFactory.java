@@ -20,19 +20,18 @@ public class EnvironmentFactory {
     }
 
     public static Environment fromYaml(File file) {
+        FileFetcher fetcher = new FileFetcher(new HttpService());
         try {
             Environment environment = mapper.readValue(file, Environment.class);
             environment.setPath(file.toString());
-            environment.getSources().forEach(s -> {
-                        s.setEnvironment(environment);
-                        List<ServiceDescription> serviceDescriptions = ServiceDescriptionFactory.fromYaml(new File(s.getFullUrl()));
+            environment.getSourceReferences().forEach(ref -> {
+                        ref.setEnvironment(environment);
+                        String yaml = fetcher.get(ref);
+                        List<ServiceDescription> serviceDescriptions = ServiceDescriptionFactory.fromYaml(yaml);
                         environment.addServices(serviceDescriptions);
                     }
             );
 
-            for (Source source : environment.getSources()) {
-
-            }
             return environment;
         } catch (IOException e) {
             throw new ReadingException("Failed to create input from " + file.getAbsolutePath(), e);

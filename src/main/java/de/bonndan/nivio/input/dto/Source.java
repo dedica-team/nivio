@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a source file with its sections.
+ * Represents source file content with its sections.
  */
 public class Source {
 

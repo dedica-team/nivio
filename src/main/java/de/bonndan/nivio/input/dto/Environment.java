@@ -1,6 +1,5 @@
 package de.bonndan.nivio.input.dto;
 
-import de.bonndan.nivio.input.Source;
 import de.bonndan.nivio.landscape.Landscape;
 
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public class Environment {
     /**
      * List of configuration sources.
      */
-    private List<Source> sources = new ArrayList<>();
+    private List<SourceReference> sources = new ArrayList<>();
 
     private List<ServiceDescription> serviceDescriptions = new ArrayList<>();
 
@@ -49,11 +48,11 @@ public class Environment {
         this.name = name;
     }
 
-    public List<Source> getSources() {
+    public List<SourceReference> getSourceReferences() {
         return sources;
     }
 
-    public void setSources(List<Source> sources) {
+    public void setSources(List<SourceReference> sources) {
         this.sources = sources;
     }
 

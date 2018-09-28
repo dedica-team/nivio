@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 
+import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.util.RootPath;
 import de.bonndan.nivio.input.dto.Environment;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -20,7 +22,11 @@ class EnvironmentFactoryTest {
         Environment environment = EnvironmentFactory.fromYaml(file);
         assertEquals("Landscape example", environment.getName());
         assertEquals("nivio:example", environment.getIdentifier());
-        assertFalse(environment.getSources().isEmpty());
+        assertFalse(environment.getSourceReferences().isEmpty());
+
+        SourceReference mapped = environment.getSourceReferences().get(1);
+        assertNotNull(mapped);
+        assertEquals("nivio", mapped.getFormat());
     }
 
 }
