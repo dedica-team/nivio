@@ -62,11 +62,11 @@ public class FileFetcher {
             return http.get(new URL(ref.getUrl()));
         } catch (IOException | AuthenticationException | URISyntaxException | RuntimeException e) {
             logger.error("Failed to fetch file " + ref, e);
-            return "";
+            throw new ReadingException("Failed to fetch file "+ ref, e);
         }
     }
 
-    private String readFile(File source) {
+    public static String readFile(File source) {
         try {
             return new String(Files.readAllBytes(Paths.get(source.toURI())));
         } catch (IOException e) {
