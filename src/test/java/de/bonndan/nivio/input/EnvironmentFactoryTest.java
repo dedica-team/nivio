@@ -42,6 +42,7 @@ class EnvironmentFactoryTest {
         ServiceDescription mapped = environment.getServiceDescription("blog-server");
         assertNotNull(mapped);
         assertEquals("blog1", mapped.getShort_name());
+        assertEquals("name2", mapped.getName());
     }
 
 }

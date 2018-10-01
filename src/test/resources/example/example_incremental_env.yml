@@ -3,3 +3,4 @@ name: Landscape example
 sources:
   - "./services/wordpress.yml"
   - "./services/wordpress1.yml"
+  - "./services/wordpress2.yml"
