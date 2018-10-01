@@ -1,15 +1,16 @@
 package de.bonndan.nivio.input.dto;
 
 import de.bonndan.nivio.landscape.Landscape;
+import de.bonndan.nivio.landscape.ServiceFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Configures an input.
- *
+ * <p>
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
- *
  */
 public class Environment {
 
@@ -68,6 +69,18 @@ public class Environment {
         return serviceDescriptions;
     }
 
+    /**
+     * Returns a service description by identifier.
+     *
+     */
+    public ServiceDescription getServiceDescription(String identifier) {
+        Optional<ServiceDescription> first = serviceDescriptions.stream()
+                .filter(serviceDescription -> serviceDescription.getIdentifier().equals(identifier))
+                .findFirst();
+
+        return first.orElse(null);
+    }
+
     public Landscape toLandscape() {
         Landscape landscape = new Landscape();
         landscape.setIdentifier(identifier);
@@ -76,10 +89,16 @@ public class Environment {
         return landscape;
     }
 
-    public void addServices(List<ServiceDescription> serviceDescriptions) {
-        serviceDescriptions.forEach(serviceDescription -> {
+    public void addServices(List<ServiceDescription> incoming) {
+        incoming.forEach(serviceDescription -> {
             serviceDescription.setEnvironment(this.identifier);
-            this.serviceDescriptions.add(serviceDescription);
+            var existing = getServiceDescription(serviceDescription.getIdentifier());
+            if (existing != null) {
+                ServiceDescriptionFactory.assignNotNull(existing, serviceDescription);
+            } else {
+                this.serviceDescriptions.add(serviceDescription);
+            }
         });
     }
+
 }

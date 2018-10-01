@@ -1,0 +1,5 @@
+identifier: nivio:example
+name: Landscape example
+sources:
+  - "./services/wordpress.yml"
+  - "./services/wordpress1.yml"
