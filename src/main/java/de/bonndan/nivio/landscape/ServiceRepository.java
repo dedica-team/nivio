@@ -10,5 +10,4 @@ public interface ServiceRepository extends CrudRepository<Service, Long> {
 
     List<Service> findAllByLandscape(Landscape landscape);
 
-    List<Service> findAllByLandscapeAndType(Landscape landscape, String type);
 }

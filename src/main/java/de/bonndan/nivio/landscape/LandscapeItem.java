@@ -1,5 +1,8 @@
 package de.bonndan.nivio.landscape;
 
+import java.util.List;
+import java.util.Set;
+
 public interface LandscapeItem {
 
     String TYPE_INFRASTRUCTURE = "infrastructure";
@@ -44,7 +47,7 @@ public interface LandscapeItem {
 
     String getHost_type();
 
-    String getNetwork();
+    Set<String> getNetworks();
 
     String getDescription();
 
@@ -52,9 +55,9 @@ public interface LandscapeItem {
 
     String getNote();
 
-    Integer getPort();
-
-    String getProtocol();
-
     String getOwner();
+
+    Set<InterfaceItem> getInterfaces();
+
+    Set<DataFlowItem> getDataFlow();
 }

@@ -1,8 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.Environment;
-import de.bonndan.nivio.input.dto.ServiceDescription;
-import de.bonndan.nivio.input.dto.ServiceDescriptionFactory;
+import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.landscape.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,11 +16,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.Set;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-public class IndexerTest {
+public class IndexerIntegrationTest {
 
     @Autowired
     ServiceRepository serviceRepository;
@@ -42,27 +42,33 @@ public class IndexerTest {
         Assertions.assertNotNull(landscape);
         Assertions.assertNotNull(landscape.getServices());
         Assertions.assertEquals(7, landscape.getServices().size());
-        Optional<Service> matchingObject = landscape.getServices().stream().
-                filter(p -> p.getIdentifier().equals("blog-server")).
-                findFirst();
-        Service blog = matchingObject.get();
+        Service blog = Utils.pick("blog-server", landscape.getServices());
         Assertions.assertNotNull(blog);
         Assertions.assertEquals(3, blog.getProvidedBy().size());
 
-        Optional<Service> webserver = blog.getProvidedBy().stream().
-                filter(p -> p.getIdentifier().equals("wordpress-web")).
-                findFirst();
-        Assertions.assertNotNull(webserver.get());
-        Assertions.assertEquals(1, webserver.get().getProvides().size());
+        Service webserver = Utils.pick("wordpress-web", blog.getProvidedBy());
+        Assertions.assertNotNull(webserver);
+        Assertions.assertEquals(1, webserver.getProvides().size());
 
-        Iterator<DataFlow> iterator = blog.getDataFlow().iterator();
-        Assertions.assertTrue(iterator.hasNext());
-        DataFlow df = iterator.next();
-        Assertions.assertNotNull(df);
-        Assertions.assertEquals("push", df.getDescription());
-        Assertions.assertEquals("json", df.getFormat());
-        Assertions.assertEquals(blog.getIdentifier(), df.getSource().getIdentifier());
-        Assertions.assertEquals("kpi-dashboard", df.getTarget().getIdentifier());
+        DataFlow push = (DataFlow) blog.getDataFlow().stream()
+                .filter(d -> d.getDescription().equals("push"))
+                .findFirst()
+                .orElseThrow();
+
+        Assertions.assertNotNull(push);
+
+        Assertions.assertEquals("push", push.getDescription());
+        Assertions.assertEquals("json", push.getFormat());
+        Assertions.assertEquals(blog.getIdentifier(), push.getSourceEntity().getIdentifier());
+        Assertions.assertEquals("kpi-dashboard", push.getTarget());
+
+        Set<InterfaceItem> interfaces = blog.getInterfaces();
+        Assertions.assertEquals(3, interfaces.size());
+        InterfaceDescription i = (InterfaceDescription) blog.getInterfaces().stream()
+                .filter(d -> d.getDescription().equals("posts"))
+                .findFirst()
+                .orElseThrow();
+        Assertions.assertEquals("form", i.getFormat());
     }
 
     private String getRootPath() {

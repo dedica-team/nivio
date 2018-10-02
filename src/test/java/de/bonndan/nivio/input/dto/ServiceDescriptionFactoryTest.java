@@ -48,7 +48,8 @@ class ServiceDescriptionFactoryTest {
         assertEquals("https://acme.io", service.getHomepage());
         assertEquals("https://git.acme.io/blog-server", service.getRepository());
         assertEquals("s", service.getMachine());
-        assertEquals("content", service.getNetwork());
+        assertNotNull(service.getNetworks());
+        assertEquals("content", service.getNetworks().toArray()[0]);
         assertEquals("alphateam", service.getTeam());
         assertEquals("alphateam@acme.io", service.getContact());
         assertEquals("content", service.getGroup());
@@ -89,11 +90,9 @@ class ServiceDescriptionFactoryTest {
         assertEquals("Webserver", infra.getDescription());
         assertEquals("Apache", infra.getSoftware());
         assertEquals("2.4", infra.getVersion());
-        assertEquals("https", infra.getProtocol());
-        assertEquals(443, (int)infra.getPort());
         assertEquals("Pentium 1 512MB RAM", infra.getMachine());
         assertEquals("ops guys", infra.getTeam());
-        assertEquals("content", infra.getNetwork());
+        assertEquals("content", infra.getNetworks().toArray()[0]);
         assertEquals("docker", infra.getHost_type());
     }
 

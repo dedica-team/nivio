@@ -31,4 +31,5 @@ public class LandscapeItems {
     private static boolean exists(LandscapeItem item, List<? extends LandscapeItem> items) {
         return items.stream().anyMatch(o -> o.getIdentifier().equals(item.getIdentifier()));
     }
+
 }

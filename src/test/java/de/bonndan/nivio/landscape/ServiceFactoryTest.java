@@ -27,8 +27,6 @@ public class ServiceFactoryTest {
         landscapeItem.setVersion("1");
         landscapeItem.setTeam("A-Team");
         landscapeItem.setVisibility("public");
-        landscapeItem.setPort(8008);
-        landscapeItem.setProtocol("http");
         landscapeItem.setTags(new String[]{"a", "b"});
     }
 
@@ -53,9 +51,9 @@ public class ServiceFactoryTest {
         assertEquals(landscapeItem.getSoftware(), created.getSoftware());
         assertEquals(landscapeItem.getVersion(), created.getVersion());
         assertEquals(landscapeItem.getVisibility(), created.getVisibility());
-        assertEquals(landscapeItem.getPort(), created.getPort());
-        assertEquals(landscapeItem.getProtocol(), created.getProtocol());
+        assertEquals(landscapeItem.getInterfaces(), created.getInterfaces());
+        assertEquals(landscapeItem.getDataFlow(), created.getDataFlow());
         assertEquals(landscapeItem.getRepository(), created.getRepository());
-        assertEquals(landscapeItem.getNetwork(), created.getNetwork());
+        assertEquals(landscapeItem.getNetworks(), created.getNetworks());
     }
 }

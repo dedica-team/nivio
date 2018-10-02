@@ -1,8 +1,12 @@
 package de.bonndan.nivio.input.dto;
 
-public class DataFlowDescription {
+import de.bonndan.nivio.landscape.DataFlowItem;
+
+public class DataFlowDescription implements DataFlowItem {
+
     private String description;
     private String format;
+    private String source;
     private String target;
 
     public String getDescription() {
@@ -23,6 +27,14 @@ public class DataFlowDescription {
 
     public String getTarget() {
         return target;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     public void setTarget(String target) {

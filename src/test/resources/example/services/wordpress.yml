@@ -1,87 +1,91 @@
 document_version: 1.0
 
 services:
-  - identifier: blog-server
-    name: Demo Blog
-    short_name: blog
-    version: 1.0
-    software: Wordpress
-    owner: Marketing
-    description: Company blog
-    team: alphateam
-    contact: alphateam@acme.io
-    homepage: https://acme.io
-    repository: https://git.acme.io/blog-server
-    group: content
-    visibility: public
-    tags:
-      - CMS
-    network: content
-    machine: s
-    scale: 5
-    host_type: docker
-    note: to be replaced
-    statuses:
-      lifecycle: green
-      security: red
-      stability: green
-      business_capability: yellow
-    interfaces:
-      - description: posts
-        format: form
-      - description: user data
-        format: form
-      - description: api calls
-        format: json
-    dataflow:
-      - description: push
-        target: kpi-dashboard
-        format: json
-      - description: in-app purchases
-        target: external-billing
-    provided_by:
-      - wordpress-web
-      - wordpress-mysql
-      - wordpress-redis
+- identifier: blog-server
+  name: Demo Blog
+  short_name: blog
+  version: 1.0
+  software: Wordpress
+  owner: Marketing
+  description: Company blog
+  team: alphateam
+  contact: alphateam@acme.io
+  homepage: https://acme.io
+  repository: https://git.acme.io/blog-server
+  group: content
+  visibility: public
+  tags:
+  - CMS
+  networks:
+  - content
+  machine: s
+  scale: 5
+  host_type: docker
+  note: to be replaced
+  statuses:
+    lifecycle: green
+    security: red
+    stability: green
+    business_capability: yellow
+  interfaces:
+  - description: posts
+    format: form
+  - description: user data
+    format: form
+  - description: api calls
+    format: json
+  dataflow:
+  - description: push
+    target: kpi-dashboard
+    format: json
+  - description: in-app purchases
+    target: external-billing
+  provided_by:
+  - wordpress-web
+  - wordpress-mysql
+  - wordpress-redis
 
 #
 # auxiliary services which do not provide business value
 #
 infrastructure:
-  - identifier: wordpress-web
-    description: Webserver
-    software: Apache
-    version: 2.4
-    protocol: https
-    port: 443
-    machine: Pentium 1 512MB RAM
-    type: webserver
-    team: ops guys
-    network: content
-    host_type: docker
-    group: content
+- identifier: wordpress-web
+  description: Webserver
+  software: Apache
+  version: 2.4
+  protocol: https
+  port: 443
+  machine: Pentium 1 512MB RAM
+  type: webserver
+  team: ops guys
+  networks:
+  - content
+  host_type: docker
+  group: content
 
-  - description: Database for Wordpress
-    software: MySQL
-    version: 5.6
-    identifier: wordpress-mysql
-    protocol: tcp
-    port: 3006
-    machine: Pentium 1 512MB RAM
-    type: database
-    team: ops guys
-    network: content
-    host_type: docker
+- description: Database for Wordpress
+  software: MySQL
+  version: 5.6
+  identifier: wordpress-mysql
+  protocol: tcp
+  port: 3006
+  machine: Pentium 1 512MB RAM
+  type: database
+  team: ops guys
+  networks:
+  - content
+  host_type: docker
 
-  - description: Cache for Wordpress
-    software: Redis
-    version: 1.0
-    identifier: wordpress-redis
-    protocol: tcp
-    port: 6379
-    machine: Pentium 1 1GB RAM
-    type: cache
-    team: ops guys
-    network: content
-    host_type: native
+- description: Cache for Wordpress
+  software: Redis
+  version: 1.0
+  identifier: wordpress-redis
+  protocol: tcp
+  port: 6379
+  machine: Pentium 1 1GB RAM
+  type: cache
+  team: ops guys
+  networks:
+  - content
+  host_type: native
 

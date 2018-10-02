@@ -1,9 +1,6 @@
 package de.bonndan.nivio.output;
 
-import de.bonndan.nivio.landscape.DataFlow;
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.LandscapeItem;
-import de.bonndan.nivio.landscape.Service;
+import de.bonndan.nivio.landscape.*;
 import org.jgrapht.Graph;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,8 +21,7 @@ public class GraphBuilderTest {
         a1.setType(LandscapeItem.TYPE_INFRASTRUCTURE);
         a1.setIdentifier("a1");
         a.getProvidedBy().add(a1);
-
-
+        landscape.addService(a1);
 
         Service b = new Service();
         b.setType(LandscapeItem.TYPE_APPLICATION);
@@ -44,12 +40,15 @@ public class GraphBuilderTest {
         Graph graph = graphBuilder.build(landscape);
         Assertions.assertNotNull(graph);
 
-        Assertions.assertTrue(graph.containsVertex(landscape.getService("a")));
+        Service a = Utils.pick("a", landscape.getServices());
+        Service a1 = Utils.pick("a1", landscape.getServices());
+        Service b = Utils.pick("b", landscape.getServices());
+        Assertions.assertTrue(graph.containsVertex(a));
 
-        Object a1 = graph.getEdge(landscape.getService("a"), landscape.getService("a1"));
-        Assertions.assertNotNull(a1);
+        Object edge1 = graph.getEdge(a, a1);
+        Assertions.assertNotNull(edge1);
 
-        Object a2b = graph.getEdge(landscape.getService("a"), landscape.getService("b"));
-        Assertions.assertNotNull(a2b);
+        Object edge2 = graph.getEdge(a, b);
+        Assertions.assertNotNull(edge2);
     }
 }

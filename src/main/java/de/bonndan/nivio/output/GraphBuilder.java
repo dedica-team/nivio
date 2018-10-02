@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output;
 
+import de.bonndan.nivio.landscape.DataFlow;
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeItem;
 import de.bonndan.nivio.landscape.Service;
@@ -31,7 +32,7 @@ public class GraphBuilder {
 
     private void addLinks(Service service) {
         service.getDataFlow().forEach(flow -> {
-            graph.addEdge(service, flow.getTarget(), new LabeledEdge(flow.getDescription()));
+            graph.addEdge(service, ((DataFlow)flow).getTargetEntity(), new LabeledEdge(flow.getDescription()));
         });
     }
 }

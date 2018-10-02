@@ -13,6 +13,8 @@
         <version>2.0.4.RELEASE</version>
     </parent>
 
+    <packaging>jar</packaging>
+
     <properties>
         <java.version>1.10</java.version>
     </properties>

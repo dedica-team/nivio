@@ -116,7 +116,7 @@ public class Indexer {
                             throw new RuntimeException("Could not find service " + provider + " in landscape " + environment);
                         }
 
-                        if (!service.getProvidedBy().contains(provider)) {
+                        if (!Utils.contains(provider, service.getProvidedBy())) {
                             service.getProvidedBy().add(provider);
                             logger.info("Adding provider " + provider.getIdentifier() + " to " + service.getIdentifier());
                         }
@@ -127,18 +127,18 @@ public class Indexer {
 
     private void linkDataflow(final Environment input, final Landscape landscape) {
         input.getServiceDescriptions().forEach(serviceDescription -> {
-            Service service = landscape.getService(serviceDescription.getIdentifier());
+            Service service = Utils.pick(serviceDescription.getIdentifier(), landscape.getServices());
             serviceDescription.getDataFlow().forEach(description -> {
-                Service target = landscape.getService(description.getTarget());
+                Service target = Utils.find(description.getTarget(), landscape.getServices());
                 if (target == null) {
                     logger.warn("Dataflow target service " + description.getTarget() + " not found");
                     return;
                 }
-                Iterator<DataFlow> iterator = service.getDataFlow().iterator();
+                Iterator<DataFlowItem> iterator = service.getDataFlow().iterator();
                 DataFlow existing = null;
                 DataFlow dataFlow = new DataFlow(service, target);
                 while (iterator.hasNext()) {
-                    existing = iterator.next();
+                    existing = (DataFlow) iterator.next();
                     if (existing.equals(dataFlow)) {
                         existing.setDescription(description.getDescription());
                         existing.setFormat(description.getFormat());

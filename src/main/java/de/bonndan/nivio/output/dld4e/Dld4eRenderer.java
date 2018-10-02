@@ -119,9 +119,11 @@ public class Dld4eRenderer implements Renderer {
         private List<String> networks = new ArrayList<>();
 
         public void add(Service service) {
-            if (!networks.contains(service.getNetwork())) {
-                networks.add(service.getNetwork());
-            }
+            service.getNetworks().forEach(s -> {
+                if (!networks.contains(s)) {
+                    networks.add(s);
+                }
+            });
         }
     }
 

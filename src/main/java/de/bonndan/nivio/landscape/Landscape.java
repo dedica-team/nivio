@@ -1,8 +1,11 @@
 package de.bonndan.nivio.landscape;
 
+import org.springframework.util.StringUtils;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
@@ -36,7 +39,7 @@ public class Landscape {
     }
 
     public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+        this.identifier = StringUtils.trimAllWhitespace(identifier);
     }
 
     public String getName() {
@@ -69,19 +72,17 @@ public class Landscape {
         services.add(service);
     }
 
-    /**
-     * Returns a service or infrastructure item by its identifier.
-     */
-    public Service getService(String identifier) {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Landscape landscape = (Landscape) o;
 
-        for (Service s : services) {
-            if (s.getIdentifier().equals(identifier))
-                return s;
-            for (Service i : s.getProvidedBy())
-                if (i.getIdentifier().equals(identifier))
-                    return i;
-        }
+        return StringUtils.trimAllWhitespace(identifier).equals(StringUtils.trimAllWhitespace(landscape.identifier));
+    }
 
-        return null;
+    @Override
+    public int hashCode() {
+        return Objects.hash(StringUtils.trimAllWhitespace(identifier));
     }
 }

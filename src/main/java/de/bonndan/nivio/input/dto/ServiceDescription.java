@@ -1,7 +1,11 @@
 package de.bonndan.nivio.input.dto;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.bonndan.nivio.landscape.DataFlowItem;
+import de.bonndan.nivio.landscape.InterfaceItem;
 import de.bonndan.nivio.landscape.LandscapeItem;
+import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.*;
@@ -37,20 +41,21 @@ public class ServiceDescription implements LandscapeItem {
     private String group;
     private String visibility;
     private String[] tags;
-    private String network;
+    private Set<String> networks;
     private String machine;
     private String scale;
     private String host_type;
 
     private Map<String, String> statuses = new HashMap<>();
 
-    private Set<DataFlowDescription> interfaces = new HashSet<>();
+    @JsonDeserialize(contentAs = InterfaceDescription.class)
+    private Set<InterfaceItem> interfaces = new HashSet<>();
 
-    private Set<DataFlowDescription> dataFlow = new HashSet<>();
+    @JsonDeserialize(contentAs = DataFlowDescription.class)
+    private Set<DataFlowItem> dataFlow = new HashSet<>();
 
     private List<String> provided_by = new ArrayList<>();
-    private String protocol;
-    private Integer port;
+
 
     public ServiceDescription() {
     }
@@ -64,7 +69,7 @@ public class ServiceDescription implements LandscapeItem {
     }
 
     public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+        this.identifier = StringUtils.trimAllWhitespace(identifier);
     }
 
     public String getEnvironment() {
@@ -196,14 +201,6 @@ public class ServiceDescription implements LandscapeItem {
         this.tags = tags;
     }
 
-    public String getNetwork() {
-        return network;
-    }
-
-    public void setNetwork(String network) {
-        this.network = network;
-    }
-
     public String getMachine() {
         return machine;
     }
@@ -224,23 +221,28 @@ public class ServiceDescription implements LandscapeItem {
         return host_type;
     }
 
+    public Set<String> getNetworks() {
+        return networks;
+    }
+
     public void setHost_type(String host_type) {
         this.host_type = host_type;
     }
 
-    public Set<DataFlowDescription> getInterfaces() {
+    public Set<InterfaceItem> getInterfaces() {
         return interfaces;
     }
 
-    public void setInterfaces(Set<DataFlowDescription> interfaces) {
+    public void setInterfaces(Set<InterfaceItem> interfaces) {
         this.interfaces = interfaces;
     }
 
-    public Set<DataFlowDescription> getDataFlow() {
+    public Set<DataFlowItem> getDataFlow() {
+        dataFlow.forEach(dataFlowItem -> ((DataFlowDescription)dataFlowItem).setSource(identifier));
         return dataFlow;
     }
 
-    public void setDataFlow(Set<DataFlowDescription> dataFlow) {
+    public void setDataFlow(Set<DataFlowItem> dataFlow) {
         this.dataFlow = dataFlow;
     }
 
@@ -252,22 +254,6 @@ public class ServiceDescription implements LandscapeItem {
         this.provided_by = provided_by;
     }
 
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
-
-    public String getProtocol() {
-        return protocol;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
     public Map<String, String> getStatuses() {
         return statuses;
     }
@@ -275,4 +261,10 @@ public class ServiceDescription implements LandscapeItem {
     public void setStatuses(Map<String, String> statuses) {
         this.statuses = statuses;
     }
+
+    public void setNetworks(Set<String> networks) {
+        this.networks = networks;
+    }
+
+
 }

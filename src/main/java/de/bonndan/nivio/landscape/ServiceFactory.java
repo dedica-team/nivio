@@ -3,6 +3,9 @@ package de.bonndan.nivio.landscape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class ServiceFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceFactory.class);
@@ -35,8 +38,8 @@ public class ServiceFactory {
 
         service.setSoftware(serviceDescription.getSoftware());
         service.setVersion(serviceDescription.getVersion());
-        service.setPort(serviceDescription.getPort());
-        service.setProtocol(serviceDescription.getProtocol());
+        service.setDataFlow(toDataFlow(serviceDescription.getDataFlow(), service.getLandscape()));
+        service.setInterfaces(serviceDescription.getInterfaces());
 
         service.setHomepage(serviceDescription.getHomepage());
         service.setRepository(serviceDescription.getRepository());
@@ -47,9 +50,18 @@ public class ServiceFactory {
         service.setGroup(serviceDescription.getGroup());
 
         service.setHost_type(serviceDescription.getHost_type());
-        service.setNetwork(serviceDescription.getNetwork());
+        service.setNetworks(serviceDescription.getNetworks());
         service.setMachine(serviceDescription.getMachine());
         service.setScale(serviceDescription.getScale());
+    }
+
+    private static Set<DataFlowItem> toDataFlow(Set<DataFlowItem> dataFlow, Landscape landscape) {
+        DataFlowFactory dataFlowFactory = new DataFlowFactory();
+        HashSet<DataFlowItem> objects = new HashSet<>();
+        dataFlow.forEach(
+                dataFlowItem -> objects.add(dataFlowFactory.createFrom(dataFlowItem, landscape.getServices()))
+        );
+        return objects;
     }
 
 }

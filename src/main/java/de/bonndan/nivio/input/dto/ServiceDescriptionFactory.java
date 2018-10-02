@@ -81,21 +81,17 @@ public class ServiceDescriptionFactory {
         if (increment.getTags() != null)
             existing.setTags(increment.getTags());
 
-
         if (increment.getDataFlow() != null)
             existing.setDataFlow(increment.getDataFlow());
         if (increment.getInterfaces() != null)
             existing.setInterfaces(increment.getInterfaces());
         if (increment.getProvided_by() != null)
             existing.setProvided_by(increment.getProvided_by());
-        if (increment.getNetwork() != null)
-            existing.setNetwork(increment.getNetwork());
+        if (increment.getNetworks() != null)
+            existing.setNetworks(increment.getNetworks());
         if (increment.getMachine() != null)
             existing.setMachine(increment.getMachine());
-        if (increment.getPort() != null)
-            existing.setPort(increment.getPort());
-        if (increment.getProtocol() != null)
-            existing.setProtocol(increment.getProtocol());
+
         if (increment.getSoftware() != null)
             existing.setSoftware(increment.getSoftware());
         if (increment.getStatuses() != null)

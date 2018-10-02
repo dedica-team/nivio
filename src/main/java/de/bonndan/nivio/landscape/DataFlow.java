@@ -2,6 +2,7 @@ package de.bonndan.nivio.landscape;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Objects;
  * Outgoing flows having a target which matches a service identifier will cause a relation to be created.
  */
 @Entity
-public class DataFlow implements Serializable {
+public class DataFlow implements DataFlowItem, Serializable {
 
     @Id
     @GeneratedValue
@@ -19,11 +20,11 @@ public class DataFlow implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "source_identifier", referencedColumnName = "identifier")
-    private Service source;
+    private Service sourceEntity;
 
     @ManyToOne
     @JoinColumn(name = "target_identifier", referencedColumnName = "identifier")
-    private Service target;
+    private Service targetEntity;
 
     private String description;
 
@@ -33,8 +34,8 @@ public class DataFlow implements Serializable {
     }
 
     public DataFlow(Service origin, Service target) {
-        this.source = origin;
-        this.target = target;
+        this.sourceEntity = origin;
+        this.targetEntity = target;
     }
 
     public long getId() {
@@ -57,20 +58,21 @@ public class DataFlow implements Serializable {
         this.format = format;
     }
 
-    public Service getSource() {
-        return source;
+    public Service getSourceEntity() {
+        return sourceEntity;
     }
 
-    public void setSource(Service source) {
-        this.source = source;
+    public void setSourceEntity(Service sourceEntity) {
+        this.sourceEntity = sourceEntity;
     }
 
-    public Service getTarget() {
-        return target;
+    public String getTarget() {
+        return targetEntity.getIdentifier();
     }
 
-    public void setTarget(Service target) {
-        this.target = target;
+    @Override
+    public String getSource() {
+        return sourceEntity.getIdentifier();
     }
 
     @Override
@@ -78,12 +80,20 @@ public class DataFlow implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DataFlow dataFlow = (DataFlow) o;
-        return Objects.equals(source.getIdentifier(), dataFlow.source.getIdentifier()) &&
-                Objects.equals(target.getIdentifier(), dataFlow.target.getIdentifier());
+        return Objects.equals(sourceEntity.getIdentifier(), dataFlow.sourceEntity.getIdentifier()) &&
+                Objects.equals(targetEntity.getIdentifier(), dataFlow.targetEntity.getIdentifier());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(source.getIdentifier(), target.getIdentifier());
+        return Objects.hash(sourceEntity.getIdentifier(), targetEntity.getIdentifier());
+    }
+
+    public Service getTargetEntity() {
+        return targetEntity;
+    }
+
+    public void setTargetEntity(Service service) {
+        targetEntity = service;
     }
 }

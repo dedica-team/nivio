@@ -1,6 +1,7 @@
 package de.bonndan.nivio.landscape;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.bonndan.nivio.input.dto.InterfaceDescription;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -51,7 +52,8 @@ public class Service implements LandscapeItem {
 
     private String[] tags;
 
-    private String network;
+    //@ElementCollection
+    private Set<String> networks;
 
     private String machine;
 
@@ -60,8 +62,8 @@ public class Service implements LandscapeItem {
     private String host_type;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "source")
-    private Set<DataFlow> dataFlow = new HashSet<>();
+    @OneToMany(targetEntity = DataFlow.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sourceEntity")
+    private Set<DataFlowItem> dataFlow = new HashSet<>();
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -78,8 +80,9 @@ public class Service implements LandscapeItem {
     private Set<Service> provides = new HashSet<>();
 
     private String note;
-    private Integer port;
-    private String protocol;
+
+    @ElementCollection(targetClass = InterfaceDescription.class)
+    private Set<InterfaceItem> interfaces;
 
     public String getIdentifier() {
         return identifier;
@@ -204,12 +207,12 @@ public class Service implements LandscapeItem {
         this.tags = tags;
     }
 
-    public String getNetwork() {
-        return network;
+    public Set<String> getNetworks() {
+        return networks;
     }
 
-    public void setNetwork(String network) {
-        this.network = network;
+    public void setNetworks(Set<String> networks) {
+        this.networks = networks;
     }
 
     public String getMachine() {
@@ -236,20 +239,16 @@ public class Service implements LandscapeItem {
         this.host_type = host_type;
     }
 
-    public Set<DataFlow> getDataFlow() {
+    public Set<DataFlowItem> getDataFlow() {
         return dataFlow;
     }
 
-    public void setDataFlow(Set<DataFlow> outgoing) {
-        this.dataFlow = outgoing;
+    public void setDataFlow(Set<DataFlowItem> outgoing) {
+        dataFlow.addAll(outgoing);
     }
 
     public Set<Service> getProvidedBy() {
         return providedBy;
-    }
-
-    public void setProvidedBy(Set<Service> providedBy) {
-        this.providedBy = providedBy;
     }
 
     public void setType(String type) {
@@ -282,23 +281,6 @@ public class Service implements LandscapeItem {
         return note;
     }
 
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    @Override
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
-    @Override
-    public String getProtocol() {
-        return protocol;
-    }
-
     public Set<Service> getProvides() {
         return provides;
     }
@@ -307,23 +289,35 @@ public class Service implements LandscapeItem {
         this.provides = provides;
     }
 
+    public void setInterfaces(Set<InterfaceItem> interfaces) {
+        this.interfaces = interfaces;
+    }
+
+    public Set<InterfaceItem> getInterfaces() {
+        return interfaces;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Service service = (Service) o;
-        return Objects.equals(identifier, service.identifier) &&
-                Objects.equals(landscape, service.landscape);
+
+        return Objects.equals(StringUtils.trimAllWhitespace(identifier),
+                StringUtils.trimAllWhitespace(service.identifier)
+        ) && Objects.equals(landscape, service.landscape);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(identifier, landscape);
+        return Objects.hash(StringUtils.trimAllWhitespace(identifier), landscape);
     }
 
     @Override
     public String toString() {
         return identifier + " (" + type + ", group: " + group + ")";
     }
+
+
 }
