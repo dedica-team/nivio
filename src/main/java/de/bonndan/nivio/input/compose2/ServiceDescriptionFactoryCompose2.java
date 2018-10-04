@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
+import de.bonndan.nivio.input.ServiceDescriptionFactory;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServiceDescriptionFactory {
+public class ServiceDescriptionFactoryCompose2 implements ServiceDescriptionFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceDescriptionFactory.class);
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
@@ -23,7 +24,7 @@ public class ServiceDescriptionFactory {
         mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
     }
 
-    public static List<de.bonndan.nivio.input.dto.ServiceDescription> fromYaml(String yml) {
+    public List<de.bonndan.nivio.input.dto.ServiceDescription> fromString(String yml) {
 
         List<ServiceDescription> services = new ArrayList<>();
 

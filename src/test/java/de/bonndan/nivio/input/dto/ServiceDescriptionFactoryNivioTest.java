@@ -3,14 +3,12 @@ package de.bonndan.nivio.input.dto;
 
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.HttpService;
+import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
 import de.bonndan.nivio.landscape.LandscapeItem;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -20,13 +18,16 @@ import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-class ServiceDescriptionFactoryTest {
+class ServiceDescriptionFactoryNivioTest {
 
     private FileFetcher fileFetcher;
+
+    private ServiceDescriptionFactoryNivio descriptionFactory;
 
     @BeforeEach
     public void setup() {
         fileFetcher = new FileFetcher(new HttpService());
+        descriptionFactory = new ServiceDescriptionFactoryNivio();
     }
 
     @Test
@@ -34,7 +35,7 @@ class ServiceDescriptionFactoryTest {
 
         SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/wordpress.yml");
         String yml = fileFetcher.get(file);
-        List<ServiceDescription> services = ServiceDescriptionFactory.fromYaml(yml);
+        List<ServiceDescription> services = descriptionFactory.fromString(yml);
         ServiceDescription service = services.get(0);
         assertEquals(LandscapeItem.TYPE_APPLICATION, service.getType());
         assertEquals("Demo Blog", service.getName());
@@ -99,11 +100,11 @@ class ServiceDescriptionFactoryTest {
     @Test
     public void readIngress() {
 
-
         SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/dashboard.yml");
         String yml = fileFetcher.get(file);
 
-        List<ServiceDescription> services = ServiceDescriptionFactory.fromYaml(yml);
+
+        List<ServiceDescription> services = descriptionFactory.fromString(yml);
         ServiceDescription service = services.get(0);
         assertEquals(LandscapeItem.TYPE_INGRESS, service.getType());
         assertEquals("Keycloak SSO", service.getName());

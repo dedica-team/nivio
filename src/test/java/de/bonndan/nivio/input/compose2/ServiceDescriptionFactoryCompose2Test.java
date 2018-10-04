@@ -14,7 +14,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class ServiceDescriptionFactoryTest {
+class ServiceDescriptionFactoryCompose2Test {
 
     private FileFetcher fileFetcher;
 
@@ -27,7 +27,8 @@ class ServiceDescriptionFactoryTest {
     public void readCompose() {
         SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/docker-compose.yml");
         String yml = fileFetcher.get(file);
-        List<ServiceDescription> services = ServiceDescriptionFactory.fromYaml(yml);
+        ServiceDescriptionFactoryCompose2 serviceDescriptionFactoryNivio = new ServiceDescriptionFactoryCompose2();
+        List<ServiceDescription> services = serviceDescriptionFactoryNivio.fromString(yml);
         assertEquals(3, services.size());
         ServiceDescription service = services.get(0);
         assertNotNull(service);

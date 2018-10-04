@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.ServiceDescription;
-import de.bonndan.nivio.input.dto.ServiceDescriptionFactory;
+import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,13 +21,16 @@ public class EnvironmentFactory {
 
     public static Environment fromYaml(File file) {
         FileFetcher fetcher = new FileFetcher(new HttpService());
+
         try {
             Environment environment = mapper.readValue(file, Environment.class);
             environment.setPath(file.toString());
             environment.getSourceReferences().forEach(ref -> {
+
+                        ServiceDescriptionFactory sdf = ServiceDescriptionFormatFactory.getFactory(ref);
                         ref.setEnvironment(environment);
-                        String yaml = fetcher.get(ref);
-                        List<ServiceDescription> serviceDescriptions = ServiceDescriptionFactory.fromYaml(yaml);
+                        String source = fetcher.get(ref);
+                        List<ServiceDescription> serviceDescriptions = sdf.fromString(source);
                         environment.addServices(serviceDescriptions);
                     }
             );

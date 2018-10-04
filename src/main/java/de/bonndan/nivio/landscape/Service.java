@@ -52,7 +52,7 @@ public class Service implements LandscapeItem {
 
     private String[] tags;
 
-    //@ElementCollection
+    @ElementCollection(targetClass = String.class)
     private Set<String> networks;
 
     private String machine;

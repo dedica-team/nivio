@@ -1,7 +1,8 @@
 package de.bonndan.nivio.input.dto;
 
+import de.bonndan.nivio.input.ServiceDescriptionFactory;
+import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
 import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.ServiceFactory;
 
 import java.util.ArrayList;
 import java.util.List;

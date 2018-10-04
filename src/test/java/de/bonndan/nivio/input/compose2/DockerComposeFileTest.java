@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.HttpService;
-import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.landscape.Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -17,16 +15,13 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DockerComposeFileTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(ServiceDescriptionFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(DockerComposeFileTest.class);
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     private FileFetcher fileFetcher;
 

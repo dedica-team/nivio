@@ -6,6 +6,13 @@ import java.util.Set;
 
 public class Utils {
 
+    /**
+     * Makes sure the services is returned or throws an exception.
+     *
+     * @param identifier service identifier
+     * @param serviceList all services
+     * @return the service with the given identifier
+     */
     public static Service pick(final String identifier, final Collection<Service> serviceList) {
         return serviceList.stream()
                 .filter(service -> service.getIdentifier().equals(identifier))
@@ -25,6 +32,13 @@ public class Utils {
         return false;
     }
 
+    /**
+     * Returns a service or null.
+     *
+     * @param identifier the service identifier
+     * @param services all services
+     * @return the service or null
+     */
     public static Service find(String identifier, Collection<Service> services) {
         return services.stream()
                 .filter(service -> service.getIdentifier().equals(identifier))
