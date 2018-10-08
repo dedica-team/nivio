@@ -17,6 +17,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.givenThat;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class RemoteFileTest {
@@ -92,6 +93,23 @@ public class RemoteFileTest {
         FileFetcher fetcher = new FileFetcher(new HttpService());
         String s = fetcher.get(sourceReference);
         assertEquals(yml, s);
+    }
+
+    @Test
+    void fetchingFails() {
+
+        givenThat(
+                get("/some/file.yml")
+                        .withHeader("Authorization", new AnythingPattern())
+                        .willReturn(aResponse().withStatus(404))
+        );
+
+        String serverUrl = buildApiUrl();
+        SourceReference sourceReference = new SourceReference(serverUrl);
+        sourceReference.setBasicAuthUsername("x");
+        sourceReference.setBasicAuthPassword("y");
+        FileFetcher fetcher = new FileFetcher(new HttpService());
+        assertThrows(ReadingException.class,() -> fetcher.get(sourceReference));
     }
 
     private String buildApiUrl() {
