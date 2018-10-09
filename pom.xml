@@ -111,6 +111,12 @@
             <artifactId>prometheus-scraper</artifactId>
             <version>0.23.0.Final</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+            <version>2.0.1.RELEASE</version>
+        </dependency>
     </dependencies>
 
     <build>

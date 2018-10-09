@@ -23,6 +23,7 @@ class EnvironmentFactoryTest {
         Environment environment = EnvironmentFactory.fromYaml(file);
         assertEquals("Landscape example", environment.getName());
         assertEquals("nivio:example", environment.getIdentifier());
+        assertEquals("mail@acme.org", environment.getContact());
         assertFalse(environment.getSourceReferences().isEmpty());
 
         SourceReference mapped = environment.getSourceReferences().get(1);

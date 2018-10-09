@@ -3,6 +3,7 @@ package de.bonndan.nivio.input.dto;
 import de.bonndan.nivio.input.ServiceDescriptionFactory;
 import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
 import de.bonndan.nivio.landscape.Landscape;
+import de.bonndan.nivio.landscape.LandscapeInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,14 @@ import java.util.Optional;
  * <p>
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
-public class Environment {
+public class Environment implements LandscapeInterface {
+
+    public static final Environment NONE = new Environment();
+
+    static {
+        NONE.contact = "";
+        NONE.identifier = "unknown landscape";
+    }
 
     /**
      * Immutable unique identifier. Maybe use an URN.
@@ -24,6 +32,11 @@ public class Environment {
      * Human readable name.
      */
     private String name;
+
+    /**
+     * Contact of the maintainer
+     */
+    private String contact;
 
     private String path;
 
@@ -48,6 +61,10 @@ public class Environment {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getContact() {
+        return contact;
     }
 
     public List<SourceReference> getSourceReferences() {
@@ -86,6 +103,7 @@ public class Environment {
         Landscape landscape = new Landscape();
         landscape.setIdentifier(identifier);
         landscape.setName(name);
+        landscape.setContact(contact);
         landscape.setPath(path);
         return landscape;
     }

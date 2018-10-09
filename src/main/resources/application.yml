@@ -18,3 +18,14 @@ spring:
     username: nivio
     password: nivio
     driver-class-name: org.h2.Driver
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: <login user to smtp server>
+    password: <login password to smtp server>
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true

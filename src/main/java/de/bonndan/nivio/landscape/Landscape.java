@@ -13,7 +13,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "landscapes")
-public class Landscape {
+public class Landscape implements LandscapeInterface {
 
     /**
      * Immutable unique identifier. Maybe use an URN.
@@ -25,6 +25,11 @@ public class Landscape {
      * Human readable name.
      */
     private String name;
+
+    /**
+     * Maintainer email
+     */
+    private String contact;
 
     private String path;
 
@@ -64,6 +69,15 @@ public class Landscape {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    @Override
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 
     public void addService(Service service) {

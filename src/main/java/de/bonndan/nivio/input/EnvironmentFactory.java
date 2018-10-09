@@ -37,7 +37,7 @@ public class EnvironmentFactory {
 
             return environment;
         } catch (IOException e) {
-            throw new ReadingException("Failed to create input from " + file.getAbsolutePath(), e);
+            throw new ReadingException("Failed to create an environment from " + file.getAbsolutePath(), e);
         }
     }
 }

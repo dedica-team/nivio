@@ -1,5 +1,6 @@
 identifier: nivio:example
 name: Landscape example
+contact: mail@acme.org
 sources:
   - "./services/wordpress.yml"
   - url: "./services/dashboard.yml"

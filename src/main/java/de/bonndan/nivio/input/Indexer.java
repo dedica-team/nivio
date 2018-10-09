@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.landscape.*;
@@ -33,11 +34,16 @@ public class Indexer {
             landscape = input.toLandscape();
         } else {
             landscape.setName(input.getName());
+            landscape.setContact(input.getContact());
         }
 
-        diff(input, landscape);
-        linkDataflow(input, landscape);
-        landscapeRepo.save(landscape);
+        try {
+            diff(input, landscape);
+            linkDataflow(input, landscape);
+            landscapeRepo.save(landscape);
+        } catch (ProcessingException e) {
+            logger.warn("Error while reindexing landscape " + input.getIdentifier(), e);
+        }
         return landscape;
     }
 
@@ -83,7 +89,7 @@ public class Indexer {
                 .findFirst().orElse(null);
 
         if (description == null)
-            throw new RuntimeException("Could not find service description for service " + service);
+            throw new ProcessingException(environment, "Could not find service description for service " + service);
 
         return description;
     }
@@ -113,7 +119,7 @@ public class Indexer {
                                 .findFirst().orElse(null);
 
                         if (provider == null) {
-                            throw new RuntimeException("Could not find service " + provider + " in landscape " + environment);
+                            throw new ProcessingException(environment, "Could not find service " + provider + " in landscape " + environment);
                         }
 
                         if (!Utils.contains(provider, service.getProvidedBy())) {

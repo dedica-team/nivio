@@ -40,6 +40,7 @@ public class IndexerIntegrationTest {
         Landscape landscape = indexer.reIndex(environment);
 
         Assertions.assertNotNull(landscape);
+        Assertions.assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getServices());
         Assertions.assertEquals(7, landscape.getServices().size());
         Service blog = Utils.pick("blog-server", landscape.getServices());
