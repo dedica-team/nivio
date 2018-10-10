@@ -3,9 +3,12 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.landscape.*;
+import de.bonndan.nivio.service.NotificationService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,9 +17,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Iterator;
-import java.util.Optional;
 import java.util.Set;
+
+import static org.mockito.MockitoAnnotations.initMocks;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -29,13 +32,20 @@ public class IndexerIntegrationTest {
     @Autowired
     LandscapeRepository environmentRepo;
 
+    @Mock
+    NotificationService notificationService;
+
+    @BeforeEach
+    void configureSystemUnderTest() {
+        initMocks(this);
+    }
 
     @Test
     public void testIndexing() {
         File file = new File(getRootPath() + "/src/test/resources/example/example_env.yml");
         Environment environment = EnvironmentFactory.fromYaml(file);
 
-        Indexer indexer = new Indexer(environmentRepo, serviceRepository);
+        Indexer indexer = new Indexer(environmentRepo, serviceRepository, notificationService);
 
         Landscape landscape = indexer.reIndex(environment);
 

@@ -1,0 +1,6 @@
+identifier: nivio:example
+name: Landscape example
+contact: mail@acme.org
+sources:
+  - url: "http://not.reachable:10000"
+    format: nivio

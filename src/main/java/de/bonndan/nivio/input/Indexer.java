@@ -4,6 +4,7 @@ import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.landscape.*;
+import de.bonndan.nivio.service.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +21,13 @@ public class Indexer {
 
     private final LandscapeRepository landscapeRepo;
     private final ServiceRepository serviceRepo;
+    private final NotificationService notificationService;
 
     @Autowired
-    public Indexer(LandscapeRepository environmentRepo, ServiceRepository serviceRepo) {
+    public Indexer(LandscapeRepository environmentRepo, ServiceRepository serviceRepo, NotificationService notificationService) {
         this.landscapeRepo = environmentRepo;
         this.serviceRepo = serviceRepo;
+        this.notificationService = notificationService;
     }
 
     public Landscape reIndex(final Environment input) {
@@ -42,7 +45,9 @@ public class Indexer {
             linkDataflow(input, landscape);
             landscapeRepo.save(landscape);
         } catch (ProcessingException e) {
-            logger.warn("Error while reindexing landscape " + input.getIdentifier(), e);
+            final String msg = "Error while reindexing landscape " + input.getIdentifier();
+            logger.warn(msg, e);
+            notificationService.sendError(e, msg);
         }
         return landscape;
     }

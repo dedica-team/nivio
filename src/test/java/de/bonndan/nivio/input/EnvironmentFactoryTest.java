@@ -12,6 +12,7 @@ import java.io.File;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 class EnvironmentFactoryTest {
@@ -46,4 +47,11 @@ class EnvironmentFactoryTest {
         assertEquals("name2", mapped.getName());
     }
 
+    @Test
+    public void brokenUrl() {
+
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_broken.yml");
+        assertThrows(ReadingException.class,() -> EnvironmentFactory.fromYaml(file));
+
+    }
 }

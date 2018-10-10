@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 @Component
 public class HttpService {
@@ -50,6 +51,8 @@ public class HttpService {
             } else {
                 throw new RuntimeException("Got " + response.getStatusLine().getStatusCode() + " while reading");
             }
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to fetch " + request.getURI(), ex);
         } finally {
             client.close();
         }
