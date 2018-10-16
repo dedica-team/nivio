@@ -1,6 +1,9 @@
 package de.bonndan.nivio.service;
 
+import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.FSChangeEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -12,7 +15,7 @@ import org.springframework.util.StringUtils;
 
 
 @Service
-public class NotificationService {
+public class NotificationService implements ApplicationListener<ProcessingErrorEvent> {
 
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationService.class);
@@ -46,5 +49,10 @@ public class NotificationService {
     }
 
 
+    @Override
+    public void onApplicationEvent(ProcessingErrorEvent processingErrorEvent) {
+        ProcessingException ex = processingErrorEvent.getException();
+        sendError(ex, ex.getMessage());
+    }
 }
 

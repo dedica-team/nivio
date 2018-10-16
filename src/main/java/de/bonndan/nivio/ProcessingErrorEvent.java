@@ -11,4 +11,8 @@ public class ProcessingErrorEvent extends ApplicationEvent {
         super(source);
         this.exception = exception;
     }
+
+    public ProcessingException getException() {
+        return exception;
+    }
 }
