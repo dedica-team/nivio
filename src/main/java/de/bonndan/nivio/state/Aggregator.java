@@ -36,9 +36,10 @@ public class Aggregator {
 
         getProviders(landscape).forEach(provider -> {
             try {
-                provider.apply(state);
+                Map<FullyQualifiedIdentifier, ServiceState> updates = provider.getStates();
+                state.putAll(updates);
             } catch (Throwable throwable) {
-                String msg = "Failed to apply state using provider " + provider;
+                String msg = "Failed to getStates state using provider " + provider;
                 handleError(landscape, throwable, msg);
             }
         });

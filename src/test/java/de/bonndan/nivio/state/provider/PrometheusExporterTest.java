@@ -21,8 +21,7 @@ public class PrometheusExporterTest {
         File file = new File(getRootPath() + "/src/test/resources/example/rancher_prometheus_exporter.txt");
         PrometheusExporter prometheusExporter = new PrometheusExporter("test", file);
 
-        Map<FullyQualifiedIdentifier, ServiceState> map = new HashMap<>();
-        prometheusExporter.apply(map);
+        Map<FullyQualifiedIdentifier, ServiceState> map = prometheusExporter.getStates();
 
         assertEquals(4, map.size());
         ServiceState hubot = map.get(new FullyQualifiedIdentifier("test", "rocket-chat", "hubot"));

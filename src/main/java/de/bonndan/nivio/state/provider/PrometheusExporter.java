@@ -37,7 +37,7 @@ public class PrometheusExporter implements Provider {
         this.target = target;
     }
 
-    public void apply(Map<FullyQualifiedIdentifier, ServiceState> state) {
+    public Map<FullyQualifiedIdentifier, ServiceState> getStates() {
         PrometheusScraper prometheusScraper = getScraper();
         final Map<FullyQualifiedIdentifier, ServiceState> tmp = new HashMap<>();
         try {
@@ -62,10 +62,11 @@ public class PrometheusExporter implements Provider {
                 });
             });
 
-            state.putAll(tmp);
         } catch (IOException e) {
             logger.error("Failed to scrape " + target, e);
         }
+
+        return tmp;
     }
 
     private void putIfHigher(FullyQualifiedIdentifier fqi, ServiceState serviceState, Map<FullyQualifiedIdentifier, ServiceState> tmp) {

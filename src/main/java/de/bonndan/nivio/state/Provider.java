@@ -7,10 +7,9 @@ import java.util.Map;
 public interface Provider {
 
     /**
-     * The provider is expected to write the states to the given map.
+     * The provider is expected return a map of service states.
      *
-     * @param state the map containing the services
      */
-    void apply(Map<FullyQualifiedIdentifier, ServiceState> state);
+    Map<FullyQualifiedIdentifier, ServiceState> getStates();
 
 }
