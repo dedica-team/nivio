@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.landscape.StateProviderConfig;
 import de.bonndan.nivio.util.RootPath;
 import de.bonndan.nivio.input.dto.Environment;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class EnvironmentFactoryTest {
@@ -45,6 +47,19 @@ class EnvironmentFactoryTest {
         assertNotNull(mapped);
         assertEquals("blog1", mapped.getShort_name());
         assertEquals("name2", mapped.getName());
+    }
+
+    @Test
+    public void readStateProviders() {
+
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_providers.yml");
+        Environment environment = EnvironmentFactory.fromYaml(file);
+        assertFalse(environment.getStateProviders().isEmpty());
+
+        StateProviderConfig cfg = environment.getStateProviders().get(0);
+        assertNotNull(cfg);
+        assertEquals("prometheus-exporter", cfg.getType());
+        assertTrue(cfg.getTarget().contains("example/rancher_prometheus_exporter.txt"));
     }
 
     @Test

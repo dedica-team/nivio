@@ -4,6 +4,7 @@ import de.bonndan.nivio.input.ServiceDescriptionFactory;
 import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeInterface;
+import de.bonndan.nivio.landscape.StateProviderConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,8 @@ public class Environment implements LandscapeInterface {
 
     private List<ServiceDescription> serviceDescriptions = new ArrayList<>();
 
+    private List<StateProviderConfig> stateProviders;
+
     public String getIdentifier() {
         return identifier;
     }
@@ -65,6 +68,15 @@ public class Environment implements LandscapeInterface {
 
     public String getContact() {
         return contact;
+    }
+
+    @Override
+    public List<StateProviderConfig> getStateProviders() {
+        return stateProviders;
+    }
+
+    public void setStateProviders(List<StateProviderConfig> stateProviders) {
+        this.stateProviders = stateProviders;
     }
 
     public List<SourceReference> getSourceReferences() {
@@ -105,6 +117,7 @@ public class Environment implements LandscapeInterface {
         landscape.setName(name);
         landscape.setContact(contact);
         landscape.setPath(path);
+        landscape.setStateProviders(stateProviders);
         return landscape;
     }
 

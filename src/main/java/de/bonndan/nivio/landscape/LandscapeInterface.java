@@ -1,5 +1,7 @@
 package de.bonndan.nivio.landscape;
 
+import java.util.List;
+
 //TODO naming
 public interface LandscapeInterface {
 
@@ -8,4 +10,6 @@ public interface LandscapeInterface {
     String getName();
 
     String getContact();
+
+    List<StateProviderConfig> getStateProviders();
 }

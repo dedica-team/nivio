@@ -28,6 +28,16 @@ public class ProcessingException extends RuntimeException {
         this.landscape = landscape;
     }
 
+    public static ProcessingException of(LandscapeInterface landscape, Throwable throwable) {
+        if (throwable instanceof ProcessingException)
+            return (ProcessingException) throwable;
+
+        if (throwable instanceof RuntimeException && throwable.getCause() instanceof ProcessingException)
+            return (ProcessingException) throwable.getCause();
+
+        return new ProcessingException(landscape, throwable.getMessage(), throwable);
+    }
+
     public LandscapeInterface getLandscape() {
         return landscape;
     }

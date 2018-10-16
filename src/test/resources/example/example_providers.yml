@@ -1,0 +1,9 @@
+identifier: nivio:example
+name: State Provider example
+contact: mail@acme.org
+sources:
+  - "./services/wordpress.yml"
+
+stateProviders:
+  - type: prometheus-exporter
+    target: classpath://example/rancher_prometheus_exporter.txt

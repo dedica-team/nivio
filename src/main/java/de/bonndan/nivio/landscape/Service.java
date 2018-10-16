@@ -1,6 +1,8 @@
 package de.bonndan.nivio.landscape;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import org.springframework.util.StringUtils;
 
@@ -19,7 +21,7 @@ public class Service implements LandscapeItem {
 
     @NotNull
     @ManyToOne
-    @JsonIgnore
+    @JsonBackReference
     private Landscape landscape;
 
     @NotNull
@@ -61,18 +63,18 @@ public class Service implements LandscapeItem {
 
     private String host_type;
 
-    @JsonIgnore
+    @JsonManagedReference
     @OneToMany(targetEntity = DataFlow.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sourceEntity")
     private Set<DataFlowItem> dataFlow = new HashSet<>();
 
-    @JsonIgnore
+    @JsonBackReference
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "TYPE_INFRASTRUCTURE",
             joinColumns = {@JoinColumn(name = "service_identifier")},
             inverseJoinColumns = {@JoinColumn(name = "infrastructure_identifier")})
     private Set<Service> providedBy = new HashSet<>();
 
-    @JsonIgnore
+    @JsonBackReference
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(name = "TYPE_INFRASTRUCTURE",
             joinColumns = {@JoinColumn(name = "infrastructure_identifier")},

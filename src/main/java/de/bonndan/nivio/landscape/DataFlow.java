@@ -1,5 +1,7 @@
 package de.bonndan.nivio.landscape;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -17,9 +19,9 @@ public class DataFlow implements DataFlowItem, Serializable {
     @GeneratedValue
     private Long id;
 
-
     @ManyToOne
     @JoinColumn(name = "source_identifier", referencedColumnName = "identifier")
+    @JsonBackReference
     private Service sourceEntity;
 
     @ManyToOne

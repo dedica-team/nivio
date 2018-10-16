@@ -1,5 +1,6 @@
 package de.bonndan.nivio.landscape;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -37,7 +38,11 @@ public class Landscape implements LandscapeInterface {
      * List of configuration services.
      */
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
     private List<Service> services = new ArrayList<>();
+
+    @ElementCollection(targetClass = StateProviderConfig.class)
+    private List<StateProviderConfig> stateProviders;
 
     public String getIdentifier() {
         return identifier;
@@ -76,6 +81,11 @@ public class Landscape implements LandscapeInterface {
         return contact;
     }
 
+    @Override
+    public List<StateProviderConfig> getStateProviders() {
+        return stateProviders;
+    }
+
     public void setContact(String contact) {
         this.contact = contact;
     }
@@ -98,5 +108,9 @@ public class Landscape implements LandscapeInterface {
     @Override
     public int hashCode() {
         return Objects.hash(StringUtils.trimAllWhitespace(identifier));
+    }
+
+    public void setStateProviders(List<StateProviderConfig> stateProviders) {
+        this.stateProviders = stateProviders;
     }
 }
