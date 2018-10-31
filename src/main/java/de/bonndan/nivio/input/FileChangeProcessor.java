@@ -28,7 +28,7 @@ public class FileChangeProcessor implements ApplicationListener<FSChangeEvent> {
     @Override
     public void onApplicationEvent(FSChangeEvent fsChangeEvent) {
         String s = (fsChangeEvent.getEvent().context()).toString();
-        process(new File(DirectoryWatcher.NIVIO_ENV_DIRECTORY + "/" + s));
+        process(new File(fsChangeEvent.getPath() + "/" + s));
     }
 
     public void process(File envFile) {

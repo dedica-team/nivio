@@ -3,7 +3,6 @@ package de.bonndan.nivio;
 import de.bonndan.nivio.input.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -13,10 +12,10 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.MalformedURLException;
 
 @SpringBootApplication
 @EnableConfigurationProperties
@@ -35,21 +34,29 @@ public class Application {
         return executor;
     }
 
-    //TODO remove after alpha phase
     @Bean
-    CommandLineRunner demo(FileChangeProcessor processor) {
-        return args -> {
-            Path currentRelativePath = Paths.get("");
-            File file = new File(currentRelativePath.toAbsolutePath().toString() + "/src/test/resources/example/example_env.yml");
-            processor.process(file);
-        };
+    public Seed seed() {
+        return new Seed();
     }
 
-
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws MalformedURLException {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
+
+        Seed seed = (Seed) context.getBean("seed");
         ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) context.getBean("taskExecutor");
-        taskExecutor.execute(context.getBean(DirectoryWatcher.class));
+        WatcherFactory watcher = context.getBean(WatcherFactory.class);
+
+        // demo
+        if (StringUtils.isEmpty(seed.getSeed()) && !StringUtils.isEmpty(System.getenv("DEMO"))) {
+            log.info("Running in demo mode");
+
+            FileChangeProcessor processor = context.getBean(FileChangeProcessor.class);
+            processor.process(Seed.getDemoFile());
+
+            taskExecutor.execute(watcher.getWatcher(Seed.getDemoFile()));
+        }
+
+        watcher.getWatchers().forEach(taskExecutor::execute);
     }
 
 }
