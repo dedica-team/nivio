@@ -14,7 +14,9 @@ from configurable services, preferably code repos.
 ## Features
 
 * **Renders the landscapes as a graph** using DLD4E (decent looking diagrams for engineers)
-* **Single seed** basic indexing of landscape driven by a configuration file
+* **Single seed** basic indexing of landscapes driven by a configuration file
+* **Multiple configuration sources** while nivio has its proprietary format, you can also use docker-compose files or use
+them as basis and enrich them using further files
 * **Rendering of landscapes** to svg, png 
 * **Aggregation of service state** using sources like Prometheus and marking services accordingly
 * Future feature: Error tracking on application level with an API compatible to Sentry
@@ -66,6 +68,15 @@ You can also add state providers which are used to gather live data and thereby 
 ### Landscape Items and Layers
 A landscape consists of the three layers ingress, services, and infrastructure. Within these layers you can allocate services.
 
+**Service configuration file**
+
+    services:
+      - identifier: blog-server
+        short_name: blog1
+    infrastructure:
+      - identifier: mysql
+        version: 5.6.0
+        
 A service can have the following attributes:
 
 * **identifier**: a unique identifier in the landscape. Use a name or an URN
@@ -73,10 +84,10 @@ A service can have the following attributes:
 * **short_name** abbreviation
 * **version** any string describing a service version (e.g. 1.2.5)
 * **software** optional name of the used software/product
-* **owner** owning party, may be addressed in case of errors (e.g. Marketing)
+* **owner** owning party (e.g. Marketing)
 * **description** a short description
 * **team** technical owner
-* **contact** support/notification contact (email)
+* **contact** support/notification contact (email) may be addressed in case of errors 
 * **homepage** url to more information
 * **repository** source code repo url
 * **group** name of an arbitrary group
