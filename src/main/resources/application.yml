@@ -29,3 +29,11 @@ spring:
         smtp:
           auth: true
           starttls.enable: true
+
+---
+spring:
+  profiles: test
+
+  datasource.url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+  datasource.username: sa
+  datasource.password: sa

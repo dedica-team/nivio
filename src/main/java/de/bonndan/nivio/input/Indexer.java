@@ -1,3 +1,4 @@
+
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.ProcessingException;
@@ -24,7 +25,10 @@ public class Indexer {
     private final NotificationService notificationService;
 
     @Autowired
-    public Indexer(LandscapeRepository environmentRepo, ServiceRepository serviceRepo, NotificationService notificationService) {
+    public Indexer(LandscapeRepository environmentRepo,
+                   ServiceRepository serviceRepo,
+                   NotificationService notificationService
+    ) {
         this.landscapeRepo = environmentRepo;
         this.serviceRepo = serviceRepo;
         this.notificationService = notificationService;

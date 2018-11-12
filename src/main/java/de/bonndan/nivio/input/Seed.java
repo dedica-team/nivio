@@ -17,6 +17,8 @@ public class Seed {
 
     private static final Logger logger = LoggerFactory.getLogger(Seed.class);
 
+    public static final String DEMO = "DEMO";
+
     static final String NIVIO_ENV_DIRECTORY = "file:/opt/nivio/environments";
 
     public static File getDemoFile() throws MalformedURLException {

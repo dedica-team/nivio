@@ -12,6 +12,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
@@ -24,6 +27,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 public class IndexerIntegrationTest {
 
     @Autowired
@@ -35,10 +39,8 @@ public class IndexerIntegrationTest {
     @Mock
     NotificationService notificationService;
 
-    @BeforeEach
-    void configureSystemUnderTest() {
-        initMocks(this);
-    }
+    @MockBean
+    JavaMailSender mailSender;
 
     @Test
     public void testIndexing() {
