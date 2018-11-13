@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This is representation of a service in the textual form as described in a source file.
@@ -52,7 +53,7 @@ public class ServiceDescription implements LandscapeItem {
     private Set<InterfaceItem> interfaces = new HashSet<>();
 
     @JsonDeserialize(contentAs = DataFlowDescription.class)
-    private Set<DataFlowItem> dataFlow = new HashSet<>();
+    private Set<DataFlowDescription> dataFlow = new HashSet<>();
 
     private List<String> provided_by = new ArrayList<>();
 
@@ -238,11 +239,11 @@ public class ServiceDescription implements LandscapeItem {
     }
 
     public Set<DataFlowItem> getDataFlow() {
-        dataFlow.forEach(dataFlowItem -> ((DataFlowDescription)dataFlowItem).setSource(identifier));
-        return dataFlow;
+        dataFlow.forEach(dataFlowItem -> dataFlowItem.setSource(identifier));
+        return new HashSet<>(dataFlow);
     }
 
-    public void setDataFlow(Set<DataFlowItem> dataFlow) {
+    public void setDataFlow(Set<DataFlowDescription> dataFlow) {
         this.dataFlow = dataFlow;
     }
 
@@ -265,6 +266,5 @@ public class ServiceDescription implements LandscapeItem {
     public void setNetworks(Set<String> networks) {
         this.networks = networks;
     }
-
 
 }

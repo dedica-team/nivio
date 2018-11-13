@@ -1,8 +1,8 @@
 package de.bonndan.nivio.landscape;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import de.bonndan.nivio.input.dto.DataFlowDescription;
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import org.springframework.util.StringUtils;
 
@@ -75,10 +75,11 @@ public class Service implements LandscapeItem {
     private Set<Service> providedBy = new HashSet<>();
 
     @JsonBackReference
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE, mappedBy = "providedBy")
+    /* integration test fails with two relations
     @JoinTable(name = "TYPE_INFRASTRUCTURE",
             joinColumns = {@JoinColumn(name = "infrastructure_identifier")},
-            inverseJoinColumns = {@JoinColumn(name = "service_identifier")})
+            inverseJoinColumns = {@JoinColumn(name = "service_identifier")})*/
     private Set<Service> provides = new HashSet<>();
 
     private String note;
@@ -259,20 +260,6 @@ public class Service implements LandscapeItem {
 
     public String getType() {
         return type;
-    }
-
-
-    /**
-     * Check if service provides any other.
-     * <p>
-     * Returns false if an infrastructure item has no "providedBy" relationship.
-     */
-    public boolean providesAny() {
-        if (LandscapeItem.TYPE_APPLICATION.equals(type)) {
-            return true;
-        }
-
-        return !provides.isEmpty();
     }
 
     public void setNote(String note) {

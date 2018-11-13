@@ -40,4 +40,10 @@ public class DataFlowDescription implements DataFlowItem {
     public void setTarget(String target) {
         this.target = target;
     }
+
+    public boolean describes(DataFlowItem dataFlow) {
+        return source.equals(dataFlow.getSource())
+                && target.equals(dataFlow.getTarget())
+                && format.equals(dataFlow.getFormat());
+    }
 }

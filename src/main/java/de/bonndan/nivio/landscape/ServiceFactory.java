@@ -22,6 +22,10 @@ public class ServiceFactory {
         return service;
     }
 
+    /**
+     * Assigns all values from the description except data flow and provided_by/provides
+     *
+     */
     public static void assignAll(Service service, LandscapeItem serviceDescription) {
         if (serviceDescription == null) {
             logger.warn("ServiceDescription for service " + service.getIdentifier() + " is null in assignAllValues");
@@ -38,7 +42,6 @@ public class ServiceFactory {
 
         service.setSoftware(serviceDescription.getSoftware());
         service.setVersion(serviceDescription.getVersion());
-        service.setDataFlow(toDataFlow(serviceDescription.getDataFlow(), service.getLandscape()));
         service.setInterfaces(serviceDescription.getInterfaces());
 
         service.setHomepage(serviceDescription.getHomepage());
@@ -54,14 +57,4 @@ public class ServiceFactory {
         service.setMachine(serviceDescription.getMachine());
         service.setScale(serviceDescription.getScale());
     }
-
-    private static Set<DataFlowItem> toDataFlow(Set<DataFlowItem> dataFlow, Landscape landscape) {
-        DataFlowFactory dataFlowFactory = new DataFlowFactory();
-        HashSet<DataFlowItem> objects = new HashSet<>();
-        dataFlow.forEach(
-                dataFlowItem -> objects.add(dataFlowFactory.createFrom(dataFlowItem, landscape.getServices()))
-        );
-        return objects;
-    }
-
 }

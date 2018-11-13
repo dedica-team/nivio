@@ -39,6 +39,7 @@ public class Indexer {
         if (landscape == null) {
             logger.info("Creating new landscape " + input.getIdentifier());
             landscape = input.toLandscape();
+            landscapeRepo.save(landscape);
         } else {
             landscape.setName(input.getName());
             landscape.setContact(input.getContact());
@@ -71,6 +72,7 @@ public class Indexer {
                     serviceRepo.save(created);
 
                     landscape.addService(created);
+                    inLandscape.add(created);
                 }
         );
 
@@ -133,6 +135,7 @@ public class Indexer {
 
                         if (!Utils.contains(provider, service.getProvidedBy())) {
                             service.getProvidedBy().add(provider);
+                            provider.getProvides().add(service);
                             logger.info("Adding provider " + provider.getIdentifier() + " to " + service.getIdentifier());
                         }
                     });
@@ -143,6 +146,7 @@ public class Indexer {
     private void linkDataflow(final Environment input, final Landscape landscape) {
         input.getServiceDescriptions().forEach(serviceDescription -> {
             Service service = Utils.pick(serviceDescription.getIdentifier(), landscape.getServices());
+
             serviceDescription.getDataFlow().forEach(description -> {
                 Service target = Utils.find(description.getTarget(), landscape.getServices());
                 if (target == null) {
@@ -155,6 +159,7 @@ public class Indexer {
                 while (iterator.hasNext()) {
                     existing = (DataFlow) iterator.next();
                     if (existing.equals(dataFlow)) {
+                        logger.info("Updating dataflow " + existing);
                         existing.setDescription(description.getDescription());
                         existing.setFormat(description.getFormat());
                         break;
@@ -162,11 +167,12 @@ public class Indexer {
                     existing = null;
                 }
 
-                if (existing != null) {
+                if (existing == null) {
                     dataFlow.setDescription(description.getDescription());
                     dataFlow.setFormat(description.getFormat());
 
                     service.getDataFlow().add(dataFlow);
+                    logger.info("Adding dataflow " + existing);
                 }
 
                 logger.info("Creating dataflow between " + service.getIdentifier() + " and " + target.getIdentifier());

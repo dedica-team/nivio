@@ -1,5 +1,7 @@
 package de.bonndan.nivio.landscape;
 
+import org.springframework.util.StringUtils;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -14,10 +16,13 @@ public class Utils {
      * @return the service with the given identifier
      */
     public static Service pick(final String identifier, final Collection<Service> serviceList) {
+        if (StringUtils.isEmpty(identifier)) {
+            throw new IllegalArgumentException("Identifier is empty");
+        }
         return serviceList.stream()
                 .filter(service -> service.getIdentifier().equals(identifier))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Element not found: " + identifier));
+                .orElseThrow(() -> new RuntimeException("Element not found: " + identifier + " in collection " + serviceList));
     }
 
     /**
