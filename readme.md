@@ -1,5 +1,8 @@
 # Nivio
 
+[![Build Status](https://api.travis-ci.org/bonndan/nivio.svg?branch=master)](https://travis-ci.org/bonndan/nivio)
+
+
 Nivio is a tool for application landscape management targeted at teams (developers, operators, managers). It follows a no-op 
 approach, i.e. there is no interface for manual data maintenance. Instead, nivio pulls all its information from data
 sources like files or web apis (e.g. monitoring services).
