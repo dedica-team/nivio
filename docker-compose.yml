@@ -8,4 +8,8 @@ services:
       - 3030:3030
       - 9229:9229
 
+  nivio:
+    image: bonndan/nivio:latest
+    ports: 
+      - 8080
 

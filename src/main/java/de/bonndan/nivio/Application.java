@@ -20,7 +20,6 @@ import java.net.MalformedURLException;
 @SpringBootApplication
 @EnableConfigurationProperties
 @EnableJpaRepositories(basePackages = "de.bonndan.nivio.landscape")
-@EnableAsync
 public class Application {
 
     private final static Logger log = LoggerFactory.getLogger(Application.class);
