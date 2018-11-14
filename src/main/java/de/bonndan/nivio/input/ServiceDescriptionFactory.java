@@ -22,10 +22,7 @@ public interface ServiceDescriptionFactory {
             existing.setRepository(increment.getRepository());
         if (increment.getContact() != null)
             existing.setContact(increment.getContact());
-        if (increment.getStatuses() != null) {
-            increment.getStatuses().forEach((s, s2) -> existing.getStatuses().put(s, s2));
-        }
-            existing.setStatuses(increment.getStatuses());
+
         if (increment.getOwner() != null)
             existing.setOwner(increment.getOwner());
         if (increment.getTeam() != null)
@@ -37,8 +34,25 @@ public interface ServiceDescriptionFactory {
         if (increment.getTags() != null)
             existing.setTags(increment.getTags());
 
+        if (increment.getMachine() != null)
+            existing.setMachine(increment.getMachine());
+
+        if (increment.getSoftware() != null)
+            existing.setSoftware(increment.getSoftware());
+        if (increment.getScale() != null)
+            existing.setScale(increment.getScale());
+        if (increment.getHost_type() != null)
+            existing.setHost_type(increment.getHost_type());
+
+        /*
+         * the rest is merged
+         */
+        if (increment.getStatuses() != null) {
+            increment.getStatuses().forEach((s, s2) -> existing.getStatuses().put(s, s2));
+        }
+
         if (increment.getDataFlow() != null) {
-            increment.getDataFlow().forEach(df -> existing.getDataFlow().add(df));
+            increment.getDataFlow().forEach(existing::addDataFlow);
         }
 
         if (increment.getInterfaces() != null) {
@@ -53,15 +67,7 @@ public interface ServiceDescriptionFactory {
             increment.getNetworks().forEach(net -> existing.getNetworks().add(net));
         }
 
-        if (increment.getMachine() != null)
-            existing.setMachine(increment.getMachine());
 
-        if (increment.getSoftware() != null)
-            existing.setSoftware(increment.getSoftware());
-        if (increment.getScale() != null)
-            existing.setScale(increment.getScale());
-        if (increment.getHost_type() != null)
-            existing.setHost_type(increment.getHost_type());
     }
 
 }

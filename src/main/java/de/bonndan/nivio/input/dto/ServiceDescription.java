@@ -9,7 +9,6 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * This is representation of a service in the textual form as described in a source file.
@@ -42,7 +41,7 @@ public class ServiceDescription implements LandscapeItem {
     private String group;
     private String visibility;
     private String[] tags;
-    private Set<String> networks;
+    private Set<String> networks = new HashSet<>();
     private String machine;
     private String scale;
     private String host_type;
@@ -238,13 +237,17 @@ public class ServiceDescription implements LandscapeItem {
         this.interfaces = interfaces;
     }
 
+    /**
+     * Returns a copy, do not use for adding elements
+     * @return
+     */
     public Set<DataFlowItem> getDataFlow() {
         dataFlow.forEach(dataFlowItem -> dataFlowItem.setSource(identifier));
         return new HashSet<>(dataFlow);
     }
 
-    public void setDataFlow(Set<DataFlowDescription> dataFlow) {
-        this.dataFlow = dataFlow;
+    public void addDataFlow(DataFlowItem dataFlow) {
+        this.dataFlow.add((DataFlowDescription) dataFlow);
     }
 
     public List<String> getProvided_by() {

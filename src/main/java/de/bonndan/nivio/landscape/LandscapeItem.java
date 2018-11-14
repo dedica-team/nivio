@@ -1,6 +1,5 @@
 package de.bonndan.nivio.landscape;
 
-import java.util.List;
 import java.util.Set;
 
 public interface LandscapeItem {
@@ -10,6 +9,16 @@ public interface LandscapeItem {
     String TYPE_INGRESS = "ingress";
 
     String IDENTIFIER_VALIDATION = "^[a-z0-9\\.\\:_-]{3,256}$";
+
+    String STATUS_KEY_LIFECYCLE = "lifecycle";
+    String STATUS_KEY_SECURITY = "security";
+    String STATUS_KEY_STABILITY = "stability";
+    String STATUS_KEY_BUSINESS_CAPABILITY = "business_capability";
+
+    String STATUS_GREEN = "green";
+    String STATUS_YELLOW = "yellow";
+    String STATUS_ORANGE = "orange";
+    String STATUS_RED = "red";
 
     /**
      * Returns the landscape-wide unique identifier of a server or application.
