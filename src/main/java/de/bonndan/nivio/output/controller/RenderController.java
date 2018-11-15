@@ -5,26 +5,25 @@ import de.bonndan.nivio.landscape.LandscapeRepository;
 import de.bonndan.nivio.output.dld4e.Dld4eRenderer;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.persistence.EntityNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 
 @Controller
 @RequestMapping(path = "/render")
@@ -43,7 +42,7 @@ public class RenderController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/png/{landscape}")
-    public ResponseEntity<String> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
+    public ResponseEntity<byte[]> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
 
         String payload = renderDlde(landscapeIdentifier);
 
@@ -55,12 +54,17 @@ public class RenderController {
             if (response.getStatusLine().getStatusCode() == 200) {
                 HttpEntity entity = response.getEntity();
                 InputStream content = entity.getContent();
-                int tmp;
-
+                HttpHeaders headers = new HttpHeaders();
+                headers.add(HttpHeaders.CONTENT_TYPE, "image/png");
+                return new ResponseEntity<>(
+                        StreamUtils.copyToByteArray(content),
+                        headers,
+                        HttpStatus.OK
+                );
             } else {
                 throw new RuntimeException("Got " + response.getStatusLine().getStatusCode() + " while reading");
             }
-            return new ResponseEntity<>("", HttpStatus.OK);
+
         } finally {
             client.close();
         }
