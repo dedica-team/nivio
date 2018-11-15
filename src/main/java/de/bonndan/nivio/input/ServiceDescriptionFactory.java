@@ -4,6 +4,9 @@ import de.bonndan.nivio.input.dto.ServiceDescription;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
+
+import static de.bonndan.nivio.util.SafeAssign.assignSafe;
 
 public interface ServiceDescriptionFactory {
 
@@ -39,10 +42,9 @@ public interface ServiceDescriptionFactory {
 
         if (increment.getSoftware() != null)
             existing.setSoftware(increment.getSoftware());
-        if (increment.getScale() != null)
-            existing.setScale(increment.getScale());
-        if (increment.getHost_type() != null)
-            existing.setHost_type(increment.getHost_type());
+
+        assignSafe(increment.getScale(), existing::setScale);
+        assignSafe(increment.getHost_type(), existing::setHost_type);
 
         /*
          * the rest is merged
@@ -51,23 +53,13 @@ public interface ServiceDescriptionFactory {
             increment.getStatuses().forEach((s, s2) -> existing.getStatuses().put(s, s2));
         }
 
-        if (increment.getDataFlow() != null) {
-            increment.getDataFlow().forEach(existing::addDataFlow);
-        }
+        assignSafe(increment.getDataFlow(), (df) -> df.forEach(existing::addDataFlow));
 
-        if (increment.getInterfaces() != null) {
-            increment.getInterfaces().forEach(intf -> existing.getInterfaces().add(intf));
-        }
+        assignSafe(increment.getInterfaces(), (set) -> set.forEach(intf -> existing.getInterfaces().add(intf)));
 
-        if (increment.getProvided_by() != null) {
-            increment.getProvided_by().forEach(s -> existing.getProvided_by().add(s));
-        }
+        assignSafe(increment.getProvided_by(), (providers) -> providers.forEach(s -> existing.getProvided_by().add(s)));
 
-        if (increment.getNetworks() != null) {
-            increment.getNetworks().forEach(net -> existing.getNetworks().add(net));
-        }
-
+        assignSafe(increment.getNetworks(), (nets) -> nets.forEach(net -> existing.getNetworks().add(net)));
 
     }
-
 }
