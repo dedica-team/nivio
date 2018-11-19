@@ -1,4 +1,4 @@
-package de.bonndan.nivio.output.controller;
+package de.bonndan.nivio.output.dld4e;
 
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
@@ -36,12 +36,12 @@ public class RenderController {
         this.landscapeRepository = landscapeRepository;
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/dld4e/{landscape}")
+    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/dld4e.yaml")
     public ResponseEntity<String> dld4eResource(@PathVariable(name = "landscape") final String landscapeIdentifier) {
         return new ResponseEntity<>(renderDlde(landscapeIdentifier), HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/png/{landscape}")
+    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/dld4e.png")
     public ResponseEntity<byte[]> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
 
         String payload = renderDlde(landscapeIdentifier);

@@ -1,4 +1,4 @@
-package de.bonndan.nivio.output.controller;
+package de.bonndan.nivio.output.json;
 
 import de.bonndan.nivio.input.FileChangeProcessor;
 import de.bonndan.nivio.landscape.Landscape;

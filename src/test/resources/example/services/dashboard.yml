@@ -5,6 +5,10 @@ ingress:
     name: Keycloak SSO
     version: 4.4.0
     owner: Ops
+    dataflow:
+      - description: auth
+        format: SAML
+        target: kpi-dashboard
 
 services:
 
