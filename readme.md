@@ -7,6 +7,8 @@ Nivio is a tool for application landscape management targeted at teams (develope
 approach, i.e. there is no interface for manual data maintenance. Instead, nivio pulls all its information from data
 sources like files or web apis (e.g. monitoring services).
 
+![rendered graph](https://raw.githubusercontent.com/bonndan/nivio/master/docs/graph.png)
+
 * **It is easy to install and to maintain.** Runs dockerized on a single server with moderate to low
 hardware requirements. It uses a H2 database, but it can be discarded at any time and will be refilled with the next start.
 * **No-op usage besides initial configuration.** Designed to gather the application landscape information
