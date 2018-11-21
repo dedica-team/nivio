@@ -4,9 +4,9 @@ import java.util.Set;
 
 public interface LandscapeItem {
 
-    String TYPE_INFRASTRUCTURE = "infrastructure";
-    String TYPE_APPLICATION = "application";
-    String TYPE_INGRESS = "ingress";
+    String LAYER_INFRASTRUCTURE = "infrastructure";
+    String LAYER_APPLICATION = "application";
+    String LAYER_INGRESS = "ingress";
 
     String IDENTIFIER_VALIDATION = "^[a-z0-9\\.\\:_-]{3,256}$";
 
@@ -28,6 +28,11 @@ public interface LandscapeItem {
 
     /**
      * @return the type (ingress, service, infrastructure)
+     */
+    String getLayer();
+
+    /**
+     * @return the type (service, database, queue, loadbalancer...)
      */
     String getType();
 

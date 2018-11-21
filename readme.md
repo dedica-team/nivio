@@ -84,6 +84,8 @@ A service can have the following attributes:
 
 * **identifier**: a unique identifier in the landscape. Use a name or an URN
 * **name** human readable, displayed name
+* **type** e.g. service, database, proxy, loadbalancer, ...
+* **layer** ingress, applications, or infrastructure (set automatically)
 * **short_name** abbreviation
 * **version** any string describing a service version (e.g. 1.2.5)
 * **software** optional name of the used software/product

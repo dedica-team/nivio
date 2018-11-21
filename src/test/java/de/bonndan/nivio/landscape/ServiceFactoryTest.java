@@ -16,7 +16,7 @@ public class ServiceFactoryTest {
         landscapeItem = new ServiceDescription();
         landscapeItem.setName("test");
         landscapeItem.setShort_name("t");
-        landscapeItem.setType(LandscapeItem.TYPE_INFRASTRUCTURE);
+        landscapeItem.setLayer(LandscapeItem.LAYER_INFRASTRUCTURE);
         landscapeItem.setIdentifier("id");
         landscapeItem.setHomepage("http://home.page");
         landscapeItem.setRepository("https://acme.git/repo1");

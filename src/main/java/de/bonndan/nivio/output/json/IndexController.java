@@ -1,14 +1,14 @@
 package de.bonndan.nivio.output.json;
 
+import de.bonndan.nivio.input.EnvironmentFactory;
 import de.bonndan.nivio.input.FileChangeProcessor;
+import de.bonndan.nivio.input.Indexer;
+import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 
@@ -46,5 +46,14 @@ public class IndexController {
         String path = distinctByIdentifier.getPath();
         fileChangeProcessor.process(new File(path));
         return distinctByIdentifier;
+    }
+
+    /**
+     * Indexes the request body. Endpoint can be used to push changes.
+     */
+    @RequestMapping(path = "/landscape", method = RequestMethod.POST)
+    public Landscape indexLandscape(@RequestBody String body) {
+        Environment env = EnvironmentFactory.fromString(body);
+        return fileChangeProcessor.process(env);
     }
 }

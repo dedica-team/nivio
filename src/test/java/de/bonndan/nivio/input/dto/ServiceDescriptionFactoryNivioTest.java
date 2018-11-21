@@ -38,7 +38,7 @@ class ServiceDescriptionFactoryNivioTest {
         String yml = fileFetcher.get(file);
         List<ServiceDescription> services = descriptionFactory.fromString(yml);
         ServiceDescription service = services.get(0);
-        assertEquals(LandscapeItem.TYPE_APPLICATION, service.getType());
+        assertEquals(LandscapeItem.LAYER_APPLICATION, service.getLayer());
         assertEquals("Demo Blog", service.getName());
         assertEquals("to be replaced", service.getNote());
         assertEquals("blog-server", service.getIdentifier());
@@ -87,7 +87,7 @@ class ServiceDescriptionFactoryNivioTest {
         });
 
         ServiceDescription infra = services.get(1);
-        assertEquals(LandscapeItem.TYPE_INFRASTRUCTURE, infra.getType());
+        assertEquals(LandscapeItem.LAYER_INFRASTRUCTURE, infra.getLayer());
         assertEquals("wordpress-web", infra.getIdentifier());
         assertEquals("Webserver", infra.getDescription());
         assertEquals("Apache", infra.getSoftware());
@@ -107,7 +107,7 @@ class ServiceDescriptionFactoryNivioTest {
 
         List<ServiceDescription> services = descriptionFactory.fromString(yml);
         ServiceDescription service = services.get(0);
-        assertEquals(LandscapeItem.TYPE_INGRESS, service.getType());
+        assertEquals(LandscapeItem.LAYER_INGRESS, service.getLayer());
         assertEquals("Keycloak SSO", service.getName());
         assertEquals("keycloak", service.getIdentifier());
     }

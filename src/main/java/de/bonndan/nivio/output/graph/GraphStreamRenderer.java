@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.graph;
 
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.output.Renderer;
+import de.bonndan.nivio.util.Color;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -31,12 +32,17 @@ public class GraphStreamRenderer implements Renderer {
         graph.addAttribute("ui.antialias");
         graph.addAttribute("ui.stylesheet", getStylesheet());
 
+        SpriteManager sm = new SpriteManager(graph);
+
 
         landscape.getServices().forEach(service -> {
             Node n = graph.addNode(service.getIdentifier());
             n.addAttribute("ui.label", StringUtils.isEmpty(service.getName()) ? service.getIdentifier() : service.getName());
             n.addAttribute("ui.class", service.getType());
-            //  node.addAttribute("ui.style", "fill-color: rgb(0,100,255);");
+            n.addAttribute("ui.style", "fill-color: #"+ Color.intToARGB(service.getGroup())+"; ");
+            Sprite appSprite = sm.addSprite("application" + service.getIdentifier());
+            appSprite.setPosition(0,0,0);
+            appSprite.attachToNode(n.getId());
         });
 
         //provider
@@ -78,13 +84,13 @@ public class GraphStreamRenderer implements Renderer {
         "graph { padding: 50px; }" +
         "node { " +
                 "fill-color: black; " +
-                "shape: rounded-box; " +
+                //"shape: rounded-box; " +
                 "size: 50px; " +
                 "text-background-mode: rounded-box; " +
                 "text-background-color: #333333; " +
                 "text-color: white; " +
                 "text-padding: 2px; " +
-                "fill-mode: image-scaled-ratio-max; fill-image: url('http://localhost:8080/icons/osa_server.png') ;" +
+                "stroke-mode: plain; " +
                 "text-offset: 50px, 20px; " +
                 "}" +
         "edge {  }" +
@@ -94,6 +100,10 @@ public class GraphStreamRenderer implements Renderer {
                 "stroke-width: 1px; " +
                 "stroke-mode: plain; " +
                 "arrow-size: 20px, 4px; }" +
-        "edge.provides { stroke-width: 1px; stroke-mode: dashes; }\n";
+        "edge.provides { stroke-width: 1px; stroke-mode: dashes; }" +
+        "sprite { " +
+                "size: 40px; " +
+                "fill-mode: image-scaled-ratio-max; fill-image: url('http://localhost:8080/icons/osa_server.png') ;" +
+        "}\n";
     }
 }

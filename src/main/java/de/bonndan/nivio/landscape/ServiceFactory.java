@@ -32,6 +32,7 @@ public class ServiceFactory {
             return;
         }
         service.setName(serviceDescription.getName());
+        service.setLayer(serviceDescription.getLayer());
         service.setType(serviceDescription.getType());
 
         service.setNote(serviceDescription.getNote());

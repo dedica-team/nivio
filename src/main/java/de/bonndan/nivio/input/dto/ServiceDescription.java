@@ -19,6 +19,8 @@ public class ServiceDescription implements LandscapeItem {
     private String environment;
 
     @NotEmpty
+    private String layer;
+
     private String type;
 
     @NotEmpty
@@ -78,6 +80,14 @@ public class ServiceDescription implements LandscapeItem {
 
     public void setEnvironment(String environment) {
         this.environment = environment;
+    }
+
+    public String getLayer() {
+        return layer;
+    }
+
+    public void setLayer(String layer) {
+        this.layer = layer;
     }
 
     @Override

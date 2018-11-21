@@ -25,6 +25,8 @@ public class Service implements LandscapeItem {
     private Landscape landscape;
 
     @NotNull
+    private String layer;
+
     private String type;
 
     private String name;
@@ -252,6 +254,14 @@ public class Service implements LandscapeItem {
 
     public Set<Service> getProvidedBy() {
         return providedBy;
+    }
+
+    public String getLayer() {
+        return layer;
+    }
+
+    public void setLayer(String layer) {
+        this.layer = layer;
     }
 
     public void setType(String type) {

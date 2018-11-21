@@ -40,15 +40,15 @@ public class ServiceDescriptionFactoryNivio implements ServiceDescriptionFactory
             return services;
         }
         source.ingress.forEach(serviceDescription -> {
-            serviceDescription.setType(LandscapeItem.TYPE_INGRESS);
+            serviceDescription.setLayer(LandscapeItem.LAYER_INGRESS);
             services.add(serviceDescription);
         });
         source.services.forEach(serviceDescription -> {
-            serviceDescription.setType(LandscapeItem.TYPE_APPLICATION);
+            serviceDescription.setLayer(LandscapeItem.LAYER_APPLICATION);
             services.add(serviceDescription);
         });
         source.infrastructure.forEach(serviceDescription -> {
-            serviceDescription.setType(LandscapeItem.TYPE_INFRASTRUCTURE);
+            serviceDescription.setLayer(LandscapeItem.LAYER_INFRASTRUCTURE);
             services.add(serviceDescription);
         });
 
