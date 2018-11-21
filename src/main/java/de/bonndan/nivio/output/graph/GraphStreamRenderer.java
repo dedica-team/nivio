@@ -7,6 +7,8 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.stream.file.FileSinkImages;
+import org.graphstream.ui.spriteManager.Sprite;
+import org.graphstream.ui.spriteManager.SpriteManager;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -74,9 +76,24 @@ public class GraphStreamRenderer implements Renderer {
     private String getStylesheet() {
         return
         "graph { padding: 50px; }" +
-        "node { fill-color: #3d5689; size-mode: fit; text-background-mode: rounded-box; text-background-color: orange; }" +
+        "node { " +
+                "fill-color: black; " +
+                "shape: rounded-box; " +
+                "size: 50px; " +
+                "text-background-mode: rounded-box; " +
+                "text-background-color: #333333; " +
+                "text-color: white; " +
+                "text-padding: 2px; " +
+                "fill-mode: image-scaled-ratio-max; fill-image: url('http://localhost:8080/icons/osa_server.png') ;" +
+                "text-offset: 50px, 20px; " +
+                "}" +
         "edge {  }" +
-        "edge.dataflow { shape: cubic-curve; stroke-color: blue; stroke-width: 1px; stroke-mode: plain; arrow-size: 20px, 4px; }" +
+        "edge.dataflow { " +
+                "shape: cubic-curve; " +
+                "stroke-color: blue; " +
+                "stroke-width: 1px; " +
+                "stroke-mode: plain; " +
+                "arrow-size: 20px, 4px; }" +
         "edge.provides { stroke-width: 1px; stroke-mode: dashes; }\n";
     }
 }
