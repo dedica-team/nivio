@@ -8,7 +8,7 @@ public class SourceReference {
 
     private Environment environment;
 
-    private String format;
+    private SourceFormat format;
 
     private String basicAuthUsername;
     private String basicAuthPassword;
@@ -35,11 +35,15 @@ public class SourceReference {
         this.environment = environment;
     }
 
-    public String getFormat() {
+    public SourceFormat getFormat() {
         return format;
     }
 
     public void setFormat(String format) {
+        this.format = SourceFormat.from(format);
+    }
+
+    public void setFormat(SourceFormat format) {
         this.format = format;
     }
 

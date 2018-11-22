@@ -50,6 +50,19 @@ public class Environment implements LandscapeInterface {
 
     private List<StateProviderConfig> stateProviders;
 
+    /**
+     * flags that the environment is not complete, but an update
+     */
+    private boolean isIncrement = false;
+
+    public void setIsIncrement(boolean isIncrement) {
+        this.isIncrement = isIncrement;
+    }
+
+    public boolean isIncrement() {
+        return isIncrement;
+    }
+
     public String getIdentifier() {
         return identifier;
     }
@@ -93,6 +106,10 @@ public class Environment implements LandscapeInterface {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public void setServiceDescriptions(List<ServiceDescription> serviceDescriptions) {
+        this.serviceDescriptions = serviceDescriptions;
     }
 
     public List<ServiceDescription> getServiceDescriptions() {

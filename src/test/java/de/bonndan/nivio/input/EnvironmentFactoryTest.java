@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 
 import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.landscape.StateProviderConfig;
 import de.bonndan.nivio.util.RootPath;
@@ -31,7 +32,7 @@ class EnvironmentFactoryTest {
 
         SourceReference mapped = environment.getSourceReferences().get(1);
         assertNotNull(mapped);
-        assertEquals("nivio", mapped.getFormat());
+        assertEquals(SourceFormat.NIVIO, mapped.getFormat());
     }
 
     @Test

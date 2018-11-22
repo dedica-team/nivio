@@ -106,6 +106,11 @@ public class Indexer {
     }
 
     private void deleteUnreferenced(final Environment environment, List<Service> kept, List<Service> all) {
+        if (environment.isIncrement()) {
+            logger.info("Incremental change, will not remove any unreferenced services.");
+            return;
+        }
+
         List<LandscapeItem> removed = LandscapeItems.removed(kept, all);
         logger.info("Removing " + removed.size() + " sources in env " + environment.getIdentifier());
         removed.forEach(

@@ -49,7 +49,7 @@ public class EnvironmentFactory {
         FileFetcher fetcher = new FileFetcher(new HttpService());
         environment.getSourceReferences().forEach(ref -> {
 
-                    ServiceDescriptionFactory sdf = ServiceDescriptionFormatFactory.getFactory(ref);
+                    ServiceDescriptionFactory sdf = ServiceDescriptionFormatFactory.getFactory(ref.getFormat());
                     ref.setEnvironment(environment);
                     String source = fetcher.get(ref);
                     List<ServiceDescription> serviceDescriptions = sdf.fromString(source);
