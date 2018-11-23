@@ -8,6 +8,7 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Pattern;
 import java.util.*;
 
@@ -24,10 +25,9 @@ public class Service implements LandscapeItem {
     @JsonBackReference
     private Landscape landscape;
 
-    @NotNull
-    private String layer;
+    private String layer = LandscapeItem.LAYER_APPLICATION;
 
-    private String type;
+    private String type = LandscapeItem.TYPE_SERVICE;
 
     private String name;
 

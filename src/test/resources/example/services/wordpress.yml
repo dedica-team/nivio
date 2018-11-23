@@ -3,6 +3,7 @@ document_version: 1.0
 services:
 - identifier: blog-server
   name: Demo Blog
+  type: webservice
   short_name: blog
   version: 1.0
   software: Wordpress
@@ -56,7 +57,7 @@ infrastructure:
   protocol: https
   port: 443
   machine: Pentium 1 512MB RAM
-  type: webserver
+  type: server
   team: ops guys
   networks:
   - content

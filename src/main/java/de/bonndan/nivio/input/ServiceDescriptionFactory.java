@@ -15,6 +15,10 @@ public interface ServiceDescriptionFactory {
     static void assignNotNull(ServiceDescription existing, ServiceDescription increment) {
         if (increment.getName() != null)
             existing.setName(increment.getName());
+        if (increment.getType() != null)
+            existing.setType(increment.getType());
+        if (increment.getLayer() != null)
+            existing.setLayer(increment.getLayer());
         if (increment.getDescription() != null)
             existing.setDescription(increment.getDescription());
         if (increment.getShort_name() != null)

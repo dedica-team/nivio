@@ -16,6 +16,7 @@ public class ServiceFactoryTest {
         landscapeItem = new ServiceDescription();
         landscapeItem.setName("test");
         landscapeItem.setShort_name("t");
+        landscapeItem.setType("loadbalancer");
         landscapeItem.setLayer(LandscapeItem.LAYER_INFRASTRUCTURE);
         landscapeItem.setIdentifier("id");
         landscapeItem.setHomepage("http://home.page");

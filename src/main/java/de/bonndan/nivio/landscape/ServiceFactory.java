@@ -26,36 +26,36 @@ public class ServiceFactory {
      * Assigns all values from the description except data flow and provided_by/provides
      *
      */
-    public static void assignAll(Service service, LandscapeItem serviceDescription) {
-        if (serviceDescription == null) {
+    public static void assignAll(Service service, LandscapeItem description) {
+        if (description == null) {
             logger.warn("ServiceDescription for service " + service.getIdentifier() + " is null in assignAllValues");
             return;
         }
-        service.setName(serviceDescription.getName());
-        service.setLayer(serviceDescription.getLayer());
-        service.setType(serviceDescription.getType());
+        service.setName(description.getName());
+        service.setLayer(description.getLayer() != null ? description.getLayer() : LandscapeItem.LAYER_APPLICATION);
+        service.setType(description.getType() != null ? description.getType() : LandscapeItem.TYPE_SERVICE);
 
-        service.setNote(serviceDescription.getNote());
-        service.setShort_name(serviceDescription.getShort_name());
-        service.setDescription(serviceDescription.getDescription());
-        service.setTags(serviceDescription.getTags());
-        service.setOwner(serviceDescription.getOwner());
+        service.setNote(description.getNote());
+        service.setShort_name(description.getShort_name());
+        service.setDescription(description.getDescription());
+        service.setTags(description.getTags());
+        service.setOwner(description.getOwner());
 
-        service.setSoftware(serviceDescription.getSoftware());
-        service.setVersion(serviceDescription.getVersion());
-        service.setInterfaces(serviceDescription.getInterfaces());
+        service.setSoftware(description.getSoftware());
+        service.setVersion(description.getVersion());
+        service.setInterfaces(description.getInterfaces());
 
-        service.setHomepage(serviceDescription.getHomepage());
-        service.setRepository(serviceDescription.getRepository());
-        service.setContact(serviceDescription.getContact());
-        service.setTeam(serviceDescription.getTeam());
+        service.setHomepage(description.getHomepage());
+        service.setRepository(description.getRepository());
+        service.setContact(description.getContact());
+        service.setTeam(description.getTeam());
 
-        service.setVisibility(serviceDescription.getVisibility());
-        service.setGroup(serviceDescription.getGroup());
+        service.setVisibility(description.getVisibility());
+        service.setGroup(description.getGroup());
 
-        service.setHost_type(serviceDescription.getHost_type());
-        service.setNetworks(serviceDescription.getNetworks());
-        service.setMachine(serviceDescription.getMachine());
-        service.setScale(serviceDescription.getScale());
+        service.setHost_type(description.getHost_type());
+        service.setNetworks(description.getNetworks());
+        service.setMachine(description.getMachine());
+        service.setScale(description.getScale());
     }
 }

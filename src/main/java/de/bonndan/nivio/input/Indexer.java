@@ -77,12 +77,26 @@ public class Indexer {
         );
 
         //update existing
-        List<LandscapeItem> kept = LandscapeItems.kept(environment.getServiceDescriptions(), existingServices);
+        List<LandscapeItem> kept = new ArrayList<>();
+        if (environment.isIncrement()) {
+            kept.addAll(existingServices); //we want to keep all, increment does not contain all services
+        } else {
+            kept = LandscapeItems.kept(environment.getServiceDescriptions(), existingServices);
+        }
         logger.info("Updating " + kept.size() + " services in landscape " + landscape.getIdentifier());
         kept.forEach(
                 service -> {
-                    logger.info("Updating service " + service.getIdentifier() + " in landscape " + environment.getIdentifier());
+
                     ServiceDescription description = getDescription(service, environment);
+                    if (description == null)
+                        if (environment.isIncrement()) {
+                            inLandscape.add((Service) service);
+                            return;
+                        } else {
+                            throw new ProcessingException(environment, "Service not found " + service.getIdentifier());
+                        }
+
+                    logger.info("Updating service " + service.getIdentifier() + " in landscape " + environment.getIdentifier());
 
                     ServiceFactory.assignAll((Service) service, description);
                     inLandscape.add((Service) service);
@@ -95,14 +109,9 @@ public class Indexer {
     }
 
     private static ServiceDescription getDescription(LandscapeItem service, final Environment environment) {
-        ServiceDescription description = environment.getServiceDescriptions().stream()
+        return environment.getServiceDescriptions().stream()
                 .filter(d -> d.getIdentifier().equals(service.getIdentifier()))
                 .findFirst().orElse(null);
-
-        if (description == null)
-            throw new ProcessingException(environment, "Could not find service description for service " + service);
-
-        return description;
     }
 
     private void deleteUnreferenced(final Environment environment, List<Service> kept, List<Service> all) {
@@ -129,6 +138,12 @@ public class Indexer {
         services.forEach(
                 service -> {
                     ServiceDescription description = getDescription(service, environment);
+                    if (description == null) {
+                        if (environment.isIncrement())
+                            return;
+                        else
+                            throw new ProcessingException(environment, "Service not found " + service.getIdentifier());
+                    }
                     description.getProvided_by().forEach(providerName -> {
                         Service provider = services.stream()
                                 .filter(s -> s.getIdentifier().equals(providerName))

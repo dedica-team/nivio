@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.InterfaceDescription;
+import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.landscape.*;
 import de.bonndan.nivio.service.NotificationService;
 import org.junit.FixMethodOrder;
@@ -22,8 +23,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @ExtendWith(SpringExtension.class)
@@ -61,16 +64,16 @@ public class IndexerIntegrationTest {
         Landscape landscape = index();
 
         Assertions.assertNotNull(landscape);
-        Assertions.assertEquals("mail@acme.org", landscape.getContact());
+        assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getServices());
-        Assertions.assertEquals(7, landscape.getServices().size());
+        assertEquals(7, landscape.getServices().size());
         Service blog = Utils.pick("blog-server", landscape.getServices());
         Assertions.assertNotNull(blog);
-        Assertions.assertEquals(3, blog.getProvidedBy().size());
+        assertEquals(3, blog.getProvidedBy().size());
 
         Service webserver = Utils.pick("wordpress-web", blog.getProvidedBy());
         Assertions.assertNotNull(webserver);
-        Assertions.assertEquals(1, webserver.getProvides().size());
+        assertEquals(1, webserver.getProvides().size());
 
         DataFlow push = (DataFlow) blog.getDataFlow().stream()
                 .filter(d -> d.getDescription().equals("push"))
@@ -79,18 +82,18 @@ public class IndexerIntegrationTest {
 
         Assertions.assertNotNull(push);
 
-        Assertions.assertEquals("push", push.getDescription());
-        Assertions.assertEquals("json", push.getFormat());
-        Assertions.assertEquals(blog.getIdentifier(), push.getSourceEntity().getIdentifier());
-        Assertions.assertEquals("kpi-dashboard", push.getTarget());
+        assertEquals("push", push.getDescription());
+        assertEquals("json", push.getFormat());
+        assertEquals(blog.getIdentifier(), push.getSourceEntity().getIdentifier());
+        assertEquals("kpi-dashboard", push.getTarget());
 
         Set<InterfaceItem> interfaces = blog.getInterfaces();
-        Assertions.assertEquals(3, interfaces.size());
+        assertEquals(3, interfaces.size());
         InterfaceDescription i = (InterfaceDescription) blog.getInterfaces().stream()
                 .filter(d -> d.getDescription().equals("posts"))
                 .findFirst()
                 .orElseThrow();
-        Assertions.assertEquals("form", i.getFormat());
+        assertEquals("form", i.getFormat());
     }
 
     @Test //second pass
@@ -98,16 +101,16 @@ public class IndexerIntegrationTest {
         Landscape landscape = index();
 
         Assertions.assertNotNull(landscape);
-        Assertions.assertEquals("mail@acme.org", landscape.getContact());
+        assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getServices());
-        Assertions.assertEquals(7, landscape.getServices().size());
+        assertEquals(7, landscape.getServices().size());
         Service blog = Utils.pick("blog-server", landscape.getServices());
         Assertions.assertNotNull(blog);
-        Assertions.assertEquals(3, blog.getProvidedBy().size());
+        assertEquals(3, blog.getProvidedBy().size());
 
         Service webserver = Utils.pick("wordpress-web", blog.getProvidedBy());
         Assertions.assertNotNull(webserver);
-        Assertions.assertEquals(1, webserver.getProvides().size());
+        assertEquals(1, webserver.getProvides().size());
 
         DataFlow push = (DataFlow) blog.getDataFlow().stream()
                 .filter(d -> d.getDescription().equals("push"))
@@ -116,20 +119,43 @@ public class IndexerIntegrationTest {
 
         Assertions.assertNotNull(push);
 
-        Assertions.assertEquals("push", push.getDescription());
-        Assertions.assertEquals("json", push.getFormat());
-        Assertions.assertEquals(blog.getIdentifier(), push.getSourceEntity().getIdentifier());
-        Assertions.assertEquals("kpi-dashboard", push.getTarget());
+        assertEquals("push", push.getDescription());
+        assertEquals("json", push.getFormat());
+        assertEquals(blog.getIdentifier(), push.getSourceEntity().getIdentifier());
+        assertEquals("kpi-dashboard", push.getTarget());
 
         Set<InterfaceItem> interfaces = blog.getInterfaces();
-        Assertions.assertEquals(3, interfaces.size());
+        assertEquals(3, interfaces.size());
         InterfaceDescription i = (InterfaceDescription) blog.getInterfaces().stream()
                 .filter(d -> d.getDescription().equals("posts"))
                 .findFirst()
                 .orElseThrow();
-        Assertions.assertEquals("form", i.getFormat());
+        assertEquals("form", i.getFormat());
     }
 
+    @Test
+    public void testIncrementalUpdate() {
+        Landscape landscape = index();
+        Service blog = Utils.pick("blog-server", landscape.getServices());
+        int before = landscape.getServices().size();
+
+        Environment environment = new Environment();
+        environment.setIdentifier(landscape.getIdentifier());
+        environment.setIsIncrement(true);
+
+        ServiceDescription sd = new ServiceDescription();
+        sd.setIdentifier(blog.getIdentifier());
+        sd.setGroup("completelyNewGroup");
+
+        environment.getServiceDescriptions().add(sd);
+
+        Indexer indexer = new Indexer(environmentRepo, serviceRepository, notificationService);
+
+        landscape = indexer.reIndex(environment);
+        blog = Utils.pick("blog-server", landscape.getServices());
+        assertEquals("completelyNewGroup", blog.getGroup());
+        assertEquals(before, landscape.getServices().size());
+    }
 
     private String getRootPath() {
         Path currentRelativePath = Paths.get("");

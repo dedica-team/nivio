@@ -18,11 +18,11 @@ from configurable services, preferably code repos.
 
 ## Features
 
-* **Renders the landscapes as a graph** using DLD4E (decent looking diagrams for engineers)
-* **Single seed** basic indexing of landscapes driven by a configuration file
+* **Renders the landscapes as a graph**
 * **Multiple configuration sources** while nivio has its proprietary format, you can also use docker-compose files or use
 them as basis and enrich them using further files
-* **Rendering of landscapes** to svg, png 
+* **PULL: Single seed** basic indexing of landscapes driven by a configuration file
+* **PUSH: incremental data aggregation** send configuration files and other formats to build a landscape
 * **Aggregation of service state** using sources like Prometheus and marking services accordingly
 * Future feature: Error tracking on application level with an API compatible to Sentry
 
