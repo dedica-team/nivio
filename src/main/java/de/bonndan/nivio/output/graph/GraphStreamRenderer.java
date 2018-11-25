@@ -32,6 +32,8 @@ public class GraphStreamRenderer implements Renderer {
         graph.addAttribute("ui.quality");
         graph.addAttribute("ui.antialias");
         graph.addAttribute("ui.stylesheet", getStylesheet());
+        graph.addAttribute("layout.stabilization-limit", 0.99);
+        graph.addAttribute("layout.quality", 3);
 
         SpriteManager sm = new SpriteManager(graph);
 
@@ -56,6 +58,7 @@ public class GraphStreamRenderer implements Renderer {
                     service.getIdentifier()
             );
             e.addAttribute("ui.class", "provides");
+            e.addAttribute("ui.style", "fill-color: #" + Color.intToARGB(service.getGroup()) + "; ");
         }));
 
         //dataflow
@@ -63,14 +66,16 @@ public class GraphStreamRenderer implements Renderer {
             Edge e = graph.addEdge(
                     "df_" + service.getIdentifier() + df.getTarget(),
                     service.getIdentifier(),
-                    df.getTarget()
+                    df.getTarget(),
+                    true //directed
             );
             e.addAttribute("ui.class", "dataflow");
+            e.addAttribute("ui.style", "fill-color: #" + Color.intToARGB(service.getGroup()) + "; ");
         }));
 
         String prefix = "prefix";
         FileSinkImages.OutputType type = FileSinkImages.OutputType.PNG;
-        FileSinkImages.Resolution resolution = FileSinkImages.Resolutions.HD720;
+        FileSinkImages.Resolution resolution = FileSinkImages.Resolutions.HD1080;
         FileSinkImages.OutputPolicy outputPolicy = FileSinkImages.OutputPolicy.BY_STEP;
 
         FileSinkImages fsi = new FileSinkImages(
@@ -96,15 +101,15 @@ public class GraphStreamRenderer implements Renderer {
                         "stroke-mode: plain; " +
                         "text-offset: 50px, 20px; " +
                         "}" +
-                    "edge {  }" +
-                    "edge.dataflow { " +
+                        "edge {  }" +
+                        "edge.dataflow { " +
                         "shape: cubic-curve; " +
                         "stroke-color: blue; " +
                         "stroke-width: 1px; " +
                         "stroke-mode: plain; " +
                         "arrow-size: 20px, 4px; }" +
                         "edge.provides { stroke-width: 1px; stroke-mode: dashes; }" +
-                    "sprite { " +
+                        "sprite { " +
                         "size: 25px; " +
                         "shape: box; " +
                         "fill-mode: image-scaled-ratio-max; " +
