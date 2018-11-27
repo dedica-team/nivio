@@ -1,4 +1,4 @@
-package de.bonndan.nivio.output.graph;
+package de.bonndan.nivio.output.graphstream;
 
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.Service;
@@ -11,12 +11,17 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.stream.file.FileSinkImages;
 import org.graphstream.ui.spriteManager.Sprite;
 import org.graphstream.ui.spriteManager.SpriteManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GraphStreamRenderer implements Renderer {
+
+    private Logger logger = LoggerFactory.getLogger(GraphStreamRenderer.class);
 
     @Override
     public String render(Landscape landscape) {
@@ -32,23 +37,27 @@ public class GraphStreamRenderer implements Renderer {
         graph.addAttribute("ui.quality");
         graph.addAttribute("ui.antialias");
         graph.addAttribute("ui.stylesheet", getStylesheet());
-        graph.addAttribute("layout.stabilization-limit", 0.99);
-        graph.addAttribute("layout.quality", 3);
+        graph.addAttribute("layout.quality", 4);
 
         SpriteManager sm = new SpriteManager(graph);
 
+        Positioner positioner = new Positioner();
 
         landscape.getServices().forEach(service -> {
             Node n = graph.addNode(service.getIdentifier());
             n.addAttribute("ui.label", StringUtils.isEmpty(service.getName()) ? service.getIdentifier() : service.getName());
-            n.addAttribute("ui.class", service.getType());
+            n.addAttribute("ui.class", service.getLayer());
             n.addAttribute("ui.style", "fill-color: #" + Color.intToARGB(service.getGroup()) + "; ");
 
             Sprite icon = sm.addSprite("icon_" + service.getIdentifier());
             icon.setPosition(0, 0, 0);
             icon.attachToNode(n.getId());
             icon.addAttribute("ui.style", "fill-image: url('http://localhost:8080/icons/" + getIcon(service) + ".png') ;");
+
+            positioner.add(service, n);
         });
+
+        positioner.compute();
 
         //provider
         landscape.getServices().forEach(service -> service.getProvidedBy().forEach(providedBy -> {
@@ -58,19 +67,43 @@ public class GraphStreamRenderer implements Renderer {
                     service.getIdentifier()
             );
             e.addAttribute("ui.class", "provides");
-            e.addAttribute("ui.style", "fill-color: #" + Color.intToARGB(service.getGroup()) + "; ");
+            e.addAttribute("ui.style", "text-background-color: #" + Color.intToARGB(service.getGroup()) + "; ");
+            e.addAttribute("layout.weight", 0.5);
         }));
 
         //dataflow
         landscape.getServices().forEach(service -> service.getDataFlow().forEach(df -> {
+
+            String id = "df_" + service.getIdentifier() + df.getTarget();
+            logger.info("Adding dataflow "+ id);
             Edge e = graph.addEdge(
-                    "df_" + service.getIdentifier() + df.getTarget(),
+                    id,
                     service.getIdentifier(),
                     df.getTarget(),
                     true //directed
             );
+
             e.addAttribute("ui.class", "dataflow");
-            e.addAttribute("ui.style", "fill-color: #" + Color.intToARGB(service.getGroup()) + "; ");
+            String color = Color.intToARGB(service.getGroup());
+            e.addAttribute("ui.style", "fill-color: #"+ color +"; text-background-color: #" + Color.intToARGB(service.getGroup(), Color.DARK) + "; ");
+            e.addAttribute("ui.label", df.getFormat());
+        }));
+
+        /*
+         * interfaces
+         *
+         *
+         */
+        AtomicInteger i = new AtomicInteger(1);
+        landscape.getServices().forEach(service -> service.getInterfaces().forEach(inter -> {
+
+            String intfID ="interface_" +service.getIdentifier() + i.getAndIncrement();
+            Node n = graph.getNode(service.getIdentifier());
+            Sprite icon = sm.addSprite(intfID);
+            icon.attachToNode(n.getId());
+            icon.setPosition(20, 0, 1 );
+            icon.addAttribute("ui.style", "fill-color: red; text-color: red; size: 30px; fill-image: url('http://localhost:8080/icons/interface.png') ;");
+            icon.addAttribute("ui.label", "test");
         }));
 
         String prefix = "prefix";
@@ -89,27 +122,66 @@ public class GraphStreamRenderer implements Renderer {
 
     private String getStylesheet() {
         return
-                "graph { padding: 50px; }" +
-                        "node { " +
-                        "fill-color: black; " +
-                        //"shape: rounded-box; " +
+                "graph { padding: 50px;} " +
+                "node {" +
+                        "text-padding: 3px; " +
+                        "text-alignment: under; " +
+                        "text-offset: 0px, 5px; " +
+                        "text-size: 12px; " +
+                        "}" +
+                "node.infrastructure { " +
                         "size: 50px; " +
                         "text-background-mode: rounded-box; " +
                         "text-background-color: #333333; " +
                         "text-color: white; " +
+                        "stroke-mode: plain; " +
+                "}" +
+                "node.ingress { " +
+                        "size: 50px; " +
+                        "text-background-mode: rounded-box; " +
+                        "text-background-color: #333333; " +
+                        "text-color: white; " +
+                        "stroke-mode: plain; " +
+                        "}" +
+                "node.applications { " +
+                        "size: 50px; " +
+                        "shape: rounded-box; " +
+                        "text-background-mode: rounded-box; " +
+                        "text-background-color: #333333; " +
+                        "text-alignment: under; " +
+                        "text-color: white; " +
+                        "stroke-mode: plain; " +
+                        "size-mode: fit; " +
+                "}" +
+                "node.interface { " +
+                        //"shape: rounded-box; " +
+                        "size: 20px; " +
                         "text-padding: 2px; " +
                         "stroke-mode: plain; " +
-                        "text-offset: 50px, 20px; " +
-                        "}" +
-                        "edge {  }" +
-                        "edge.dataflow { " +
+                        "shape: freeplane; " +
+                        "size-mode: fit; " +
+                "}" +
+                "edge {  }" +
+                "edge.dataflow { " +
                         "shape: cubic-curve; " +
-                        "stroke-color: blue; " +
+                        "stroke-color: grey; " +
                         "stroke-width: 1px; " +
                         "stroke-mode: plain; " +
-                        "arrow-size: 20px, 4px; }" +
-                        "edge.provides { stroke-width: 1px; stroke-mode: dashes; }" +
-                        "sprite { " +
+                        "arrow-size: 20px, 4px; " +
+                        "size-mode: fit; " +
+                        "text-background-mode: rounded-box; " +
+                        "text-padding: 5px; " +
+                        "text-color: white; " +
+                        "text-size: 12px; " +
+                        "fill-mode: plain; " +
+                        "}" +
+                "edge.provides { " +
+                        "stroke-width: 1px; stroke-mode: dashes; " +
+                        "size-mode: fit; " +
+                        "text-background-mode: rounded-box; " +
+                        "text-size: 12px; " +
+                        "}" +
+                "sprite { " +
                         "size: 25px; " +
                         "shape: box; " +
                         "fill-mode: image-scaled-ratio-max; " +
