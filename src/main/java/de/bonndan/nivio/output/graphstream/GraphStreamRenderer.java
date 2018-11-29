@@ -9,6 +9,7 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.stream.file.FileSinkImages;
+import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants;
 import org.graphstream.ui.spriteManager.Sprite;
 import org.graphstream.ui.spriteManager.SpriteManager;
 import org.slf4j.Logger;
@@ -31,15 +32,13 @@ public class GraphStreamRenderer implements Renderer {
     @Override
     public void render(Landscape landscape, File file) throws IOException {
 
-        System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-
         Graph graph = new SingleGraph(landscape.getName());
         graph.addAttribute("ui.quality");
         graph.addAttribute("ui.antialias");
         graph.addAttribute("ui.stylesheet", getStylesheet());
         graph.addAttribute("layout.quality", 4);
 
-        SpriteManager sm = new SpriteManager(graph);
+        SpriteManager spriteManager = new SpriteManager(graph);
 
         Positioner positioner = new Positioner();
 
@@ -49,10 +48,10 @@ public class GraphStreamRenderer implements Renderer {
             n.addAttribute("ui.class", service.getLayer());
             n.addAttribute("ui.style", "fill-color: #" + Color.intToARGB(service.getGroup()) + "; ");
 
-            Sprite icon = sm.addSprite("icon_" + service.getIdentifier());
+            Sprite icon = spriteManager.addSprite("icon_" + service.getIdentifier());
             icon.setPosition(0, 0, 0);
             icon.attachToNode(n.getId());
-            icon.addAttribute("ui.style", "fill-image: url('http://localhost:8080/icons/" + getIcon(service) + ".png') ;");
+            icon.addAttribute("ui.style", "size: 30px; fill-image: url('http://localhost:8080/icons/" + getIcon(service) + ".png') ;");
 
             positioner.add(service, n);
         });
@@ -75,7 +74,7 @@ public class GraphStreamRenderer implements Renderer {
         landscape.getServices().forEach(service -> service.getDataFlow().forEach(df -> {
 
             String id = "df_" + service.getIdentifier() + df.getTarget();
-            logger.info("Adding dataflow "+ id);
+            logger.info("Adding dataflow " + id);
             Edge e = graph.addEdge(
                     id,
                     service.getIdentifier(),
@@ -85,7 +84,7 @@ public class GraphStreamRenderer implements Renderer {
 
             e.addAttribute("ui.class", "dataflow");
             String color = Color.intToARGB(service.getGroup());
-            e.addAttribute("ui.style", "fill-color: #"+ color +"; text-background-color: #" + Color.intToARGB(service.getGroup(), Color.DARK) + "; ");
+            e.addAttribute("ui.style", "fill-color: #" + color + "; text-background-color: #" + Color.intToARGB(service.getGroup(), Color.DARK) + "; ");
             e.addAttribute("ui.label", df.getFormat());
         }));
 
@@ -94,17 +93,30 @@ public class GraphStreamRenderer implements Renderer {
          *
          *
          */
-        AtomicInteger i = new AtomicInteger(1);
-        landscape.getServices().forEach(service -> service.getInterfaces().forEach(inter -> {
+        landscape.getServices().forEach(service -> {
 
-            String intfID ="interface_" +service.getIdentifier() + i.getAndIncrement();
-            Node n = graph.getNode(service.getIdentifier());
-            Sprite icon = sm.addSprite(intfID);
-            icon.attachToNode(n.getId());
-            icon.setPosition(20, 0, 1 );
-            icon.addAttribute("ui.style", "fill-color: red; text-color: red; size: 30px; fill-image: url('http://localhost:8080/icons/interface.png') ;");
-            icon.addAttribute("ui.label", "test");
-        }));
+                    if (service.getInterfaces().size() == 0)
+                        return;
+                    Node serviceNode = graph.getNode(service.getIdentifier());
+
+
+                    AtomicInteger i = new AtomicInteger(1);
+                    service.getInterfaces().forEach(inter -> {
+
+                        String intfID = "interface_" + service.getIdentifier() + i.getAndIncrement();
+
+                        Sprite sprite = spriteManager.addSprite(intfID);
+                        sprite.attachToNode(serviceNode.getId());
+                        sprite.setAttribute("ui.label", "test");
+                        sprite.setAttribute("ui.style", "stroke-mode: plain; " +
+                                "fill-image: url('http://localhost:8080/icons/interface.png'); " +
+                                "shadow-mode: plain; " +
+                                "shape: circle; ");
+                        sprite.setPosition(StyleConstants.Units.GU, 0.1, 2, 10 + i.get()*50);
+                    });
+                }
+        );
+
 
         String prefix = "prefix";
         FileSinkImages.OutputType type = FileSinkImages.OutputType.PNG;
@@ -123,46 +135,45 @@ public class GraphStreamRenderer implements Renderer {
     private String getStylesheet() {
         return
                 "graph { padding: 50px;} " +
-                "node {" +
+                        "node {" +
                         "text-padding: 3px; " +
                         "text-alignment: under; " +
                         "text-offset: 0px, 5px; " +
                         "text-size: 12px; " +
+                        "stroke-mode: plain; " +
                         "}" +
-                "node.infrastructure { " +
+                        "node.infrastructure { " +
                         "size: 50px; " +
                         "text-background-mode: rounded-box; " +
                         "text-background-color: #333333; " +
                         "text-color: white; " +
-                        "stroke-mode: plain; " +
-                "}" +
-                "node.ingress { " +
+                        "}" +
+                        "node.ingress { " +
                         "size: 50px; " +
                         "text-background-mode: rounded-box; " +
                         "text-background-color: #333333; " +
                         "text-color: white; " +
-                        "stroke-mode: plain; " +
                         "}" +
-                "node.applications { " +
+                        "node.applications { " +
                         "size: 50px; " +
                         "shape: rounded-box; " +
                         "text-background-mode: rounded-box; " +
                         "text-background-color: #333333; " +
                         "text-alignment: under; " +
                         "text-color: white; " +
-                        "stroke-mode: plain; " +
                         "size-mode: fit; " +
-                "}" +
-                "node.interface { " +
+                        "}" +
+                        "node.interface { " +
                         //"shape: rounded-box; " +
                         "size: 20px; " +
                         "text-padding: 2px; " +
-                        "stroke-mode: plain; " +
-                        "shape: freeplane; " +
+                        //"shape: freeplane; " +
                         "size-mode: fit; " +
-                "}" +
-                "edge {  }" +
-                "edge.dataflow { " +
+                        "fill-image: url('http://localhost:8080/icons/interface.png'); " +
+                        "}" +
+                        //////////////
+                        "edge {  }" +
+                        "edge.dataflow { " +
                         "shape: cubic-curve; " +
                         "stroke-color: grey; " +
                         "stroke-width: 1px; " +
@@ -175,16 +186,19 @@ public class GraphStreamRenderer implements Renderer {
                         "text-size: 12px; " +
                         "fill-mode: plain; " +
                         "}" +
-                "edge.provides { " +
+                        "edge.provides { " +
                         "stroke-width: 1px; stroke-mode: dashes; " +
                         "size-mode: fit; " +
                         "text-background-mode: rounded-box; " +
                         "text-size: 12px; " +
                         "}" +
-                "sprite { " +
+                        ///////////
+                        "sprite { " +
                         "size: 25px; " +
                         "shape: box; " +
                         "fill-mode: image-scaled-ratio-max; " +
+                        "text-alignment: at-right; " +
+                        "text-padding: 30px, 0px; " +
                         "}\n";
     }
 
