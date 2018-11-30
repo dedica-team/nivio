@@ -24,6 +24,9 @@ public class GraphStreamRenderer implements Renderer {
 
     private Logger logger = LoggerFactory.getLogger(GraphStreamRenderer.class);
 
+    private Graph graph;
+    private SpriteManager spriteManager;
+
     @Override
     public String render(Landscape landscape) {
         return null;
@@ -32,13 +35,13 @@ public class GraphStreamRenderer implements Renderer {
     @Override
     public void render(Landscape landscape, File file) throws IOException {
 
-        Graph graph = new SingleGraph(landscape.getName());
+        graph = new SingleGraph(landscape.getName());
         graph.addAttribute("ui.quality");
         graph.addAttribute("ui.antialias");
         graph.addAttribute("ui.stylesheet", getStylesheet());
         graph.addAttribute("layout.quality", 4);
 
-        SpriteManager spriteManager = new SpriteManager(graph);
+        spriteManager = new SpriteManager(graph);
 
         Positioner positioner = new Positioner();
 
@@ -73,6 +76,9 @@ public class GraphStreamRenderer implements Renderer {
         //dataflow
         landscape.getServices().forEach(service -> service.getDataFlow().forEach(df -> {
 
+            if (df.getSource().equals(df.getTarget()))
+                return;
+
             String id = "df_" + service.getIdentifier() + df.getTarget();
             logger.info("Adding dataflow " + id);
             Edge e = graph.addEdge(
@@ -93,29 +99,7 @@ public class GraphStreamRenderer implements Renderer {
          *
          *
          */
-        landscape.getServices().forEach(service -> {
-
-                    if (service.getInterfaces().size() == 0)
-                        return;
-                    Node serviceNode = graph.getNode(service.getIdentifier());
-
-
-                    AtomicInteger i = new AtomicInteger(1);
-                    service.getInterfaces().forEach(inter -> {
-
-                        String intfID = "interface_" + service.getIdentifier() + i.getAndIncrement();
-
-                        Sprite sprite = spriteManager.addSprite(intfID);
-                        sprite.attachToNode(serviceNode.getId());
-                        sprite.setAttribute("ui.label", "test");
-                        sprite.setAttribute("ui.style", "stroke-mode: plain; " +
-                                "fill-image: url('http://localhost:8080/icons/interface.png'); " +
-                                "shadow-mode: plain; " +
-                                "shape: circle; ");
-                        sprite.setPosition(StyleConstants.Units.GU, 0.1, 2, 10 + i.get()*50);
-                    });
-                }
-        );
+        landscape.getServices().forEach(this::addInterfaces);
 
 
         String prefix = "prefix";
@@ -130,6 +114,33 @@ public class GraphStreamRenderer implements Renderer {
         fsi.setRenderer(FileSinkImages.RendererType.SCALA);
 
         fsi.writeAll(graph, file.getAbsolutePath());
+    }
+
+    private void addInterfaces(Service service) {
+
+        if (service.getInterfaces().size() == 0)
+            return;
+        Node serviceNode = graph.getNode(service.getIdentifier());
+
+
+        AtomicInteger i = new AtomicInteger(1);
+        service.getInterfaces().forEach(inter -> {
+
+            String intfID = "interface_" + service.getIdentifier() + i.getAndIncrement();
+
+            Sprite sprite = spriteManager.addSprite(intfID);
+            sprite.attachToNode(serviceNode.getId());
+            int rotation = 45;
+            int offset = -90 - (rotation / 2) * (service.getInterfaces().size() -1);
+            int z = offset + i.get() * rotation;
+            sprite.setPosition(StyleConstants.Units.GU, 0.13, 2, z);
+            sprite.setAttribute("ui.label", "   "+ inter.getDescription());
+            sprite.setAttribute("ui.style", "stroke-mode: plain; " +
+                    "fill-color: #" + Color.intToARGB(service.getGroup())+ "; fill-mode: plain; " +
+                    "fill-image: url('http://localhost:8080/icons/interface.png'); " +
+                    "shape: circle; " +
+                    "z-index: 1; ");
+        });
     }
 
     private String getStylesheet() {
