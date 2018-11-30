@@ -143,12 +143,15 @@ public class GraphStreamRenderer implements Renderer {
             int offset = -90 - (rotation / 2) * (service.getInterfaces().size() -1);
             int z = offset + i.get() * rotation;
             sprite.setPosition(StyleConstants.Units.GU, 0.13, 2, z);
-            sprite.setAttribute("ui.label", "   "+ inter.getDescription());
+            sprite.setAttribute("ui.label", " "+ inter.getDescription());
             sprite.setAttribute("ui.style", "stroke-mode: plain; " +
                     "fill-color: #" + Color.intToARGB(service.getGroup())+ "; fill-mode: plain; " +
                     "fill-image: url('http://localhost:8080/icons/interface.png'); " +
-                    "shape: circle; " +
-                    "z-index: 1; ");
+                    "z-index: 1; " +
+                    "sprite-orientation: from; " +
+                    "shape: arrow; " +
+                    "text-alignment: at-right; "
+            );
         });
     }
 
@@ -172,13 +175,15 @@ public class GraphStreamRenderer implements Renderer {
             sprite.attachToNode(serviceNode.getId());
             int rotation = 45;
             int offset = 90 - (rotation / 2) * (displayed.size() - 1);
-            int z = offset + i.get() * rotation;
-            sprite.setPosition(StyleConstants.Units.GU, 0.13, 2, z);
+            int z = offset + i.getAndIncrement() * rotation;
+            sprite.setPosition(StyleConstants.Units.GU, 0.07, 2, z);
             sprite.setAttribute("ui.label", "   " + key);
             sprite.setAttribute("ui.style", "stroke-mode: plain; " +
                     "fill-color: "+ value + "; fill-mode: plain; " +
-                    "shape: circle; " +
-                    "z-index: 1; ");
+                    "shape: box; " +
+                    "z-index: 2; " +
+                    "text-alignment: at-left; "
+            );
         });
     }
 
@@ -247,7 +252,6 @@ public class GraphStreamRenderer implements Renderer {
                         "size: 25px; " +
                         "shape: box; " +
                         "fill-mode: image-scaled-ratio-max; " +
-                        "text-alignment: at-right; " +
                         "text-padding: 30px, 0px; " +
                         "}\n";
     }
