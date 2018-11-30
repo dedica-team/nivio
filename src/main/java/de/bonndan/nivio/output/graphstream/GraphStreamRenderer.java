@@ -143,6 +143,10 @@ public class GraphStreamRenderer implements Renderer {
         });
     }
 
+    private void addStatuses(Service service) {
+        service.getStatuses();
+    }
+
     private String getStylesheet() {
         return
                 "graph { padding: 50px;} " +

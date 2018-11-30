@@ -1,5 +1,6 @@
 package de.bonndan.nivio.landscape;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface LandscapeItem {
@@ -56,6 +57,8 @@ public interface LandscapeItem {
     String getTeam();
 
     String getVisibility();
+
+    Map<String, String> getStatuses();
 
     String getMachine();
 

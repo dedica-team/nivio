@@ -272,10 +272,6 @@ public class ServiceDescription implements LandscapeItem {
         return statuses;
     }
 
-    public void setStatuses(Map<String, String> statuses) {
-        this.statuses = statuses;
-    }
-
     public void setNetworks(Set<String> networks) {
         this.networks = networks;
     }

@@ -65,6 +65,12 @@ public class Service implements LandscapeItem {
 
     private String host_type;
 
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
+    @MapKeyColumn(name = "status")
+    @CollectionTable(name = "MAP")
+    @Column(name = "value")
+    private Map<String, String> statuses = new HashMap<>();
+
     @JsonManagedReference
     @OneToMany(targetEntity = DataFlow.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sourceEntity")
     private Set<DataFlowItem> dataFlow = new HashSet<>();
@@ -204,6 +210,11 @@ public class Service implements LandscapeItem {
         this.visibility = visibility;
     }
 
+    @Override
+    public Map<String, String> getStatuses() {
+        return statuses;
+    }
+
     public String[] getTags() {
         return tags;
     }
@@ -319,4 +330,7 @@ public class Service implements LandscapeItem {
     }
 
 
+    public void setStatuses(Map<String, String> statuses) {
+        this.statuses = statuses;
+    }
 }

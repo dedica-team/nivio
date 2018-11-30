@@ -24,7 +24,6 @@ public class ServiceFactory {
 
     /**
      * Assigns all values from the description except data flow and provided_by/provides
-     *
      */
     public static void assignAll(Service service, LandscapeItem description) {
         if (description == null) {
@@ -52,6 +51,11 @@ public class ServiceFactory {
 
         service.setVisibility(description.getVisibility());
         service.setGroup(description.getGroup());
+
+        if (service.getStatuses() == null)
+            service.setStatuses(description.getStatuses());
+        else
+            service.getStatuses().putAll(description.getStatuses());
 
         service.setHost_type(description.getHost_type());
         service.setNetworks(description.getNetworks());
