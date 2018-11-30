@@ -18,7 +18,11 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import static de.bonndan.nivio.landscape.LandscapeItem.STATUS_GREEN;
 
 public class GraphStreamRenderer implements Renderer {
 
@@ -101,6 +105,11 @@ public class GraphStreamRenderer implements Renderer {
          */
         landscape.getServices().forEach(this::addInterfaces);
 
+        /*
+         * statuses
+         */
+        landscape.getServices().forEach(this::addStatuses);
+
 
         String prefix = "prefix";
         FileSinkImages.OutputType type = FileSinkImages.OutputType.PNG;
@@ -144,7 +153,33 @@ public class GraphStreamRenderer implements Renderer {
     }
 
     private void addStatuses(Service service) {
-        service.getStatuses();
+        Map<String, String> displayed = service.getStatuses().entrySet().stream()
+                .filter(entry -> !STATUS_GREEN.equals(entry.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        if (displayed.size() == 0)
+            return;
+
+        Node serviceNode = graph.getNode(service.getIdentifier());
+
+
+        AtomicInteger i = new AtomicInteger(1);
+        displayed.forEach((key, value) -> {
+
+            String statusID = "status_" + key + "_" + serviceNode.getId();
+
+            Sprite sprite = spriteManager.addSprite(statusID);
+            sprite.attachToNode(serviceNode.getId());
+            int rotation = 45;
+            int offset = 90 - (rotation / 2) * (displayed.size() - 1);
+            int z = offset + i.get() * rotation;
+            sprite.setPosition(StyleConstants.Units.GU, 0.13, 2, z);
+            sprite.setAttribute("ui.label", "   " + key);
+            sprite.setAttribute("ui.style", "stroke-mode: plain; " +
+                    "fill-color: "+ value + "; fill-mode: plain; " +
+                    "shape: circle; " +
+                    "z-index: 1; ");
+        });
     }
 
     private String getStylesheet() {
