@@ -55,7 +55,11 @@ public class GraphStreamRenderer implements Renderer {
             Node n = graph.addNode(service.getIdentifier());
             n.addAttribute("ui.label", StringUtils.isEmpty(service.getName()) ? service.getIdentifier() : service.getName());
             n.addAttribute("ui.class", service.getLayer());
-            n.addAttribute("ui.style", "fill-color: #" + Color.intToARGB(service.getGroup()) + "; stroke-color: yellow; ");
+            n.addAttribute("ui.style",
+                    "fill-color: #" + Color.intToARGB(service.getGroup()) + "; " +
+                            "stroke-color: " + getStatusColor(service) + "; " +
+                            "stroke-width: 3px; "
+            );
 
             Sprite icon = spriteManager.addSprite("icon_" + service.getIdentifier());
             icon.setPosition(0, 0, 0);
@@ -142,12 +146,12 @@ public class GraphStreamRenderer implements Renderer {
             Sprite sprite = spriteManager.addSprite(intfID);
             sprite.attachToNode(serviceNode.getId());
             int rotation = 45;
-            int offset = -90 - (rotation / 2) * (service.getInterfaces().size() -1);
+            int offset = -90 - (rotation / 2) * (service.getInterfaces().size() - 1);
             int z = offset + i.get() * rotation;
             sprite.setPosition(StyleConstants.Units.GU, 0.13, 2, z);
-            sprite.setAttribute("ui.label", " "+ inter.getDescription());
+            sprite.setAttribute("ui.label", " " + inter.getDescription());
             sprite.setAttribute("ui.style", "stroke-mode: plain; " +
-                    "fill-color: #" + Color.intToARGB(service.getGroup())+ "; fill-mode: plain; " +
+                    "fill-color: #" + Color.intToARGB(service.getGroup()) + "; fill-mode: plain; " +
                     "fill-image: url('http://localhost:8080/icons/interface.png'); " +
                     "z-index: 1; " +
                     "sprite-orientation: from; " +
@@ -155,6 +159,19 @@ public class GraphStreamRenderer implements Renderer {
                     "text-alignment: at-right; "
             );
         });
+    }
+
+    private String getStatusColor(Service service) {
+        var ref = new Object() {
+            Status current = Status.UNKNOWN;
+        };
+
+        service.getStatuses().forEach((s, status) -> {
+            if (status.isHigherThan(ref.current))
+                ref.current = status;
+        });
+
+        return ref.current.toString();
     }
 
     private void addStatuses(Service service) {
@@ -178,13 +195,13 @@ public class GraphStreamRenderer implements Renderer {
             int rotation = 45;
             int offset = 90 - (rotation / 2) * (displayed.size() - 1);
             int z = offset + i.getAndIncrement() * rotation;
-            sprite.setPosition(StyleConstants.Units.GU, 0.07, 2, z);
-            sprite.setAttribute("ui.label", "   " + key);
+            sprite.setPosition(StyleConstants.Units.GU, 0.1, 2, z);
+            sprite.setAttribute("ui.label", key.toUpperCase().substring(0,3));
             sprite.setAttribute("ui.style", "stroke-mode: plain; " +
-                    "fill-color: "+ value + "; fill-mode: plain; " +
-                    "shape: box; " +
-                    "z-index: 2; " +
-                    "text-alignment: at-left; "
+                    "fill-color: " + value + "; fill-mode: plain; " +
+                    "shape: rounded-box; " +
+                    "z-index: 2; " //+
+                    //"text-alignment: at-left; "
             );
         });
     }
