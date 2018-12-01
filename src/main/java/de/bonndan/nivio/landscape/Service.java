@@ -63,6 +63,7 @@ public class Service implements LandscapeItem {
 
     private String host_type;
 
+    @Convert(converter = StatusConverter.class, attributeName = "value")
     @ElementCollection(fetch = FetchType.EAGER, targetClass = Status.class)
     @MapKeyColumn(name = "status")
     @CollectionTable(name = "MAP")
