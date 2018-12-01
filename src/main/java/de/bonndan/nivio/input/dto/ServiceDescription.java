@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.landscape.DataFlowItem;
 import de.bonndan.nivio.landscape.InterfaceItem;
 import de.bonndan.nivio.landscape.LandscapeItem;
+import de.bonndan.nivio.landscape.Status;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
@@ -48,7 +49,7 @@ public class ServiceDescription implements LandscapeItem {
     private String scale;
     private String host_type;
 
-    private Map<String, String> statuses = new HashMap<>();
+    private Map<String, Status> statuses = new HashMap<>();
 
     @JsonDeserialize(contentAs = InterfaceDescription.class)
     private Set<InterfaceItem> interfaces = new HashSet<>();
@@ -268,7 +269,7 @@ public class ServiceDescription implements LandscapeItem {
         this.provided_by = provided_by;
     }
 
-    public Map<String, String> getStatuses() {
+    public Map<String, Status> getStatuses() {
         return statuses;
     }
 

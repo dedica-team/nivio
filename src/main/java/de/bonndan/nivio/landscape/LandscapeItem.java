@@ -18,10 +18,6 @@ public interface LandscapeItem {
     String STATUS_KEY_STABILITY = "stability";
     String STATUS_KEY_BUSINESS_CAPABILITY = "business_capability";
 
-    String STATUS_GREEN = "green";
-    String STATUS_YELLOW = "yellow";
-    String STATUS_ORANGE = "orange";
-    String STATUS_RED = "red";
 
     /**
      * Returns the landscape-wide unique identifier of a server or application.
@@ -58,7 +54,7 @@ public interface LandscapeItem {
 
     String getVisibility();
 
-    Map<String, String> getStatuses();
+    Map<String, Status> getStatuses();
 
     String getMachine();
 

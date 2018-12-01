@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.graphstream;
 
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.Service;
+import de.bonndan.nivio.landscape.Status;
 import de.bonndan.nivio.output.Renderer;
 import de.bonndan.nivio.util.Color;
 import org.graphstream.graph.Edge;
@@ -22,7 +23,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.landscape.LandscapeItem.STATUS_GREEN;
+import static de.bonndan.nivio.landscape.Status.GREEN;
+
 
 public class GraphStreamRenderer implements Renderer {
 
@@ -53,7 +55,7 @@ public class GraphStreamRenderer implements Renderer {
             Node n = graph.addNode(service.getIdentifier());
             n.addAttribute("ui.label", StringUtils.isEmpty(service.getName()) ? service.getIdentifier() : service.getName());
             n.addAttribute("ui.class", service.getLayer());
-            n.addAttribute("ui.style", "fill-color: #" + Color.intToARGB(service.getGroup()) + "; ");
+            n.addAttribute("ui.style", "fill-color: #" + Color.intToARGB(service.getGroup()) + "; stroke-color: yellow; ");
 
             Sprite icon = spriteManager.addSprite("icon_" + service.getIdentifier());
             icon.setPosition(0, 0, 0);
@@ -156,8 +158,8 @@ public class GraphStreamRenderer implements Renderer {
     }
 
     private void addStatuses(Service service) {
-        Map<String, String> displayed = service.getStatuses().entrySet().stream()
-                .filter(entry -> !STATUS_GREEN.equals(entry.getValue()))
+        Map<String, Status> displayed = service.getStatuses().entrySet().stream()
+                .filter(entry -> !GREEN.equals(entry.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         if (displayed.size() == 0)
@@ -202,6 +204,7 @@ public class GraphStreamRenderer implements Renderer {
                         "text-background-mode: rounded-box; " +
                         "text-background-color: #333333; " +
                         "text-color: white; " +
+                        "shape: rounded-box; " +
                         "}" +
                         "node.ingress { " +
                         "size: 50px; " +
@@ -210,8 +213,8 @@ public class GraphStreamRenderer implements Renderer {
                         "text-color: white; " +
                         "}" +
                         "node.applications { " +
-                        "size: 50px; " +
-                        "shape: rounded-box; " +
+                        "size: 70px; " +
+                        "shape: circle; " +
                         "text-background-mode: rounded-box; " +
                         "text-background-color: #333333; " +
                         "text-alignment: under; " +

@@ -17,6 +17,7 @@ public class EnvironmentFactory {
     static {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+        mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
     }
 
     public static Environment fromYaml(File file) {

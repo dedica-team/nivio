@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.HttpService;
 import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
 import de.bonndan.nivio.landscape.LandscapeItem;
+import de.bonndan.nivio.landscape.Status;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,11 +63,11 @@ class ServiceDescriptionFactoryNivioTest {
         assertNotNull(service.getStatuses());
         assertEquals(4, service.getStatuses().size());
         service.getStatuses().forEach((status, color) -> {
-            if (status.equals("security")) {
-                Assert.assertEquals("red", color);
+            if (status.equals(LandscapeItem.STATUS_KEY_SECURITY)) {
+                Assert.assertEquals(Status.RED, color);
             }
-            if (status.equals("business_capability")) {
-                Assert.assertEquals("yellow", color);
+            if (status.equals(LandscapeItem.STATUS_KEY_BUSINESS_CAPABILITY)) {
+                Assert.assertEquals(Status.YELLOW, color);
             }
         });
 

@@ -2,13 +2,11 @@ package de.bonndan.nivio.landscape;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import de.bonndan.nivio.input.dto.DataFlowDescription;
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import javax.validation.constraints.Pattern;
 import java.util.*;
 
@@ -65,11 +63,11 @@ public class Service implements LandscapeItem {
 
     private String host_type;
 
-    @ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = Status.class)
     @MapKeyColumn(name = "status")
     @CollectionTable(name = "MAP")
     @Column(name = "value")
-    private Map<String, String> statuses = new HashMap<>();
+    private Map<String, Status> statuses = new HashMap<>();
 
     @JsonManagedReference
     @OneToMany(targetEntity = DataFlow.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sourceEntity")
@@ -211,8 +209,12 @@ public class Service implements LandscapeItem {
     }
 
     @Override
-    public Map<String, String> getStatuses() {
+    public Map<String, Status> getStatuses() {
         return statuses;
+    }
+
+    public void setStatuses(Map<String, Status> statuses) {
+        this.statuses = statuses;
     }
 
     public String[] getTags() {
@@ -329,8 +331,4 @@ public class Service implements LandscapeItem {
         return identifier + " (" + type + ", group: " + group + ")";
     }
 
-
-    public void setStatuses(Map<String, String> statuses) {
-        this.statuses = statuses;
-    }
 }
