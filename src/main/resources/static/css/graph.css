@@ -1,0 +1,78 @@
+graph {
+    padding: 50px;
+}
+
+node {
+    text-padding: 3px;
+    text-alignment: under;
+    text-offset: 0px, 5px;
+    text-size: 12px;
+    stroke-mode: plain;
+    stroke-width: 1px;
+}
+
+node.infrastructure {
+    size: 50px;
+    text-background-mode: rounded-box;
+    text-background-color: #333333;
+    text-color: white;
+    shape: rounded-box;
+}
+
+node.ingress {
+    size: 50px;
+    text-background-mode: rounded-box;
+    text-background-color: #333333;
+    text-color: white;
+}
+
+node.applications {
+    size: 70px;
+    shape: circle;
+    text-background-mode: rounded-box;
+    text-background-color: #333333;
+    text-alignment: under;
+    text-color: white;
+    size-mode: fit;
+}
+
+edge {
+}
+
+edge.dataflow {
+    shape: cubic-curve;
+    stroke-color: grey;
+    stroke-width: 1px;
+    stroke-mode: plain;
+    arrow-size: 20px, 4px;
+    size-mode: fit;
+    text-background-mode: rounded-box;
+    text-padding: 5px;
+    text-color: white;
+    text-size: 12px;
+    fill-mode: plain;
+}
+
+edge.provides {
+    stroke-width: 1px;
+    stroke-mode: dashes;
+    size-mode: fit;
+    text-background-mode: rounded-box;
+    text-size: 12px;
+}
+
+sprite {
+    size: 25px;
+    shape: box;
+    fill-mode: image-scaled-ratio-max;
+    text-padding: 30px, 0px;
+}
+
+sprite.interface {
+    stroke-mode: plain;
+    fill-mode: plain;
+    z-index: 1;
+    sprite-orientation: from;
+    shape: arrow;
+    text-alignment: at-right;
+}

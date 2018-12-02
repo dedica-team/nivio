@@ -44,7 +44,7 @@ public class GraphStreamRenderer implements Renderer {
         graph = new SingleGraph(landscape.getName());
         graph.addAttribute("ui.quality");
         graph.addAttribute("ui.antialias");
-        graph.addAttribute("ui.stylesheet", getStylesheet());
+        graph.addAttribute("ui.stylesheet", "url('http://localhost:8080/css/graph.css')");
         graph.addAttribute("layout.quality", 4);
 
         spriteManager = new SpriteManager(graph);
@@ -55,11 +55,12 @@ public class GraphStreamRenderer implements Renderer {
             Node n = graph.addNode(service.getIdentifier());
             n.addAttribute("ui.label", StringUtils.isEmpty(service.getName()) ? service.getIdentifier() : service.getName());
             n.addAttribute("ui.class", service.getLayer());
-            n.addAttribute("ui.style",
-                    "fill-color: #" + Color.intToARGB(service.getGroup()) + "; " +
-                            "stroke-color: " + getStatusColor(service) + "; " +
-                            "stroke-width: 3px; "
-            );
+            String style = "fill-color: #" + Color.intToARGB(service.getGroup()) + "; ";
+            String statusColor = getStatusColor(service);
+            if (!Status.UNKNOWN.toString().equals(statusColor)) {
+                style += "stroke-color: " + statusColor + "; stroke-width: 3px; ";
+            }
+            n.addAttribute("ui.style", style);
 
             Sprite icon = spriteManager.addSprite("icon_" + service.getIdentifier());
             icon.setPosition(0, 0, 0);
@@ -150,14 +151,8 @@ public class GraphStreamRenderer implements Renderer {
             int z = offset + i.get() * rotation;
             sprite.setPosition(StyleConstants.Units.GU, 0.13, 2, z);
             sprite.setAttribute("ui.label", " " + inter.getDescription());
-            sprite.setAttribute("ui.style", "stroke-mode: plain; " +
-                    "fill-color: #" + Color.intToARGB(service.getGroup()) + "; fill-mode: plain; " +
-                    "fill-image: url('http://localhost:8080/icons/interface.png'); " +
-                    "z-index: 1; " +
-                    "sprite-orientation: from; " +
-                    "shape: arrow; " +
-                    "text-alignment: at-right; "
-            );
+            sprite.setAttribute("ui.class", "interface");
+            sprite.setAttribute("ui.style", "fill-color: #" + Color.intToARGB(service.getGroup()) + "; ");
         });
     }
 
@@ -184,7 +179,6 @@ public class GraphStreamRenderer implements Renderer {
 
         Node serviceNode = graph.getNode(service.getIdentifier());
 
-
         AtomicInteger i = new AtomicInteger(1);
         displayed.forEach((key, value) -> {
 
@@ -204,76 +198,6 @@ public class GraphStreamRenderer implements Renderer {
                     //"text-alignment: at-left; "
             );
         });
-    }
-
-    private String getStylesheet() {
-        return
-                "graph { padding: 50px;} " +
-                        "node {" +
-                        "text-padding: 3px; " +
-                        "text-alignment: under; " +
-                        "text-offset: 0px, 5px; " +
-                        "text-size: 12px; " +
-                        "stroke-mode: plain; " +
-                        "}" +
-                        "node.infrastructure { " +
-                        "size: 50px; " +
-                        "text-background-mode: rounded-box; " +
-                        "text-background-color: #333333; " +
-                        "text-color: white; " +
-                        "shape: rounded-box; " +
-                        "}" +
-                        "node.ingress { " +
-                        "size: 50px; " +
-                        "text-background-mode: rounded-box; " +
-                        "text-background-color: #333333; " +
-                        "text-color: white; " +
-                        "}" +
-                        "node.applications { " +
-                        "size: 70px; " +
-                        "shape: circle; " +
-                        "text-background-mode: rounded-box; " +
-                        "text-background-color: #333333; " +
-                        "text-alignment: under; " +
-                        "text-color: white; " +
-                        "size-mode: fit; " +
-                        "}" +
-                        "node.interface { " +
-                        //"shape: rounded-box; " +
-                        "size: 20px; " +
-                        "text-padding: 2px; " +
-                        //"shape: freeplane; " +
-                        "size-mode: fit; " +
-                        "fill-image: url('http://localhost:8080/icons/interface.png'); " +
-                        "}" +
-                        //////////////
-                        "edge {  }" +
-                        "edge.dataflow { " +
-                        "shape: cubic-curve; " +
-                        "stroke-color: grey; " +
-                        "stroke-width: 1px; " +
-                        "stroke-mode: plain; " +
-                        "arrow-size: 20px, 4px; " +
-                        "size-mode: fit; " +
-                        "text-background-mode: rounded-box; " +
-                        "text-padding: 5px; " +
-                        "text-color: white; " +
-                        "text-size: 12px; " +
-                        "fill-mode: plain; " +
-                        "}" +
-                        "edge.provides { " +
-                        "stroke-width: 1px; stroke-mode: dashes; " +
-                        "size-mode: fit; " +
-                        "text-background-mode: rounded-box; " +
-                        "text-size: 12px; " +
-                        "}" +
-                        ///////////
-                        "sprite { " +
-                        "size: 25px; " +
-                        "shape: box; " +
-                        "fill-mode: image-scaled-ratio-max; " +
-                        "text-padding: 30px, 0px; " +
-                        "}\n";
     }
 
     private String getIcon(Service service) {
