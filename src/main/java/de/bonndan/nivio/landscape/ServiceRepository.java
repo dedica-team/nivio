@@ -8,6 +8,9 @@ import java.util.List;
 @Repository
 public interface ServiceRepository extends CrudRepository<Service, Long> {
 
+
+    List<Service> findAllByIdentifier(String identifier);
     List<Service> findAllByLandscape(Landscape landscape);
+    List<Service> findAllByLandscapeAndGroup(Landscape landscape, String group);
 
 }

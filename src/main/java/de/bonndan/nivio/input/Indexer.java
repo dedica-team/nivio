@@ -145,10 +145,7 @@ public class Indexer {
                             throw new ProcessingException(environment, "Service not found " + service.getIdentifier());
                     }
                     description.getProvided_by().forEach(providerName -> {
-                        Service provider = services.stream()
-                                .filter(s -> s.getIdentifier().equals(providerName))
-                                .findFirst().orElse(null);
-
+                        Service provider = Utils.find(providerName, service.getGroup(), services);
                         if (provider == null) {
                             throw new ProcessingException(environment, "Could not find service " + provider + " in landscape " + environment);
                         }
@@ -156,7 +153,7 @@ public class Indexer {
                         if (!Utils.contains(provider, service.getProvidedBy())) {
                             service.getProvidedBy().add(provider);
                             provider.getProvides().add(service);
-                            logger.info("Adding provider " + provider.getIdentifier() + " to " + service.getIdentifier());
+                            logger.info("Adding provider " + provider + " to serivce " + service);
                         }
                     });
                 }
@@ -165,10 +162,11 @@ public class Indexer {
 
     private void linkDataflow(final Environment input, final Landscape landscape) {
         input.getServiceDescriptions().forEach(serviceDescription -> {
-            Service service = Utils.pick(serviceDescription.getIdentifier(), landscape.getServices());
+            Service service = Utils.pick(serviceDescription, landscape.getServices());
 
             serviceDescription.getDataFlow().forEach(description -> {
-                Service target = Utils.find(description.getTarget(), landscape.getServices());
+
+                Service target = Utils.find(description.getTarget(), service.getGroup(), landscape.getServices());
                 if (target == null) {
                     logger.warn("Dataflow target service " + description.getTarget() + " not found");
                     return;

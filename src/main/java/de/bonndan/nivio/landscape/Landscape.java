@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +21,7 @@ public class Landscape implements LandscapeInterface {
      * Immutable unique identifier. Maybe use an URN.
      */
     @Id
+    @Pattern(regexp = LandscapeItem.IDENTIFIER_VALIDATION)
     private String identifier;
 
     /**

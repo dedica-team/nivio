@@ -20,12 +20,10 @@ public class DataFlow implements DataFlowItem, Serializable {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "source_identifier", referencedColumnName = "identifier")
     @JsonBackReference
     private Service sourceEntity;
 
     @ManyToOne
-    @JoinColumn(name = "target_identifier", referencedColumnName = "identifier")
     private Service targetEntity;
 
     private String description;

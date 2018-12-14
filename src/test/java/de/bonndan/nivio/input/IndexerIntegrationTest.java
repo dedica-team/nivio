@@ -67,11 +67,11 @@ public class IndexerIntegrationTest {
         assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getServices());
         assertEquals(7, landscape.getServices().size());
-        Service blog = Utils.pick("blog-server", landscape.getServices());
+        Service blog = Utils.pick("blog-server", null, landscape.getServices());
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
 
-        Service webserver = Utils.pick("wordpress-web", blog.getProvidedBy());
+        Service webserver = Utils.pick("wordpress-web", null, blog.getProvidedBy());
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getProvides().size());
 
@@ -104,11 +104,11 @@ public class IndexerIntegrationTest {
         assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getServices());
         assertEquals(7, landscape.getServices().size());
-        Service blog = Utils.pick("blog-server", landscape.getServices());
+        Service blog = Utils.pick("blog-server", null,landscape.getServices());
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
 
-        Service webserver = Utils.pick("wordpress-web", blog.getProvidedBy());
+        Service webserver = Utils.pick("wordpress-web", null, blog.getProvidedBy());
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getProvides().size());
 
@@ -136,7 +136,7 @@ public class IndexerIntegrationTest {
     @Test
     public void testIncrementalUpdate() {
         Landscape landscape = index();
-        Service blog = Utils.pick("blog-server", landscape.getServices());
+        Service blog = Utils.pick("blog-server", null, landscape.getServices());
         int before = landscape.getServices().size();
 
         Environment environment = new Environment();
@@ -152,7 +152,7 @@ public class IndexerIntegrationTest {
         Indexer indexer = new Indexer(environmentRepo, serviceRepository, notificationService);
 
         landscape = indexer.reIndex(environment);
-        blog = Utils.pick("blog-server", landscape.getServices());
+        blog = Utils.pick("blog-server", null, landscape.getServices());
         assertEquals("completelyNewGroup", blog.getGroup());
         assertEquals(before, landscape.getServices().size());
     }

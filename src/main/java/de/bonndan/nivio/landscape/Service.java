@@ -11,9 +11,13 @@ import javax.validation.constraints.Pattern;
 import java.util.*;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames={"landscape_identifier", "identifier", "group"}))
 public class Service implements LandscapeItem {
 
     @Id
+    @GeneratedValue
+    private Long id;
+
     @NotNull
     @Pattern(regexp = LandscapeItem.IDENTIFIER_VALIDATION)
     private String identifier;
@@ -77,7 +81,7 @@ public class Service implements LandscapeItem {
     @JsonBackReference
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "TYPE_INFRASTRUCTURE",
-            joinColumns = {@JoinColumn(name = "service_identifier")},
+            joinColumns = {@JoinColumn(name = "service_id")},
             inverseJoinColumns = {@JoinColumn(name = "infrastructure_identifier")})
     private Set<Service> providedBy = new HashSet<>();
 
@@ -316,20 +320,23 @@ public class Service implements LandscapeItem {
         if (o == null || getClass() != o.getClass()) return false;
         Service service = (Service) o;
 
-        return Objects.equals(StringUtils.trimAllWhitespace(identifier),
-                StringUtils.trimAllWhitespace(service.identifier)
-        ) && Objects.equals(landscape, service.landscape);
+        return toString().equals(service.toString())
+                && identifier.equals(service.getIdentifier())
+                && (group == null ? service.getGroup() == null : group.equals(service.getGroup()))
+                && Objects.equals(landscape, service.getLandscape());
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(StringUtils.trimAllWhitespace(identifier), landscape);
+        return Objects.hash(toString());
     }
 
     @Override
     public String toString() {
-        return identifier + " (" + type + ", group: " + group + ")";
+        if (landscape == null || StringUtils.isEmpty(landscape.getIdentifier()) || StringUtils.isEmpty(group))
+            return "Detached service " + identifier;
+
+        return FullyQualifiedIdentifier.build(landscape.getIdentifier(), group, identifier);
     }
 
 }

@@ -28,6 +28,11 @@ spring:
           auth: true
           starttls.enable: true
 
+logging:
+  level:
+    root: WARN
+    org.hibnerate: debug
+
 ---
 spring:
   profiles: test
