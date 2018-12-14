@@ -49,14 +49,16 @@ public class IndexerIntegrationTest {
     JavaMailSender mailSender;
 
     private Landscape index() {
-        File file = new File(getRootPath() + "/src/test/resources/example/example_env.yml");
+        return index("/src/test/resources/example/example_env.yml");
+    }
+
+    private Landscape index(String path) {
+        File file = new File(getRootPath() + path);
         Environment environment = EnvironmentFactory.fromYaml(file);
 
         Indexer indexer = new Indexer(environmentRepo, serviceRepository, notificationService);
 
-        Landscape landscape = indexer.reIndex(environment);
-
-        return landscape;
+        return indexer.reIndex(environment);
     }
 
     @Test //first pass
@@ -155,6 +157,30 @@ public class IndexerIntegrationTest {
         blog = Utils.pick("blog-server", null, landscape.getServices());
         assertEquals("completelyNewGroup", blog.getGroup());
         assertEquals(before, landscape.getServices().size());
+    }
+
+    /**
+     * Ensures that same names in different landscapes do not collide
+     */
+    @Test
+    public void testNameConflictDifferentLandscapes() {
+        Landscape landscape1 = index("/src/test/resources/example/example_env.yml");
+        Landscape landscape2 = index("/src/test/resources/example/example_other.yml");
+
+        Assertions.assertNotNull(landscape1);
+        assertEquals("mail@acme.org", landscape1.getContact());
+        Assertions.assertNotNull(landscape1.getServices());
+        Service blog1 = Utils.pick("blog-server", null,landscape1.getServices());
+        Assertions.assertNotNull(blog1);
+        assertEquals("blog", blog1.getShort_name());
+
+        Assertions.assertNotNull(landscape2);
+        assertEquals("nivio:other", landscape2.getIdentifier());
+        assertEquals("mail@other.org", landscape2.getContact());
+        Assertions.assertNotNull(landscape2.getServices());
+        Service blog2 = Utils.pick("blog-server", null,landscape2.getServices());
+        Assertions.assertNotNull(blog2);
+        assertEquals("blog1", blog2.getShort_name());
     }
 
     private String getRootPath() {

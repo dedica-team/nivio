@@ -1,0 +1,5 @@
+identifier: nivio:other
+name: Other landscape example
+contact: mail@other.org
+sources:
+  - "./services/wordpress1.yml"
