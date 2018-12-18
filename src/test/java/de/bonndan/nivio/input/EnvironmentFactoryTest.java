@@ -4,8 +4,8 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.landscape.LandscapeItems;
 import de.bonndan.nivio.landscape.StateProviderConfig;
-import de.bonndan.nivio.landscape.Utils;
 import de.bonndan.nivio.util.RootPath;
 import de.bonndan.nivio.input.dto.Environment;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ class EnvironmentFactoryTest {
         assertEquals("nivio:incremental", environment.getIdentifier());
         assertFalse(environment.getSourceReferences().isEmpty());
 
-        ServiceDescription mapped = (ServiceDescription) Utils.pick("blog-server", null, environment.getServiceDescriptions());
+        ServiceDescription mapped = (ServiceDescription) LandscapeItems.pick("blog-server", null, environment.getServiceDescriptions());
         assertNotNull(mapped);
         assertEquals("blog1", mapped.getShort_name());
         assertEquals("name2", mapped.getName());

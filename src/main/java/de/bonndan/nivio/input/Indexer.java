@@ -87,7 +87,7 @@ public class Indexer {
         kept.forEach(
                 service -> {
 
-                    ServiceDescription description = (ServiceDescription) Utils.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
+                    ServiceDescription description = (ServiceDescription) LandscapeItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
                     if (description == null) {
                         if (environment.isIncrement()) {
                             inLandscape.add((Service) service);
@@ -132,7 +132,7 @@ public class Indexer {
 
         services.forEach(
                 service -> {
-                    ServiceDescription description = (ServiceDescription) Utils.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
+                    ServiceDescription description = (ServiceDescription) LandscapeItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
                     if (description == null) {
                         if (environment.isIncrement())
                             return;
@@ -141,12 +141,12 @@ public class Indexer {
                     }
                     description.getProvided_by().forEach(providerName -> {
                         var fqi =FullyQualifiedIdentifier.from(providerName);
-                        Service provider = (Service) Utils.find(fqi, services);
+                        Service provider = (Service) LandscapeItems.find(fqi, services);
                         if (provider == null) {
                             throw new ProcessingException(environment, "Could not find service " + fqi + " in landscape " + environment);
                         }
 
-                        if (!Utils.contains(provider, service.getProvidedBy())) {
+                        if (!LandscapeItems.contains(provider, service.getProvidedBy())) {
                             service.getProvidedBy().add(provider);
                             provider.getProvides().add(service);
                             logger.info("Adding provider " + provider + " to serivce " + service);
@@ -158,12 +158,12 @@ public class Indexer {
 
     private void linkDataflow(final Environment input, final Landscape landscape) {
         input.getServiceDescriptions().forEach(serviceDescription -> {
-            Service origin = (Service) Utils.pick(serviceDescription, landscape.getServices());
+            Service origin = (Service) LandscapeItems.pick(serviceDescription, landscape.getServices());
 
             serviceDescription.getDataFlow().forEach(description -> {
 
                 var fqi = FullyQualifiedIdentifier.from(description.getTarget());
-                Service target = (Service) Utils.find(fqi, landscape.getServices());
+                Service target = (Service) LandscapeItems.find(fqi, landscape.getServices());
                 if (target == null) {
                     logger.warn("Dataflow target service " + description.getTarget() + " not found");
                     return;
