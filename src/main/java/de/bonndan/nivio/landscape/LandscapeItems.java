@@ -34,7 +34,7 @@ public class LandscapeItems {
 
     private static boolean exists(LandscapeItem item, List<? extends LandscapeItem> items) {
         return items.stream().anyMatch(
-                inList -> item.getFullyQualifiedIdentifier().equalsIgnoringLandscape(inList)
+                inList -> item.getFullyQualifiedIdentifier().isSimilarTo(inList)
         );
     }
 
@@ -113,7 +113,7 @@ public class LandscapeItems {
 
     private static List<LandscapeItem> findAll(FullyQualifiedIdentifier fqi, List<? extends LandscapeItem> serviceList) {
         return serviceList.stream()
-                .filter(fqi::equalsIgnoringLandscape)
+                .filter(fqi::isSimilarTo)
                 .collect(Collectors.toList());
     }
 

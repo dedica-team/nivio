@@ -24,9 +24,9 @@ public class FullyQualifiedIdentifierTest {
         otherIdentifier.setIdentifier("d2");
         otherIdentifier.setGroup("g1");
 
-        assertTrue(fqi1.equalsIgnoringLandscape(desc1));
-        assertFalse(fqi1.equalsIgnoringLandscape(otherGroup));
-        assertFalse(fqi1.equalsIgnoringLandscape(otherIdentifier));
+        assertTrue(fqi1.isSimilarTo(desc1));
+        assertFalse(fqi1.isSimilarTo(otherGroup));
+        assertFalse(fqi1.isSimilarTo(otherIdentifier));
     }
 
     @Test
@@ -36,14 +36,14 @@ public class FullyQualifiedIdentifierTest {
         ServiceDescription desc1 = new ServiceDescription();
         desc1.setIdentifier("d1");
         desc1.setGroup(null);
-        assertTrue(fqi1.equalsIgnoringLandscape(desc1));
+        assertTrue(fqi1.isSimilarTo(desc1));
 
         ServiceDescription otherGroup = new ServiceDescription();
         otherGroup.setIdentifier("d1");
         otherGroup.setGroup("g2");
 
         var fqiNoGroup = FullyQualifiedIdentifier.build(null, null, "d1");
-        assertTrue(fqiNoGroup.equalsIgnoringLandscape(desc1));
-        assertTrue(fqiNoGroup.equalsIgnoringLandscape(otherGroup));
+        assertTrue(fqiNoGroup.isSimilarTo(desc1));
+        assertTrue(fqiNoGroup.isSimilarTo(otherGroup));
     }
 }

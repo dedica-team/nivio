@@ -85,7 +85,7 @@ public class FullyQualifiedIdentifier {
      * @param item other item
      * @return true if group and identifier match (if group is null, it is not taken into account)
      */
-    public boolean equalsIgnoringLandscape(LandscapeItem item) {
+    public boolean isSimilarTo(LandscapeItem item) {
         FullyQualifiedIdentifier fqi = item.getFullyQualifiedIdentifier();
         if (StringUtils.isEmpty(group) || StringUtils.isEmpty(item.getGroup()))
             return identifier.equals(fqi.identifier);
