@@ -1,6 +1,5 @@
 package de.bonndan.nivio.landscape;
 
-import de.bonndan.nivio.landscape.LandscapeItem;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,12 +23,16 @@ public class LandscapeItems {
     /**
      * Returns all elements which are not in the second list
      */
-    public static List<LandscapeItem> added(List<? extends LandscapeItem> items1, List<? extends LandscapeItem> items2) {
-        return items1.stream().filter(item -> !exists(item, items2)).collect(Collectors.toList());
+    public static List<LandscapeItem> added(List<? extends LandscapeItem> items1, List<? extends LandscapeItem> existing) {
+        return items1.stream()
+                .filter(item -> !exists(item, existing))
+                .collect(Collectors.toList());
     }
 
     private static boolean exists(LandscapeItem item, List<? extends LandscapeItem> items) {
-        return items.stream().anyMatch(o -> o.getIdentifier().equals(item.getIdentifier()));
+        return items.stream().anyMatch(
+                inList -> item.getFullyQualifiedIdentifier().equalsIgnoringLandscape(inList)
+        );
     }
 
 }

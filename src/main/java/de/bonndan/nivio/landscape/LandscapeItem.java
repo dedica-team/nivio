@@ -26,6 +26,11 @@ public interface LandscapeItem {
     String getIdentifier();
 
     /**
+     * @return the fqi to identify the landscape item
+     */
+    FullyQualifiedIdentifier getFullyQualifiedIdentifier();
+
+    /**
      * @return the type (ingress, service, infrastructure)
      */
     String getLayer();
@@ -75,4 +80,6 @@ public interface LandscapeItem {
     Set<InterfaceItem> getInterfaces();
 
     Set<DataFlowItem> getDataFlow();
+
+
 }

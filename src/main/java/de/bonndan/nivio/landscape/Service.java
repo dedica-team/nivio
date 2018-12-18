@@ -109,6 +109,12 @@ public class Service implements LandscapeItem {
         this.identifier = identifier.toLowerCase();
     }
 
+    @Override
+    @Transient
+    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
+        return FullyQualifiedIdentifier.build(landscape == null ? "" : landscape.getIdentifier(), group, identifier);
+    }
+
     public Landscape getLandscape() {
         return landscape;
     }
@@ -316,14 +322,13 @@ public class Service implements LandscapeItem {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Service service = (Service) o;
+        if (this == o)
+            return true;
+        if (o == null)
+            return false;
+        LandscapeItem landscapeItem = (LandscapeItem) o;
 
-        return toString().equals(service.toString())
-                && identifier.equals(service.getIdentifier())
-                && (group == null ? service.getGroup() == null : group.equals(service.getGroup()))
-                && Objects.equals(landscape, service.getLandscape());
+        return toString().equals(landscapeItem.toString());
     }
 
     @Override
@@ -331,12 +336,16 @@ public class Service implements LandscapeItem {
         return Objects.hash(toString());
     }
 
+    /**
+     *
+     * @return the fully qualified identifier for this service
+     */
     @Override
     public String toString() {
-        if (landscape == null || StringUtils.isEmpty(landscape.getIdentifier()) || StringUtils.isEmpty(group))
-            return "Detached service " + identifier;
+        if (landscape == null)
+            return identifier;
 
-        return FullyQualifiedIdentifier.build(landscape.getIdentifier(), group, identifier);
+       return getFullyQualifiedIdentifier().toString();
     }
 
 }

@@ -1,5 +1,5 @@
-identifier: nivio:example
-name: Landscape example
+identifier: nivio:incremental
+name: Incremental update example
 sources:
   - "./services/wordpress.yml"
   - "./services/wordpress1.yml"

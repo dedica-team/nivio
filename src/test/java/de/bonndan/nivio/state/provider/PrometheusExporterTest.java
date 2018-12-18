@@ -24,7 +24,7 @@ public class PrometheusExporterTest {
         Map<FullyQualifiedIdentifier, ServiceState> map = prometheusExporter.getStates();
 
         assertEquals(4, map.size());
-        ServiceState hubot = map.get(new FullyQualifiedIdentifier("test", "rocket-chat", "hubot"));
+        ServiceState hubot = map.get(FullyQualifiedIdentifier.build("test", "rocket-chat", "hubot"));
         assertNotNull(hubot);
         assertEquals(Level.OK, hubot.getLevel(),hubot.getMessage());
     }

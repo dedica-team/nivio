@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.landscape.StateProviderConfig;
+import de.bonndan.nivio.landscape.Utils;
 import de.bonndan.nivio.util.RootPath;
 import de.bonndan.nivio.input.dto.Environment;
 import org.junit.jupiter.api.Test;
@@ -40,11 +41,11 @@ class EnvironmentFactoryTest {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_incremental_env.yml");
         Environment environment = EnvironmentFactory.fromYaml(file);
-        assertEquals("Landscape example", environment.getName());
-        assertEquals("nivio:example", environment.getIdentifier());
+        assertEquals("Incremental update example", environment.getName());
+        assertEquals("nivio:incremental", environment.getIdentifier());
         assertFalse(environment.getSourceReferences().isEmpty());
 
-        ServiceDescription mapped = environment.getServiceDescription("blog-server");
+        ServiceDescription mapped = (ServiceDescription) Utils.pick("blog-server", null, environment.getServiceDescriptions());
         assertNotNull(mapped);
         assertEquals("blog1", mapped.getShort_name());
         assertEquals("name2", mapped.getName());

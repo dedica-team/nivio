@@ -40,9 +40,9 @@ public class GraphBuilderTest {
         Graph graph = graphBuilder.build(landscape);
         Assertions.assertNotNull(graph);
 
-        Service a = Utils.pick("a", null, landscape.getServices());
-        Service a1 = Utils.pick("a1", null, landscape.getServices());
-        Service b = Utils.pick("b", null, landscape.getServices());
+        Service a = (Service) Utils.pick("a", null, landscape.getServices());
+        Service a1 = (Service) Utils.pick("a1", null, landscape.getServices());
+        Service b = (Service) Utils.pick("b", null, landscape.getServices());
         Assertions.assertTrue(graph.containsVertex(a));
 
         Object edge1 = graph.getEdge(a, a1);

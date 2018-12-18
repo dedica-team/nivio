@@ -1,0 +1,4 @@
+identifier: nivio:dataflowtest
+name: Data flow test
+sources:
+  - "./services/dataflowtest.yml"

@@ -86,6 +86,7 @@ public class DataFlow implements DataFlowItem, Serializable {
 
     @Override
     public int hashCode() {
+        sourceEntity.toString();
         return Objects.hash(sourceEntity.getIdentifier(), targetEntity.getIdentifier());
     }
 

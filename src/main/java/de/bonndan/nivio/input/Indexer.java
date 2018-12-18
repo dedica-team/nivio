@@ -87,14 +87,15 @@ public class Indexer {
         kept.forEach(
                 service -> {
 
-                    ServiceDescription description = getDescription(service, environment);
-                    if (description == null)
+                    ServiceDescription description = (ServiceDescription) Utils.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
+                    if (description == null) {
                         if (environment.isIncrement()) {
                             inLandscape.add((Service) service);
                             return;
                         } else {
                             throw new ProcessingException(environment, "Service not found " + service.getIdentifier());
                         }
+                    }
 
                     logger.info("Updating service " + service.getIdentifier() + " in landscape " + environment.getIdentifier());
 
@@ -106,12 +107,6 @@ public class Indexer {
         landscape.setServices(inLandscape);
         linkAllProviders(inLandscape, environment);
         deleteUnreferenced(environment, inLandscape, existingServices);
-    }
-
-    private static ServiceDescription getDescription(LandscapeItem service, final Environment environment) {
-        return environment.getServiceDescriptions().stream()
-                .filter(d -> d.getIdentifier().equals(service.getIdentifier()))
-                .findFirst().orElse(null);
     }
 
     private void deleteUnreferenced(final Environment environment, List<Service> kept, List<Service> all) {
@@ -137,7 +132,7 @@ public class Indexer {
 
         services.forEach(
                 service -> {
-                    ServiceDescription description = getDescription(service, environment);
+                    ServiceDescription description = (ServiceDescription) Utils.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
                     if (description == null) {
                         if (environment.isIncrement())
                             return;
@@ -145,9 +140,10 @@ public class Indexer {
                             throw new ProcessingException(environment, "Service not found " + service.getIdentifier());
                     }
                     description.getProvided_by().forEach(providerName -> {
-                        Service provider = Utils.find(providerName, service.getGroup(), services);
+                        var fqi =FullyQualifiedIdentifier.from(providerName);
+                        Service provider = (Service) Utils.find(fqi, services);
                         if (provider == null) {
-                            throw new ProcessingException(environment, "Could not find service " + provider + " in landscape " + environment);
+                            throw new ProcessingException(environment, "Could not find service " + fqi + " in landscape " + environment);
                         }
 
                         if (!Utils.contains(provider, service.getProvidedBy())) {
@@ -162,18 +158,19 @@ public class Indexer {
 
     private void linkDataflow(final Environment input, final Landscape landscape) {
         input.getServiceDescriptions().forEach(serviceDescription -> {
-            Service service = Utils.pick(serviceDescription, landscape.getServices());
+            Service origin = (Service) Utils.pick(serviceDescription, landscape.getServices());
 
             serviceDescription.getDataFlow().forEach(description -> {
 
-                Service target = Utils.find(description.getTarget(), service.getGroup(), landscape.getServices());
+                var fqi = FullyQualifiedIdentifier.from(description.getTarget());
+                Service target = (Service) Utils.find(fqi, landscape.getServices());
                 if (target == null) {
                     logger.warn("Dataflow target service " + description.getTarget() + " not found");
                     return;
                 }
-                Iterator<DataFlowItem> iterator = service.getDataFlow().iterator();
+                Iterator<DataFlowItem> iterator = origin.getDataFlow().iterator();
                 DataFlow existing = null;
-                DataFlow dataFlow = new DataFlow(service, target);
+                DataFlow dataFlow = new DataFlow(origin, target);
                 while (iterator.hasNext()) {
                     existing = (DataFlow) iterator.next();
                     if (existing.equals(dataFlow)) {
@@ -189,11 +186,11 @@ public class Indexer {
                     dataFlow.setDescription(description.getDescription());
                     dataFlow.setFormat(description.getFormat());
 
-                    service.getDataFlow().add(dataFlow);
+                    origin.getDataFlow().add(dataFlow);
                     logger.info("Adding dataflow " + existing);
                 }
 
-                logger.info("Creating dataflow between " + service.getIdentifier() + " and " + target.getIdentifier());
+                logger.info("Creating dataflow between " + origin.getIdentifier() + " and " + target.getIdentifier());
             });
         });
     }

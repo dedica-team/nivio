@@ -111,7 +111,7 @@ public class PrometheusExporter implements Provider {
 
     private FullyQualifiedIdentifier toFQI(Metric metric) {
         try {
-            return new FullyQualifiedIdentifier(
+            return FullyQualifiedIdentifier.build(
                     landscape,
                     metric.getLabels().getOrDefault("stack_name", ""),
                     metric.getLabels().getOrDefault("name", "")

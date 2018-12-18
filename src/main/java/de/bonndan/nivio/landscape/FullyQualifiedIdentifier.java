@@ -2,87 +2,94 @@ package de.bonndan.nivio.landscape;
 
 import org.springframework.util.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import java.io.Serializable;
 import java.util.Objects;
 
 public class FullyQualifiedIdentifier {
 
-    private String landscapeId;
-
+    private String landscape;
+    private String group;
     private String identifier;
 
-    private String group;
-
-
-    public static final String SEPARATOR = "|";
+    public static final String SEPARATOR = "/";
 
     public FullyQualifiedIdentifier() {
     }
 
-    public FullyQualifiedIdentifier(String landscapeId, String identifier, String group) {
-        this.landscapeId = landscapeId;
-        this.identifier = identifier;
-        this.group = group;
-    }
+    public static FullyQualifiedIdentifier build(final String landscape, final String group, final String serviceIdentifier) {
 
-    public static String build(final String landscape, final String group, final String serviceIdentifier) {
-
-        if (StringUtils.isEmpty(landscape))
-            throw new IllegalArgumentException("landscape must not be empty");
-        if (StringUtils.isEmpty(group))
-            throw new IllegalArgumentException("group must not be empty");
         if (StringUtils.isEmpty(serviceIdentifier))
             throw new IllegalArgumentException("serviceIdentifier must not be empty");
 
-        return StringUtils.trimAllWhitespace(landscape.toLowerCase())
-                + SEPARATOR
-                + StringUtils.trimAllWhitespace(group.toLowerCase())
-                + SEPARATOR
-                + StringUtils.trimAllWhitespace(serviceIdentifier.toLowerCase());
+        FullyQualifiedIdentifier fqi = new FullyQualifiedIdentifier();
+        fqi.landscape = StringUtils.trimAllWhitespace(landscape == null ? "" : landscape.toLowerCase());
+        if (!StringUtils.isEmpty(group))
+            fqi.group = StringUtils.trimAllWhitespace(group.toLowerCase());
+        fqi.identifier = StringUtils.trimAllWhitespace(serviceIdentifier.toLowerCase());
+
+        return fqi;
     }
 
-    public String getLandscapeId() {
-        return landscapeId;
-    }
+    /**
+     * Factory method to create a fqi from a string like a dataflow target.
+     *
+     * @param string group/identifier
+     * @return fqi
+     */
+    public static FullyQualifiedIdentifier from(String string) {
+        if (StringUtils.isEmpty(string))
+            throw new IllegalArgumentException("identifier must not be empty");
 
-    public void setLandscapeId(String landscapeId) {
-        this.landscapeId = landscapeId;
-    }
+        String[] split = string.split(SEPARATOR);
+        if (split.length == 1)
+            return FullyQualifiedIdentifier.build(null, null, split[0]);
 
-    public String getIdentifier() {
-        return identifier;
-    }
+        if (split.length == 2)
+            return FullyQualifiedIdentifier.build(null, split[0], split[1]);
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
+        if (split.length == 3)
+            return FullyQualifiedIdentifier.build(split[0], split[1], split[3]);
 
-    public String getGroup() {
-        return group;
-    }
-
-    public void setGroup(String group) {
-        this.group = group;
-    }
-
-    private String fqi() {
-        return build(landscapeId, group, identifier);
+        return null;
     }
 
     @Override
     public String toString() {
-        return fqi();
+        if (landscape == null || StringUtils.isEmpty(identifier))
+            return "Detached service " + super.toString();
+
+        StringBuilder b = new StringBuilder().append(landscape);
+        if (!StringUtils.isEmpty(landscape))
+            b.append(SEPARATOR);
+
+        if (!StringUtils.isEmpty(group))
+            b.append(group).append(SEPARATOR);
+
+        b.append(identifier);
+
+        return b.toString();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fqi());
+        return Objects.hash(toString());
     }
 
     @Override
     public boolean equals(Object obj) {
         return hashCode() == obj.hashCode();
+    }
+
+    /**
+     * Compares landscape items by group and identifier.
+     *
+     * @param item other item
+     * @return true if group and identifier match (if group is null, it is not taken into account)
+     */
+    public boolean equalsIgnoringLandscape(LandscapeItem item) {
+        FullyQualifiedIdentifier fqi = item.getFullyQualifiedIdentifier();
+        if (StringUtils.isEmpty(group) || StringUtils.isEmpty(item.getGroup()))
+            return identifier.equals(fqi.identifier);
+
+        return group.equals(fqi.group) && identifier.equals(fqi.identifier);
     }
 }

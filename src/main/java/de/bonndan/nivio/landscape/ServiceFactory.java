@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import java.util.HashSet;
 import java.util.Set;
 
+import static de.bonndan.nivio.util.SafeAssign.assignSafe;
+
 public class ServiceFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceFactory.class);
@@ -50,7 +52,7 @@ public class ServiceFactory {
         service.setTeam(description.getTeam());
 
         service.setVisibility(description.getVisibility());
-        service.setGroup(description.getGroup());
+        assignSafe(description.getGroup(), service::setGroup);
 
         if (service.getStatuses() == null)
             service.setStatuses(description.getStatuses());

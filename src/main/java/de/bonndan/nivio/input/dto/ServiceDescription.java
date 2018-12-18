@@ -2,10 +2,7 @@ package de.bonndan.nivio.input.dto;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.bonndan.nivio.landscape.DataFlowItem;
-import de.bonndan.nivio.landscape.InterfaceItem;
-import de.bonndan.nivio.landscape.LandscapeItem;
-import de.bonndan.nivio.landscape.Status;
+import de.bonndan.nivio.landscape.*;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
@@ -73,6 +70,11 @@ public class ServiceDescription implements LandscapeItem {
 
     public void setIdentifier(String identifier) {
         this.identifier = StringUtils.trimAllWhitespace(identifier);
+    }
+
+    @Override
+    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
+        return FullyQualifiedIdentifier.build(environment, group, identifier);
     }
 
     public String getEnvironment() {
@@ -277,4 +279,31 @@ public class ServiceDescription implements LandscapeItem {
         this.networks = networks;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null)
+            return false;
+        LandscapeItem landscapeItem = (LandscapeItem) o;
+
+        return toString().equals(landscapeItem.toString());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(toString());
+    }
+
+    /**
+     *
+     * @return the fully qualified identifier for this service description
+     */
+    @Override
+    public String toString() {
+        if (StringUtils.isEmpty(environment))
+            return identifier;
+
+        return FullyQualifiedIdentifier.build(environment, group, identifier).toString();
+    }
 }

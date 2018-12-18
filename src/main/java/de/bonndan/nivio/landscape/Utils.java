@@ -1,17 +1,15 @@
 package de.bonndan.nivio.landscape;
 
-import de.bonndan.nivio.input.dto.ServiceDescription;
 import org.springframework.util.StringUtils;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Utils {
 
-    public static Service pick(final LandscapeItem description, final Collection<Service> services) {
-        return pick(description.getIdentifier(), description.getGroup(), services);
+    public static LandscapeItem pick(final LandscapeItem item, final List<? extends LandscapeItem> services) {
+        return pick(item.getIdentifier(), item.getGroup(), services);
     }
 
     /**
@@ -22,27 +20,16 @@ public class Utils {
      * @param serviceList all services
      * @return the service with the given identifier
      */
-    public static Service pick(final String identifier, String group, final Collection<Service> serviceList) {
+    public static LandscapeItem pick(final String identifier, String group, final List<? extends LandscapeItem> serviceList) {
         if (StringUtils.isEmpty(identifier)) {
             throw new IllegalArgumentException("Identifier is empty");
         }
-        if (StringUtils.isEmpty(group)) {
 
-            List<Service> found = serviceList.stream()
-                    .filter(service -> service.getIdentifier().equals(identifier))
-                    .collect(Collectors.toList());
-            if (found.size() == 1)
-                return found.get(0);
-            if (found.size() > 1)
-                throw new RuntimeException("Ambiguous result for " + identifier + ": " + found + " in collection " + serviceList);
-
+        LandscapeItem landscapeItem = find(identifier, group, serviceList);
+        if (landscapeItem == null)
             throw new RuntimeException("Element not found " + identifier + " in collection " + serviceList);
-        }
 
-        return serviceList.stream()
-                .filter(service -> service.getIdentifier().equals(identifier) && service.getGroup().equals(group))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Element not found: " + identifier + "/" + group + " in collection " + serviceList));
+        return landscapeItem;
     }
 
     /**
@@ -63,10 +50,44 @@ public class Utils {
      * @param services   all services
      * @return the service or null
      */
-    public static Service find(String identifier, String group, Collection<Service> services) {
-        return services.stream()
-                .filter(service -> service.getIdentifier().equals(identifier))
-                .findFirst()
-                .orElse(null);
+    public static LandscapeItem find(String identifier, String group, List<? extends LandscapeItem> services) {
+        if (StringUtils.isEmpty(identifier)) {
+            throw new IllegalArgumentException("Identifier is empty");
+        }
+
+        List<LandscapeItem> found = findAll(identifier, group, services);
+
+        if (found.size() == 1)
+            return found.get(0);
+        if (found.size() > 1)
+            throw new RuntimeException("Ambiguous result for " + group + "/" + identifier + ": " + found + " in collection " + services);
+
+        return null;
+    }
+
+    private static List<LandscapeItem> findAll(
+            final String identifier,
+            final String group,
+            final List<? extends LandscapeItem> serviceList
+    ) {
+        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.build(null, group, identifier);
+        return findAll(fqi, serviceList);
+    }
+
+    private static List<LandscapeItem> findAll(FullyQualifiedIdentifier fqi, List<? extends LandscapeItem> serviceList) {
+        return serviceList.stream()
+                .filter(fqi::equalsIgnoringLandscape)
+                .collect(Collectors.toList());
+    }
+
+    public static LandscapeItem find(FullyQualifiedIdentifier fqi, List<? extends LandscapeItem> services) {
+        List<LandscapeItem> found = findAll(fqi, services);
+
+        if (found.size() == 1)
+            return found.get(0);
+        if (found.size() > 1)
+            throw new RuntimeException("Ambiguous result for " + fqi + ": " + found + " in collection " + services);
+
+        return null;
     }
 }

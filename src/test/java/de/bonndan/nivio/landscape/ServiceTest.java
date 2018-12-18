@@ -79,8 +79,15 @@ public class ServiceTest {
         Service s2 = new Service();
         s2.setIdentifier("a");
         s2.setGroup("g1");
-        s2.setLandscape(null);
+        s2.setLandscape(landscape);
 
-        assertNotEquals(s1, s2);
+        assertEquals(s1, s2);
+
+        Service s3 = new Service();
+        s3.setIdentifier("a");
+        s3.setGroup("g1");
+        s3.setLandscape(null);
+
+        assertNotEquals(s1, s3);
     }
 }

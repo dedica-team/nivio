@@ -2,9 +2,7 @@ package de.bonndan.nivio.input.dto;
 
 import de.bonndan.nivio.input.ServiceDescriptionFactory;
 import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.LandscapeInterface;
-import de.bonndan.nivio.landscape.StateProviderConfig;
+import de.bonndan.nivio.landscape.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,18 +114,6 @@ public class Environment implements LandscapeInterface {
         return serviceDescriptions;
     }
 
-    /**
-     * Returns a service description by identifier.
-     *
-     */
-    public ServiceDescription getServiceDescription(String identifier) {
-        Optional<ServiceDescription> first = serviceDescriptions.stream()
-                .filter(serviceDescription -> serviceDescription.getIdentifier().equals(identifier))
-                .findFirst();
-
-        return first.orElse(null);
-    }
-
     public Landscape toLandscape() {
         Landscape landscape = new Landscape();
         landscape.setIdentifier(identifier);
@@ -139,15 +125,20 @@ public class Environment implements LandscapeInterface {
     }
 
     public void addServices(List<ServiceDescription> incoming) {
-        incoming.forEach(serviceDescription -> {
-            serviceDescription.setEnvironment(this.identifier);
-            var existing = getServiceDescription(serviceDescription.getIdentifier());
+        incoming.forEach(desc -> {
+            desc.setEnvironment(this.identifier);
+
+            ServiceDescription existing = (ServiceDescription) Utils.find(desc.getIdentifier(), desc.getGroup(), serviceDescriptions);
             if (existing != null) {
-                ServiceDescriptionFactory.assignNotNull(existing, serviceDescription);
+                ServiceDescriptionFactory.assignNotNull(existing, desc);
             } else {
-                this.serviceDescriptions.add(serviceDescription);
+                this.serviceDescriptions.add(desc);
             }
         });
     }
 
+    @Override
+    public String toString() {
+        return identifier;
+    }
 }

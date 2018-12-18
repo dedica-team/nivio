@@ -62,7 +62,7 @@ public class AggregatorTest {
         e.setIdentifier("test");
         e.setStateProviders(List.of(new StateProviderConfig(StateProviderConfig.TYPE_PROMETHEUS_EXPORTER, "target")));
 
-        FullyQualifiedIdentifier fullyQualifiedIdentifier = new FullyQualifiedIdentifier("x", "y", "z");
+        FullyQualifiedIdentifier fullyQualifiedIdentifier = FullyQualifiedIdentifier.build("x", "y", "z");
         Provider mockProvider = Mockito.mock(Provider.class);
         when(mockProvider.getStates()).then(invocationOnMock -> {
             Map<FullyQualifiedIdentifier, ServiceState> updates = new HashMap<>();
@@ -87,7 +87,7 @@ public class AggregatorTest {
         Environment e = new Environment();
         e.setIdentifier("test");
         e.setStateProviders(List.of(new StateProviderConfig(StateProviderConfig.TYPE_PROMETHEUS_EXPORTER, "target")));
-        FullyQualifiedIdentifier fullyQualifiedIdentifier = new FullyQualifiedIdentifier("x", "y", "z");
+        FullyQualifiedIdentifier fullyQualifiedIdentifier = FullyQualifiedIdentifier.build("x", "y", "z");
         state.put(fullyQualifiedIdentifier, new ServiceState(Level.OK, "good"));
 
 
@@ -114,7 +114,7 @@ public class AggregatorTest {
         Environment e = new Environment();
         e.setIdentifier("test");
         e.setStateProviders(List.of(new StateProviderConfig(StateProviderConfig.TYPE_PROMETHEUS_EXPORTER, "target")));
-        FullyQualifiedIdentifier fullyQualifiedIdentifier = new FullyQualifiedIdentifier("x", "y", "z");
+        FullyQualifiedIdentifier fullyQualifiedIdentifier = FullyQualifiedIdentifier.build("x", "y", "z");
         state.put(fullyQualifiedIdentifier, new ServiceState(Level.ERROR, "error"));
 
 
