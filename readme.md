@@ -75,6 +75,9 @@ A landscape consists of the three layers ingress, services, and infrastructure. 
 
 **Service configuration file**
 
+    ingress:
+      - identifier: auth-gateway
+        short_name: blog1
     services:
       - identifier: blog-server
         short_name: blog1
@@ -85,6 +88,7 @@ A landscape consists of the three layers ingress, services, and infrastructure. 
 A service can have the following attributes:
 
 * **identifier**: a unique identifier in the landscape. Use a name or an URN
+* **group** name of the group (optional)
 * **name** human readable, displayed name
 * **type** e.g. service, database, proxy, loadbalancer, ...
 * **layer** ingress, applications, or infrastructure (set automatically)
@@ -97,7 +101,6 @@ A service can have the following attributes:
 * **contact** support/notification contact (email) may be addressed in case of errors 
 * **homepage** url to more information
 * **repository** source code repo url
-* **group** name of an arbitrary group
 * **visibility** whether the service is publicly exposed
 * **tags** list of strings used as tag
 * **networks** list of network names (can be defined somewhere else)
@@ -119,6 +122,21 @@ A service can have the following attributes:
   * format: media type or binary format
  * **provided_by** array of references to other services (identifiers)
 
+## Service identification and referencing
+
+A service can be uniquely identified by its landscape, its group and its identifier. A fully qualified
+identifier is composed of these three: **mylandscape/agroup/theservice**. Since the group is optional, services with unique
+identifier can also be addressed using **mylandscape/theservice** or just **theservice**. Nivio tries to resolve the correct service and raises
+an error if it cannot be found or the result is ambiguous.
+
+Service references are required to describe a provider relation or dataflows.
+
+        services:
+          - identifier: theservice
+            group: agroup
+            dataflow:
+              - target: anothergroup/anotherservice
+                format: json
 
 ## References and similar projects
 
