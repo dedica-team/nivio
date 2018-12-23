@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.graphstream;
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.Service;
 import de.bonndan.nivio.landscape.Status;
+import de.bonndan.nivio.landscape.StatusItem;
 import de.bonndan.nivio.output.Renderer;
 import de.bonndan.nivio.util.Color;
 import org.graphstream.graph.Edge;
@@ -19,6 +20,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -161,18 +163,18 @@ public class GraphStreamRenderer implements Renderer {
             Status current = Status.UNKNOWN;
         };
 
-        service.getStatuses().forEach((s, status) -> {
-            if (status.isHigherThan(ref.current))
-                ref.current = status;
+        service.getStatuses().forEach(statusItem -> {
+            if (statusItem.getStatus().isHigherThan(ref.current))
+                ref.current = statusItem.getStatus();
         });
 
         return ref.current.toString();
     }
 
     private void addStatuses(Service service) {
-        Map<String, Status> displayed = service.getStatuses().entrySet().stream()
-                .filter(entry -> !GREEN.equals(entry.getValue()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        List<StatusItem> displayed = service.getStatuses().stream()
+                .filter(item -> !GREEN.equals(item.getStatus()))
+                .collect(Collectors.toList());
 
         if (displayed.size() == 0)
             return;
@@ -180,9 +182,9 @@ public class GraphStreamRenderer implements Renderer {
         Node serviceNode = graph.getNode(service.getIdentifier());
 
         AtomicInteger i = new AtomicInteger(1);
-        displayed.forEach((key, value) -> {
+        displayed.forEach(value -> {
 
-            String statusID = "status_" + key + "_" + serviceNode.getId();
+            String statusID = "status_" + value.getLabel() + "_" + serviceNode.getId();
 
             Sprite sprite = spriteManager.addSprite(statusID);
             sprite.attachToNode(serviceNode.getId());
@@ -190,9 +192,9 @@ public class GraphStreamRenderer implements Renderer {
             int offset = 90 - (rotation / 2) * (displayed.size() - 1);
             int z = offset + i.getAndIncrement() * rotation;
             sprite.setPosition(StyleConstants.Units.GU, 0.1, 2, z);
-            sprite.setAttribute("ui.label", key.toUpperCase().substring(0,3));
+            sprite.setAttribute("ui.label", value.getLabel().toUpperCase().substring(0,3));
             sprite.setAttribute("ui.style", "stroke-mode: plain; " +
-                    "fill-color: " + value + "; fill-mode: plain; " +
+                    "fill-color: " + value.getStatus().toString() + "; fill-mode: plain; " +
                     "shape: rounded-box; " +
                     "z-index: 2; " //+
                     //"text-alignment: at-left; "

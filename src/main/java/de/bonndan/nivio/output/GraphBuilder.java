@@ -2,17 +2,16 @@ package de.bonndan.nivio.output;
 
 import de.bonndan.nivio.landscape.DataFlow;
 import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.LandscapeItem;
+import de.bonndan.nivio.landscape.ServiceItem;
 import de.bonndan.nivio.landscape.Service;
 import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GraphBuilder {
 
-    private Graph<LandscapeItem, LabeledEdge> graph;
+    private Graph<ServiceItem, LabeledEdge> graph;
 
     public Graph build(Landscape landscape) {
         graph = new SimpleGraph<>(LabeledEdge.class);

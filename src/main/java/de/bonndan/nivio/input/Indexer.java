@@ -5,7 +5,7 @@ import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.landscape.*;
-import de.bonndan.nivio.service.NotificationService;
+import de.bonndan.nivio.notification.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +62,7 @@ public class Indexer {
         List<Service> existingServices = serviceRepo.findAllByLandscape(landscape);
 
         //insert new ones
-        List<LandscapeItem> newItems = LandscapeItems.added(environment.getServiceDescriptions(), existingServices);
+        List<ServiceItem> newItems = ServiceItems.added(environment.getServiceDescriptions(), existingServices);
         List<Service> inLandscape = new ArrayList<>();
         logger.info("Adding " + newItems.size() + " items in env " + landscape.getIdentifier());
         newItems.forEach(
@@ -77,17 +77,17 @@ public class Indexer {
         );
 
         //update existing
-        List<LandscapeItem> kept = new ArrayList<>();
+        List<ServiceItem> kept = new ArrayList<>();
         if (environment.isIncrement()) {
             kept.addAll(existingServices); //we want to keep all, increment does not contain all services
         } else {
-            kept = LandscapeItems.kept(environment.getServiceDescriptions(), existingServices);
+            kept = ServiceItems.kept(environment.getServiceDescriptions(), existingServices);
         }
         logger.info("Updating " + kept.size() + " services in landscape " + landscape.getIdentifier());
         kept.forEach(
                 service -> {
 
-                    ServiceDescription description = (ServiceDescription) LandscapeItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
+                    ServiceDescription description = (ServiceDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
                     if (description == null) {
                         if (environment.isIncrement()) {
                             inLandscape.add((Service) service);
@@ -115,7 +115,7 @@ public class Indexer {
             return;
         }
 
-        List<LandscapeItem> removed = LandscapeItems.removed(kept, all);
+        List<ServiceItem> removed = ServiceItems.removed(kept, all);
         logger.info("Removing " + removed.size() + " sources in env " + environment.getIdentifier());
         removed.forEach(
                 service -> {
@@ -132,7 +132,7 @@ public class Indexer {
 
         services.forEach(
                 service -> {
-                    ServiceDescription description = (ServiceDescription) LandscapeItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
+                    ServiceDescription description = (ServiceDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
                     if (description == null) {
                         if (environment.isIncrement())
                             return;
@@ -141,12 +141,12 @@ public class Indexer {
                     }
                     description.getProvided_by().forEach(providerName -> {
                         var fqi =FullyQualifiedIdentifier.from(providerName);
-                        Service provider = (Service) LandscapeItems.find(fqi, services);
+                        Service provider = (Service) ServiceItems.find(fqi, services);
                         if (provider == null) {
                             throw new ProcessingException(environment, "Could not find service " + fqi + " in landscape " + environment);
                         }
 
-                        if (!LandscapeItems.contains(provider, service.getProvidedBy())) {
+                        if (!ServiceItems.contains(provider, service.getProvidedBy())) {
                             service.getProvidedBy().add(provider);
                             provider.getProvides().add(service);
                             logger.info("Adding provider " + provider + " to serivce " + service);
@@ -158,12 +158,12 @@ public class Indexer {
 
     private void linkDataflow(final Environment input, final Landscape landscape) {
         input.getServiceDescriptions().forEach(serviceDescription -> {
-            Service origin = (Service) LandscapeItems.pick(serviceDescription, landscape.getServices());
+            Service origin = (Service) ServiceItems.pick(serviceDescription, landscape.getServices());
 
             serviceDescription.getDataFlow().forEach(description -> {
 
                 var fqi = FullyQualifiedIdentifier.from(description.getTarget());
-                Service target = (Service) LandscapeItems.find(fqi, landscape.getServices());
+                Service target = (Service) ServiceItems.find(fqi, landscape.getServices());
                 if (target == null) {
                     logger.warn("Dataflow target service " + description.getTarget() + " not found");
                     return;

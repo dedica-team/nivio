@@ -1,9 +1,9 @@
-package de.bonndan.nivio.state;
+package de.bonndan.nivio.stateaggregation;
 
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.landscape.StateProviderConfig;
-import de.bonndan.nivio.state.provider.PrometheusExporter;
+import de.bonndan.nivio.stateaggregation.provider.PrometheusExporter;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

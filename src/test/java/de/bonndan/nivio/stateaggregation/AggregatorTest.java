@@ -1,19 +1,17 @@
-package de.bonndan.nivio.state;
+package de.bonndan.nivio.stateaggregation;
 
 import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.Environment;
-import de.bonndan.nivio.landscape.FullyQualifiedIdentifier;
-import de.bonndan.nivio.landscape.StateProviderConfig;
+import de.bonndan.nivio.input.dto.StatusDescription;
+import de.bonndan.nivio.landscape.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -29,7 +27,8 @@ public class AggregatorTest {
     @Mock
     ApplicationEventPublisher publisher;
 
-    private Map<FullyQualifiedIdentifier, ServiceState> state;
+    @Mock
+    ServiceRepository serviceRepo;
 
     private Aggregator aggregator;
 
@@ -37,9 +36,7 @@ public class AggregatorTest {
     @BeforeEach
     void configureSystemUnderTest() {
         initMocks(this);
-        state = new HashMap<>();
-
-        aggregator = new Aggregator(state, factory, publisher);
+        aggregator = new Aggregator(serviceRepo, factory, publisher);
     }
 
     @Test
@@ -65,73 +62,92 @@ public class AggregatorTest {
         FullyQualifiedIdentifier fullyQualifiedIdentifier = FullyQualifiedIdentifier.build("x", "y", "z");
         Provider mockProvider = Mockito.mock(Provider.class);
         when(mockProvider.getStates()).then(invocationOnMock -> {
-            Map<FullyQualifiedIdentifier, ServiceState> updates = new HashMap<>();
-            updates.put(fullyQualifiedIdentifier, new ServiceState(Level.ERROR, "error"));
+            Map<FullyQualifiedIdentifier, StatusItem> updates = new HashMap<>();
+            updates.put(fullyQualifiedIdentifier, new StatusDescription(StatusItem.HEALTH, Status.RED, "error"));
             return updates;
         });
+        Mockito.when(factory.createFor(Mockito.any(), Mockito.any()))
+                .thenReturn(mockProvider);
 
-        Mockito.when(factory.createFor(Mockito.any(), Mockito.any())).thenReturn(mockProvider);
+        var service = new Service();
+        Mockito.when(serviceRepo.findByLandscapeAndGroupAndIdentifier(Mockito.any(),Mockito.any(),Mockito.any()))
+                .thenReturn(Optional.of(service));
+
 
         aggregator.fetch(e);
-        assertFalse(state.isEmpty());
-        assertEquals(1, state.size());
-        ServiceState s1 = state.get(fullyQualifiedIdentifier);
+        Set<StatusItem> statuses = service.getStatuses();
+        assertFalse(statuses.isEmpty());
+        assertEquals(1, statuses.size());
+        StatusItem s1 = statuses.iterator().next();
         assertNotNull(s1);
-        assertEquals(Level.ERROR, s1.getLevel());
+        assertEquals(Status.RED, s1.getStatus());
         assertEquals("error", s1.getMessage());
     }
 
     @Test
     public void testServiceDeteriorates() {
 
+        var service = new Service();
+        service.setStatus(new StatusDescription(StatusItem.HEALTH, Status.GREEN, "ok"));
+        Mockito.when(serviceRepo.findByLandscapeAndGroupAndIdentifier(Mockito.any(),Mockito.any(),Mockito.any()))
+                .thenReturn(Optional.of(service));
+
         Environment e = new Environment();
         e.setIdentifier("test");
         e.setStateProviders(List.of(new StateProviderConfig(StateProviderConfig.TYPE_PROMETHEUS_EXPORTER, "target")));
-        FullyQualifiedIdentifier fullyQualifiedIdentifier = FullyQualifiedIdentifier.build("x", "y", "z");
-        state.put(fullyQualifiedIdentifier, new ServiceState(Level.OK, "good"));
 
+        FullyQualifiedIdentifier fullyQualifiedIdentifier = FullyQualifiedIdentifier.build("x", "y", "z");
 
         Provider mockProvider = Mockito.mock(Provider.class);
         when(mockProvider.getStates()).then(invocationOnMock -> {
-            Map<FullyQualifiedIdentifier, ServiceState> updates = new HashMap<>();
-            updates.put(fullyQualifiedIdentifier, new ServiceState(Level.ERROR, "error"));
+            Map<FullyQualifiedIdentifier, StatusItem> updates = new HashMap<>();
+            updates.put(fullyQualifiedIdentifier, new StatusDescription(StatusItem.HEALTH, Status.RED, "error"));
             return updates;
         });
 
         Mockito.when(factory.createFor(Mockito.any(), Mockito.any())).thenReturn(mockProvider);
 
         aggregator.fetch(e);
-        assertEquals(1, state.size());
-        ServiceState s1 = state.get(fullyQualifiedIdentifier);
+        Set<StatusItem> statuses = service.getStatuses();
+        assertFalse(statuses.isEmpty());
+        assertEquals(1, statuses.size());
+        StatusItem s1 = statuses.iterator().next();
         assertNotNull(s1);
-        assertEquals(Level.ERROR, s1.getLevel());
+        assertEquals(StatusItem.HEALTH, s1.getLabel());
+        assertEquals(Status.RED, s1.getStatus());
         assertEquals("error", s1.getMessage());
     }
 
     @Test
     public void testServiceRecovers() {
 
+        var service = new Service();
+        service.setStatus(new StatusDescription(StatusItem.HEALTH, Status.RED, "error"));
+        Mockito.when(serviceRepo.findByLandscapeAndGroupAndIdentifier(Mockito.any(),Mockito.any(),Mockito.any()))
+                .thenReturn(Optional.of(service));
+
         Environment e = new Environment();
         e.setIdentifier("test");
         e.setStateProviders(List.of(new StateProviderConfig(StateProviderConfig.TYPE_PROMETHEUS_EXPORTER, "target")));
         FullyQualifiedIdentifier fullyQualifiedIdentifier = FullyQualifiedIdentifier.build("x", "y", "z");
-        state.put(fullyQualifiedIdentifier, new ServiceState(Level.ERROR, "error"));
-
 
         Provider mockProvider = Mockito.mock(Provider.class);
         when(mockProvider.getStates()).then(invocationOnMock -> {
-            Map<FullyQualifiedIdentifier, ServiceState> updates = new HashMap<>();
-            updates.put(fullyQualifiedIdentifier, new ServiceState(Level.WARNING, "better"));
+            Map<FullyQualifiedIdentifier, StatusItem> updates = new HashMap<>();
+            updates.put(fullyQualifiedIdentifier, new StatusDescription(StatusItem.HEALTH, Status.ORANGE, "better"));
             return updates;
         });
 
         Mockito.when(factory.createFor(Mockito.any(), Mockito.any())).thenReturn(mockProvider);
 
         aggregator.fetch(e);
-        assertEquals(1, state.size());
-        ServiceState s1 = state.get(fullyQualifiedIdentifier);
+
+        Set<StatusItem> statuses = service.getStatuses();
+        assertFalse(statuses.isEmpty());
+        assertEquals(1, statuses.size());
+        StatusItem s1 = statuses.iterator().next();
         assertNotNull(s1);
-        assertEquals(Level.WARNING, s1.getLevel());
+        assertEquals(Status.ORANGE, s1.getStatus());
         assertEquals("better", s1.getMessage());
     }
 }

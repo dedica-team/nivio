@@ -30,9 +30,12 @@ services:
     scale: 1
     host_type: docker
     statuses:
-      lifecycle: green
-      stability: green
-      business_capability: green
+      - label: lifecycle
+        status: green
+      - label: stability
+        status: green
+      - label: business_capability
+        status: green
     interfaces:
       - description: kpis
         format: json

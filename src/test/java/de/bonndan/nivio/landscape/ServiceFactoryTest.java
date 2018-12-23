@@ -17,7 +17,7 @@ public class ServiceFactoryTest {
         landscapeItem.setName("test");
         landscapeItem.setShort_name("t");
         landscapeItem.setType("loadbalancer");
-        landscapeItem.setLayer(LandscapeItem.LAYER_INFRASTRUCTURE);
+        landscapeItem.setLayer(ServiceItem.LAYER_INFRASTRUCTURE);
         landscapeItem.setIdentifier("id");
         landscapeItem.setHomepage("http://home.page");
         landscapeItem.setRepository("https://acme.git/repo1");

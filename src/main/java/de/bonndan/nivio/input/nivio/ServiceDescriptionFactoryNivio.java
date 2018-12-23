@@ -7,7 +7,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.bonndan.nivio.input.ServiceDescriptionFactory;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.dto.Source;
-import de.bonndan.nivio.landscape.LandscapeItem;
+import de.bonndan.nivio.landscape.ServiceItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,15 +40,15 @@ public class ServiceDescriptionFactoryNivio implements ServiceDescriptionFactory
             return services;
         }
         source.ingress.forEach(serviceDescription -> {
-            serviceDescription.setLayer(LandscapeItem.LAYER_INGRESS);
+            serviceDescription.setLayer(ServiceItem.LAYER_INGRESS);
             services.add(serviceDescription);
         });
         source.services.forEach(serviceDescription -> {
-            serviceDescription.setLayer(LandscapeItem.LAYER_APPLICATION);
+            serviceDescription.setLayer(ServiceItem.LAYER_APPLICATION);
             services.add(serviceDescription);
         });
         source.infrastructure.forEach(serviceDescription -> {
-            serviceDescription.setLayer(LandscapeItem.LAYER_INFRASTRUCTURE);
+            serviceDescription.setLayer(ServiceItem.LAYER_INFRASTRUCTURE);
             services.add(serviceDescription);
         });
 

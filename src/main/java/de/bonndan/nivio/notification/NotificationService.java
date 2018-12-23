@@ -1,4 +1,4 @@
-package de.bonndan.nivio.service;
+package de.bonndan.nivio.notification;
 
 import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;

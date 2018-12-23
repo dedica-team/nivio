@@ -54,7 +54,7 @@ public interface ServiceDescriptionFactory {
          * the rest is merged
          */
         if (increment.getStatuses() != null) {
-            increment.getStatuses().forEach((s, s2) -> existing.getStatuses().put(s, s2));
+            increment.getStatuses().forEach(existing::setStatus);
         }
 
         assignSafe(increment.getDataFlow(), (df) -> df.forEach(existing::addDataFlow));

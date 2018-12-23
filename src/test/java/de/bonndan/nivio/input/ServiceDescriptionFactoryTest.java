@@ -3,8 +3,9 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.DataFlowDescription;
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ServiceDescription;
-import de.bonndan.nivio.landscape.LandscapeItem;
+import de.bonndan.nivio.input.dto.StatusDescription;
 import de.bonndan.nivio.landscape.Status;
+import de.bonndan.nivio.landscape.StatusItem;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,11 +54,11 @@ public class ServiceDescriptionFactoryTest {
     public void incrementAddsStatuses() {
         ServiceDescription sd1 = new ServiceDescription();
         sd1.setIdentifier("sd1");
-        sd1.getStatuses().put(LandscapeItem.STATUS_KEY_LIFECYCLE, Status.GREEN);
+        sd1.setStatus(new StatusDescription(StatusItem.LIFECYCLE, Status.GREEN));
 
         ServiceDescription increment = new ServiceDescription();
         increment.setIdentifier("sd1");
-        increment.getStatuses().put(LandscapeItem.STATUS_KEY_STABILITY, Status.GREEN);
+        increment.setStatus(new StatusDescription(StatusItem.STABILITY, Status.GREEN));
 
         ServiceDescriptionFactory.assignNotNull(sd1, increment);
 

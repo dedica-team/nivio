@@ -85,11 +85,23 @@ public class FullyQualifiedIdentifier {
      * @param item other item
      * @return true if group and identifier match (if group is null, it is not taken into account)
      */
-    public boolean isSimilarTo(LandscapeItem item) {
+    public boolean isSimilarTo(ServiceItem item) {
         FullyQualifiedIdentifier fqi = item.getFullyQualifiedIdentifier();
         if (StringUtils.isEmpty(group) || StringUtils.isEmpty(item.getGroup()))
             return identifier.equals(fqi.identifier);
 
         return group.equals(fqi.group) && identifier.equals(fqi.identifier);
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public String getLandscape() {
+        return landscape;
     }
 }

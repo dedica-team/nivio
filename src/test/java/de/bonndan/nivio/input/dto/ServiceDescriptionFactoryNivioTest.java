@@ -4,8 +4,9 @@ package de.bonndan.nivio.input.dto;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.HttpService;
 import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
-import de.bonndan.nivio.landscape.LandscapeItem;
+import de.bonndan.nivio.landscape.ServiceItem;
 import de.bonndan.nivio.landscape.Status;
+import de.bonndan.nivio.landscape.StatusItem;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ class ServiceDescriptionFactoryNivioTest {
         String yml = fileFetcher.get(file);
         List<ServiceDescription> services = descriptionFactory.fromString(yml);
         ServiceDescription service = services.get(0);
-        assertEquals(LandscapeItem.LAYER_APPLICATION, service.getLayer());
+        assertEquals(ServiceItem.LAYER_APPLICATION, service.getLayer());
         assertEquals("Demo Blog", service.getName());
         assertEquals("to be replaced", service.getNote());
         assertEquals("blog-server", service.getIdentifier());
@@ -62,12 +63,14 @@ class ServiceDescriptionFactoryNivioTest {
 
         assertNotNull(service.getStatuses());
         assertEquals(4, service.getStatuses().size());
-        service.getStatuses().forEach((status, color) -> {
-            if (status.equals(LandscapeItem.STATUS_KEY_SECURITY)) {
-                Assert.assertEquals(Status.RED, color);
+        service.getStatuses().forEach(statusItem -> {
+            Assert.assertNotNull(statusItem);
+            Assert.assertNotNull(statusItem.getLabel());
+            if (statusItem.getLabel().equals(StatusItem.SECURITY)) {
+                Assert.assertEquals(Status.RED, statusItem.getStatus());
             }
-            if (status.equals(LandscapeItem.STATUS_KEY_BUSINESS_CAPABILITY)) {
-                Assert.assertEquals(Status.YELLOW, color);
+            if (statusItem.getLabel().equals(StatusItem.BUSINESS_CAPABILITY)) {
+                Assert.assertEquals(Status.YELLOW, statusItem.getStatus());
             }
         });
 
@@ -88,7 +91,7 @@ class ServiceDescriptionFactoryNivioTest {
         });
 
         ServiceDescription infra = services.get(1);
-        assertEquals(LandscapeItem.LAYER_INFRASTRUCTURE, infra.getLayer());
+        assertEquals(ServiceItem.LAYER_INFRASTRUCTURE, infra.getLayer());
         assertEquals("wordpress-web", infra.getIdentifier());
         assertEquals("Webserver", infra.getDescription());
         assertEquals("Apache", infra.getSoftware());
@@ -108,7 +111,7 @@ class ServiceDescriptionFactoryNivioTest {
 
         List<ServiceDescription> services = descriptionFactory.fromString(yml);
         ServiceDescription service = services.get(0);
-        assertEquals(LandscapeItem.LAYER_INGRESS, service.getLayer());
+        assertEquals(ServiceItem.LAYER_INGRESS, service.getLayer());
         assertEquals("Keycloak SSO", service.getName());
         assertEquals("keycloak", service.getIdentifier());
     }

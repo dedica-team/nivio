@@ -24,10 +24,16 @@ services:
   host_type: docker
   note: to be replaced
   statuses:
-    lifecycle: green
-    security: red
-    stability: green
-    business_capability: yellow
+    - label: lifecycle
+      status: green
+    - label: security
+      status: red
+      message: uses outdated version
+    - label: stability
+      status: green
+    - label: business_capability
+      status: yellow
+      message: needs finer control of content publishing like ACLs
   interfaces:
   - description: posts
     format: form

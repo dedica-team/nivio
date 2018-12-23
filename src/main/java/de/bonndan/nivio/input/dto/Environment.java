@@ -1,19 +1,17 @@
 package de.bonndan.nivio.input.dto;
 
 import de.bonndan.nivio.input.ServiceDescriptionFactory;
-import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
 import de.bonndan.nivio.landscape.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Configures an input.
  * <p>
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
-public class Environment implements LandscapeInterface {
+public class Environment implements LandscapeItem {
 
     public static final Environment NONE = new Environment();
 
@@ -128,7 +126,7 @@ public class Environment implements LandscapeInterface {
         incoming.forEach(desc -> {
             desc.setEnvironment(this.identifier);
 
-            ServiceDescription existing = (ServiceDescription) LandscapeItems.find(desc.getIdentifier(), desc.getGroup(), serviceDescriptions);
+            ServiceDescription existing = (ServiceDescription) ServiceItems.find(desc.getIdentifier(), desc.getGroup(), serviceDescriptions);
             if (existing != null) {
                 ServiceDescriptionFactory.assignNotNull(existing, desc);
             } else {

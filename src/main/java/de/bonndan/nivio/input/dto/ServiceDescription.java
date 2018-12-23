@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * This is representation of a service in the textual form as described in a source file.
  */
-public class ServiceDescription implements LandscapeItem {
+public class ServiceDescription implements ServiceItem {
 
     @NotEmpty
     private String environment;
@@ -46,7 +46,8 @@ public class ServiceDescription implements LandscapeItem {
     private String scale;
     private String host_type;
 
-    private Map<String, Status> statuses = new HashMap<>();
+    @JsonDeserialize(contentAs = StatusDescription.class)
+    private Set<StatusItem> statuses = new HashSet<>();
 
     @JsonDeserialize(contentAs = InterfaceDescription.class)
     private Set<InterfaceItem> interfaces = new HashSet<>();
@@ -252,6 +253,7 @@ public class ServiceDescription implements LandscapeItem {
 
     /**
      * Returns a copy, do not use for adding elements
+     *
      * @return
      */
     public Set<DataFlowItem> getDataFlow() {
@@ -271,8 +273,13 @@ public class ServiceDescription implements LandscapeItem {
         this.provided_by = provided_by;
     }
 
-    public Map<String, Status> getStatuses() {
-        return statuses;
+    public Set<StatusItem> getStatuses() {
+        return (Set<StatusItem>) statuses;
+    }
+
+    @Override
+    public void setStatus(StatusItem statusItem) {
+        statuses.add(statusItem);
     }
 
     public void setNetworks(Set<String> networks) {
@@ -285,7 +292,7 @@ public class ServiceDescription implements LandscapeItem {
             return true;
         if (o == null)
             return false;
-        LandscapeItem landscapeItem = (LandscapeItem) o;
+        ServiceItem landscapeItem = (ServiceItem) o;
 
         return toString().equals(landscapeItem.toString());
     }
@@ -296,7 +303,6 @@ public class ServiceDescription implements LandscapeItem {
     }
 
     /**
-     *
      * @return the fully qualified identifier for this service description
      */
     @Override

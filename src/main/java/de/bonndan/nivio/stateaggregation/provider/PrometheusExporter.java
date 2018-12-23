@@ -1,9 +1,10 @@
-package de.bonndan.nivio.state.provider;
+package de.bonndan.nivio.stateaggregation.provider;
 
+import de.bonndan.nivio.input.dto.StatusDescription;
 import de.bonndan.nivio.landscape.FullyQualifiedIdentifier;
-import de.bonndan.nivio.state.Level;
-import de.bonndan.nivio.state.Provider;
-import de.bonndan.nivio.state.ServiceState;
+import de.bonndan.nivio.landscape.Status;
+import de.bonndan.nivio.landscape.StatusItem;
+import de.bonndan.nivio.stateaggregation.Provider;
 import org.hawkular.agent.prometheus.PrometheusDataFormat;
 import org.hawkular.agent.prometheus.PrometheusScraper;
 import org.hawkular.agent.prometheus.types.Gauge;
@@ -37,9 +38,9 @@ public class PrometheusExporter implements Provider {
         this.target = target;
     }
 
-    public Map<FullyQualifiedIdentifier, ServiceState> getStates() {
+    public Map<FullyQualifiedIdentifier, StatusItem> getStates() {
         PrometheusScraper prometheusScraper = getScraper();
-        final Map<FullyQualifiedIdentifier, ServiceState> tmp = new HashMap<>();
+        final Map<FullyQualifiedIdentifier, StatusItem> tmp = new HashMap<>();
         try {
             List<MetricFamily> scrape = prometheusScraper.scrape();
             scrape.forEach(metricFamily -> {
@@ -56,9 +57,9 @@ public class PrometheusExporter implements Provider {
                     FullyQualifiedIdentifier fqi = toFQI(metric);
                     if (fqi == null)
                         return;
-                    ServiceState serviceState = toServiceState(metric);
-                    if (serviceState != null)
-                        putIfHigher(fqi, serviceState, tmp);
+                    StatusItem item = toStatusItem(metric);
+                    if (item != null)
+                        putIfHigher(fqi, item, tmp);
                 });
             });
 
@@ -69,40 +70,37 @@ public class PrometheusExporter implements Provider {
         return tmp;
     }
 
-    private void putIfHigher(FullyQualifiedIdentifier fqi, ServiceState serviceState, Map<FullyQualifiedIdentifier, ServiceState> tmp) {
+    private void putIfHigher(FullyQualifiedIdentifier fqi, StatusItem serviceState, Map<FullyQualifiedIdentifier, StatusItem> tmp) {
         if (fqi == null || serviceState == null) {
             return;
         }
 
-        ServiceState old = tmp.get(fqi);
+        StatusItem old = tmp.get(fqi);
         if (old == null) {
             tmp.put(fqi, serviceState);
-        } else if (serviceState.getLevel().isHigherThan(old.getLevel())) {
+        } else if (serviceState.getStatus().isHigherThan(old.getStatus())) {
             tmp.put(fqi, serviceState);
         }
 
     }
 
-    private ServiceState toServiceState(Metric metric) {
+    private StatusItem toStatusItem(Metric metric) {
 
-        ServiceState state = null;
+        StatusItem state = null;
         if (metric instanceof Gauge) {
             state = processGauge((Gauge) metric);
         }
 
-        if (state == null)
-            state = new ServiceState(Level.UNKNOWN, "unknown metric " + metric.getName());
-
         return state;
     }
 
-    private ServiceState processGauge(Gauge metric) {
+    private StatusItem processGauge(Gauge metric) {
         if (metric.getName().equals("rancher_service_health_status")) {
             if (metric.getLabels().getOrDefault("health_state", "").equals("healthy") && metric.getValue() > 0) {
-                return new ServiceState(Level.OK, metric.getLabels().getOrDefault("health_state", ""));
+                return new StatusDescription(StatusItem.HEALTH, Status.GREEN, metric.getLabels().getOrDefault("health_state", ""));
             }
             if (metric.getLabels().getOrDefault("health_state", "").equals("unhealthy") && metric.getValue() > 0) {
-                return new ServiceState(Level.ERROR, metric.getLabels().getOrDefault("health_state", ""));
+                return new StatusDescription(StatusItem.HEALTH, Status.ORANGE, metric.getLabels().getOrDefault("health_state", ""));
             }
 
         }

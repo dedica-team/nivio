@@ -1,10 +1,11 @@
 package de.bonndan.nivio.landscape;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames={"service_id", "label"}))
-public class ServiceStatus {
+public class ServiceStatus implements StatusItem {
 
     @Id
     @GeneratedValue
@@ -13,7 +14,10 @@ public class ServiceStatus {
     @ManyToOne
     private Service service;
 
+    @NotEmpty
     private String label;
+
+    private String message;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -48,5 +52,13 @@ public class ServiceStatus {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

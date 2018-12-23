@@ -2,8 +2,8 @@ package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.landscape.Groups;
 import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.LandscapeItem;
-import de.bonndan.nivio.landscape.LandscapeItems;
+import de.bonndan.nivio.landscape.ServiceItem;
+import de.bonndan.nivio.landscape.ServiceItems;
 
 
 public class AsciiDocGenerator {
@@ -23,7 +23,7 @@ public class AsciiDocGenerator {
         builder.append("= " + landscape.getName() + NL);
         builder.append("landscape documentation");
 
-        builder.append(writeGroups(LandscapeItems.getGroups(landscape)));
+        builder.append(writeGroups(ServiceItems.getGroups(landscape)));
         return builder.toString();
     }
 
@@ -37,7 +37,7 @@ public class AsciiDocGenerator {
         return builder.toString();
     }
 
-    private String writeItem(LandscapeItem item) {
+    private String writeItem(ServiceItem item) {
         final StringBuilder builder = new StringBuilder();
 
         builder.append("=== " + item.getName());

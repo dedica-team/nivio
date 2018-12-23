@@ -3,37 +3,36 @@ package de.bonndan.nivio.landscape;
 
 import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class LandscapeItems {
+public class ServiceItems {
 
     /**
      * Returns all elements kept in the second list.
      */
-    public static List<LandscapeItem> kept(List<? extends LandscapeItem> items1, List<? extends LandscapeItem> items2) {
+    public static List<ServiceItem> kept(List<? extends ServiceItem> items1, List<? extends ServiceItem> items2) {
         return items2.stream().filter(item -> exists(item, items1)).collect(Collectors.toList());
     }
 
     /**
      * Returns all elements removed from the second list.
      */
-    public static List<LandscapeItem> removed(List<? extends LandscapeItem> items1, List<? extends LandscapeItem> items2) {
+    public static List<ServiceItem> removed(List<? extends ServiceItem> items1, List<? extends ServiceItem> items2) {
         return items2.stream().filter(item -> !exists(item, items1)).collect(Collectors.toList());
     }
 
     /**
      * Returns all elements which are not in the second list
      */
-    public static List<LandscapeItem> added(List<? extends LandscapeItem> items1, List<? extends LandscapeItem> existing) {
+    public static List<ServiceItem> added(List<? extends ServiceItem> items1, List<? extends ServiceItem> existing) {
         return items1.stream()
                 .filter(item -> !exists(item, existing))
                 .collect(Collectors.toList());
     }
 
-    private static boolean exists(LandscapeItem item, List<? extends LandscapeItem> items) {
+    private static boolean exists(ServiceItem item, List<? extends ServiceItem> items) {
         return items.stream().anyMatch(
                 inList -> item.getFullyQualifiedIdentifier().isSimilarTo(inList)
         );
@@ -46,7 +45,7 @@ public class LandscapeItems {
      * @param items list of landscape items
      * @return the sibling from the list
      */
-    public static LandscapeItem pick(final LandscapeItem item, final List<? extends LandscapeItem> items) {
+    public static ServiceItem pick(final ServiceItem item, final List<? extends ServiceItem> items) {
         return pick(item.getIdentifier(), item.getGroup(), items);
     }
 
@@ -58,12 +57,12 @@ public class LandscapeItems {
      * @param serviceList all services
      * @return the sibling with the given identifier
      */
-    public static LandscapeItem pick(final String identifier, String group, final List<? extends LandscapeItem> serviceList) {
+    public static ServiceItem pick(final String identifier, String group, final List<? extends ServiceItem> serviceList) {
         if (StringUtils.isEmpty(identifier)) {
             throw new IllegalArgumentException("Identifier is empty");
         }
 
-        LandscapeItem landscapeItem = find(identifier, group, serviceList);
+        ServiceItem landscapeItem = find(identifier, group, serviceList);
         if (landscapeItem == null)
             throw new RuntimeException("Element not found " + identifier + " in collection " + serviceList);
 
@@ -88,12 +87,12 @@ public class LandscapeItems {
      * @param items   all services
      * @return the service or null
      */
-    public static LandscapeItem find(String identifier, String group, List<? extends LandscapeItem> items) {
+    public static ServiceItem find(String identifier, String group, List<? extends ServiceItem> items) {
         if (StringUtils.isEmpty(identifier)) {
             throw new IllegalArgumentException("Identifier is empty");
         }
 
-        List<LandscapeItem> found = findAll(identifier, group, items);
+        List<ServiceItem> found = findAll(identifier, group, items);
 
         if (found.size() == 1)
             return found.get(0);
@@ -103,16 +102,16 @@ public class LandscapeItems {
         return null;
     }
 
-    private static List<LandscapeItem> findAll(
+    private static List<ServiceItem> findAll(
             final String identifier,
             final String group,
-            final List<? extends LandscapeItem> serviceList
+            final List<? extends ServiceItem> serviceList
     ) {
         FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.build(null, group, identifier);
         return findAll(fqi, serviceList);
     }
 
-    private static List<LandscapeItem> findAll(FullyQualifiedIdentifier fqi, List<? extends LandscapeItem> serviceList) {
+    private static List<ServiceItem> findAll(FullyQualifiedIdentifier fqi, List<? extends ServiceItem> serviceList) {
         return serviceList.stream()
                 .filter(fqi::isSimilarTo)
                 .collect(Collectors.toList());
@@ -125,8 +124,8 @@ public class LandscapeItems {
      * @param services   all services
      * @return the service or null
      */
-    public static LandscapeItem find(FullyQualifiedIdentifier fqi, List<? extends LandscapeItem> services) {
-        List<LandscapeItem> found = findAll(fqi, services);
+    public static ServiceItem find(FullyQualifiedIdentifier fqi, List<? extends ServiceItem> services) {
+        List<ServiceItem> found = findAll(fqi, services);
 
         if (found.size() == 1)
             return found.get(0);

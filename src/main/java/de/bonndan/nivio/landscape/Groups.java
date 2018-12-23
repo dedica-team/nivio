@@ -9,7 +9,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 public class Groups {
 
-    private Map<String, List<LandscapeItem>> groups = new HashMap<>();
+    private Map<String, List<ServiceItem>> groups = new HashMap<>();
 
     public void add(Service service) {
         if (isEmpty(service.getGroup()))
@@ -21,7 +21,7 @@ public class Groups {
         groups.get(service.getGroup()).add(service);
     }
 
-    public Map<String, List<LandscapeItem>> getAll() {
+    public Map<String, List<ServiceItem>> getAll() {
         return groups;
     }
 }

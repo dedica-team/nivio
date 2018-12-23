@@ -4,10 +4,9 @@ import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.landscape.*;
-import de.bonndan.nivio.service.NotificationService;
+import de.bonndan.nivio.notification.NotificationService;
 import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runners.MethodSorters;
@@ -28,7 +27,6 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -70,11 +68,11 @@ public class IndexerIntegrationTest {
         assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getServices());
         assertEquals(7, landscape.getServices().size());
-        Service blog = (Service) LandscapeItems.pick("blog-server", null, landscape.getServices());
+        Service blog = (Service) ServiceItems.pick("blog-server", null, landscape.getServices());
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
 
-        Service webserver = (Service)LandscapeItems.pick("wordpress-web", null, new ArrayList<>(blog.getProvidedBy()));
+        Service webserver = (Service) ServiceItems.pick("wordpress-web", null, new ArrayList<>(blog.getProvidedBy()));
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getProvides().size());
 
@@ -107,11 +105,11 @@ public class IndexerIntegrationTest {
         assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getServices());
         assertEquals(7, landscape.getServices().size());
-        Service blog = (Service) LandscapeItems.pick("blog-server", null,landscape.getServices());
+        Service blog = (Service) ServiceItems.pick("blog-server", null,landscape.getServices());
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
 
-        Service webserver = (Service) LandscapeItems.pick("wordpress-web", null, new ArrayList<LandscapeItem>(blog.getProvidedBy()));
+        Service webserver = (Service) ServiceItems.pick("wordpress-web", null, new ArrayList<ServiceItem>(blog.getProvidedBy()));
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getProvides().size());
 
@@ -142,7 +140,7 @@ public class IndexerIntegrationTest {
     @Test
     public void testIncrementalUpdate() {
         Landscape landscape = index();
-        Service blog = (Service) LandscapeItems.pick("blog-server", null, landscape.getServices());
+        Service blog = (Service) ServiceItems.pick("blog-server", null, landscape.getServices());
         int before = landscape.getServices().size();
 
         Environment environment = new Environment();
@@ -163,12 +161,12 @@ public class IndexerIntegrationTest {
 
         //created
         landscape = indexer.reIndex(environment);
-        blog = (Service) LandscapeItems.pick("blog-server", "completelyNewGroup", landscape.getServices());
+        blog = (Service) ServiceItems.pick("blog-server", "completelyNewGroup", landscape.getServices());
         assertEquals("completelyNewGroup", blog.getGroup());
         assertEquals(before +1, landscape.getServices().size());
 
         //updated
-        Service wordpress = (Service) LandscapeItems.pick("wordpress-web", "content", landscape.getServices());
+        Service wordpress = (Service) ServiceItems.pick("wordpress-web", "content", landscape.getServices());
         assertEquals("Other name", wordpress.getName());
         assertEquals("content", wordpress.getGroup());
 
@@ -186,7 +184,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(landscape1);
         assertEquals("mail@acme.org", landscape1.getContact());
         Assertions.assertNotNull(landscape1.getServices());
-        Service blog1 = (Service) LandscapeItems.pick("blog-server", null,landscape1.getServices());
+        Service blog1 = (Service) ServiceItems.pick("blog-server", null,landscape1.getServices());
         Assertions.assertNotNull(blog1);
         assertEquals("blog", blog1.getShort_name());
 
@@ -194,7 +192,7 @@ public class IndexerIntegrationTest {
         assertEquals("nivio:other", landscape2.getIdentifier());
         assertEquals("mail@other.org", landscape2.getContact());
         Assertions.assertNotNull(landscape2.getServices());
-        Service blog2 = (Service) LandscapeItems.pick("blog-server", null,landscape2.getServices());
+        Service blog2 = (Service) ServiceItems.pick("blog-server", null,landscape2.getServices());
         Assertions.assertNotNull(blog2);
         assertEquals("blog1", blog2.getShort_name());
     }
@@ -208,9 +206,9 @@ public class IndexerIntegrationTest {
 
         Assertions.assertNotNull(landscape1);
         Assertions.assertNotNull(landscape1.getServices());
-        Service blog1 = (Service) LandscapeItems.pick("blog-server", "content1",landscape1.getServices());
+        Service blog1 = (Service) ServiceItems.pick("blog-server", "content1",landscape1.getServices());
         Assertions.assertNotNull(blog1);
-        Service blog2 = (Service) LandscapeItems.pick("blog-server", "content2",landscape1.getServices());
+        Service blog2 = (Service) ServiceItems.pick("blog-server", "content2",landscape1.getServices());
         Assertions.assertNotNull(blog2);
         assertEquals("Demo Blog", blog1.getName());
         assertEquals(

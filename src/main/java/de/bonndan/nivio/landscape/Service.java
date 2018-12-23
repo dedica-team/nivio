@@ -11,15 +11,15 @@ import javax.validation.constraints.Pattern;
 import java.util.*;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames={"landscape_identifier", "identifier", "group"}))
-public class Service implements LandscapeItem {
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"landscape_identifier", "identifier", "group"}))
+public class Service implements ServiceItem {
 
     @Id
     @GeneratedValue
     private Long id;
 
     @NotNull
-    @Pattern(regexp = LandscapeItem.IDENTIFIER_VALIDATION)
+    @Pattern(regexp = ServiceItem.IDENTIFIER_VALIDATION)
     private String identifier;
 
     @NotNull
@@ -27,9 +27,9 @@ public class Service implements LandscapeItem {
     @JsonBackReference
     private Landscape landscape;
 
-    private String layer = LandscapeItem.LAYER_APPLICATION;
+    private String layer = ServiceItem.LAYER_APPLICATION;
 
-    private String type = LandscapeItem.TYPE_SERVICE;
+    private String type = ServiceItem.TYPE_SERVICE;
 
     private String name;
 
@@ -69,7 +69,7 @@ public class Service implements LandscapeItem {
 
     @JsonManagedReference
     @OneToMany(targetEntity = ServiceStatus.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "service")
-    private Set<ServiceStatus> statuses = new HashSet<>();
+    private Set<StatusItem> statuses = new HashSet<>();
 
     @JsonManagedReference
     @OneToMany(targetEntity = DataFlow.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sourceEntity")
@@ -217,29 +217,34 @@ public class Service implements LandscapeItem {
     }
 
     @Override
-    public Map<String, Status> getStatuses() {
-
-        var st = new HashMap<String, Status>();
-        statuses.forEach(serviceStatus -> st.put(serviceStatus.getLabel(), serviceStatus.getStatus()));
-        return st;
+    public Set<StatusItem> getStatuses() {
+        return statuses;
     }
 
-    public void setStatuses(Map<String, Status> statuses) {
-        statuses.forEach((label, status) -> {
-            Optional<ServiceStatus> existing = this.statuses.stream()
-                    .filter(serviceStatus -> serviceStatus.getLabel().equals(label))
-                    .findFirst();
+    public void setStatus(StatusItem statusItem) {
 
-            existing.ifPresentOrElse(
-                    serviceStatus -> serviceStatus.setStatus(status),
-                    () -> {
-                        var added = new ServiceStatus();
-                        added.setService(this);
-                        added.setLabel(label);
-                        added.setStatus(status);
-                        this.statuses.add(added);
-                    });
-        });
+        if (statusItem == null)
+            throw new IllegalArgumentException("Status item is null");
+        if (StringUtils.isEmpty(statusItem.getLabel()))
+            throw new IllegalArgumentException("Status item has no label");
+
+        Optional<StatusItem> existing = this.statuses.stream()
+                .filter(serviceStatus -> statusItem.getLabel().equals(serviceStatus.getLabel()))
+                .findFirst();
+
+        existing.ifPresentOrElse(
+                serviceStatus -> {
+                    ((ServiceStatus) serviceStatus).setStatus(statusItem.getStatus());
+                    ((ServiceStatus) serviceStatus).setMessage(statusItem.getMessage());
+                },
+                () -> {
+                    var added = new ServiceStatus();
+                    added.setService(this);
+                    added.setLabel(statusItem.getLabel());
+                    added.setStatus(statusItem.getStatus());
+                    added.setMessage(statusItem.getMessage());
+                    this.statuses.add(added);
+                });
     }
 
     public String[] getTags() {
@@ -340,7 +345,11 @@ public class Service implements LandscapeItem {
             return true;
         if (o == null)
             return false;
-        LandscapeItem landscapeItem = (LandscapeItem) o;
+
+        if (!(o instanceof ServiceItem))
+            return false;
+
+        ServiceItem landscapeItem = (ServiceItem) o;
 
         return toString().equals(landscapeItem.toString());
     }
@@ -351,7 +360,6 @@ public class Service implements LandscapeItem {
     }
 
     /**
-     *
      * @return the fully qualified identifier for this service
      */
     @Override
@@ -359,7 +367,7 @@ public class Service implements LandscapeItem {
         if (landscape == null)
             return identifier;
 
-       return getFullyQualifiedIdentifier().toString();
+        return getFullyQualifiedIdentifier().toString();
     }
 
 }

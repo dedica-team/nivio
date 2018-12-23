@@ -1,10 +1,12 @@
-package de.bonndan.nivio.state;
+package de.bonndan.nivio.stateaggregation;
 
 import com.jasongoodwin.monads.Try;
 import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.landscape.FullyQualifiedIdentifier;
-import de.bonndan.nivio.landscape.LandscapeInterface;
+import de.bonndan.nivio.landscape.LandscapeItem;
+import de.bonndan.nivio.landscape.ServiceRepository;
+import de.bonndan.nivio.landscape.StatusItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,20 +22,20 @@ public class Aggregator {
 
     private final static Logger logger = LoggerFactory.getLogger(Aggregator.class);
 
-    private final Map<FullyQualifiedIdentifier, ServiceState> state;
+    private final ServiceRepository serviceRepo;
 
     private final ProviderFactory factory;
 
     private final ApplicationEventPublisher publisher;
 
     @Autowired
-    public Aggregator(Map<FullyQualifiedIdentifier, ServiceState> state, ProviderFactory factory, ApplicationEventPublisher publisher) {
-        this.state = state;
+    public Aggregator(ServiceRepository serviceRepo, ProviderFactory factory, ApplicationEventPublisher publisher) {
+        this.serviceRepo = serviceRepo;
         this.factory = factory;
         this.publisher = publisher;
     }
 
-    public void fetch(LandscapeInterface landscape) {
+    public void fetch(LandscapeItem landscape) {
 
         getProviders(landscape).forEach(provider -> {
             try {
@@ -46,24 +48,14 @@ public class Aggregator {
 
     }
 
-    private void applyUpdates(Map<FullyQualifiedIdentifier, ServiceState> updates) {
-        updates.forEach((fqi, serviceState) -> {
-
-            if (!state.containsKey(fqi)) {
-                state.put(fqi, serviceState);
-                return;
-            }
-
-            ServiceState current = state.get(fqi);
-            if (!current.getLevel().equals(serviceState.getLevel())) {
-                publisher.publishEvent(new ServiceStateChangeEvent(this, fqi, current, serviceState));
-            }
-
-            state.put(fqi, serviceState);
+    private void applyUpdates(Map<FullyQualifiedIdentifier, StatusItem> updates) {
+        updates.forEach((fqi, item) -> {
+            serviceRepo.findByLandscapeAndGroupAndIdentifier(fqi.getLandscape(), fqi.getGroup(), fqi.getIdentifier())
+                    .ifPresent(service -> service.setStatus(item));
         });
     }
 
-    private List<Provider> getProviders(LandscapeInterface landscape) {
+    private List<Provider> getProviders(LandscapeItem landscape) {
         List<Provider> providers = new ArrayList<>();
         landscape.getStateProviders()
                 .forEach(config ->
@@ -76,7 +68,7 @@ public class Aggregator {
         return providers;
     }
 
-    private void handleError(LandscapeInterface landscape, Throwable throwable, String msg) {
+    private void handleError(LandscapeItem landscape, Throwable throwable, String msg) {
         logger.error(msg, throwable);
         publisher.publishEvent(new ProcessingErrorEvent(this, ProcessingException.of(landscape, throwable)));
     }

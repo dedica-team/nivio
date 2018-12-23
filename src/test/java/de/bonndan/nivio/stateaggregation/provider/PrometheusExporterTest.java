@@ -1,14 +1,13 @@
-package de.bonndan.nivio.state.provider;
+package de.bonndan.nivio.stateaggregation.provider;
 
 import de.bonndan.nivio.landscape.FullyQualifiedIdentifier;
-import de.bonndan.nivio.state.Level;
-import de.bonndan.nivio.state.ServiceState;
+import de.bonndan.nivio.landscape.Status;
+import de.bonndan.nivio.landscape.StatusItem;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,12 +20,12 @@ public class PrometheusExporterTest {
         File file = new File(getRootPath() + "/src/test/resources/example/rancher_prometheus_exporter.txt");
         PrometheusExporter prometheusExporter = new PrometheusExporter("test", file);
 
-        Map<FullyQualifiedIdentifier, ServiceState> map = prometheusExporter.getStates();
+        Map<FullyQualifiedIdentifier, StatusItem> states = prometheusExporter.getStates();
 
-        assertEquals(4, map.size());
-        ServiceState hubot = map.get(FullyQualifiedIdentifier.build("test", "rocket-chat", "hubot"));
+        assertEquals(4, states.size());
+        StatusItem hubot = states.get(FullyQualifiedIdentifier.build("test", "rocket-chat", "hubot"));
         assertNotNull(hubot);
-        assertEquals(Level.OK, hubot.getLevel(),hubot.getMessage());
+        assertEquals(Status.GREEN, hubot.getStatus(),hubot.getMessage());
     }
 
     private String getRootPath() {

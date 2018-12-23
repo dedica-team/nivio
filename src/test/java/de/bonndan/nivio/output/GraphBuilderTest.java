@@ -13,18 +13,18 @@ public class GraphBuilderTest {
     @Before
     public void setUp() {
         Service a = new Service();
-        a.setLayer(LandscapeItem.LAYER_APPLICATION);
+        a.setLayer(ServiceItem.LAYER_APPLICATION);
         a.setIdentifier("a");
         landscape.addService(a);
 
         Service a1 = new Service();
-        a1.setLayer(LandscapeItem.LAYER_INFRASTRUCTURE);
+        a1.setLayer(ServiceItem.LAYER_INFRASTRUCTURE);
         a1.setIdentifier("a1");
         a.getProvidedBy().add(a1);
         landscape.addService(a1);
 
         Service b = new Service();
-        b.setLayer(LandscapeItem.LAYER_INGRESS);
+        b.setLayer(ServiceItem.LAYER_INGRESS);
         b.setIdentifier("b");
         landscape.addService(b);
 
@@ -40,9 +40,9 @@ public class GraphBuilderTest {
         Graph graph = graphBuilder.build(landscape);
         Assertions.assertNotNull(graph);
 
-        Service a = (Service) LandscapeItems.pick("a", null, landscape.getServices());
-        Service a1 = (Service) LandscapeItems.pick("a1", null, landscape.getServices());
-        Service b = (Service) LandscapeItems.pick("b", null, landscape.getServices());
+        Service a = (Service) ServiceItems.pick("a", null, landscape.getServices());
+        Service a1 = (Service) ServiceItems.pick("a1", null, landscape.getServices());
+        Service b = (Service) ServiceItems.pick("b", null, landscape.getServices());
         Assertions.assertTrue(graph.containsVertex(a));
 
         Object edge1 = graph.getEdge(a, a1);

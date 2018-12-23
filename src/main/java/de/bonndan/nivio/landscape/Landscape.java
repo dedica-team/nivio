@@ -15,13 +15,13 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "landscapes")
-public class Landscape implements LandscapeInterface {
+public class Landscape implements LandscapeItem {
 
     /**
      * Immutable unique identifier. Maybe use an URN.
      */
     @Id
-    @Pattern(regexp = LandscapeItem.IDENTIFIER_VALIDATION)
+    @Pattern(regexp = ServiceItem.IDENTIFIER_VALIDATION)
     private String identifier;
 
     /**

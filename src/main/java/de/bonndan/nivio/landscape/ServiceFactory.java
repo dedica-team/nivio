@@ -3,16 +3,13 @@ package de.bonndan.nivio.landscape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import static de.bonndan.nivio.util.SafeAssign.assignSafe;
 
 public class ServiceFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceFactory.class);
 
-    public static Service fromDescription(LandscapeItem item, Landscape landscape) {
+    public static Service fromDescription(ServiceItem item, Landscape landscape) {
         if (item == null) {
             throw new RuntimeException("landscape item is null");
         }
@@ -27,14 +24,14 @@ public class ServiceFactory {
     /**
      * Assigns all values from the description except data flow and provided_by/provides
      */
-    public static void assignAll(Service service, LandscapeItem description) {
+    public static void assignAll(Service service, ServiceItem description) {
         if (description == null) {
             logger.warn("ServiceDescription for service " + service.getIdentifier() + " is null in assignAllValues");
             return;
         }
         service.setName(description.getName());
-        service.setLayer(description.getLayer() != null ? description.getLayer() : LandscapeItem.LAYER_APPLICATION);
-        service.setType(description.getType() != null ? description.getType() : LandscapeItem.TYPE_SERVICE);
+        service.setLayer(description.getLayer() != null ? description.getLayer() : ServiceItem.LAYER_APPLICATION);
+        service.setType(description.getType() != null ? description.getType() : ServiceItem.TYPE_SERVICE);
 
         service.setNote(description.getNote());
         service.setShort_name(description.getShort_name());
@@ -54,7 +51,8 @@ public class ServiceFactory {
         service.setVisibility(description.getVisibility());
         assignSafe(description.getGroup(), service::setGroup);
 
-        service.setStatuses(description.getStatuses());
+        if (description.getStatuses() != null)
+        description.getStatuses().forEach(service::setStatus);
 
         service.setHost_type(description.getHost_type());
         service.setNetworks(description.getNetworks());

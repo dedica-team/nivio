@@ -1,14 +1,15 @@
-package de.bonndan.nivio.state;
+package de.bonndan.nivio.stateaggregation;
 
 import de.bonndan.nivio.landscape.FullyQualifiedIdentifier;
+import de.bonndan.nivio.landscape.StatusItem;
 import org.springframework.context.ApplicationEvent;
 
 public class ServiceStateChangeEvent extends ApplicationEvent  {
     private final FullyQualifiedIdentifier fqi;
-    private final ServiceState old;
-    private final ServiceState current;
+    private final StatusItem old;
+    private final StatusItem current;
 
-    public ServiceStateChangeEvent(Object source, FullyQualifiedIdentifier fqi, ServiceState old, ServiceState state) {
+    public ServiceStateChangeEvent(Object source, FullyQualifiedIdentifier fqi, StatusItem old, StatusItem state) {
         super(source);
         this.fqi = fqi;
         this.old = old;
@@ -19,11 +20,11 @@ public class ServiceStateChangeEvent extends ApplicationEvent  {
         return fqi;
     }
 
-    public ServiceState getOld() {
+    public StatusItem getOld() {
         return old;
     }
 
-    public ServiceState getCurrent() {
+    public StatusItem getCurrent() {
         return current;
     }
 }
