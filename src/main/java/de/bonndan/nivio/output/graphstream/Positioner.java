@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.graphstream;
 
+import de.bonndan.nivio.landscape.Groups;
 import de.bonndan.nivio.landscape.Service;
 import org.graphstream.graph.Node;
 import org.slf4j.Logger;

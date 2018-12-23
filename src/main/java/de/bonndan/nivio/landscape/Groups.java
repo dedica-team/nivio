@@ -1,6 +1,4 @@
-package de.bonndan.nivio.output.graphstream;
-
-import de.bonndan.nivio.landscape.Service;
+package de.bonndan.nivio.landscape;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +9,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 public class Groups {
 
-    private Map<String, List<Service>> groups = new HashMap<>();
+    private Map<String, List<LandscapeItem>> groups = new HashMap<>();
 
     public void add(Service service) {
         if (isEmpty(service.getGroup()))
@@ -23,7 +21,7 @@ public class Groups {
         groups.get(service.getGroup()).add(service);
     }
 
-    public Map<String, List<Service>> getAll() {
+    public Map<String, List<LandscapeItem>> getAll() {
         return groups;
     }
 }

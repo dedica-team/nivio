@@ -39,7 +39,7 @@ public class Landscape implements LandscapeInterface {
     /**
      * List of configuration services.
      */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "landscape")
     @JsonManagedReference
     private List<Service> services = new ArrayList<>();
 

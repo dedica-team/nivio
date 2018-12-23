@@ -3,6 +3,7 @@ package de.bonndan.nivio.landscape;
 
 import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -133,5 +134,11 @@ public class LandscapeItems {
             throw new RuntimeException("Ambiguous result for " + fqi + ": " + found + " in collection " + services);
 
         return null;
+    }
+
+    public static Groups getGroups(Landscape landscape) {
+        Groups groups = new Groups();
+        landscape.getServices().forEach(groups::add);
+        return groups;
     }
 }

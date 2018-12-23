@@ -54,10 +54,7 @@ public class ServiceFactory {
         service.setVisibility(description.getVisibility());
         assignSafe(description.getGroup(), service::setGroup);
 
-        if (service.getStatuses() == null)
-            service.setStatuses(description.getStatuses());
-        else
-            service.getStatuses().putAll(description.getStatuses());
+        service.setStatuses(description.getStatuses());
 
         service.setHost_type(description.getHost_type());
         service.setNetworks(description.getNetworks());

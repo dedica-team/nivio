@@ -67,12 +67,9 @@ public class Service implements LandscapeItem {
 
     private String host_type;
 
-    @Convert(converter = StatusConverter.class, attributeName = "value")
-    @ElementCollection(fetch = FetchType.EAGER, targetClass = Status.class)
-    @MapKeyColumn(name = "status")
-    @CollectionTable(name = "MAP")
-    @Column(name = "value")
-    private Map<String, Status> statuses = new HashMap<>();
+    @JsonManagedReference
+    @OneToMany(targetEntity = ServiceStatus.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "service")
+    private Set<ServiceStatus> statuses = new HashSet<>();
 
     @JsonManagedReference
     @OneToMany(targetEntity = DataFlow.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sourceEntity")
@@ -221,11 +218,28 @@ public class Service implements LandscapeItem {
 
     @Override
     public Map<String, Status> getStatuses() {
-        return statuses;
+
+        var st = new HashMap<String, Status>();
+        statuses.forEach(serviceStatus -> st.put(serviceStatus.getLabel(), serviceStatus.getStatus()));
+        return st;
     }
 
     public void setStatuses(Map<String, Status> statuses) {
-        this.statuses = statuses;
+        statuses.forEach((label, status) -> {
+            Optional<ServiceStatus> existing = this.statuses.stream()
+                    .filter(serviceStatus -> serviceStatus.getLabel().equals(label))
+                    .findFirst();
+
+            existing.ifPresentOrElse(
+                    serviceStatus -> serviceStatus.setStatus(status),
+                    () -> {
+                        var added = new ServiceStatus();
+                        added.setService(this);
+                        added.setLabel(label);
+                        added.setStatus(status);
+                        this.statuses.add(added);
+                    });
+        });
     }
 
     public String[] getTags() {

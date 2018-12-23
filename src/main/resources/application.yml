@@ -6,7 +6,7 @@ spring:
     properties.hibernate.dialect: org.hibernate.dialect.H2Dialect
     generate-ddl: true
     show-sql: false
-    hibernate.ddl-auto: update
+    hibernate.ddl-auto: create-drop
     properties.hibernate.show_sql: false
     properties.hibernate.use_sql_comments: false
     properties.hibernate.format_sql: false
@@ -30,8 +30,7 @@ spring:
 
 logging:
   level:
-    root: WARN
-    org.hibnerate: debug
+    root: INFO
 
 ---
 spring:
