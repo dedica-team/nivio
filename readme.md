@@ -108,11 +108,10 @@ A service can have the following attributes:
 * **scale** number of instances (or other description)
 * **host_type** e.g. docker
 * **note** any note attached to the service
-* **statuses** status evaluation in colors (green, yellow, orange, red)
-  * lifecycle
-  * security
-  * stability
-  * business_capability
+* **statuses** status objects, represented in colors
+  * label: lifecycle (etc: stability, business_capability ....)
+  * status: green, yellow, orange, red, brown
+  * message: Everything ok.
 * **interfaces** an array of provided interfaces
   * description: description
   * format: media type or binary format
