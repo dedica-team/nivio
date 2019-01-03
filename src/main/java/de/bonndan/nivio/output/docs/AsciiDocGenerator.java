@@ -4,8 +4,11 @@ import de.bonndan.nivio.landscape.Groups;
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.ServiceItem;
 import de.bonndan.nivio.landscape.ServiceItems;
+import org.springframework.util.StringUtils;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 import static org.springframework.util.StringUtils.isEmpty;
 
@@ -59,7 +62,9 @@ public class AsciiDocGenerator {
         builder.append("Name:: " + nice(item.getName()) + NL);
         builder.append("Short Name:: " + nice(item.getShort_name()) + NL);
         builder.append("Type:: " + item.getType() + NL);
-        builder.append("Tags:: " + item.getTags() + NL);
+        builder.append("Homepage:: " + nice(item.getHomepage()) + NL);
+        builder.append("Repository:: " + nice(item.getRepository()) + NL);
+        builder.append("Tags:: " + nice(item.getTags()) + NL);
         builder.append("Contact:: " + nice(item.getContact()) + NL);
         builder.append("Team:: " + nice(item.getTeam()) + NL);
         builder.append("Owner:: " + nice(item.getOwner()) + NL);
@@ -67,8 +72,8 @@ public class AsciiDocGenerator {
         builder.append("Version:: " + item.getVersion() + NL);
         builder.append("Machine:: " + nice(item.getMachine())+ NL);
         builder.append("Scale:: " + nice(item.getScale())+ NL);
-        builder.append("Visibility:: " + item.getVisibility() + NL);
-        builder.append("Networks:: " + item.getNetworks() + NL);
+        builder.append("Visibility:: " + nice(item.getVisibility()) + NL);
+        builder.append("Networks:: " + nice(item.getNetworks()) + NL);
 
         item.getStatuses().forEach(statusItem -> {
             builder.append(nice(statusItem.getLabel()) + ":: [" + statusItem.getStatus() + "]*" + statusItem.getStatus() + "* " + nice(statusItem.getMessage()) + NL);
@@ -99,6 +104,19 @@ public class AsciiDocGenerator {
 
 
         return builder.toString();
+    }
+
+    private String nice(Collection<String> strings) {
+        if (strings == null)
+            return "";
+        return nice(strings.toArray(new String[]{}));
+    }
+
+    private String nice(String[] tags) {
+        if (tags == null || tags.length == 0)
+            return "";
+
+        return StringUtils.arrayToCommaDelimitedString(tags);
     }
 
     private String nice(String string) {

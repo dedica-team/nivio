@@ -21,7 +21,6 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -57,7 +56,7 @@ public class GraphStreamRenderer implements Renderer {
             Node n = graph.addNode(service.getIdentifier());
             n.addAttribute("ui.label", StringUtils.isEmpty(service.getName()) ? service.getIdentifier() : service.getName());
             n.addAttribute("ui.class", service.getLayer());
-            String style = "fill-color: #" + Color.intToARGB(service.getGroup()) + "; ";
+            String style = "fill-color: #" + Color.nameToRGB(service.getGroup()) + "; ";
             String statusColor = getStatusColor(service);
             if (!Status.UNKNOWN.toString().equals(statusColor)) {
                 style += "stroke-color: " + statusColor + "; stroke-width: 3px; ";
@@ -82,7 +81,7 @@ public class GraphStreamRenderer implements Renderer {
                     service.getIdentifier()
             );
             e.addAttribute("ui.class", "provides");
-            e.addAttribute("ui.style", "text-background-color: #" + Color.intToARGB(service.getGroup()) + "; ");
+            e.addAttribute("ui.style", "text-background-color: #" + Color.nameToRGB(service.getGroup()) + "; ");
             e.addAttribute("layout.weight", 0.5);
         }));
 
@@ -102,8 +101,8 @@ public class GraphStreamRenderer implements Renderer {
             );
 
             e.addAttribute("ui.class", "dataflow");
-            String color = Color.intToARGB(service.getGroup());
-            e.addAttribute("ui.style", "fill-color: #" + color + "; text-background-color: #" + Color.intToARGB(service.getGroup(), Color.DARK) + "; ");
+            String color = Color.nameToRGB(service.getGroup());
+            e.addAttribute("ui.style", "fill-color: #" + color + "; text-background-color: #" + Color.nameToRGB(service.getGroup(), Color.DARK) + "; ");
             e.addAttribute("ui.label", df.getFormat());
         }));
 
@@ -154,7 +153,7 @@ public class GraphStreamRenderer implements Renderer {
             sprite.setPosition(StyleConstants.Units.GU, 0.13, 2, z);
             sprite.setAttribute("ui.label", " " + inter.getDescription());
             sprite.setAttribute("ui.class", "interface");
-            sprite.setAttribute("ui.style", "fill-color: #" + Color.intToARGB(service.getGroup()) + "; ");
+            sprite.setAttribute("ui.style", "fill-color: #" + Color.nameToRGB(service.getGroup()) + "; ");
         });
     }
 
