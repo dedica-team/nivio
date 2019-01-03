@@ -20,7 +20,7 @@ import java.net.MalformedURLException;
 @SpringBootApplication
 @EnableConfigurationProperties
 @EnableJpaRepositories(basePackages = "de.bonndan.nivio.landscape")
-public class    Application {
+public class Application {
 
     private final static Logger log = LoggerFactory.getLogger(Application.class);
 
@@ -47,7 +47,7 @@ public class    Application {
             WatcherFactory watcher = context.getBean(WatcherFactory.class);
             watcher.getWatchers().forEach(taskExecutor::execute);
 
-        //demo mode
+            //demo mode
         } else if (!StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
             log.info("Running in demo mode");
 

@@ -1,8 +1,13 @@
 package de.bonndan.nivio.output.docs;
 
-import com.github.fluorumlabs.asciidocj.AsciiDocument;
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
+import org.asciidoctor.Asciidoctor;
+
+import static org.asciidoctor.Asciidoctor.Factory.create;
+
+import org.asciidoctor.Attributes;
+import org.asciidoctor.OptionsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping(path = "/docs")
@@ -27,22 +34,31 @@ public class DocsController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}")
-    public ResponseEntity<String> docResource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
+    public ResponseEntity<String> docResource(@PathVariable(name = "landscape") final String landscapeIdentifier) {
+
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
         if (landscape == null)
-            throw new EntityNotFoundException("Not found");
+            throw new EntityNotFoundException("Landscape " + landscapeIdentifier + " not found");
+
+        Map<String, Object> attributes = new HashMap<String, Object>();
+        //attributes.put(Attributes.LINK_CSS, true);
+        attributes.put(Attributes.COPY_CSS, true);
+        attributes.put(Attributes.STYLESHEET_NAME, "http://themes.asciidoctor.org/stylesheets/github.css");
+        Map<String, Object> options = OptionsBuilder.options()
+                .headerFooter(true)
+                .attributes(attributes)
+                .asMap();
 
         AsciiDocGenerator generator = new AsciiDocGenerator();
-        AsciiDocument parsedAsciidoc = AsciiDocument.from(generator.toDocument(landscape));
+        Asciidoctor asciidoctor = create();
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
         return new ResponseEntity<>(
-                parsedAsciidoc.getHtml(),
+                asciidoctor.convert(generator.toDocument(landscape), options),
+                //generator.toDocument(landscape),
                 headers,
                 HttpStatus.OK
         );
 
     }
-
-
 }

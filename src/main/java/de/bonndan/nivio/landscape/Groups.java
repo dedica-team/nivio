@@ -9,16 +9,18 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 public class Groups {
 
+    public static final String COMMON = "Common";
+
     private Map<String, List<ServiceItem>> groups = new HashMap<>();
 
     public void add(Service service) {
-        if (isEmpty(service.getGroup()))
-            return;
 
-        if (!groups.containsKey(service.getGroup())) {
-            groups.put(service.getGroup(), new ArrayList<>());
+        String key = isEmpty(service.getGroup()) ? COMMON : service.getGroup();
+
+        if (!groups.containsKey(key)) {
+            groups.put(key, new ArrayList<>());
         }
-        groups.get(service.getGroup()).add(service);
+        groups.get(key).add(service);
     }
 
     public Map<String, List<ServiceItem>> getAll() {
