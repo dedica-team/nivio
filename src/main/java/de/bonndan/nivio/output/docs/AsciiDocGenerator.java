@@ -70,8 +70,8 @@ public class AsciiDocGenerator {
         builder.append("Owner:: " + nice(item.getOwner()) + NL);
         builder.append("Software:: " + item.getSoftware() + NL);
         builder.append("Version:: " + item.getVersion() + NL);
-        builder.append("Machine:: " + nice(item.getMachine())+ NL);
-        builder.append("Scale:: " + nice(item.getScale())+ NL);
+        builder.append("Machine:: " + nice(item.getMachine()) + NL);
+        builder.append("Scale:: " + nice(item.getScale()) + NL);
         builder.append("Visibility:: " + nice(item.getVisibility()) + NL);
         builder.append("Networks:: " + nice(item.getNetworks()) + NL);
 
@@ -95,8 +95,16 @@ public class AsciiDocGenerator {
         if (item.getInterfaces() != null && item.getInterfaces().size() > 0) {
             builder.append(".Interfaces" + NL);
             item.getInterfaces().forEach(interfaceItem -> {
-                builder.append("* " + interfaceItem.getProtocol() + ": " + interfaceItem.getPort() + " ");
-                builder.append(interfaceItem.getFormat() + " " + interfaceItem.getDescription());
+                builder.append("* ");
+                if (!StringUtils.isEmpty(interfaceItem.getDescription()))
+                    builder.append(interfaceItem.getDescription());
+
+                if (!StringUtils.isEmpty(interfaceItem.getFormat()))
+                    builder.append(", format: " + interfaceItem.getFormat());
+                if (!StringUtils.isEmpty(interfaceItem.getProtocol()))
+                    builder.append(", protocol: " + interfaceItem.getProtocol());
+                if (!StringUtils.isEmpty(interfaceItem.getPort()))
+                    builder.append(", port: " + interfaceItem.getPort());
                 builder.append(NL);
             });
         }
@@ -108,20 +116,20 @@ public class AsciiDocGenerator {
 
     private String nice(Collection<String> strings) {
         if (strings == null)
-            return "";
+            return "-";
         return nice(strings.toArray(new String[]{}));
     }
 
     private String nice(String[] tags) {
         if (tags == null || tags.length == 0)
-            return "";
+            return "-";
 
         return StringUtils.arrayToCommaDelimitedString(tags);
     }
 
     private String nice(String string) {
         if (isEmpty(string))
-            return "";
+            return "-";
 
         string = string.replace("_", " ");
         return string.substring(0, 1).toUpperCase() + string.substring(1);
