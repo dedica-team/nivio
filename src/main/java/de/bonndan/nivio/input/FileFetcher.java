@@ -63,8 +63,8 @@ public class FileFetcher {
             }
             return http.get(new URL(ref.getUrl()));
         } catch (IOException | AuthenticationException | URISyntaxException | RuntimeException e) {
-            logger.error("Failed to fetch file " + ref, e);
-            throw new ReadingException(ref.getEnvironment(), "Failed to fetch file "+ ref, e);
+            logger.error("Failed to fetch file " + ref.getUrl(), e);
+            throw new ReadingException(ref.getEnvironment(), "Failed to fetch file "+ ref.getUrl(), e);
         }
     }
 
