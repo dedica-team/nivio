@@ -1,13 +1,13 @@
 package de.bonndan.nivio.landscape;
 
+import java.net.URL;
+
 public interface InterfaceItem {
 
     String getDescription();
 
     String getFormat();
 
-    String getProtocol();
-
-    Integer getPort();
+    URL getUrl();
 }
 

@@ -112,9 +112,10 @@ A service can have the following attributes:
   * label: lifecycle (etc: stability, business_capability ....)
   * status: green, yellow, orange, red, brown
   * message: Everything ok.
-* **interfaces** an array of provided interfaces
+* **interfaces** an array of provided interfaces or endpoints
   * description: description
   * format: media type or binary format
+  * url: an url pointing to the interface
 * **dataflow** connections to other services
   * description: description
   * target: a service identifier

@@ -39,6 +39,7 @@ services:
     interfaces:
       - description: kpis
         format: json
+        url: http://dashboard.acme.io/kpis
     provided_by:
       - dashboard-mysql
 

@@ -95,6 +95,7 @@ public class IndexerIntegrationTest {
                 .findFirst()
                 .orElseThrow();
         assertEquals("form", i.getFormat());
+        assertEquals("http://acme.io/create", i.getUrl().toString());
     }
 
     @Test //second pass

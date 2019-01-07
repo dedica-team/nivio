@@ -37,10 +37,13 @@ services:
   interfaces:
   - description: posts
     format: form
+    url: http://acme.io/create
   - description: user data
     format: form
+    url: http://acme.io/whoami
   - description: api calls
     format: json
+    url: http://acme.io/api
   dataflow:
   - description: push
     target: kpi-dashboard

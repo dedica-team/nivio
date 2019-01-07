@@ -4,14 +4,14 @@ import de.bonndan.nivio.landscape.InterfaceItem;
 
 import javax.persistence.Embeddable;
 import java.io.Serializable;
+import java.net.URL;
 
 @Embeddable
 public class InterfaceDescription implements InterfaceItem, Serializable {
 
     private String description;
     private String format;
-    private String protocol;
-    private Integer port;
+    private URL url;
 
     public String getDescription() {
         return description;
@@ -29,19 +29,12 @@ public class InterfaceDescription implements InterfaceItem, Serializable {
         this.format = format;
     }
 
-    public String getProtocol() {
-        return protocol;
+    @Override
+    public URL getUrl() {
+        return url;
     }
 
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
+    public void setUrl(URL url) {
+        this.url = url;
     }
 }

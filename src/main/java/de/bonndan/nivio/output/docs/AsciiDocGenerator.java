@@ -101,10 +101,8 @@ public class AsciiDocGenerator {
 
                 if (!StringUtils.isEmpty(interfaceItem.getFormat()))
                     builder.append(", format: " + interfaceItem.getFormat());
-                if (!StringUtils.isEmpty(interfaceItem.getProtocol()))
-                    builder.append(", protocol: " + interfaceItem.getProtocol());
-                if (!StringUtils.isEmpty(interfaceItem.getPort()))
-                    builder.append(", port: " + interfaceItem.getPort());
+                if (!StringUtils.isEmpty(interfaceItem.getUrl().toString()))
+                    builder.append(", " + interfaceItem.getUrl());
                 builder.append(NL);
             });
         }
