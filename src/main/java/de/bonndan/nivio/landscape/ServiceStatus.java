@@ -1,5 +1,7 @@
 package de.bonndan.nivio.landscape;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
@@ -12,6 +14,7 @@ public class ServiceStatus implements StatusItem {
     private Long id;
 
     @ManyToOne
+    @JsonBackReference
     private Service service;
 
     @NotEmpty
