@@ -1,10 +1,10 @@
-package de.bonndan.nivio.output.json;
+package de.bonndan.nivio.api;
 
+import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.dto.SourceFormat;
-import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,41 +13,41 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping(path = "/")
-public class IndexController {
+public class ApiController {
 
     private final LandscapeRepository landscapeRepository;
 
     private final FileChangeProcessor fileChangeProcessor;
 
     @Autowired
-    public IndexController(LandscapeRepository landscapeRepository, FileChangeProcessor fileChangeProcessor) {
+    public ApiController(LandscapeRepository landscapeRepository, FileChangeProcessor fileChangeProcessor) {
         this.landscapeRepository = landscapeRepository;
         this.fileChangeProcessor = fileChangeProcessor;
     }
 
+
+    /**
+     * Overview on all landscapes.
+     *
+     * @return dto list
+     */
     @RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Iterable<Landscape> landscapes() {
-        return landscapeRepository.findAll();
+    public Iterable<LandscapeDTO> landscapes() {
+        Iterable<Landscape> all = landscapeRepository.findAll();
+
+        return StreamSupport.stream(all.spliterator(), false)
+                .map(LandscapeDTO::from)
+                .collect(Collectors.toList());
     }
 
     @RequestMapping(path = "/landscape/{identifier}")
     public Landscape landscape(@PathVariable String identifier) {
         return landscapeRepository.findDistinctByIdentifier(identifier);
-    }
-
-    /**
-     * Trigger reindexing of a landscape source.
-     *
-     */
-    @RequestMapping(path = "/landscape/{identifier}", method = RequestMethod.POST)
-    public Landscape updateLandscape(@PathVariable String identifier) {
-        Landscape distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(identifier);
-        String path = distinctByIdentifier.getPath();
-        fileChangeProcessor.process(new File(path));
-        return distinctByIdentifier;
     }
 
     /**
@@ -73,5 +73,16 @@ public class IndexController {
         env.setIsIncrement(true);
 
         return fileChangeProcessor.process(env);
+    }
+
+    /**
+     * Trigger reindexing of a landscape source.
+     */
+    @RequestMapping(path = "/reindex/{landscape}", method = RequestMethod.POST)
+    public Landscape reindex(@PathVariable String landscape) {
+        Landscape distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape);
+        String path = distinctByIdentifier.getPath();
+        fileChangeProcessor.process(new File(path));
+        return distinctByIdentifier;
     }
 }
