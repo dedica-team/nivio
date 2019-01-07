@@ -57,7 +57,8 @@ public class IndexerIntegrationTest {
 
         Indexer indexer = new Indexer(environmentRepo, serviceRepository, notificationService);
 
-        return indexer.reIndex(environment);
+        ProcessLog processLog = indexer.reIndex(environment);
+        return (Landscape) processLog.getLandscape();
     }
 
     @Test //first pass
@@ -161,7 +162,7 @@ public class IndexerIntegrationTest {
         Indexer indexer = new Indexer(environmentRepo, serviceRepository, notificationService);
 
         //created
-        landscape = indexer.reIndex(environment);
+        landscape = (Landscape) indexer.reIndex(environment).getLandscape();
         blog = (Service) ServiceItems.pick("blog-server", "completelyNewGroup", landscape.getServices());
         assertEquals("completelyNewGroup", blog.getGroup());
         assertEquals(before +1, landscape.getServices().size());

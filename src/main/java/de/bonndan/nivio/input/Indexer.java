@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 public class Indexer {
 
-    private static final Logger logger = LoggerFactory.getLogger(Indexer.class);
+    private static final Logger _logger = LoggerFactory.getLogger(Indexer.class);
 
     private final LandscapeRepository landscapeRepo;
     private final ServiceRepository serviceRepo;
@@ -34,7 +34,10 @@ public class Indexer {
         this.notificationService = notificationService;
     }
 
-    public Landscape reIndex(final Environment input) {
+    public ProcessLog reIndex(final Environment input) {
+
+        ProcessLog logger = new ProcessLog(_logger);
+
         Landscape landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier());
         if (landscape == null) {
             logger.info("Creating new landscape " + input.getIdentifier());
@@ -44,20 +47,23 @@ public class Indexer {
             landscape.setName(input.getName());
             landscape.setContact(input.getContact());
         }
+        logger.setLandscape(landscape);
 
         try {
-            diff(input, landscape);
-            linkDataflow(input, landscape);
+            diff(input, landscape, logger);
+            linkDataflow(input, landscape, logger);
             landscapeRepo.save(landscape);
         } catch (ProcessingException e) {
             final String msg = "Error while reindexing landscape " + input.getIdentifier();
             logger.warn(msg, e);
             notificationService.sendError(e, msg);
         }
-        return landscape;
+
+        logger.info("Reindexed landscape " + input.getIdentifier());
+        return logger;
     }
 
-    private void diff(final Environment environment, final Landscape landscape) {
+    private void diff(final Environment environment, final Landscape landscape, ProcessLog logger) {
 
         List<Service> existingServices = serviceRepo.findAllByLandscape(landscape);
 
@@ -105,11 +111,11 @@ public class Indexer {
         );
 
         landscape.setServices(inLandscape);
-        linkAllProviders(inLandscape, environment);
-        deleteUnreferenced(environment, inLandscape, existingServices);
+        linkAllProviders(inLandscape, environment, logger);
+        deleteUnreferenced(environment, inLandscape, existingServices, logger);
     }
 
-    private void deleteUnreferenced(final Environment environment, List<Service> kept, List<Service> all) {
+    private void deleteUnreferenced(final Environment environment, List<Service> kept, List<Service> all, ProcessLog logger) {
         if (environment.isIncrement()) {
             logger.info("Incremental change, will not remove any unreferenced services.");
             return;
@@ -128,7 +134,7 @@ public class Indexer {
     /**
      * Links all providers to a service
      */
-    private void linkAllProviders(List<Service> services, Environment environment) {
+    private void linkAllProviders(List<Service> services, Environment environment, ProcessLog logger) {
 
         services.forEach(
                 service -> {
@@ -140,7 +146,7 @@ public class Indexer {
                             throw new ProcessingException(environment, "Service not found " + service.getIdentifier());
                     }
                     description.getProvided_by().forEach(providerName -> {
-                        var fqi =FullyQualifiedIdentifier.from(providerName);
+                        var fqi = FullyQualifiedIdentifier.from(providerName);
                         Service provider = (Service) ServiceItems.find(fqi, services);
                         if (provider == null) {
                             throw new ProcessingException(environment, "Could not find service " + fqi + " in landscape " + environment);
@@ -156,7 +162,7 @@ public class Indexer {
         );
     }
 
-    private void linkDataflow(final Environment input, final Landscape landscape) {
+    private void linkDataflow(final Environment input, final Landscape landscape, ProcessLog logger) {
         input.getServiceDescriptions().forEach(serviceDescription -> {
             Service origin = (Service) ServiceItems.pick(serviceDescription, landscape.getServices());
 

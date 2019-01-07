@@ -1,5 +1,6 @@
 package de.bonndan.nivio;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.landscape.LandscapeItem;
 
@@ -40,5 +41,10 @@ public class ProcessingException extends RuntimeException {
 
     public LandscapeItem getLandscape() {
         return landscape;
+    }
+
+    @JsonValue
+    public String getMessage() {
+        return super.getMessage();
     }
 }

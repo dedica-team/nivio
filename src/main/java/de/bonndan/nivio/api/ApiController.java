@@ -54,13 +54,13 @@ public class ApiController {
      * Creates a new landscape
      */
     @RequestMapping(path = "/landscape", method = RequestMethod.POST)
-    public Landscape create(@RequestBody String body) {
+    public ProcessLog create(@RequestBody String body) {
         Environment env = EnvironmentFactory.fromString(body);
         return fileChangeProcessor.process(env);
     }
 
     @RequestMapping(path = "/landscape/{identifier}/services", method = RequestMethod.POST)
-    public Landscape indexLandscape(
+    public ProcessLog indexLandscape(
             @PathVariable String identifier,
             @RequestHeader(name = "format") String format,
             @RequestBody String body
@@ -71,6 +71,7 @@ public class ApiController {
         Environment env = new Environment();
         env.setIdentifier(identifier);
         env.setIsIncrement(true);
+        env.setServiceDescriptions(serviceDescriptions);
 
         return fileChangeProcessor.process(env);
     }
@@ -79,10 +80,9 @@ public class ApiController {
      * Trigger reindexing of a landscape source.
      */
     @RequestMapping(path = "/reindex/{landscape}", method = RequestMethod.POST)
-    public Landscape reindex(@PathVariable String landscape) {
+    public ProcessLog reindex(@PathVariable String landscape) {
         Landscape distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape);
         String path = distinctByIdentifier.getPath();
-        fileChangeProcessor.process(new File(path));
-        return distinctByIdentifier;
+        return fileChangeProcessor.process(new File(path));
     }
 }
