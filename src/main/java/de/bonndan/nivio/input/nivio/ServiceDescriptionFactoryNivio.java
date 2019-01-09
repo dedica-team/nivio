@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import de.bonndan.nivio.input.ReadingException;
 import de.bonndan.nivio.input.ServiceDescriptionFactory;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.dto.Source;
@@ -34,7 +35,9 @@ public class ServiceDescriptionFactoryNivio implements ServiceDescriptionFactory
             source = mapper.readValue(yml, Source.class);
         } catch (IOException e) {
             logger.error("Failed to read yml", e);
+            throw new ReadingException("Failed to parse yaml service description", e);
         }
+
         if (source == null) {
             logger.warn("Got null out of yml string " + yml);
             return services;

@@ -30,7 +30,18 @@ public class FileFetcher {
         this.http = httpService;
     }
 
+    public String get(URL url) {
+        try {
+            return http.get(url);
+        } catch (IOException | URISyntaxException | RuntimeException e) {
+            logger.error("Failed to fetch file " + url, e);
+            throw new ReadingException("Failed to fetch file "+ url, e);
+        }
+    }
+
+
     public String get(SourceReference ref) {
+
         try {
             URL url = new URL(ref.getUrl());
             url.toURI(); //to force exception early
@@ -38,7 +49,7 @@ public class FileFetcher {
         } catch (MalformedURLException | URISyntaxException e) {
             String path = ref.getUrl();
             if (ref.getEnvironment() != null) {
-                File file = new File(ref.getEnvironment().getPath());
+                File file = new File(ref.getEnvironment().getSource());
                 path = file.getParent() + "/" + ref.getUrl();
             }
             File source = new File(path);
@@ -73,7 +84,7 @@ public class FileFetcher {
             return new String(Files.readAllBytes(Paths.get(source.toURI())));
         } catch (IOException e) {
             logger.error("Failed to read file " + source.getAbsolutePath(), e);
-            return "";
+            throw new ReadingException("Failed to read file " + source.getAbsolutePath(), e);
         }
     }
 }

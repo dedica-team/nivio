@@ -10,5 +10,10 @@ public interface LandscapeItem {
 
     String getContact();
 
+    /**
+     * @return path or yaml content
+     */
+    String getSource();
+
     List<StateProviderConfig> getStateProviders();
 }

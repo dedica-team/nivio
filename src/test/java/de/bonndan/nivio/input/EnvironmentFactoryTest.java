@@ -11,6 +11,8 @@ import de.bonndan.nivio.input.dto.Environment;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -29,6 +31,24 @@ class EnvironmentFactoryTest {
         assertEquals("Landscape example", environment.getName());
         assertEquals("nivio:example", environment.getIdentifier());
         assertEquals("mail@acme.org", environment.getContact());
+        assertEquals(RootPath.get() + "/src/test/resources/example/example_env.yml", environment.getSource());
+        assertFalse(environment.getSourceReferences().isEmpty());
+
+        SourceReference mapped = environment.getSourceReferences().get(1);
+        assertNotNull(mapped);
+        assertEquals(SourceFormat.NIVIO, mapped.getFormat());
+    }
+
+    @Test
+    public void readYamlStr() throws IOException {
+
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_env.yml");
+        String yaml = new String(Files.readAllBytes(file.toPath()));
+        Environment environment = EnvironmentFactory.fromString(yaml);
+        assertEquals("Landscape example", environment.getName());
+        assertEquals("nivio:example", environment.getIdentifier());
+        assertEquals("mail@acme.org", environment.getContact());
+        assertTrue(environment.getSource().contains("name: Landscape example"));
         assertFalse(environment.getSourceReferences().isEmpty());
 
         SourceReference mapped = environment.getSourceReferences().get(1);
@@ -44,11 +64,6 @@ class EnvironmentFactoryTest {
         assertEquals("Incremental update example", environment.getName());
         assertEquals("nivio:incremental", environment.getIdentifier());
         assertFalse(environment.getSourceReferences().isEmpty());
-
-        ServiceDescription mapped = (ServiceDescription) ServiceItems.pick("blog-server", null, environment.getServiceDescriptions());
-        assertNotNull(mapped);
-        assertEquals("blog1", mapped.getShort_name());
-        assertEquals("name2", mapped.getName());
     }
 
     @Test
@@ -62,13 +77,5 @@ class EnvironmentFactoryTest {
         assertNotNull(cfg);
         assertEquals("prometheus-exporter", cfg.getType());
         assertTrue(cfg.getTarget().contains("example/rancher_prometheus_exporter.txt"));
-    }
-
-    @Test
-    public void brokenUrl() {
-
-        File file = new File(RootPath.get() + "/src/test/resources/example/example_broken.yml");
-        assertThrows(ReadingException.class,() -> EnvironmentFactory.fromYaml(file));
-
     }
 }

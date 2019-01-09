@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +23,15 @@ public class WatcherFactory {
 
     private final ApplicationEventPublisher publisher;
 
+    private final FileFetcher fileFetcher;
+    private final Indexer indexer;
+
     @Autowired
-    public WatcherFactory(Seed seed, ApplicationEventPublisher publisher) {
+    public WatcherFactory(Seed seed, ApplicationEventPublisher publisher, FileFetcher fileFetcher, Indexer indexer) {
         this.seed = seed;
         this.publisher = publisher;
+        this.fileFetcher = fileFetcher;
+        this.indexer = indexer;
     }
 
     public List<Runnable> getWatchers() {
@@ -37,6 +43,10 @@ public class WatcherFactory {
                     DirectoryWatcher directoryWatcher = new DirectoryWatcher(publisher, new File(url.toString()));
                     runnables.add(directoryWatcher);
                     logger.info("Created directory watcher for url " + url);
+                } else {
+
+                    Environment env = EnvironmentFactory.fromString(fileFetcher.get(url));
+                    indexer.reIndex(env);
                 }
             });
         } catch (MalformedURLException e) {

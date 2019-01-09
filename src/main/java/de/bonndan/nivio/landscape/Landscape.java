@@ -34,7 +34,7 @@ public class Landscape implements LandscapeItem {
      */
     private String contact;
 
-    private String path;
+    private String source;
 
     /**
      * List of configuration services.
@@ -70,12 +70,12 @@ public class Landscape implements LandscapeItem {
         this.services = services;
     }
 
-    public String getPath() {
-        return path;
+    public String getSource() {
+        return source;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setSource(String source) {
+        this.source = source;
     }
 
     @Override

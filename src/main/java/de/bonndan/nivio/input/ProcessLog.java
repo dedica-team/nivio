@@ -8,6 +8,7 @@ import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.landscape.LandscapeItem;
 import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,12 @@ public class ProcessLog {
 
     public ProcessLog(Logger logger) {
         this.logger = logger;
+    }
+
+    public ProcessLog(ProcessingException e) {
+        this.logger = null;
+        exception = e;
+        landscape = e.getLandscape();
     }
 
     public void info(String message) {

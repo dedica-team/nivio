@@ -5,6 +5,8 @@ import de.bonndan.nivio.landscape.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Configures an input.
@@ -35,7 +37,7 @@ public class Environment implements LandscapeItem {
      */
     private String contact;
 
-    private String path;
+    private String source;
 
     /**
      * List of configuration sources.
@@ -96,12 +98,12 @@ public class Environment implements LandscapeItem {
         this.sources = sources;
     }
 
-    public String getPath() {
-        return path;
+    public String getSource() {
+        return source;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setSource(String source) {
+        this.source = source;
     }
 
     public void setServiceDescriptions(List<ServiceDescription> serviceDescriptions) {
@@ -117,7 +119,7 @@ public class Environment implements LandscapeItem {
         landscape.setIdentifier(identifier);
         landscape.setName(name);
         landscape.setContact(contact);
-        landscape.setPath(path);
+        landscape.setSource(source);
         landscape.setStateProviders(stateProviders);
         return landscape;
     }

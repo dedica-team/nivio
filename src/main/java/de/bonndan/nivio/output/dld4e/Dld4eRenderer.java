@@ -47,7 +47,7 @@ public class Dld4eRenderer implements Renderer {
                         .set("heightPercentage", 5)
                         .set("logoFill", "none")
                         .set("stroke", "lightgrey")
-                        .set("subText", landscape.getIdentifier() + " " + landscape.getPath())
+                        .set("subText", landscape.getIdentifier())
                         .set("text", landscape.getName())
                         .set("type", "bar")
         );

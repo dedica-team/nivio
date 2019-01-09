@@ -16,6 +16,7 @@ public class LandscapeDTO implements de.bonndan.nivio.landscape.LandscapeItem {
     private String name;
     private String contact;
     private List<StateProviderConfig> stateProviders;
+    private String source;
 
     public static LandscapeDTO from(LandscapeItem item) {
 
@@ -27,6 +28,7 @@ public class LandscapeDTO implements de.bonndan.nivio.landscape.LandscapeItem {
         l.name = item.getName();
         l.contact = item.getContact();
         l.stateProviders = item.getStateProviders();
+        l.source = item.getSource();
 
         return l;
     }
@@ -44,6 +46,11 @@ public class LandscapeDTO implements de.bonndan.nivio.landscape.LandscapeItem {
     @Override
     public String getContact() {
         return contact;
+    }
+
+    @Override
+    public String getSource() {
+        return source;
     }
 
     @Override

@@ -24,6 +24,8 @@ public class Indexer {
     private final ServiceRepository serviceRepo;
     private final NotificationService notificationService;
 
+    private final SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
+
     @Autowired
     public Indexer(LandscapeRepository environmentRepo,
                    ServiceRepository serviceRepo,
@@ -50,6 +52,8 @@ public class Indexer {
         logger.setLandscape(landscape);
 
         try {
+            sourceReferencesResolver.resolve(input, logger);
+
             diff(input, landscape, logger);
             linkDataflow(input, landscape, logger);
             landscapeRepo.save(landscape);

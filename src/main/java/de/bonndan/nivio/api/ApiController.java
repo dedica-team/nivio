@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -82,7 +81,6 @@ public class ApiController {
     @RequestMapping(path = "/reindex/{landscape}", method = RequestMethod.POST)
     public ProcessLog reindex(@PathVariable String landscape) {
         Landscape distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape);
-        String path = distinctByIdentifier.getPath();
-        return fileChangeProcessor.process(new File(path));
+        return fileChangeProcessor.process(distinctByIdentifier);
     }
 }

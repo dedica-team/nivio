@@ -8,7 +8,9 @@ import de.bonndan.nivio.input.dto.ServiceDescription;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class EnvironmentFactory {
 
@@ -24,40 +26,24 @@ public class EnvironmentFactory {
 
         try {
             Environment environment = mapper.readValue(file, Environment.class);
-            environment.setPath(file.toString());
-            return process(environment);
+            environment.setSource(file.toString());
+            environment.getSourceReferences().forEach(ref -> ref.setEnvironment(environment));
+            return environment;
         } catch (IOException e) {
-            throw new ReadingException("Failed to create an environment from " + file.getAbsolutePath(), e);
+            throw new ReadingException("Failed to create an environment from file " + file.getAbsolutePath(), e);
         }
     }
 
     public static Environment fromString(String yaml) {
 
-        Environment environment;
-
         try {
-            environment = mapper.readValue(yaml, Environment.class);
-            environment.setPath("yaml string");
-            return process(environment);
+            Environment environment = mapper.readValue(yaml, Environment.class);
+            environment.setSource(yaml);
+            environment.getSourceReferences().forEach(ref -> ref.setEnvironment(environment));
+            return environment;
         } catch (IOException e) {
-            throw new ReadingException("Failed to create an environment from yaml string", e);
+            throw new ReadingException("Failed to create an environment from yaml input string", e);
         }
 
-    }
-
-    private static Environment process(Environment environment) {
-
-        FileFetcher fetcher = new FileFetcher(new HttpService());
-        environment.getSourceReferences().forEach(ref -> {
-
-                    ServiceDescriptionFactory sdf = ServiceDescriptionFormatFactory.getFactory(ref.getFormat());
-                    ref.setEnvironment(environment);
-                    String source = fetcher.get(ref);
-                    List<ServiceDescription> serviceDescriptions = sdf.fromString(source);
-                    environment.addServices(serviceDescriptions);
-                }
-        );
-
-        return environment;
     }
 }
