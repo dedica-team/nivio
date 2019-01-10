@@ -34,6 +34,7 @@ public class Landscape implements LandscapeItem {
      */
     private String contact;
 
+    @Column(columnDefinition = "TEXT")
     private String source;
 
     /**
