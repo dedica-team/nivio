@@ -68,8 +68,8 @@ public class AsciiDocGenerator {
         builder.append("Contact:: " + nice(item.getContact()) + NL);
         builder.append("Team:: " + nice(item.getTeam()) + NL);
         builder.append("Owner:: " + nice(item.getOwner()) + NL);
-        builder.append("Software:: " + item.getSoftware() + NL);
-        builder.append("Version:: " + item.getVersion() + NL);
+        builder.append("Software:: " + nice(item.getSoftware()) + NL);
+        builder.append("Version:: " + nice(item.getVersion()) + NL);
         builder.append("Machine:: " + nice(item.getMachine()) + NL);
         builder.append("Scale:: " + nice(item.getScale()) + NL);
         builder.append("Visibility:: " + nice(item.getVisibility()) + NL);
@@ -101,7 +101,7 @@ public class AsciiDocGenerator {
 
                 if (!StringUtils.isEmpty(interfaceItem.getFormat()))
                     builder.append(", format: " + interfaceItem.getFormat());
-                if (!StringUtils.isEmpty(interfaceItem.getUrl().toString()))
+                if (interfaceItem.getUrl() != null && !StringUtils.isEmpty(interfaceItem.getUrl().toString()))
                     builder.append(", " + interfaceItem.getUrl());
                 builder.append(NL);
             });
