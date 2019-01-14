@@ -47,7 +47,7 @@ public class FullyQualifiedIdentifier {
             return FullyQualifiedIdentifier.build(null, split[0], split[1]);
 
         if (split.length == 3)
-            return FullyQualifiedIdentifier.build(split[0], split[1], split[3]);
+            return FullyQualifiedIdentifier.build(split[0], split[1], split[2]);
 
         return null;
     }

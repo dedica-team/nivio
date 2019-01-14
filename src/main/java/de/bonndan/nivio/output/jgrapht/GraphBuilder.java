@@ -1,4 +1,4 @@
-package de.bonndan.nivio.output;
+package de.bonndan.nivio.output.jgrapht;
 
 import de.bonndan.nivio.landscape.DataFlow;
 import de.bonndan.nivio.landscape.Landscape;

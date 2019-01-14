@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output;
 
 import de.bonndan.nivio.landscape.*;
+import de.bonndan.nivio.output.jgrapht.GraphBuilder;
 import org.jgrapht.Graph;
 import org.junit.Before;
 import org.junit.Test;

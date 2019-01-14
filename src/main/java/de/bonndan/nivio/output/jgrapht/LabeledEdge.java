@@ -1,4 +1,4 @@
-package de.bonndan.nivio.output;
+package de.bonndan.nivio.output.jgrapht;
 
 import org.jgrapht.graph.DefaultEdge;
 

@@ -4,6 +4,7 @@ import de.bonndan.nivio.input.dto.ServiceDescription;
 import org.junit.jupiter.api.Test;
 
 import static junit.framework.TestCase.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FullyQualifiedIdentifierTest {
@@ -45,5 +46,27 @@ public class FullyQualifiedIdentifierTest {
         var fqiNoGroup = FullyQualifiedIdentifier.build(null, null, "d1");
         assertTrue(fqiNoGroup.isSimilarTo(desc1));
         assertTrue(fqiNoGroup.isSimilarTo(otherGroup));
+    }
+
+    @Test
+    public void testFrom() {
+
+        String three = "a/b/c";
+        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(three);
+        assertEquals("a", fqi.getLandscape());
+        assertEquals("b", fqi.getGroup());
+        assertEquals("c", fqi.getIdentifier());
+
+        String two = "b/c";
+        fqi = FullyQualifiedIdentifier.from(two);
+        assertEquals("", fqi.getLandscape());
+        assertEquals("b", fqi.getGroup());
+        assertEquals("c", fqi.getIdentifier());
+
+        String one = "c";
+        fqi = FullyQualifiedIdentifier.from(one);
+        assertEquals("", fqi.getLandscape());
+        assertEquals(null, fqi.getGroup());
+        assertEquals("c", fqi.getIdentifier());
     }
 }
