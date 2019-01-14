@@ -206,4 +206,20 @@ public class GraphStreamRenderer implements Renderer {
             return "service";
         return service.getType().toLowerCase();
     }
+
+    public String getGraphDump() {
+
+        StringBuilder s = new StringBuilder(graph.getId() + " ");
+        graph.getNodeIterator().forEachRemaining(node -> {
+            String n = "NODE " + node.getId() + " " + node.getAttribute("ui.style") + "\n";
+            s.append(n);
+        });
+
+        graph.getEdgeIterator().forEachRemaining(edge -> {
+            String n = "EDGE " + edge.getId() + " " + edge.getAttribute("ui.style") + "\n";
+            s.append(n);
+        });
+
+        return s.toString();
+    }
 }

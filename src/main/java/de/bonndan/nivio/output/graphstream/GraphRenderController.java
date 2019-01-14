@@ -2,6 +2,8 @@ package de.bonndan.nivio.output.graphstream;
 
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,8 @@ import java.nio.file.Files;
 @RequestMapping(path = "/render")
 public class GraphRenderController {
 
+    private static final Logger logger = LoggerFactory.getLogger(GraphRenderController.class);
+
     private final LandscapeRepository landscapeRepository;
 
     @Autowired
@@ -35,7 +39,12 @@ public class GraphRenderController {
 
         GraphStreamRenderer graphStreamRenderer = new GraphStreamRenderer();
         File png = File.createTempFile(landscapeIdentifier, "png");
-        graphStreamRenderer.render(landscape, png);
+        try {
+            graphStreamRenderer.render(landscape, png);
+        } catch (Exception ex) {
+            logger.warn("Could not render graph: " + graphStreamRenderer.getGraphDump());
+            throw ex;
+        }
 
         byte[] bFile = Files.readAllBytes(png.toPath());
         HttpHeaders headers = new HttpHeaders();
