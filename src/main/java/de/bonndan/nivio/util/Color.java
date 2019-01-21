@@ -20,10 +20,6 @@ public class Color {
         if (StringUtils.isEmpty(name))
             return defaultColor;
 
-        int i = name.hashCode();
-
-        return Integer.toHexString(((i >> 16) & 0xFF)) +
-                        Integer.toHexString(((i >> 8) & 0xFF)) +
-                        Integer.toHexString((i & 0xFF));
+        return String.format("#%X", name.hashCode()).concat("000000").substring(0,6);
     }
 }

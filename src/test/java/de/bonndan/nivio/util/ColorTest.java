@@ -1,0 +1,20 @@
+package de.bonndan.nivio.util;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class ColorTest {
+
+    @Test
+    public void testLongName() {
+        String color = Color.nameToRGB("globalservices");
+        assertEquals(6, color.length());
+    }
+
+    @Test
+    public void testShort() {
+        String color = Color.nameToRGB("xx");
+        assertEquals(6, color.length());
+    }
+}
