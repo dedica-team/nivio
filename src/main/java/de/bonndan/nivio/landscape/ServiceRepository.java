@@ -14,5 +14,5 @@ public interface ServiceRepository extends CrudRepository<Service, Long> {
     List<Service> findAllByLandscapeAndGroup(Landscape landscape, String group);
 
 
-    Optional<Service> findByLandscapeAndGroupAndIdentifier(String landscape, String group, String identifier);
+    Optional<Service> findByLandscapeAndGroupAndIdentifier(Landscape landscape, String group, String identifier);
 }

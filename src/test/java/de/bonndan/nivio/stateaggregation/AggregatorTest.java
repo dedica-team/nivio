@@ -28,6 +28,9 @@ public class AggregatorTest {
     ApplicationEventPublisher publisher;
 
     @Mock
+    LandscapeRepository landscapeRepo;
+
+    @Mock
     ServiceRepository serviceRepo;
 
     private Aggregator aggregator;
@@ -36,7 +39,7 @@ public class AggregatorTest {
     @BeforeEach
     void configureSystemUnderTest() {
         initMocks(this);
-        aggregator = new Aggregator(serviceRepo, factory, publisher);
+        aggregator = new Aggregator(landscapeRepo, serviceRepo, factory, publisher);
     }
 
     @Test

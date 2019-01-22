@@ -3,10 +3,7 @@ package de.bonndan.nivio.stateaggregation;
 import com.jasongoodwin.monads.Try;
 import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.landscape.FullyQualifiedIdentifier;
-import de.bonndan.nivio.landscape.LandscapeItem;
-import de.bonndan.nivio.landscape.ServiceRepository;
-import de.bonndan.nivio.landscape.StatusItem;
+import de.bonndan.nivio.landscape.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +19,7 @@ public class Aggregator {
 
     private final static Logger logger = LoggerFactory.getLogger(Aggregator.class);
 
+    private final LandscapeRepository landscapeRepository;
     private final ServiceRepository serviceRepo;
 
     private final ProviderFactory factory;
@@ -29,7 +27,12 @@ public class Aggregator {
     private final ApplicationEventPublisher publisher;
 
     @Autowired
-    public Aggregator(ServiceRepository serviceRepo, ProviderFactory factory, ApplicationEventPublisher publisher) {
+    public Aggregator(LandscapeRepository landscapeRepository,
+                      ServiceRepository serviceRepo,
+                      ProviderFactory factory,
+                      ApplicationEventPublisher publisher
+    ) {
+        this.landscapeRepository = landscapeRepository;
         this.serviceRepo = serviceRepo;
         this.factory = factory;
         this.publisher = publisher;
@@ -50,7 +53,8 @@ public class Aggregator {
 
     private void applyUpdates(Map<FullyQualifiedIdentifier, StatusItem> updates) {
         updates.forEach((fqi, item) -> {
-            serviceRepo.findByLandscapeAndGroupAndIdentifier(fqi.getLandscape(), fqi.getGroup(), fqi.getIdentifier())
+            Landscape landscape = landscapeRepository.findDistinctByIdentifier(fqi.getLandscape());
+            serviceRepo.findByLandscapeAndGroupAndIdentifier(landscape, fqi.getGroup(), fqi.getIdentifier())
                     .ifPresent(service -> service.setStatus(item));
         });
     }
