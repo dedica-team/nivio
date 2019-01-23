@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -33,6 +34,24 @@ public class GraphStreamRenderer implements Renderer {
 
     private Graph graph;
     private SpriteManager spriteManager;
+
+    private static final String[] KNOWN_ICONS = new String[]{
+            "api.png",
+            "cache.png",
+            "database.png",
+            "dataflow.png",
+            "firewall.png",
+            "humanuser.png",
+            "interface.png",
+            "keyvaluestore.png",
+            "loadbalancer.png",
+            "lock.png",
+            "messagequeue.png",
+            "mobileclient.png",
+            "server.png",
+            "service.png",
+            "webservice.png",
+    };
 
     @Override
     public String render(Landscape landscape) {
@@ -204,6 +223,11 @@ public class GraphStreamRenderer implements Renderer {
     private String getIcon(Service service) {
         if (StringUtils.isEmpty(service.getType()))
             return "service";
+
+        //fallback to service
+        if (!Arrays.asList(KNOWN_ICONS).contains(service.getType().toLowerCase()))
+            return "service";
+
         return service.getType().toLowerCase();
     }
 
