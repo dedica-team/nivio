@@ -45,8 +45,8 @@ public class ApiController {
     }
 
     @RequestMapping(path = "/landscape/{identifier}")
-    public Landscape landscape(@PathVariable String identifier) {
-        return landscapeRepository.findDistinctByIdentifier(identifier);
+    public LandscapeDTO landscape(@PathVariable String identifier) {
+        return LandscapeDTO.from(landscapeRepository.findDistinctByIdentifier(identifier));
     }
 
     /**
