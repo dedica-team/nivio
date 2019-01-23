@@ -20,6 +20,6 @@ public class Color {
         if (StringUtils.isEmpty(name))
             return defaultColor;
 
-        return String.format("#%X", name.hashCode()).concat("000000").substring(0,6);
+        return String.format("%X", name.hashCode()).concat("000000").substring(0,6);
     }
 }

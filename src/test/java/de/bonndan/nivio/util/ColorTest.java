@@ -17,4 +17,10 @@ public class ColorTest {
         String color = Color.nameToRGB("xx");
         assertEquals(6, color.length());
     }
+
+    @Test
+    public void testRegression() {
+        String color = Color.nameToRGB("restrictions");
+        assertEquals("BB8E66", color);
+    }
 }
