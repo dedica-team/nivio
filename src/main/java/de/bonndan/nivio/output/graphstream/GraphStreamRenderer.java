@@ -36,21 +36,21 @@ public class GraphStreamRenderer implements Renderer {
     private SpriteManager spriteManager;
 
     private static final String[] KNOWN_ICONS = new String[]{
-            "api.png",
-            "cache.png",
-            "database.png",
-            "dataflow.png",
-            "firewall.png",
-            "humanuser.png",
-            "interface.png",
-            "keyvaluestore.png",
-            "loadbalancer.png",
-            "lock.png",
-            "messagequeue.png",
-            "mobileclient.png",
-            "server.png",
-            "service.png",
-            "webservice.png",
+            "api",
+            "cache",
+            "database",
+            "dataflow",
+            "firewall",
+            "humanuser",
+            "interface",
+            "keyvaluestore",
+            "loadbalancer",
+            "lock",
+            "messagequeue",
+            "mobileclient",
+            "server",
+            "service",
+            "webservice",
     };
 
     @Override
