@@ -153,7 +153,8 @@ public class Indexer {
                         var fqi = FullyQualifiedIdentifier.from(providerName);
                         Service provider = (Service) ServiceItems.find(fqi, services);
                         if (provider == null) {
-                            throw new ProcessingException(environment, "Could not find service " + fqi + " in landscape " + environment);
+                            logger.warn("Could not find service " + fqi + " in landscape " + environment + " while linking providers for service " + description.getFullyQualifiedIdentifier());
+                            return;
                         }
 
                         if (!ServiceItems.contains(provider, service.getProvidedBy())) {
