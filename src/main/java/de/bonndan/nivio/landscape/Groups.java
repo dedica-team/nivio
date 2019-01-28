@@ -13,6 +13,12 @@ public class Groups {
 
     private Map<String, List<ServiceItem>> groups = new HashMap<>();
 
+    public static Groups from(Landscape landscape) {
+        Groups groups = new Groups();
+        landscape.getServices().forEach(groups::add);
+        return groups;
+    }
+
     public void add(Service service) {
 
         String key = isEmpty(service.getGroup()) ? COMMON : service.getGroup();

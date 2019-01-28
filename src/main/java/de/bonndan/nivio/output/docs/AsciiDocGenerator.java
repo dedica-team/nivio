@@ -34,7 +34,7 @@ public class AsciiDocGenerator {
         builder.append("Identifier:: " + landscape.getIdentifier() + NL);
         builder.append("Contact:: " + landscape.getContact() + NL);
 
-        builder.append(writeGroups(ServiceItems.getGroups(landscape)));
+        builder.append(writeGroups(Groups.from(landscape)));
         return builder.toString();
     }
 

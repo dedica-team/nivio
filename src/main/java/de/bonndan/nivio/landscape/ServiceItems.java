@@ -134,10 +134,4 @@ public class ServiceItems {
 
         return null;
     }
-
-    public static Groups getGroups(Landscape landscape) {
-        Groups groups = new Groups();
-        landscape.getServices().forEach(groups::add);
-        return groups;
-    }
 }
