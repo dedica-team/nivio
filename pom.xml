@@ -158,6 +158,12 @@
             <artifactId>asciidoctorj</artifactId>
             <version>1.5.8</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.jgraph</groupId>
+            <artifactId>jgraphx</artifactId>
+            <version>3.9.12</version>
+        </dependency>
     </dependencies>
 
     <build>
