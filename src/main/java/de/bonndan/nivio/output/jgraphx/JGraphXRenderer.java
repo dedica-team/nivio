@@ -86,6 +86,22 @@ public class JGraphXRenderer implements Renderer {
             serviceVertexes.entrySet().forEach(this::renderExtras);
 
 
+            //dataflow renderer after hierarchy layout
+            landscape.getServices().forEach(service -> service.getDataFlow().forEach(df -> {
+
+                if (df.getSource().equals(df.getTarget()))
+                    return;
+
+                String id = "df_" + service.getIdentifier() + df.getTarget();
+                logger.info("Adding dataflow " + id);
+                ServiceItem target = ServiceItems.find(FullyQualifiedIdentifier.from(df.getTarget()), landscape.getServices());
+                graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(), serviceVertexes.get(service), serviceVertexes.get((Service) target),
+                        mxConstants.STYLE_STROKECOLOR + "=#" + de.bonndan.nivio.util.Color.nameToRGB(service.getGroup() + ";" + mxConstants.STYLE_DASHED + "=true")
+                );
+            }));
+
+            //draw vertexes above edges
+            graph.orderCells(false, serviceVertexes.values().toArray());
 
         }
 
@@ -134,23 +150,6 @@ public class JGraphXRenderer implements Renderer {
                 );
             });
         });
-
-        //dataflow
-        landscape.getServices().forEach(service -> service.getDataFlow().forEach(df -> {
-
-            if (df.getSource().equals(df.getTarget()))
-                return;
-
-            String id = "df_" + service.getIdentifier() + df.getTarget();
-            logger.info("Adding dataflow " + id);
-            ServiceItem target = ServiceItems.find(FullyQualifiedIdentifier.from(df.getTarget()), landscape.getServices());
-            graph.insertEdge(parent, id, df.getFormat(), serviceVertexes.get(service), serviceVertexes.get((Service) target),
-                    mxConstants.STYLE_STROKECOLOR + "=#" + de.bonndan.nivio.util.Color.nameToRGB(service.getGroup() + ";" + mxConstants.STYLE_DASHED + "=true")
-            );
-        }));
-
-        //draw vertexes above edges
-        graph.orderCells(false, serviceVertexes.values().toArray());
     }
 
     private void renderExtras(Map.Entry<Service, Object> entry) {
