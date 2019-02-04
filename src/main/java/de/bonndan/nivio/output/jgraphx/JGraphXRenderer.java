@@ -2,8 +2,10 @@ package de.bonndan.nivio.output.jgraphx;
 
 import com.mxgraph.canvas.mxGraphics2DCanvas;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
+import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.util.mxConstants;
+import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
 import de.bonndan.nivio.landscape.*;
@@ -21,7 +23,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+
+import static de.bonndan.nivio.landscape.Status.GREEN;
 
 public class JGraphXRenderer implements Renderer {
     private final int DEFAULT_ICON_SIZE = 40;
@@ -47,6 +54,7 @@ public class JGraphXRenderer implements Renderer {
     private Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);
     private Map<Service, Object> serviceVertexes = new HashMap<>();
     private mxStylesheet stylesheet;
+    private mxGraph graph;
 
     @Override
     public String render(Landscape landscape) {
@@ -55,7 +63,7 @@ public class JGraphXRenderer implements Renderer {
 
     @Override
     public void render(Landscape landscape, File file) throws IOException {
-        mxGraph graph = new mxGraph();
+        graph = new mxGraph();
         graph.setHtmlLabels(true);
 
         stylesheet = graph.getStylesheet();
@@ -73,6 +81,12 @@ public class JGraphXRenderer implements Renderer {
             layout.execute(graph.getDefaultParent());
 
             graph.getModel().endUpdate();
+
+            //render extra stuff per service
+            serviceVertexes.entrySet().forEach(this::renderExtras);
+
+
+
         }
 
         BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
@@ -102,15 +116,6 @@ public class JGraphXRenderer implements Renderer {
                     style
             );
             serviceVertexes.put(service, v1);
-
-            //label
-//            mxGeometry geo = new mxGeometry(0, 0, 100, 65);
-//            geo.setRelative(true);
-//
-//            mxCell titleCell = new mxCell("Title", geo,"");
-//            titleCell.setVertex(true);
-
-            //graph.addCell(titleCell, v1);
         });
 
         //provider edges
@@ -146,6 +151,29 @@ public class JGraphXRenderer implements Renderer {
 
         //draw vertexes above edges
         graph.orderCells(false, serviceVertexes.values().toArray());
+    }
+
+    private void renderExtras(Map.Entry<Service, Object> entry) {
+        mxCell cell = (mxCell)entry.getValue();
+        mxRectangle cellBounds = graph.getCellBounds(cell);
+        double centerX = cellBounds.getCenterX();
+        double centerY = cellBounds.getCenterY();
+        Service service = entry.getKey();
+        List<StatusItem> displayed = service.getStatuses().stream()
+                .filter(item -> !GREEN.equals(item.getStatus()))
+                .collect(Collectors.toList());
+
+        //statuses at left
+        int statusBoxSize = 15;
+        double statusOffsetX = cellBounds.getX() - 2* statusBoxSize;
+        AtomicReference<Double> statusOffsetY = new AtomicReference<>(cellBounds.getY());
+        displayed.forEach(statusItem -> {
+            graph.insertVertex(graph.getDefaultParent(), null,
+                    statusItem.getLabel().toUpperCase().substring(0, 3),
+                    statusOffsetX, statusOffsetY.get(), statusBoxSize * 2, statusBoxSize,
+                    mxConstants.STYLE_FILLCOLOR + "=" + statusItem.getStatus().toString());
+            statusOffsetY.updateAndGet(v -> v + statusBoxSize);
+        });
     }
 
     private String getStatusColor(Service service) {
