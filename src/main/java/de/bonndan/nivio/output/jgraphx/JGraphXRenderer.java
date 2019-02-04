@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.landscape.Status.GREEN;
+import static de.bonndan.nivio.landscape.Status.UNKNOWN;
 
 public class JGraphXRenderer implements Renderer {
     private final int DEFAULT_ICON_SIZE = 40;
@@ -119,11 +120,14 @@ public class JGraphXRenderer implements Renderer {
         landscape.getServices().forEach(service -> {
 
             // "ROUNDED;strokeColor=red;fillColor=green"
-            String style = getBaseStyle(service) + ";" + mxConstants.STYLE_FILLCOLOR + "=#" + de.bonndan.nivio.util.Color.nameToRGB(service.getGroup()) + ";";
             String statusColor = getStatusColor(service);
+            String style = getBaseStyle(service) + ";";
             if (!Status.UNKNOWN.toString().equals(statusColor)) {
-                style += "strokeColor=" + statusColor + ";strokeWidth=3; ";
+                   style += mxConstants.STYLE_FILLCOLOR + "=" + statusColor + ";";
+            } else {
+                   style += mxConstants.STYLE_FILLCOLOR + "=white;";
             }
+            style += "strokeColor=" +  de.bonndan.nivio.util.Color.nameToRGB(service.getGroup(), "gray") + ";strokeWidth=3;";
 
             Object v1 = graph.insertVertex(
                     parent,
@@ -175,18 +179,24 @@ public class JGraphXRenderer implements Renderer {
         double centerY = cellBounds.getCenterY();
         Service service = entry.getKey();
         List<StatusItem> displayed = service.getStatuses().stream()
-                .filter(item -> !GREEN.equals(item.getStatus()))
-                .collect(Collectors.toList());
+                .filter(item -> !UNKNOWN.equals(item.getStatus()))
+                .sorted((statusItem, t1) -> {
+                    if (statusItem.getStatus().equals(t1.getStatus()))
+                        return 0;
+                    return statusItem.getStatus().isHigherThan(t1.getStatus()) ? -1 : 1;
+                }).collect(Collectors.toList());
 
         //statuses at left
         int statusBoxSize = 15;
-        double statusOffsetX = cellBounds.getX() - 2* statusBoxSize;
+        double statusOffsetX = cellBounds.getX() - 2.5* statusBoxSize;
         AtomicReference<Double> statusOffsetY = new AtomicReference<>(cellBounds.getY());
         displayed.forEach(statusItem -> {
             graph.insertVertex(graph.getDefaultParent(), null,
                     statusItem.getLabel().toUpperCase().substring(0, 3),
                     statusOffsetX, statusOffsetY.get(), statusBoxSize * 2, statusBoxSize,
-                    mxConstants.STYLE_FILLCOLOR + "=" + statusItem.getStatus().toString());
+                    mxConstants.STYLE_FILLCOLOR + "=" + statusItem.getStatus().toString() + ";"
+                            +mxConstants.STYLE_FONTCOLOR + "=black"
+            );
             statusOffsetY.updateAndGet(v -> v + statusBoxSize);
         });
     }
