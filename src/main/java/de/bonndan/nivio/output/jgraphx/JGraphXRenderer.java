@@ -96,7 +96,8 @@ public class JGraphXRenderer implements Renderer {
                 logger.info("Adding dataflow " + id);
                 ServiceItem target = ServiceItems.find(FullyQualifiedIdentifier.from(df.getTarget()), landscape.getServices());
                 graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(), serviceVertexes.get(service), serviceVertexes.get((Service) target),
-                        mxConstants.STYLE_STROKECOLOR + "=#" + de.bonndan.nivio.util.Color.nameToRGB(service.getGroup() + ";" + mxConstants.STYLE_DASHED + "=true")
+                        mxConstants.STYLE_STROKECOLOR + "=#" + de.bonndan.nivio.util.Color.nameToRGB(service.getGroup() + ";"
+                        +mxConstants.STYLE_SHAPE + "=" + mxConstants.SHAPE_CURVE+";")
                 );
             }));
 
@@ -137,6 +138,21 @@ public class JGraphXRenderer implements Renderer {
         //provider edges
         landscape.getServices().forEach(service -> {
             service.getProvidedBy().forEach(provider -> {
+
+                //ingress: inverse
+                if (provider.getLayer().equals(ServiceItem.LAYER_INGRESS)) {
+                    String style = mxConstants.STYLE_STROKEWIDTH + "=3;"
+                            + mxConstants.STYLE_ENDARROW + "=oval;"
+                            + mxConstants.STYLE_STARTARROW + "=false;"
+                            + mxConstants.STYLE_STROKECOLOR + "=#" + de.bonndan.nivio.util.Color.nameToRGB(service.getGroup()) + ";";
+                    graph.insertEdge(
+                            parent, null, "",
+                            serviceVertexes.get(service),
+                            serviceVertexes.get(provider),
+                            style
+                    );
+                    return;
+                }
 
                 String style = mxConstants.STYLE_STROKEWIDTH + "=3;"
                         + mxConstants.STYLE_ENDARROW + "=false;"

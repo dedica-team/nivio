@@ -5,10 +5,6 @@ ingress:
     name: Keycloak SSO
     version: 4.4.0
     owner: Ops
-    dataflow:
-      - description: auth
-        format: SAML
-        target: kpi-dashboard
 
 services:
 
@@ -42,6 +38,11 @@ services:
         url: http://dashboard.acme.io/kpis
     provided_by:
       - dashboard-mysql
+      - keycloak
+    #dataflow:
+    #  - description: auth
+    #    format: SAML
+    #    target: keycloak
 
 infrastructure:
 
