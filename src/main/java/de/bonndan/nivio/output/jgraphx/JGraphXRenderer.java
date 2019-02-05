@@ -20,11 +20,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -97,8 +94,8 @@ public class JGraphXRenderer implements Renderer {
                 logger.info("Adding dataflow " + id);
                 ServiceItem target = ServiceItems.find(FullyQualifiedIdentifier.from(df.getTarget()), landscape.getServices());
                 graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(), serviceVertexes.get(service), serviceVertexes.get((Service) target),
-                        mxConstants.STYLE_STROKECOLOR + "=#" + de.bonndan.nivio.util.Color.nameToRGB(service.getGroup() + ";"
-                        +mxConstants.STYLE_SHAPE + "=" + mxConstants.SHAPE_CURVE+";")
+                        mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";"
+                                + mxConstants.STYLE_SHAPE + "=" + mxConstants.SHAPE_CURVE + ";"
                 );
             }));
 
@@ -123,11 +120,11 @@ public class JGraphXRenderer implements Renderer {
             String statusColor = getStatusColor(service);
             String style = getBaseStyle(service) + ";";
             if (!Status.UNKNOWN.toString().equals(statusColor)) {
-                   style += mxConstants.STYLE_FILLCOLOR + "=" + statusColor + ";";
+                style += mxConstants.STYLE_FILLCOLOR + "=" + statusColor + ";";
             } else {
-                   style += mxConstants.STYLE_FILLCOLOR + "=white;";
+                style += mxConstants.STYLE_FILLCOLOR + "=white;";
             }
-            style += "strokeColor=" +  de.bonndan.nivio.util.Color.nameToRGB(service.getGroup(), "gray") + ";strokeWidth=3;";
+            style += "strokeColor=" + de.bonndan.nivio.util.Color.nameToRGB(service.getGroup(), "gray") + ";strokeWidth=3;";
 
             Object v1 = graph.insertVertex(
                     parent,
@@ -148,7 +145,7 @@ public class JGraphXRenderer implements Renderer {
                     String style = mxConstants.STYLE_STROKEWIDTH + "=3;"
                             + mxConstants.STYLE_ENDARROW + "=oval;"
                             + mxConstants.STYLE_STARTARROW + "=false;"
-                            + mxConstants.STYLE_STROKECOLOR + "=#" + de.bonndan.nivio.util.Color.nameToRGB(service.getGroup()) + ";";
+                            + mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";";
                     graph.insertEdge(
                             parent, null, "",
                             serviceVertexes.get(service),
@@ -161,7 +158,7 @@ public class JGraphXRenderer implements Renderer {
                 String style = mxConstants.STYLE_STROKEWIDTH + "=3;"
                         + mxConstants.STYLE_ENDARROW + "=false;"
                         + mxConstants.STYLE_STARTARROW + "=oval;"
-                        + mxConstants.STYLE_STROKECOLOR + "=#" + de.bonndan.nivio.util.Color.nameToRGB(service.getGroup()) + ";";
+                        + mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";";
                 graph.insertEdge(
                         parent, null, "",
                         serviceVertexes.get(provider),
@@ -173,7 +170,7 @@ public class JGraphXRenderer implements Renderer {
     }
 
     private void renderExtras(Map.Entry<Service, Object> entry) {
-        mxCell cell = (mxCell)entry.getValue();
+        mxCell cell = (mxCell) entry.getValue();
         mxRectangle cellBounds = graph.getCellBounds(cell);
         double centerX = cellBounds.getCenterX();
         double centerY = cellBounds.getCenterY();
@@ -188,16 +185,41 @@ public class JGraphXRenderer implements Renderer {
 
         //statuses at left
         int statusBoxSize = 15;
-        double statusOffsetX = cellBounds.getX() - 2.5* statusBoxSize;
+        double statusOffsetX = cellBounds.getX() - 2.5 * statusBoxSize;
         AtomicReference<Double> statusOffsetY = new AtomicReference<>(cellBounds.getY());
         displayed.forEach(statusItem -> {
             graph.insertVertex(graph.getDefaultParent(), null,
                     statusItem.getLabel().toUpperCase().substring(0, 3),
                     statusOffsetX, statusOffsetY.get(), statusBoxSize * 2, statusBoxSize,
                     mxConstants.STYLE_FILLCOLOR + "=" + statusItem.getStatus().toString() + ";"
-                            +mxConstants.STYLE_FONTCOLOR + "=black"
+                            + mxConstants.STYLE_FONTCOLOR + "=black"
             );
             statusOffsetY.updateAndGet(v -> v + statusBoxSize);
+        });
+
+        //interfaces
+        int intfBoxSize = 10;
+        double intfOffsetX = cellBounds.getX() + cellBounds.getWidth() + 1.5 * intfBoxSize;
+        AtomicReference<Double> intfOffsetY = new AtomicReference<>(cellBounds.getY());
+        String intfStyle = mxConstants.STYLE_SHAPE + "=" + mxConstants.SHAPE_IMAGE + ";"
+                + mxConstants.STYLE_FONTCOLOR + "=black;"
+                + mxConstants.STYLE_LABEL_POSITION + "=right;";
+        service.getInterfaces().forEach(intf -> {
+            Object v1 = graph.insertVertex(graph.getDefaultParent(), null,
+                    intf.getFormat(),
+                    intfOffsetX, intfOffsetY.get(), intfBoxSize, intfBoxSize,
+                    intfStyle
+            );
+            intfOffsetY.updateAndGet(v -> v + intfBoxSize * 1.5);
+
+            graph.insertEdge(
+                    graph.getDefaultParent(), null, "",
+                    cell,
+                    v1,
+                    mxConstants.STYLE_ENDARROW + "=" + mxConstants.ARROW_OVAL+ ";"
+                            + mxConstants.STYLE_STROKEWIDTH + "=2;"
+                            + mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";"
+            );
         });
     }
 
@@ -212,6 +234,10 @@ public class JGraphXRenderer implements Renderer {
         });
 
         return ref.current.toString();
+    }
+
+    private String getGroupColor(Service service) {
+        return de.bonndan.nivio.util.Color.nameToRGB(service.getGroup(), "gray");
     }
 
     private String getIcon(Service service) {
