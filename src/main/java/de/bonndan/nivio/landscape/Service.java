@@ -350,6 +350,8 @@ public class Service implements ServiceItem {
             return false;
 
         ServiceItem landscapeItem = (ServiceItem) o;
+        if (toString() == null)
+            return false;
 
         return toString().equals(landscapeItem.toString());
     }
