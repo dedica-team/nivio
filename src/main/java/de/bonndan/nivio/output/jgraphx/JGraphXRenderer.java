@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -199,24 +200,35 @@ public class JGraphXRenderer implements Renderer {
 
         //interfaces
         int intfBoxSize = 10;
-        double intfOffsetX = cellBounds.getX() + cellBounds.getWidth() + 1.5 * intfBoxSize;
-        AtomicReference<Double> intfOffsetY = new AtomicReference<>(cellBounds.getY());
-        String intfStyle = mxConstants.STYLE_SHAPE + "=" + mxConstants.SHAPE_IMAGE + ";"
+        double intfOffsetX = cellBounds.getCenterX() - 0.5 * intfBoxSize;
+        double intfOffsetY = cellBounds.getCenterY() - 0.5 * intfBoxSize;
+        String intfStyle = mxConstants.STYLE_SHAPE + "=" + mxConstants.SHAPE_ELLIPSE + ";"
                 + mxConstants.STYLE_FONTCOLOR + "=black;"
-                + mxConstants.STYLE_LABEL_POSITION + "=right;";
+                + mxConstants.STYLE_LABEL_POSITION + "=right;"
+                + mxConstants.STYLE_ALIGN + "=left;"
+                + mxConstants.STYLE_FILLCOLOR + "=#" + getGroupColor(service) + ";"
+                + mxConstants.STYLE_STROKEWIDTH + "=0;";
+
+
+        AtomicInteger count = new AtomicInteger(0);
         service.getInterfaces().forEach(intf -> {
+
+            double angleInRadians = -0.5 + count.getAndIncrement() * 0.5;
+            double radius = intfBoxSize * 4;
+            double x = Math.cos(angleInRadians) * radius;
+            double y = Math.sin(angleInRadians) * radius;
+
             Object v1 = graph.insertVertex(graph.getDefaultParent(), null,
-                    intf.getFormat(),
-                    intfOffsetX, intfOffsetY.get(), intfBoxSize, intfBoxSize,
+                    intf.getDescription() + " (" + intf.getFormat() + ")",
+                    intfOffsetX + x, intfOffsetY + y, intfBoxSize, intfBoxSize,
                     intfStyle
             );
-            intfOffsetY.updateAndGet(v -> v + intfBoxSize * 1.5);
 
             graph.insertEdge(
                     graph.getDefaultParent(), null, "",
                     cell,
                     v1,
-                    mxConstants.STYLE_ENDARROW + "=" + mxConstants.ARROW_OVAL+ ";"
+                    mxConstants.STYLE_ENDARROW + "=none;"
                             + mxConstants.STYLE_STROKEWIDTH + "=2;"
                             + mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";"
             );
