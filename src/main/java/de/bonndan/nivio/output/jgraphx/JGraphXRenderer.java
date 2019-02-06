@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static de.bonndan.nivio.landscape.Status.GREEN;
 import static de.bonndan.nivio.landscape.Status.UNKNOWN;
@@ -173,14 +174,15 @@ public class JGraphXRenderer implements Renderer {
     private void renderExtras(Map.Entry<Service, Object> entry) {
         mxCell cell = (mxCell) entry.getValue();
         mxRectangle cellBounds = graph.getCellBounds(cell);
-        double centerX = cellBounds.getCenterX();
-        double centerY = cellBounds.getCenterY();
+
+        //sort services
         Service service = entry.getKey();
         List<StatusItem> displayed = service.getStatuses().stream()
                 .filter(item -> !UNKNOWN.equals(item.getStatus()))
                 .sorted((statusItem, t1) -> {
-                    if (statusItem.getStatus().equals(t1.getStatus()))
-                        return 0;
+                    if (statusItem.getStatus().equals(t1.getStatus())) {
+                        return statusItem.getLabel().compareToIgnoreCase(t1.getLabel());
+                    }
                     return statusItem.getStatus().isHigherThan(t1.getStatus()) ? -1 : 1;
                 }).collect(Collectors.toList());
 
@@ -211,7 +213,9 @@ public class JGraphXRenderer implements Renderer {
 
 
         AtomicInteger count = new AtomicInteger(0);
-        service.getInterfaces().forEach(intf -> {
+        Stream<InterfaceItem> sorted = service.getInterfaces().stream()
+                .sorted((interfaceItem, t1) -> interfaceItem.getDescription().compareToIgnoreCase(t1.getDescription()));
+        sorted.forEach(intf -> {
 
             double angleInRadians = -0.5 + count.getAndIncrement() * 0.5;
             double radius = intfBoxSize * 4;
