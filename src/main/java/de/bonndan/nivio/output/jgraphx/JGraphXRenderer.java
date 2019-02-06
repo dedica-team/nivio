@@ -97,7 +97,9 @@ public class JGraphXRenderer implements Renderer {
                 ServiceItem target = ServiceItems.find(FullyQualifiedIdentifier.from(df.getTarget()), landscape.getServices());
                 graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(), serviceVertexes.get(service), serviceVertexes.get((Service) target),
                         mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";"
-                                + mxConstants.STYLE_SHAPE + "=" + mxConstants.SHAPE_CURVE + ";"
+                                + mxConstants.STYLE_STROKEWIDTH + "=2;"
+                                + mxConstants.STYLE_DASHED + "=true;"
+                                + mxConstants.STYLE_VERTICAL_LABEL_POSITION + "=bottom;"
                 );
             }));
 
@@ -118,15 +120,9 @@ public class JGraphXRenderer implements Renderer {
         //add all nodes
         landscape.getServices().forEach(service -> {
 
-            // "ROUNDED;strokeColor=red;fillColor=green"
-            String statusColor = getStatusColor(service);
-            String style = getBaseStyle(service) + ";";
-            if (!Status.UNKNOWN.toString().equals(statusColor)) {
-                style += mxConstants.STYLE_FILLCOLOR + "=" + statusColor + ";";
-            } else {
-                style += mxConstants.STYLE_FILLCOLOR + "=white;";
-            }
-            style += "strokeColor=" + de.bonndan.nivio.util.Color.nameToRGB(service.getGroup(), "gray") + ";strokeWidth=3;";
+            String style = getBaseStyle(service) + ";"
+                    + "strokeColor=" + getGroupColor(service) + ";"
+                    + "strokeWidth=3;";
 
             Object v1 = graph.insertVertex(
                     parent,
@@ -199,6 +195,23 @@ public class JGraphXRenderer implements Renderer {
             );
             statusOffsetY.updateAndGet(v -> v + statusBoxSize);
         });
+
+
+        //status ring
+        String statusColor = getStatusColor(service);
+        int statusRingWidth = 4;
+        if (!Status.UNKNOWN.toString().equals(statusColor)) {
+            String style = mxConstants.STYLE_FILLCOLOR + "=none;"
+                    + mxConstants.STYLE_STROKEWIDTH + "=" + statusRingWidth + ";"
+                    + mxConstants.STYLE_SHAPE + "=" + mxConstants.SHAPE_ELLIPSE + ";"
+                    + mxConstants.STYLE_STROKECOLOR + "=" + statusColor + ";";
+            graph.insertVertex(graph.getDefaultParent(), null,
+                    "",
+                    cellBounds.getX() - statusRingWidth / 2, cellBounds.getY() - statusRingWidth / 2, cellBounds.getWidth() + statusRingWidth, cellBounds.getHeight() + statusRingWidth,
+                    style
+            );
+        }
+
 
         //interfaces
         int intfBoxSize = 10;
@@ -277,6 +290,7 @@ public class JGraphXRenderer implements Renderer {
             style.put(mxConstants.STYLE_VERTICAL_LABEL_POSITION, mxConstants.ALIGN_BOTTOM);
             style.put(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, "#666");
             style.put(mxConstants.STYLE_FONTCOLOR, "white");
+            style.put(mxConstants.STYLE_FILLCOLOR, "white");
 
             stylesheet.putCellStyle(type, style);
         }
