@@ -9,6 +9,7 @@ import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
 import de.bonndan.nivio.landscape.*;
+import de.bonndan.nivio.output.Icons;
 import de.bonndan.nivio.output.Renderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,29 +28,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static de.bonndan.nivio.landscape.Status.GREEN;
 import static de.bonndan.nivio.landscape.Status.UNKNOWN;
 
 public class JGraphXRenderer implements Renderer {
     private final int DEFAULT_ICON_SIZE = 40;
-
-    private static final String[] KNOWN_ICONS = new String[]{
-            "api",
-            "cache",
-            "database",
-            "dataflow",
-            "firewall",
-            "humanuser",
-            "interface",
-            "keyvaluestore",
-            "loadbalancer",
-            "lock",
-            "messagequeue",
-            "mobileclient",
-            "server",
-            "service",
-            "webservice",
-    };
 
     private Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);
     private Map<Service, Object> serviceVertexes = new HashMap<>();
@@ -269,19 +251,10 @@ public class JGraphXRenderer implements Renderer {
         return de.bonndan.nivio.util.Color.nameToRGB(service.getGroup(), "gray");
     }
 
-    private String getIcon(Service service) {
-        if (StringUtils.isEmpty(service.getType()))
-            return "service";
 
-        //fallback to service
-        if (!Arrays.asList(KNOWN_ICONS).contains(service.getType().toLowerCase()))
-            return "service";
-
-        return service.getType().toLowerCase();
-    }
 
     private String getBaseStyle(Service service) {
-        String type = getIcon(service);
+        String type = Icons.getIcon(service);
 
         if (!stylesheet.getStyles().containsKey(type)) {
             Hashtable<String, Object> style = new Hashtable<String, Object>();

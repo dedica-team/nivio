@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 @Controller
-@RequestMapping(path = "/render")
+@RequestMapping(path = "/renderg")
 public class GraphRenderController {
 
     private static final Logger logger = LoggerFactory.getLogger(GraphRenderController.class);

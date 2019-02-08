@@ -61,4 +61,23 @@ public class DocsController {
         );
 
     }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/html/{landscape}")
+    public ResponseEntity<String> htmlResource(@PathVariable(name = "landscape") final String landscapeIdentifier) {
+
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
+        if (landscape == null)
+            throw new EntityNotFoundException("Landscape " + landscapeIdentifier + " not found");
+
+        HtmlGenerator htmlGenerator = new HtmlGenerator();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
+        return new ResponseEntity<>(
+                htmlGenerator.toDocument(landscape),
+                headers,
+                HttpStatus.OK
+        );
+
+    }
 }

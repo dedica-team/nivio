@@ -21,7 +21,7 @@ import java.nio.file.Files;
 
 
 @Controller
-@RequestMapping(path = "/renderj")
+@RequestMapping(path = "/render")
 public class JGraphXRenderController {
 
     private static final Logger logger = LoggerFactory.getLogger(de.bonndan.nivio.output.jgraphx.JGraphXRenderController.class);

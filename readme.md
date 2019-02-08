@@ -42,8 +42,15 @@ In the demo mode Nivio loads immutable demo data for demonstration purposes. Run
 
     DEMO=1 docker-compose up
     
-then point your browser to http://localhost:8080/render/dld4e/nivio:example
+then point your browser to http://localhost:8080/render/nivio:example/graph.png
     
+## Api Endpoints
+
+* /landscape/{landscape.identifier}
+* /landscape/{landscape.identifier}/services
+* /render/{landscape.identifier}/graph.png returns the landscape as rendered graph
+* /docs/html/{landscape.identifier} returns a formatted html summary of the landscape
+ 
 ## Model and Syntax
 
 ### Landscape
