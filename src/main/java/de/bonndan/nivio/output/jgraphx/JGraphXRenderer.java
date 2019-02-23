@@ -212,7 +212,7 @@ public class JGraphXRenderer implements Renderer {
                 .sorted((interfaceItem, t1) -> interfaceItem.getDescription().compareToIgnoreCase(t1.getDescription()));
         sorted.forEach(intf -> {
 
-            double angleInRadians = -0.5 + count.getAndIncrement() * 0.5;
+            double angleInRadians = -1 + count.getAndIncrement() * 0.5;
             double radius = intfBoxSize * 4;
             double x = Math.cos(angleInRadians) * radius;
             double y = Math.sin(angleInRadians) * radius;
