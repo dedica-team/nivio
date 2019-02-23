@@ -8,6 +8,7 @@ import de.bonndan.nivio.input.dto.ServiceDescription;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -34,6 +35,12 @@ public class EnvironmentFactory {
         }
     }
 
+    /**
+     * Creates a new environment description and sets the given yaml as source.
+     *
+     * @param yaml source
+     * @return environment description
+     */
     public static Environment fromString(String yaml) {
 
         try {
@@ -45,5 +52,18 @@ public class EnvironmentFactory {
             throw new ReadingException("Failed to create an environment from yaml input string", e);
         }
 
+    }
+
+    /**
+     * Creates a new environment description and sets the given url as source.
+     *
+     * @param yaml source
+     * @param url for updates
+     * @return env description
+     */
+    public static Environment fromString(String yaml, URL url) {
+        Environment env = fromString(yaml);
+        env.setSource(url.toString());
+        return env;
     }
 }

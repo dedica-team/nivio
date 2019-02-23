@@ -57,6 +57,15 @@ class EnvironmentFactoryTest {
     }
 
     @Test
+    public void readYamlStrWithUrlSource() throws IOException {
+
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_env.yml");
+        String yaml = new String(Files.readAllBytes(file.toPath()));
+        Environment environment = EnvironmentFactory.fromString(yaml, file.toURI().toURL());
+        assertEquals(file.toURI().toURL().toString(), environment.getSource());
+    }
+
+    @Test
     public void readIncremental() {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_incremental_env.yml");

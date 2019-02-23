@@ -3,21 +3,25 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.landscape.LandscapeItem;
+import de.bonndan.nivio.util.URLHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.net.URL;
 
 @Component
 public class FileChangeProcessor implements ApplicationListener<FSChangeEvent> {
 
     private final Indexer indexer;
+    private final FileFetcher fileFetcher;
 
     @Autowired
-    public FileChangeProcessor(Indexer indexer) {
+    public FileChangeProcessor(Indexer indexer, FileFetcher fileFetcher) {
         this.indexer = indexer;
+        this.fileFetcher = fileFetcher;
     }
 
     @Override
@@ -39,6 +43,10 @@ public class FileChangeProcessor implements ApplicationListener<FSChangeEvent> {
         File file = new File(item.getSource());
         if (file.exists())
             return process(file);
+        URL url = URLHelper.getURL(item.getSource());
+        if (url != null) {
+            return process(EnvironmentFactory.fromString(fileFetcher.get(url), url));
+        }
 
         return process(EnvironmentFactory.fromString(item.getSource()));
     }

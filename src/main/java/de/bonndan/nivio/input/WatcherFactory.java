@@ -44,8 +44,7 @@ public class WatcherFactory {
                     runnables.add(directoryWatcher);
                     logger.info("Created directory watcher for url " + url);
                 } else {
-
-                    Environment env = EnvironmentFactory.fromString(fileFetcher.get(url));
+                    Environment env = EnvironmentFactory.fromString(fileFetcher.get(url), url);
                     indexer.reIndex(env);
                 }
             });

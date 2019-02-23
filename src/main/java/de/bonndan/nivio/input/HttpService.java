@@ -1,6 +1,5 @@
 package de.bonndan.nivio.input;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.UnknownHostException;
 
 @Component
 public class HttpService {

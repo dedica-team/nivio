@@ -150,12 +150,19 @@ public class Indexer {
                             throw new ProcessingException(environment, "Service not found " + service.getIdentifier());
                     }
                     description.getProvided_by().forEach(providerName -> {
-                        var fqi = FullyQualifiedIdentifier.from(providerName);
-                        Service provider = (Service) ServiceItems.find(fqi, services);
-                        if (provider == null) {
-                            logger.warn("Could not find service " + fqi + " in landscape " + environment + " while linking providers for service " + description.getFullyQualifiedIdentifier());
+                        Service provider;
+                        try {
+                            var fqi = FullyQualifiedIdentifier.from(providerName);
+                            provider = (Service) ServiceItems.find(fqi, services);
+                            if (provider == null) {
+                                logger.warn("Could not find service " + fqi + " in landscape " + environment + " while linking providers for service " + description.getFullyQualifiedIdentifier());
+                                return;
+                            }
+                        } catch (IllegalArgumentException ex) {
+                            logger.warn("Misconfigured provider in service " + description.getFullyQualifiedIdentifier());
                             return;
                         }
+
 
                         if (!ServiceItems.contains(provider, service.getProvidedBy())) {
                             service.getProvidedBy().add(provider);
