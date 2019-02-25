@@ -13,6 +13,14 @@ public class InterfaceDescription implements InterfaceItem, Serializable {
     private String format;
     private URL url;
 
+    public InterfaceDescription() {
+
+    }
+
+    public InterfaceDescription(String description) {
+        this.description = description;
+    }
+
     public String getDescription() {
         return description;
     }
