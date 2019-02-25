@@ -248,7 +248,7 @@ public class JGraphXRenderer implements Renderer {
     }
 
     private String getGroupColor(Service service) {
-        return de.bonndan.nivio.util.Color.nameToRGB(service.getGroup(), "gray");
+        return de.bonndan.nivio.util.Color.nameToRGB(service.getGroup(), "333333");
     }
 
 
