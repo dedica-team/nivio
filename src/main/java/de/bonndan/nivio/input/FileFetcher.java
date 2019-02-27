@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.util.URLHelper;
 import org.apache.http.auth.AuthenticationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +58,18 @@ public class FileFetcher {
         }
     }
 
+    public String get(SourceReference ref, URL baseUrl) {
+
+        //we have no base url or source ref has absolute url
+        if (baseUrl == null || ref.getUrl().startsWith("http")) {
+            return get(ref);
+        }
+
+        //assemble new absolute url
+        ref.setUrl(URLHelper.combine(baseUrl, ref.getUrl()));
+        return get(ref);
+    }
+
     private String fetchUrl(SourceReference ref) {
 
         try {
@@ -87,4 +100,6 @@ public class FileFetcher {
             throw new ReadingException("Failed to read file " + source.getAbsolutePath(), e);
         }
     }
+
+
 }

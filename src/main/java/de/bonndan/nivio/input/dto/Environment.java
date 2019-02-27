@@ -44,6 +44,9 @@ public class Environment implements LandscapeItem {
      */
     private List<SourceReference> sources = new ArrayList<>();
 
+    /**
+     * descriptions of services fetched and parsed from sources
+     */
     private List<ServiceDescription> serviceDescriptions = new ArrayList<>();
 
     private List<StateProviderConfig> stateProviders;
