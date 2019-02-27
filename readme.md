@@ -72,6 +72,12 @@ You can also add state providers which are used to gather live data and thereby 
       - "./services/wordpress.yml"
       - url: "./services/dashboard.yml"
         format: nivio
+      - url: "http://some.server/docker-compose.yml"
+        format: docker-compose-v2
+        autoGroup: billing #adds all services without group to "billing"
+      - url: https://gitlab.com/bonndan/nivio-private-demo/raw/docker-compose.yml
+        headerTokenName: PRIVATE_TOKEN
+        headerTokenValue: somethingsupersecret123
     stateProviders:
       - type: prometheus-exporter
         target: http://prometheus_exporter.url

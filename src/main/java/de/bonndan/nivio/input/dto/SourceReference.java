@@ -16,6 +16,8 @@ public class SourceReference {
     private String headerTokenName;
     private String headerTokenValue;
 
+    private String autoGroup;
+
     public SourceReference() {
     }
 
@@ -89,5 +91,13 @@ public class SourceReference {
 
     public void setHeaderTokenValue(String headerTokenValue) {
         this.headerTokenValue = headerTokenValue;
+    }
+
+    public String getAutoGroup() {
+        return autoGroup;
+    }
+
+    public void setAutoGroup(String autoGroup) {
+        this.autoGroup = autoGroup;
     }
 }
