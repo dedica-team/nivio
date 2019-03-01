@@ -17,7 +17,7 @@ public class ServiceDescription implements ServiceItem {
     private String environment;
 
     @NotEmpty
-    private String layer;
+    private String layer = ServiceItem.LAYER_APPLICATION;
 
     private String type;
 

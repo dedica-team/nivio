@@ -84,19 +84,26 @@ You can also add state providers which are used to gather live data and thereby 
      
         
 ### Landscape Items and Layers
-A landscape consists of the three layers ingress, services, and infrastructure. Within these layers you can allocate services.
+A landscape consists of several groups (think of bounded contexts) and the three layers ingress, services, and infrastructure 
+for technical separation. Any service can only be part of one group and layer.
 
 **Service configuration file**
 
-    ingress:
-      - identifier: auth-gateway
-        short_name: blog1
     services:
       - identifier: blog-server
         short_name: blog1
-    infrastructure:
+        group: content
+      
+      - identifier: auth-gateway
+        short_name: blog1
+        layer: ingress
+        group: content
+        
       - identifier: mysql
         version: 5.6.0
+        type: database
+        layer: infrastructure
+        group: content
         
 A service can have the following attributes:
 
@@ -104,7 +111,7 @@ A service can have the following attributes:
 * **group** name of the group (optional)
 * **name** human readable, displayed name
 * **type** e.g. service, database, proxy, loadbalancer, ...
-* **layer** ingress, applications, or infrastructure (set automatically)
+* **layer** ingress, applications, or infrastructure 
 * **short_name** abbreviation
 * **version** any string describing a service version (e.g. 1.2.5)
 * **software** optional name of the used software/product

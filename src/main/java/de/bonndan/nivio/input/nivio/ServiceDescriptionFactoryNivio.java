@@ -7,7 +7,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.bonndan.nivio.input.ReadingException;
 import de.bonndan.nivio.input.ServiceDescriptionFactory;
 import de.bonndan.nivio.input.dto.ServiceDescription;
-import de.bonndan.nivio.input.dto.Source;
 import de.bonndan.nivio.landscape.ServiceItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,18 +41,8 @@ public class ServiceDescriptionFactoryNivio implements ServiceDescriptionFactory
             logger.warn("Got null out of yml string " + yml);
             return services;
         }
-        source.ingress.forEach(serviceDescription -> {
-            serviceDescription.setLayer(ServiceItem.LAYER_INGRESS);
-            services.add(serviceDescription);
-        });
-        source.services.forEach(serviceDescription -> {
-            serviceDescription.setLayer(ServiceItem.LAYER_APPLICATION);
-            services.add(serviceDescription);
-        });
-        source.infrastructure.forEach(serviceDescription -> {
-            serviceDescription.setLayer(ServiceItem.LAYER_INFRASTRUCTURE);
-            services.add(serviceDescription);
-        });
+
+        services.addAll(source.services);
 
         return services;
 

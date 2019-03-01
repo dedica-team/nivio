@@ -58,9 +58,10 @@ services:
 #
 # auxiliary services which do not provide business value
 #
-infrastructure:
+
 - identifier: wordpress-web
   description: Webserver
+  layer: ingress
   software: Apache
   version: 2.4
   protocol: https

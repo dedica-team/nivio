@@ -90,16 +90,16 @@ class ServiceDescriptionFactoryNivioTest {
             }
         });
 
-        ServiceDescription infra = services.get(1);
-        assertEquals(ServiceItem.LAYER_INFRASTRUCTURE, infra.getLayer());
-        assertEquals("wordpress-web", infra.getIdentifier());
-        assertEquals("Webserver", infra.getDescription());
-        assertEquals("Apache", infra.getSoftware());
-        assertEquals("2.4", infra.getVersion());
-        assertEquals("Pentium 1 512MB RAM", infra.getMachine());
-        assertEquals("ops guys", infra.getTeam());
-        assertEquals("content", infra.getNetworks().toArray()[0]);
-        assertEquals("docker", infra.getHost_type());
+        ServiceDescription web = services.get(1);
+        assertEquals(ServiceItem.LAYER_INGRESS, web.getLayer());
+        assertEquals("wordpress-web", web.getIdentifier());
+        assertEquals("Webserver", web.getDescription());
+        assertEquals("Apache", web.getSoftware());
+        assertEquals("2.4", web.getVersion());
+        assertEquals("Pentium 1 512MB RAM", web.getMachine());
+        assertEquals("ops guys", web.getTeam());
+        assertEquals("content", web.getNetworks().toArray()[0]);
+        assertEquals("docker", web.getHost_type());
     }
 
     @Test

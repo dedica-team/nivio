@@ -1,4 +1,6 @@
-package de.bonndan.nivio.input.dto;
+package de.bonndan.nivio.input.nivio;
+
+import de.bonndan.nivio.input.dto.ServiceDescription;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +10,5 @@ import java.util.List;
  */
 public class Source {
 
-    public List<ServiceDescription> ingress = new ArrayList<>();
     public List<ServiceDescription> services = new ArrayList<>();
-    public List<ServiceDescription> infrastructure = new ArrayList<>();
 }

@@ -46,6 +46,10 @@ public interface ServiceDescriptionFactory {
 
         if (increment.getSoftware() != null)
             existing.setSoftware(increment.getSoftware());
+        if (increment.getVersion() != null)
+            existing.setVersion(increment.getVersion());
+        if (increment.getVisibility() != null)
+            existing.setVisibility(increment.getVisibility());
 
         assignSafe(increment.getScale(), existing::setScale);
         assignSafe(increment.getHost_type(), existing::setHost_type);

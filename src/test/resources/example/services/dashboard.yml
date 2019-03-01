@@ -1,12 +1,12 @@
 document_version: 1.0
 
-ingress:
+services:
+
   - identifier: keycloak
     name: Keycloak SSO
     version: 4.4.0
     owner: Ops
-
-services:
+    layer: ingress
 
   - identifier: kpi-dashboard
     name: Demo Dashboard
@@ -39,14 +39,9 @@ services:
     provided_by:
       - dashboard-mysql
       - keycloak
-    #dataflow:
-    #  - description: auth
-    #    format: SAML
-    #    target: keycloak
-
-infrastructure:
 
   - description: Database for Dashboard
+    layer: infrastructure
     software: MySQL
     version: 5.6
     identifier: dashboard-mysql
