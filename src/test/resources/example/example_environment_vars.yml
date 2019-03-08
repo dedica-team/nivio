@@ -1,0 +1,9 @@
+identifier: nivio:example
+name: Landscape example
+contact: mail@acme.org
+
+sources:
+  - url: "http://acme.io/dashboard.yml"
+    format: nivio
+    headerTokenName: PRIVATE_TOKEN
+    headerTokenValue: ${PRIVATE_TOKEN}

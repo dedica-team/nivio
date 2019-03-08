@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
@@ -9,10 +10,15 @@ import de.bonndan.nivio.landscape.StateProviderConfig;
 import de.bonndan.nivio.util.RootPath;
 import de.bonndan.nivio.input.dto.Environment;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.Collections;
+import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -86,5 +92,25 @@ class EnvironmentFactoryTest {
         assertNotNull(cfg);
         assertEquals("prometheus-exporter", cfg.getType());
         assertTrue(cfg.getTarget().contains("example/rancher_prometheus_exporter.txt"));
+    }
+
+    @Test
+    public void readEnvVars() throws IOException, NoSuchFieldException, IllegalAccessException {
+
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_environment_vars.yml");
+        String read = com.github.jknack.handlebars.internal.Files.read(file, Charset.defaultCharset());
+
+        for (Class c : Collections.class.getDeclaredClasses()) {
+            if ("java.util.Collections$UnmodifiableMap".equals(c.getName())) {
+                Field m = c.getDeclaredField("m");
+                m.setAccessible(true);
+                var x = (Map<String, String>)m.get(System.getenv());
+                x.put("PRIVATE_TOKEN", "veryPrivateToken");
+            }
+        };
+
+        Environment environment = EnvironmentFactory.fromString(read);
+        assertNotNull(environment);
+        assertEquals("veryPrivateToken", environment.getSourceReferences().get(0).getHeaderTokenValue());
     }
 }
