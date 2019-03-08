@@ -19,6 +19,7 @@ from configurable services, preferably code repos.
 ## Features
 
 * **Renders the landscapes as a graph**
+* **Generates a report** see [here](https://raw.githubusercontent.com/bonndan/nivio/master/docs/Landscape_example.png)
 * **Multiple configuration sources** while nivio has its proprietary format, you can also use docker-compose files or use
 them as basis and enrich them using further files
 * **PULL: Single seed** basic indexing of landscapes driven by a configuration file
@@ -62,7 +63,10 @@ infrastructure. Both landscapes could have services in common (like a database, 
 
 **Landscape configuration file**
 
-The configuration file contains basic data, references to service descriptions (sources), which can be local paths or URLs.
+The configuration file contains basic data, references to service descriptions ("sources"), which can be local paths or URLs.
+The descriptions can be gathered by http, i.e. it is possible to fetch files from protected sources via authentication headers.
+Think of GitLab or GitHub and the related tokens.
+
 You can also add state providers which are used to gather live data and thereby provide state for the services. 
 
     identifier: nivio:example
@@ -77,7 +81,7 @@ You can also add state providers which are used to gather live data and thereby 
         autoGroup: billing #adds all services without group to "billing"
       - url: https://gitlab.com/bonndan/nivio-private-demo/raw/docker-compose.yml
         headerTokenName: PRIVATE_TOKEN
-        headerTokenValue: somethingsupersecret123
+        headerTokenValue: ${MY_SECRET_TOKEN_ENV_VAR}
     stateProviders:
       - type: prometheus-exporter
         target: http://prometheus_exporter.url
