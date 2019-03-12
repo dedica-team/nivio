@@ -9,7 +9,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.Optional;
 
+import de.bonndan.nivio.input.dto.ServiceDescription;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookupFactory;
 
@@ -49,6 +51,7 @@ public class EnvironmentFactory {
             Environment environment = mapper.readValue(yaml, Environment.class);
             environment.setSource(yaml);
             environment.getSourceReferences().forEach(ref -> ref.setEnvironment(environment));
+            sanitizeTemplates(environment);
             return environment;
         } catch (IOException e) {
             throw new ReadingException("Failed to create an environment from yaml input string", e);
@@ -67,5 +70,15 @@ public class EnvironmentFactory {
         Environment env = fromString(yaml);
         env.setSource(url.toString());
         return env;
+    }
+
+    private static void sanitizeTemplates(Environment environment) {
+        //sanitize templates, unset properties which are not reusable
+        if (environment.getTemplates() != null) {
+            environment.getTemplates().forEach(tpl -> {
+                tpl.setName("");
+                tpl.setShort_name("");
+            });
+        }
     }
 }

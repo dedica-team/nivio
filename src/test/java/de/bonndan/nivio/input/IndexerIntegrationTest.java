@@ -5,6 +5,8 @@ import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.landscape.*;
 import de.bonndan.nivio.notification.NotificationService;
+import de.bonndan.nivio.util.RootPath;
+import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,6 +27,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Set;
 
+import static de.bonndan.nivio.landscape.ServiceItems.pick;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -220,6 +223,16 @@ public class IndexerIntegrationTest {
 
         assertNotNull(blog1.getDataFlow());
         assertEquals(1, blog1.getDataFlow().size());
+    }
+
+    @Test
+    public void environmentTemplatesApplied() {
+        Landscape landscape = index("/src/test/resources/example/example_templates.yml");
+
+        ServiceItem web = pick( "web", null, landscape.getServices());
+        Assert.assertNotNull(web);
+        assertEquals("web", web.getIdentifier());
+        assertEquals("webservice", web.getType());
     }
 
     private String getRootPath() {

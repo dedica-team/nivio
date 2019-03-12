@@ -37,6 +37,8 @@ public class Environment implements LandscapeItem {
      */
     private String contact;
 
+    private List<ServiceDescription> templates;
+
     private String source;
 
     /**
@@ -115,6 +117,14 @@ public class Environment implements LandscapeItem {
 
     public List<ServiceDescription> getServiceDescriptions() {
         return serviceDescriptions;
+    }
+
+    public List<ServiceDescription> getTemplates() {
+        return templates;
+    }
+
+    public void setTemplates(List<ServiceDescription> templates) {
+        this.templates = templates;
     }
 
     public Landscape toLandscape() {

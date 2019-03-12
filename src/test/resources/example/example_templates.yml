@@ -1,0 +1,68 @@
+identifier: nivio:templates
+name: Templates example
+contact: mail@acme.org
+sources:
+  - url: "./services/docker-compose.yml"
+    format: docker-compose-v2
+    assignTemplates:
+      myfirsttemplate: [web]
+      insamegroup: ["*"]
+
+templates:
+  - identifier: myfirsttemplate
+    name: willnotbeused
+    type: webservice
+    short_name: willnotbeused
+    version: 1.0
+    software: Wordpress
+    owner: Marketing
+    description: Company blog
+    team: alphateam
+    contact: alphateam@acme.io
+    homepage: https://acme.io
+    repository: https://git.acme.io/blog-server
+    group: content
+    visibility: public
+    tags:
+      - CMS
+    networks:
+      - content
+    machine: s
+    scale: 5
+    host_type: docker
+    note: to be replaced
+    statuses:
+      - label: lifecycle
+        status: green
+      - label: security
+        status: red
+        message: uses outdated version
+      - label: stability
+        status: green
+      - label: business_capability
+        status: yellow
+        message: needs finer control of content publishing like ACLs
+    interfaces:
+      - description: posts
+        format: form
+        url: http://acme.io/create
+      - description: user data
+        format: form
+        url: http://acme.io/whoami
+      - description: api calls
+        format: json
+        url: http://acme.io/api
+    dataflow:
+      - description: push
+        target: kpi-dashboard
+        format: json
+      - description: in-app purchases
+        target: external-billing
+    provided_by:
+      - wordpress-web
+      - wordpress-mysql
+      - wordpress-redis
+
+  # template for grouping
+  - identifier: insamegroup
+    group: allinsamegroup

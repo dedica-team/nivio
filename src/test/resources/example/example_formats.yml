@@ -4,4 +4,3 @@ sources:
   - url: "./services/wordpress.yml"
   - url: "./services/docker-compose.yml"
     format: docker-compose-v2
-    autoGroup: webservice

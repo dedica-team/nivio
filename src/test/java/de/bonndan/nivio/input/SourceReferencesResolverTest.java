@@ -20,6 +20,7 @@ import static de.bonndan.nivio.landscape.ServiceItems.find;
 import static de.bonndan.nivio.landscape.ServiceItems.pick;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SourceReferencesResolverTest {
@@ -62,24 +63,67 @@ public class SourceReferencesResolverTest {
     }
 
     @Test
-    public void autoGroups() {
+    public void assignTemplateToAll() {
 
-        File file = new File(RootPath.get() + "/src/test/resources/example/example_formats.yml");
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
         Environment environment = EnvironmentFactory.fromYaml(file);
         assertFalse(environment.getSourceReferences().isEmpty());
-        SourceReference dockerComposeRef = environment.getSourceReferences().get(1);
 
-        assertEquals("webservice", dockerComposeRef.getAutoGroup());
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
+        sourceReferencesResolver.resolve(environment, log);
+
+        ServiceDescription redis = (ServiceDescription) pick("redis", null, environment.getServiceDescriptions());
+        assertNotNull(redis);
+        assertEquals("allinsamegroup", redis.getGroup());
+
+        ServiceDescription datadog = (ServiceDescription) pick("datadog", null, environment.getServiceDescriptions());
+        assertNotNull(datadog);
+        assertEquals("allinsamegroup", datadog.getGroup());
+
+        //web has previously been assigned to group "content" and will not be overwritten by further templates
+        ServiceDescription web = (ServiceDescription) pick("web", null, environment.getServiceDescriptions());
+        assertNotNull(web);
+        assertEquals("content", web.getGroup());
+    }
+
+    @Test
+    public void assignsAllValues() {
+
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
+        Environment environment = EnvironmentFactory.fromYaml(file);
+        assertFalse(environment.getSourceReferences().isEmpty());
 
         SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
         sourceReferencesResolver.resolve(environment, log);
 
 
-        ServiceItem web = find("web", "webservice", environment.getServiceDescriptions());
-        assertNotNull("web");
-        assertEquals("webservice", web.getGroup());
-        ServiceItem blogService = find("blog-server", null, environment.getServiceDescriptions());
-        assertNotNull(blogService);
-        assertFalse("webservice".equals(blogService.getGroup()));
+        //web has previously been assigned to group "content" and will not be overwritten by further templates
+        ServiceDescription web = (ServiceDescription) pick("web", null, environment.getServiceDescriptions());
+        assertNotNull(web);
+        assertEquals("content", web.getGroup());
+
+        //other values from template
+        assertNull(web.getName());
+        assertNull(web.getShort_name());
+        assertEquals("Wordpress", web.getSoftware());
+        assertEquals("alphateam", web.getTeam());
+        assertEquals("alphateam@acme.io", web.getContact());
+        assertEquals(1, web.getTags().length);
+    }
+
+    @Test
+    public void assignsOnlyToReferences() {
+
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
+        Environment environment = EnvironmentFactory.fromYaml(file);
+        assertFalse(environment.getSourceReferences().isEmpty());
+
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
+        sourceReferencesResolver.resolve(environment, log);
+
+
+        ServiceDescription redis = (ServiceDescription) pick("redis", null, environment.getServiceDescriptions());
+        assertNotNull(redis);
+        assertNull(redis.getSoftware());
     }
 }

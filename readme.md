@@ -61,37 +61,74 @@ or tagging to further separate the applications. A second landscape could be use
 infrastructure. Both landscapes could have services in common (like a database, load balancer etc.), so their configuration can be reused.
 
 
-**Landscape configuration file**
+**Landscape configuration**
 
 The configuration file contains basic data, references to service descriptions ("sources"), which can be local paths or URLs.
 The descriptions can be gathered by http, i.e. it is possible to fetch files from protected sources via authentication headers.
 Think of GitLab or GitHub and the related tokens.
 
-You can also add state providers which are used to gather live data and thereby provide state for the services. 
-
     identifier: nivio:example
     name: Landscape example
     contact: mail@acme.org
+    
     sources:
       - "./services/wordpress.yml"
       - url: "./services/dashboard.yml"
         format: nivio
       - url: "http://some.server/docker-compose.yml"
         format: docker-compose-v2
-        autoGroup: billing #adds all services without group to "billing"
       - url: https://gitlab.com/bonndan/nivio-private-demo/raw/docker-compose.yml
         headerTokenName: PRIVATE_TOKEN
         headerTokenValue: ${MY_SECRET_TOKEN_ENV_VAR}
+        
+
+***State***
+
+You can also add state providers which are used to gather live data and thereby provide state for the services. 
+
+    identifier: nivio:example
+    name: Landscape example
+    
+    ...
+        
     stateProviders:
       - type: prometheus-exporter
         target: http://prometheus_exporter.url
+        
+***Using Templates***
+
+To prevent repetitive configuration of services, i.e. entering the same owner again and again,
+templates can be used to prefill values. Templates a just service descriptions, except that
+the identifier is used for referencing and that names are ignored. A template value is ony applied
+if the target value is null.
+
+Multiple templates can be assigned to services, too. In this case the first assigned value "wins" and
+ will not be overwritten by templates applied later. **Wildcards**  
+
+
+    identifier: nivio:example
+    name: Landscape example
+    
+    sources:
+      - url: "./services/docker-compose.yml"
+        format: docker-compose-v2
+        assignTemplates:
+          endOfLife: [web]
+          myGroupTemplate: ["*"]
+        
+    templates:
+      - identifier: myGroupTemplate
+        group: billing
+      - identifier: endOfLife
+        tags: [eol]
+        statuses
      
         
 ### Landscape Items and Layers
 A landscape consists of several groups (think of bounded contexts) and the three layers ingress, services, and infrastructure 
 for technical separation. Any service can only be part of one group and layer.
 
-**Service configuration file**
+**Service configuration file (nivio format)**
 
     services:
       - identifier: blog-server

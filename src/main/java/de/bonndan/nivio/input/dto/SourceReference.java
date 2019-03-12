@@ -2,6 +2,10 @@ package de.bonndan.nivio.input.dto;
 
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class SourceReference {
 
     private String url;
@@ -16,7 +20,7 @@ public class SourceReference {
     private String headerTokenName;
     private String headerTokenValue;
 
-    private String autoGroup;
+    private Map<String, List<String>> assignTemplates = new HashMap<>();
 
     public SourceReference() {
     }
@@ -93,11 +97,11 @@ public class SourceReference {
         this.headerTokenValue = headerTokenValue;
     }
 
-    public String getAutoGroup() {
-        return autoGroup;
+    public Map<String, List<String>> getAssignTemplates() {
+        return assignTemplates;
     }
 
-    public void setAutoGroup(String autoGroup) {
-        this.autoGroup = autoGroup;
+    public void setAssignTemplates(Map<String, List<String>> assignTemplates) {
+        this.assignTemplates = assignTemplates;
     }
 }

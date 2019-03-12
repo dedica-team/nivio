@@ -1,16 +1,13 @@
 package de.bonndan.nivio.input;
 
 
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.landscape.ServiceItems;
+import de.bonndan.nivio.landscape.ServiceItem;
 import de.bonndan.nivio.landscape.StateProviderConfig;
 import de.bonndan.nivio.util.RootPath;
-import de.bonndan.nivio.input.dto.Environment;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,12 +15,13 @@ import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
+import static de.bonndan.nivio.landscape.ServiceItems.pick;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -98,7 +96,7 @@ class EnvironmentFactoryTest {
     public void readEnvVars() throws IOException, NoSuchFieldException, IllegalAccessException {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_environment_vars.yml");
-        String read = com.github.jknack.handlebars.internal.Files.read(file, Charset.defaultCharset());
+        String read = Files.readString(file.toPath());
 
         for (Class c : Collections.class.getDeclaredClasses()) {
             if ("java.util.Collections$UnmodifiableMap".equals(c.getName())) {
@@ -112,5 +110,44 @@ class EnvironmentFactoryTest {
         Environment environment = EnvironmentFactory.fromString(read);
         assertNotNull(environment);
         assertEquals("veryPrivateToken", environment.getSourceReferences().get(0).getHeaderTokenValue());
+    }
+
+    @Test
+    public void environmentTemplatesRead() {
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
+        Environment environment = EnvironmentFactory.fromYaml(file);
+        assertNotNull(environment.getTemplates());
+        assertEquals(2, environment.getTemplates().size());
+
+        ServiceItem template = pick("myfirsttemplate", null, environment.getTemplates());
+        assertNotNull(template);
+        ServiceItem groupTemplate = pick("insamegroup", null, environment.getTemplates());
+        assertNotNull(groupTemplate);
+    }
+
+    @Test
+    public void environmentTemplatesSanitized() {
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
+        Environment environment = EnvironmentFactory.fromYaml(file);
+
+        ServiceItem template = pick("myfirsttemplate", null, environment.getTemplates());
+
+        assertEquals("webservice", template.getType());
+        assertTrue(template.getName().isEmpty());
+        assertTrue(template.getShort_name().isEmpty());
+    }
+
+    @Test
+    public void templatesAssigned() {
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
+        Environment environment = EnvironmentFactory.fromYaml(file);
+
+        SourceReference ref = environment.getSourceReferences().get(0);
+
+        assertNotNull(ref.getAssignTemplates());
+        assertEquals(2, ref.getAssignTemplates().size());
+        assertTrue(ref.getAssignTemplates().containsKey("myfirsttemplate"));
+        List<String> assignments = ref.getAssignTemplates().get("myfirsttemplate");
+        assertNotNull(assignments);
     }
 }

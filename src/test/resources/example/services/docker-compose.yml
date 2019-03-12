@@ -16,6 +16,7 @@ services:
     networks:
     - test
     - test2
+
   redis:
     image: redis
     networks:
