@@ -79,8 +79,8 @@ You can also add state providers which are used to gather live data and thereby 
       - url: "http://some.server/docker-compose.yml"
         format: docker-compose-v2
         autoGroup: billing #adds all services without group to "billing"
-      - url: https://gitlab.com/bonndan/nivio-private-demo/raw/docker-compose.yml
-        headerTokenName: PRIVATE_TOKEN
+      - url: https://gitlab.com/api/v4/projects/10972253/repository/files/dashboard.yml/raw?ref=master
+        headerTokenName: PRIVATE-TOKEN #gitlab example
         headerTokenValue: ${MY_SECRET_TOKEN_ENV_VAR}
     stateProviders:
       - type: prometheus-exporter
