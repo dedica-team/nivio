@@ -7,8 +7,12 @@ import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
+import de.bonndan.nivio.landscape.Service;
+import de.bonndan.nivio.landscape.ServiceItem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,8 +49,12 @@ public class ApiController {
     }
 
     @RequestMapping(path = "/landscape/{identifier}")
-    public LandscapeDTO landscape(@PathVariable String identifier) {
-        return LandscapeDTO.from(landscapeRepository.findDistinctByIdentifier(identifier));
+    public ResponseEntity<LandscapeDTO> landscape(@PathVariable String identifier) {
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier);
+        if (landscape == null)
+            return ResponseEntity.notFound().build();
+
+        return new ResponseEntity<>(LandscapeDTO.from(landscape), HttpStatus.OK);
     }
 
     /**
@@ -73,6 +81,17 @@ public class ApiController {
         env.setServiceDescriptions(serviceDescriptions);
 
         return fileChangeProcessor.process(env);
+    }
+
+    @RequestMapping(path = "/landscape/{identifier}/services", method = RequestMethod.GET)
+    public ResponseEntity<List<Service>> services(@PathVariable String identifier) {
+
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier);
+        if (landscape == null)
+            return ResponseEntity.notFound().build();
+
+        return new ResponseEntity<>(landscape.getServices(), HttpStatus.OK);
+
     }
 
     /**
