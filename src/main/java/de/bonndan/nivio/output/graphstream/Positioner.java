@@ -20,7 +20,7 @@ public class Positioner {
 
     public void add(Service service, Node node) {
         pairs.put(service, node);
-        groups.add(service);
+        groups.add(service.getGroup(), service);
     }
 
     public void compute () {
