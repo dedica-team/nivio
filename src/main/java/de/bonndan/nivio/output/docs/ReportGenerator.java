@@ -75,6 +75,7 @@ public class ReportGenerator extends HtmlGenerator {
                                 , li("Team: " + FormatUtils.nice(item.getTeam()))
                                 , li("Owner: " + FormatUtils.nice(item.getOwner()))
                                 , li("Type: " + item.getType())
+                                , li("Capability: " + FormatUtils.nice(item.getCapability()))
                                 , iff(!StringUtils.isEmpty(item.getHomepage()), li(span("Homepage: "), a(item.getHomepage()).attr("href", item.getHomepage())))
                                 , li("Repository: " + FormatUtils.nice(item.getRepository()))
                                 , li("Tags: " + FormatUtils.nice(item.getTags()))
@@ -84,6 +85,7 @@ public class ReportGenerator extends HtmlGenerator {
                                 , li("Scale: " + FormatUtils.nice(item.getScale()))
                                 , li("Visibility: " + FormatUtils.nice(item.getVisibility()))
                                 , li("Networks: " + FormatUtils.nice(item.getNetworks()))
+                                , li("Costs: " + FormatUtils.nice(item.getCosts()))
                         ),
 
 
@@ -116,7 +118,7 @@ public class ReportGenerator extends HtmlGenerator {
                                         span(interfaceItem.getDescription()),
                                         iff(!StringUtils.isEmpty(interfaceItem.getFormat()), span(", format: " + interfaceItem.getFormat())),
                                         iff(interfaceItem.getUrl() != null && !StringUtils.isEmpty(interfaceItem.getUrl().toString()),
-                                                a(interfaceItem.getUrl().toString()).attr("href", interfaceItem.getUrl().toString())
+                                                span(", " ).with(a(interfaceItem.getUrl().toString()).attr("href", interfaceItem.getUrl().toString()))
                                         )
                                 ))
                                 )

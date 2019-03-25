@@ -22,7 +22,8 @@ public class ServiceFactory {
     }
 
     /**
-     * Assigns all values from the description except data flow and provided_by/provides
+     * Assigns all values from the description except data flow and provided_by/provides. Description values
+     * overwrite all fields except the group
      */
     public static void assignAll(Service service, ServiceItem description) {
         if (description == null) {
@@ -50,6 +51,9 @@ public class ServiceFactory {
 
         service.setVisibility(description.getVisibility());
         assignSafe(description.getGroup(), service::setGroup);
+
+        service.setCosts(description.getCosts());
+        service.setCapability(description.getCapability());
 
         if (description.getStatuses() != null)
         description.getStatuses().forEach(service::setStatus);

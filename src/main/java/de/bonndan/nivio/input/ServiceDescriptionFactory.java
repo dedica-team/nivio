@@ -54,6 +54,9 @@ public interface ServiceDescriptionFactory {
         assignSafe(increment.getScale(), existing::setScale);
         assignSafe(increment.getHost_type(), existing::setHost_type);
 
+        assignSafe(increment.getCosts(), existing::setCosts);
+        assignSafe(increment.getCapability(), existing::setCapability);
+
         /*
          * the rest is merged
          */

@@ -46,6 +46,9 @@ public class ServiceDescription implements ServiceItem {
     private String scale;
     private String host_type;
 
+    private String costs;
+    private String capability;
+
     @JsonDeserialize(contentAs = StatusDescription.class)
     private Set<StatusItem> statuses = new HashSet<>();
 
@@ -284,6 +287,24 @@ public class ServiceDescription implements ServiceItem {
 
     public void setNetworks(Set<String> networks) {
         this.networks = networks;
+    }
+
+    @Override
+    public String getCapability() {
+        return capability;
+    }
+
+    public void setCapability(String capability) {
+        this.capability = capability;
+    }
+
+    @Override
+    public String getCosts() {
+        return costs;
+    }
+
+    public void setCosts(String costs) {
+        this.costs = costs;
     }
 
     @Override

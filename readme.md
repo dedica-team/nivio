@@ -112,12 +112,14 @@ for technical separation. Any service can only be part of one group and layer.
         
 A service can have the following attributes:
 
-* **identifier**: a unique identifier in the landscape. Use a name or an URN
-* **group** name of the group (optional)
+* **identifier**: a unique identifier in the landscape. Use a name or an URN, validated against ^[a-z0-9\\.\\:_-]{3,256}$
+* **group** name of the group (optional). If a group is given it becomes part of the global identifier
 * **name** human readable, displayed name
 * **type** e.g. service, database, proxy, loadbalancer, ...
 * **layer** ingress, applications, or infrastructure 
 * **short_name** abbreviation
+* **capability** the capability the service provides for the business, or in case of infrastructure the technical purpose 
+like enabling service discovery, configuration, secrets or persistence.
 * **version** any string describing a service version (e.g. 1.2.5)
 * **software** optional name of the used software/product
 * **owner** owning party (e.g. Marketing)
@@ -131,10 +133,11 @@ A service can have the following attributes:
 * **networks** list of network names (can be defined somewhere else)
 * **machine** description of the underlying virtual or physical machine
 * **scale** number of instances (or other description)
-* **host_type** e.g. docker
+* **host_type** e.g. docker, VM, bare metal
 * **note** any note attached to the service
+* **costs** running costs of the service. Stored as string
 * **statuses** status objects, represented in colors
-  * label: lifecycle (etc: stability, business_capability ....)
+  * label: lifecycle (etc: stability, capability ....)
   * status: green, yellow, orange, red, brown
   * message: Everything ok.
 * **interfaces** an array of provided interfaces or endpoints

@@ -69,7 +69,7 @@ class ServiceDescriptionFactoryNivioTest {
             if (statusItem.getLabel().equals(StatusItem.SECURITY)) {
                 Assert.assertEquals(Status.RED, statusItem.getStatus());
             }
-            if (statusItem.getLabel().equals(StatusItem.BUSINESS_CAPABILITY)) {
+            if (statusItem.getLabel().equals(StatusItem.CAPABILITY)) {
                 Assert.assertEquals(Status.YELLOW, statusItem.getStatus());
             }
         });

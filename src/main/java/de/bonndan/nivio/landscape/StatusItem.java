@@ -5,11 +5,11 @@ package de.bonndan.nivio.landscape;
  */
 public interface StatusItem {
 
-    String HEALTH = "HEALTH";
+    String HEALTH = "health";
     String LIFECYCLE = "lifecycle";
     String SECURITY = "security";
     String STABILITY = "stability";
-    String BUSINESS_CAPABILITY = "business_capability";
+    String CAPABILITY = "capability";
 
     /**
      * The label / name, unique for a service.
