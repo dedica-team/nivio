@@ -13,7 +13,7 @@ public class GroupsTest {
 
     @Test
     public void testBy() {
-        List<Service> services = new ArrayList<>();
+        List<ServiceItem> services = new ArrayList<>();
         Service service1 = new Service();
         service1.setIdentifier("1");
         service1.setOwner("A");
@@ -43,7 +43,7 @@ public class GroupsTest {
 
     @Test
     public void testByDefault() {
-        List<Service> services = new ArrayList<>();
+        List<ServiceItem> services = new ArrayList<>();
         Service service1 = new Service();
         service1.setIdentifier("1");
         services.add(service1);
@@ -75,7 +75,7 @@ public class GroupsTest {
 
     @Test
     public void testByNotUsingGroupField() {
-        List<Service> services = new ArrayList<>();
+        List<ServiceItem> services = new ArrayList<>();
         Service service1 = new Service();
         service1.setIdentifier("1");
         service1.setOwner("A");

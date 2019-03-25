@@ -50,7 +50,8 @@ then point your browser to http://localhost:8080/render/nivio:example/graph.png
 * /landscape/{landscape.identifier}
 * /landscape/{landscape.identifier}/services
 * /render/{landscape.identifier}/graph.png returns the landscape as rendered graph
-* /docs/html/{landscape.identifier} returns a formatted html summary of the landscape
+* /docs/{landscape.identifier}/report.html returns a formatted html summary of the landscape
+* /docs/{landscape.identifier}/owners.html returns a formatted html summary of the landscape
  
 ## Model and Syntax
 

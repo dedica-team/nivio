@@ -32,7 +32,7 @@ public class Groups {
      * @param groupKey the group key
      * @param service service to add
      */
-    public void add(String groupKey, Service service) {
+    public void add(String groupKey, ServiceItem service) {
 
         String key = isEmpty(groupKey) ? COMMON : groupKey;
 
@@ -58,7 +58,7 @@ public class Groups {
      * @param items services
      * @return grouped services
      */
-    public static Groups by(Function<ServiceItem, String> supplier, List<Service> items) {
+    public static Groups by(Function<ServiceItem, String> supplier, List<ServiceItem> items) {
         var groups = new Groups();
         items.forEach(serviceItem -> {
             String key = supplier.apply(serviceItem);
@@ -68,7 +68,7 @@ public class Groups {
         return groups;
     }
 
-    private void add(Service service) {
+    private void add(ServiceItem service) {
         add(service.getGroup(), service);
     }
 
