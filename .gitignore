@@ -1,2 +1,5 @@
 .idea
 target
+docs/build
+_static
+_templates
