@@ -1,7 +1,7 @@
 # Nivio
 
 [![Build Status](https://api.travis-ci.org/bonndan/nivio.svg?branch=master)](https://travis-ci.org/bonndan/nivio)
-
+[![Documentation Status](https://readthedocs.org/projects/nivio/badge/?version=master)](https://nivio.readthedocs.io/en/master/?badge=master)
 
 Nivio is application landscape management for teams (developers, operators, managers). It follows a bottom-up no-op 
 approach, i.e. there is no interface for manual data maintenance. It is designed to gather the application landscape
