@@ -1,6 +1,9 @@
 Getting Started
 ===============
 
+The easiest way to get started is run to Nivio using Docker. **Make sure to read about using templates before putting too much effort in service configuration.**
+
+
 Requirements
 ------------
 
@@ -37,7 +40,7 @@ or you can omit the variable and place environment files in /opt/nivio/environme
     SEED=/my/files/here docker-compose up
 
 then point your browser to http://localhost:8080/render/dld4e/{landscape} where landscape is the identifier of the landscape
-to be rendered.
+to be rendered. The seed can also be an URL.
 
 
 Landscape configuration
@@ -64,21 +67,3 @@ You can also add state providers which are used to gather live data and thereby 
       - url: https://gitlab.com/bonndan/nivio-private-demo/raw/docker-compose.yml
         headerTokenName: PRIVATE_TOKEN
         headerTokenValue: ${MY_SECRET_TOKEN_ENV_VAR}
-
-
-Service state (alpha)
----------------------
-
-You can also add state providers which are used to gather live data and thereby provide state for the services. Currently only prometheus is supported.
-
-.. code-block:: yaml
-   :linenos:
-
-    identifier: nivio:example
-    name: Landscape example
-
-    ...
-
-    stateProviders:
-      - type: prometheus-exporter
-        target: http://prometheus_exporter.url

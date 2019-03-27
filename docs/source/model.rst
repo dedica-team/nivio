@@ -76,7 +76,7 @@ A service can have the following attributes:
   * format: media type or binary format
 * **provided_by** array of references to other services (identifiers)
 
-Service identification and referencing
+Service Identification and Referencing
 --------------------------------------
 
 A service can be uniquely identified by its landscape, its group and its identifier. A fully qualified
@@ -132,3 +132,21 @@ will not be overwritten by templates applied later.
       - identifier: endOfLife
         tags: [eol]
         statuses
+
+
+Service state (alpha)
+---------------------
+
+You can also add state providers which are used to gather live data and thereby provide state for the services. Currently only prometheus is supported.
+
+.. code-block:: yaml
+   :linenos:
+
+    identifier: nivio:example
+    name: Landscape example
+
+    ...
+
+    stateProviders:
+      - type: prometheus-exporter
+        target: http://prometheus_exporter.url
