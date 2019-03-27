@@ -12,7 +12,12 @@ import java.util.Set;
 
 import static org.springframework.util.StringUtils.isEmpty;
 
-
+/**
+ * Generates a document using asciidoc, which is cumbersome.
+ *
+ *
+ */
+@Deprecated
 public class AsciiDocGenerator {
 
     private static final String NL = "\n";

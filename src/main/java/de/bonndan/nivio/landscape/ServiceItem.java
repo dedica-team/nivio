@@ -77,5 +77,18 @@ public interface ServiceItem {
 
     Set<DataFlowItem> getDataFlow();
 
+    /**
+     * Describes the capability the service provides for the business, or in case of infrastructure the technical
+     * capability like enabling service discovery, configuration, secrets or persistence.
+     *
+     * @return name
+     */
+    String getCapability();
 
+    /**
+     * Running costs of the service.
+     *
+     * @return the raw string
+     */
+    String getCosts();
 }

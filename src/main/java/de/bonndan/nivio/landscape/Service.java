@@ -67,6 +67,10 @@ public class Service implements ServiceItem {
 
     private String host_type;
 
+    private String costs;
+
+    private String capability;
+
     @JsonManagedReference
     @OneToMany(targetEntity = ServiceStatus.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "service")
     private Set<StatusItem> statuses = new HashSet<>();
@@ -84,10 +88,6 @@ public class Service implements ServiceItem {
 
     @JsonBackReference
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE, mappedBy = "providedBy")
-    /* integration test fails with two relations
-    @JoinTable(name = "TYPE_INFRASTRUCTURE",
-            joinColumns = {@JoinColumn(name = "infrastructure_identifier")},
-            inverseJoinColumns = {@JoinColumn(name = "service_identifier")})*/
     private Set<Service> provides = new HashSet<>();
 
     private String note;
@@ -337,6 +337,24 @@ public class Service implements ServiceItem {
 
     public Set<InterfaceItem> getInterfaces() {
         return interfaces;
+    }
+
+    @Override
+    public String getCosts() {
+        return costs;
+    }
+
+    public void setCosts(String costs) {
+        this.costs = costs;
+    }
+
+    @Override
+    public String getCapability() {
+        return capability;
+    }
+
+    public void setCapability(String capability) {
+        this.capability = capability;
     }
 
     @Override

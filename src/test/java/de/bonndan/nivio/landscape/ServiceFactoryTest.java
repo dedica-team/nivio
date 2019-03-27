@@ -29,6 +29,8 @@ public class ServiceFactoryTest {
         landscapeItem.setTeam("A-Team");
         landscapeItem.setVisibility("public");
         landscapeItem.setTags(new String[]{"a", "b"});
+        landscapeItem.setCosts("10000");
+        landscapeItem.setCapability("billing");
     }
 
     @Test
@@ -56,5 +58,8 @@ public class ServiceFactoryTest {
         assertEquals(landscapeItem.getDataFlow(), created.getDataFlow());
         assertEquals(landscapeItem.getRepository(), created.getRepository());
         assertEquals(landscapeItem.getNetworks(), created.getNetworks());
+        assertEquals(landscapeItem.getCosts(), created.getCosts());
+        assertEquals(landscapeItem.getCapability(), created.getCapability());
+
     }
 }

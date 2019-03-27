@@ -1,6 +1,7 @@
 package de.bonndan.nivio.landscape;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,6 +18,7 @@ public class DataFlow implements DataFlowItem, Serializable {
 
     @Id
     @GeneratedValue
+    @JsonIgnore
     private Long id;
 
     @ManyToOne
@@ -24,6 +26,7 @@ public class DataFlow implements DataFlowItem, Serializable {
     private Service sourceEntity;
 
     @ManyToOne
+    @JsonBackReference
     private Service targetEntity;
 
     private String description;
