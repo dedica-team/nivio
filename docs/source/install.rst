@@ -67,3 +67,10 @@ You can also add state providers which are used to gather live data and thereby 
       - url: https://gitlab.com/bonndan/nivio-private-demo/raw/docker-compose.yml
         headerTokenName: PRIVATE_TOKEN
         headerTokenValue: ${MY_SECRET_TOKEN_ENV_VAR}
+      - url: xxx
+        format: kubernetes
+
+Kubernetes cluster inspection
+-----------------------------
+
+Kubernetes clusters are inspected using Fabric8.io's Java client. See https://github.com/fabric8io/kubernetes-client#configuring-the-client for configuration.

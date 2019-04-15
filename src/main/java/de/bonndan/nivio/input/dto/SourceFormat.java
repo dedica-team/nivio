@@ -7,6 +7,7 @@ import java.util.List;
 public enum SourceFormat {
 
     DOCKER_COMPOSE2("docker-compose-v2"),
+    KUBERNETES("kubernetes"),
     NIVIO("nivio", "");
 
     private final List<String> formats;
