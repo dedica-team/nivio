@@ -1,8 +1,9 @@
 package de.bonndan.nivio.output.jgraphx;
 
 import com.mxgraph.canvas.mxGraphics2DCanvas;
-import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
+import com.mxgraph.layout.mxOrganicLayout;
 import com.mxgraph.model.mxCell;
+import com.mxgraph.model.mxGeometry;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxRectangle;
@@ -16,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -37,6 +37,7 @@ public class JGraphXRenderer implements Renderer {
     private Map<Service, Object> serviceVertexes = new HashMap<>();
     private mxStylesheet stylesheet;
     private mxGraph graph;
+    private Map<String, Object> groupNodes = new HashMap<>();
 
     @Override
     public String render(Landscape landscape) {
@@ -53,37 +54,31 @@ public class JGraphXRenderer implements Renderer {
 
         graph.getModel().beginUpdate();
         try {
-            render(graph, landscape);
+            Groups groups = Groups.from(landscape);
+            addGrouped(groups);
+            addCommon(groups);
+
+            addVirtualEdgesBetweenGroups(landscape.getServices());
+            //organic layout between group containers
+            mxOrganicLayout outer = new mxOrganicLayout(graph);
+            outer.setEdgeLengthCostFactor(0.001D);
+            outer.setNodeDistributionCostFactor(10000.0D);
+            outer.execute(graph.getDefaultParent());
+
         } finally {
 
-            mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
-            layout.setOrientation(SwingConstants.SOUTH);
-            layout.setInterRankCellSpacing(4 * DEFAULT_ICON_SIZE);
-            layout.setIntraCellSpacing(3 * DEFAULT_ICON_SIZE);
-            layout.execute(graph.getDefaultParent());
 
             graph.getModel().endUpdate();
 
-            //render extra stuff per service
+            addInterGroupProviderEdges(landscape.getServices());
+
+            //addGroupNodes extra stuff per service
             serviceVertexes.entrySet().forEach(this::renderExtras);
 
+            //dataflow rendered after layout
+            addDataFlow(landscape.getServices());
 
-            //dataflow renderer after hierarchy layout
-            landscape.getServices().forEach(service -> service.getDataFlow().forEach(df -> {
-
-                if (df.getSource().equals(df.getTarget()))
-                    return;
-
-                String id = "df_" + service.getIdentifier() + df.getTarget();
-                logger.info("Adding dataflow " + id);
-                ServiceItem target = ServiceItems.find(FullyQualifiedIdentifier.from(df.getTarget()), landscape.getServices());
-                graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(), serviceVertexes.get(service), serviceVertexes.get((Service) target),
-                        mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";"
-                                + mxConstants.STYLE_STROKEWIDTH + "=2;"
-                                + mxConstants.STYLE_DASHED + "=true;"
-                                + mxConstants.STYLE_VERTICAL_LABEL_POSITION + "=bottom;"
-                );
-            }));
+            addVirtualGroupNodes();
 
             //draw vertexes above edges
             graph.orderCells(false, serviceVertexes.values().toArray());
@@ -96,14 +91,251 @@ public class JGraphXRenderer implements Renderer {
 
     }
 
-    private void render(mxGraph graph, Landscape landscape) {
-        Object parent = graph.getDefaultParent();
+    /**
+     * Adds copies of the group nodes with same size plus padding.
+     * The original group nodes are for some reason not centered b theloweir children.
+     */
+    private void addVirtualGroupNodes() {
 
-        //add all nodes
-        landscape.getServices().forEach(service -> {
+        List<Object> virtualNodes = new ArrayList<>();
+        groupNodes.forEach((group, node) -> {
+            mxCell cell = (mxCell) node;
 
-            String style = getBaseStyle(service) + ";"
-                    + "strokeColor=" + getGroupColor(service) + ";"
+            Object[] childCells = Arrays.stream(graph.getChildCells(cell))
+                    .filter(o -> ((mxCell) o).isVertex())
+                    .toArray();
+
+            mxRectangle geo = graph.getBoundsForCells(childCells, false, false, false);
+
+            if (geo == null)
+                return;
+
+            final String groupColor = group.startsWith(Groups.COMMON) ? de.bonndan.nivio.util.Color.GRAY
+                    : de.bonndan.nivio.util.Color.nameToRGB(group);
+
+            Object vg = graph.insertVertex(
+                    graph.getDefaultParent(), group + "v", group,
+                    geo.getX() - DEFAULT_ICON_SIZE, //more space because of labels
+                    geo.getY() - DEFAULT_ICON_SIZE / 2,
+                    geo.getWidth() + 2 * DEFAULT_ICON_SIZE,
+                    geo.getHeight() + 2 * DEFAULT_ICON_SIZE,
+                    "strokeColor=" + groupColor + ";" + "strokeWidth=3;rounded=1;"
+                            + mxConstants.STYLE_FILLCOLOR + "=" + de.bonndan.nivio.util.Color.lighten(groupColor) + ";"
+                            + mxConstants.STYLE_VERTICAL_ALIGN + "=" + mxConstants.ALIGN_BOTTOM + ";"
+            );
+            virtualNodes.add(vg);
+        });
+        graph.orderCells(true, virtualNodes.toArray());
+    }
+
+    /**
+     * Adds only the edges which cross group boundaries.
+     *
+     * These edges are added after layouting in order not to influence it.
+     *
+     * @param services all services
+     */
+    private void addInterGroupProviderEdges(List<Service> services) {
+
+        services.forEach(service -> {
+            final String groupColor = de.bonndan.nivio.util.Color.nameToRGB(service.getGroup());
+            final String astyle = mxConstants.STYLE_STROKEWIDTH + "=3;"
+                    + mxConstants.STYLE_ENDARROW + "=oval;"
+                    + mxConstants.STYLE_STARTARROW + "=false;"
+                    + mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
+
+            service.getProvidedBy().forEach(provider -> {
+
+                if (!service.getGroup().equals(provider.getGroup())) {
+                    graph.insertEdge(
+                            graph.getDefaultParent(), null, "",
+                            serviceVertexes.get(provider),
+                            serviceVertexes.get(service),
+                            astyle
+                    );
+                }
+            });
+        });
+    }
+
+    /**
+     * Adds dataflow edges.
+     *
+     */
+    private void addDataFlow(List<Service> services) {
+
+        services.forEach(service -> service.getDataFlow().forEach(df -> {
+
+            if (df.getSource().equals(df.getTarget()))
+                return;
+
+            String id = "df_" + service.getIdentifier() + df.getTarget();
+            logger.info("Adding dataflow " + id);
+            ServiceItem target = ServiceItems.find(FullyQualifiedIdentifier.from(df.getTarget()), services);
+            graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(), serviceVertexes.get(service), serviceVertexes.get(target),
+                    mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";"
+                            + mxConstants.STYLE_STROKEWIDTH + "=2;"
+                            + mxConstants.STYLE_DASHED + "=true;"
+                            + mxConstants.STYLE_VERTICAL_LABEL_POSITION + "=bottom;"
+            );
+        }));
+    }
+
+    /**
+     * Virtual edges between group containers enable organic layout of groups.
+     */
+    private void addVirtualEdgesBetweenGroups(List<Service> services) {
+        services.forEach(service -> {
+            String group = service.getGroup();
+            Object groupNode = groupNodes.get(group);
+            service.getProvidedBy().forEach(provider -> {
+                String pGroup = provider.getGroup() == null ? Groups.COMMON : provider.getGroup();
+                Object pGroupNode = groupNodes.get(pGroup);
+                if (Groups.COMMON.equals(pGroup)) {
+                    pGroupNode = groupNodes.get(Groups.COMMON + provider.getLayer());
+                }
+                if (pGroupNode != null && pGroupNode != groupNode) {
+                    graph.insertEdge(graph.getDefaultParent(), "", "", groupNode, pGroupNode,
+                            mxConstants.STYLE_STROKEWIDTH + "=0;"
+                    );
+                }
+            });
+
+        });
+    }
+
+    /**
+     * Adds group nodes (parent) and all children.
+     *
+     * @param groups groups
+     */
+    private void addGrouped(Groups groups) {
+        groups.getAll().forEach((groupName, serviceItems) -> {
+
+            if (Groups.COMMON.equals(groupName))
+                return;
+
+            Object groupnode = graph.insertVertex(
+                    graph.getDefaultParent(),
+                    groupName,
+                    "",
+                    0, 0, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE,
+                    "strokeColor=none;strokeWidth=0;" + mxConstants.STYLE_FILLCOLOR + "=none;"
+            );
+            groupNodes.put(groupName, groupnode);
+
+            addGroupItems(graph, groupnode, serviceItems);
+
+            //organic layout inside the group/layer nodes
+            mxOrganicLayout inner = new mxOrganicLayout(graph);
+            inner.setEdgeLengthCostFactor(0.001D);
+            inner.setNodeDistributionCostFactor(10000.0D);
+            inner.execute(groupnode);
+            resizeContainer((mxCell) groupnode);
+
+        });
+    }
+
+    private void addCommon(Groups groups) {
+
+        List<ServiceItem> commonItems = groups.getAll().get(Groups.COMMON);
+
+        final String noStyle = "strokeWidth=0;" + mxConstants.STYLE_FILLCOLOR + "=none;"
+                + mxConstants.STYLE_STROKECOLOR + "=none";
+
+        Object infra = graph.insertVertex(
+                graph.getDefaultParent(),
+                ServiceItem.LAYER_INFRASTRUCTURE,
+                "",
+                0, 0, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE,
+                noStyle
+        );
+        groupNodes.put(Groups.COMMON + " " + ServiceItem.LAYER_INFRASTRUCTURE, infra);
+
+        Object ingress = graph.insertVertex(
+                graph.getDefaultParent(),
+                ServiceItem.LAYER_INGRESS,
+                "",
+                0, 0, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE,
+                noStyle
+        );
+        groupNodes.put(Groups.COMMON + " " + ServiceItem.LAYER_INGRESS, ingress);
+
+        Object apps = graph.insertVertex(
+                graph.getDefaultParent(),
+                ServiceItem.LAYER_APPLICATION,
+                "",
+                0, 0, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE,
+                noStyle
+        );
+        groupNodes.put(Groups.COMMON + " " + ServiceItem.LAYER_APPLICATION, apps);
+
+        commonItems.forEach(serviceItem -> {
+
+            String style = getBaseStyle((Service) serviceItem) + ";"
+                    + "strokeColor=" + getGroupColor((Service) serviceItem) + ";"
+                    + "strokeWidth=3;";
+
+            if (serviceItem.getLayer().equals(ServiceItem.LAYER_INGRESS)) {
+                var vertex = addServiceVertex(ingress, serviceItem, style);
+                serviceVertexes.put((Service) serviceItem, vertex);
+            }
+
+            if (serviceItem.getLayer().equals(ServiceItem.LAYER_INFRASTRUCTURE)) {
+                var vertex = addServiceVertex(infra, serviceItem, style);
+                serviceVertexes.put((Service) serviceItem, vertex);
+            }
+
+            if (serviceItem.getLayer().equals(ServiceItem.LAYER_APPLICATION)) {
+                var vertex = addServiceVertex(apps, serviceItem, style);
+                serviceVertexes.put((Service) serviceItem, vertex);
+            }
+        });
+
+        mxOrganicLayout inner = new mxOrganicLayout(graph);
+        inner.setEdgeLengthCostFactor(0.001D);
+        inner.setNodeDistributionCostFactor(10000.0D);
+
+        inner.execute(ingress);
+        resizeContainer((mxCell) ingress);
+        inner.execute(infra);
+        resizeContainer((mxCell) infra);
+    }
+
+    private void resizeContainer(mxCell cell) {
+        Object[] childCells = Arrays.stream(graph.getChildCells(cell)).filter(o -> ((mxCell) o).isVertex()).toArray();
+
+        mxRectangle geo = graph.getBoundingBoxFromGeometry(childCells);
+        geo.setWidth(geo.getWidth() + 2 * DEFAULT_ICON_SIZE);
+        geo.setHeight(geo.getHeight() + 2 * DEFAULT_ICON_SIZE);
+
+        graph.resizeCell(cell, geo);
+        Arrays.stream(childCells).forEach(o -> {
+            mxCell child = ((mxCell) o);
+            if (StringUtils.isEmpty(child.getValue()))
+                return;
+            mxGeometry childGeo = child.getGeometry();
+            childGeo.setX(childGeo.getX() - geo.getWidth());
+            childGeo.setY(childGeo.getY() - geo.getHeight() - DEFAULT_ICON_SIZE);
+        });
+    }
+
+    private Object addServiceVertex(Object parent, ServiceItem serviceItem, String style) {
+        return graph.insertVertex(
+                parent,
+                serviceItem.getFullyQualifiedIdentifier().toString(),
+                StringUtils.isEmpty(serviceItem.getName()) ? serviceItem.getIdentifier() : serviceItem.getName(),
+                0, 0, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE,
+                style
+        );
+    }
+
+    private void addGroupItems(mxGraph graph, Object parent, List<ServiceItem> groupItems) {
+
+        groupItems.forEach(service -> {
+
+            String style = getBaseStyle((Service) service) + ";"
+                    + "strokeColor=" + getGroupColor((Service) service) + ";"
                     + "strokeWidth=3;";
 
             Object v1 = graph.insertVertex(
@@ -113,38 +345,27 @@ public class JGraphXRenderer implements Renderer {
                     20, 20, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE,
                     style
             );
-            serviceVertexes.put(service, v1);
+            serviceVertexes.put((Service) service, v1);
         });
 
-        //provider edges
-        landscape.getServices().forEach(service -> {
-            service.getProvidedBy().forEach(provider -> {
+        //inner group relations
+        groupItems.forEach(service -> {
+            final String groupColor = de.bonndan.nivio.util.Color.nameToRGB(service.getGroup());
+            var astyle = mxConstants.STYLE_STROKEWIDTH + "=3;"
+                    + mxConstants.STYLE_ENDARROW + "=oval;"
+                    + mxConstants.STYLE_STARTARROW + "=false;"
+                    + mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
 
-                //ingress: inverse
-                if (provider.getLayer().equals(ServiceItem.LAYER_INGRESS)) {
-                    String style = mxConstants.STYLE_STROKEWIDTH + "=3;"
-                            + mxConstants.STYLE_ENDARROW + "=oval;"
-                            + mxConstants.STYLE_STARTARROW + "=false;"
-                            + mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";";
+            ((Service) service).getProvidedBy().forEach(provider -> {
+
+                if (service.getGroup().equals(provider.getGroup())) {
                     graph.insertEdge(
                             parent, null, "",
-                            serviceVertexes.get(service),
                             serviceVertexes.get(provider),
-                            style
+                            serviceVertexes.get(service),
+                            astyle
                     );
-                    return;
                 }
-
-                String style = mxConstants.STYLE_STROKEWIDTH + "=3;"
-                        + mxConstants.STYLE_ENDARROW + "=false;"
-                        + mxConstants.STYLE_STARTARROW + "=oval;"
-                        + mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";";
-                graph.insertEdge(
-                        parent, null, "",
-                        serviceVertexes.get(provider),
-                        serviceVertexes.get(service),
-                        style
-                );
             });
         });
     }
@@ -250,7 +471,6 @@ public class JGraphXRenderer implements Renderer {
     private String getGroupColor(Service service) {
         return de.bonndan.nivio.util.Color.nameToRGB(service.getGroup(), "333333");
     }
-
 
 
     private String getBaseStyle(Service service) {

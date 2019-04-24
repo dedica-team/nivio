@@ -50,10 +50,22 @@ services:
     format: json
   - description: in-app purchases
     target: external-billing
+  - description: reminder
+    target: emailer
   provided_by:
   - wordpress-web
   - wordpress-mysql
   - wordpress-redis
+
+- identifier: emailer
+  description: Reminder
+  software: PHP
+  version: 2.4
+  type: application
+  networks:
+    - content
+  host_type: docker
+  group: content
 
 #
 # auxiliary services which do not provide business value
@@ -86,6 +98,7 @@ services:
   networks:
   - content
   host_type: docker
+  layer: infrastructure
 
 - description: Cache for Wordpress
   software: Redis
@@ -99,4 +112,5 @@ services:
   networks:
   - content
   host_type: native
+  layer: infrastructure
 
