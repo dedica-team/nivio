@@ -83,14 +83,14 @@ class ServiceDescriptionFactoryNivioTest {
         });
 
         assertNotNull(service.getDataFlow());
-        assertEquals(2, service.getDataFlow().size());
+        assertEquals(3, service.getDataFlow().size());
         service.getDataFlow().forEach(dataFlow -> {
             if (dataFlow.getDescription().equals("kpis")) {
                 Assert.assertEquals("content-kpi-dashboard", dataFlow.getTarget());
             }
         });
 
-        ServiceDescription web = services.get(1);
+        ServiceDescription web = services.get(2);
         assertEquals(ServiceItem.LAYER_INGRESS, web.getLayer());
         assertEquals("wordpress-web", web.getIdentifier());
         assertEquals("Webserver", web.getDescription());
