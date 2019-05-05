@@ -12,3 +12,9 @@ approach, i.e. there is no interface for manual data maintenance. It is designed
 ![rendered graph](https://raw.githubusercontent.com/bonndan/nivio/master/docs/graph.png)
 
 To **get started** read the [documentation](https://nivio.readthedocs.io/en/master).
+
+## Copyright & Trademark Acknowledgement Statements
+
+* Redis™ is a trademark of Redis Labs Ltd. Any rights therein are reserved to Redis Labs Ltd.
+* Apache Httpd and the logo are trademarks of the ASF.
+* WordPress and the logo are trademarks of Wordpress Foundation. http://wordpressfoundation.org/trademark-policy/

@@ -36,6 +36,7 @@ public class ServiceFactory {
 
         service.setNote(description.getNote());
         service.setShort_name(description.getShort_name());
+        service.setIcon(description.getIcon());
         service.setDescription(description.getDescription());
         service.setTags(description.getTags());
         service.setOwner(description.getOwner());

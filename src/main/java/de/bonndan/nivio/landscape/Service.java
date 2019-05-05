@@ -33,6 +33,10 @@ public class Service implements ServiceItem {
 
     private String name;
 
+    private String short_name;
+
+    private String icon;
+
     private String owner;
 
     private String team;
@@ -42,8 +46,6 @@ public class Service implements ServiceItem {
     private String homepage;
 
     private String description;
-
-    private String short_name;
 
     private String version;
 
@@ -134,6 +136,15 @@ public class Service implements ServiceItem {
 
     public void setShort_name(String short_name) {
         this.short_name = short_name;
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public String getVersion() {

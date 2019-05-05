@@ -30,6 +30,8 @@ public class ServiceDescription implements ServiceItem {
     private String note;
 
     private String short_name;
+    private String icon;
+
     private String version;
     private String software;
     private String owner;
@@ -128,6 +130,15 @@ public class ServiceDescription implements ServiceItem {
 
     public void setShort_name(String short_name) {
         this.short_name = short_name;
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public String getVersion() {

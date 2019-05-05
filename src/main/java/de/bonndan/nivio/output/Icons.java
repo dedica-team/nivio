@@ -1,11 +1,16 @@
 package de.bonndan.nivio.output;
 
 import de.bonndan.nivio.landscape.ServiceItem;
+import de.bonndan.nivio.util.URLHelper;
 import org.springframework.util.StringUtils;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 
 public class Icons {
+
+    public static final String DEFAULT_ICON = "service";
 
     public static final String[] KNOWN_ICONS = new String[]{
             "api",
@@ -21,22 +26,46 @@ public class Icons {
             "messagequeue",
             "mobileclient",
             "server",
-            "service",
+            DEFAULT_ICON,
             "webservice",
     };
 
-    public static String getIcon(ServiceItem service) {
+    public static Icon getIcon(ServiceItem service) {
+
+        if (!StringUtils.isEmpty(service.getIcon())) {
+            URL vendorUrl = VendorIcons.get(service.getIcon());
+            return new Icon(vendorUrl != null ? vendorUrl : getUrl(service.getIcon()), true);
+        }
+
         if (StringUtils.isEmpty(service.getType()))
-            return "service";
+            return new Icon(getUrl(DEFAULT_ICON));
 
         //fallback to service
         if (!Arrays.asList(Icons.KNOWN_ICONS).contains(service.getType().toLowerCase()))
-            return "service";
+            return new Icon(getUrl(DEFAULT_ICON));
 
-        return service.getType().toLowerCase();
+        return new Icon(getUrl(service.getType().toLowerCase()));
     }
 
-    public static String getUrl(ServiceItem item) {
-        return "http://localhost:8080/icons/" + getIcon(item) + ".png";
+    /**
+     * Provides an URL for a locally served icon.
+     */
+    private static URL getUrl(String icon) {
+        URL url = URLHelper.getURL(icon);
+
+        //local icon urls are not supported
+        if (url != null && URLHelper.isLocal(url)) {
+            url = null;
+        }
+
+        try {
+            return url != null ? url : new URL("http://localhost:8080/icons/" + icon + ".png");
+        } catch (MalformedURLException e) {
+            try {
+                return new URL("http://localhost:8080/icons/" + DEFAULT_ICON + ".png");
+            } catch (MalformedURLException ex) {
+                return null;
+            }
+        }
     }
 }

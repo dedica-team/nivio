@@ -4,6 +4,7 @@ services:
 
   - identifier: keycloak
     name: Keycloak SSO
+    icon: https://raw.githubusercontent.com/keycloak/keycloak-misc/master/logo/keycloak_icon_256px.png
     version: 4.4.0
     owner: Ops
     layer: ingress

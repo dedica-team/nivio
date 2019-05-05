@@ -27,6 +27,8 @@ public interface ServiceDescriptionFactory {
             existing.setDescription(increment.getDescription());
         if (increment.getShort_name() != null)
             existing.setShort_name(increment.getShort_name());
+        if (increment.getIcon() != null)
+            existing.setIcon(increment.getIcon());
         if (increment.getHomepage() != null)
             existing.setHomepage(increment.getHomepage());
         if (increment.getRepository() != null)
@@ -91,6 +93,8 @@ public interface ServiceDescriptionFactory {
         assignSafeIfAbsent(template.getLayer(), item.getLayer(), item::setLayer);
 
         assignSafeIfAbsent(template.getDescription(), item.getDescription(), item::setDescription);
+
+        assignSafeIfAbsent(template.getIcon(), item.getIcon(), item::setIcon);
 
         assignSafeIfAbsent(template.getNote(), item.getNote(), item::setNote);
 

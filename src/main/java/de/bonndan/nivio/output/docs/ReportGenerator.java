@@ -60,7 +60,7 @@ public class ReportGenerator extends HtmlGenerator {
                 div(
                         iff(!isEmpty(item.getNote()), div(item.getNote()).attr("class", "alert alert-warning float float-right")),
                         h3(
-                                img().attr("src", Icons.getUrl(item)).attr("width", "30px").attr("class", "img-fluid"),
+                                img().attr("src", Icons.getIcon(item).getUrl()).attr("width", "30px").attr("class", "img-fluid"),
                                 rawHtml(" "),
                                 rawHtml(isEmpty(item.getName()) ? item.getIdentifier() : item.getName())
                         ),

@@ -5,6 +5,7 @@ services:
   name: Demo Blog
   type: webservice
   short_name: blog
+  icon: https://s.w.org/style/images/about/WordPress-logotype-wmark.png
   version: 1.0
   software: Wordpress
   owner: Marketing
@@ -73,6 +74,7 @@ services:
 
 - identifier: wordpress-web
   description: Webserver
+  icon: vendor://apache/httpd
   layer: ingress
   software: Apache
   version: 2.4
@@ -103,6 +105,7 @@ services:
 - description: Cache for Wordpress
   software: Redis
   version: 1.0
+  icon: vendor://redis
   identifier: wordpress-redis
   protocol: tcp
   port: 6379

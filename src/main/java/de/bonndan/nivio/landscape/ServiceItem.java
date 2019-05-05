@@ -36,6 +36,7 @@ public interface ServiceItem {
 
     String getName();
     String getShort_name();
+    String getIcon();
 
     String getGroup();
 

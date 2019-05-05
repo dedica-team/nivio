@@ -8,10 +8,13 @@ import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
+import com.mxgraph.view.mxStyleRegistry;
 import com.mxgraph.view.mxStylesheet;
 import de.bonndan.nivio.landscape.*;
+import de.bonndan.nivio.output.Icon;
 import de.bonndan.nivio.output.Icons;
 import de.bonndan.nivio.output.Renderer;
+import de.bonndan.nivio.output.docs.OwnersReportGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -25,13 +28,14 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.bonndan.nivio.landscape.Status.UNKNOWN;
 
 public class JGraphXRenderer implements Renderer {
-    private final int DEFAULT_ICON_SIZE = 40;
+    private final int DEFAULT_ICON_SIZE = 50;
 
     private Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);
     private Map<Service, Object> serviceVertexes = new HashMap<>();
@@ -50,7 +54,13 @@ public class JGraphXRenderer implements Renderer {
         graph.setHtmlLabels(true);
 
         stylesheet = graph.getStylesheet();
-        mxGraphics2DCanvas.putShape("circularImage", new mxCircularImageShape());
+
+        //ciruclar image
+        mxGraphics2DCanvas.putShape(mxCircularImageShape.NAME, new mxCircularImageShape());
+
+        //curved edges, https://stackoverflow.com/questions/22746439/jgraphx-custom-layoult-curved-edges
+        mxGraphics2DCanvas.putShape(CurvedShape.KEY, new CurvedShape());
+        mxStyleRegistry.putValue(CurvedEdgeStyle.KEY, new CurvedEdgeStyle());
 
         graph.getModel().beginUpdate();
         try {
@@ -62,7 +72,7 @@ public class JGraphXRenderer implements Renderer {
             //organic layout between group containers
             mxOrganicLayout outer = new mxOrganicLayout(graph);
             outer.setEdgeLengthCostFactor(0.001D);
-            outer.setNodeDistributionCostFactor(10000.0D);
+            outer.setNodeDistributionCostFactor(100000.0D);
             outer.execute(graph.getDefaultParent());
 
         } finally {
@@ -80,9 +90,7 @@ public class JGraphXRenderer implements Renderer {
 
             addVirtualGroupNodes();
 
-            //draw vertexes above edges
-            graph.orderCells(false, serviceVertexes.values().toArray());
-
+            //TODO draw vertexes above edges
         }
 
         BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
@@ -113,14 +121,18 @@ public class JGraphXRenderer implements Renderer {
             final String groupColor = group.startsWith(Groups.COMMON) ? de.bonndan.nivio.util.Color.GRAY
                     : de.bonndan.nivio.util.Color.nameToRGB(group);
 
+            String lightened = de.bonndan.nivio.util.Color.lighten(groupColor);
+            logger.debug("virtual group color is " + lightened);
             Object vg = graph.insertVertex(
                     graph.getDefaultParent(), group + "v", group,
                     geo.getX() - DEFAULT_ICON_SIZE, //more space because of labels
                     geo.getY() - DEFAULT_ICON_SIZE / 2,
                     geo.getWidth() + 2 * DEFAULT_ICON_SIZE,
                     geo.getHeight() + 2 * DEFAULT_ICON_SIZE,
-                    "strokeColor=" + groupColor + ";" + "strokeWidth=3;rounded=1;"
-                            + mxConstants.STYLE_FILLCOLOR + "=" + de.bonndan.nivio.util.Color.lighten(groupColor) + ";"
+                    "strokeColor=" + groupColor + ";"
+                            + "strokeWidth=0;"
+                            + "rounded=1;"
+                            + mxConstants.STYLE_FILLCOLOR + "=" + lightened + ";"
                             + mxConstants.STYLE_VERTICAL_ALIGN + "=" + mxConstants.ALIGN_BOTTOM + ";"
             );
             virtualNodes.add(vg);
@@ -130,7 +142,7 @@ public class JGraphXRenderer implements Renderer {
 
     /**
      * Adds only the edges which cross group boundaries.
-     *
+     * <p>
      * These edges are added after layouting in order not to influence it.
      *
      * @param services all services
@@ -142,6 +154,7 @@ public class JGraphXRenderer implements Renderer {
             final String astyle = mxConstants.STYLE_STROKEWIDTH + "=3;"
                     + mxConstants.STYLE_ENDARROW + "=oval;"
                     + mxConstants.STYLE_STARTARROW + "=false;"
+                    + mxConstants.STYLE_EDGE + "=" + mxConstants.EDGESTYLE_ELBOW + ";"
                     + mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
 
             service.getProvidedBy().forEach(provider -> {
@@ -160,7 +173,6 @@ public class JGraphXRenderer implements Renderer {
 
     /**
      * Adds dataflow edges.
-     *
      */
     private void addDataFlow(List<Service> services) {
 
@@ -177,6 +189,8 @@ public class JGraphXRenderer implements Renderer {
                             + mxConstants.STYLE_STROKEWIDTH + "=2;"
                             + mxConstants.STYLE_DASHED + "=true;"
                             + mxConstants.STYLE_VERTICAL_LABEL_POSITION + "=bottom;"
+                            + mxConstants.STYLE_SHAPE + "=" + CurvedShape.KEY + ";"
+                            + mxConstants.STYLE_EDGE + "=" + CurvedEdgeStyle.KEY + ";"
             );
         }));
     }
@@ -188,19 +202,61 @@ public class JGraphXRenderer implements Renderer {
         services.forEach(service -> {
             String group = service.getGroup();
             Object groupNode = groupNodes.get(group);
+            HashMap<Object, Object> groupConnections = new HashMap<>();
+
+            BiFunction<Object, Object, Boolean> canLink = (ownGroup, otherGroup) -> {
+
+                if (ownGroup == null)
+                    return false;
+                if (otherGroup == null)
+                    return false;
+                if (ownGroup == otherGroup)
+                    return false;
+
+                if (groupConnections.get(ownGroup) == otherGroup)
+                    return false;
+                if (groupConnections.get(otherGroup) == ownGroup)
+                    return false;
+
+                return true;
+            };
+
+            //provider
             service.getProvidedBy().forEach(provider -> {
                 String pGroup = provider.getGroup() == null ? Groups.COMMON : provider.getGroup();
                 Object pGroupNode = groupNodes.get(pGroup);
                 if (Groups.COMMON.equals(pGroup)) {
-                    pGroupNode = groupNodes.get(Groups.COMMON + provider.getLayer());
+                    pGroupNode = groupNodes.get(commonGroup(provider.getLayer()));
                 }
-                if (pGroupNode != null && pGroupNode != groupNode) {
+                if (canLink.apply(groupNode, pGroupNode)) {
                     graph.insertEdge(graph.getDefaultParent(), "", "", groupNode, pGroupNode,
-                            mxConstants.STYLE_STROKEWIDTH + "=0;"
+                            mxConstants.STYLE_STROKEWIDTH + "=none;" + mxConstants.STYLE_OPACITY + "=1;"
                     );
+                    groupConnections.put(groupNode, pGroupNode);
+                    logger.debug("************ Virtual provider connection between " + groupNode + " and " + pGroupNode);
                 }
             });
 
+            //dataflow
+            service.getDataFlow().forEach(dataFlowItem -> {
+                String target = dataFlowItem.getTarget();
+                if (target == null) return;
+                ServiceItem targetItem = ServiceItems.find(target, null, services);
+                if (targetItem == null) return;
+
+                String pGroup = targetItem.getGroup() == null ? Groups.COMMON : targetItem.getGroup();
+                Object pGroupNode = groupNodes.get(pGroup);
+                if (Groups.COMMON.equals(pGroup)) {
+                    pGroupNode = groupNodes.get(commonGroup(targetItem.getLayer()));
+                }
+                if (canLink.apply(groupNode, pGroupNode)) {
+                    graph.insertEdge(graph.getDefaultParent(), "", "", groupNode, pGroupNode,
+                            mxConstants.STYLE_STROKEWIDTH + "=none;" + mxConstants.STYLE_OPACITY + "=1;"
+                    );
+                    groupConnections.put(groupNode, pGroupNode);
+                    logger.debug("************ Virtual Dataflow connection between " + groupNode + " and " + pGroupNode);
+                }
+            });
         });
     }
 
@@ -229,7 +285,7 @@ public class JGraphXRenderer implements Renderer {
             //organic layout inside the group/layer nodes
             mxOrganicLayout inner = new mxOrganicLayout(graph);
             inner.setEdgeLengthCostFactor(0.001D);
-            inner.setNodeDistributionCostFactor(10000.0D);
+            inner.setNodeDistributionCostFactor(50000.0D);
             inner.execute(groupnode);
             resizeContainer((mxCell) groupnode);
 
@@ -265,7 +321,7 @@ public class JGraphXRenderer implements Renderer {
                 graph.getDefaultParent(),
                 ServiceItem.LAYER_APPLICATION,
                 "",
-                0, 0, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE,
+                0, 0, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE * 2,
                 noStyle
         );
         groupNodes.put(Groups.COMMON + " " + ServiceItem.LAYER_APPLICATION, apps);
@@ -273,8 +329,7 @@ public class JGraphXRenderer implements Renderer {
         commonItems.forEach(serviceItem -> {
 
             String style = getBaseStyle((Service) serviceItem) + ";"
-                    + "strokeColor=" + getGroupColor((Service) serviceItem) + ";"
-                    + "strokeWidth=3;";
+                    + "strokeColor=" + getGroupColor((Service) serviceItem) + ";";
 
             if (serviceItem.getLayer().equals(ServiceItem.LAYER_INGRESS)) {
                 var vertex = addServiceVertex(ingress, serviceItem, style);
@@ -335,16 +390,9 @@ public class JGraphXRenderer implements Renderer {
         groupItems.forEach(service -> {
 
             String style = getBaseStyle((Service) service) + ";"
-                    + "strokeColor=" + getGroupColor((Service) service) + ";"
-                    + "strokeWidth=3;";
+                    + "strokeColor=" + getGroupColor((Service) service) + ";";
 
-            Object v1 = graph.insertVertex(
-                    parent,
-                    service.getFullyQualifiedIdentifier().toString(),
-                    StringUtils.isEmpty(service.getName()) ? service.getIdentifier() : service.getName(),
-                    20, 20, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE,
-                    style
-            );
+            Object v1 = addServiceVertex(parent, service, style);
             serviceVertexes.put((Service) service, v1);
         });
 
@@ -408,6 +456,7 @@ public class JGraphXRenderer implements Renderer {
                     + mxConstants.STYLE_STROKEWIDTH + "=" + statusRingWidth + ";"
                     + mxConstants.STYLE_SHAPE + "=" + mxConstants.SHAPE_ELLIPSE + ";"
                     + mxConstants.STYLE_STROKECOLOR + "=" + statusColor + ";";
+            //TODO
             graph.insertVertex(graph.getDefaultParent(), null,
                     "",
                     cellBounds.getX() - statusRingWidth / 2, cellBounds.getY() - statusRingWidth / 2, cellBounds.getWidth() + statusRingWidth, cellBounds.getHeight() + statusRingWidth,
@@ -474,20 +523,32 @@ public class JGraphXRenderer implements Renderer {
 
 
     private String getBaseStyle(Service service) {
-        String type = Icons.getIcon(service);
+        Icon type = Icons.getIcon(service);
 
-        if (!stylesheet.getStyles().containsKey(type)) {
-            Hashtable<String, Object> style = new Hashtable<String, Object>();
-            style.put(mxConstants.STYLE_SHAPE, "circularImage");
-            style.put(mxConstants.STYLE_IMAGE, "http://localhost:8080/icons/" + type + ".png");
-            style.put(mxConstants.STYLE_VERTICAL_LABEL_POSITION, mxConstants.ALIGN_BOTTOM);
-            style.put(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, "#666");
-            style.put(mxConstants.STYLE_FONTCOLOR, "white");
-            style.put(mxConstants.STYLE_FILLCOLOR, "white");
+        Hashtable<String, Object> style = new Hashtable<String, Object>();
 
-            stylesheet.putCellStyle(type, style);
+        if (stylesheet.getStyles().containsKey(type.getUrl().toString())) {
+            return type.getUrl().toString();
         }
 
-        return type;
+
+        // standard shape is rounded
+        style.put(mxConstants.STYLE_SHAPE, mxCircularImageShape.NAME);
+        style.put(mxConstants.STYLE_STROKEWIDTH, 3);
+
+        //style.put(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, "#666");
+        //style.put(mxConstants.STYLE_FONTCOLOR, "white");
+
+        style.put(mxConstants.STYLE_FILLCOLOR, "white");
+        style.put(mxConstants.STYLE_IMAGE, type.getUrl());
+        style.put(mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_TOP); //decreases space between label and img
+        style.put(mxConstants.STYLE_VERTICAL_LABEL_POSITION, mxConstants.ALIGN_BOTTOM);
+        stylesheet.putCellStyle(type.getUrl().toString(), style);
+
+        return type.getUrl().toString();
+    }
+
+    private String commonGroup(String layer) {
+        return Groups.COMMON + " " + layer;
     }
 }
