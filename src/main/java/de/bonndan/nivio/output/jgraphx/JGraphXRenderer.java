@@ -425,7 +425,7 @@ public class JGraphXRenderer implements Renderer {
         //sort services
         Service service = entry.getKey();
         List<StatusItem> displayed = service.getStatuses().stream()
-                .filter(item -> !UNKNOWN.equals(item.getStatus()))
+                .filter(item -> !UNKNOWN.equals(item.getStatus()) && !Status.GREEN.equals(item.getStatus()))
                 .sorted((statusItem, t1) -> {
                     if (statusItem.getStatus().equals(t1.getStatus())) {
                         return statusItem.getLabel().compareToIgnoreCase(t1.getLabel());
@@ -435,7 +435,12 @@ public class JGraphXRenderer implements Renderer {
 
         //statuses at left
         int statusBoxSize = 15;
+        if (cellBounds == null) {
+            logger.warn("Render extras: no cell bounds for {}", service);
+            return;
+        }
         double statusOffsetX = cellBounds.getX() - 2.5 * statusBoxSize;
+
         AtomicReference<Double> statusOffsetY = new AtomicReference<>(cellBounds.getY());
         displayed.forEach(statusItem -> {
             graph.insertVertex(graph.getDefaultParent(), null,
