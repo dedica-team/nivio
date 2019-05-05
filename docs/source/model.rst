@@ -31,8 +31,9 @@ for technical separation. Any service can only be part of one group and layer.
         layer: ingress
         group: content
 
-      - identifier: mysql
-        version: 5.6.0
+      - identifier: DB1
+        software: MariaDB
+        version: 10.3.11
         type: database
         layer: infrastructure
         group: content

@@ -54,7 +54,7 @@ services:
     target: emailer
   provided_by:
   - wordpress-web
-  - wordpress-mysql
+  - wordpress-mariadb
   - wordpress-redis
 
 - identifier: emailer
@@ -87,9 +87,9 @@ services:
   group: content
 
 - description: Database for Wordpress
-  software: MySQL
-  version: 5.6
-  identifier: wordpress-mysql
+  software: MariaDB
+  version: 10.3.11
+  identifier: wordpress-mariadb
   protocol: tcp
   port: 3006
   machine: Pentium 1 512MB RAM

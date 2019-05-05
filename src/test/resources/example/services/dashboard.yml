@@ -37,14 +37,14 @@ services:
         format: json
         url: http://dashboard.acme.io/kpis
     provided_by:
-      - dashboard-mysql
+      - dashboard-db
       - keycloak
 
   - description: Database for Dashboard
     layer: infrastructure
-    software: MySQL
-    version: 5.6
-    identifier: dashboard-mysql
+    software: MariaDB
+    version: 10.3.11
+    identifier: dashboard-db
     protocol: tcp
     port: 3006
     machine: Pentium 1 512MB RAM

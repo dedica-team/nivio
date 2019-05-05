@@ -60,7 +60,7 @@ templates:
         target: external-billing
     provided_by:
       - wordpress-web
-      - wordpress-mysql
+      - wordpress-mariadb
       - wordpress-redis
 
   # template for grouping
