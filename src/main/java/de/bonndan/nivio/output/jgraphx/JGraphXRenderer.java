@@ -128,7 +128,7 @@ public class JGraphXRenderer implements Renderer {
             Object vg = graph.insertVertex(
                     graph.getDefaultParent(), group + "v", group,
                     geo.getX() - DEFAULT_ICON_SIZE, //more space because of labels
-                    geo.getY() - DEFAULT_ICON_SIZE ,
+                    geo.getY() - DEFAULT_ICON_SIZE,
                     geo.getWidth() + 2 * DEFAULT_ICON_SIZE,
                     geo.getHeight() + 2 * DEFAULT_ICON_SIZE,
                     "strokeColor=" + groupColor + ";"
@@ -425,53 +425,32 @@ public class JGraphXRenderer implements Renderer {
         mxCell cell = (mxCell) entry.getValue();
         mxRectangle cellBounds = graph.getCellBounds(cell);
 
-        //sort services
+        //sort statuses, pick worst
         Service service = entry.getKey();
-        List<StatusItem> displayed = service.getStatuses().stream()
+        Optional<StatusItem> displayed = service.getStatuses().stream()
                 .filter(item -> !UNKNOWN.equals(item.getStatus()) && !Status.GREEN.equals(item.getStatus()))
-                .sorted((statusItem, t1) -> {
+                .min((statusItem, t1) -> {
                     if (statusItem.getStatus().equals(t1.getStatus())) {
                         return statusItem.getLabel().compareToIgnoreCase(t1.getLabel());
                     }
                     return statusItem.getStatus().isHigherThan(t1.getStatus()) ? -1 : 1;
-                }).collect(Collectors.toList());
+                });
 
         //statuses at left
-        int statusBoxSize = 15;
+        int statusBoxSize = DEFAULT_ICON_SIZE / 2;
         if (cellBounds == null) {
             logger.warn("Render extras: no cell bounds for {}", service);
             return;
         }
-        double statusOffsetX = cellBounds.getX() - 2.5 * statusBoxSize;
 
-        AtomicReference<Double> statusOffsetY = new AtomicReference<>(cellBounds.getY());
-        displayed.forEach(statusItem -> {
-            graph.insertVertex(graph.getDefaultParent(), null,
-                    statusItem.getLabel().toUpperCase().substring(0, 3),
-                    statusOffsetX, statusOffsetY.get(), statusBoxSize * 2, statusBoxSize,
-                    mxConstants.STYLE_FILLCOLOR + "=" + statusItem.getStatus().toString() + ";"
-                            + mxConstants.STYLE_FONTCOLOR + "=black"
+        displayed.ifPresent(statusItem -> {
+            cell.setValue(cell.getValue() + "\n(" + statusItem.getLabel() + "!)");
+            cell.setStyle(cell.getStyle()
+                    + mxConstants.STYLE_STROKECOLOR + "=" + statusItem.getStatus().toString() + ";"
+                    + mxConstants.STYLE_STROKEWIDTH + "=" + 4 + ";"
+                    + mxConstants.STYLE_IMAGE + "=" + "http://localhost:8080/icons/" + statusItem.getStatus().getSymbol() + ".png" + ";"
             );
-            statusOffsetY.updateAndGet(v -> v + statusBoxSize);
         });
-
-
-        //status ring
-        String statusColor = getStatusColor(service);
-        int statusRingWidth = 4;
-        if (!Status.UNKNOWN.toString().equals(statusColor)) {
-            String style = mxConstants.STYLE_FILLCOLOR + "=none;"
-                    + mxConstants.STYLE_STROKEWIDTH + "=" + statusRingWidth + ";"
-                    + mxConstants.STYLE_SHAPE + "=" + mxConstants.SHAPE_ELLIPSE + ";"
-                    + mxConstants.STYLE_STROKECOLOR + "=" + statusColor + ";";
-            //TODO
-            graph.insertVertex(graph.getDefaultParent(), null,
-                    "",
-                    cellBounds.getX() - statusRingWidth / 2, cellBounds.getY() - statusRingWidth / 2, cellBounds.getWidth() + statusRingWidth, cellBounds.getHeight() + statusRingWidth,
-                    style
-            );
-        }
-
 
         //interfaces
         int intfBoxSize = 10;
