@@ -128,7 +128,7 @@ public class JGraphXRenderer implements Renderer {
             Object vg = graph.insertVertex(
                     graph.getDefaultParent(), group + "v", group,
                     geo.getX() - DEFAULT_ICON_SIZE, //more space because of labels
-                    geo.getY() - DEFAULT_ICON_SIZE / 2,
+                    geo.getY() - DEFAULT_ICON_SIZE ,
                     geo.getWidth() + 2 * DEFAULT_ICON_SIZE,
                     geo.getHeight() + 2 * DEFAULT_ICON_SIZE,
                     "strokeColor=" + groupColor + ";"
@@ -136,6 +136,7 @@ public class JGraphXRenderer implements Renderer {
                             + "rounded=1;"
                             + mxConstants.STYLE_FILLCOLOR + "=" + lightened + ";"
                             + mxConstants.STYLE_VERTICAL_ALIGN + "=" + mxConstants.ALIGN_BOTTOM + ";"
+                            + mxConstants.STYLE_VERTICAL_LABEL_POSITION + "=" + mxConstants.ALIGN_TOP + ";"
             );
             virtualNodes.add(vg);
         });
