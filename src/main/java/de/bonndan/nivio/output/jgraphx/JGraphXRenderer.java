@@ -90,7 +90,9 @@ public class JGraphXRenderer implements Renderer {
 
             addVirtualGroupNodes();
 
-            //TODO draw vertexes above edges
+            //draw vertexes above edges (group nodes must be moved to front)
+            Object[] cells = groupNodes.values().stream().filter(o -> ((mxCell) o).isVertex()).toArray();
+            graph.orderCells(false, cells);
         }
 
         BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
@@ -529,21 +531,13 @@ public class JGraphXRenderer implements Renderer {
 
     private String getBaseStyle(Service service) {
         Icon type = Icons.getIcon(service);
-
-        Hashtable<String, Object> style = new Hashtable<String, Object>();
-
         if (stylesheet.getStyles().containsKey(type.getUrl().toString())) {
             return type.getUrl().toString();
         }
 
-
-        // standard shape is rounded
+        Hashtable<String, Object> style = new Hashtable<String, Object>();
         style.put(mxConstants.STYLE_SHAPE, mxCircularImageShape.NAME);
         style.put(mxConstants.STYLE_STROKEWIDTH, 3);
-
-        //style.put(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, "#666");
-        //style.put(mxConstants.STYLE_FONTCOLOR, "white");
-
         style.put(mxConstants.STYLE_FILLCOLOR, "white");
         style.put(mxConstants.STYLE_IMAGE, type.getUrl());
         style.put(mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_TOP); //decreases space between label and img
