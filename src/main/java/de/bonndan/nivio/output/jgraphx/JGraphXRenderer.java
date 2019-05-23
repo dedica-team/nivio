@@ -14,27 +14,27 @@ import de.bonndan.nivio.landscape.*;
 import de.bonndan.nivio.output.Icon;
 import de.bonndan.nivio.output.Icons;
 import de.bonndan.nivio.output.Renderer;
-import de.bonndan.nivio.output.docs.OwnersReportGenerator;
+import org.dom4j.dom.DOMElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+import org.w3c.dom.Element;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.bonndan.nivio.landscape.Status.UNKNOWN;
 
-public class JGraphXRenderer implements Renderer {
+public class JGraphXRenderer implements Renderer<mxGraph> {
+
     private final int DEFAULT_ICON_SIZE = 50;
 
     private Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);
@@ -44,12 +44,8 @@ public class JGraphXRenderer implements Renderer {
     private Map<String, Object> groupNodes = new HashMap<>();
 
     @Override
-    public String render(Landscape landscape) {
-        return null;
-    }
+    public mxGraph render(Landscape landscape) {
 
-    @Override
-    public void render(Landscape landscape, File file) throws IOException {
         graph = new mxGraph();
         graph.setHtmlLabels(true);
 
@@ -95,6 +91,14 @@ public class JGraphXRenderer implements Renderer {
             graph.orderCells(false, cells);
         }
 
+        //TODO without render() (see below) the layout is not final
+        return graph;
+    }
+
+    @Override
+    public void render(Landscape landscape, File file) throws IOException {
+
+        graph = render(landscape);
         BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
 
         ImageIO.write(image, "PNG", file);
@@ -131,7 +135,8 @@ public class JGraphXRenderer implements Renderer {
                     geo.getY() - DEFAULT_ICON_SIZE,
                     geo.getWidth() + 2 * DEFAULT_ICON_SIZE,
                     geo.getHeight() + 2 * DEFAULT_ICON_SIZE,
-                    "strokeColor=" + groupColor + ";"
+                    "type=group;groupColor=" + groupColor + ";"
+                            + "strokeColor=" + groupColor + ";"
                             + "strokeWidth=0;"
                             + "rounded=1;"
                             + mxConstants.STYLE_FILLCOLOR + "=" + lightened + ";"
@@ -332,6 +337,7 @@ public class JGraphXRenderer implements Renderer {
         commonItems.forEach(serviceItem -> {
 
             String style = getBaseStyle((Service) serviceItem) + ";"
+                    + "type=" + serviceItem.getType() + ";group=" + serviceItem.getGroup() + ";"
                     + "strokeColor=" + getGroupColor((Service) serviceItem) + ";";
 
             if (serviceItem.getLayer().equals(ServiceItem.LAYER_INGRESS)) {
@@ -393,6 +399,7 @@ public class JGraphXRenderer implements Renderer {
         groupItems.forEach(service -> {
 
             String style = getBaseStyle((Service) service) + ";"
+                    + "type=" + service.getType() + ";group=" + service.getGroup() + ";"
                     + "strokeColor=" + getGroupColor((Service) service) + ";";
 
             Object v1 = addServiceVertex(parent, service, style);

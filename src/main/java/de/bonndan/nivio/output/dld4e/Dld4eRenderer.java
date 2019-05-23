@@ -11,7 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-public class Dld4eRenderer implements Renderer {
+public class Dld4eRenderer implements Renderer<String> {
 
     private static final Logger logger = LoggerFactory.getLogger(Dld4eRenderer.class);
 

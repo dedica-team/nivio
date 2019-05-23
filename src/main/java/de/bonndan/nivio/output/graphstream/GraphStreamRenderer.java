@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import static de.bonndan.nivio.landscape.Status.GREEN;
 
 
-public class GraphStreamRenderer implements Renderer {
+public class GraphStreamRenderer implements Renderer<Graph> {
 
     private Logger logger = LoggerFactory.getLogger(GraphStreamRenderer.class);
 
@@ -54,13 +54,7 @@ public class GraphStreamRenderer implements Renderer {
     };
 
     @Override
-    public String render(Landscape landscape) {
-        return null;
-    }
-
-    @Override
-    public void render(Landscape landscape, File file) throws IOException {
-
+    public Graph render(Landscape landscape) {
         graph = new SingleGraph(landscape.getName());
         graph.addAttribute("ui.quality");
         graph.addAttribute("ui.antialias");
@@ -137,6 +131,15 @@ public class GraphStreamRenderer implements Renderer {
          */
         landscape.getServices().forEach(this::addStatuses);
 
+
+        return graph;
+
+    }
+
+    @Override
+    public void render(Landscape landscape, File file) throws IOException {
+
+        graph = render(landscape);
 
         String prefix = "prefix";
         FileSinkImages.OutputType type = FileSinkImages.OutputType.PNG;

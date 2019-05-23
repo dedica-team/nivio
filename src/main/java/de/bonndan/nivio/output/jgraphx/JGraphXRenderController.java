@@ -2,7 +2,6 @@ package de.bonndan.nivio.output.jgraphx;
 
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
-import de.bonndan.nivio.output.graphstream.GraphStreamRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,5 +58,27 @@ public class JGraphXRenderController {
 
     }
 
+    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/threejs.json")
+    public ResponseEntity<String> json(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
+        if (landscape == null)
+            throw new EntityNotFoundException("Not found");
 
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer();
+        JsonRenderer renderer = new JsonRenderer(jGraphXRenderer);
+
+        try {
+            String rendered = renderer.render(landscape);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
+            return new ResponseEntity<>(
+                    rendered,
+                    headers,
+                    HttpStatus.OK
+            );
+        } catch (Exception ex) {
+            logger.warn("Could not render graph: " );
+            throw ex;
+        }
+    }
 }
