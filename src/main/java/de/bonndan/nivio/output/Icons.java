@@ -59,10 +59,10 @@ public class Icons {
         }
 
         try {
-            return url != null ? url : new URL("http://localhost:8080/icons/" + icon + ".png");
+            return url != null ? url : new URL(LocalServer.url("/icons/" + icon + ".png"));
         } catch (MalformedURLException e) {
             try {
-                return new URL("http://localhost:8080/icons/" + DEFAULT_ICON + ".png");
+                return new URL(LocalServer.url("/icons/" + DEFAULT_ICON + ".png"));
             } catch (MalformedURLException ex) {
                 return null;
             }

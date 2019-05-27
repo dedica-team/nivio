@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.landscape.Landscape;
+import de.bonndan.nivio.output.LocalServer;
 import j2html.tags.ContainerTag;
 
 import static j2html.TagCreator.*;
@@ -14,7 +15,7 @@ public abstract class HtmlGenerator {
     protected ContainerTag getHead(Landscape landscape) {
         return head(
                 title(landscape.getName()),
-                link().attr("rel", "stylesheet").attr("href", "http://localhost:8080/css/bootstrap.min.css"),
+                link().attr("rel", "stylesheet").attr("href", LocalServer.url("/css/bootstrap.min.css")),
                 meta().attr("charset", "utf-8"),
                 meta().attr("name", "viewport").attr("content", "width=device-width, initial-scale=1, shrink-to-fit=no"),
                 meta().attr("name", "description").attr("content", landscape.getName()),

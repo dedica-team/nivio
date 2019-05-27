@@ -9,7 +9,7 @@ import javax.persistence.Convert;
 public enum Status {
 
     UNKNOWN("grey", 0, ""),
-    GREEN("green", 1, ""),
+    GREEN("green", 1, "checked"),
     YELLOW("yellow", 2, "warning"),
     ORANGE("orange", 3, "warning"),
     RED("red", 4, "flame"),

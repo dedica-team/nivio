@@ -5,6 +5,7 @@ import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.ServiceItem;
 import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.Icons;
+import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.util.Color;
 import j2html.tags.ContainerTag;
 import org.springframework.util.StringUtils;
@@ -28,8 +29,8 @@ public class ReportGenerator extends HtmlGenerator {
                 body(
                         h1(landscape.getName()),
                         p("Contact: " + landscape.getContact()),
-                        div(img().attr("src", "http://localhost:8080/render/" +landscape.getIdentifier() + "/graph.png").attr("class", "img-fluid img-thumbnail mx-auto d-block")),
-                        br(),br(),
+                        div(img().attr("src", LocalServer.url("/render/" + landscape.getIdentifier() + "/graph.png")).attr("class", "img-fluid img-thumbnail mx-auto d-block")),
+                        br(), br(),
                         rawHtml(writeGroups(Groups.from(landscape)))
                 )
         ).renderFormatted();
@@ -95,7 +96,9 @@ public class ReportGenerator extends HtmlGenerator {
                                 item.getStatuses().stream().map(statusItem ->
                                         join(
                                                 dt(FormatUtils.nice(statusItem.getLabel())),
-                                                dd(span(statusItem.getStatus().toString() + " ")
+                                                dd(
+                                                        img().attr("src", LocalServer.url("/icons/" + statusItem.getStatus().getSymbol() + ".png")).attr("width", "30px").attr("class", "img-fluid"),
+                                                        span(" " + statusItem.getStatus().toString() + " ")
                                                                 .attr("class", "badge")
                                                                 .attr("style", "background-color: " + statusItem.getStatus() + " !important"),
                                                         span(" " + FormatUtils.nice(statusItem.getMessage())))
@@ -118,7 +121,7 @@ public class ReportGenerator extends HtmlGenerator {
                                         span(interfaceItem.getDescription()),
                                         iff(!StringUtils.isEmpty(interfaceItem.getFormat()), span(", format: " + interfaceItem.getFormat())),
                                         iff(interfaceItem.getUrl() != null && !StringUtils.isEmpty(interfaceItem.getUrl().toString()),
-                                                span(", " ).with(a(interfaceItem.getUrl().toString()).attr("href", interfaceItem.getUrl().toString()))
+                                                span(", ").with(a(interfaceItem.getUrl().toString()).attr("href", interfaceItem.getUrl().toString()))
                                         )
                                 ))
                                 )

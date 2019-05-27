@@ -13,6 +13,7 @@ import com.mxgraph.view.mxStylesheet;
 import de.bonndan.nivio.landscape.*;
 import de.bonndan.nivio.output.Icon;
 import de.bonndan.nivio.output.Icons;
+import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.Renderer;
 import org.dom4j.dom.DOMElement;
 import org.slf4j.Logger;
@@ -455,7 +456,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             cell.setStyle(cell.getStyle()
                     + mxConstants.STYLE_STROKECOLOR + "=" + statusItem.getStatus().toString() + ";"
                     + mxConstants.STYLE_STROKEWIDTH + "=" + 4 + ";"
-                    + mxConstants.STYLE_IMAGE + "=" + "http://localhost:8080/icons/" + statusItem.getStatus().getSymbol() + ".png" + ";"
+                    + mxConstants.STYLE_IMAGE + "=" + LocalServer.url("/icons/" + statusItem.getStatus().getSymbol() + ".png") + ";"
             );
         });
 
