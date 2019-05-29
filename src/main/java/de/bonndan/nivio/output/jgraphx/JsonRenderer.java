@@ -6,7 +6,7 @@ import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
-import de.bonndan.nivio.landscape.Landscape;
+import de.bonndan.nivio.landscape.*;
 import de.bonndan.nivio.output.Renderer;
 import de.bonndan.nivio.output.jgraphx.dto.Vertex;
 import org.slf4j.Logger;
@@ -35,11 +35,13 @@ public class JsonRenderer implements Renderer<String> {
     public String render(Landscape landscape) {
         mxGraph graph = mxGraphRenderer.render(landscape);
 
+        List<Service> services = landscape.getServices();
+
         //this is to have the final layout
         mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
 
         List<Serializable> dtos = new ArrayList<>();
-        getAllChildren(dtos, graph, (mxCell) graph.getDefaultParent());
+        getAllChildren(dtos, graph, (mxCell) graph.getDefaultParent(), services);
 
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -50,20 +52,24 @@ public class JsonRenderer implements Renderer<String> {
         }
     }
 
-    private void getAllChildren(List<Serializable> dtos, mxGraph graph, mxCell cell) {
+    private void getAllChildren(List<Serializable> dtos, mxGraph graph, mxCell cell, List<Service> services) {
         dtos.addAll(
                 Arrays.stream(graph.getChildCells(cell))
-                        .map(o -> toDto((mxCell) o))
+                        .map(o -> toDto((mxCell) o, services))
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList())
         );
-        Arrays.stream(graph.getChildCells(cell)).forEach(o -> getAllChildren(dtos, graph, (mxCell) o));
+        Arrays.stream(graph.getChildCells(cell)).forEach(o -> getAllChildren(dtos, graph, (mxCell) o, services));
     }
 
-    private Serializable toDto(mxCell cell) {
+    private Serializable toDto(mxCell cell, List<Service> services) {
 
         mxGeometry geometry = cell.getGeometry();
         Map<String, String> style = parseStyle(cell.getStyle());
+
+        ServiceItem serviceItem = null;
+        if (!StringUtils.isEmpty(cell.getId()))
+            serviceItem = ServiceItems.find(FullyQualifiedIdentifier.from(cell.getId()), services);
         Vertex vertex = new Vertex();
         vertex.id = cell.getId();
         vertex.name = (String) cell.getValue();
@@ -83,6 +89,9 @@ public class JsonRenderer implements Renderer<String> {
         if (vertex.x == 0 && vertex.y == 0)
             return null;
 
+        if (serviceItem != null) {
+            vertex.service = serviceItem;
+        }
         return vertex;
     }
 
