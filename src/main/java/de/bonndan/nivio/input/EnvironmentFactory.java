@@ -4,16 +4,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.bonndan.nivio.input.dto.Environment;
+import org.apache.commons.text.StringSubstitutor;
+import org.apache.commons.text.lookup.StringLookupFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.Optional;
-
-import de.bonndan.nivio.input.dto.ServiceDescription;
-import org.apache.commons.text.StringSubstitutor;
-import org.apache.commons.text.lookup.StringLookupFactory;
 
 public class EnvironmentFactory {
 
@@ -28,7 +25,7 @@ public class EnvironmentFactory {
     public static Environment fromYaml(File file) {
 
         try {
-            Environment environment = fromString(Files.readString(file.toPath()));
+            Environment environment = fromString(new String(Files.readAllBytes(file.toPath())));
             environment.setSource(file.toString());
             environment.getSourceReferences().forEach(ref -> ref.setEnvironment(environment));
             return environment;

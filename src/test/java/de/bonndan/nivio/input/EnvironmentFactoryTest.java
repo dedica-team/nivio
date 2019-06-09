@@ -96,7 +96,7 @@ class EnvironmentFactoryTest {
     public void readEnvVars() throws IOException, NoSuchFieldException, IllegalAccessException {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_environment_vars.yml");
-        String read = Files.readString(file.toPath());
+        String read = new String(Files.readAllBytes(file.toPath()));
 
         for (Class c : Collections.class.getDeclaredClasses()) {
             if ("java.util.Collections$UnmodifiableMap".equals(c.getName())) {
