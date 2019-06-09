@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @Controller
-@RequestMapping(path = "/renderd    ")
+@RequestMapping(path = "/render")
 public class RenderController {
 
     private final LandscapeRepository landscapeRepository;
