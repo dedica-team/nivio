@@ -58,6 +58,12 @@ public class JGraphXRenderController {
 
     }
 
+    /**
+     * Prints the landscape as json based on rendering
+     *
+     *
+     */
+    //TODO todo provide officially supported 3d format like https://threejs.org/docs/#examples/loaders/OBJLoader
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/threejs.json")
     public ResponseEntity<String> json(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
