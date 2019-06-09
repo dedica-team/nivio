@@ -88,7 +88,7 @@ public class Indexer {
 
         //update existing
         List<ServiceItem> kept = new ArrayList<>();
-        if (environment.isIncrement()) {
+        if (environment.isPartial()) {
             kept.addAll(existingServices); //we want to keep all, increment does not contain all services
         } else {
             kept = ServiceItems.kept(environment.getServiceDescriptions(), existingServices);
@@ -99,7 +99,7 @@ public class Indexer {
 
                     ServiceDescription description = (ServiceDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
                     if (description == null) {
-                        if (environment.isIncrement()) {
+                        if (environment.isPartial()) {
                             inLandscape.add((Service) service);
                             return;
                         } else {
@@ -120,7 +120,7 @@ public class Indexer {
     }
 
     private void deleteUnreferenced(final Environment environment, List<Service> kept, List<Service> all, ProcessLog logger) {
-        if (environment.isIncrement()) {
+        if (environment.isPartial()) {
             logger.info("Incremental change, will not remove any unreferenced services.");
             return;
         }
@@ -144,7 +144,7 @@ public class Indexer {
                 service -> {
                     ServiceDescription description = (ServiceDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
                     if (description == null) {
-                        if (environment.isIncrement())
+                        if (environment.isPartial())
                             return;
                         else
                             throw new ProcessingException(environment, "Service not found " + service.getIdentifier());

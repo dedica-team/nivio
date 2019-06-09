@@ -5,8 +5,6 @@ import de.bonndan.nivio.landscape.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Configures an input.
@@ -53,17 +51,17 @@ public class Environment implements LandscapeItem {
 
     private List<StateProviderConfig> stateProviders;
 
+    private boolean isPartial = false;
+
+    public void setIsPartial(boolean isPartial) {
+        this.isPartial = isPartial;
+    }
+
     /**
      * flags that the environment is not complete, but an update
      */
-    private boolean isIncrement = false;
-
-    public void setIsIncrement(boolean isIncrement) {
-        this.isIncrement = isIncrement;
-    }
-
-    public boolean isIncrement() {
-        return isIncrement;
+    public boolean isPartial() {
+        return isPartial;
     }
 
     public String getIdentifier() {

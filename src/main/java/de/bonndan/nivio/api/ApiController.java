@@ -8,7 +8,6 @@ import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
 import de.bonndan.nivio.landscape.Service;
-import de.bonndan.nivio.landscape.ServiceItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -77,7 +76,7 @@ public class ApiController {
 
         Environment env = new Environment();
         env.setIdentifier(identifier);
-        env.setIsIncrement(true);
+        env.setIsPartial(true);
         env.setServiceDescriptions(serviceDescriptions);
 
         return fileChangeProcessor.process(env);
