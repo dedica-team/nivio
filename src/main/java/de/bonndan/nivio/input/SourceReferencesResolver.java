@@ -55,6 +55,7 @@ public class SourceReferencesResolver {
                 env.addServices(descriptions);
             } catch (ProcessingException ex) {
                 log.warn("Failed to resolve source reference " + ref, ex);
+                env.setIsPartial(true);
             }
         });
 

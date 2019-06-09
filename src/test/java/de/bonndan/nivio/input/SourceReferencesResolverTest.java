@@ -50,16 +50,21 @@ public class SourceReferencesResolverTest {
     }
 
     @Test
-    public void resolveBreaks() {
+    public void resolveOneReferenceIsNotAvailable() {
 
+        //given
         File file = new File(RootPath.get() + "/src/test/resources/example/example_broken.yml");
         Environment environment = EnvironmentFactory.fromYaml(file);
         assertFalse(environment.getSourceReferences().isEmpty());
+        assertFalse(environment.isPartial());
 
+        //when
         SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
         sourceReferencesResolver.resolve(environment, log);
 
+        //then
         assertFalse(StringUtils.isEmpty(log.getError()));
+        assertTrue(environment.isPartial());
     }
 
     @Test
