@@ -67,3 +67,11 @@ You can also add state providers which are used to gather live data and thereby 
       - url: https://gitlab.com/bonndan/nivio-private-demo/raw/docker-compose.yml
         headerTokenName: PRIVATE_TOKEN
         headerTokenValue: ${MY_SECRET_TOKEN_ENV_VAR}
+
+
+Deleting services
+-----------------
+
+Services not referenced anymore in the descriptions will be deleted automatically on a complete and successful re-index run.
+If an error occurs fetching the source while indexing, the behaviour of the indexer changes to treat the available data as
+ partial input. This means only upserts will happen, and no deletion.

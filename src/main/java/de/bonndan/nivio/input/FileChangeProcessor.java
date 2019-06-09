@@ -35,22 +35,6 @@ public class FileChangeProcessor implements ApplicationListener<FSChangeEvent> {
         return process(environment);
     }
 
-    public ProcessLog process(LandscapeItem item) {
-        if (item == null || StringUtils.isEmpty(item.getSource())) {
-            return new ProcessLog(new ProcessingException(item, "Cannot process empty source."));
-        }
-
-        File file = new File(item.getSource());
-        if (file.exists())
-            return process(file);
-        URL url = URLHelper.getURL(item.getSource());
-        if (url != null) {
-            return process(EnvironmentFactory.fromString(fileFetcher.get(url), url));
-        }
-
-        return process(EnvironmentFactory.fromString(item.getSource()));
-    }
-
     public ProcessLog process(Environment environment) {
         return indexer.reIndex(environment);
     }

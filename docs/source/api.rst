@@ -8,6 +8,7 @@ JSON Endpoints
 
 * /landscape/{landscape.identifier}
 * /landscape/{landscape.identifier}/services
+* /landscape/{landscape.identifier}/services/{fully qualified service identifier} DELETE
 
 Document Endpoints
 ------------------
