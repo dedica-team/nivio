@@ -28,3 +28,15 @@ Vendor icons are work in progress.
       - identifier: bar
         icon: vendor://redis
 
+
+Icon Caching
+------------
+
+All icons not served by the application can be cached (otherwise rendering may take a while). To enable caching, provide
+an external caching proxy. Currently only https://github.com/willnorris/imageproxy is supported. Once the proxy is running,
+it is important to set the environment variable *IMAGE_CACHE* to the proxy base url.
+
+.. code-block:: bash
+
+   docker run -p 8888:8888 willnorris/imageproxy -addr 0.0.0.0:8888 -cache memory
+   IMAGE_CACHE=http://localhost:8888
