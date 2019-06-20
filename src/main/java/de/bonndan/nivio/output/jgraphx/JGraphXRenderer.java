@@ -11,15 +11,10 @@ import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStyleRegistry;
 import com.mxgraph.view.mxStylesheet;
 import de.bonndan.nivio.landscape.*;
-import de.bonndan.nivio.output.Icon;
-import de.bonndan.nivio.output.Icons;
-import de.bonndan.nivio.output.LocalServer;
-import de.bonndan.nivio.output.Renderer;
-import org.dom4j.dom.DOMElement;
+import de.bonndan.nivio.output.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
-import org.w3c.dom.Element;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -37,12 +32,17 @@ import static de.bonndan.nivio.landscape.Status.UNKNOWN;
 public class JGraphXRenderer implements Renderer<mxGraph> {
 
     private final int DEFAULT_ICON_SIZE = 50;
+    private final IconService iconService;
 
     private Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);
     private Map<Service, Object> serviceVertexes = new HashMap<>();
     private mxStylesheet stylesheet;
     private mxGraph graph;
     private Map<String, Object> groupNodes = new HashMap<>();
+
+    public JGraphXRenderer(IconService iconService) {
+        this.iconService = iconService;
+    }
 
     @Override
     public mxGraph render(Landscape landscape) {
@@ -518,7 +518,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
 
 
     private String getBaseStyle(Service service) {
-        Icon type = Icons.getIcon(service);
+        Icon type = iconService.getIcon(service);
         if (stylesheet.getStyles().containsKey(type.getUrl().toString())) {
             return type.getUrl().toString();
         }

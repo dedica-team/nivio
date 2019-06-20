@@ -1,71 +1,41 @@
 package de.bonndan.nivio.output;
 
-import de.bonndan.nivio.landscape.ServiceItem;
-import de.bonndan.nivio.util.URLHelper;
-import org.springframework.util.StringUtils;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
+import java.util.Optional;
 
-public class Icons {
+public enum Icons {
 
-    public static final String DEFAULT_ICON = "service";
+    DEFAULT_ICON("service"),
+    API("api"),
+    CACHE("cache"),
+    DATABASE("database"),
+    DATAFLOW("dataflow"),
+    FIREWALL("firewall"),
+    HUMANUSER("humanuser"),
+    INTERFACE("interface"),
+    KEYVALUESTORE("keyvaluestore"),
+    LOADBALANCER("loadbalancer"),
+    LOCK("lock"),
+    MESSAGEQUEUE("messagequeue"),
+    MOBILECLIENT("mobileclient"),
+    SERVER("server"),
+    WEBSERVICE("webservice");
 
-    public static final String[] KNOWN_ICONS = new String[]{
-            "api",
-            "cache",
-            "database",
-            "dataflow",
-            "firewall",
-            "humanuser",
-            "interface",
-            "keyvaluestore",
-            "loadbalancer",
-            "lock",
-            "messagequeue",
-            "mobileclient",
-            "server",
-            DEFAULT_ICON,
-            "webservice",
-    };
 
-    public static Icon getIcon(ServiceItem service) {
+    private final String name;
 
-        if (!StringUtils.isEmpty(service.getIcon())) {
-            URL vendorUrl = VendorIcons.get(service.getIcon());
-            return new Icon(vendorUrl != null ? vendorUrl : getUrl(service.getIcon()), true);
-        }
 
-        if (StringUtils.isEmpty(service.getType()))
-            return new Icon(getUrl(DEFAULT_ICON));
-
-        //fallback to service
-        if (!Arrays.asList(Icons.KNOWN_ICONS).contains(service.getType().toLowerCase()))
-            return new Icon(getUrl(DEFAULT_ICON));
-
-        return new Icon(getUrl(service.getType().toLowerCase()));
+    Icons(String name) {
+        this.name = name;
     }
 
-    /**
-     * Provides an URL for a locally served icon.
-     */
-    private static URL getUrl(String icon) {
-        URL url = URLHelper.getURL(icon);
+    public static Optional<Icons> of(String serviceType) {
+        return Arrays.stream(values())
+                .filter(icons -> icons.getName().equals(serviceType))
+                .findFirst();
+    }
 
-        //local icon urls are not supported
-        if (url != null && URLHelper.isLocal(url)) {
-            url = null;
-        }
-
-        try {
-            return url != null ? url : new URL(LocalServer.url("/icons/" + icon + ".png"));
-        } catch (MalformedURLException e) {
-            try {
-                return new URL(LocalServer.url("/icons/" + DEFAULT_ICON + ".png"));
-            } catch (MalformedURLException ex) {
-                return null;
-            }
-        }
+    public String getName() {
+        return name;
     }
 }

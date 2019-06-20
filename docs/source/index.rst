@@ -18,5 +18,6 @@ sources like files or web apis (e.g. monitoring services) or allows pushing info
    install
    model
    api
+   extra
    references
 

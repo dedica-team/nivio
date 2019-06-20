@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
+import de.bonndan.nivio.output.IconService;
 import org.asciidoctor.Asciidoctor;
 
 import static org.asciidoctor.Asciidoctor.Factory.create;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.persistence.EntityNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,10 +27,12 @@ import java.util.Map;
 public class DocsController {
 
     private final LandscapeRepository landscapeRepository;
+    private final IconService iconService;
 
     @Autowired
-    public DocsController(LandscapeRepository landscapeRepository) {
+    public DocsController(LandscapeRepository landscapeRepository, IconService iconService) {
         this.landscapeRepository = landscapeRepository;
+        this.iconService = iconService;
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}")
@@ -69,7 +71,7 @@ public class DocsController {
         if (landscape == null)
             throw new EntityNotFoundException("Landscape " + landscapeIdentifier + " not found");
 
-        ReportGenerator generator = new ReportGenerator();
+        ReportGenerator generator = new ReportGenerator(iconService);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html");

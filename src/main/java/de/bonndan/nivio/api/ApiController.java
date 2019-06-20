@@ -112,7 +112,7 @@ public class ApiController {
             return new ProcessLog(new ProcessingException(landscape, "Could use fully qualified identifier " + fqi));
 
         Optional<Service> service = serviceRepository.findByLandscapeAndGroupAndIdentifier(landscape, from.getGroup(), from.getIdentifier());
-        if (service.isEmpty()) {
+        if (!service.isPresent()) {
             return new ProcessLog(new ProcessingException(landscape, "Could find service " + fqi));
         }
 

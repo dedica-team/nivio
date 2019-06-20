@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.jgraphx;
 
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
+import de.bonndan.nivio.output.IconService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,12 @@ public class JGraphXRenderController {
     private static final Logger logger = LoggerFactory.getLogger(de.bonndan.nivio.output.jgraphx.JGraphXRenderController.class);
 
     private final LandscapeRepository landscapeRepository;
+    private final IconService iconService;
 
     @Autowired
-    public JGraphXRenderController(LandscapeRepository landscapeRepository) {
+    public JGraphXRenderController(LandscapeRepository landscapeRepository, IconService iconService) {
         this.landscapeRepository = landscapeRepository;
+        this.iconService = iconService;
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/graph.png")
@@ -38,7 +41,7 @@ public class JGraphXRenderController {
         if (landscape == null)
             throw new EntityNotFoundException("Not found");
 
-        JGraphXRenderer graphStreamRenderer = new JGraphXRenderer();
+        JGraphXRenderer graphStreamRenderer = new JGraphXRenderer(iconService);
         File png = File.createTempFile(landscapeIdentifier, "png");
         try {
             graphStreamRenderer.render(landscape, png);
@@ -70,7 +73,7 @@ public class JGraphXRenderController {
         if (landscape == null)
             throw new EntityNotFoundException("Not found");
 
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer();
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
         JsonRenderer renderer = new JsonRenderer(jGraphXRenderer);
 
         try {
