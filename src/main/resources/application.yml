@@ -33,7 +33,7 @@ logging:
     root: INFO
 
 nivio:
-  imageProxy: ${IMAGE_CACHE}
+  imageProxy: ${IMAGE_CACHE:}
 
 ---
 spring:
