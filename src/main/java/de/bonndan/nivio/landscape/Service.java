@@ -74,7 +74,7 @@ public class Service implements ServiceItem {
     private String capability;
 
     @JsonManagedReference
-    @OneToMany(targetEntity = ServiceStatus.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "service")
+    @OneToMany(targetEntity = ServiceStatus.class, fetch = FetchType.EAGER, mappedBy = "service")
     private Set<StatusItem> statuses = new HashSet<>();
 
     @JsonManagedReference
@@ -366,6 +366,10 @@ public class Service implements ServiceItem {
 
     public void setCapability(String capability) {
         this.capability = capability;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     @Override

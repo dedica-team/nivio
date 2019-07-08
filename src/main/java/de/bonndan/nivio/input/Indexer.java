@@ -130,7 +130,7 @@ public class Indexer {
         removed.forEach(
                 service -> {
                     logger.info("Service " + service.getIdentifier() + " not contained anymore in env " + environment.getIdentifier() + ", deleting it.");
-                    serviceRepo.delete((Service) service);
+                    serviceRepo.delete(((Service) service).getId());
                 }
         );
     }
