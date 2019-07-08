@@ -303,7 +303,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
 
     private void addCommon(Groups groups) {
 
-        List<ServiceItem> commonItems = groups.getAll().get(Groups.COMMON);
+        List<ServiceItem> commonItems = groups.getAll().getOrDefault(Groups.COMMON, new ArrayList<>());
 
         final String noStyle = "strokeWidth=0;" + mxConstants.STYLE_FILLCOLOR + "=none;"
                 + mxConstants.STYLE_STROKECOLOR + "=none";
@@ -333,6 +333,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
                 0, 0, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE * 2,
                 noStyle
         );
+
         groupNodes.put(Groups.COMMON + " " + ServiceItem.LAYER_APPLICATION, apps);
 
         commonItems.forEach(serviceItem -> {
@@ -371,6 +372,9 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
         Object[] childCells = Arrays.stream(graph.getChildCells(cell)).filter(o -> ((mxCell) o).isVertex()).toArray();
 
         mxRectangle geo = graph.getBoundingBoxFromGeometry(childCells);
+        if (geo == null)
+            return;
+
         geo.setWidth(geo.getWidth() + 2 * DEFAULT_ICON_SIZE);
         geo.setHeight(geo.getHeight() + 2 * DEFAULT_ICON_SIZE);
 

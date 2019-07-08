@@ -39,7 +39,7 @@ public class JGraphXRenderController {
     public ResponseEntity<byte[]> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
         if (landscape == null)
-            throw new EntityNotFoundException("Not found");
+            throw new EntityNotFoundException("Not found: " + landscapeIdentifier);
 
         JGraphXRenderer graphStreamRenderer = new JGraphXRenderer(iconService);
         File png = File.createTempFile(landscapeIdentifier, "png");
