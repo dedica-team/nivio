@@ -148,6 +148,13 @@ public class Environment implements LandscapeItem {
         });
     }
 
+    /**
+     * For compatibility with source references, service can be added directly to the env description.
+     */
+    public void setServices(List<ServiceDescription> services) {
+        addServices(services);
+    }
+
     @Override
     public String toString() {
         return identifier;
