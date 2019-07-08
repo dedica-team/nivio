@@ -21,7 +21,7 @@ public class Seed {
 
     static final String NIVIO_ENV_DIRECTORY = "file:/opt/nivio/environments";
 
-    public static File getDemoFile() throws MalformedURLException {
+    public static File getDemoFile() {
         Path currentRelativePath = Paths.get("");
         return new File(
                  currentRelativePath.toAbsolutePath().toString() + "/src/test/resources/example/example_env.yml"
