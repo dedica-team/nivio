@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +41,12 @@ public class WatcherFactory {
         try {
             seed.getLocations().forEach(url -> {
                 if (URLHelper.isLocal(url)) {
-                    DirectoryWatcher directoryWatcher = new DirectoryWatcher(publisher, new File(url.toString()));
+                    DirectoryWatcher directoryWatcher = null;
+                    try {
+                        directoryWatcher = new DirectoryWatcher(publisher, new File(url.toURI()));
+                    } catch (URISyntaxException e) {
+                        throw new ProcessingException("Failed to initialize watchers from seed", e);
+                    }
                     runnables.add(directoryWatcher);
                     logger.info("Created directory watcher for url " + url);
                 } else {
