@@ -40,19 +40,23 @@ public class WatcherFactory {
         List<Runnable> runnables = new ArrayList<>();
         try {
             seed.getLocations().forEach(url -> {
+                Environment env;
                 if (URLHelper.isLocal(url)) {
                     DirectoryWatcher directoryWatcher = null;
+                    File file;
                     try {
-                        directoryWatcher = new DirectoryWatcher(publisher, new File(url.toURI()));
+                        file = new File(url.toURI());
+                        directoryWatcher = new DirectoryWatcher(publisher, file);
                     } catch (URISyntaxException e) {
                         throw new ProcessingException("Failed to initialize watchers from seed", e);
                     }
                     runnables.add(directoryWatcher);
                     logger.info("Created directory watcher for url " + url);
+                    env = EnvironmentFactory.fromYaml(file);
                 } else {
-                    Environment env = EnvironmentFactory.fromString(fileFetcher.get(url), url);
-                    indexer.reIndex(env);
+                    env = EnvironmentFactory.fromString(fileFetcher.get(url), url);
                 }
+                indexer.reIndex(env);
             });
         } catch (MalformedURLException e) {
             throw new ProcessingException("Failed to initialize watchers from seed", e);
