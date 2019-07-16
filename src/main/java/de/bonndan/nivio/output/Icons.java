@@ -19,7 +19,9 @@ public enum Icons {
     MESSAGEQUEUE("messagequeue"),
     MOBILECLIENT("mobileclient"),
     SERVER("server"),
-    WEBSERVICE("webservice");
+    WEBSERVICE("webservice"),
+    NIVIO("nivio")
+    ;
 
 
     private final String name;
