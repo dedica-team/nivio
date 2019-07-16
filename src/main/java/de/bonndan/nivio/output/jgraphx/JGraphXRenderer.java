@@ -69,7 +69,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             //organic layout between group containers
             mxOrganicLayout outer = new mxOrganicLayout(graph);
             outer.setEdgeLengthCostFactor(0.001D);
-            outer.setNodeDistributionCostFactor(100000.0D);
+            outer.setNodeDistributionCostFactor(1000000.0D);
             outer.execute(graph.getDefaultParent());
 
         } finally {
@@ -195,8 +195,8 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             ServiceItem target = ServiceItems.find(FullyQualifiedIdentifier.from(df.getTarget()), services);
             graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(), serviceVertexes.get(service), serviceVertexes.get(target),
                     mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";"
-                            + mxConstants.STYLE_STROKEWIDTH + "=2;"
-                            + mxConstants.STYLE_DASHED + "=true;"
+                            + mxConstants.STYLE_STROKEWIDTH + "=3;"
+                          //  + mxConstants.STYLE_DASHED + "=true;"
                             + mxConstants.STYLE_VERTICAL_LABEL_POSITION + "=bottom;"
                             + mxConstants.STYLE_SHAPE + "=" + CurvedShape.KEY + ";"
                             + mxConstants.STYLE_EDGE + "=" + CurvedEdgeStyle.KEY + ";"
@@ -294,7 +294,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             //organic layout inside the group/layer nodes
             mxOrganicLayout inner = new mxOrganicLayout(graph);
             inner.setEdgeLengthCostFactor(0.001D);
-            inner.setNodeDistributionCostFactor(50000.0D);
+            inner.setNodeDistributionCostFactor(80000.0D);
             inner.execute(groupnode);
             resizeContainer((mxCell) groupnode);
 
