@@ -140,15 +140,21 @@ public class Indexer {
      */
     private void linkAllProviders(List<Service> services, Environment environment, ProcessLog logger) {
 
+        boolean isPartial = environment.isPartial();
         services.forEach(
                 service -> {
                     ServiceDescription description = (ServiceDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
                     if (description == null) {
-                        if (environment.isPartial())
+                        if (isPartial)
                             return;
                         else
                             throw new ProcessingException(environment, "Service not found " + service.getIdentifier());
                     }
+
+                    if (!isPartial) {
+                        service.getProvidedBy().clear();
+                    }
+
                     description.getProvided_by().forEach(providerName -> {
                         Service provider;
                         try {
@@ -163,11 +169,10 @@ public class Indexer {
                             return;
                         }
 
-
                         if (!ServiceItems.contains(provider, service.getProvidedBy())) {
                             service.getProvidedBy().add(provider);
-                            provider.getProvides().add(service);
-                            logger.info("Adding provider " + provider + " to serivce " + service);
+                            provider.getProvides().add(service); //deprecated
+                            logger.info("Adding provider " + provider + " to service " + service);
                         }
                     });
                 }
