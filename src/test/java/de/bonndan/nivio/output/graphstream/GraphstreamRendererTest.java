@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 
+import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
 @ExtendWith(SpringExtension.class)
