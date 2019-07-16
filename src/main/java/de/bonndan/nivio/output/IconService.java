@@ -53,6 +53,7 @@ public class IconService {
             //http://www.apache.org/foundation/marks/
             vendorIcons.put("apache/httpd", new URL("http://www.apache.org/logos/res/httpd/httpd.png"));
             vendorIcons.put("redhat/keycloak", new URL("https://raw.githubusercontent.com/keycloak/keycloak-misc/master/logo/keycloak_icon_256px.png"));
+            vendorIcons.put("k8s", new URL("https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png"));
             //https://redis.io/topics/trademark
             vendorIcons.put("redis", new URL("http://download.redis.io/logocontest/82.png"));
 
