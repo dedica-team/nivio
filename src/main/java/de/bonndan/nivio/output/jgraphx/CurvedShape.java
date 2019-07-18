@@ -43,19 +43,21 @@ class CurvedShape extends mxConnectorShape {
         int n = knots.length - 1;
         mxPoint[] firstControlPoints = new mxPoint[n];
         mxPoint[] secondControlPoints = new mxPoint[n];    // Calculate first Bezier control points    // Right hand side vector
-        double[] rhs = new double[n];    // Set right hand side X values
+        double[] rightHand = new double[n];    // Set right hand side X values
         for (int i = 1; i < n - 1; ++i) {
-            rhs[i] = 4 * knots[i].getX() + 2 * knots[i + 1].getX();
+            rightHand[i] = 4 * knots[i].getX() + 2 * knots[i + 1].getX();
         }
-        rhs[0] = knots[0].getX() + 2 * knots[1].getX();
-        rhs[n - 1] = (8 * knots[n - 1].getX() + knots[n].getX()) / 2.0;    // Get first control points X-values
-        double[] x = getFirstControlPoints(rhs);    // Set right hand side Y values
+
+        rightHand[0] = knots[0].getX() + 2 * knots[1].getX();
+        rightHand[n - 1] = (8 * knots[n - 1].getX() + knots[n].getX()) / 2.0;    // Get first control points X-values
+        double[] x = getFirstControlPoints(rightHand);    // Set right hand side Y values
         for (int i = 1; i < n - 1; ++i) {
-            rhs[i] = 4 * knots[i].getY() + 2 * knots[i + 1].getY();
+            rightHand[i] = 4 * knots[i].getY() + 2 * knots[i + 1].getY();
         }
-        rhs[0] = knots[0].getY() + 2 * knots[1].getY();
-        rhs[n - 1] = (8 * knots[n - 1].getY() + knots[n].getY()) / 2.0;    // Get first control points Y-values
-        double[] y = getFirstControlPoints(rhs);    // Fill output arrays.
+
+        rightHand[0] = knots[0].getY() + 2 * knots[1].getY();
+        rightHand[n - 1] = (8 * knots[n - 1].getY() + knots[n].getY()) / 2.0;    // Get first control points Y-values
+        double[] y = getFirstControlPoints(rightHand);    // Fill output arrays.
         for (int i = 0; i < n; ++i) {        // First control point
             firstControlPoints[i] = new mxPoint(x[i], y[i]);        // Second control point
             if (i < n - 1) {
@@ -67,11 +69,23 @@ class CurvedShape extends mxConnectorShape {
         GeneralPath path = new GeneralPath();
         path.moveTo(knots[0].getX(), knots[0].getY());
         for (int i = 1; i < n + 1; i++) {
-            path.curveTo(firstControlPoints[i - 1].getX(), firstControlPoints[i - 1].getY(), secondControlPoints[i - 1].getX(), secondControlPoints[i - 1].getY(), knots[i].getX(), knots[i].getY());
+            path.curveTo(
+                    firstControlPoints[i - 1].getX(),
+                    firstControlPoints[i - 1].getY(),
+                    secondControlPoints[i - 1].getX(),
+                    secondControlPoints[i - 1].getY(),
+                    knots[i].getX(), knots[i].getY()
+            );
         }
         return path;
-    }/// <summary>/// Solves a tridiagonal system for one of coordinates (x or y)/// of first Bezier control points./// </summary>/// <param name="rhs">Right hand side vector.</param>/// <returns>Solution vector.</returns>
+    }
 
+    /**
+     * Solves a tridiagonal system for one of coordinates (x or y) of first Bezier control points.
+     *
+     * @param rhs Right hand side vector.
+     * @return Solution vector
+     */
     private static double[] getFirstControlPoints(double[] rhs) {
         int n = rhs.length;
         double[] x = new double[n]; // Solution vector.
