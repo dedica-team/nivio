@@ -2,26 +2,20 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.Environment;
-import de.bonndan.nivio.landscape.LandscapeItem;
-import de.bonndan.nivio.util.URLHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
-import java.net.URL;
 
 @Component
 public class FileChangeProcessor implements ApplicationListener<FSChangeEvent> {
 
     private final Indexer indexer;
-    private final FileFetcher fileFetcher;
 
     @Autowired
-    public FileChangeProcessor(Indexer indexer, FileFetcher fileFetcher) {
+    public FileChangeProcessor(Indexer indexer) {
         this.indexer = indexer;
-        this.fileFetcher = fileFetcher;
     }
 
     @Override
@@ -32,6 +26,9 @@ public class FileChangeProcessor implements ApplicationListener<FSChangeEvent> {
 
     public ProcessLog process(File envFile) {
         Environment environment = EnvironmentFactory.fromYaml(envFile);
+        if (environment == null) {
+            return new ProcessLog(new ProcessingException("Could not read environment from " + envFile, new RuntimeException()));
+        }
         return process(environment);
     }
 
