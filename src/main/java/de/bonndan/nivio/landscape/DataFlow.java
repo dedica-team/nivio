@@ -25,9 +25,7 @@ public class DataFlow implements DataFlowItem, Serializable {
     @JsonBackReference
     private Service sourceEntity;
 
-    @ManyToOne
-    @JsonBackReference
-    private Service targetEntity;
+    private String target;
 
     private String description;
 
@@ -36,9 +34,9 @@ public class DataFlow implements DataFlowItem, Serializable {
     public DataFlow() {
     }
 
-    public DataFlow(Service origin, Service target) {
+    public DataFlow(Service origin, FullyQualifiedIdentifier fullyQualifiedIdentifier) {
         this.sourceEntity = origin;
-        this.targetEntity = target;
+        this.target = fullyQualifiedIdentifier.toString();
     }
 
     public long getId() {
@@ -70,7 +68,7 @@ public class DataFlow implements DataFlowItem, Serializable {
     }
 
     public String getTarget() {
-        return targetEntity.getIdentifier();
+        return target;
     }
 
     @Override
@@ -84,20 +82,12 @@ public class DataFlow implements DataFlowItem, Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         DataFlow dataFlow = (DataFlow) o;
         return Objects.equals(sourceEntity.getIdentifier(), dataFlow.sourceEntity.getIdentifier()) &&
-                Objects.equals(targetEntity.getIdentifier(), dataFlow.targetEntity.getIdentifier());
+                Objects.equals(target, dataFlow.target);
     }
 
     @Override
     public int hashCode() {
-        sourceEntity.toString();
-        return Objects.hash(sourceEntity.getIdentifier(), targetEntity.getIdentifier());
+        return Objects.hash(sourceEntity.getIdentifier(), target);
     }
 
-    public Service getTargetEntity() {
-        return targetEntity;
-    }
-
-    public void setTargetEntity(Service service) {
-        targetEntity = service;
-    }
 }

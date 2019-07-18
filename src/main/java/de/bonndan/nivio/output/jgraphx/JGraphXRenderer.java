@@ -160,7 +160,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
 
         services.forEach(service -> {
             final String groupColor = de.bonndan.nivio.util.Color.nameToRGB(service.getGroup());
-            final String astyle = mxConstants.STYLE_STROKEWIDTH + "=3;"
+            final String astyle = mxConstants.STYLE_STROKEWIDTH + "=2;"
                     + mxConstants.STYLE_ENDARROW + "=oval;"
                     + mxConstants.STYLE_STARTARROW + "=false;"
                     + mxConstants.STYLE_EDGE + "=" + mxConstants.EDGESTYLE_ELBOW + ";"
@@ -195,7 +195,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             ServiceItem target = ServiceItems.find(FullyQualifiedIdentifier.from(df.getTarget()), services);
             graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(), serviceVertexes.get(service), serviceVertexes.get(target),
                     mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";"
-                            + mxConstants.STYLE_STROKEWIDTH + "=3;"
+                            + mxConstants.STYLE_STROKEWIDTH + "=4;"
                           //  + mxConstants.STYLE_DASHED + "=true;"
                             + mxConstants.STYLE_VERTICAL_LABEL_POSITION + "=bottom;"
                             + mxConstants.STYLE_SHAPE + "=" + CurvedShape.KEY + ";"
@@ -414,7 +414,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
         //inner group relations
         groupItems.forEach(service -> {
             final String groupColor = de.bonndan.nivio.util.Color.nameToRGB(service.getGroup());
-            var astyle = mxConstants.STYLE_STROKEWIDTH + "=3;"
+            var astyle = mxConstants.STYLE_STROKEWIDTH + "=2;"
                     + mxConstants.STYLE_ENDARROW + "=oval;"
                     + mxConstants.STYLE_STARTARROW + "=false;"
                     + mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";

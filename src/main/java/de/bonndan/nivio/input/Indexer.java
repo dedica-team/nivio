@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -182,6 +183,10 @@ public class Indexer {
     private void linkDataflow(final Environment input, final Landscape landscape, ProcessLog logger) {
         input.getServiceDescriptions().forEach(serviceDescription -> {
             Service origin = (Service) ServiceItems.pick(serviceDescription, landscape.getServices());
+            if (!input.isPartial() && origin.getDataFlow().size() > 0) {
+                logger.info("Clearing dataflow of " + origin);
+                origin.getDataFlow().clear(); //delete all dataflow on full update
+            }
 
             serviceDescription.getDataFlow().forEach(description -> {
 
@@ -193,11 +198,11 @@ public class Indexer {
                 }
                 Iterator<DataFlowItem> iterator = origin.getDataFlow().iterator();
                 DataFlow existing = null;
-                DataFlow dataFlow = new DataFlow(origin, target);
+                DataFlow dataFlow = new DataFlow(origin, target.getFullyQualifiedIdentifier());
                 while (iterator.hasNext()) {
                     existing = (DataFlow) iterator.next();
                     if (existing.equals(dataFlow)) {
-                        logger.info("Updating dataflow " + existing);
+                        logger.info(String.format("Updating dataflow between %s and %s", existing.getSource(), existing.getTarget()));
                         existing.setDescription(description.getDescription());
                         existing.setFormat(description.getFormat());
                         break;
@@ -210,10 +215,8 @@ public class Indexer {
                     dataFlow.setFormat(description.getFormat());
 
                     origin.getDataFlow().add(dataFlow);
-                    logger.info("Adding dataflow " + existing);
+                    logger.info(String.format("Adding dataflow between %s and %s", dataFlow.getSource(), dataFlow.getTarget()));
                 }
-
-                logger.info("Creating dataflow between " + origin.getIdentifier() + " and " + target.getIdentifier());
             });
         });
     }

@@ -89,7 +89,7 @@ public class IndexerIntegrationTest {
         assertEquals("push", push.getDescription());
         assertEquals("json", push.getFormat());
         assertEquals(blog.getIdentifier(), push.getSourceEntity().getIdentifier());
-        assertEquals("kpi-dashboard", push.getTarget());
+        assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget());
 
         Set<InterfaceItem> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());
@@ -127,7 +127,7 @@ public class IndexerIntegrationTest {
         assertEquals("push", push.getDescription());
         assertEquals("json", push.getFormat());
         assertEquals(blog.getIdentifier(), push.getSourceEntity().getIdentifier());
-        assertEquals("kpi-dashboard", push.getTarget());
+        assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget());
 
         Set<InterfaceItem> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());

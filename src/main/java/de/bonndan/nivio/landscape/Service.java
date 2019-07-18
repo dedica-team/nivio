@@ -78,7 +78,7 @@ public class Service implements ServiceItem {
     private Set<StatusItem> statuses = new HashSet<>();
 
     @JsonManagedReference
-    @OneToMany(targetEntity = DataFlow.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sourceEntity")
+    @OneToMany(targetEntity = DataFlow.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sourceEntity", orphanRemoval = true)
     private Set<DataFlowItem> dataFlow = new HashSet<>();
 
     @JsonBackReference
