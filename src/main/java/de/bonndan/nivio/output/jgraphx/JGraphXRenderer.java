@@ -100,7 +100,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
     public void render(Landscape landscape, File file) throws IOException {
 
         graph = render(landscape);
-        BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
+        BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, null, true, null);
 
         ImageIO.write(image, "PNG", file);
 
