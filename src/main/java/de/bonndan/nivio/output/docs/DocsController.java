@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.docs;
 
+import de.bonndan.nivio.api.NotFoundException;
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
 import de.bonndan.nivio.output.IconService;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +40,7 @@ public class DocsController {
 
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
         if (landscape == null)
-            throw new EntityNotFoundException("Landscape " + landscapeIdentifier + " not found");
+            throw new NotFoundException("Landscape " + landscapeIdentifier + " not found");
 
         Map<String, Object> attributes = new HashMap<String, Object>();
         //attributes.put(Attributes.LINK_CSS, true);
@@ -69,7 +69,7 @@ public class DocsController {
 
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
         if (landscape == null)
-            throw new EntityNotFoundException("Landscape " + landscapeIdentifier + " not found");
+            throw new NotFoundException("Landscape " + landscapeIdentifier + " not found");
 
         ReportGenerator generator = new ReportGenerator(iconService);
 
@@ -88,7 +88,7 @@ public class DocsController {
 
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
         if (landscape == null)
-            throw new EntityNotFoundException("Landscape " + landscapeIdentifier + " not found");
+            throw new NotFoundException("Landscape " + landscapeIdentifier + " not found");
 
         OwnersReportGenerator generator = new OwnersReportGenerator();
 

@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.jgraphx;
 
+import de.bonndan.nivio.api.NotFoundException;
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
 import de.bonndan.nivio.output.IconService;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.persistence.EntityNotFoundException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,7 +39,7 @@ public class JGraphXRenderController {
     public ResponseEntity<byte[]> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
         if (landscape == null)
-            throw new EntityNotFoundException("Not found: " + landscapeIdentifier);
+            throw new NotFoundException("Not found: " + landscapeIdentifier);
 
         JGraphXRenderer graphStreamRenderer = new JGraphXRenderer(iconService);
         File png = File.createTempFile(landscapeIdentifier, "png");
@@ -71,7 +71,7 @@ public class JGraphXRenderController {
     public ResponseEntity<String> json(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
         if (landscape == null)
-            throw new EntityNotFoundException("Not found");
+            throw new NotFoundException("Not found");
 
         JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
         JsonRenderer renderer = new JsonRenderer(jGraphXRenderer);

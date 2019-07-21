@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.graphstream;
 
+import de.bonndan.nivio.api.NotFoundException;
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
 import org.slf4j.Logger;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.persistence.EntityNotFoundException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,7 +35,7 @@ public class GraphRenderController {
     public ResponseEntity<byte[]> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
         if (landscape == null)
-            throw new EntityNotFoundException("Not found");
+            throw new NotFoundException("Not found");
 
         GraphStreamRenderer graphStreamRenderer = new GraphStreamRenderer();
         File png = File.createTempFile(landscapeIdentifier, "png");

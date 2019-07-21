@@ -1,8 +1,8 @@
 package de.bonndan.nivio.output.dld4e;
 
+import de.bonndan.nivio.api.NotFoundException;
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
-import de.bonndan.nivio.output.dld4e.Dld4eRenderer;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -19,9 +19,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -73,7 +71,8 @@ public class RenderController {
     private String renderDlde(String landscapeIdentifier) {
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
         if (landscape == null)
-            throw new EntityNotFoundException("Not found");
+            throw new NotFoundException("Landscape not found " + landscapeIdentifier);
+
 
         Dld4eRenderer graphRenderer = new Dld4eRenderer();
         return graphRenderer.render(landscape);
