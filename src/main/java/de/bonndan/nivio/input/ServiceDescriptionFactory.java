@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.landscape.Lifecycle;
 import de.bonndan.nivio.landscape.ServiceItem;
 
 import java.util.Arrays;
@@ -56,6 +57,8 @@ public interface ServiceDescriptionFactory {
             existing.setVersion(increment.getVersion());
         if (increment.getVisibility() != null)
             existing.setVisibility(increment.getVisibility());
+        if (increment.getLifecycle() != null)
+            existing.setLifecycle(increment.getLifecycle());
 
         assignSafe(increment.getScale(), existing::setScale);
         assignSafe(increment.getHost_type(), existing::setHost_type);
@@ -118,6 +121,8 @@ public interface ServiceDescriptionFactory {
 
         assignSafeIfAbsent(template.getVisibility(), item.getVisibility(), item::setVisibility);
 
+        assignLifecycleIfAbsent(template.getLifecycle(), item.getLifecycle(), item::setLifecycle);
+
         assignSafeIfAbsent(template.getScale(), item.getScale(), item::setScale);
 
         assignSafeIfAbsent(template.getHost_type(), item.getHost_type(), item::setHost_type);
@@ -157,5 +162,9 @@ public interface ServiceDescriptionFactory {
         if (template.getNetworks() != null) {
             template.getNetworks().forEach(net -> item.getNetworks().add(net));
         }
+    }
+
+    private static void assignLifecycleIfAbsent(Lifecycle s, Lifecycle absent, Consumer<Lifecycle> c) {
+        if (s != null && absent == null) c.accept(s);
     }
 }

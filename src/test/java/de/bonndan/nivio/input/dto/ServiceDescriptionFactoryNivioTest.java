@@ -4,6 +4,7 @@ package de.bonndan.nivio.input.dto;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.HttpService;
 import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
+import de.bonndan.nivio.landscape.Lifecycle;
 import de.bonndan.nivio.landscape.ServiceItem;
 import de.bonndan.nivio.landscape.Status;
 import de.bonndan.nivio.landscape.StatusItem;
@@ -60,9 +61,10 @@ class ServiceDescriptionFactoryNivioTest {
         assertEquals("docker", service.getHost_type());
         assertEquals(1, service.getTags().length);
         assertTrue(Arrays.asList(service.getTags()).contains("CMS"));
+        assertEquals(Lifecycle.END_OF_LIFE, service.getLifecycle());
 
         assertNotNull(service.getStatuses());
-        assertEquals(4, service.getStatuses().size());
+        assertEquals(3, service.getStatuses().size());
         service.getStatuses().forEach(statusItem -> {
             Assert.assertNotNull(statusItem);
             Assert.assertNotNull(statusItem.getLabel());

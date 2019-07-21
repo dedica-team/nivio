@@ -6,7 +6,6 @@ package de.bonndan.nivio.landscape;
 public interface StatusItem {
 
     String HEALTH = "health";
-    String LIFECYCLE = "lifecycle";
     String SECURITY = "security";
     String STABILITY = "stability";
     String CAPABILITY = "capability";

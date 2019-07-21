@@ -63,8 +63,9 @@ A service can have the following attributes:
 * **host_type** e.g. docker, VM, bare metal
 * **note** any note attached to the service
 * **costs** running costs of the service. Stored as string
+* **lifecycle** life cycle phase. One of "planned", "integration", "production", "end of life" (abbrevs work)
 * **statuses** status objects, represented in colors
-  * label: lifecycle (etc: stability, capability ....)
+  * label: stability, capability, health, security ....)
   * status: green, yellow, orange, red, brown
   * message: Everything ok.
 * **interfaces** an array of provided interfaces or endpoints

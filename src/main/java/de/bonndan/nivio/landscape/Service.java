@@ -97,6 +97,9 @@ public class Service implements ServiceItem {
     @ElementCollection(targetClass = InterfaceDescription.class)
     private Set<InterfaceItem> interfaces;
 
+    @Enumerated(EnumType.STRING)
+    private Lifecycle lifecycle;
+
     public String getIdentifier() {
         return identifier;
     }
@@ -221,6 +224,15 @@ public class Service implements ServiceItem {
 
     public String getVisibility() {
         return visibility;
+    }
+
+    @Override
+    public Lifecycle getLifecycle() {
+        return lifecycle;
+    }
+
+    public void setLifecycle(Lifecycle lifecycle) {
+        this.lifecycle = lifecycle;
     }
 
     public void setVisibility(String visibility) {

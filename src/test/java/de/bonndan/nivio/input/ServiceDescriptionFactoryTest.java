@@ -4,6 +4,7 @@ import de.bonndan.nivio.input.dto.DataFlowDescription;
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.dto.StatusDescription;
+import de.bonndan.nivio.landscape.Lifecycle;
 import de.bonndan.nivio.landscape.Status;
 import de.bonndan.nivio.landscape.StatusItem;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,7 @@ public class ServiceDescriptionFactoryTest {
     public void incrementAddsStatuses() {
         ServiceDescription sd1 = new ServiceDescription();
         sd1.setIdentifier("sd1");
-        sd1.setStatus(new StatusDescription(StatusItem.LIFECYCLE, Status.GREEN));
+        sd1.setStatus(new StatusDescription(StatusItem.CAPABILITY, Status.GREEN));
 
         ServiceDescription increment = new ServiceDescription();
         increment.setIdentifier("sd1");
@@ -103,4 +104,19 @@ public class ServiceDescriptionFactoryTest {
         assertEquals(2, sd1.getInterfaces().size());
     }
 
+    @Test
+    public void incrementAddsLifecycle() {
+
+        ServiceDescription sd1 = new ServiceDescription();
+        sd1.setIdentifier("sd1");
+
+        ServiceDescription increment = new ServiceDescription();
+        increment.setIdentifier("sd1");
+        increment.setLifecycle(Lifecycle.END_OF_LIFE);
+
+
+        ServiceDescriptionFactory.assignNotNull(sd1, increment);
+
+        assertEquals(Lifecycle.END_OF_LIFE, sd1.getLifecycle());
+    }
 }

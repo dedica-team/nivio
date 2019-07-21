@@ -31,9 +31,8 @@ templates:
     scale: 5
     host_type: docker
     note: to be replaced
+    lifecycle: production
     statuses:
-      - label: lifecycle
-        status: green
       - label: security
         status: red
         message: uses outdated version

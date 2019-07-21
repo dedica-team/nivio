@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input.dto;
 
 
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.landscape.*;
 import org.springframework.util.StringUtils;
@@ -62,6 +63,7 @@ public class ServiceDescription implements ServiceItem {
 
     private List<String> provided_by = new ArrayList<>();
 
+    private Lifecycle lifecycle;
 
     public ServiceDescription() {
     }
@@ -215,6 +217,15 @@ public class ServiceDescription implements ServiceItem {
 
     public String getVisibility() {
         return visibility;
+    }
+
+    public void setLifecycle(Lifecycle lifecycle) {
+        this.lifecycle = lifecycle;
+    }
+
+    @Override
+    public Lifecycle getLifecycle() {
+        return lifecycle;
     }
 
     public void setVisibility(String visibility) {

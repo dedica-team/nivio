@@ -54,6 +54,8 @@ public interface ServiceItem {
 
     String getVisibility();
 
+    Lifecycle getLifecycle();
+
     void setStatus(StatusItem statusItem);
 
     Set<StatusItem> getStatuses();

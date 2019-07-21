@@ -26,9 +26,8 @@ services:
     machine: s
     scale: 1
     host_type: docker
+    lifecycle: production
     statuses:
-      - label: lifecycle
-        status: green
       - label: stability
         status: green
       - label: business_capability

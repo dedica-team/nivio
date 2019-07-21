@@ -24,9 +24,8 @@ services:
   scale: 5
   host_type: docker
   note: to be replaced
+  lifecycle: EOL
   statuses:
-    - label: lifecycle
-      status: green
     - label: security
       status: red
       message: uses outdated version
@@ -87,6 +86,7 @@ services:
   - content
   host_type: docker
   group: content
+  lifecycle: production
 
 - description: Database for Wordpress
   software: MariaDB
