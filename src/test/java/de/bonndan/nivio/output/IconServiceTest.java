@@ -23,7 +23,7 @@ class IconServiceTest {
         wireMockServer = new WireMockServer(options().dynamicPort());
         wireMockServer.start();
         WireMock.configureFor("localhost", wireMockServer.port());
-        iconService = new IconService(null);
+        iconService = new IconService();
     }
 
     @AfterEach
@@ -83,11 +83,12 @@ class IconServiceTest {
 
         wireMockServer.stubFor(get("/")
                 .willReturn(ok("OK")));
-        iconService = new IconService(String.format("http://localhost:%d", wireMockServer.port()));
+        String urlprefix = String.format("http://localhost:%d", wireMockServer.port());
+        iconService = new IconService();
+        iconService.setImageProxy(urlprefix);
 
         Service service = new Service();
         service.setIcon(VENDOR_PREFIX + "redis");
-        String urlprefix = String.format("http://localhost:%d", wireMockServer.port());
         assertEquals(urlprefix + "//" + "http://download.redis.io/logocontest/82.png", iconService.getIcon(service).getUrl().toString());
     }
 
@@ -96,7 +97,8 @@ class IconServiceTest {
 
         wireMockServer.stubFor(get("/")
                 .willReturn(ok("OK")));
-        iconService = new IconService(String.format("http://localhost:%d", wireMockServer.port()));
+        iconService = new IconService();
+        iconService.setImageProxy(String.format("http://localhost:%d", wireMockServer.port()));
 
         Service service = new Service();
         service.setIcon("http://my.icon");
