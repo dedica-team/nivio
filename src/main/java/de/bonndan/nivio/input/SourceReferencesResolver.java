@@ -3,9 +3,9 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.landscape.ServiceItem;
 import de.bonndan.nivio.util.URLHelper;
-import org.springframework.util.StringUtils;
 
 import java.net.URL;
 import java.util.List;

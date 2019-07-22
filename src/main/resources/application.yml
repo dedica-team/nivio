@@ -32,9 +32,6 @@ logging:
   level:
     root: INFO
 
-nivio:
-  imageProxy: ${IMAGE_CACHE:}
-
 ---
 spring:
   profiles: test

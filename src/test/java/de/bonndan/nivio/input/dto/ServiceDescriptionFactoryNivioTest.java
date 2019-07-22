@@ -2,7 +2,7 @@ package de.bonndan.nivio.input.dto;
 
 
 import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.HttpService;
+import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
 import de.bonndan.nivio.landscape.Lifecycle;
 import de.bonndan.nivio.landscape.ServiceItem;

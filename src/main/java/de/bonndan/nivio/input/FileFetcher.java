@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.util.URLHelper;
 import org.apache.http.auth.AuthenticationException;
 import org.slf4j.Logger;

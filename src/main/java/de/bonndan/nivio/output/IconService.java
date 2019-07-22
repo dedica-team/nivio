@@ -1,17 +1,14 @@
 package de.bonndan.nivio.output;
 
-import de.bonndan.nivio.input.HttpService;
 import de.bonndan.nivio.landscape.ServiceItem;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
+import javax.annotation.PostConstruct;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,24 +27,9 @@ public class IconService {
     public static final String VENDOR_PREFIX = "vendor://";
 
     private final Map<String, URL> vendorIcons = new HashMap<>();
-    private final String imageProxy;
+    private String imageProxy;
 
-    public IconService(@Value("${nivio.imageProxy}") String imageProxy) {
-
-        if (!StringUtils.isEmpty(imageProxy)) {
-
-            HttpService httpService = new HttpService();
-            try {
-                httpService.get(new URL(imageProxy + "/"));
-            } catch (IOException | URISyntaxException e) {
-                LOGGER.error("ImageProxy misconfigured {}", imageProxy, e);
-                imageProxy = null;
-            } catch (RuntimeException e) {
-                LOGGER.error("ImageProxy not reachable {}/", imageProxy, e);
-                imageProxy = null;
-            }
-        }
-        this.imageProxy = imageProxy;
+    public IconService() {
 
         try {
             //http://www.apache.org/foundation/marks/
@@ -60,6 +42,12 @@ public class IconService {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+    }
+
+    @PostConstruct
+    public void init() {
+        String imageProxy = LocalServer.url("/icons");
+        setImageProxy(imageProxy);
     }
 
     public void add(String icon, URL url) {
@@ -133,5 +121,22 @@ public class IconService {
             }
         }
         return url;
+    }
+
+    public void setImageProxy(String imageProxy) {
+//        if (!StringUtils.isEmpty(imageProxy)) {
+//
+//            HttpService httpService = new HttpService();
+//            try {
+//                httpService.get(new URL(imageProxy + "/"));
+//            } catch (IOException | URISyntaxException e) {
+//                LOGGER.error("ImageProxy misconfigured {}", imageProxy, e);
+//                imageProxy = null;
+//            } catch (RuntimeException e) {
+//                LOGGER.error("ImageProxy not reachable {}/", imageProxy, e);
+//                imageProxy = null;
+//            }
+//        }
+        this.imageProxy = imageProxy;
     }
 }

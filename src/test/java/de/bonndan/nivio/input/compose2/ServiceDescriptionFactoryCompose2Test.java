@@ -1,7 +1,7 @@
 package de.bonndan.nivio.input.compose2;
 
 import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.HttpService;
+import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import org.junit.jupiter.api.BeforeEach;
