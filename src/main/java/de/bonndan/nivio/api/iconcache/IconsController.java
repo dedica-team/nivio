@@ -40,11 +40,10 @@ public class IconsController {
 
         String requestURI = request.getRequestURI();
         String part = VENDORICONS_PATH + "/";
-        int i = requestURI.indexOf(part);
-        String iconRequestURI = requestURI.substring(i + part.length());
+        String iconRequestURI = requestURI.substring(part.length());
         iconRequestURI = StringUtils.trimLeadingCharacter(iconRequestURI, '/');
         if (imageCache.containsKey(iconRequestURI)) {
-            sendResponse(imageCache.get(iconRequestURI));
+            return sendResponse(imageCache.get(iconRequestURI));
         }
 
         try {
