@@ -18,11 +18,13 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
- * http://localhost:8080/icons//https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
+ * http://localhost:8080/vendoricons//https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
  */
 @Controller
-@RequestMapping(path = "/icons")
+@RequestMapping(path = "/vendoricons")
 public class IconsController {
+
+    public static final String VENDORICONS_PATH = "/vendoricons";
 
     private final Map<String, CachedResponse> imageCache;
 
@@ -37,7 +39,7 @@ public class IconsController {
     public ResponseEntity<byte[]> icons(HttpServletRequest request) {
 
         String requestURI = request.getRequestURI();
-        String part = "/icons/";
+        String part = VENDORICONS_PATH + "/";
         int i = requestURI.indexOf(part);
         String iconRequestURI = requestURI.substring(i + part.length());
         iconRequestURI = StringUtils.trimLeadingCharacter(iconRequestURI, '/');

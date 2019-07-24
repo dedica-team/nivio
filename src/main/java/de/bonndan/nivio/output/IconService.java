@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output;
 
+import de.bonndan.nivio.api.iconcache.IconsController;
 import de.bonndan.nivio.landscape.ServiceItem;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ public class IconService {
 
     @PostConstruct
     public void init() {
-        String imageProxy = LocalServer.url("/icons");
+        String imageProxy = LocalServer.url(IconsController.VENDORICONS_PATH);
         setImageProxy(imageProxy);
     }
 

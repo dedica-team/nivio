@@ -116,4 +116,5 @@ services:
   - content
   host_type: native
   layer: infrastructure
+  lifecycle: planned
 

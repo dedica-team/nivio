@@ -196,7 +196,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(), serviceVertexes.get(service), serviceVertexes.get(target),
                     mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";"
                             + mxConstants.STYLE_STROKEWIDTH + "=4;"
-                          //  + mxConstants.STYLE_DASHED + "=true;"
+                            //  + mxConstants.STYLE_DASHED + "=true;"
                             + mxConstants.STYLE_VERTICAL_LABEL_POSITION + "=bottom;"
                             + mxConstants.STYLE_SHAPE + "=" + CurvedShape.KEY + ";"
                             + mxConstants.STYLE_EDGE + "=" + CurvedEdgeStyle.KEY + ";"
@@ -534,6 +534,11 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
         style.put(mxConstants.STYLE_IMAGE, type.getUrl());
         style.put(mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_TOP); //decreases space between label and img
         style.put(mxConstants.STYLE_VERTICAL_LABEL_POSITION, mxConstants.ALIGN_BOTTOM);
+
+        if (Lifecycle.PLANNED.equals(service.getLifecycle())) {
+            style.put(mxConstants.STYLE_DASHED, 1);
+        }
+
         stylesheet.putCellStyle(type.getUrl().toString(), style);
 
         return type.getUrl().toString();
