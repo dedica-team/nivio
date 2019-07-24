@@ -60,6 +60,7 @@ public class ServiceFactoryTest {
         assertEquals(landscapeItem.getNetworks(), created.getNetworks());
         assertEquals(landscapeItem.getCosts(), created.getCosts());
         assertEquals(landscapeItem.getCapability(), created.getCapability());
+        assertEquals(landscapeItem.getLifecycle(), created.getLifecycle());
 
     }
 }

@@ -51,6 +51,7 @@ public class ServiceFactory {
         service.setTeam(description.getTeam());
 
         service.setVisibility(description.getVisibility());
+        service.setLifecycle(description.getLifecycle());
         assignSafe(description.getGroup(), service::setGroup);
 
         service.setCosts(description.getCosts());
