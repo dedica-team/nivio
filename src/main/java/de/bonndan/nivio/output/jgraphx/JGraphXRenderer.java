@@ -338,9 +338,13 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
 
         commonItems.forEach(serviceItem -> {
 
+            String groupColor = getGroupColor((Service) serviceItem);
             String style = getBaseStyle((Service) serviceItem) + ";"
-                    + "type=" + serviceItem.getType() + ";group=" + serviceItem.getGroup() + ";"
-                    + "strokeColor=" + getGroupColor((Service) serviceItem) + ";";
+                    + "type=" + serviceItem.getType() + ";"
+                    + "strokeColor=" + groupColor + ";";
+            if (Lifecycle.PLANNED.equals(serviceItem.getLifecycle())) {
+                style = style + mxConstants.STYLE_DASHED + "=1";
+            }
 
             if (serviceItem.getLayer().equals(ServiceItem.LAYER_INGRESS)) {
                 var vertex = addServiceVertex(ingress, serviceItem, style);
@@ -390,10 +394,15 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
     }
 
     private Object addServiceVertex(Object parent, ServiceItem serviceItem, String style) {
+
+        String name = StringUtils.isEmpty(serviceItem.getName()) ? serviceItem.getIdentifier() : serviceItem.getName();
+        if (Lifecycle.PLANNED.equals(serviceItem.getLifecycle())) {
+            name = name + "\n(planned)";
+        }
         return graph.insertVertex(
                 parent,
                 serviceItem.getFullyQualifiedIdentifier().toString(),
-                StringUtils.isEmpty(serviceItem.getName()) ? serviceItem.getIdentifier() : serviceItem.getName(),
+                name,
                 0, 0, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE,
                 style
         );
@@ -406,6 +415,9 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             String style = getBaseStyle((Service) service) + ";"
                     + "type=" + service.getType() + ";group=" + service.getGroup() + ";"
                     + "strokeColor=" + getGroupColor((Service) service) + ";";
+            if (Lifecycle.PLANNED.equals(service.getLifecycle())) {
+                style = style + mxConstants.STYLE_DASHED + "=1";
+            }
 
             Object v1 = addServiceVertex(parent, service, style);
             serviceVertexes.put((Service) service, v1);
@@ -534,10 +546,6 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
         style.put(mxConstants.STYLE_IMAGE, type.getUrl());
         style.put(mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_TOP); //decreases space between label and img
         style.put(mxConstants.STYLE_VERTICAL_LABEL_POSITION, mxConstants.ALIGN_BOTTOM);
-
-        if (Lifecycle.PLANNED.equals(service.getLifecycle())) {
-            style.put(mxConstants.STYLE_DASHED, 1);
-        }
 
         stylesheet.putCellStyle(type.getUrl().toString(), style);
 
