@@ -6,7 +6,7 @@ import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.net.URL;
 
-@Embeddable
+
 public class InterfaceDescription implements InterfaceItem, Serializable {
 
     private String description;

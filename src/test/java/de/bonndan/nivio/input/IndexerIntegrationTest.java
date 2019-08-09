@@ -93,7 +93,7 @@ public class IndexerIntegrationTest {
 
         Set<InterfaceItem> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());
-        InterfaceDescription i = (InterfaceDescription) blog.getInterfaces().stream()
+        InterfaceItem i =  blog.getInterfaces().stream()
                 .filter(d -> d.getDescription().equals("posts"))
                 .findFirst()
                 .orElseThrow();
@@ -131,7 +131,7 @@ public class IndexerIntegrationTest {
 
         Set<InterfaceItem> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());
-        InterfaceDescription i = (InterfaceDescription) blog.getInterfaces().stream()
+        InterfaceItem i =  blog.getInterfaces().stream()
                 .filter(d -> d.getDescription().equals("posts"))
                 .findFirst()
                 .orElseThrow();

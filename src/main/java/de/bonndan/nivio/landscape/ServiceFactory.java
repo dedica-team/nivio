@@ -3,6 +3,8 @@ package de.bonndan.nivio.landscape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.stream.Collectors;
+
 import static de.bonndan.nivio.util.SafeAssign.assignSafe;
 
 public class ServiceFactory {
@@ -43,7 +45,7 @@ public class ServiceFactory {
 
         service.setSoftware(description.getSoftware());
         service.setVersion(description.getVersion());
-        service.setInterfaces(description.getInterfaces());
+        service.setInterfaces(description.getInterfaces().stream().map(ServiceInterface::new).collect(Collectors.toSet()));
 
         service.setHomepage(description.getHomepage());
         service.setRepository(description.getRepository());

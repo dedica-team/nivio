@@ -2,13 +2,15 @@ package de.bonndan.nivio.landscape;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import de.bonndan.nivio.input.dto.InterfaceDescription;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"landscape_identifier", "identifier", "group"}))
@@ -60,8 +62,7 @@ public class Service implements ServiceItem {
 
     private String[] tags;
 
-    @ElementCollection(targetClass = String.class)
-    private Set<String> networks;
+    private String[] networks;
 
     private String machine;
 
@@ -94,8 +95,9 @@ public class Service implements ServiceItem {
 
     private String note;
 
-    @ElementCollection(targetClass = InterfaceDescription.class)
-    private Set<InterfaceItem> interfaces;
+    @JsonManagedReference
+    @OneToMany(targetEntity = ServiceInterface.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "service", orphanRemoval = true)
+    private Set<InterfaceItem> interfaces = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     private Lifecycle lifecycle;
@@ -279,11 +281,11 @@ public class Service implements ServiceItem {
     }
 
     public Set<String> getNetworks() {
-        return networks;
+        return networks == null? new HashSet<>() : Set.of(networks);
     }
 
     public void setNetworks(Set<String> networks) {
-        this.networks = networks;
+        this.networks = networks.stream().toArray(String[]::new);
     }
 
     public String getMachine() {
