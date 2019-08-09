@@ -168,7 +168,8 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
 
             service.getProvidedBy().forEach(provider -> {
 
-                if (!service.getGroup().equals(provider.getGroup())) {
+                String g  = service.getGroup() == null ? "" : service.getGroup();
+                if (!g.equals(provider.getGroup())) {
                     graph.insertEdge(
                             graph.getDefaultParent(), null, "",
                             serviceVertexes.get(provider),
