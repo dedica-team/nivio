@@ -75,7 +75,7 @@ public class Service implements ServiceItem {
     private String capability;
 
     @JsonManagedReference
-    @OneToMany(targetEntity = ServiceStatus.class, fetch = FetchType.EAGER, mappedBy = "service")
+    @OneToMany(targetEntity = ServiceStatus.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "service", orphanRemoval = true)
     private Set<StatusItem> statuses = new HashSet<>();
 
     @JsonManagedReference
