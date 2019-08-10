@@ -48,7 +48,6 @@ public class ComposeService {
             links.forEach(s -> description.getProvided_by().add(s));
         }
 
-        description.setGroup(Groups.COMMON);
         return description;
     }
 
