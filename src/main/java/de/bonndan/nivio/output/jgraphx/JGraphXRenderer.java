@@ -339,6 +339,9 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
 
         commonItems.forEach(serviceItem -> {
 
+            if (serviceItem.getGroup() == null)
+                ((Service) serviceItem).setGroup(Groups.COMMON);
+
             String groupColor = getGroupColor((Service) serviceItem);
             String style = getBaseStyle((Service) serviceItem) + ";"
                     + "type=" + serviceItem.getType() + ";"
@@ -347,19 +350,62 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
                 style = style + mxConstants.STYLE_DASHED + "=1";
             }
 
+            var astyle = mxConstants.STYLE_STROKEWIDTH + "=2;"
+                    + mxConstants.STYLE_ENDARROW + "=oval;"
+                    + mxConstants.STYLE_STARTARROW + "=false;"
+                    + mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
+
             if (serviceItem.getLayer().equals(ServiceItem.LAYER_INGRESS)) {
                 var vertex = addServiceVertex(ingress, serviceItem, style);
                 serviceVertexes.put((Service) serviceItem, vertex);
+
+
+                ((Service) serviceItem).getProvidedBy().forEach(provider -> {
+
+                    if (serviceItem.getGroup().equals(provider.getGroup())) {
+                        graph.insertEdge(
+                                graph.getDefaultParent(), null, "",
+                                serviceVertexes.get(provider),
+                                serviceVertexes.get(serviceItem),
+                                astyle
+                        );
+                    }
+                });
             }
 
             if (serviceItem.getLayer().equals(ServiceItem.LAYER_INFRASTRUCTURE)) {
                 var vertex = addServiceVertex(infra, serviceItem, style);
                 serviceVertexes.put((Service) serviceItem, vertex);
+
+                ((Service) serviceItem).getProvidedBy().forEach(provider -> {
+
+                    if (serviceItem.getGroup().equals(provider.getGroup())) {
+                        graph.insertEdge(
+                                graph.getDefaultParent(), null, "",
+                                serviceVertexes.get(provider),
+                                serviceVertexes.get(serviceItem),
+                                astyle
+                        );
+                    }
+                });
             }
 
             if (serviceItem.getLayer().equals(ServiceItem.LAYER_APPLICATION)) {
                 var vertex = addServiceVertex(apps, serviceItem, style);
                 serviceVertexes.put((Service) serviceItem, vertex);
+
+                ((Service) serviceItem).getProvidedBy().forEach(provider -> {
+
+
+                    if (serviceItem.getGroup().equals(provider.getGroup())) {
+                        graph.insertEdge(
+                                graph.getDefaultParent(), null, "",
+                                serviceVertexes.get(provider),
+                                serviceVertexes.get(serviceItem),
+                                astyle
+                        );
+                    }
+                });
             }
         });
 
