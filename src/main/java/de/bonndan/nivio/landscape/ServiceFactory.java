@@ -60,7 +60,13 @@ public class ServiceFactory {
         service.setCapability(description.getCapability());
 
         if (description.getStatuses() != null)
-        description.getStatuses().forEach(service::setStatus);
+            description.getStatuses().forEach(statusItem -> {
+                try {
+                    service.setStatus(statusItem);
+                } catch (IllegalArgumentException ex) {
+                    logger.warn("Failed to set status", ex);
+                }
+            });
 
         service.setHost_type(description.getHost_type());
         service.setNetworks(description.getNetworks());
