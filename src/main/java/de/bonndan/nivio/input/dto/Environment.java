@@ -3,6 +3,7 @@ package de.bonndan.nivio.input.dto;
 import de.bonndan.nivio.input.ServiceDescriptionFactory;
 import de.bonndan.nivio.landscape.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -158,5 +159,19 @@ public class Environment implements LandscapeItem {
     @Override
     public String toString() {
         return identifier;
+    }
+
+    public boolean hasReference(String source) {
+        return sources.stream().anyMatch(sourceReference -> {
+
+            if (sourceReference.getUrl().equals(source))
+                return true;
+
+            File file = new File(source);
+            if (sourceReference.getUrl().contains(file.getName())) //TODO
+                return true;
+
+            return false;
+        });
     }
 }
