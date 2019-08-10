@@ -371,6 +371,8 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
         resizeContainer((mxCell) ingress);
         inner.execute(infra);
         resizeContainer((mxCell) infra);
+        inner.execute(apps);
+        resizeContainer((mxCell) apps);
     }
 
     private void resizeContainer(mxCell cell) {
