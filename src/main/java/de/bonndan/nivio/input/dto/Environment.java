@@ -137,6 +137,9 @@ public class Environment implements LandscapeItem {
     }
 
     public void addServices(List<ServiceDescription> incoming) {
+        if (incoming == null)
+            return;
+
         incoming.forEach(desc -> {
             desc.setEnvironment(this.identifier);
 

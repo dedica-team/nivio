@@ -42,7 +42,9 @@ public class ServiceDescriptionFactoryNivio implements ServiceDescriptionFactory
             return services;
         }
 
-        services.addAll(source.services);
+        if (source.services != null) {
+            services.addAll(source.services);
+        }
 
         return services;
 
