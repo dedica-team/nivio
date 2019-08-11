@@ -1,8 +1,12 @@
 package de.bonndan.nivio.output.threeD;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import de.bonndan.nivio.api.NotFoundException;
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +17,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 
 @Controller
 public class ThreeDRenderController {
@@ -29,7 +29,7 @@ public class ThreeDRenderController {
     @Autowired
     public ThreeDRenderController(LandscapeRepository landscapeRepository) throws IOException {
         this.landscapeRepository = landscapeRepository;
-        content = new String(Files.readAllBytes(new File("src/main/resources/static/html/3d.html").toPath()));
+        content = IOUtils.toString(getClass().getResourceAsStream("/static/html/3d.html"), StandardCharsets.UTF_8);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/render/{landscape}/threeD.html")

@@ -45,7 +45,7 @@ public class RenderController {
         String payload = renderDlde(landscapeIdentifier);
 
         CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost request = new HttpPost("http://localhost:3030");
+        HttpPost request = new HttpPost("http://localhost:8080");
         request.addHeader(new BasicHeader("Content-Type", "text/yaml"));
         request.setEntity(new StringEntity(payload));
         try (CloseableHttpResponse response = client.execute(request)) {
