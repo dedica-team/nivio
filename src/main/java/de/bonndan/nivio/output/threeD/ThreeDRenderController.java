@@ -33,7 +33,7 @@ public class ThreeDRenderController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/render/{landscape}/threeD.html")
-    public ResponseEntity<String> three3Resource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
+    public ResponseEntity<String> three3Resource(@PathVariable(name = "landscape") final String landscapeIdentifier) {
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
         if (landscape == null)
             throw new NotFoundException("Not found");
