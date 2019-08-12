@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -65,18 +67,14 @@ public class GraphStreamRenderer implements Renderer<Graph> {
         spriteManager = new SpriteManager(graph);
 
         Positioner positioner = new Positioner();
-        String configColor = landscape.getConfigMap().get("color");
+        Optional<Map<String,String>> configMapOptional = Optional.ofNullable(landscape.getConfigMap());
 
         landscape.getServices().forEach(service -> {
             Node n = graph.addNode(service.getIdentifier());
             n.addAttribute("ui.label", StringUtils.isEmpty(service.getName()) ? service.getIdentifier() : service.getName());
             n.addAttribute("ui.class", service.getLayer());
-            String style;
-            if (configColor != null) {
-                style = "fill-color: #" + configColor + "; ";
-            } else {
-                style = "fill-color: #" + Color.nameToRGB(service.getGroup()) + "; ";
-            }
+            String style = configMapOptional.map(stringStringMap -> "fill-color: #" + stringStringMap.get("color") + "; ")
+                .orElseGet(() -> "fill-color: #" + Color.nameToRGB(service.getGroup()) + "; ");
             String statusColor = getStatusColor(service);
             if (!Status.UNKNOWN.toString().equals(statusColor)) {
                 style += "stroke-color: " + statusColor + "; stroke-width: 3px; ";
