@@ -4,6 +4,8 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.landscape.LandscapeConfig;
+import de.bonndan.nivio.landscape.LandscapeConfig.GroupConfig;
 import de.bonndan.nivio.landscape.ServiceItem;
 import de.bonndan.nivio.landscape.StateProviderConfig;
 import de.bonndan.nivio.util.RootPath;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static de.bonndan.nivio.landscape.ServiceItems.pick;
+import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,6 +44,8 @@ class EnvironmentFactoryTest {
         SourceReference mapped = environment.getSourceReferences().get(1);
         assertNotNull(mapped);
         assertEquals(SourceFormat.NIVIO, mapped.getFormat());
+        assertNotNull(environment.getConfig());
+        assertTrue(environment.getConfig().getGroupConfig("content").isPresent());
     }
 
     @Test
@@ -149,5 +154,18 @@ class EnvironmentFactoryTest {
         assertTrue(ref.getAssignTemplates().containsKey("myfirsttemplate"));
         List<String> assignments = ref.getAssignTemplates().get("myfirsttemplate");
         assertNotNull(assignments);
+    }
+
+    @Test
+    public void configRead() {
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_config.yml");
+        Environment environment = EnvironmentFactory.fromYaml(file);
+
+        LandscapeConfig config = environment.getConfig();
+
+        assertNotNull(config);
+        assertFalse(config.getGroupConfig("notpresent").isPresent());
+        assertTrue(config.getGroupConfig("test1").isPresent());
+        assertEquals("#234234", config.getGroupConfig("test1").map(GroupConfig::getColor).get());
     }
 }

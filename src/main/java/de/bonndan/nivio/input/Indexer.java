@@ -28,11 +28,11 @@ public class Indexer {
     private final SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
 
     @Autowired
-    public Indexer(LandscapeRepository environmentRepo,
+    public Indexer(LandscapeRepository landscapeRepository,
                    ServiceRepository serviceRepo,
                    NotificationService notificationService
     ) {
-        this.landscapeRepo = environmentRepo;
+        this.landscapeRepo = landscapeRepository;
         this.serviceRepo = serviceRepo;
         this.notificationService = notificationService;
     }
@@ -49,6 +49,7 @@ public class Indexer {
         } else {
             landscape.setName(input.getName());
             landscape.setContact(input.getContact());
+            landscape.setConfig(input.getConfig());
         }
         logger.setLandscape(landscape);
 

@@ -47,6 +47,10 @@ public class Landscape implements LandscapeItem {
     @ElementCollection(targetClass = StateProviderConfig.class)
     private List<StateProviderConfig> stateProviders;
 
+    @Column(columnDefinition = "TEXT", nullable = true)
+    @Convert(converter = LandscapeConfigConverter.class)
+    private LandscapeConfig config;
+
     public String getIdentifier() {
         return identifier;
     }
@@ -89,6 +93,11 @@ public class Landscape implements LandscapeItem {
         return stateProviders;
     }
 
+    @Override
+    public LandscapeConfig getConfig() {
+        return config == null ? new LandscapeConfig() : config;
+    }
+
     public void setContact(String contact) {
         this.contact = contact;
     }
@@ -115,5 +124,9 @@ public class Landscape implements LandscapeItem {
 
     public void setStateProviders(List<StateProviderConfig> stateProviders) {
         this.stateProviders = stateProviders;
+    }
+
+    public void setConfig(LandscapeConfig config) {
+        this.config = config;
     }
 }

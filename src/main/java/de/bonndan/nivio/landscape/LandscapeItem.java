@@ -16,4 +16,6 @@ public interface LandscapeItem {
     String getSource();
 
     List<StateProviderConfig> getStateProviders();
+
+    LandscapeConfig getConfig();
 }

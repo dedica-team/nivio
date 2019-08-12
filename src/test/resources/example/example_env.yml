@@ -5,3 +5,8 @@ sources:
   - "./services/wordpress.yml"
   - url: "./services/dashboard.yml"
     format: nivio
+
+config:
+  groups:
+    content:
+      color: "24a0ed"

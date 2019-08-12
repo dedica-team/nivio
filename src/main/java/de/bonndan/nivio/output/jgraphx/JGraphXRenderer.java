@@ -28,6 +28,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import static de.bonndan.nivio.landscape.Status.UNKNOWN;
+import static de.bonndan.nivio.util.Color.GRAY;
 
 public class JGraphXRenderer implements Renderer<mxGraph> {
 
@@ -85,7 +86,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             //dataflow rendered after layout
             addDataFlow(landscape.getServices());
 
-            addVirtualGroupNodes();
+            addVirtualGroupNodes(landscape);
 
             //draw vertexes above edges (group nodes must be moved to front)
             Object[] cells = groupNodes.values().stream().filter(o -> ((mxCell) o).isVertex()).toArray();
@@ -110,7 +111,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
      * Adds copies of the group nodes with same size plus padding.
      * The original group nodes are for some reason not centered b theloweir children.
      */
-    private void addVirtualGroupNodes() {
+    private void addVirtualGroupNodes(Landscape landscape) {
 
         List<Object> virtualNodes = new ArrayList<>();
         groupNodes.forEach((group, node) -> {
@@ -125,8 +126,8 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             if (geo == null)
                 return;
 
-            final String groupColor = group.startsWith(Groups.COMMON) ? de.bonndan.nivio.util.Color.GRAY
-                    : de.bonndan.nivio.util.Color.nameToRGB(group);
+            final String groupColor = group.startsWith(Groups.COMMON) ? GRAY
+                    : getGroupColor(group, landscape);
 
             String lightened = de.bonndan.nivio.util.Color.lighten(groupColor);
             logger.debug("virtual group color is " + lightened);
@@ -140,6 +141,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
                             + "strokeColor=" + groupColor + ";"
                             + "strokeWidth=0;"
                             + "rounded=1;"
+                            + mxConstants.STYLE_FONTCOLOR + "=" + groupColor + ";"
                             + mxConstants.STYLE_FILLCOLOR + "=" + lightened + ";"
                             + mxConstants.STYLE_VERTICAL_ALIGN + "=" + mxConstants.ALIGN_BOTTOM + ";"
                             + mxConstants.STYLE_VERTICAL_LABEL_POSITION + "=" + mxConstants.ALIGN_TOP + ";"
@@ -159,14 +161,14 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
     private void addInterGroupProviderEdges(List<Service> services) {
 
         services.forEach(service -> {
-            final String groupColor = de.bonndan.nivio.util.Color.nameToRGB(service.getGroup());
-            final String astyle = mxConstants.STYLE_STROKEWIDTH + "=2;"
-                    + mxConstants.STYLE_ENDARROW + "=oval;"
-                    + mxConstants.STYLE_STARTARROW + "=false;"
-                    + mxConstants.STYLE_EDGE + "=" + mxConstants.EDGESTYLE_ELBOW + ";"
-                    + mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
-
             service.getProvidedBy().forEach(provider -> {
+
+                final String groupColor = getGroupColor(provider);
+                final String astyle = mxConstants.STYLE_STROKEWIDTH + "=2;"
+                        + mxConstants.STYLE_ENDARROW + "=oval;"
+                        + mxConstants.STYLE_STARTARROW + "=false;"
+                        + mxConstants.STYLE_EDGE + "=" + mxConstants.EDGESTYLE_ELBOW + ";"
+                        + mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
 
                 String g  = service.getGroup() == null ? "" : service.getGroup();
                 if (!g.equals(provider.getGroup())) {
@@ -194,13 +196,19 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             String id = "df_" + service.getIdentifier() + df.getTarget();
             logger.info("Adding dataflow " + id);
             ServiceItem target = ServiceItems.find(FullyQualifiedIdentifier.from(df.getTarget()), services);
-            graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(), serviceVertexes.get(service), serviceVertexes.get(target),
-                    mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";"
-                            + mxConstants.STYLE_STROKEWIDTH + "=4;"
-                            //  + mxConstants.STYLE_DASHED + "=true;"
-                            + mxConstants.STYLE_VERTICAL_LABEL_POSITION + "=bottom;"
-                            + mxConstants.STYLE_SHAPE + "=" + CurvedShape.KEY + ";"
-                            + mxConstants.STYLE_EDGE + "=" + CurvedEdgeStyle.KEY + ";"
+            String style = mxConstants.STYLE_STROKECOLOR + "=" + getGroupColor(service) + ";"
+                    + mxConstants.STYLE_STROKEWIDTH + "=4;"
+                    //  + mxConstants.STYLE_DASHED + "=true;"
+                    + mxConstants.STYLE_VERTICAL_LABEL_POSITION + "=bottom;"
+                    + mxConstants.STYLE_SHAPE + "=" + CurvedShape.KEY + ";"
+                    + mxConstants.STYLE_EDGE + "=" + CurvedEdgeStyle.KEY + ";";
+            graph.insertEdge(
+                    graph.getDefaultParent(),
+                    id,
+                    df.getFormat(),
+                    serviceVertexes.get(service),
+                    serviceVertexes.get(target),
+                    style
             );
         }));
     }
@@ -472,13 +480,18 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             serviceVertexes.put((Service) service, v1);
         });
 
+        if (groupItems.size() == 0)
+            return;
+
+        final String groupColor = getGroupColor((Service) groupItems.get(0)); //same group, so we can use service
+        var astyle = mxConstants.STYLE_STROKEWIDTH + "=2;"
+                + mxConstants.STYLE_ENDARROW + "=oval;"
+                + mxConstants.STYLE_STARTARROW + "=false;"
+                + mxConstants.STYLE_STROKECOLOR + "=" + groupColor + ";";
+
         //inner group relations
         groupItems.forEach(service -> {
-            final String groupColor = de.bonndan.nivio.util.Color.nameToRGB(service.getGroup());
-            var astyle = mxConstants.STYLE_STROKEWIDTH + "=2;"
-                    + mxConstants.STYLE_ENDARROW + "=oval;"
-                    + mxConstants.STYLE_STARTARROW + "=false;"
-                    + mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
+
 
             ((Service) service).getProvidedBy().forEach(provider -> {
 
@@ -577,8 +590,20 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
         return ref.current.toString();
     }
 
+    private String getGroupColor(String group, Landscape landscape) {
+        return landscape.getConfig().getGroupConfig(group)
+                .map(LandscapeConfig.GroupConfig::getColor)
+                .orElse(de.bonndan.nivio.util.Color.nameToRGB(group, "333333"));
+    }
+
     private String getGroupColor(Service service) {
-        return de.bonndan.nivio.util.Color.nameToRGB(service.getGroup(), "333333");
+
+        if (service.getGroup().startsWith(Groups.COMMON))
+            return GRAY;
+
+        return service.getLandscape().getConfig().getGroupConfig(service.getGroup())
+                .map(LandscapeConfig.GroupConfig::getColor)
+                .orElse(de.bonndan.nivio.util.Color.nameToRGB(service.getGroup(), "333333"));
     }
 
 

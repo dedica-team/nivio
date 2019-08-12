@@ -52,6 +52,8 @@ public class Environment implements LandscapeItem {
 
     private List<StateProviderConfig> stateProviders;
 
+    private LandscapeConfig config;
+
     private boolean isPartial = false;
 
     public void setIsPartial(boolean isPartial) {
@@ -133,6 +135,7 @@ public class Environment implements LandscapeItem {
         landscape.setContact(contact);
         landscape.setSource(source);
         landscape.setStateProviders(stateProviders);
+        landscape.setConfig(config);
         return landscape;
     }
 
@@ -176,5 +179,10 @@ public class Environment implements LandscapeItem {
 
             return false;
         });
+    }
+
+    @Override
+    public LandscapeConfig getConfig() {
+        return config;
     }
 }
