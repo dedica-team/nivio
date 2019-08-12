@@ -85,7 +85,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             //dataflow rendered after layout
             addDataFlow(landscape.getServices());
 
-            addVirtualGroupNodes();
+            addVirtualGroupNodes(landscape);
 
             //draw vertexes above edges (group nodes must be moved to front)
             Object[] cells = groupNodes.values().stream().filter(o -> ((mxCell) o).isVertex()).toArray();
@@ -110,7 +110,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
      * Adds copies of the group nodes with same size plus padding.
      * The original group nodes are for some reason not centered b theloweir children.
      */
-    private void addVirtualGroupNodes() {
+    private void addVirtualGroupNodes(Landscape landscape) {
 
         List<Object> virtualNodes = new ArrayList<>();
         groupNodes.forEach((group, node) -> {
@@ -125,9 +125,12 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             if (geo == null)
                 return;
 
-            final String groupColor = group.startsWith(Groups.COMMON) ? de.bonndan.nivio.util.Color.GRAY
+            Map<String,String> configMap = landscape.getConfigMap();
+            String groupColor = configMap.get("color");
+            if (groupColor == null) {
+                groupColor = group.startsWith(Groups.COMMON) ? de.bonndan.nivio.util.Color.GRAY
                     : de.bonndan.nivio.util.Color.nameToRGB(group);
-
+            }
             String lightened = de.bonndan.nivio.util.Color.lighten(groupColor);
             logger.debug("virtual group color is " + lightened);
             Object vg = graph.insertVertex(

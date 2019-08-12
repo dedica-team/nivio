@@ -5,7 +5,9 @@ import de.bonndan.nivio.landscape.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Configures an input.
@@ -54,6 +56,8 @@ public class Environment implements LandscapeItem {
 
     private boolean isPartial = false;
 
+    private Map<String,String> configMap;
+
     public void setIsPartial(boolean isPartial) {
         this.isPartial = isPartial;
     }
@@ -88,6 +92,15 @@ public class Environment implements LandscapeItem {
     @Override
     public List<StateProviderConfig> getStateProviders() {
         return stateProviders;
+    }
+
+    @Override
+    public Map<String, String> getConfigMap() {
+        return configMap;
+    }
+
+    public void setConfigMap(Map<String, String> configMap) {
+        this.configMap = configMap;
     }
 
     public void setStateProviders(List<StateProviderConfig> stateProviders) {
@@ -133,6 +146,7 @@ public class Environment implements LandscapeItem {
         landscape.setContact(contact);
         landscape.setSource(source);
         landscape.setStateProviders(stateProviders);
+        landscape.setConfigMap(configMap);
         return landscape;
     }
 

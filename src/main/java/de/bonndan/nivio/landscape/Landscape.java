@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -47,6 +48,11 @@ public class Landscape implements LandscapeItem {
     @ElementCollection(targetClass = StateProviderConfig.class)
     private List<StateProviderConfig> stateProviders;
 
+    @ElementCollection(targetClass = String.class)
+    @MapKeyColumn(name="key")
+    @Column(name="value")
+    private Map<String, String> configMap;
+
     public String getIdentifier() {
         return identifier;
     }
@@ -77,6 +83,14 @@ public class Landscape implements LandscapeItem {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public Map<String, String> getConfigMap() {
+        return configMap;
+    }
+
+    public void setConfigMap(Map<String, String> configMap) {
+        this.configMap = configMap;
     }
 
     @Override
@@ -116,4 +130,5 @@ public class Landscape implements LandscapeItem {
     public void setStateProviders(List<StateProviderConfig> stateProviders) {
         this.stateProviders = stateProviders;
     }
+
 }

@@ -1,6 +1,7 @@
 package de.bonndan.nivio.landscape;
 
 import java.util.List;
+import java.util.Map;
 
 public interface LandscapeItem {
 
@@ -16,4 +17,6 @@ public interface LandscapeItem {
     String getSource();
 
     List<StateProviderConfig> getStateProviders();
+
+    Map<String,String> getConfigMap();
 }

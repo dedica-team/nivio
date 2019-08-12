@@ -4,6 +4,7 @@ import de.bonndan.nivio.landscape.LandscapeItem;
 import de.bonndan.nivio.landscape.StateProviderConfig;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @todo use HAL / ressource support etc
@@ -17,6 +18,10 @@ public class LandscapeDTO implements de.bonndan.nivio.landscape.LandscapeItem {
     private String contact;
     private List<StateProviderConfig> stateProviders;
     private String source;
+    private Map<String,String> configMap;
+
+    public LandscapeDTO() {
+    }
 
     public static LandscapeDTO from(LandscapeItem item) {
 
@@ -29,6 +34,7 @@ public class LandscapeDTO implements de.bonndan.nivio.landscape.LandscapeItem {
         l.contact = item.getContact();
         l.stateProviders = item.getStateProviders();
         l.source = item.getSource();
+        l.configMap = item.getConfigMap();
 
         return l;
     }
@@ -56,6 +62,11 @@ public class LandscapeDTO implements de.bonndan.nivio.landscape.LandscapeItem {
     @Override
     public List<StateProviderConfig> getStateProviders() {
         return stateProviders;
+    }
+
+    @Override
+    public Map<String,String> getConfigMap() {
+        return configMap;
     }
 
     public String getUrl() {

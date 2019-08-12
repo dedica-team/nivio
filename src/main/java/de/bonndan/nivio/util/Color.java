@@ -19,7 +19,7 @@ public class Color {
      * @return a hex color
      */
     public static String nameToRGB(String name) {
-        return nameToRGB(name, "FFFFFF");
+        return nameToRGB(name, "a0c8ff");
     }
 
     public static String nameToRGB(String name, String defaultColor) {

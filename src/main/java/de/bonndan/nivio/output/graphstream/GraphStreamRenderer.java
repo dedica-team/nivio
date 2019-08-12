@@ -65,12 +65,18 @@ public class GraphStreamRenderer implements Renderer<Graph> {
         spriteManager = new SpriteManager(graph);
 
         Positioner positioner = new Positioner();
+        String configColor = landscape.getConfigMap().get("color");
 
         landscape.getServices().forEach(service -> {
             Node n = graph.addNode(service.getIdentifier());
             n.addAttribute("ui.label", StringUtils.isEmpty(service.getName()) ? service.getIdentifier() : service.getName());
             n.addAttribute("ui.class", service.getLayer());
-            String style = "fill-color: #" + Color.nameToRGB(service.getGroup()) + "; ";
+            String style;
+            if (configColor != null) {
+                style = "fill-color: #" + configColor + "; ";
+            } else {
+                style = "fill-color: #" + Color.nameToRGB(service.getGroup()) + "; ";
+            }
             String statusColor = getStatusColor(service);
             if (!Status.UNKNOWN.toString().equals(statusColor)) {
                 style += "stroke-color: " + statusColor + "; stroke-width: 3px; ";
