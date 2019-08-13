@@ -52,6 +52,9 @@ Think of GitLab or GitHub and the related tokens.
 
 You can also add state providers which are used to gather live data and thereby provide state for the services.
 
+To finetune the visual appearance of rendered landscapes, the automatic color choice for groups can be overridden as well.
+More configuration options will be added over time.
+
 .. code-block:: yaml
    :linenos:
 
@@ -67,6 +70,12 @@ You can also add state providers which are used to gather live data and thereby 
       - url: https://gitlab.com/bonndan/nivio-private-demo/raw/docker-compose.yml
         headerTokenName: PRIVATE_TOKEN
         headerTokenValue: ${MY_SECRET_TOKEN_ENV_VAR}
+
+    # landscape configuration
+    config:
+      groups:
+         content:
+            color: "24a0ed"
 
 
 Deleting services
