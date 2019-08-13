@@ -68,8 +68,9 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             addVirtualEdgesBetweenGroups(landscape.getServices());
             //organic layout between group containers
             mxOrganicLayout outer = new mxOrganicLayout(graph);
-            outer.setEdgeLengthCostFactor(0.001D);
-            outer.setNodeDistributionCostFactor(1000000.0D);
+            outer.setEdgeLengthCostFactor(0.0001D);
+            outer.setNodeDistributionCostFactor(900000.0D);
+            outer.setBorderLineCostFactor(7.0D);
             outer.execute(graph.getDefaultParent());
 
         } finally {
@@ -163,7 +164,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             final String astyle = mxConstants.STYLE_STROKEWIDTH + "=2;"
                     + mxConstants.STYLE_ENDARROW + "=oval;"
                     + mxConstants.STYLE_STARTARROW + "=false;"
-                    + mxConstants.STYLE_EDGE + "=" + mxConstants.EDGESTYLE_ELBOW + ";"
+                   // + mxConstants.STYLE_EDGE + "=" + mxConstants.EDGESTYLE_ELBOW + ";"
                     + mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
 
             service.getProvidedBy().forEach(provider -> {
