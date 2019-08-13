@@ -53,7 +53,7 @@ Think of GitLab or GitHub and the related tokens.
 You can also add state providers which are used to gather live data and thereby provide state for the services.
 
 To finetune the visual appearance of rendered landscapes, the automatic color choice for groups can be overridden as well.
-More configuration options will be added over time.
+For jgraphx output, some force directed graph params can be set. More configuration options will be added over time.
 
 .. code-block:: yaml
    :linenos:
@@ -74,8 +74,15 @@ More configuration options will be added over time.
     # landscape configuration
     config:
       groups:
-         content:
-            color: "24a0ed"
+        content:
+          color: "24a0ed"
+
+      # https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxOrganicLayout.html
+      jgraphx:
+        triesPerCell: 8
+        edgeLengthCostFactor: 0.0001
+        nodeDistributionCostFactor: 900000.0
+        borderLineCostFactor: 7.0
 
 
 Deleting services

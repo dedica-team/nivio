@@ -69,8 +69,11 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             addVirtualEdgesBetweenGroups(landscape.getServices());
             //organic layout between group containers
             mxOrganicLayout outer = new mxOrganicLayout(graph);
-            outer.setEdgeLengthCostFactor(0.001D);
-            outer.setNodeDistributionCostFactor(1000000.0D);
+            LandscapeConfig.JGraphXConfig jGraphXConfig = landscape.getConfig().getJgraphx();
+            outer.setEdgeLengthCostFactor(jGraphXConfig.getEdgeLengthCostFactor());
+            outer.setNodeDistributionCostFactor(jGraphXConfig.getNodeDistributionCostFactor());
+            outer.setTriesPerCell(jGraphXConfig.getTriesPerCell());
+            outer.setBorderLineCostFactor(jGraphXConfig.getBorderLineCostFactor());
             outer.execute(graph.getDefaultParent());
 
         } finally {
