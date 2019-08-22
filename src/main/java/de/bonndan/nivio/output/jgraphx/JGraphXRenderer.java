@@ -11,17 +11,18 @@ import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStyleRegistry;
 import com.mxgraph.view.mxStylesheet;
 import de.bonndan.nivio.landscape.*;
-import de.bonndan.nivio.output.*;
+import de.bonndan.nivio.output.Icon;
+import de.bonndan.nivio.output.IconService;
+import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.Renderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
@@ -35,7 +36,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
     private final IconService iconService;
 
     private Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);
-    private Map<Service, Object> serviceVertexes = new HashMap<>();
+    private Map<Service, mxCell> serviceVertexes = new HashMap<>();
     private mxStylesheet stylesheet;
     private mxGraph graph;
     private Map<String, Object> groupNodes = new HashMap<>();
@@ -63,14 +64,14 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
         try {
             Groups groups = Groups.from(landscape);
             addGrouped(groups);
-            addCommon(groups);
-
             addVirtualEdgesBetweenGroups(landscape.getServices());
+
             //organic layout between group containers
             mxOrganicLayout outer = new mxOrganicLayout(graph);
             outer.setEdgeLengthCostFactor(0.0001D);
             outer.setNodeDistributionCostFactor(900000.0D);
             outer.setBorderLineCostFactor(7.0D);
+            outer.setTriesPerCell(16);
             outer.execute(graph.getDefaultParent());
 
         } finally {
@@ -279,9 +280,6 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
     private void addGrouped(Groups groups) {
         groups.getAll().forEach((groupName, serviceItems) -> {
 
-            if (Groups.COMMON.equals(groupName))
-                return;
-
             Object groupnode = graph.insertVertex(
                     graph.getDefaultParent(),
                     groupName,
@@ -301,125 +299,6 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             resizeContainer((mxCell) groupnode);
 
         });
-    }
-
-    private void addCommon(Groups groups) {
-
-        List<ServiceItem> commonItems = groups.getAll().getOrDefault(Groups.COMMON, new ArrayList<>());
-
-        final String noStyle = "strokeWidth=0;" + mxConstants.STYLE_FILLCOLOR + "=none;"
-                + mxConstants.STYLE_STROKECOLOR + "=none";
-
-        Object infra = graph.insertVertex(
-                graph.getDefaultParent(),
-                ServiceItem.LAYER_INFRASTRUCTURE,
-                "",
-                0, 0, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE,
-                noStyle
-        );
-        groupNodes.put(Groups.COMMON + " " + ServiceItem.LAYER_INFRASTRUCTURE, infra);
-
-        Object ingress = graph.insertVertex(
-                graph.getDefaultParent(),
-                ServiceItem.LAYER_INGRESS,
-                "",
-                0, 0, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE,
-                noStyle
-        );
-        groupNodes.put(Groups.COMMON + " " + ServiceItem.LAYER_INGRESS, ingress);
-
-        Object apps = graph.insertVertex(
-                graph.getDefaultParent(),
-                ServiceItem.LAYER_APPLICATION,
-                "",
-                0, 0, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE * 2,
-                noStyle
-        );
-
-        groupNodes.put(Groups.COMMON + " " + ServiceItem.LAYER_APPLICATION, apps);
-
-        commonItems.forEach(serviceItem -> {
-
-            if (serviceItem.getGroup() == null)
-                ((Service) serviceItem).setGroup(Groups.COMMON);
-
-            String groupColor = getGroupColor((Service) serviceItem);
-            String style = getBaseStyle((Service) serviceItem) + ";"
-                    + "type=" + serviceItem.getType() + ";"
-                    + "strokeColor=" + groupColor + ";";
-            if (Lifecycle.PLANNED.equals(serviceItem.getLifecycle())) {
-                style = style + mxConstants.STYLE_DASHED + "=1";
-            }
-
-            var astyle = mxConstants.STYLE_STROKEWIDTH + "=2;"
-                    + mxConstants.STYLE_ENDARROW + "=oval;"
-                    + mxConstants.STYLE_STARTARROW + "=false;"
-                    + mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
-
-            if (serviceItem.getLayer().equals(ServiceItem.LAYER_INGRESS)) {
-                var vertex = addServiceVertex(ingress, serviceItem, style);
-                serviceVertexes.put((Service) serviceItem, vertex);
-
-
-                ((Service) serviceItem).getProvidedBy().forEach(provider -> {
-
-                    if (serviceItem.getGroup().equals(provider.getGroup())) {
-                        graph.insertEdge(
-                                graph.getDefaultParent(), null, "",
-                                serviceVertexes.get(provider),
-                                serviceVertexes.get(serviceItem),
-                                astyle
-                        );
-                    }
-                });
-            }
-
-            if (serviceItem.getLayer().equals(ServiceItem.LAYER_INFRASTRUCTURE)) {
-                var vertex = addServiceVertex(infra, serviceItem, style);
-                serviceVertexes.put((Service) serviceItem, vertex);
-
-                ((Service) serviceItem).getProvidedBy().forEach(provider -> {
-
-                    if (serviceItem.getGroup().equals(provider.getGroup())) {
-                        graph.insertEdge(
-                                graph.getDefaultParent(), null, "",
-                                serviceVertexes.get(provider),
-                                serviceVertexes.get(serviceItem),
-                                astyle
-                        );
-                    }
-                });
-            }
-
-            if (serviceItem.getLayer().equals(ServiceItem.LAYER_APPLICATION)) {
-                var vertex = addServiceVertex(apps, serviceItem, style);
-                serviceVertexes.put((Service) serviceItem, vertex);
-
-                ((Service) serviceItem).getProvidedBy().forEach(provider -> {
-
-
-                    if (serviceItem.getGroup().equals(provider.getGroup())) {
-                        graph.insertEdge(
-                                graph.getDefaultParent(), null, "",
-                                serviceVertexes.get(provider),
-                                serviceVertexes.get(serviceItem),
-                                astyle
-                        );
-                    }
-                });
-            }
-        });
-
-        mxOrganicLayout inner = new mxOrganicLayout(graph);
-        inner.setEdgeLengthCostFactor(0.001D);
-        inner.setNodeDistributionCostFactor(10000.0D);
-
-        inner.execute(ingress);
-        resizeContainer((mxCell) ingress);
-        inner.execute(infra);
-        resizeContainer((mxCell) infra);
-        inner.execute(apps);
-        resizeContainer((mxCell) apps);
     }
 
     private void resizeContainer(mxCell cell) {
@@ -469,7 +348,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
                 style = style + mxConstants.STYLE_DASHED + "=1";
             }
 
-            Object v1 = addServiceVertex(parent, service, style);
+            mxCell v1 = (mxCell) addServiceVertex(parent, service, style);
             serviceVertexes.put((Service) service, v1);
         });
 
@@ -495,8 +374,8 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
         });
     }
 
-    private void renderExtras(Map.Entry<Service, Object> entry) {
-        mxCell cell = (mxCell) entry.getValue();
+    private void renderExtras(Map.Entry<Service, mxCell> entry) {
+        mxCell cell = entry.getValue();
         mxRectangle cellBounds = graph.getCellBounds(cell);
 
         //sort statuses, pick worst
