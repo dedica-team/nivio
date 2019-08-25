@@ -113,7 +113,7 @@ class ServiceDescriptionFactoryNivioTest {
 
         List<ServiceDescription> services = descriptionFactory.fromString(yml);
         ServiceDescription service = services.get(0);
-        assertEquals(ServiceItem.LAYER_INGRESS, service.getLayer());
+        assertEquals(ServiceItem.LAYER_INGRESS, service.getGroup());
         assertEquals("Keycloak SSO", service.getName());
         assertEquals("keycloak", service.getIdentifier());
     }
