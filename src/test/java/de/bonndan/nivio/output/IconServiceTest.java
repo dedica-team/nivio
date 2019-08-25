@@ -61,7 +61,7 @@ class IconServiceTest {
     public void returnsIcon() {
         Service service = new Service();
         service.setIcon("http://my.icon");
-        assertEquals("http://my.icon", iconService.getIcon(service).getUrl().toString());
+        assertTrue(iconService.getIcon(service).getUrl().toString().contains("http://my.icon"));
     }
 
     @Test
@@ -75,7 +75,7 @@ class IconServiceTest {
     public void usesVendorIcon() {
         Service service = new Service();
         service.setIcon(VENDOR_PREFIX + "redis");
-        assertEquals("http://download.redis.io/logocontest/82.png", iconService.getIcon(service).getUrl().toString());
+        assertTrue(iconService.getIcon(service).getUrl().toString().contains("http://download.redis.io/logocontest/82.png"));
     }
 
     @Test

@@ -45,12 +45,6 @@ public class IconService {
         }
     }
 
-    @PostConstruct
-    public void init() {
-        String imageProxy = LocalServer.url(IconsController.VENDORICONS_PATH);
-        setImageProxy(imageProxy);
-    }
-
     public void add(String icon, URL url) {
         if (StringUtils.isEmpty(icon))
             return;
@@ -114,6 +108,12 @@ public class IconService {
     }
 
     private URL proxiedUrl(URL url) {
+
+        if (imageProxy == null){
+            String imageProxy = LocalServer.url(IconsController.VENDORICONS_PATH);
+            setImageProxy(imageProxy);
+        }
+
         if (!StringUtils.isEmpty(imageProxy)) {
             try {
                 return new URL(imageProxy + "//" + url.toString());
@@ -125,19 +125,6 @@ public class IconService {
     }
 
     public void setImageProxy(String imageProxy) {
-//        if (!StringUtils.isEmpty(imageProxy)) {
-//
-//            HttpService httpService = new HttpService();
-//            try {
-//                httpService.get(new URL(imageProxy + "/"));
-//            } catch (IOException | URISyntaxException e) {
-//                LOGGER.error("ImageProxy misconfigured {}", imageProxy, e);
-//                imageProxy = null;
-//            } catch (RuntimeException e) {
-//                LOGGER.error("ImageProxy not reachable {}/", imageProxy, e);
-//                imageProxy = null;
-//            }
-//        }
         this.imageProxy = imageProxy;
     }
 }
