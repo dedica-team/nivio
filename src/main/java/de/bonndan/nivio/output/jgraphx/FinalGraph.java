@@ -356,7 +356,7 @@ public class FinalGraph {
 
     private String getGroupColor(Service service) {
 
-        if (service.getGroup().startsWith(Groups.COMMON))
+        if (service.getGroup() == null || service.getGroup().startsWith(Groups.COMMON))
             return GRAY;
 
         return service.getLandscape().getConfig().getGroupConfig(service.getGroup())
