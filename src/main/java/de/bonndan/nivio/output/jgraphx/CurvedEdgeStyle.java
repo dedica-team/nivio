@@ -24,9 +24,10 @@ class CurvedEdgeStyle implements mxEdgeStyle.mxEdgeStyleFunction {
                 result.add(pt);
             } else {
 
-                double offset = target.getCenterX() > source.getCenterX() ? 1.85 : 2.15;
-                x = (target.getCenterX() + source.getCenterX()) / offset; //shift x center to right
-                y = (target.getCenterY() + source.getCenterY()) / 2;
+                double offsetx = target.getCenterX() > source.getCenterX() ? 1.85 : 2.15;
+                double offsety = target.getCenterY() > source.getCenterY() ? 1.50 : 2.50;
+                x = (target.getCenterX() + source.getCenterX()) / offsetx; //shift x center to right
+                y = (target.getCenterY() + source.getCenterY()) / offsety;
                 mxPoint point = new mxPoint(x, y);
                 result.add(point);
             }
