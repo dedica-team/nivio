@@ -32,7 +32,6 @@ public class FinalGraph {
     private Map<Service, mxCell> serviceVertexes = new HashMap<>();
     private mxStylesheet stylesheet;
     private mxGraph graph;
-    private Map<String, mxCell> groupNodes = new HashMap<>();
 
     public FinalGraph(IconService iconService) {
         this.iconService = iconService;
@@ -103,6 +102,7 @@ public class FinalGraph {
 
         addDataFlow(services);
         addInterGroupProviderEdges(services);
+        renderExtras(serviceVertexes);
 
         return graph;
     }
@@ -166,7 +166,7 @@ public class FinalGraph {
     private void resizeContainer(mxCell cell) {
         Object[] childCells = Arrays.stream(graph.getChildCells(cell)).filter(o -> ((mxCell) o).isVertex()).toArray();
 
-        double amount = DEFAULT_ICON_SIZE / 2;
+        double amount = DEFAULT_ICON_SIZE * 0.8;
         cell.getGeometry().grow(amount);
         Arrays.stream(childCells).forEach(o -> {
             mxCell child = ((mxCell) o);
@@ -197,74 +197,78 @@ public class FinalGraph {
         );
     }
 
-    private void renderExtras(Map.Entry<Service, mxCell> entry) {
-        mxCell cell = entry.getValue();
-        mxRectangle cellBounds = graph.getCellBounds(cell);
+    private void renderExtras(Map<Service, mxCell> map) {
 
-        //sort statuses, pick worst
-        Service service = entry.getKey();
-        Optional<StatusItem> displayed = service.getStatuses().stream()
-                .filter(item -> !UNKNOWN.equals(item.getStatus()) && !Status.GREEN.equals(item.getStatus()))
-                .min((statusItem, t1) -> {
-                    if (statusItem.getStatus().equals(t1.getStatus())) {
-                        return statusItem.getLabel().compareToIgnoreCase(t1.getLabel());
-                    }
-                    return statusItem.getStatus().isHigherThan(t1.getStatus()) ? -1 : 1;
-                });
+        map.entrySet().forEach(entry -> {
+            mxCell cell = entry.getValue();
+            mxRectangle cellBounds = graph.getCellBounds(cell);
 
-        //statuses at left
-        int statusBoxSize = DEFAULT_ICON_SIZE / 2;
-        if (cellBounds == null) {
-            logger.warn("Render extras: no cell bounds for {}", service);
-            return;
-        }
+            //sort statuses, pick worst
+            Service service = entry.getKey();
+            Optional<StatusItem> displayed = service.getStatuses().stream()
+                    .filter(item -> !UNKNOWN.equals(item.getStatus()) && !Status.GREEN.equals(item.getStatus()))
+                    .min((statusItem, t1) -> {
+                        if (statusItem.getStatus().equals(t1.getStatus())) {
+                            return statusItem.getLabel().compareToIgnoreCase(t1.getLabel());
+                        }
+                        return statusItem.getStatus().isHigherThan(t1.getStatus()) ? -1 : 1;
+                    });
 
-        displayed.ifPresent(statusItem -> {
-            cell.setValue(cell.getValue() + "\n(" + statusItem.getLabel() + "!)");
-            cell.setStyle(cell.getStyle()
-                    + mxConstants.STYLE_STROKECOLOR + "=" + statusItem.getStatus().toString() + ";"
-                    + mxConstants.STYLE_STROKEWIDTH + "=" + 4 + ";"
-                    + mxConstants.STYLE_IMAGE + "=" + LocalServer.url("/icons/" + statusItem.getStatus().getSymbol() + ".png") + ";"
-            );
+            //statuses at left
+            int statusBoxSize = DEFAULT_ICON_SIZE / 2;
+            if (cellBounds == null) {
+                logger.warn("Render extras: no cell bounds for {}", service);
+                return;
+            }
+
+            displayed.ifPresent(statusItem -> {
+                cell.setValue(cell.getValue() + "\n(" + statusItem.getLabel() + "!)");
+                cell.setStyle(cell.getStyle()
+                        + mxConstants.STYLE_STROKECOLOR + "=" + statusItem.getStatus().toString() + ";"
+                        + mxConstants.STYLE_STROKEWIDTH + "=" + 4 + ";"
+                        + mxConstants.STYLE_IMAGE + "=" + LocalServer.url("/icons/" + statusItem.getStatus().getSymbol() + ".png") + ";"
+                );
+            });
+
+            //interfaces
+            int intfBoxSize = 10;
+            double intfOffsetX = cellBounds.getCenterX() - 0.5 * intfBoxSize;
+            double intfOffsetY = cellBounds.getCenterY() - 0.5 * intfBoxSize;
+            String intfStyle = mxConstants.STYLE_SHAPE + "=" + mxConstants.SHAPE_ELLIPSE + ";"
+                    + mxConstants.STYLE_FONTCOLOR + "=black;"
+                    + mxConstants.STYLE_LABEL_POSITION + "=right;"
+                    + mxConstants.STYLE_ALIGN + "=left;"
+                    + mxConstants.STYLE_FILLCOLOR + "=#" + getGroupColor(service) + ";"
+                    + mxConstants.STYLE_STROKEWIDTH + "=0;";
+
+
+            AtomicInteger count = new AtomicInteger(0);
+            Stream<InterfaceItem> sorted = service.getInterfaces().stream()
+                    .sorted((interfaceItem, t1) -> interfaceItem.getDescription().compareToIgnoreCase(t1.getDescription()));
+            sorted.forEach(intf -> {
+
+                double angleInRadians = -1 + count.getAndIncrement() * 0.5;
+                double radius = intfBoxSize * 4;
+                double x = Math.cos(angleInRadians) * radius;
+                double y = Math.sin(angleInRadians) * radius;
+
+                Object v1 = graph.insertVertex(graph.getDefaultParent(), null,
+                        intf.getDescription() + " (" + intf.getFormat() + ")",
+                        intfOffsetX + x, intfOffsetY + y, intfBoxSize, intfBoxSize,
+                        intfStyle
+                );
+
+                graph.insertEdge(
+                        graph.getDefaultParent(), null, "",
+                        cell,
+                        v1,
+                        mxConstants.STYLE_ENDARROW + "=none;"
+                                + mxConstants.STYLE_STROKEWIDTH + "=2;"
+                                + mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";"
+                );
+            });
         });
 
-        //interfaces
-        int intfBoxSize = 10;
-        double intfOffsetX = cellBounds.getCenterX() - 0.5 * intfBoxSize;
-        double intfOffsetY = cellBounds.getCenterY() - 0.5 * intfBoxSize;
-        String intfStyle = mxConstants.STYLE_SHAPE + "=" + mxConstants.SHAPE_ELLIPSE + ";"
-                + mxConstants.STYLE_FONTCOLOR + "=black;"
-                + mxConstants.STYLE_LABEL_POSITION + "=right;"
-                + mxConstants.STYLE_ALIGN + "=left;"
-                + mxConstants.STYLE_FILLCOLOR + "=#" + getGroupColor(service) + ";"
-                + mxConstants.STYLE_STROKEWIDTH + "=0;";
-
-
-        AtomicInteger count = new AtomicInteger(0);
-        Stream<InterfaceItem> sorted = service.getInterfaces().stream()
-                .sorted((interfaceItem, t1) -> interfaceItem.getDescription().compareToIgnoreCase(t1.getDescription()));
-        sorted.forEach(intf -> {
-
-            double angleInRadians = -1 + count.getAndIncrement() * 0.5;
-            double radius = intfBoxSize * 4;
-            double x = Math.cos(angleInRadians) * radius;
-            double y = Math.sin(angleInRadians) * radius;
-
-            Object v1 = graph.insertVertex(graph.getDefaultParent(), null,
-                    intf.getDescription() + " (" + intf.getFormat() + ")",
-                    intfOffsetX + x, intfOffsetY + y, intfBoxSize, intfBoxSize,
-                    intfStyle
-            );
-
-            graph.insertEdge(
-                    graph.getDefaultParent(), null, "",
-                    cell,
-                    v1,
-                    mxConstants.STYLE_ENDARROW + "=none;"
-                            + mxConstants.STYLE_STROKEWIDTH + "=2;"
-                            + mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";"
-            );
-        });
     }
 
     private String getStatusColor(Service service) {
@@ -322,8 +326,7 @@ public class FinalGraph {
                 + mxConstants.STYLE_SHAPE + "=" + CurvedShape.KEY + ";"
                 + mxConstants.STYLE_EDGE + "=" + CurvedEdgeStyle.KEY + ";"
                 + mxConstants.STYLE_LABEL_BACKGROUNDCOLOR + "=#" + groupColor + ";"
-                + mxConstants.STYLE_FONTCOLOR + "=black;"
-                ;
+                + mxConstants.STYLE_FONTCOLOR + "=black;";
 
         if (Lifecycle.PLANNED.equals(service.getLifecycle())) {
             style = style + mxConstants.STYLE_DASHED + "=1";
@@ -339,12 +342,12 @@ public class FinalGraph {
         String lightened = de.bonndan.nivio.util.Color.lighten(groupColor);
         String style = "type=group;groupColor=" + groupColor + ";"
                 + "strokeColor=" + groupColor + ";"
-                + "strokeWidth=0;"
+                + "strokeWidth=1;"
                 + "rounded=1;"
                 + mxConstants.STYLE_FILLCOLOR + "=" + lightened + ";"
                 + mxConstants.STYLE_VERTICAL_ALIGN + "=" + mxConstants.ALIGN_BOTTOM + ";"
                 + mxConstants.STYLE_VERTICAL_LABEL_POSITION + "=" + mxConstants.ALIGN_TOP + ";"
-                + mxConstants.STYLE_LABEL_BACKGROUNDCOLOR + "=white;";
+                + mxConstants.STYLE_FONTCOLOR + "=#" + groupColor + ";";
         return style;
     }
 }

@@ -1,32 +1,20 @@
 package de.bonndan.nivio.output.jgraphx;
 
-import com.mxgraph.canvas.mxGraphics2DCanvas;
 import com.mxgraph.model.mxCell;
-import com.mxgraph.model.mxGeometry;
 import com.mxgraph.util.mxCellRenderer;
-import com.mxgraph.util.mxConstants;
-import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
-import com.mxgraph.view.mxStyleRegistry;
 import com.mxgraph.view.mxStylesheet;
 import de.bonndan.nivio.landscape.*;
-import de.bonndan.nivio.output.Icon;
 import de.bonndan.nivio.output.IconService;
-import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.Renderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
-
-import static de.bonndan.nivio.landscape.Status.UNKNOWN;
 
 public class JGraphXRenderer implements Renderer<mxGraph> {
 
@@ -49,7 +37,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
 
         Groups groups = Groups.from(landscape);
         groups.getAll().forEach((groupName, serviceItems) -> {
-            GroupGraph groupGraph = new GroupGraph(groupName, serviceItems);
+            GroupGraph groupGraph = new GroupGraph(serviceItems);
             subgraphs.put(groupName, groupGraph);
         });
 

@@ -15,11 +15,9 @@ import java.util.Map;
 public class GroupGraph {
     public final int DEFAULT_ICON_SIZE = 50;
     private final mxGraph graph;
-    private final String groupName;
     private Map<ServiceItem, mxCell> serviceVertexes = new HashMap<>();
 
-    public GroupGraph(String groupName, List<ServiceItem> services) {
-        this.groupName = groupName;
+    public GroupGraph(List<ServiceItem> services) {
         graph = new mxGraph();
 
         services.forEach(service -> {
@@ -46,7 +44,6 @@ public class GroupGraph {
         //organic layout between group containers
         mxOrganicLayout outer = new mxOrganicLayout(graph);
         outer.execute(graph.getDefaultParent());
-        System.out.println(serviceVertexes.toString());
     }
 
     public mxRectangle getBounds() {
