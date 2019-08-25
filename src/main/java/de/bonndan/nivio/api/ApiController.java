@@ -27,14 +27,12 @@ import java.util.stream.StreamSupport;
 public class ApiController {
 
     private final LandscapeRepository landscapeRepository;
-    private final ServiceRepository serviceRepository;
     private final Indexer indexer;
     private final FileFetcher fileFetcher;
 
     @Autowired
-    public ApiController(LandscapeRepository landscapeRepository, ServiceRepository serviceRepository, Indexer indexer, FileFetcher fileFetcher) {
+    public ApiController(LandscapeRepository landscapeRepository, Indexer indexer, FileFetcher fileFetcher) {
         this.landscapeRepository = landscapeRepository;
-        this.serviceRepository = serviceRepository;
         this.indexer = indexer;
         this.fileFetcher = fileFetcher;
     }
@@ -56,7 +54,7 @@ public class ApiController {
 
     @RequestMapping(path = "/landscape/{identifier}")
     public ResponseEntity<LandscapeDTO> landscape(@PathVariable String identifier) {
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null)
             return ResponseEntity.notFound().build();
 
@@ -103,7 +101,7 @@ public class ApiController {
             @PathVariable String identifier,
             @PathVariable String fqi
     ) {
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null)
             return new ProcessLog(new ProcessingException(null, "Could not find lanscape " + identifier));
 
@@ -111,23 +109,23 @@ public class ApiController {
         if (from == null)
             return new ProcessLog(new ProcessingException(landscape, "Could use fully qualified identifier " + fqi));
 
-        Optional<Service> service = serviceRepository.findByLandscapeAndGroupAndIdentifier(landscape, from.getGroup(), from.getIdentifier());
+        Optional<ServiceItem> service = ServiceItems.find(FullyQualifiedIdentifier.build(from.getLandscape(), from.getGroup(), from.getIdentifier()), landscape.getServices());
         if (!service.isPresent()) {
             return new ProcessLog(new ProcessingException(landscape, "Could find service " + fqi));
         }
 
-        serviceRepository.delete(service.get());
+        landscape.getServices().remove(service);
         return process(landscape);
     }
 
     @RequestMapping(path = "/landscape/{identifier}/services", method = RequestMethod.GET)
     public ResponseEntity<List<Service>> services(@PathVariable String identifier) {
 
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null)
             return ResponseEntity.notFound().build();
 
-        return new ResponseEntity<>(landscape.getServices(), HttpStatus.OK);
+        return new ResponseEntity<>(List.copyOf(landscape.getServices()), HttpStatus.OK);
 
     }
 
@@ -136,7 +134,7 @@ public class ApiController {
      */
     @RequestMapping(path = "/reindex/{landscape}", method = RequestMethod.POST)
     public ProcessLog reindex(@PathVariable String landscape) {
-        Landscape distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape);
+        Landscape distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape).orElse(null);
         if (distinctByIdentifier == null)
             return new ProcessLog(new ProcessingException(null, "Could not find lanscape " + landscape));
 

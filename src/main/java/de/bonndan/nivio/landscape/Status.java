@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.Convert;
-
 public enum Status {
 
     UNKNOWN("grey", 0, ""),

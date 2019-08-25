@@ -29,7 +29,7 @@ public class SourceReferencesResolver {
 
                 ref.getAssignTemplates().entrySet().forEach(templateAssignments -> {
 
-                    ServiceItem template = find(templateAssignments.getKey(), "", env.getTemplates());
+                    ServiceItem template = find(templateAssignments.getKey(), "", env.getTemplates()).orElse(null);
                     if (template == null) {
                         log.warn("Could not find template to assign: " + templateAssignments.getKey());
                         return;
@@ -40,7 +40,7 @@ public class SourceReferencesResolver {
                             descriptions.forEach(item -> ServiceDescriptionFactory.assignTemplateValues(item, (ServiceDescription)template));
 
                         } else {
-                            ServiceItem item = find(identifier, "", descriptions);
+                            ServiceItem item = find(identifier, "", descriptions).orElse(null);
                             if (item == null) {
                                 log.warn("Could not assign template " + template.getIdentifier() + ", service " + identifier + " not found.");
                                 return;

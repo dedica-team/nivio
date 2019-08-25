@@ -1,11 +1,7 @@
 package de.bonndan.nivio.landscape;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -13,15 +9,8 @@ import java.util.Objects;
  * <p>
  * Outgoing flows having a target which matches a service identifier will cause a relation to be created.
  */
-@Entity
 public class DataFlow implements DataFlowItem, Serializable {
 
-    @Id
-    @GeneratedValue
-    @JsonIgnore
-    private Long id;
-
-    @ManyToOne
     @JsonBackReference
     private Service sourceEntity;
 
@@ -37,10 +26,6 @@ public class DataFlow implements DataFlowItem, Serializable {
     public DataFlow(Service origin, FullyQualifiedIdentifier fullyQualifiedIdentifier) {
         this.sourceEntity = origin;
         this.target = fullyQualifiedIdentifier.toString();
-    }
-
-    public long getId() {
-        return id;
     }
 
     public String getDescription() {

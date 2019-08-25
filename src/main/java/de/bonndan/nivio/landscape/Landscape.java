@@ -3,24 +3,18 @@ package de.bonndan.nivio.landscape;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.*;
 import javax.validation.constraints.Pattern;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  *
  */
-@Entity
-@Table(name = "landscapes")
 public class Landscape implements LandscapeItem {
 
     /**
      * Immutable unique identifier. Maybe use an URN.
      */
-    @Id
     @Pattern(regexp = ServiceItem.IDENTIFIER_VALIDATION)
     private String identifier;
 
@@ -34,21 +28,16 @@ public class Landscape implements LandscapeItem {
      */
     private String contact;
 
-    @Column(columnDefinition = "TEXT")
     private String source;
 
     /**
      * List of configuration services.
      */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "landscape")
     @JsonManagedReference
-    private List<Service> services = new ArrayList<>();
+    private Set<Service> services = new HashSet<>();
 
-    @ElementCollection(targetClass = StateProviderConfig.class)
-    private List<StateProviderConfig> stateProviders;
+    private List<StateProviderConfig> stateProviders = new ArrayList<>();
 
-    @Column(columnDefinition = "TEXT", nullable = true)
-    @Convert(converter = LandscapeConfigConverter.class)
     private LandscapeConfig config;
 
     public String getIdentifier() {
@@ -67,11 +56,11 @@ public class Landscape implements LandscapeItem {
         this.name = name;
     }
 
-    public List<Service> getServices() {
+    public Set<Service> getServices() {
         return services;
     }
 
-    public void setServices(List<Service> services) {
+    public void setServices(Set<Service> services) {
         this.services = services;
     }
 

@@ -121,12 +121,14 @@ public class FinalGraph {
 
             String id = "df_" + service.getIdentifier() + df.getTarget();
             logger.info("Adding dataflow " + id);
-            ServiceItem target = ServiceItems.find(FullyQualifiedIdentifier.from(df.getTarget()), services);
-            graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(),
-                    serviceVertexes.get(service),
-                    serviceVertexes.get(target),
-                    getDataFlowStyle(service)
-            );
+            ServiceItems.find(FullyQualifiedIdentifier.from(df.getTarget()), services).ifPresent(target -> {
+                graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(),
+                        serviceVertexes.get(service),
+                        serviceVertexes.get(target),
+                        getDataFlowStyle(service)
+                );
+            });
+
         }));
     }
 

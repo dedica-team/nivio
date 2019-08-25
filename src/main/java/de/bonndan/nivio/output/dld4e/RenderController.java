@@ -69,10 +69,9 @@ public class RenderController {
     }
 
     private String renderDlde(String landscapeIdentifier) {
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
-        if (landscape == null)
-            throw new NotFoundException("Landscape not found " + landscapeIdentifier);
-
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
+                () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
+        );
 
         Dld4eRenderer graphRenderer = new Dld4eRenderer();
         return graphRenderer.render(landscape);

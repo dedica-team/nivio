@@ -35,7 +35,7 @@ public class JsonRenderer implements Renderer<String> {
     public String render(Landscape landscape) {
         mxGraph graph = mxGraphRenderer.render(landscape);
 
-        List<Service> services = landscape.getServices();
+        Set<Service> services = landscape.getServices();
 
         //this is to have the final layout
         mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
@@ -52,7 +52,7 @@ public class JsonRenderer implements Renderer<String> {
         }
     }
 
-    private void getAllChildren(List<Serializable> dtos, mxGraph graph, mxCell cell, List<Service> services) {
+    private void getAllChildren(List<Serializable> dtos, mxGraph graph, mxCell cell, Collection<Service> services) {
         dtos.addAll(
                 Arrays.stream(graph.getChildCells(cell))
                         .map(o -> toDto((mxCell) o, services))
@@ -62,14 +62,14 @@ public class JsonRenderer implements Renderer<String> {
         Arrays.stream(graph.getChildCells(cell)).forEach(o -> getAllChildren(dtos, graph, (mxCell) o, services));
     }
 
-    private Serializable toDto(mxCell cell, List<Service> services) {
+    private Serializable toDto(mxCell cell, Collection<Service> services) {
 
         mxGeometry geometry = cell.getGeometry();
         Map<String, String> style = parseStyle(cell.getStyle());
 
         ServiceItem serviceItem = null;
         if (!StringUtils.isEmpty(cell.getId()))
-            serviceItem = ServiceItems.find(FullyQualifiedIdentifier.from(cell.getId()), services);
+            serviceItem = ServiceItems.find(FullyQualifiedIdentifier.from(cell.getId()), services).orElse(null);
         Vertex vertex = new Vertex();
         vertex.id = cell.getId();
         vertex.name = (String) cell.getValue();

@@ -37,9 +37,9 @@ public class JGraphXRenderController {
 
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/graph.png")
     public ResponseEntity<byte[]> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
-        if (landscape == null)
-            throw new NotFoundException("Not found: " + landscapeIdentifier);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(() ->
+             new NotFoundException("Not found: " + landscapeIdentifier)
+        );
 
         JGraphXRenderer graphStreamRenderer = new JGraphXRenderer(iconService);
         File png = File.createTempFile(landscapeIdentifier, "png");
@@ -69,9 +69,9 @@ public class JGraphXRenderController {
     //TODO todo provide officially supported 3d format like https://threejs.org/docs/#examples/loaders/OBJLoader
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/threejs.json")
     public ResponseEntity<String> json(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
-        if (landscape == null)
-            throw new NotFoundException("Not found");
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(() ->
+                new NotFoundException("Not found: " + landscapeIdentifier)
+        );
 
         JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
         JsonRenderer renderer = new JsonRenderer(jGraphXRenderer);

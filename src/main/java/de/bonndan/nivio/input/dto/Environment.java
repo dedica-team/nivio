@@ -146,7 +146,8 @@ public class Environment implements LandscapeItem {
         incoming.forEach(desc -> {
             desc.setEnvironment(this.identifier);
 
-            ServiceDescription existing = (ServiceDescription) ServiceItems.find(desc.getIdentifier(), desc.getGroup(), serviceDescriptions);
+            ServiceDescription existing = (ServiceDescription)
+                    ServiceItems.find(desc.getIdentifier(), desc.getGroup(), serviceDescriptions).orElse(null);
             if (existing != null) {
                 ServiceDescriptionFactory.assignNotNull(existing, desc);
             } else {

@@ -1,23 +1,11 @@
 package de.bonndan.nivio.landscape;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import java.net.URL;
 
-@Entity
 public class ServiceInterface implements InterfaceItem {
 
-    @Id
-    @GeneratedValue
-    @JsonIgnore
-    private Long id;
-
-    @ManyToOne
     @JsonBackReference
     private Service service;
 
@@ -33,14 +21,6 @@ public class ServiceInterface implements InterfaceItem {
         this.description = interfaceItem.getDescription();
         this.format = interfaceItem.getFormat();
         this.url = interfaceItem.getUrl();
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     @Override
