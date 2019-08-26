@@ -46,11 +46,21 @@ public class AllGroupsGraph {
         addVirtualEdgesBetweenGroups(services);
 
         mxFastOrganicLayout layout = new mxFastOrganicLayout(graph);
-        Optional.ofNullable(config.getJgraphx().getMaxIterations()).ifPresent(layout::setMaxIterations);
-        layout.setInitialTemp(18);
-        layout.setForceConstant(layout.getForceConstant() * 4); //longer edges, containers are enlarged later
+        Optional.ofNullable(config.getJgraphx().getMaxIterations())
+                .ifPresent(layout::setMaxIterations);
+        Optional.ofNullable(config.getJgraphx().getInitialTemp())
+                .ifPresent(layout::setInitialTemp);
+        //longer edges, containers are enlarged later
+        Optional.ofNullable(config.getJgraphx().getForceConstantFactor())
+                .ifPresent(f -> layout.setForceConstant(layout.getForceConstant() * f));
+
+        Optional.ofNullable(config.getJgraphx().getMinDistanceLimitFactor())
+                .ifPresent(f -> layout.setMinDistanceLimit(layout.getMinDistanceLimit() * f));
+
+
         layout.execute(graph.getDefaultParent());
     }
+
 
     /**
      * Virtual edges between group containers enable organic layout of groups.
@@ -58,12 +68,12 @@ public class AllGroupsGraph {
      * @param services
      */
     private void addVirtualEdgesBetweenGroups(List<ServiceItem> services) {
+        HashMap<mxCell, mxCell> groupConnections = new HashMap<>();
         services.forEach(service -> {
             String group = service.getGroup();
-            Object groupNode = groupNodes.get(group);
-            HashMap<Object, Object> groupConnections = new HashMap<>();
+            mxCell groupNode = groupNodes.get(group);
 
-            BiFunction<Object, Object, Boolean> canLink = (ownGroup, otherGroup) -> {
+            BiFunction<mxCell, mxCell, Boolean> canLink = (ownGroup, otherGroup) -> {
 
                 if (ownGroup == null)
                     return false;
@@ -83,13 +93,13 @@ public class AllGroupsGraph {
             //provider
             ((Service) service).getProvidedBy().forEach(provider -> {
                 String pGroup = provider.getGroup() == null ? Groups.COMMON : provider.getGroup();
-                Object pGroupNode = groupNodes.get(pGroup);
+                mxCell pGroupNode = groupNodes.get(pGroup);
                 if (canLink.apply(groupNode, pGroupNode)) {
                     graph.insertEdge(graph.getDefaultParent(), "", "", groupNode, pGroupNode,
                             mxConstants.STYLE_STROKEWIDTH + "=2;" + mxConstants.STYLE_STROKECOLOR + "=red;"
                     );
                     groupConnections.put(groupNode, pGroupNode);
-                    logger.info("************ Virtual provider connection between " + groupNode + " and " + pGroupNode);
+                    logger.info("************ Virtual provider connection between " + service.getGroup() + " and " + pGroup);
                 }
             });
 
@@ -101,7 +111,7 @@ public class AllGroupsGraph {
                 if (targetItem == null) return;
 
                 String pGroup = targetItem.getGroup() == null ? Groups.COMMON : targetItem.getGroup();
-                Object pGroupNode = groupNodes.get(pGroup);
+                mxCell pGroupNode = groupNodes.get(pGroup);
 
                 if (canLink.apply(groupNode, pGroupNode)) {
                     graph.insertEdge(graph.getDefaultParent(), "", "", groupNode, pGroupNode,
@@ -112,9 +122,34 @@ public class AllGroupsGraph {
                 }
             });
         });
+
+        //add connections from unconnected groups to each other group to keep it at distance
+        groupNodes.forEach((s, groupNode) -> {
+            boolean connected = groupConnections.entrySet().stream()
+                    .anyMatch(entry -> entry.getKey().equals(groupNode) || entry.getValue().equals(groupNode));
+
+            if (connected)
+                return;
+
+            groupNodes.forEach((s1, other) -> {
+                if (other.equals(groupNode))
+                    return;
+                graph.insertEdge(graph.getDefaultParent(), "", "distance", groupNode, other,
+                        mxConstants.STYLE_STROKEWIDTH + "=2;" + mxConstants.STYLE_STROKECOLOR + "=blue;"
+                );
+                groupConnections.put(groupNode, other);
+            });
+        });
     }
 
     public Map<String, mxCell> getLayoutedGroups() {
         return groupNodes;
+    }
+
+    /**
+     * For layout debugging.
+     */
+    public mxGraph getGraph() {
+        return graph;
     }
 }

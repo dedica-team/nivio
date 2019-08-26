@@ -51,6 +51,9 @@ public class LandscapeConfig {
         private Double borderLineCostFactor;
         private Integer triesPerCell;
         private Integer maxIterations;
+        private Integer initialTemp;
+        private Float forceConstantFactor = 1f;
+        private Float minDistanceLimitFactor = 1f;
 
         public Double getEdgeLengthCostFactor() {
             return edgeLengthCostFactor;
@@ -94,6 +97,30 @@ public class LandscapeConfig {
 
         public void setMaxIterations(Integer maxIterations) {
             this.maxIterations = maxIterations;
+        }
+
+        public Integer getInitialTemp() {
+            return initialTemp;
+        }
+
+        public void setInitialTemp(Integer initialTemp) {
+            this.initialTemp = initialTemp;
+        }
+
+        public Float getForceConstantFactor() {
+            return forceConstantFactor;
+        }
+
+        public void setForceConstantFactor(Float forceConstantFactor) {
+            this.forceConstantFactor = forceConstantFactor;
+        }
+
+        public Float getMinDistanceLimitFactor() {
+            return minDistanceLimitFactor;
+        }
+
+        public void setMinDistanceLimitFactor(Float minDistanceLimitFactor) {
+            this.minDistanceLimitFactor = minDistanceLimitFactor;
         }
     }
 }
