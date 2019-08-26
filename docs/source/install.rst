@@ -84,6 +84,19 @@ For jgraphx output, some force directed graph params can be set. More configurat
         nodeDistributionCostFactor: 900000.0
         borderLineCostFactor: 7.0
 
+        #
+        # for group alignment
+        #
+
+        # the higher, the longer the edges between groups
+        forceConstantFactor: 2.8
+
+        # higher value is cpu intensive, but can lead to better layouts
+        maxIterations: 1000
+
+        # can also influence edge length and layout
+        minDistanceLimitFactor: 3.05
+
 
 Deleting services
 -----------------
