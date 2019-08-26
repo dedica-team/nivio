@@ -76,25 +76,6 @@ public class FinalGraph {
                         (Service) service,
                         addServiceVertex(offset, groupContainer, service)
                 );
-
-                //inner group relations
-                final String groupColor = de.bonndan.nivio.util.Color.nameToRGB(service.getGroup());
-                var astyle = mxConstants.STYLE_STROKEWIDTH + "=2;"
-                        + mxConstants.STYLE_ENDARROW + "=oval;"
-                        + mxConstants.STYLE_STARTARROW + "=false;"
-                        + mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
-
-                ((Service) service).getProvidedBy().forEach(provider -> {
-
-                    if (service.getGroup().equals(provider.getGroup())) {
-                        graph.insertEdge(
-                                graph.getDefaultParent(), null, "",
-                                serviceVertexes.get(provider),
-                                serviceVertexes.get(service),
-                                astyle
-                        );
-                    }
-                });
                 services.add((Service) service);
             });
 
@@ -102,7 +83,7 @@ public class FinalGraph {
         });
 
         addDataFlow(services);
-        addInterGroupProviderEdges(services);
+        addProviderEdges(services);
         renderExtras(serviceVertexes);
 
         return graph;
@@ -138,31 +119,24 @@ public class FinalGraph {
      *
      * @param services all services
      */
-    private void addInterGroupProviderEdges(List<Service> services) {
+    private void addProviderEdges(List<Service> services) {
 
         services.forEach(service -> {
-            final String groupColor = de.bonndan.nivio.util.Color.nameToRGB(service.getGroup());
-            final String astyle = mxConstants.STYLE_STROKEWIDTH + "=2;"
-                    + mxConstants.STYLE_ENDARROW + "=oval;"
-                    + mxConstants.STYLE_STARTARROW + "=false;"
-                    // + mxConstants.STYLE_EDGE + "=" + mxConstants.EDGESTYLE_ELBOW + ";"
-                    + mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
+
 
             service.getProvidedBy().forEach(provider -> {
 
-                String g = service.getGroup() == null ? "" : service.getGroup();
-                if (!g.equals(provider.getGroup())) {
-                    graph.insertEdge(
-                            graph.getDefaultParent(), null, "",
-                            serviceVertexes.get(provider),
-                            serviceVertexes.get(service),
-                            astyle
-                    );
-                }
+                final String astyle = getProviderEdgeStyle(provider);
+
+                graph.insertEdge(
+                        graph.getDefaultParent(), null, "",
+                        serviceVertexes.get(provider),
+                        serviceVertexes.get(service),
+                        astyle
+                );
             });
         });
     }
-
 
     private void resizeContainer(mxCell cell) {
         Object[] childCells = Arrays.stream(graph.getChildCells(cell)).filter(o -> ((mxCell) o).isVertex()).toArray();
@@ -272,19 +246,6 @@ public class FinalGraph {
 
     }
 
-    private String getStatusColor(Service service) {
-        var ref = new Object() {
-            Status current = Status.UNKNOWN;
-        };
-
-        service.getStatuses().forEach(statusItem -> {
-            if (statusItem.getStatus().isHigherThan(ref.current))
-                ref.current = statusItem.getStatus();
-        });
-
-        return ref.current.toString();
-    }
-
     private String getServiceStyle(ServiceItem serviceItem) {
         String style = getBaseStyle((Service) serviceItem) + ";" + "type=" + serviceItem.getType()
                 + ";group=" + serviceItem.getGroup() + ";"
@@ -317,15 +278,15 @@ public class FinalGraph {
 
     private String getDataFlowStyle(Service service) {
         String groupColor = getGroupColor(service);
-        String style = mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";"
-                + mxConstants.STYLE_STROKEWIDTH + "=4;"
+        String style = mxConstants.STYLE_STROKEWIDTH + "=4;"
                 + mxConstants.STYLE_VERTICAL_LABEL_POSITION + "=bottom;"
                 + mxConstants.STYLE_SHAPE + "=" + CurvedShape.KEY + ";"
                 + mxConstants.STYLE_EDGE + "=" + CurvedEdgeStyle.KEY + ";"
                 + mxConstants.STYLE_LABEL_BACKGROUNDCOLOR + "=#" + groupColor + ";"
-                + mxConstants.STYLE_FONTCOLOR + "=black;";
+                + mxConstants.STYLE_FONTCOLOR + "=black;"
+                + getStrokeColor(service);
 
-        if (Lifecycle.PLANNED.equals(service.getLifecycle())) {
+        if (Lifecycle.PLANNED.equals(service.getLifecycle()) || Lifecycle.END_OF_LIFE.equals(service.getLifecycle())) {
             style = style + mxConstants.STYLE_DASHED + "=1";
         }
 
@@ -348,14 +309,30 @@ public class FinalGraph {
         return style;
     }
 
-    private String getGroupColor(String group, Landscape landscape) {
-        return landscape.getConfig().getGroupConfig(group)
-                .map(LandscapeConfig.GroupConfig::getColor)
-                .orElse(de.bonndan.nivio.util.Color.nameToRGB(group, "333333"));
+    private String getProviderEdgeStyle(Service provider) {
+        String style = mxConstants.STYLE_STROKEWIDTH + "=2;"
+                + mxConstants.STYLE_ENDARROW + "=oval;"
+                + mxConstants.STYLE_STARTARROW + "=false;"
+                + getStrokeColor(provider);
+
+        if (Lifecycle.PLANNED.equals(provider.getLifecycle()) || Lifecycle.END_OF_LIFE.equals(provider.getLifecycle())) {
+            style = style + mxConstants.STYLE_DASHED + "=1";
+        }
+
+        return style;
+    }
+
+    private String getStrokeColor(Service serviceItem) {
+        Status providerStatus = Status.highestOf(serviceItem.getStatuses());
+        if (Status.RED.equals(providerStatus))
+            return mxConstants.STYLE_STROKECOLOR + "=red;";
+        if (Status.ORANGE.equals(providerStatus))
+            return mxConstants.STYLE_STROKECOLOR + "=orange;";
+
+        return mxConstants.STYLE_STROKECOLOR + "=" + getGroupColor(serviceItem) + ";";
     }
 
     private String getGroupColor(Service service) {
-
         if (service.getGroup() == null || service.getGroup().startsWith(Groups.COMMON))
             return GRAY;
 

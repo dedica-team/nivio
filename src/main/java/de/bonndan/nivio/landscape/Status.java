@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.Convert;
+import java.util.Set;
 
 public enum Status {
 
@@ -31,10 +32,14 @@ public enum Status {
             return UNKNOWN;
 
         switch (status.toLowerCase().trim()) {
-            case "green": return GREEN;
-            case "yellow": return YELLOW;
-            case "orange": return ORANGE;
-            case "red": return RED;
+            case "green":
+                return GREEN;
+            case "yellow":
+                return YELLOW;
+            case "orange":
+                return ORANGE;
+            case "red":
+                return RED;
         }
 
         return UNKNOWN;
@@ -52,5 +57,19 @@ public enum Status {
 
     public String getSymbol() {
         return symbol;
+    }
+
+    public static Status highestOf(Set<StatusItem> statuses) {
+
+        var ref = new Object() {
+            Status current = Status.UNKNOWN;
+        };
+
+        statuses.forEach(statusItem -> {
+            if (statusItem.getStatus().isHigherThan(ref.current))
+                ref.current = statusItem.getStatus();
+        });
+
+        return ref.current;
     }
 }
