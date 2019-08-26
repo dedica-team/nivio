@@ -46,10 +46,11 @@ public class LandscapeConfig {
      * @link https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxOrganicLayout.html
      */
     public static class JGraphXConfig {
-        private Double edgeLengthCostFactor = 0.0001D;
-        private Double nodeDistributionCostFactor = 900000.0D;
-        private Double borderLineCostFactor = 7.0D;
-        private Integer triesPerCell = 16;
+        private Double edgeLengthCostFactor;
+        private Double nodeDistributionCostFactor;
+        private Double borderLineCostFactor;
+        private Integer triesPerCell;
+        private Integer maxIterations;
 
         public Double getEdgeLengthCostFactor() {
             return edgeLengthCostFactor;
@@ -85,6 +86,14 @@ public class LandscapeConfig {
         public void setTriesPerCell(Integer triesPerCell) {
             if (triesPerCell != null)
                 this.triesPerCell = triesPerCell;
+        }
+
+        public Integer getMaxIterations() {
+            return maxIterations;
+        }
+
+        public void setMaxIterations(Integer maxIterations) {
+            this.maxIterations = maxIterations;
         }
     }
 }

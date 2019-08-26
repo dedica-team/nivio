@@ -5,16 +5,11 @@ import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
-import de.bonndan.nivio.landscape.Groups;
-import de.bonndan.nivio.landscape.Service;
-import de.bonndan.nivio.landscape.ServiceItem;
-import de.bonndan.nivio.landscape.ServiceItems;
+import de.bonndan.nivio.landscape.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
 
 /**
@@ -27,10 +22,11 @@ public class AllGroupsGraph {
     private final mxGraph graph;
     private final Map<String, mxCell> groupNodes = new HashMap<>();
 
-    public AllGroupsGraph(Groups groups, Map<String, GroupGraph> subgraphs) {
+    public AllGroupsGraph(LandscapeConfig config, Groups groups, Map<String, GroupGraph> subgraphs) {
 
         graph = new mxGraph();
 
+        List<ServiceItem> services = new ArrayList<>();
         groups.getAll().forEach((groupName, serviceItems) -> {
 
             mxRectangle groupGeometry = subgraphs.get(groupName).getBounds();
@@ -44,12 +40,13 @@ public class AllGroupsGraph {
                     ""
             );
             groupNodes.put(groupName, groupnode);
+            services.addAll(serviceItems);
         });
 
-        groups.getAll().forEach((s, serviceItems) -> addVirtualEdgesBetweenGroups(serviceItems));
+        addVirtualEdgesBetweenGroups(services);
 
         mxFastOrganicLayout layout = new mxFastOrganicLayout(graph);
-        layout.setMaxIterations(1000);
+        Optional.ofNullable(config.getJgraphx().getMaxIterations()).ifPresent(layout::setMaxIterations);
         layout.setInitialTemp(18);
         layout.setForceConstant(layout.getForceConstant() * 4); //longer edges, containers are enlarged later
         layout.execute(graph.getDefaultParent());
@@ -92,7 +89,7 @@ public class AllGroupsGraph {
                             mxConstants.STYLE_STROKEWIDTH + "=2;" + mxConstants.STYLE_STROKECOLOR + "=red;"
                     );
                     groupConnections.put(groupNode, pGroupNode);
-                    logger.debug("************ Virtual provider connection between " + groupNode + " and " + pGroupNode);
+                    logger.info("************ Virtual provider connection between " + groupNode + " and " + pGroupNode);
                 }
             });
 
@@ -111,7 +108,7 @@ public class AllGroupsGraph {
                             mxConstants.STYLE_STROKEWIDTH + "=none;" + mxConstants.STYLE_OPACITY + "=1;"
                     );
                     groupConnections.put(groupNode, pGroupNode);
-                    logger.debug("************ Virtual Dataflow connection between " + groupNode + " and " + pGroupNode);
+                    logger.info("************ Virtual Dataflow connection between " + groupNode + " and " + pGroupNode);
                 }
             });
         });

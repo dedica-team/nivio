@@ -41,7 +41,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             subgraphs.put(groupName, groupGraph);
         });
 
-        AllGroupsGraph allGroupsGraph = new AllGroupsGraph(groups, subgraphs);
+        AllGroupsGraph allGroupsGraph = new AllGroupsGraph(landscape.getConfig(), groups, subgraphs);
 
         FinalGraph finalGraph = new FinalGraph(iconService);
         return finalGraph.render(allGroupsGraph, subgraphs);

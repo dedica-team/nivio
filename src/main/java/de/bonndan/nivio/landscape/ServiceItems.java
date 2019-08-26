@@ -107,7 +107,11 @@ public class ServiceItems {
             final String group,
             final List<? extends ServiceItem> serviceList
     ) {
-        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.build(null, group, identifier);
+        FullyQualifiedIdentifier fqi;
+        if (group == null)
+           fqi = FullyQualifiedIdentifier.from(identifier);
+        else
+            fqi = FullyQualifiedIdentifier.build(null, group, identifier);
         return findAll(fqi, serviceList);
     }
 
