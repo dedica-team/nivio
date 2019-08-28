@@ -58,6 +58,9 @@ public class FinalGraph {
 
         allGroupsGraph.getLayoutedGroups().forEach((groupName, mxCell) -> {
 
+            Optional<Service> serviceItem = subgraphs.get(groupName).getServiceVertexesWithRelativeOffset().entrySet().stream()
+                    .findFirst().map(serviceItemmxPointEntry -> (Service) serviceItemmxPointEntry.getKey());
+            LandscapeConfig landscapeConfig = serviceItem.map(service -> service.getLandscape().getConfig()).orElse(null);
             mxGeometry groupGeo = mxCell.getGeometry();
             mxCell groupContainer = (mxCell) graph.insertVertex(
                     graph.getDefaultParent(),
@@ -66,7 +69,7 @@ public class FinalGraph {
                     groupGeo.getY(),
                     groupGeo.getWidth(),
                     groupGeo.getHeight(),
-                    getGroupStyle(groupName)
+                    getGroupStyle(groupName, getGroupColor(groupName, landscapeConfig))
             );
 
 
@@ -293,9 +296,7 @@ public class FinalGraph {
         return style;
     }
 
-    private String getGroupStyle(String groupName) {
-        final String groupColor = groupName.startsWith(Groups.COMMON) ? de.bonndan.nivio.util.Color.GRAY
-                : de.bonndan.nivio.util.Color.nameToRGB(groupName);
+    private String getGroupStyle(String groupName, String groupColor) {
 
         String lightened = de.bonndan.nivio.util.Color.lighten(groupColor);
         String style = "type=group;groupColor=" + groupColor + ";"
@@ -329,15 +330,25 @@ public class FinalGraph {
         if (Status.ORANGE.equals(providerStatus))
             return mxConstants.STYLE_STROKECOLOR + "=orange;";
 
-        return mxConstants.STYLE_STROKECOLOR + "=" + getGroupColor(serviceItem) + ";";
+        String groupColor = getGroupColor(serviceItem);
+        logger.info("Dataflow stroke color {} for service {} group {}", groupColor, serviceItem.getIdentifier(), serviceItem.getGroup());
+        return mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
     }
 
     private String getGroupColor(Service service) {
         if (service.getGroup() == null || service.getGroup().startsWith(Groups.COMMON))
             return GRAY;
 
-        return service.getLandscape().getConfig().getGroupConfig(service.getGroup())
+        return getGroupColor(service.getGroup(), service.getLandscape().getConfig());
+    }
+
+    private String getGroupColor(String name, LandscapeConfig config) {
+
+        if (config == null)
+            return "333333";
+
+        return config.getGroupConfig(name)
                 .map(LandscapeConfig.GroupConfig::getColor)
-                .orElse(de.bonndan.nivio.util.Color.nameToRGB(service.getGroup(), "333333"));
+                .orElse(de.bonndan.nivio.util.Color.nameToRGB(name, "333333"));
     }
 }
