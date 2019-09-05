@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import org.springframework.context.ApplicationEvent;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 
@@ -14,6 +15,10 @@ public class FSChangeEvent extends ApplicationEvent {
         super(source);
         this.event = event;
         this.path = path;
+    }
+
+    public File getChangedFile() {
+        return new File(getPath() + "/" + event.context().toString());
     }
 
     public WatchEvent<?> getEvent() {

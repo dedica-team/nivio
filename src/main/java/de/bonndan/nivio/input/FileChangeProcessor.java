@@ -24,8 +24,7 @@ public class FileChangeProcessor implements ApplicationListener<FSChangeEvent> {
 
     @Override
     public void onApplicationEvent(FSChangeEvent fsChangeEvent) {
-        String s = (fsChangeEvent.getEvent().context()).toString();
-        process(new File(fsChangeEvent.getPath() + "/" + s));
+        process(fsChangeEvent.getChangedFile());
     }
 
     public ProcessLog process(File envFile) {

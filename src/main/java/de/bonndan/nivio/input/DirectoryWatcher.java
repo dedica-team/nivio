@@ -7,12 +7,18 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.*;
+import java.util.Arrays;
+import java.util.List;
 
 public class DirectoryWatcher implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(DirectoryWatcher.class);
+
+    /**
+     * List of file extensions which can trigger events. Empty extension is allowed.
+     */
+    public static final List<String> SUFFIX_WHITELIST = Arrays.asList("", "yaml", "yml", "txt");
 
     private final ApplicationEventPublisher publisher;
     private final File file;
@@ -49,7 +55,17 @@ public class DirectoryWatcher implements Runnable {
         try {
             while ((key = watchService.take()) != null) {
                 for (WatchEvent<?> event : key.pollEvents()) {
-                    publisher.publishEvent(new FSChangeEvent(this, event, path));
+
+                    FSChangeEvent fsChangeEvent = new FSChangeEvent(this, event, path);
+                    File changedFile = fsChangeEvent.getChangedFile();
+                    if (changedFile.isFile()) {
+                        String extension = getExtension(changedFile.getName());
+                        if (!SUFFIX_WHITELIST.contains(extension)) {
+                            logger.info("Ignoring file {} because of extension {}", changedFile, extension);
+                            continue;
+                        }
+                    }
+                    publisher.publishEvent(fsChangeEvent);
                     logger.info("Event kind:" + event.kind() + ". File affected: " + event.context() + ".");
                 }
                 key.reset();
@@ -59,4 +75,20 @@ public class DirectoryWatcher implements Runnable {
         }
     }
 
+    //https://stackoverflow.com/questions/3571223/how-do-i-get-the-file-extension-of-a-file-in-java
+    public static String getExtension(String fileName) {
+        char ch;
+        int len;
+        if(fileName==null ||
+                (len = fileName.length())==0 ||
+                (ch = fileName.charAt(len-1))=='/' || ch=='\\' || //in the case of a directory
+                ch=='.' ) //in the case of . or ..
+            return "";
+        int dotInd = fileName.lastIndexOf('.'),
+                sepInd = Math.max(fileName.lastIndexOf('/'), fileName.lastIndexOf('\\'));
+        if( dotInd<=sepInd )
+            return "";
+        else
+            return fileName.substring(dotInd+1).toLowerCase();
+    }
 }
