@@ -7,7 +7,9 @@ Nivio is application landscape management for teams (developers, operators, mana
 approach, i.e. there is no interface for manual data maintenance. It is designed to gather the application landscape
  information from configurable services, preferably code repos.
 
+![input output_graph](https://raw.githubusercontent.com/bonndan/nivio/master/docs/inout.png)
 
+## Example Graph
 
 ![rendered graph](https://raw.githubusercontent.com/bonndan/nivio/master/docs/graph.png)
 
