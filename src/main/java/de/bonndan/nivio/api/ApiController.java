@@ -1,21 +1,24 @@
 package de.bonndan.nivio.api;
 
+import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.dto.SourceFormat;
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.LandscapeRepository;
-import de.bonndan.nivio.landscape.Service;
-import de.bonndan.nivio.landscape.ServiceItem;
+import de.bonndan.nivio.landscape.*;
+import de.bonndan.nivio.util.URLHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -24,13 +27,16 @@ import java.util.stream.StreamSupport;
 public class ApiController {
 
     private final LandscapeRepository landscapeRepository;
-
-    private final FileChangeProcessor fileChangeProcessor;
+    private final ServiceRepository serviceRepository;
+    private final Indexer indexer;
+    private final FileFetcher fileFetcher;
 
     @Autowired
-    public ApiController(LandscapeRepository landscapeRepository, FileChangeProcessor fileChangeProcessor) {
+    public ApiController(LandscapeRepository landscapeRepository, ServiceRepository serviceRepository, Indexer indexer, FileFetcher fileFetcher) {
         this.landscapeRepository = landscapeRepository;
-        this.fileChangeProcessor = fileChangeProcessor;
+        this.serviceRepository = serviceRepository;
+        this.indexer = indexer;
+        this.fileFetcher = fileFetcher;
     }
 
 
@@ -63,7 +69,7 @@ public class ApiController {
     @RequestMapping(path = "/landscape", method = RequestMethod.POST)
     public ProcessLog create(@RequestBody String body) {
         Environment env = EnvironmentFactory.fromString(body);
-        return fileChangeProcessor.process(env);
+        return indexer.reIndex(env);
     }
 
     @RequestMapping(path = "/landscape/{identifier}/services", method = RequestMethod.POST)
@@ -77,10 +83,41 @@ public class ApiController {
 
         Environment env = new Environment();
         env.setIdentifier(identifier);
-        env.setIsIncrement(true);
+        env.setIsPartial(true);
         env.setServiceDescriptions(serviceDescriptions);
 
-        return fileChangeProcessor.process(env);
+        return indexer.reIndex(env);
+    }
+
+    /**
+     * Delete a single service from the landscape.
+     *
+     * Reindexes the landscape on success.
+     *
+     * @param identifier landscape
+     * @param fqi fully qualified identifier of the service
+     * @return the process log
+     */
+    @RequestMapping(path = "/landscape/{identifier}/services/{fqi}", method = RequestMethod.DELETE)
+    public ProcessLog deleteService(
+            @PathVariable String identifier,
+            @PathVariable String fqi
+    ) {
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier);
+        if (landscape == null)
+            return new ProcessLog(new ProcessingException(null, "Could not find lanscape " + identifier));
+
+        FullyQualifiedIdentifier from = FullyQualifiedIdentifier.from(fqi);
+        if (from == null)
+            return new ProcessLog(new ProcessingException(landscape, "Could use fully qualified identifier " + fqi));
+
+        Optional<Service> service = serviceRepository.findByLandscapeAndGroupAndIdentifier(landscape, from.getGroup(), from.getIdentifier());
+        if (!service.isPresent()) {
+            return new ProcessLog(new ProcessingException(landscape, "Could find service " + fqi));
+        }
+
+        serviceRepository.delete(service.get());
+        return process(landscape);
     }
 
     @RequestMapping(path = "/landscape/{identifier}/services", method = RequestMethod.GET)
@@ -100,6 +137,28 @@ public class ApiController {
     @RequestMapping(path = "/reindex/{landscape}", method = RequestMethod.POST)
     public ProcessLog reindex(@PathVariable String landscape) {
         Landscape distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape);
-        return fileChangeProcessor.process(distinctByIdentifier);
+        if (distinctByIdentifier == null)
+            return new ProcessLog(new ProcessingException(null, "Could not find lanscape " + landscape));
+
+        return process(distinctByIdentifier);
+    }
+
+    private ProcessLog process(LandscapeItem item) {
+        if (item == null || StringUtils.isEmpty(item.getSource())) {
+            return new ProcessLog(new ProcessingException(item, "Cannot process empty source."));
+        }
+
+        File file = new File(item.getSource());
+        if (file.exists()) {
+            Environment environment = EnvironmentFactory.fromYaml(file);
+            return indexer.reIndex(environment);
+        }
+
+        URL url = URLHelper.getURL(item.getSource());
+        if (url != null) {
+            return process(EnvironmentFactory.fromString(fileFetcher.get(url), url));
+        }
+
+        return process(EnvironmentFactory.fromString(item.getSource()));
     }
 }

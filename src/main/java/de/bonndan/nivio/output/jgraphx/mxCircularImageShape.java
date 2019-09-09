@@ -11,6 +11,8 @@ import java.awt.geom.Ellipse2D;
 
 public class mxCircularImageShape extends mxEllipseShape {
 
+    public static final String NAME = "circularImage";
+
     private final int IMAGE_MARGIN = 8;
 
     public void paintShape(mxGraphics2DCanvas canvas, mxCellState state) {

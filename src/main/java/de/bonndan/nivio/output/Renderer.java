@@ -5,9 +5,9 @@ import de.bonndan.nivio.landscape.Landscape;
 import java.io.File;
 import java.io.IOException;
 
-public interface Renderer {
+public interface Renderer<T> {
 
-    String render(Landscape landscape);
+    T render(Landscape landscape);
 
     void render(Landscape landscape, File file) throws IOException;
 }

@@ -1,4 +1,4 @@
-package de.bonndan.nivio.input;
+package de.bonndan.nivio.input.http;
 
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -22,6 +22,19 @@ public class HttpService {
     public String get(URL url) throws IOException, URISyntaxException {
         CloseableHttpClient client = HttpClients.createDefault();
         return executeRequest(client, new HttpGet(url.toURI()));
+    }
+
+    public CachedResponse getResponse(URL url) throws URISyntaxException {
+
+        HttpGet request = new HttpGet(url.toURI());
+        request.setHeader(new BasicHeader("Pragma", "no-cache"));
+        request.setHeader(new BasicHeader("Cache-Control", "no-cache"));
+
+        try (CloseableHttpClient client = HttpClients.createDefault(); CloseableHttpResponse response = client.execute(request)) {
+            return new CachedResponse(response.getAllHeaders(), response.getEntity());
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to fetch " + request.getURI(), ex);
+        }
     }
 
     public String getWithBasicAuth(URL url, String username, String password) throws IOException, AuthenticationException, URISyntaxException {

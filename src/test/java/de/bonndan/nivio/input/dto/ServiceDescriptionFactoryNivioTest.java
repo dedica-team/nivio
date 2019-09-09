@@ -2,8 +2,9 @@ package de.bonndan.nivio.input.dto;
 
 
 import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.HttpService;
+import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
+import de.bonndan.nivio.landscape.Lifecycle;
 import de.bonndan.nivio.landscape.ServiceItem;
 import de.bonndan.nivio.landscape.Status;
 import de.bonndan.nivio.landscape.StatusItem;
@@ -60,9 +61,10 @@ class ServiceDescriptionFactoryNivioTest {
         assertEquals("docker", service.getHost_type());
         assertEquals(1, service.getTags().length);
         assertTrue(Arrays.asList(service.getTags()).contains("CMS"));
+        assertEquals(Lifecycle.END_OF_LIFE, service.getLifecycle());
 
         assertNotNull(service.getStatuses());
-        assertEquals(4, service.getStatuses().size());
+        assertEquals(3, service.getStatuses().size());
         service.getStatuses().forEach(statusItem -> {
             Assert.assertNotNull(statusItem);
             Assert.assertNotNull(statusItem.getLabel());
@@ -83,14 +85,14 @@ class ServiceDescriptionFactoryNivioTest {
         });
 
         assertNotNull(service.getDataFlow());
-        assertEquals(2, service.getDataFlow().size());
+        assertEquals(3, service.getDataFlow().size());
         service.getDataFlow().forEach(dataFlow -> {
             if (dataFlow.getDescription().equals("kpis")) {
                 Assert.assertEquals("content-kpi-dashboard", dataFlow.getTarget());
             }
         });
 
-        ServiceDescription web = services.get(1);
+        ServiceDescription web = services.get(2);
         assertEquals(ServiceItem.LAYER_INGRESS, web.getLayer());
         assertEquals("wordpress-web", web.getIdentifier());
         assertEquals("Webserver", web.getDescription());
@@ -111,7 +113,7 @@ class ServiceDescriptionFactoryNivioTest {
 
         List<ServiceDescription> services = descriptionFactory.fromString(yml);
         ServiceDescription service = services.get(0);
-        assertEquals(ServiceItem.LAYER_INGRESS, service.getLayer());
+        assertEquals(ServiceItem.LAYER_INGRESS, service.getGroup());
         assertEquals("Keycloak SSO", service.getName());
         assertEquals("keycloak", service.getIdentifier());
     }

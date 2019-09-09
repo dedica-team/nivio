@@ -8,7 +8,7 @@ import java.util.Objects;
 public class URLHelper {
 
     public static boolean isLocal(URL url) {
-        return Objects.nonNull(url) && url.toString().startsWith("file://");
+        return Objects.nonNull(url) && url.toString().startsWith("file:/");
     }
 
     public static URL getURL(String url) {

@@ -3,6 +3,8 @@ package de.bonndan.nivio.landscape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.stream.Collectors;
+
 import static de.bonndan.nivio.util.SafeAssign.assignSafe;
 
 public class ServiceFactory {
@@ -36,13 +38,14 @@ public class ServiceFactory {
 
         service.setNote(description.getNote());
         service.setShort_name(description.getShort_name());
+        service.setIcon(description.getIcon());
         service.setDescription(description.getDescription());
         service.setTags(description.getTags());
         service.setOwner(description.getOwner());
 
         service.setSoftware(description.getSoftware());
         service.setVersion(description.getVersion());
-        service.setInterfaces(description.getInterfaces());
+        service.setInterfaces(description.getInterfaces().stream().map(ServiceInterface::new).collect(Collectors.toSet()));
 
         service.setHomepage(description.getHomepage());
         service.setRepository(description.getRepository());
@@ -50,13 +53,20 @@ public class ServiceFactory {
         service.setTeam(description.getTeam());
 
         service.setVisibility(description.getVisibility());
+        service.setLifecycle(description.getLifecycle());
         assignSafe(description.getGroup(), service::setGroup);
 
         service.setCosts(description.getCosts());
         service.setCapability(description.getCapability());
 
         if (description.getStatuses() != null)
-        description.getStatuses().forEach(service::setStatus);
+            description.getStatuses().forEach(statusItem -> {
+                try {
+                    service.setStatus(statusItem);
+                } catch (IllegalArgumentException ex) {
+                    logger.warn("Failed to set status", ex);
+                }
+            });
 
         service.setHost_type(description.getHost_type());
         service.setNetworks(description.getNetworks());

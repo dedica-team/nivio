@@ -36,6 +36,7 @@ public interface ServiceItem {
 
     String getName();
     String getShort_name();
+    String getIcon();
 
     String getGroup();
 
@@ -52,6 +53,8 @@ public interface ServiceItem {
     String getTeam();
 
     String getVisibility();
+
+    Lifecycle getLifecycle();
 
     void setStatus(StatusItem statusItem);
 

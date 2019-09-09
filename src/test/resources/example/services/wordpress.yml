@@ -5,6 +5,7 @@ services:
   name: Demo Blog
   type: webservice
   short_name: blog
+  icon: https://s.w.org/style/images/about/WordPress-logotype-wmark.png
   version: 1.0
   software: Wordpress
   owner: Marketing
@@ -23,9 +24,8 @@ services:
   scale: 5
   host_type: docker
   note: to be replaced
+  lifecycle: EOL
   statuses:
-    - label: lifecycle
-      status: green
     - label: security
       status: red
       message: uses outdated version
@@ -50,10 +50,22 @@ services:
     format: json
   - description: in-app purchases
     target: external-billing
+  - description: reminder
+    target: emailer
   provided_by:
   - wordpress-web
-  - wordpress-mysql
+  - wordpress-mariadb
   - wordpress-redis
+
+- identifier: emailer
+  description: Reminder
+  software: PHP
+  version: 2.4
+  type: application
+  networks:
+    - content
+  host_type: docker
+  group: content
 
 #
 # auxiliary services which do not provide business value
@@ -61,6 +73,7 @@ services:
 
 - identifier: wordpress-web
   description: Webserver
+  icon: vendor://apache/httpd
   layer: ingress
   software: Apache
   version: 2.4
@@ -73,11 +86,12 @@ services:
   - content
   host_type: docker
   group: content
+  lifecycle: production
 
 - description: Database for Wordpress
-  software: MySQL
-  version: 5.6
-  identifier: wordpress-mysql
+  software: MariaDB
+  version: 10.3.11
+  identifier: wordpress-mariadb
   protocol: tcp
   port: 3006
   machine: Pentium 1 512MB RAM
@@ -86,10 +100,12 @@ services:
   networks:
   - content
   host_type: docker
+  layer: infrastructure
 
 - description: Cache for Wordpress
   software: Redis
   version: 1.0
+  icon: vendor://redis
   identifier: wordpress-redis
   protocol: tcp
   port: 6379
@@ -99,4 +115,6 @@ services:
   networks:
   - content
   host_type: native
+  layer: infrastructure
+  lifecycle: planned
 

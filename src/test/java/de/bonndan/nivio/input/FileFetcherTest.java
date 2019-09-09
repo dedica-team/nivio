@@ -1,7 +1,7 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.input.http.HttpService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 

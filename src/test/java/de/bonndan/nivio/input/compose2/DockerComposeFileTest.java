@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.HttpService;
+import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.dto.SourceReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

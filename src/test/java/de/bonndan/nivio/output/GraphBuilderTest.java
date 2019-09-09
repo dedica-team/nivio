@@ -29,7 +29,7 @@ public class GraphBuilderTest {
         b.setIdentifier("b");
         landscape.addService(b);
 
-        DataFlow df = new DataFlow(a, b);
+        DataFlow df = new DataFlow(a, b.getFullyQualifiedIdentifier());
         df.setFormat("json");
         df.setDescription("push");
         a.getDataFlow().add(df);

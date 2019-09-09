@@ -4,9 +4,10 @@ services:
 
   - identifier: keycloak
     name: Keycloak SSO
+    icon: https://raw.githubusercontent.com/keycloak/keycloak-misc/master/logo/keycloak_icon_256px.png
     version: 4.4.0
     owner: Ops
-    layer: ingress
+    group: ingress
 
   - identifier: kpi-dashboard
     name: Demo Dashboard
@@ -25,9 +26,8 @@ services:
     machine: s
     scale: 1
     host_type: docker
+    lifecycle: production
     statuses:
-      - label: lifecycle
-        status: green
       - label: stability
         status: green
       - label: business_capability
@@ -37,14 +37,14 @@ services:
         format: json
         url: http://dashboard.acme.io/kpis
     provided_by:
-      - dashboard-mysql
+      - dashboard-db
       - keycloak
 
   - description: Database for Dashboard
     layer: infrastructure
-    software: MySQL
-    version: 5.6
-    identifier: dashboard-mysql
+    software: MariaDB
+    version: 10.3.11
+    identifier: dashboard-db
     protocol: tcp
     port: 3006
     machine: Pentium 1 512MB RAM

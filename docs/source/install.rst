@@ -52,6 +52,9 @@ Think of GitLab or GitHub and the related tokens.
 
 You can also add state providers which are used to gather live data and thereby provide state for the services.
 
+To finetune the visual appearance of rendered landscapes, the automatic color choice for groups can be overridden as well.
+For jgraphx output, some force directed graph params can be set. More configuration options will be added over time.
+
 .. code-block:: yaml
    :linenos:
 
@@ -70,7 +73,42 @@ You can also add state providers which are used to gather live data and thereby 
       - url: xxx
         format: kubernetes
 
+    # landscape configuration
+    config:
+      groups:
+        content:
+          color: "24a0ed"
+
+      # https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxOrganicLayout.html
+      jgraphx:
+        triesPerCell: 8
+        edgeLengthCostFactor: 0.0001
+        nodeDistributionCostFactor: 900000.0
+        borderLineCostFactor: 7.0
+
+        #
+        # for group alignment
+        #
+
+        # the higher, the longer the edges between groups
+        forceConstantFactor: 2.8
+
+        # higher value is cpu intensive, but can lead to better layouts
+        maxIterations: 1000
+
+        # can also influence edge length and layout
+        minDistanceLimitFactor: 3.05
+
 Kubernetes cluster inspection
 -----------------------------
 
-Kubernetes clusters are inspected using Fabric8.io's Java client. See https://github.com/fabric8io/kubernetes-client#configuring-the-client for configuration.
+Kubernetes clusters are inspected using Fabric8.io's Java client. See https://github.com/fabric8io/kubernetes-client#configuring-the-client
+for configuration.
+
+Deleting services
+-----------------
+
+Services not referenced anymore in the descriptions will be deleted automatically on a complete and successful re-index run.
+If an error occurs fetching the source while indexing, the behaviour of the indexer changes to treat the available data as
+ partial input. This means only upserts will happen, and no deletion.
+

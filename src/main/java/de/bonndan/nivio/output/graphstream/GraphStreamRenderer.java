@@ -4,6 +4,7 @@ import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.Service;
 import de.bonndan.nivio.landscape.Status;
 import de.bonndan.nivio.landscape.StatusItem;
+import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.Renderer;
 import de.bonndan.nivio.util.Color;
 import org.graphstream.graph.Edge;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 import static de.bonndan.nivio.landscape.Status.GREEN;
 
 
-public class GraphStreamRenderer implements Renderer {
+public class GraphStreamRenderer implements Renderer<Graph> {
 
     private Logger logger = LoggerFactory.getLogger(GraphStreamRenderer.class);
 
@@ -54,17 +55,11 @@ public class GraphStreamRenderer implements Renderer {
     };
 
     @Override
-    public String render(Landscape landscape) {
-        return null;
-    }
-
-    @Override
-    public void render(Landscape landscape, File file) throws IOException {
-
+    public Graph render(Landscape landscape) {
         graph = new SingleGraph(landscape.getName());
         graph.addAttribute("ui.quality");
         graph.addAttribute("ui.antialias");
-        graph.addAttribute("ui.stylesheet", "url('http://localhost:8080/css/graph.css')");
+        graph.addAttribute("ui.stylesheet", "url('" + LocalServer.url("/css/graph.css") + "')");
         graph.addAttribute("layout.quality", 4);
 
         spriteManager = new SpriteManager(graph);
@@ -85,7 +80,7 @@ public class GraphStreamRenderer implements Renderer {
             Sprite icon = spriteManager.addSprite("icon_" + service.getIdentifier());
             icon.setPosition(0, 0, 0);
             icon.attachToNode(n.getId());
-            icon.addAttribute("ui.style", "size: 30px; fill-image: url('http://localhost:8080/icons/" + getIcon(service) + ".png') ;");
+            icon.addAttribute("ui.style", "size: 30px; fill-image: url('" + LocalServer.url("/icons/" + getIcon(service) + ".png") + "') ;");
 
             positioner.add(service, n);
         });
@@ -137,6 +132,15 @@ public class GraphStreamRenderer implements Renderer {
          */
         landscape.getServices().forEach(this::addStatuses);
 
+
+        return graph;
+
+    }
+
+    @Override
+    public void render(Landscape landscape, File file) throws IOException {
+
+        graph = render(landscape);
 
         String prefix = "prefix";
         FileSinkImages.OutputType type = FileSinkImages.OutputType.PNG;
@@ -210,11 +214,11 @@ public class GraphStreamRenderer implements Renderer {
             int offset = 90 - (rotation / 2) * (displayed.size() - 1);
             int z = offset + i.getAndIncrement() * rotation;
             sprite.setPosition(StyleConstants.Units.GU, 0.1, 2, z);
-            sprite.setAttribute("ui.label", value.getLabel().toUpperCase().substring(0,3));
+            sprite.setAttribute("ui.label", value.getLabel().toUpperCase().substring(0, 3));
             sprite.setAttribute("ui.style", "stroke-mode: plain; " +
-                    "fill-color: " + value.getStatus().toString() + "; fill-mode: plain; " +
-                    "shape: rounded-box; " +
-                    "z-index: 2; " //+
+                            "fill-color: " + value.getStatus().toString() + "; fill-mode: plain; " +
+                            "shape: rounded-box; " +
+                            "z-index: 2; " //+
                     //"text-alignment: at-left; "
             );
         });

@@ -31,8 +31,9 @@ for technical separation. Any service can only be part of one group and layer.
         layer: ingress
         group: content
 
-      - identifier: mysql
-        version: 5.6.0
+      - identifier: DB1
+        software: MariaDB
+        version: 10.3.11
         type: database
         layer: infrastructure
         group: content
@@ -62,8 +63,9 @@ A service can have the following attributes:
 * **host_type** e.g. docker, VM, bare metal
 * **note** any note attached to the service
 * **costs** running costs of the service. Stored as string
+* **lifecycle** life cycle phase. One of "planned", "integration", "production", "end of life" (abbrevs work)
 * **statuses** status objects, represented in colors
-  * label: lifecycle (etc: stability, capability ....)
+  * label: stability, capability, health, security ....)
   * status: green, yellow, orange, red, brown
   * message: Everything ok.
 * **interfaces** an array of provided interfaces or endpoints

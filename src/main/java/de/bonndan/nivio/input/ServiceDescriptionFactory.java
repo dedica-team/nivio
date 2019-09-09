@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.landscape.Lifecycle;
 import de.bonndan.nivio.landscape.ServiceItem;
 
 import java.util.Arrays;
@@ -27,6 +28,8 @@ public interface ServiceDescriptionFactory {
             existing.setDescription(increment.getDescription());
         if (increment.getShort_name() != null)
             existing.setShort_name(increment.getShort_name());
+        if (increment.getIcon() != null)
+            existing.setIcon(increment.getIcon());
         if (increment.getHomepage() != null)
             existing.setHomepage(increment.getHomepage());
         if (increment.getRepository() != null)
@@ -54,6 +57,8 @@ public interface ServiceDescriptionFactory {
             existing.setVersion(increment.getVersion());
         if (increment.getVisibility() != null)
             existing.setVisibility(increment.getVisibility());
+        if (increment.getLifecycle() != null)
+            existing.setLifecycle(increment.getLifecycle());
 
         assignSafe(increment.getScale(), existing::setScale);
         assignSafe(increment.getHost_type(), existing::setHost_type);
@@ -92,6 +97,8 @@ public interface ServiceDescriptionFactory {
 
         assignSafeIfAbsent(template.getDescription(), item.getDescription(), item::setDescription);
 
+        assignSafeIfAbsent(template.getIcon(), item.getIcon(), item::setIcon);
+
         assignSafeIfAbsent(template.getNote(), item.getNote(), item::setNote);
 
         assignSafeIfAbsent(template.getHomepage(), item.getHomepage(), item::setHomepage);
@@ -113,6 +120,8 @@ public interface ServiceDescriptionFactory {
         assignSafeIfAbsent(template.getVersion(), item.getVersion(), item::setVersion);
 
         assignSafeIfAbsent(template.getVisibility(), item.getVisibility(), item::setVisibility);
+
+        assignLifecycleIfAbsent(template.getLifecycle(), item.getLifecycle(), item::setLifecycle);
 
         assignSafeIfAbsent(template.getScale(), item.getScale(), item::setScale);
 
@@ -153,5 +162,9 @@ public interface ServiceDescriptionFactory {
         if (template.getNetworks() != null) {
             template.getNetworks().forEach(net -> item.getNetworks().add(net));
         }
+    }
+
+    private static void assignLifecycleIfAbsent(Lifecycle s, Lifecycle absent, Consumer<Lifecycle> c) {
+        if (s != null && absent == null) c.accept(s);
     }
 }

@@ -1,0 +1,7 @@
+identifier: nivio:broken
+name: Landscape example
+contact: mail@acme.org
+config:
+  groups:
+    test1:
+      color: "#234234"

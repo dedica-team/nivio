@@ -1,5 +1,6 @@
 package de.bonndan.nivio.api.dto;
 
+import de.bonndan.nivio.landscape.LandscapeConfig;
 import de.bonndan.nivio.landscape.LandscapeItem;
 import de.bonndan.nivio.landscape.StateProviderConfig;
 
@@ -56,6 +57,11 @@ public class LandscapeDTO implements de.bonndan.nivio.landscape.LandscapeItem {
     @Override
     public List<StateProviderConfig> getStateProviders() {
         return stateProviders;
+    }
+
+    @Override
+    public LandscapeConfig getConfig() {
+        return null;
     }
 
     public String getUrl() {

@@ -5,7 +5,6 @@ import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.landscape.*;
 import de.bonndan.nivio.notification.NotificationService;
-import de.bonndan.nivio.util.RootPath;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.Assertions;
@@ -71,7 +70,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(landscape);
         assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getServices());
-        assertEquals(7, landscape.getServices().size());
+        assertEquals(8, landscape.getServices().size());
         Service blog = (Service) ServiceItems.pick("blog-server", null, landscape.getServices());
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
@@ -90,11 +89,11 @@ public class IndexerIntegrationTest {
         assertEquals("push", push.getDescription());
         assertEquals("json", push.getFormat());
         assertEquals(blog.getIdentifier(), push.getSourceEntity().getIdentifier());
-        assertEquals("kpi-dashboard", push.getTarget());
+        assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget());
 
         Set<InterfaceItem> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());
-        InterfaceDescription i = (InterfaceDescription) blog.getInterfaces().stream()
+        InterfaceItem i =  blog.getInterfaces().stream()
                 .filter(d -> d.getDescription().equals("posts"))
                 .findFirst()
                 .orElseThrow();
@@ -109,7 +108,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(landscape);
         assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getServices());
-        assertEquals(7, landscape.getServices().size());
+        assertEquals(8, landscape.getServices().size());
         Service blog = (Service) ServiceItems.pick("blog-server", null,landscape.getServices());
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
@@ -128,11 +127,11 @@ public class IndexerIntegrationTest {
         assertEquals("push", push.getDescription());
         assertEquals("json", push.getFormat());
         assertEquals(blog.getIdentifier(), push.getSourceEntity().getIdentifier());
-        assertEquals("kpi-dashboard", push.getTarget());
+        assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget());
 
         Set<InterfaceItem> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());
-        InterfaceDescription i = (InterfaceDescription) blog.getInterfaces().stream()
+        InterfaceItem i =  blog.getInterfaces().stream()
                 .filter(d -> d.getDescription().equals("posts"))
                 .findFirst()
                 .orElseThrow();
@@ -150,7 +149,7 @@ public class IndexerIntegrationTest {
 
         Environment environment = new Environment();
         environment.setIdentifier(landscape.getIdentifier());
-        environment.setIsIncrement(true);
+        environment.setIsPartial(true);
 
         ServiceDescription newItem = new ServiceDescription();
         newItem.setIdentifier(blog.getIdentifier());

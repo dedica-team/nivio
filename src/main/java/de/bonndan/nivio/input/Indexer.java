@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,11 +28,11 @@ public class Indexer {
     private final SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
 
     @Autowired
-    public Indexer(LandscapeRepository environmentRepo,
+    public Indexer(LandscapeRepository landscapeRepository,
                    ServiceRepository serviceRepo,
                    NotificationService notificationService
     ) {
-        this.landscapeRepo = environmentRepo;
+        this.landscapeRepo = landscapeRepository;
         this.serviceRepo = serviceRepo;
         this.notificationService = notificationService;
     }
@@ -48,6 +49,7 @@ public class Indexer {
         } else {
             landscape.setName(input.getName());
             landscape.setContact(input.getContact());
+            landscape.setConfig(input.getConfig());
         }
         logger.setLandscape(landscape);
 
@@ -88,7 +90,7 @@ public class Indexer {
 
         //update existing
         List<ServiceItem> kept = new ArrayList<>();
-        if (environment.isIncrement()) {
+        if (environment.isPartial()) {
             kept.addAll(existingServices); //we want to keep all, increment does not contain all services
         } else {
             kept = ServiceItems.kept(environment.getServiceDescriptions(), existingServices);
@@ -99,7 +101,7 @@ public class Indexer {
 
                     ServiceDescription description = (ServiceDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
                     if (description == null) {
-                        if (environment.isIncrement()) {
+                        if (environment.isPartial()) {
                             inLandscape.add((Service) service);
                             return;
                         } else {
@@ -120,7 +122,7 @@ public class Indexer {
     }
 
     private void deleteUnreferenced(final Environment environment, List<Service> kept, List<Service> all, ProcessLog logger) {
-        if (environment.isIncrement()) {
+        if (environment.isPartial()) {
             logger.info("Incremental change, will not remove any unreferenced services.");
             return;
         }
@@ -130,7 +132,7 @@ public class Indexer {
         removed.forEach(
                 service -> {
                     logger.info("Service " + service.getIdentifier() + " not contained anymore in env " + environment.getIdentifier() + ", deleting it.");
-                    serviceRepo.delete((Service) service);
+                    serviceRepo.delete(((Service) service).getId());
                 }
         );
     }
@@ -140,15 +142,21 @@ public class Indexer {
      */
     private void linkAllProviders(List<Service> services, Environment environment, ProcessLog logger) {
 
+        boolean isPartial = environment.isPartial();
         services.forEach(
                 service -> {
                     ServiceDescription description = (ServiceDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
                     if (description == null) {
-                        if (environment.isIncrement())
+                        if (isPartial)
                             return;
                         else
                             throw new ProcessingException(environment, "Service not found " + service.getIdentifier());
                     }
+
+                    if (!isPartial) {
+                        service.getProvidedBy().clear();
+                    }
+
                     description.getProvided_by().forEach(providerName -> {
                         Service provider;
                         try {
@@ -163,11 +171,10 @@ public class Indexer {
                             return;
                         }
 
-
                         if (!ServiceItems.contains(provider, service.getProvidedBy())) {
                             service.getProvidedBy().add(provider);
-                            provider.getProvides().add(service);
-                            logger.info("Adding provider " + provider + " to serivce " + service);
+                            provider.getProvides().add(service); //deprecated
+                            logger.info("Adding provider " + provider + " to service " + service);
                         }
                     });
                 }
@@ -177,6 +184,10 @@ public class Indexer {
     private void linkDataflow(final Environment input, final Landscape landscape, ProcessLog logger) {
         input.getServiceDescriptions().forEach(serviceDescription -> {
             Service origin = (Service) ServiceItems.pick(serviceDescription, landscape.getServices());
+            if (!input.isPartial() && origin.getDataFlow().size() > 0) {
+                logger.info("Clearing dataflow of " + origin);
+                origin.getDataFlow().clear(); //delete all dataflow on full update
+            }
 
             serviceDescription.getDataFlow().forEach(description -> {
 
@@ -188,11 +199,11 @@ public class Indexer {
                 }
                 Iterator<DataFlowItem> iterator = origin.getDataFlow().iterator();
                 DataFlow existing = null;
-                DataFlow dataFlow = new DataFlow(origin, target);
+                DataFlow dataFlow = new DataFlow(origin, target.getFullyQualifiedIdentifier());
                 while (iterator.hasNext()) {
                     existing = (DataFlow) iterator.next();
                     if (existing.equals(dataFlow)) {
-                        logger.info("Updating dataflow " + existing);
+                        logger.info(String.format("Updating dataflow between %s and %s", existing.getSource(), existing.getTarget()));
                         existing.setDescription(description.getDescription());
                         existing.setFormat(description.getFormat());
                         break;
@@ -205,10 +216,8 @@ public class Indexer {
                     dataFlow.setFormat(description.getFormat());
 
                     origin.getDataFlow().add(dataFlow);
-                    logger.info("Adding dataflow " + existing);
+                    logger.info(String.format("Adding dataflow between %s and %s", dataFlow.getSource(), dataFlow.getTarget()));
                 }
-
-                logger.info("Creating dataflow between " + origin.getIdentifier() + " and " + target.getIdentifier());
             });
         });
     }

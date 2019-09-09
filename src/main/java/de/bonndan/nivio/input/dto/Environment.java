@@ -3,10 +3,9 @@ package de.bonndan.nivio.input.dto;
 import de.bonndan.nivio.input.ServiceDescriptionFactory;
 import de.bonndan.nivio.landscape.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Configures an input.
@@ -53,17 +52,19 @@ public class Environment implements LandscapeItem {
 
     private List<StateProviderConfig> stateProviders;
 
+    private LandscapeConfig config;
+
+    private boolean isPartial = false;
+
+    public void setIsPartial(boolean isPartial) {
+        this.isPartial = isPartial;
+    }
+
     /**
      * flags that the environment is not complete, but an update
      */
-    private boolean isIncrement = false;
-
-    public void setIsIncrement(boolean isIncrement) {
-        this.isIncrement = isIncrement;
-    }
-
-    public boolean isIncrement() {
-        return isIncrement;
+    public boolean isPartial() {
+        return isPartial;
     }
 
     public String getIdentifier() {
@@ -134,10 +135,14 @@ public class Environment implements LandscapeItem {
         landscape.setContact(contact);
         landscape.setSource(source);
         landscape.setStateProviders(stateProviders);
+        landscape.setConfig(config);
         return landscape;
     }
 
     public void addServices(List<ServiceDescription> incoming) {
+        if (incoming == null)
+            return;
+
         incoming.forEach(desc -> {
             desc.setEnvironment(this.identifier);
 
@@ -150,8 +155,34 @@ public class Environment implements LandscapeItem {
         });
     }
 
+    /**
+     * For compatibility with source references, service can be added directly to the env description.
+     */
+    public void setServices(List<ServiceDescription> services) {
+        addServices(services);
+    }
+
     @Override
     public String toString() {
         return identifier;
+    }
+
+    public boolean hasReference(String source) {
+        return sources.stream().anyMatch(sourceReference -> {
+
+            if (sourceReference.getUrl().equals(source))
+                return true;
+
+            File file = new File(source);
+            if (sourceReference.getUrl().contains(file.getName())) //TODO
+                return true;
+
+            return false;
+        });
+    }
+
+    @Override
+    public LandscapeConfig getConfig() {
+        return config;
     }
 }

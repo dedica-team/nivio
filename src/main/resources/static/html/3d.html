@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Beginning my Three.js Journey</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%
+        }
+    </style>
+</head>
+<body>
+<!-- CDN Link to Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.js"></script>
+<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<!--reference your JS file here. Mine looks like below-->
+<script type="application/javascript">
+    // We need 3 things everytime we use Three.js
+    // Scene + Camera + Renderer
+    document.addEventListener("DOMContentLoaded", function (event) {
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({antialias: true});
+        const loader = new THREE.FileLoader();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        // sets renderer background color
+        renderer.setClearColor("#222222");
+        document.body.appendChild(renderer.domElement);
+        camera.position.z = 5;
+
+        var controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        //controls.update() must be called after any manual changes to the camera's transform
+        controls.update();
+
+
+        // ambient light
+        var ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+        scene.add(ambientLight);
+
+        // point light
+        var pointLight = new THREE.PointLight(0xffffff, 1);
+        pointLight.position.set(25, 50, 25);
+        scene.add(pointLight);
+
+
+        function animate() {
+            requestAnimationFrame(animate);
+            //cube.rotation.x += 0.04;
+            //cube.rotation.y += 0.04;
+            //wireframeCube.rotation.x -= 0.01;
+            //wireframeCube.rotation.y -= 0.01;
+            controls.update();
+            renderer.render(scene, camera)
+        }
+
+        animate();
+
+
+        //load a text file and output the result to the console
+        loader.load(
+            // resource URL
+            "http://localhost:8080/render/nivio:example/threejs.json",
+
+            // onLoad callback
+            function (data) {
+                // output the text to the console
+
+                var objects = JSON.parse(data);
+                objects.forEach(function (obj) {
+                    var geometry = new THREE.BoxGeometry(1, 1, 1);
+                    var color = 0xff0051;
+                    var material = new THREE.MeshStandardMaterial({
+                        color: color,
+                        flatShading: true,
+                        metalness: 0,
+                        roughness: 1
+                    });
+                    var cube = new THREE.Mesh(geometry, material);
+                    cube.position.set(obj.width, obj.height, 1);
+                    scene.add(cube);
+                    console.log("added item " + obj.name)
+                })
+            },
+
+            // onProgress callback
+            function (xhr) {
+                console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+            },
+
+            // onError callback
+            function (err) {
+                console.error('An error happened');
+            }
+        );
+    });
+</script>
+</body>
+</html>

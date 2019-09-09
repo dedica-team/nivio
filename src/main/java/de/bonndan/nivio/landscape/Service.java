@@ -2,13 +2,15 @@ package de.bonndan.nivio.landscape;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import de.bonndan.nivio.input.dto.InterfaceDescription;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"landscape_identifier", "identifier", "group"}))
@@ -33,6 +35,10 @@ public class Service implements ServiceItem {
 
     private String name;
 
+    private String short_name;
+
+    private String icon;
+
     private String owner;
 
     private String team;
@@ -42,8 +48,6 @@ public class Service implements ServiceItem {
     private String homepage;
 
     private String description;
-
-    private String short_name;
 
     private String version;
 
@@ -58,8 +62,7 @@ public class Service implements ServiceItem {
 
     private String[] tags;
 
-    @ElementCollection(targetClass = String.class)
-    private Set<String> networks;
+    private String[] networks;
 
     private String machine;
 
@@ -72,11 +75,11 @@ public class Service implements ServiceItem {
     private String capability;
 
     @JsonManagedReference
-    @OneToMany(targetEntity = ServiceStatus.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "service")
+    @OneToMany(targetEntity = ServiceStatus.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "service", orphanRemoval = true)
     private Set<StatusItem> statuses = new HashSet<>();
 
     @JsonManagedReference
-    @OneToMany(targetEntity = DataFlow.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sourceEntity")
+    @OneToMany(targetEntity = DataFlow.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sourceEntity", orphanRemoval = true)
     private Set<DataFlowItem> dataFlow = new HashSet<>();
 
     @JsonBackReference
@@ -92,8 +95,12 @@ public class Service implements ServiceItem {
 
     private String note;
 
-    @ElementCollection(targetClass = InterfaceDescription.class)
-    private Set<InterfaceItem> interfaces;
+    @JsonManagedReference
+    @OneToMany(targetEntity = ServiceInterface.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "service", orphanRemoval = true)
+    private Set<InterfaceItem> interfaces = new HashSet<>();
+
+    @Enumerated(EnumType.STRING)
+    private Lifecycle lifecycle;
 
     public String getIdentifier() {
         return identifier;
@@ -134,6 +141,15 @@ public class Service implements ServiceItem {
 
     public void setShort_name(String short_name) {
         this.short_name = short_name;
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public String getVersion() {
@@ -212,6 +228,15 @@ public class Service implements ServiceItem {
         return visibility;
     }
 
+    @Override
+    public Lifecycle getLifecycle() {
+        return lifecycle;
+    }
+
+    public void setLifecycle(Lifecycle lifecycle) {
+        this.lifecycle = lifecycle;
+    }
+
     public void setVisibility(String visibility) {
         this.visibility = visibility;
     }
@@ -256,11 +281,11 @@ public class Service implements ServiceItem {
     }
 
     public Set<String> getNetworks() {
-        return networks;
+        return networks == null? new HashSet<>() : Set.of(networks);
     }
 
     public void setNetworks(Set<String> networks) {
-        this.networks = networks;
+        this.networks = networks.stream().toArray(String[]::new);
     }
 
     public String getMachine() {
@@ -355,6 +380,10 @@ public class Service implements ServiceItem {
 
     public void setCapability(String capability) {
         this.capability = capability;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     @Override
