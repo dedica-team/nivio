@@ -29,6 +29,10 @@ public class SourceReference {
         this.url = url;
     }
 
+    public SourceReference(SourceFormat format) {
+        this.format = format;
+    }
+
     public String getUrl() {
         return url;
     }

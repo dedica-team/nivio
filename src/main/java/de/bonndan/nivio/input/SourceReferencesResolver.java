@@ -24,7 +24,7 @@ public class SourceReferencesResolver {
         env.getSourceReferences().forEach(ref -> {
             try {
                 String source = fetcher.get(ref, baseUrl);
-                ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(ref.getFormat());
+                ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(ref);
                 List<ServiceDescription> descriptions = factory.fromString(source);
 
                 ref.getAssignTemplates().entrySet().forEach(templateAssignments -> {

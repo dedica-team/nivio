@@ -1,6 +1,8 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.input.dto.SourceFormat;
+import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.kubernetes.ServiceDescriptionFactoryKubernetes;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.PodBuilder;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,6 +46,7 @@ public class KubernetesTest {
                         .withNewMetadata()
                         .withName("pod1")
                         .withNamespace("default")
+                        .withLabels(Map.of("release", "testgroup"))
                         .endMetadata()
                         .withSpec(
                                 new PodSpecBuilder()
@@ -59,7 +63,11 @@ public class KubernetesTest {
     public void testRead() throws IOException {
 
         setup();
-        ServiceDescriptionFactoryKubernetes factory = new ServiceDescriptionFactoryKubernetes(client);
+        SourceReference sourceReference = new SourceReference();
+        sourceReference.setFormat(SourceFormat.KUBERNETES);
+        sourceReference.setUrl("http://localhost:80?groupLabel=release&namespace=default");
+
+        ServiceDescriptionFactoryKubernetes factory = new ServiceDescriptionFactoryKubernetes(sourceReference, client);
         factory.getConfiguration().setNamespace("default");
 
         List<ServiceDescription> serviceDescriptions = factory.fromString("");
@@ -69,7 +77,7 @@ public class KubernetesTest {
         ServiceDescription serviceDescription = serviceDescriptions.get(0);
         assertNotNull(serviceDescription);
 
-        assertEquals("default-pod1", serviceDescription.getGroup());
+        assertEquals("testgroup", serviceDescription.getGroup());
         assertEquals("mydb", serviceDescription.getName());
         assertEquals("mydb", serviceDescription.getIdentifier());
         assertEquals("postgres:9.5", serviceDescription.getSoftware());

@@ -15,8 +15,7 @@ import java.io.File;
 import static de.bonndan.nivio.landscape.ServiceItems.pick;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SourceReferencesResolverTest {
 

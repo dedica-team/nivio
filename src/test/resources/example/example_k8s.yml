@@ -1,0 +1,5 @@
+identifier: k8s:example
+name: Kubernetes example
+sources:
+  - format: kubernetes
+    url: http://192.168.99.100?namespace=default

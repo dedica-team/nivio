@@ -12,8 +12,9 @@ public class ServiceDescriptionFormatFactoryTest {
 
     @Test
     public void defaultIfNull() {
-        SourceReference sourceReference = new SourceReference();
-        ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(sourceReference.getFormat());
+        ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(
+                new SourceReference()
+        );
 
         assertTrue(factory instanceof ServiceDescriptionFactory);
         assertTrue(factory instanceof ServiceDescriptionFactoryNivio);
@@ -21,7 +22,9 @@ public class ServiceDescriptionFormatFactoryTest {
 
     @Test
     public void defaultIfOther() {
-        ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(SourceFormat.from("abc"));
+        ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(
+                new SourceReference(SourceFormat.from("abc"))
+        );
 
         assertTrue(factory instanceof ServiceDescriptionFactory);
         assertTrue(factory instanceof ServiceDescriptionFactoryNivio);
@@ -29,7 +32,10 @@ public class ServiceDescriptionFormatFactoryTest {
 
     @Test
     public void compose2() {
-        ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(SourceFormat.from("docker-compose-v2"));
+
+        ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(
+                new SourceReference(SourceFormat.from("docker-compose-v2"))
+        );
 
         assertTrue(factory instanceof ServiceDescriptionFactory);
         assertTrue(factory instanceof ServiceDescriptionFactoryCompose2);
