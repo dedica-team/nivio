@@ -41,7 +41,6 @@ public class FileFetcher {
         }
     }
 
-
     public String get(SourceReference ref) {
 
         try {
@@ -50,6 +49,8 @@ public class FileFetcher {
             return fetchUrl(ref);
         } catch (MalformedURLException | URISyntaxException e) {
             String path = ref.getUrl();
+            if (path == null)
+                return null;
             if (ref.getEnvironment() != null) {
                 File file = new File(ref.getEnvironment().getSource());
                 path = file.getParent() + "/" + ref.getUrl();
@@ -66,6 +67,8 @@ public class FileFetcher {
             return get(ref);
         }
 
+        if (ref.getUrl() == null)
+            return null;
         //assemble new absolute url
         ref.setUrl(URLHelper.combine(baseUrl, ref.getUrl()));
         return get(ref);
