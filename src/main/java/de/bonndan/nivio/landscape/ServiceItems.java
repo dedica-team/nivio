@@ -167,6 +167,7 @@ public class ServiceItems {
     }
 
     public static final Attribute<ServiceItem, String> IDENTIFIER = attribute("identifier", ServiceItem::getIdentifier);
+    public static final Attribute<ServiceItem, String> NAME = attribute("name", ServiceItem::getName);
 
     /**
      * Run the condition as CQN query. See https://github.com/npgall/cqengine
@@ -176,7 +177,9 @@ public class ServiceItems {
      * @return resultset
      */
     public static List<? extends ServiceItem> query(String condition, List<? extends ServiceItem> serviceItems) {
-        SQLParser<ServiceItem> parser = SQLParser.forPojoWithAttributes(ServiceItem.class, Map.of("identifier", IDENTIFIER));
+        SQLParser<ServiceItem> parser = SQLParser.forPojoWithAttributes(ServiceItem.class,
+                Map.of("identifier", IDENTIFIER, "name", NAME)
+        );
         IndexedCollection<ServiceItem> index = new ConcurrentIndexedCollection<>();
         index.addAll(serviceItems);
 

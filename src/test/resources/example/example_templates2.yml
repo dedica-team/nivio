@@ -5,7 +5,10 @@ sources:
     format: nivio
     assignTemplates:
       putIntoGroupAlpha: ["identifier LIKE 'crappy_dockername%'"]
+      putIntoGroupBeta: ["name = 'baz'"]
 
 templates:
   - identifier: putIntoGroupAlpha
     group: alpha
+  - identifier: putIntoGroupBeta
+    group: beta

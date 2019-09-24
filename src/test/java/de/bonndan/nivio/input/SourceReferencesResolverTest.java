@@ -105,7 +105,7 @@ public class SourceReferencesResolverTest {
 
         ServiceDescription three = (ServiceDescription) pick("other_crappy_name-2343a", null, environment.getServiceDescriptions());
         assertNotNull(three);
-        assertNotEquals("alpha", three.getGroup());
+        assertEquals("beta", three.getGroup());
     }
 
     @Test
