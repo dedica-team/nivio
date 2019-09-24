@@ -10,9 +10,7 @@ class LandscapeConfigTest {
     public void testJgraphXConfigIsNotNull() {
         LandscapeConfig landscapeConfig = new LandscapeConfig();
         assertNotNull(landscapeConfig.getJgraphx());
-        assertNotNull(landscapeConfig.getJgraphx().getBorderLineCostFactor());
-        assertNotNull(landscapeConfig.getJgraphx().getEdgeLengthCostFactor());
-        assertNotNull(landscapeConfig.getJgraphx().getNodeDistributionCostFactor());
-        assertNotNull(landscapeConfig.getJgraphx().getTriesPerCell());
+        assertNotNull(landscapeConfig.getJgraphx().getForceConstantFactor());
+        assertNotNull(landscapeConfig.getJgraphx().getMinDistanceLimitFactor());
     }
 }
