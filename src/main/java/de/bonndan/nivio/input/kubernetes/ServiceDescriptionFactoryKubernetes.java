@@ -110,6 +110,7 @@ public class ServiceDescriptionFactoryKubernetes implements ServiceDescriptionFa
             description.setMachine(pod.getSpec().getNodeName()); //ip?
 
             // TODO
+            //set Labels, introduce new labels property (docker/k8s)
             //description.getProvided_by().add(pod.getSpec().)
             //description.setScale(...);
             // statuses: pod.getStatus()
