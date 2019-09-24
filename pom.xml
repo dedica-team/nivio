@@ -60,11 +60,17 @@
             <version>2.3.0</version>
         </dependency>
 
-        <!-- graphing -->
+        <!-- graphing, deprecated -->
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-io</artifactId>
             <version>1.1.0</version>
+            <exclusions>
+                <exclusion><!-- conflicts with cqengine -->
+                    <groupId>org.antlr</groupId>
+                    <artifactId>antlr4-runtime</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -189,6 +195,12 @@
             <artifactId>kubernetes-server-mock</artifactId>
             <version>4.2.0</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.googlecode.cqengine</groupId>
+            <artifactId>cqengine</artifactId>
+            <version>3.4.0</version>
         </dependency>
     </dependencies>
 

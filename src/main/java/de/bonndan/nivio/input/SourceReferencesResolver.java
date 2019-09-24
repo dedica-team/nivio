@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.landscape.ServiceItem;
+import de.bonndan.nivio.landscape.ServiceItems;
 import de.bonndan.nivio.util.URLHelper;
 
 import java.net.URL;
@@ -36,18 +37,8 @@ public class SourceReferencesResolver {
                     }
 
                     templateAssignments.getValue().forEach(identifier -> {
-                        if ("*".equals(identifier)) {
-                            descriptions.forEach(item -> ServiceDescriptionFactory.assignTemplateValues(item, (ServiceDescription)template));
-
-                        } else {
-                            ServiceItem item = find(identifier, "", descriptions);
-                            if (item == null) {
-                                log.warn("Could not assign template " + template.getIdentifier() + ", service " + identifier + " not found.");
-                                return;
-                            }
-                            ServiceDescriptionFactory.assignTemplateValues((ServiceDescription)item, (ServiceDescription)template);
-                        }
-
+                        ServiceItems.filter(identifier, descriptions)
+                                .forEach(item -> ServiceDescriptionFactory.assignTemplateValues((ServiceDescription) item, (ServiceDescription) template));
                     });
 
                 });

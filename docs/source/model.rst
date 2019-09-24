@@ -135,6 +135,7 @@ will not be overwritten by templates applied later.
         tags: [eol]
         statuses
 
+For CQ queries, read https://github.com/npgall/cqengine#string-based-queries-sql-and-cqn-dialects.
 
 Service state (alpha)
 ---------------------

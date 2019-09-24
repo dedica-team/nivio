@@ -1,0 +1,6 @@
+document_version: 1.0
+
+services:
+  - identifier: crappy_dockername-78345
+  - identifier: crappy_dockername-2343a
+  - identifier: other_crappy_name-2343a
