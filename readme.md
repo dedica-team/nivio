@@ -21,3 +21,10 @@ To **get started** read the [documentation](https://nivio.readthedocs.io/en/mast
 * Apache Httpd and the logo are trademarks of the ASF.
 * WordPress and the logo are trademarks of Wordpress Foundation. http://wordpressfoundation.org/trademark-policy/
 * Flame, Danger, Warning, Checked icon made by <a href="https://www.flaticon.com/authors/vectors-market" title="Vectors Market">Vectors Market</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
+
+## Development Setup
+
+    git clone https://github.com/bonndan/nivio.git && cd nivio
+    mvn clean package
+    docker build -t nivio:latest
+    docker run -e SEED=/tmp/inout.yml --mount type=bind,source="$(pwd)"/src/test/resources/example,target=/tmp -p 8089:8080 nivio:latest 
