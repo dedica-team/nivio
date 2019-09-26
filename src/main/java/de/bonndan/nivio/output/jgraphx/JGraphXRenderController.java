@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.jgraphx;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.api.NotFoundException;
 import de.bonndan.nivio.landscape.Landscape;
 import de.bonndan.nivio.landscape.LandscapeRepository;
@@ -82,6 +83,33 @@ public class JGraphXRenderController {
             headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
             return new ResponseEntity<>(
                     rendered,
+                    headers,
+                    HttpStatus.OK
+            );
+        } catch (Exception ex) {
+            logger.warn("Could not render graph: " );
+            throw ex;
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/hex.json")
+    public ResponseEntity<String> hex(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
+        if (landscape == null)
+            throw new NotFoundException("Not found");
+
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
+
+
+        try {
+            FinalGraph graph = new FinalGraph(iconService);
+            jGraphXRenderer.getFinalGraph(landscape, graph);
+
+            HttpHeaders headers = new HttpHeaders();
+            ObjectMapper objectMapper = new ObjectMapper();
+            headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
+            return new ResponseEntity<>(
+                    objectMapper.writeValueAsString(graph.getRenderedGraph()),
                     headers,
                     HttpStatus.OK
             );

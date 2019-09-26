@@ -18,10 +18,9 @@ import java.util.Map;
 
 public class JGraphXRenderer implements Renderer<mxGraph> {
 
+    private static final Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);
     private final IconService iconService;
 
-    private Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);
-    private Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
 
     public JGraphXRenderer(IconService iconService) {
         this.iconService = iconService;
@@ -30,6 +29,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
     @Override
     public mxGraph render(Landscape landscape) {
 
+        Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
         Groups groups = Groups.from(landscape);
         groups.getAll().forEach((groupName, serviceItems) -> {
             GroupGraph groupGraph = new GroupGraph(serviceItems);
@@ -41,7 +41,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
         //return allGroupsGraph.getGraph();
 
         FinalGraph finalGraph = new FinalGraph(iconService);
-        return finalGraph.render(allGroupsGraph, subgraphs);
+        return getFinalGraph(landscape, finalGraph);
     }
 
     @Override
@@ -52,5 +52,20 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
 
         ImageIO.write(image, "PNG", file);
 
+    }
+
+    public mxGraph getFinalGraph(Landscape landscape, FinalGraph finalGraph) {
+        Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
+        Groups groups = Groups.from(landscape);
+        groups.getAll().forEach((groupName, serviceItems) -> {
+            GroupGraph groupGraph = new GroupGraph(serviceItems);
+            subgraphs.put(groupName, groupGraph);
+        });
+
+        AllGroupsGraph allGroupsGraph = new AllGroupsGraph(landscape.getConfig(), groups, subgraphs);
+
+        //return allGroupsGraph.getGraph();
+
+        return finalGraph.render(allGroupsGraph, subgraphs);
     }
 }

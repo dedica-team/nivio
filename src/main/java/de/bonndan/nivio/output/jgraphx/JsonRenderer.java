@@ -62,10 +62,10 @@ public class JsonRenderer implements Renderer<String> {
         Arrays.stream(graph.getChildCells(cell)).forEach(o -> getAllChildren(dtos, graph, (mxCell) o, services));
     }
 
+    @Deprecated
     private Serializable toDto(mxCell cell, List<Service> services) {
 
         mxGeometry geometry = cell.getGeometry();
-        Map<String, String> style = parseStyle(cell.getStyle());
 
         ServiceItem serviceItem = null;
         if (!StringUtils.isEmpty(cell.getId()))
@@ -73,9 +73,7 @@ public class JsonRenderer implements Renderer<String> {
         Vertex vertex = new Vertex();
         vertex.id = cell.getId();
         vertex.name = (String) cell.getValue();
-        vertex.type = style.get("type");
-        vertex.group = style.get("group");
-        vertex.groupColor = style.get("groupColor");
+
         if (cell.getParent().getGeometry() != null) {
             vertex.x = Math.round(geometry.getX() + cell.getParent().getGeometry().getX());
             vertex.y = Math.round(geometry.getY() + cell.getParent().getGeometry().getY());
@@ -93,19 +91,6 @@ public class JsonRenderer implements Renderer<String> {
             vertex.service = serviceItem;
         }
         return vertex;
-    }
-
-    private Map<String, String> parseStyle(String style) {
-        Map<String, String> map = new HashMap<>();
-        Arrays.stream(StringUtils.delimitedListToStringArray(style, ";")).forEach(s -> {
-            String[] keyvalue = StringUtils.delimitedListToStringArray(s, "=");
-            if (StringUtils.isEmpty(s))
-                return;
-            if (keyvalue.length < 2)
-                return;
-            map.put(keyvalue[0], keyvalue[1]);
-        });
-        return map;
     }
 
     @Override

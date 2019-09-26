@@ -13,17 +13,26 @@ import de.bonndan.nivio.landscape.*;
 import de.bonndan.nivio.output.Icon;
 import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.jgraphx.dto.HexVertex;
+import de.bonndan.nivio.output.jgraphx.dto.RenderedGraph;
+import de.bonndan.nivio.output.jgraphx.dto.Vertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static de.bonndan.nivio.landscape.Status.UNKNOWN;
 import static de.bonndan.nivio.util.Color.GRAY;
 
+/**
+ * This class is responsible for rendering services and groups nicely with bells and whistles.
+ *
+ * It receives
+ */
 public class FinalGraph {
 
     private final int DEFAULT_ICON_SIZE = 50;
@@ -33,6 +42,7 @@ public class FinalGraph {
     private Map<Service, mxCell> serviceVertexes = new HashMap<>();
     private mxStylesheet stylesheet;
     private mxGraph graph;
+    private Map<String, mxCell> groups = new HashMap<>();
 
     public FinalGraph(IconService iconService) {
         this.iconService = iconService;
@@ -59,7 +69,8 @@ public class FinalGraph {
         allGroupsGraph.getLayoutedGroups().forEach((groupName, mxCell) -> {
 
             Optional<Service> serviceItem = subgraphs.get(groupName).getServiceVertexesWithRelativeOffset().entrySet().stream()
-                    .findFirst().map(serviceItemmxPointEntry -> (Service) serviceItemmxPointEntry.getKey());
+                    .findFirst()
+                    .map(entry -> (Service) entry.getKey());
             LandscapeConfig landscapeConfig = serviceItem.map(service -> service.getLandscape().getConfig()).orElse(null);
             mxGeometry groupGeo = mxCell.getGeometry();
             mxCell groupContainer = (mxCell) graph.insertVertex(
@@ -71,7 +82,7 @@ public class FinalGraph {
                     groupGeo.getHeight(),
                     getGroupStyle(groupName, getGroupColor(groupName, landscapeConfig))
             );
-
+            groups.put(groupName, groupContainer);
 
             GroupGraph groupGraph = subgraphs.get(groupName);
             groupGraph.getServiceVertexesWithRelativeOffset().forEach((service, offset) -> {
@@ -90,6 +101,15 @@ public class FinalGraph {
         renderExtras(serviceVertexes);
 
         return graph;
+    }
+
+    public RenderedGraph getRenderedGraph() {
+
+        RenderedGraph renderedGraph = new RenderedGraph();
+        serviceVertexes.forEach((service, mxCell) -> renderedGraph.services.add(new HexVertex(service, mxCell, 1000)));
+        groups.forEach((groupName, mxCell) -> renderedGraph.groups.add(new HexVertex(groupName, mxCell, 1000)));
+
+        return renderedGraph;
     }
 
 
