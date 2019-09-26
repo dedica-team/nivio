@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.HashSet;
@@ -12,20 +11,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-@Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"landscape_identifier", "identifier", "group"}))
 public class Service implements ServiceItem {
-
-    @Id
-    @GeneratedValue
-    private Long id;
 
     @NotNull
     @Pattern(regexp = ServiceItem.IDENTIFIER_VALIDATION)
     private String identifier;
 
     @NotNull
-    @ManyToOne
     @JsonBackReference
     private Landscape landscape;
 
@@ -55,7 +47,6 @@ public class Service implements ServiceItem {
 
     private String repository;
 
-    @Column(name = "`group`")
     private String group;
 
     private String visibility;
@@ -75,31 +66,22 @@ public class Service implements ServiceItem {
     private String capability;
 
     @JsonManagedReference
-    @OneToMany(targetEntity = ServiceStatus.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "service", orphanRemoval = true)
     private Set<StatusItem> statuses = new HashSet<>();
 
     @JsonManagedReference
-    @OneToMany(targetEntity = DataFlow.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sourceEntity", orphanRemoval = true)
     private Set<DataFlowItem> dataFlow = new HashSet<>();
 
     @JsonBackReference
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "TYPE_INFRASTRUCTURE",
-            joinColumns = {@JoinColumn(name = "service_id")},
-            inverseJoinColumns = {@JoinColumn(name = "infrastructure_identifier")})
     private Set<Service> providedBy = new HashSet<>();
 
     @JsonBackReference
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE, mappedBy = "providedBy")
     private Set<Service> provides = new HashSet<>();
 
     private String note;
 
     @JsonManagedReference
-    @OneToMany(targetEntity = ServiceInterface.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "service", orphanRemoval = true)
     private Set<InterfaceItem> interfaces = new HashSet<>();
 
-    @Enumerated(EnumType.STRING)
     private Lifecycle lifecycle;
 
     public String getIdentifier() {
@@ -114,7 +96,6 @@ public class Service implements ServiceItem {
     }
 
     @Override
-    @Transient
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(landscape == null ? "" : landscape.getIdentifier(), group, identifier);
     }
@@ -380,10 +361,6 @@ public class Service implements ServiceItem {
 
     public void setCapability(String capability) {
         this.capability = capability;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     @Override

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class Aggregator {
@@ -20,7 +21,6 @@ public class Aggregator {
     private final static Logger logger = LoggerFactory.getLogger(Aggregator.class);
 
     private final LandscapeRepository landscapeRepository;
-    private final ServiceRepository serviceRepo;
 
     private final ProviderFactory factory;
 
@@ -28,12 +28,10 @@ public class Aggregator {
 
     @Autowired
     public Aggregator(LandscapeRepository landscapeRepository,
-                      ServiceRepository serviceRepo,
                       ProviderFactory factory,
                       ApplicationEventPublisher publisher
     ) {
         this.landscapeRepository = landscapeRepository;
-        this.serviceRepo = serviceRepo;
         this.factory = factory;
         this.publisher = publisher;
     }
@@ -53,9 +51,13 @@ public class Aggregator {
 
     private void applyUpdates(Map<FullyQualifiedIdentifier, StatusItem> updates) {
         updates.forEach((fqi, item) -> {
-            Landscape landscape = landscapeRepository.findDistinctByIdentifier(fqi.getLandscape());
-            serviceRepo.findByLandscapeAndGroupAndIdentifier(landscape, fqi.getGroup(), fqi.getIdentifier())
-                    .ifPresent(service -> service.setStatus(item));
+            landscapeRepository.findDistinctByIdentifier(fqi.getLandscape())
+                    .ifPresentOrElse(landscape -> {
+                                ServiceItems.find(fqi, landscape.getServices()).ifPresent(serviceItem -> serviceItem.setStatus(item));
+                            },
+                            () -> {
+                            }
+                    );
         });
     }
 

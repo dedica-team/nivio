@@ -1,10 +1,25 @@
 package de.bonndan.nivio.landscape;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
-@Repository
-public interface LandscapeRepository extends CrudRepository<Landscape, Long> {
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
-    Landscape findDistinctByIdentifier(String identifier);
+@Component
+public class LandscapeRepository {
+
+    private final Map<String, Landscape> landscapes = new ConcurrentHashMap<>();
+
+    public Optional<Landscape> findDistinctByIdentifier(String identifier) {
+        return Optional.ofNullable(landscapes.get(identifier));
+    }
+
+    public void save(Landscape landscape) {
+        landscapes.put(landscape.getIdentifier(), landscape);
+    }
+
+    public Iterable<Landscape> findAll() {
+        return landscapes.values();
+    }
 }

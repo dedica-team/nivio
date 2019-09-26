@@ -107,7 +107,7 @@ public class AllGroupsGraph {
             service.getDataFlow().forEach(dataFlowItem -> {
                 String target = dataFlowItem.getTarget();
                 if (target == null) return;
-                ServiceItem targetItem = ServiceItems.find(target, null, services);
+                ServiceItem targetItem = ServiceItems.find(target, null, services).orElse(null);
                 if (targetItem == null) return;
 
                 String pGroup = targetItem.getGroup() == null ? Groups.COMMON : targetItem.getGroup();

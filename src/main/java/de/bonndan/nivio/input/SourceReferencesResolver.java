@@ -30,7 +30,7 @@ public class SourceReferencesResolver {
 
                 ref.getAssignTemplates().entrySet().forEach(templateAssignments -> {
 
-                    ServiceItem template = find(templateAssignments.getKey(), "", env.getTemplates());
+                    ServiceItem template = find(templateAssignments.getKey(), "", env.getTemplates()).orElse(null);
                     if (template == null) {
                         log.warn("Could not find template to assign: " + templateAssignments.getKey());
                         return;

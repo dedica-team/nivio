@@ -9,8 +9,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.StringUtils;
 
@@ -19,7 +17,6 @@ import java.net.MalformedURLException;
 
 @SpringBootApplication
 @EnableConfigurationProperties
-@EnableJpaRepositories(basePackages = "de.bonndan.nivio.landscape")
 public class Application {
 
     private final static Logger log = LoggerFactory.getLogger(Application.class);

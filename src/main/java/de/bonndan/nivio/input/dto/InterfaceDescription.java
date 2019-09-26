@@ -2,7 +2,6 @@ package de.bonndan.nivio.input.dto;
 
 import de.bonndan.nivio.landscape.InterfaceItem;
 
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.net.URL;
 

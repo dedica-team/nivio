@@ -1,7 +1,6 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.Environment;
-import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.landscape.*;
 import de.bonndan.nivio.notification.NotificationService;
@@ -38,10 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class IndexerIntegrationTest {
 
     @Autowired
-    ServiceRepository serviceRepository;
-
-    @Autowired
-    LandscapeRepository environmentRepo;
+    LandscapeRepository landscapeRepository;
 
     @Mock
     NotificationService notificationService;
@@ -57,7 +53,7 @@ public class IndexerIntegrationTest {
         File file = new File(getRootPath() + path);
         Environment environment = EnvironmentFactory.fromYaml(file);
 
-        Indexer indexer = new Indexer(environmentRepo, serviceRepository, notificationService);
+        Indexer indexer = new Indexer(landscapeRepository, notificationService);
 
         ProcessLog processLog = indexer.reIndex(environment);
         return (Landscape) processLog.getLandscape();
@@ -161,7 +157,7 @@ public class IndexerIntegrationTest {
         exsistingWordPress.setName("Other name");
         environment.getServiceDescriptions().add(exsistingWordPress);
 
-        Indexer indexer = new Indexer(environmentRepo, serviceRepository, notificationService);
+        Indexer indexer = new Indexer(landscapeRepository, notificationService);
 
         //created
         landscape = (Landscape) indexer.reIndex(environment).getLandscape();

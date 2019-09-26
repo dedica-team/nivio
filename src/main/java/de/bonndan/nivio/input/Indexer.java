@@ -11,10 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class Indexer {
@@ -22,18 +19,15 @@ public class Indexer {
     private static final Logger _logger = LoggerFactory.getLogger(Indexer.class);
 
     private final LandscapeRepository landscapeRepo;
-    private final ServiceRepository serviceRepo;
     private final NotificationService notificationService;
 
     private final SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
 
     @Autowired
     public Indexer(LandscapeRepository landscapeRepository,
-                   ServiceRepository serviceRepo,
                    NotificationService notificationService
     ) {
         this.landscapeRepo = landscapeRepository;
-        this.serviceRepo = serviceRepo;
         this.notificationService = notificationService;
     }
 
@@ -41,16 +35,16 @@ public class Indexer {
 
         ProcessLog logger = new ProcessLog(_logger);
 
-        Landscape landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier());
-        if (landscape == null) {
+        Landscape landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier()).orElseGet(() -> {
             logger.info("Creating new landscape " + input.getIdentifier());
-            landscape = input.toLandscape();
-            landscapeRepo.save(landscape);
-        } else {
-            landscape.setName(input.getName());
-            landscape.setContact(input.getContact());
-            landscape.setConfig(input.getConfig());
-        }
+            Landscape landscape1 = input.toLandscape();
+            landscapeRepo.save(landscape1);
+            return landscape1;
+        });
+
+        landscape.setName(input.getName());
+        landscape.setContact(input.getContact());
+        landscape.setConfig(input.getConfig());
         logger.setLandscape(landscape);
 
         try {
@@ -71,18 +65,16 @@ public class Indexer {
 
     private void diff(final Environment environment, final Landscape landscape, ProcessLog logger) {
 
-        List<Service> existingServices = serviceRepo.findAllByLandscape(landscape);
+        Set<Service> existingServices = landscape.getServices();
 
         //insert new ones
         List<ServiceItem> newItems = ServiceItems.added(environment.getServiceDescriptions(), existingServices);
-        List<Service> inLandscape = new ArrayList<>();
+        Set<Service> inLandscape = new HashSet<>();
         logger.info("Adding " + newItems.size() + " items in env " + landscape.getIdentifier());
         newItems.forEach(
                 serviceDescription -> {
                     logger.info("Creating new service " + serviceDescription.getIdentifier() + " in env " + environment.getIdentifier());
                     Service created = ServiceFactory.fromDescription(serviceDescription, landscape);
-                    serviceRepo.save(created);
-
                     landscape.addService(created);
                     inLandscape.add(created);
                 }
@@ -99,7 +91,7 @@ public class Indexer {
         kept.forEach(
                 service -> {
 
-                    ServiceDescription description = (ServiceDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
+                    ServiceDescription description = (ServiceDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions()).orElse(null);
                     if (description == null) {
                         if (environment.isPartial()) {
                             inLandscape.add((Service) service);
@@ -118,34 +110,37 @@ public class Indexer {
 
         landscape.setServices(inLandscape);
         linkAllProviders(inLandscape, environment, logger);
-        deleteUnreferenced(environment, inLandscape, existingServices, logger);
+        deleteUnreferenced(environment, inLandscape, existingServices, logger).forEach(serviceItem -> {
+            landscape.getServices().remove(serviceItem);
+        });
     }
 
-    private void deleteUnreferenced(final Environment environment, List<Service> kept, List<Service> all, ProcessLog logger) {
+    private List<ServiceItem> deleteUnreferenced(
+            final Environment environment,
+            Set<Service> kept,
+            Set<Service> all,
+            ProcessLog logger
+    ) {
         if (environment.isPartial()) {
             logger.info("Incremental change, will not remove any unreferenced services.");
-            return;
+            return new ArrayList<>();
         }
 
         List<ServiceItem> removed = ServiceItems.removed(kept, all);
         logger.info("Removing " + removed.size() + " sources in env " + environment.getIdentifier());
-        removed.forEach(
-                service -> {
-                    logger.info("Service " + service.getIdentifier() + " not contained anymore in env " + environment.getIdentifier() + ", deleting it.");
-                    serviceRepo.delete(((Service) service).getId());
-                }
-        );
+        return removed;
     }
 
     /**
      * Links all providers to a service
      */
-    private void linkAllProviders(List<Service> services, Environment environment, ProcessLog logger) {
+    private void linkAllProviders(Set<Service> services, Environment environment, ProcessLog logger) {
 
         boolean isPartial = environment.isPartial();
         services.forEach(
                 service -> {
-                    ServiceDescription description = (ServiceDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions());
+                    ServiceDescription description =
+                            (ServiceDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions()).orElse(null);
                     if (description == null) {
                         if (isPartial)
                             return;
@@ -161,7 +156,7 @@ public class Indexer {
                         Service provider;
                         try {
                             var fqi = FullyQualifiedIdentifier.from(providerName);
-                            provider = (Service) ServiceItems.find(fqi, services);
+                            provider = (Service) ServiceItems.find(fqi, services).orElse(null);
                             if (provider == null) {
                                 logger.warn("Could not find service " + fqi + " in landscape " + environment + " while linking providers for service " + description.getFullyQualifiedIdentifier());
                                 return;
@@ -171,7 +166,8 @@ public class Indexer {
                             return;
                         }
 
-                        if (!ServiceItems.contains(provider, service.getProvidedBy())) {
+
+                        if (!service.getProvidedBy().contains(provider)) {
                             service.getProvidedBy().add(provider);
                             provider.getProvides().add(service); //deprecated
                             logger.info("Adding provider " + provider + " to service " + service);
@@ -192,7 +188,7 @@ public class Indexer {
             serviceDescription.getDataFlow().forEach(description -> {
 
                 var fqi = FullyQualifiedIdentifier.from(description.getTarget());
-                Service target = (Service) ServiceItems.find(fqi, landscape.getServices());
+                Service target = (Service) ServiceItems.find(fqi, landscape.getServices()).orElse(null);
                 if (target == null) {
                     logger.warn("Dataflow target service " + description.getTarget() + " not found");
                     return;

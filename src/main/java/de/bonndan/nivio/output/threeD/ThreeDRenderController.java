@@ -35,9 +35,9 @@ public class ThreeDRenderController {
 
     @RequestMapping(method = RequestMethod.GET, path = "/render/{landscape}/threeD.html")
     public ResponseEntity<String> three3Resource(@PathVariable(name = "landscape") final String landscapeIdentifier) {
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
-        if (landscape == null)
-            throw new NotFoundException("Not found");
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
+                () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
+        );
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html");

@@ -33,9 +33,9 @@ public class GraphRenderController {
 
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/graph.png")
     public ResponseEntity<byte[]> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
-        if (landscape == null)
-            throw new NotFoundException("Not found");
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
+                () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
+        );
 
         GraphStreamRenderer graphStreamRenderer = new GraphStreamRenderer();
         File png = File.createTempFile(landscapeIdentifier, "png");

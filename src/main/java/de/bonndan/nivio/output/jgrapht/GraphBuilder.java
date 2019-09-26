@@ -29,7 +29,8 @@ public class GraphBuilder {
 
     private void addLinks(Service service) {
         service.getDataFlow().forEach(flow -> {
-            graph.addEdge(service, ServiceItems.pick(((DataFlow)flow).getTarget(), null, landscape.getServices()), new LabeledEdge(flow.getDescription()));
+            ServiceItem target = ServiceItems.pick(flow.getTarget(), null, landscape.getServices());
+            graph.addEdge(service, target, new LabeledEdge(flow.getDescription()));
         });
     }
 }
