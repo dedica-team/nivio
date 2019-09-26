@@ -6,10 +6,7 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class Service implements ServiceItem {
 
@@ -83,6 +80,7 @@ public class Service implements ServiceItem {
     private Set<InterfaceItem> interfaces = new HashSet<>();
 
     private Lifecycle lifecycle;
+    private Map<String, String> labels = new HashMap<>();
 
     public String getIdentifier() {
         return identifier;
@@ -259,6 +257,15 @@ public class Service implements ServiceItem {
 
     public void setTags(String[] tags) {
         this.tags = tags;
+    }
+
+    @Override
+    public Map<String, String> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Map<String, String> labels) {
+        this.labels = labels;
     }
 
     public Set<String> getNetworks() {

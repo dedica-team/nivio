@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -50,6 +51,11 @@ public class DockerComposeFileTest {
         assertNotNull(service.getNetworks());
         service.getNetworks().stream().filter(n -> n.getName().equals("test")).findFirst().orElseThrow();
         service.getNetworks().stream().filter(n -> n.getName().equals("test2")).findFirst().orElseThrow();
+
+        String s = service.getLabels().get("com.foo");
+        assertEquals("bar", s);
+        s = service.getLabels().get("com.bar");
+        assertEquals("baz", s);
     }
 
     private String getRootPath() {

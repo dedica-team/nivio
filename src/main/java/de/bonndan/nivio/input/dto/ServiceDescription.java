@@ -65,6 +65,8 @@ public class ServiceDescription implements ServiceItem {
 
     private Lifecycle lifecycle;
 
+    private Map<String, String> labels = new HashMap<>();
+
     public ServiceDescription() {
     }
 
@@ -238,6 +240,15 @@ public class ServiceDescription implements ServiceItem {
 
     public void setTags(String[] tags) {
         this.tags = tags;
+    }
+
+    @Override
+    public Map<String, String> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Map<String, String> labels) {
+        this.labels = labels;
     }
 
     public String getMachine() {

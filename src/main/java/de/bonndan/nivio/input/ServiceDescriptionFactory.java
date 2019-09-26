@@ -51,6 +51,9 @@ public interface ServiceDescriptionFactory {
         if (increment.getMachine() != null)
             existing.setMachine(increment.getMachine());
 
+        if (increment.getLabels() != null)
+            increment.getLabels().forEach((s, s2) -> existing.getLabels().putIfAbsent(s, s2));
+
         if (increment.getSoftware() != null)
             existing.setSoftware(increment.getSoftware());
         if (increment.getVersion() != null)
@@ -129,6 +132,9 @@ public interface ServiceDescriptionFactory {
 
         if (template.getTags() != null && item.getTags() == null)
             item.setTags(template.getTags());
+
+        if (template.getLabels().isEmpty())
+            template.getLabels().forEach((s, s2) -> item.getLabels().putIfAbsent(s,s2));
 
 
         if (template.getStatuses() != null) {

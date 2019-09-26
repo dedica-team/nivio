@@ -1,5 +1,6 @@
 package de.bonndan.nivio.landscape;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface ServiceItem {
@@ -71,6 +72,8 @@ public interface ServiceItem {
     String getDescription();
 
     String[] getTags();
+
+    Map<String, String> getLabels();
 
     String getNote();
 

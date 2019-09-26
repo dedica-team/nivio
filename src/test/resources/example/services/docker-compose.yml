@@ -16,6 +16,9 @@ services:
     networks:
     - test
     - test2
+    labels:
+      com.foo: bar
+      com.bar: baz
 
   redis:
     image: redis

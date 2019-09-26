@@ -119,4 +119,23 @@ public class ServiceDescriptionFactoryTest {
 
         assertEquals(Lifecycle.END_OF_LIFE, sd1.getLifecycle());
     }
+
+    @Test
+    public void incrementAddsUnsetLabels() {
+
+        ServiceDescription sd1 = new ServiceDescription();
+        sd1.setIdentifier("sd1");
+        sd1.getLabels().put("a", "1");
+
+        ServiceDescription increment = new ServiceDescription();
+        increment.setIdentifier("sd1");
+        increment.getLabels().put("a", "2");
+        increment.getLabels().put("b", "3");
+
+
+        ServiceDescriptionFactory.assignNotNull(sd1, increment);
+
+        assertEquals("1", sd1.getLabels().get("a"));
+        assertEquals("3", sd1.getLabels().get("b"));
+    }
 }
