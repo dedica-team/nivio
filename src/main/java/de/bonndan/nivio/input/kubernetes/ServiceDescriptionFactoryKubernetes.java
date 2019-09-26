@@ -108,6 +108,7 @@ public class ServiceDescriptionFactoryKubernetes implements ServiceDescriptionFa
             description.setIdentifier(container.getName());
             description.setSoftware(container.getImage());
             description.setMachine(pod.getSpec().getNodeName()); //ip?
+            description.setLabels(pod.getMetadata().getLabels());
 
             // TODO
             //set Labels, introduce new labels property (docker/k8s)

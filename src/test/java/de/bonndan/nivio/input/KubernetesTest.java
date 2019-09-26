@@ -82,6 +82,7 @@ public class KubernetesTest {
         assertEquals("mydb", serviceDescription.getIdentifier());
         assertEquals("postgres:9.5", serviceDescription.getSoftware());
         assertEquals("node1", serviceDescription.getMachine());
+        assertEquals("testgroup", serviceDescription.getLabels().get("release"));
 
         tearDown();
     }
