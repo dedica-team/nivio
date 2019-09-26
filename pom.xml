@@ -201,6 +201,12 @@
             <version>2.3.0</version>
         </dependency>
 
+        <!-- hex -->
+        <dependency>
+            <groupId>com.github.Hexworks.mixite</groupId>
+            <artifactId>mixite.core-jvm</artifactId>
+            <version>2018.2.0-RELEASE</version>
+        </dependency>
     </dependencies>
 
     <build>

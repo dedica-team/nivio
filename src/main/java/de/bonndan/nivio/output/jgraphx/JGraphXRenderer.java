@@ -18,10 +18,12 @@ import java.util.Map;
 
 public class JGraphXRenderer implements Renderer<mxGraph> {
 
+    private static final Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);
     private final IconService iconService;
     private boolean debugMode;
 
     private Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
+
 
     public JGraphXRenderer(IconService iconService) {
         this.iconService = iconService;
@@ -30,6 +32,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
     @Override
     public mxGraph render(LandscapeImpl landscape) {
 
+        Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
         Groups groups = Groups.from(landscape);
         groups.getAll().forEach((groupName, serviceItems) -> {
             GroupGraph groupGraph = new GroupGraph(serviceItems);
@@ -42,7 +45,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
             return allGroupsGraph.getGraph();
 
         FinalGraph finalGraph = new FinalGraph(iconService);
-        return finalGraph.render(allGroupsGraph, subgraphs);
+        return getFinalGraph(landscape, finalGraph);
     }
 
     @Override
@@ -55,6 +58,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
 
     }
 
+
     private boolean isDebugMode() {
         return debugMode;
     }
@@ -64,5 +68,17 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
      */
     void setDebugMode(boolean debugMode) {
         this.debugMode = debugMode;
+    }
+
+    public mxGraph getFinalGraph(LandscapeImpl landscape, FinalGraph finalGraph) {
+        Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
+        Groups groups = Groups.from(landscape);
+        groups.getAll().forEach((groupName, items) -> {
+            GroupGraph groupGraph = new GroupGraph(items);
+            subgraphs.put(groupName, groupGraph);
+        });
+
+        AllGroupsGraph allGroupsGraph = new AllGroupsGraph(landscape.getConfig(), groups, subgraphs);
+        return finalGraph.render(allGroupsGraph, subgraphs);
     }
 }
