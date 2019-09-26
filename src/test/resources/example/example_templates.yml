@@ -64,4 +64,4 @@ templates:
 
   # template for grouping
   - identifier: insamegroup
-    group: allinsamegroup
+    group: foo

@@ -1,0 +1,9 @@
+document_version: 1.0
+
+services:
+  - identifier: crappy_dockername-78345
+    name: foo
+  - identifier: crappy_dockername-2343a
+    name: bar
+  - identifier: other_crappy_name-2343a
+    name: baz

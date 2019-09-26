@@ -1,0 +1,14 @@
+identifier: nivio:templates2
+name: Templates2 example
+sources:
+  - url: "./services/docker-like.yml"
+    format: nivio
+    assignTemplates:
+      putIntoGroupAlpha: ["identifier LIKE 'crappy_dockername%'"]
+      putIntoGroupBeta: ["name = 'baz'"]
+
+templates:
+  - identifier: putIntoGroupAlpha
+    group: alpha
+  - identifier: putIntoGroupBeta
+    group: beta

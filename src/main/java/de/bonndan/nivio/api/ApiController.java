@@ -6,6 +6,7 @@ import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.dto.SourceFormat;
+import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.landscape.*;
 import de.bonndan.nivio.util.URLHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +79,9 @@ public class ApiController {
             @RequestHeader(name = "format") String format,
             @RequestBody String body
     ) {
-        ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(SourceFormat.from(format));
+        ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(
+                new SourceReference(SourceFormat.from(format))
+        );
         List<ServiceDescription> serviceDescriptions = factory.fromString(body);
 
         Environment env = new Environment();

@@ -2,11 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.ServiceDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.landscape.ServiceItem;
-import de.bonndan.nivio.landscape.ServiceItems;
 import de.bonndan.nivio.util.RootPath;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -16,12 +12,10 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 
-import static de.bonndan.nivio.landscape.ServiceItems.find;
 import static de.bonndan.nivio.landscape.ServiceItems.pick;
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SourceReferencesResolverTest {
 
@@ -79,16 +73,39 @@ public class SourceReferencesResolverTest {
 
         ServiceDescription redis = (ServiceDescription) pick("redis", null, environment.getServiceDescriptions());
         assertNotNull(redis);
-        assertEquals("allinsamegroup", redis.getGroup());
+        assertEquals("foo", redis.getGroup());
 
         ServiceDescription datadog = (ServiceDescription) pick("datadog", null, environment.getServiceDescriptions());
         assertNotNull(datadog);
-        assertEquals("allinsamegroup", datadog.getGroup());
+        assertEquals("foo", datadog.getGroup());
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
         ServiceDescription web = (ServiceDescription) pick("web", null, environment.getServiceDescriptions());
         assertNotNull(web);
         assertEquals("content", web.getGroup());
+    }
+
+    @Test
+    public void assignTemplateWithRegex() {
+
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_templates2.yml");
+        Environment environment = EnvironmentFactory.fromYaml(file);
+        assertFalse(environment.getSourceReferences().isEmpty());
+
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
+        sourceReferencesResolver.resolve(environment, log);
+
+        ServiceDescription one = (ServiceDescription) pick("crappy_dockername-78345", null, environment.getServiceDescriptions());
+        assertNotNull(one);
+        assertEquals("alpha", one.getGroup());
+
+        ServiceDescription two = (ServiceDescription) pick("crappy_dockername-2343a", null, environment.getServiceDescriptions());
+        assertNotNull(two);
+        assertEquals("alpha", two.getGroup());
+
+        ServiceDescription three = (ServiceDescription) pick("other_crappy_name-2343a", null, environment.getServiceDescriptions());
+        assertNotNull(three);
+        assertEquals("beta", three.getGroup());
     }
 
     @Test

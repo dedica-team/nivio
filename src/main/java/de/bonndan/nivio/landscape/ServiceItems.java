@@ -1,11 +1,22 @@
 package de.bonndan.nivio.landscape;
 
 
+import com.googlecode.cqengine.ConcurrentIndexedCollection;
+import com.googlecode.cqengine.IndexedCollection;
+import com.googlecode.cqengine.attribute.Attribute;
+import com.googlecode.cqengine.query.parser.sql.SQLParser;
+import com.googlecode.cqengine.resultset.ResultSet;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.googlecode.cqengine.query.QueryFactory.attribute;
+import static de.bonndan.nivio.landscape.ServiceItem.IDENTIFIER_VALIDATION;
 
 public class ServiceItems {
 
@@ -41,7 +52,7 @@ public class ServiceItems {
     /**
      * Ensures that the given item has a sibling in the list, returns the item from the list.
      *
-     * @param item item to search for
+     * @param item  item to search for
      * @param items list of landscape items
      * @return the sibling from the list
      */
@@ -84,7 +95,7 @@ public class ServiceItems {
      * Returns a the item from the list or null. Uses the matching criteria of {@link FullyQualifiedIdentifier}
      *
      * @param identifier the service identifier
-     * @param items   all services
+     * @param items      all services
      * @return the service or null
      */
     public static ServiceItem find(String identifier, String group, List<? extends ServiceItem> items) {
@@ -109,7 +120,7 @@ public class ServiceItems {
     ) {
         FullyQualifiedIdentifier fqi;
         if (group == null)
-           fqi = FullyQualifiedIdentifier.from(identifier);
+            fqi = FullyQualifiedIdentifier.from(identifier);
         else
             fqi = FullyQualifiedIdentifier.build(null, group, identifier);
         return findAll(fqi, serviceList);
@@ -124,8 +135,8 @@ public class ServiceItems {
     /**
      * Returns a the item from the list or null. Uses the matching criteria of {@link FullyQualifiedIdentifier}
      *
-     * @param fqi the service identifier
-     * @param services   all services
+     * @param fqi      the service identifier
+     * @param services all services
      * @return the service or null
      */
     public static ServiceItem find(FullyQualifiedIdentifier fqi, List<? extends ServiceItem> services) {
@@ -137,5 +148,43 @@ public class ServiceItems {
             throw new RuntimeException("Ambiguous result for " + fqi + ": " + found + " in collection " + services);
 
         return null;
+    }
+
+    public static List<? extends ServiceItem> filter(String condition, List<? extends ServiceItem> services) {
+
+        if ("*" .equals(condition))
+            return services;
+
+        //single word compared against identifier
+        if (condition.matches(IDENTIFIER_VALIDATION)) {
+            return services.stream()
+                    .filter(serviceItem -> serviceItem.getIdentifier().equals(condition))
+                    .collect(Collectors.toList());
+        }
+
+        String query = "SELECT * FROM services WHERE " + condition;
+        return query(query, services);
+    }
+
+    public static final Attribute<ServiceItem, String> IDENTIFIER = attribute("identifier", ServiceItem::getIdentifier);
+    public static final Attribute<ServiceItem, String> NAME = attribute("name", ServiceItem::getName);
+
+    /**
+     * Run the condition as CQN query. See https://github.com/npgall/cqengine
+     *
+     * @param condition query where part
+     * @param serviceItems list to operate on
+     * @return resultset
+     */
+    public static List<? extends ServiceItem> query(String condition, List<? extends ServiceItem> serviceItems) {
+        SQLParser<ServiceItem> parser = SQLParser.forPojoWithAttributes(ServiceItem.class,
+                Map.of("identifier", IDENTIFIER, "name", NAME)
+        );
+        IndexedCollection<ServiceItem> index = new ConcurrentIndexedCollection<>();
+        index.addAll(serviceItems);
+
+        ResultSet<ServiceItem> results = parser.retrieve(index, condition);
+
+        return results.stream().collect(Collectors.toList());
     }
 }
