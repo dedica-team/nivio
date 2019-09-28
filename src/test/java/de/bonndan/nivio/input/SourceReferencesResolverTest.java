@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.landscape.DataFlowItem;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,8 @@ import org.slf4j.Logger;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.util.List;
+import java.util.Set;
 
 import static de.bonndan.nivio.landscape.ServiceItems.pick;
 import static org.junit.Assert.assertFalse;
@@ -147,5 +150,44 @@ public class SourceReferencesResolverTest {
         ServiceDescription redis = (ServiceDescription) pick("redis", null, environment.getServiceDescriptions());
         assertNotNull(redis);
         assertNull(redis.getSoftware());
+    }
+
+    @Test
+    public void resolvesTemplatePlaceholdersInProviders() {
+
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_templates2.yml");
+        Environment environment = EnvironmentFactory.fromYaml(file);
+
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
+        sourceReferencesResolver.resolve(environment, log);
+
+
+        //the provider has been resolved using a query instead of naming a service
+        ServiceDescription providedbyBar = (ServiceDescription) pick("crappy_dockername-78345", null, environment.getServiceDescriptions());
+        assertNotNull(providedbyBar);
+        assertNotNull(providedbyBar.getProvided_by());
+        List<String> provided_by = providedbyBar.getProvided_by();
+        String s = provided_by.get(0);
+        assertEquals("crappy_dockername-2343a", s);
+    }
+
+    @Test
+    public void resolvesTemplatePlaceholdersInDataflow() {
+
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_templates2.yml");
+        Environment environment = EnvironmentFactory.fromYaml(file);
+
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
+        sourceReferencesResolver.resolve(environment, log);
+
+
+        //web has previously been assigned to group "content" and will not be overwritten by further templates
+        ServiceDescription hasdataFlow = (ServiceDescription) pick("crappy_dockername-78345", null, environment.getServiceDescriptions());
+        assertNotNull(hasdataFlow);
+        assertNotNull(hasdataFlow.getDataFlow());
+        Set<DataFlowItem> dataFlow = hasdataFlow.getDataFlow();
+        assertFalse(dataFlow.isEmpty());
+        DataFlowItem s = (DataFlowItem) dataFlow.toArray()[0];
+        assertEquals("other_crappy_name-2343a", s.getTarget());
     }
 }

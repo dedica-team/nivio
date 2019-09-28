@@ -2,8 +2,10 @@ package de.bonndan.nivio.input;
 
 
 import de.bonndan.nivio.input.dto.Environment;
+import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.landscape.DataFlowItem;
 import de.bonndan.nivio.landscape.LandscapeConfig;
 import de.bonndan.nivio.landscape.LandscapeConfig.GroupConfig;
 import de.bonndan.nivio.landscape.ServiceItem;
@@ -154,6 +156,16 @@ class EnvironmentFactoryTest {
         assertTrue(ref.getAssignTemplates().containsKey("myfirsttemplate"));
         List<String> assignments = ref.getAssignTemplates().get("myfirsttemplate");
         assertNotNull(assignments);
+    }
+
+    @Test
+    public void templatesAssignedWithDataflow() {
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_templates2.yml");
+        Environment environment = EnvironmentFactory.fromYaml(file);
+
+        ServiceDescription template = environment.getTemplates().get(3);
+        DataFlowItem df = (DataFlowItem) template.getDataFlow().toArray()[0];
+        assertEquals("identifier LIKE 'other_crappy_name%'", df.getTarget());
     }
 
     @Test

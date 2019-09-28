@@ -6,9 +6,18 @@ sources:
     assignTemplates:
       putIntoGroupAlpha: ["identifier LIKE 'crappy_dockername%'"]
       putIntoGroupBeta: ["name = 'baz'"]
+      providedByBar: ["identifier LIKE 'crappy_dockername-78%'"]
+      addDataFlow: ["name = 'foo'"]
 
 templates:
   - identifier: putIntoGroupAlpha
     group: alpha
   - identifier: putIntoGroupBeta
     group: beta
+  - identifier: providedByBar
+    provided_by:
+    - "identifier LIKE 'crappy_dockername-23%'"
+  - identifier: addDataFlow
+    dataFlow:
+    - description: foo to other
+      target: "identifier LIKE 'other_crappy_name%'"
