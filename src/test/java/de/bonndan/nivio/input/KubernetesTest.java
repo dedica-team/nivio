@@ -70,7 +70,7 @@ public class KubernetesTest {
         ServiceDescriptionFactoryKubernetes factory = new ServiceDescriptionFactoryKubernetes(sourceReference, client);
         factory.getConfiguration().setNamespace("default");
 
-        List<ServiceDescription> serviceDescriptions = factory.fromString("");
+        List<ServiceDescription> serviceDescriptions = factory.getDescriptions(sourceReference);
         assertNotNull(serviceDescriptions);
         assertEquals(1, serviceDescriptions.size());
 

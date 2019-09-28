@@ -48,8 +48,8 @@ public class ServiceDescriptionFactoryKubernetes implements ServiceDescriptionFa
     }
 
     @Override
-    public List<ServiceDescription> fromString(String context) {
-        KubernetesClient client = getClient(context);
+    public List<ServiceDescription> getDescriptions(SourceReference reference) {
+        KubernetesClient client = getClient(reference.getUrl());
 
         List<ServiceDescription> descriptions = new ArrayList<>();
         client.pods().list().getItems().stream()

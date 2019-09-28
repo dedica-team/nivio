@@ -27,8 +27,8 @@ class ServiceDescriptionFactoryCompose2Test {
     public void readCompose() {
         SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/docker-compose.yml");
         String yml = fileFetcher.get(file);
-        ServiceDescriptionFactoryCompose2 serviceDescriptionFactoryNivio = new ServiceDescriptionFactoryCompose2();
-        List<ServiceDescription> services = serviceDescriptionFactoryNivio.fromString(yml);
+        ServiceDescriptionFactoryCompose2 factoryCompose2 = new ServiceDescriptionFactoryCompose2(fileFetcher, null);
+        List<ServiceDescription> services = factoryCompose2.getDescriptions(file);
         assertEquals(3, services.size());
         ServiceDescription service = services.get(0);
         assertNotNull(service);

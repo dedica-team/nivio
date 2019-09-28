@@ -31,15 +31,15 @@ class ServiceDescriptionFactoryNivioTest {
     @BeforeEach
     public void setup() {
         fileFetcher = new FileFetcher(new HttpService());
-        descriptionFactory = new ServiceDescriptionFactoryNivio();
+        descriptionFactory = new ServiceDescriptionFactoryNivio(fileFetcher, null);
     }
 
     @Test
     public void readServiceAndInfra() {
 
         SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/wordpress.yml");
-        String yml = fileFetcher.get(file);
-        List<ServiceDescription> services = descriptionFactory.fromString(yml);
+
+        List<ServiceDescription> services = descriptionFactory.getDescriptions(file);
         ServiceDescription service = services.get(0);
         assertEquals(ServiceItem.LAYER_APPLICATION, service.getLayer());
         assertEquals("Demo Blog", service.getName());
@@ -108,10 +108,8 @@ class ServiceDescriptionFactoryNivioTest {
     public void readIngress() {
 
         SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/dashboard.yml");
-        String yml = fileFetcher.get(file);
 
-
-        List<ServiceDescription> services = descriptionFactory.fromString(yml);
+        List<ServiceDescription> services = descriptionFactory.getDescriptions(file);
         ServiceDescription service = services.get(0);
         assertEquals(ServiceItem.LAYER_INGRESS, service.getGroup());
         assertEquals("Keycloak SSO", service.getName());

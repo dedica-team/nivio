@@ -77,14 +77,17 @@ public class ApiController {
             @RequestHeader(name = "format") String format,
             @RequestBody String body
     ) {
-        ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(
-                new SourceReference(SourceFormat.from(format))
-        );
-        List<ServiceDescription> serviceDescriptions = factory.fromString(body);
-
         Environment env = new Environment();
         env.setIdentifier(identifier);
         env.setIsPartial(true);
+
+        SourceReference sourceReference = new SourceReference(SourceFormat.from(format));
+        sourceReference.setUrl(null);
+        sourceReference.setContent(body);
+
+        ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(sourceReference, env);
+        List<ServiceDescription> serviceDescriptions = factory.getDescriptions(sourceReference);
+
         env.setServiceDescriptions(serviceDescriptions);
 
         return indexer.reIndex(env);

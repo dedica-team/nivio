@@ -3,30 +3,22 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.ServiceDescription;
-import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.landscape.ServiceItem;
 import de.bonndan.nivio.landscape.ServiceItems;
-import de.bonndan.nivio.util.URLHelper;
 
-import java.net.URL;
 import java.util.List;
 
 import static de.bonndan.nivio.landscape.ServiceItems.find;
 
 public class SourceReferencesResolver {
 
-
-    private final FileFetcher fetcher = new FileFetcher(new HttpService());
-
     public void resolve(final Environment env, final ProcessLog log) {
-
-        URL baseUrl = URLHelper.getParentPath(env.getSource());
 
         env.getSourceReferences().forEach(ref -> {
             try {
-                String source = fetcher.get(ref, baseUrl);
-                ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(ref);
-                List<ServiceDescription> descriptions = factory.fromString(source);
+                ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(ref,env);
+
+                List<ServiceDescription> descriptions = factory.getDescriptions(ref);
 
                 ref.getAssignTemplates().entrySet().forEach(templateAssignments -> {
 

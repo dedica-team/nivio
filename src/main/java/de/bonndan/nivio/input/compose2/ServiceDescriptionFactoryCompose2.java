@@ -5,12 +5,15 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
+import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.ServiceDescriptionFactory;
 import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.input.dto.SourceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,10 +27,18 @@ public class ServiceDescriptionFactoryCompose2 implements ServiceDescriptionFact
         mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
     }
 
-    public List<de.bonndan.nivio.input.dto.ServiceDescription> fromString(String yml) {
+    private final FileFetcher fileFetcher;
+    private final URL baseUrl;
+
+    public ServiceDescriptionFactoryCompose2(FileFetcher fileFetcher, URL baseUrl) {
+        this.fileFetcher = fileFetcher;
+        this.baseUrl = baseUrl;
+    }
+
+    public List<de.bonndan.nivio.input.dto.ServiceDescription> getDescriptions(SourceReference reference) {
 
         List<ServiceDescription> services = new ArrayList<>();
-
+        String yml = fileFetcher.get(reference, baseUrl);
         DockerComposeFile source = null;
         try {
             source = mapper.readValue(yml, DockerComposeFile.class);

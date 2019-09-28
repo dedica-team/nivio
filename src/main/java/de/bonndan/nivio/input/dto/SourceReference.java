@@ -21,6 +21,7 @@ public class SourceReference {
     private String headerTokenValue;
 
     private Map<String, List<String>> assignTemplates = new HashMap<>();
+    private String content;
 
     public SourceReference() {
     }
@@ -107,5 +108,16 @@ public class SourceReference {
 
     public void setAssignTemplates(Map<String, List<String>> assignTemplates) {
         this.assignTemplates = assignTemplates;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    /**
+     * A source reference has content in case of http api pushes.
+     */
+    public String getContent() {
+        return content;
     }
 }

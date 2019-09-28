@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.landscape.Lifecycle;
 import de.bonndan.nivio.landscape.ServiceItem;
 
@@ -14,7 +15,7 @@ import static de.bonndan.nivio.util.SafeAssign.assignSafeIfAbsent;
 
 public interface ServiceDescriptionFactory {
 
-    List<ServiceDescription> fromString(String source);
+    List<ServiceDescription> getDescriptions(SourceReference reference);
 
     static void assignNotNull(ServiceDescription existing, ServiceDescription increment) {
         

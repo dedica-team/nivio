@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.compose2.ServiceDescriptionFactoryCompose2;
+import de.bonndan.nivio.input.dto.Environment;
 import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
@@ -13,7 +14,8 @@ public class ServiceDescriptionFormatFactoryTest {
     @Test
     public void defaultIfNull() {
         ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(
-                new SourceReference()
+                new SourceReference(),
+                new Environment()
         );
 
         assertTrue(factory instanceof ServiceDescriptionFactory);
@@ -23,7 +25,8 @@ public class ServiceDescriptionFormatFactoryTest {
     @Test
     public void defaultIfOther() {
         ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(
-                new SourceReference(SourceFormat.from("abc"))
+                new SourceReference(SourceFormat.from("abc")),
+                new Environment()
         );
 
         assertTrue(factory instanceof ServiceDescriptionFactory);
@@ -34,7 +37,8 @@ public class ServiceDescriptionFormatFactoryTest {
     public void compose2() {
 
         ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(
-                new SourceReference(SourceFormat.from("docker-compose-v2"))
+                new SourceReference(SourceFormat.from("docker-compose-v2")),
+                new Environment()
         );
 
         assertTrue(factory instanceof ServiceDescriptionFactory);
