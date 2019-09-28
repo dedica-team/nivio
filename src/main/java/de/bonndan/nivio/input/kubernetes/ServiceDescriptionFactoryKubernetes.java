@@ -82,10 +82,15 @@ public class ServiceDescriptionFactoryKubernetes implements ServiceDescriptionFa
         String group = getGroup(kubernetesService);
         description.setGroup(group);
 
-        String targetId = kubernetesService.getSpec().getSelector().get("app");
-        Optional.ofNullable(ServiceItems.find(targetId, group, items)).ifPresent(provider -> {
-            ((ServiceDescription) provider.get()).getProvided_by().add(description.getIdentifier());
-        });
+        String targetId = "";
+        Map<String, String> selector = kubernetesService.getSpec().getSelector();
+        if (selector != null)
+             targetId = selector.getOrDefault("app", null);
+        if (!StringUtils.isEmpty(targetId)) {
+            ServiceItems.find(targetId, group, items).ifPresent(provider -> {
+                ((ServiceDescription) provider).getProvided_by().add(description.getIdentifier());
+            });
+        }
 
         descriptions.add(description);
 
