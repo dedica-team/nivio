@@ -134,8 +134,7 @@ public interface ServiceDescriptionFactory {
         if (template.getTags() != null && item.getTags() == null)
             item.setTags(template.getTags());
 
-        if (template.getLabels().isEmpty())
-            template.getLabels().forEach((s, s2) -> item.getLabels().putIfAbsent(s,s2));
+        template.getLabels().forEach((s, s2) -> item.getLabels().putIfAbsent(s,s2));
 
 
         if (template.getStatuses() != null) {
