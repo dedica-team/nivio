@@ -67,7 +67,7 @@ public class SourceReferencesResolver {
             serviceDescription.getDataFlow().forEach(dataFlowItem -> {
                 ServiceItems.filter(dataFlowItem.getTarget(), serviceDescriptions).stream()
                         .findFirst()
-                        .ifPresent(service -> ((DataFlowDescription)dataFlowItem).setTarget(service.getIdentifier()));
+                        .ifPresent(service -> ((DataFlowDescription)dataFlowItem).setTarget(service.getFullyQualifiedIdentifier().toString()));
             });
         });
     }

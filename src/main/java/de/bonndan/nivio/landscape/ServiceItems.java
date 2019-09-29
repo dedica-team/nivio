@@ -147,6 +147,11 @@ public class ServiceItems {
                     .collect(Collectors.toList());
         }
 
+        if (condition.contains("/")) {
+            FullyQualifiedIdentifier from = FullyQualifiedIdentifier.from(condition);
+            return findAll(from, services);
+        }
+
         String query = "SELECT * FROM services WHERE " + condition;
         return query(query, services);
     }

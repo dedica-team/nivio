@@ -180,14 +180,12 @@ public class SourceReferencesResolverTest {
         SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
         sourceReferencesResolver.resolve(environment, log);
 
-
-        //web has previously been assigned to group "content" and will not be overwritten by further templates
         ServiceDescription hasdataFlow = (ServiceDescription) pick("crappy_dockername-78345", null, environment.getServiceDescriptions());
         assertNotNull(hasdataFlow);
         assertNotNull(hasdataFlow.getDataFlow());
         Set<DataFlowItem> dataFlow = hasdataFlow.getDataFlow();
         assertFalse(dataFlow.isEmpty());
         DataFlowItem s = (DataFlowItem) dataFlow.toArray()[0];
-        assertEquals("other_crappy_name-2343a", s.getTarget());
+        assertEquals("nivio:templates2/beta/other_crappy_name-2343a", s.getTarget());
     }
 }

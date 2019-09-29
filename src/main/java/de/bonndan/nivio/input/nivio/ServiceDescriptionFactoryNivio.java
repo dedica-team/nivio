@@ -10,6 +10,7 @@ import de.bonndan.nivio.input.ServiceDescriptionFactory;
 import de.bonndan.nivio.input.dto.ServiceDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.landscape.ServiceItem;
+import de.bonndan.nivio.util.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,7 @@ import java.util.List;
 public class ServiceDescriptionFactoryNivio implements ServiceDescriptionFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceDescriptionFactoryNivio.class);
-    private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    private static final ObjectMapper mapper = Mappers.gracefulYamlMapper;
 
     static {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);

@@ -1,9 +1,8 @@
 package de.bonndan.nivio.input;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.bonndan.nivio.input.dto.Environment;
+import de.bonndan.nivio.util.Mappers;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookupFactory;
 import org.slf4j.Logger;
@@ -18,13 +17,7 @@ import java.nio.file.Files;
 public class EnvironmentFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EnvironmentFactory.class);
-    private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-
-    static {
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-        mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
-    }
+    private static final ObjectMapper mapper = Mappers.gracefulYamlMapper;
 
     public static Environment fromYaml(File file) {
 
