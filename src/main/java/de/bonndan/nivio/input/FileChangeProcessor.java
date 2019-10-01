@@ -1,8 +1,8 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.input.dto.Environment;
-import de.bonndan.nivio.landscape.LandscapeRepository;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.LandscapeRepository;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -28,30 +28,30 @@ public class FileChangeProcessor implements ApplicationListener<FSChangeEvent> {
     }
 
     public ProcessLog process(File envFile) {
-        Environment environment = EnvironmentFactory.fromYaml(envFile);
-        if (environment == null) {
+        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(envFile);
+        if (landscapeDescription == null) {
             return new ProcessLog(new ProcessingException("Could not read environment from " + envFile, new RuntimeException()));
         }
 
         //this is not an environment file, but likely a service description file
-        if (environment.getIdentifier() == null && !StringUtils.isEmpty(environment.getSource())) {
-            return handleServiceDescriptionFileChange(environment).orElse(
+        if (landscapeDescription.getIdentifier() == null && !StringUtils.isEmpty(landscapeDescription.getSource())) {
+            return handleServiceDescriptionFileChange(landscapeDescription).orElse(
                     new ProcessLog(new ProcessingException("Could not read environment from " + envFile, new RuntimeException()))
             );
         }
-        return process(environment);
+        return process(landscapeDescription);
     }
 
-    private Optional<ProcessLog> handleServiceDescriptionFileChange(Environment environment) {
+    private Optional<ProcessLog> handleServiceDescriptionFileChange(LandscapeDescription landscapeDescription) {
 
         AtomicReference<ProcessLog> process = new AtomicReference<>();
         landscapeRepository.findAll().forEach(landscape -> {
-            Environment env1 = EnvironmentFactory.fromYaml(new File(landscape.getSource()));
-            if (env1 != null && env1.hasReference(environment.getSource())) {
+            LandscapeDescription env1 = EnvironmentFactory.fromYaml(new File(landscape.getSource()));
+            if (env1 != null && env1.hasReference(landscapeDescription.getSource())) {
 
                 Optional.ofNullable(process(env1)).ifPresent(processLog -> {
                     process.set(processLog);
-                    process.get().info("Reindexing triggered based on file change: " + environment.getSource());
+                    process.get().info("Reindexing triggered based on file change: " + landscapeDescription.getSource());
                 });
 
             }
@@ -59,7 +59,7 @@ public class FileChangeProcessor implements ApplicationListener<FSChangeEvent> {
         return Optional.of(process.get());
     }
 
-    public ProcessLog process(Environment environment) {
-        return indexer.reIndex(environment);
+    public ProcessLog process(LandscapeDescription landscapeDescription) {
+        return indexer.reIndex(landscapeDescription);
     }
 }

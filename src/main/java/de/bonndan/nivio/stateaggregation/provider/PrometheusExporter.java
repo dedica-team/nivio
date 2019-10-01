@@ -1,9 +1,9 @@
 package de.bonndan.nivio.stateaggregation.provider;
 
 import de.bonndan.nivio.input.dto.StatusDescription;
-import de.bonndan.nivio.landscape.FullyQualifiedIdentifier;
-import de.bonndan.nivio.landscape.Status;
-import de.bonndan.nivio.landscape.StatusItem;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.Status;
+import de.bonndan.nivio.model.StatusItem;
 import de.bonndan.nivio.stateaggregation.Provider;
 import org.hawkular.agent.prometheus.PrometheusDataFormat;
 import org.hawkular.agent.prometheus.PrometheusScraper;

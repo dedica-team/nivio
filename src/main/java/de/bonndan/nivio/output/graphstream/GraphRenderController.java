@@ -1,8 +1,8 @@
 package de.bonndan.nivio.output.graphstream;
 
 import de.bonndan.nivio.api.NotFoundException;
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.LandscapeRepository;
+import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.LandscapeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class GraphRenderController {
 
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/graph.png")
     public ResponseEntity<byte[]> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
                 () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
         );
 

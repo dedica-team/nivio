@@ -3,13 +3,11 @@ package de.bonndan.nivio.input.nivio;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.ReadingException;
 import de.bonndan.nivio.input.ServiceDescriptionFactory;
-import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.landscape.ServiceItem;
 import de.bonndan.nivio.util.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +35,9 @@ public class ServiceDescriptionFactoryNivio implements ServiceDescriptionFactory
         this.baseUrl = baseUrl;
     }
 
-    public List<ServiceDescription> getDescriptions(SourceReference reference) {
+    public List<ItemDescription> getDescriptions(SourceReference reference) {
 
-        List<ServiceDescription> services = new ArrayList<>();
+        List<ItemDescription> services = new ArrayList<>();
         String yml = fetcher.get(reference, baseUrl);
         Source source = null;
         try {

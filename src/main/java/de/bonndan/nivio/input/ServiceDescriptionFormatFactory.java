@@ -1,7 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.compose2.ServiceDescriptionFactoryCompose2;
-import de.bonndan.nivio.input.dto.Environment;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.kubernetes.ServiceDescriptionFactoryKubernetes;
@@ -16,12 +16,12 @@ public class ServiceDescriptionFormatFactory {
      * Returns the proper factory to generate/parse service descriptions based on the input format.
      *
      * @param reference the reference pointing at a file or url
-     * @param environment landscape, may contain a base url
+     * @param landscapeDescription landscape, may contain a base url
      * @return the factory
      */
-    public static ServiceDescriptionFactory getFactory(SourceReference reference, Environment environment) {
+    public static ServiceDescriptionFactory getFactory(SourceReference reference, LandscapeDescription landscapeDescription) {
 
-        URL baseUrl = URLHelper.getParentPath(environment.getSource());
+        URL baseUrl = URLHelper.getParentPath(landscapeDescription.getSource());
 
         FileFetcher fetcher = new FileFetcher(new HttpService());
 

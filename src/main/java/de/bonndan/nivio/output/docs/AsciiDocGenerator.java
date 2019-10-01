@@ -1,14 +1,12 @@
 package de.bonndan.nivio.output.docs;
 
-import de.bonndan.nivio.landscape.Groups;
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.ServiceItem;
-import de.bonndan.nivio.landscape.ServiceItems;
+import de.bonndan.nivio.model.Groups;
+import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.LandscapeItem;
 import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
 
 import static org.springframework.util.StringUtils.isEmpty;
 
@@ -22,12 +20,12 @@ public class AsciiDocGenerator {
 
     private static final String NL = "\n";
 
-    public String toDocument(Landscape landscape) {
+    public String toDocument(LandscapeImpl landscape) {
 
         return writeLandscape(landscape);
     }
 
-    private String writeLandscape(Landscape landscape) {
+    private String writeLandscape(LandscapeImpl landscape) {
         final StringBuilder builder = new StringBuilder();
 
         builder.append("= " + landscape.getName() + NL);
@@ -53,7 +51,7 @@ public class AsciiDocGenerator {
         return builder.toString();
     }
 
-    private String writeItem(ServiceItem item) {
+    private String writeItem(LandscapeItem item) {
         final StringBuilder builder = new StringBuilder();
 
         builder.append(NL + "=== " + (isEmpty(item.getName()) ? item.getIdentifier() : item.getName()) + NL);

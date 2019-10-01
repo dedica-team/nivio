@@ -1,8 +1,8 @@
 package de.bonndan.nivio.output.dld4e;
 
 import de.bonndan.nivio.api.NotFoundException;
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.LandscapeRepository;
+import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.LandscapeRepository;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -69,7 +69,7 @@ public class RenderController {
     }
 
     private String renderDlde(String landscapeIdentifier) {
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
                 () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
         );
 

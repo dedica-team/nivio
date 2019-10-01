@@ -1,10 +1,10 @@
 package de.bonndan.nivio.input.kubernetes;
 
 import de.bonndan.nivio.input.ServiceDescriptionFactory;
-import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.landscape.ServiceItem;
-import de.bonndan.nivio.landscape.ServiceItems;
+import de.bonndan.nivio.model.LandscapeItem;
+import de.bonndan.nivio.model.ServiceItems;
 import de.bonndan.nivio.util.URLHelper;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -48,10 +48,10 @@ public class ServiceDescriptionFactoryKubernetes implements ServiceDescriptionFa
     }
 
     @Override
-    public List<ServiceDescription> getDescriptions(SourceReference reference) {
+    public List<ItemDescription> getDescriptions(SourceReference reference) {
         KubernetesClient client = getClient(reference.getUrl());
 
-        List<ServiceDescription> descriptions = new ArrayList<>();
+        List<ItemDescription> descriptions = new ArrayList<>();
         client.pods().list().getItems().stream()
                 .filter(pod -> {
                     if (namespace == null)
@@ -71,12 +71,12 @@ public class ServiceDescriptionFactoryKubernetes implements ServiceDescriptionFa
         return descriptions;
     }
 
-    private Collection<? extends ServiceDescription> createDescriptionFromService(Service kubernetesService, List<ServiceDescription> items) {
-        List<ServiceDescription> descriptions = new ArrayList<>();
+    private Collection<? extends ItemDescription> createDescriptionFromService(Service kubernetesService, List<ItemDescription> items) {
+        List<ItemDescription> descriptions = new ArrayList<>();
 
-        ServiceDescription description = new ServiceDescription();
+        ItemDescription description = new ItemDescription();
         description.setIdentifier(kubernetesService.getMetadata().getName());
-        description.setLayer(ServiceItem.LAYER_INGRESS);
+        description.setLayer(LandscapeItem.LAYER_INGRESS);
         description.setType(kubernetesService.getSpec().getType());
 
         String group = getGroup(kubernetesService);
@@ -88,7 +88,7 @@ public class ServiceDescriptionFactoryKubernetes implements ServiceDescriptionFa
              targetId = selector.getOrDefault("app", null);
         if (!StringUtils.isEmpty(targetId)) {
             ServiceItems.find(targetId, group, items).ifPresent(provider -> {
-                ((ServiceDescription) provider).getProvided_by().add(description.getIdentifier());
+                ((ItemDescription) provider).getProvided_by().add(description.getIdentifier());
             });
         }
 
@@ -101,13 +101,13 @@ public class ServiceDescriptionFactoryKubernetes implements ServiceDescriptionFa
         return getClient("").getConfiguration();
     }
 
-    private List<ServiceDescription> createDescriptionFromService(Pod pod) {
+    private List<ItemDescription> createDescriptionFromService(Pod pod) {
 
-        List<ServiceDescription> descriptions = new ArrayList<>();
+        List<ItemDescription> descriptions = new ArrayList<>();
 
         String group = getGroup(pod);
         pod.getSpec().getContainers().forEach(container -> {
-            ServiceDescription description = new ServiceDescription();
+            ItemDescription description = new ItemDescription();
             description.setGroup(group);
             description.setName(container.getName());
             description.setIdentifier(container.getName());

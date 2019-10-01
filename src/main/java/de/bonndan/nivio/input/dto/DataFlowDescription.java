@@ -1,6 +1,6 @@
 package de.bonndan.nivio.input.dto;
 
-import de.bonndan.nivio.landscape.DataFlowItem;
+import de.bonndan.nivio.model.DataFlowItem;
 
 public class DataFlowDescription implements DataFlowItem {
 

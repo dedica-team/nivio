@@ -1,6 +1,6 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.kubernetes.ServiceDescriptionFactoryKubernetes;
@@ -70,19 +70,19 @@ public class KubernetesTest {
         ServiceDescriptionFactoryKubernetes factory = new ServiceDescriptionFactoryKubernetes(sourceReference, client);
         factory.getConfiguration().setNamespace("default");
 
-        List<ServiceDescription> serviceDescriptions = factory.getDescriptions(sourceReference);
-        assertNotNull(serviceDescriptions);
-        assertEquals(1, serviceDescriptions.size());
+        List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference);
+        assertNotNull(itemDescriptions);
+        assertEquals(1, itemDescriptions.size());
 
-        ServiceDescription serviceDescription = serviceDescriptions.get(0);
-        assertNotNull(serviceDescription);
+        ItemDescription itemDescription = itemDescriptions.get(0);
+        assertNotNull(itemDescription);
 
-        assertEquals("testgroup", serviceDescription.getGroup());
-        assertEquals("mydb", serviceDescription.getName());
-        assertEquals("mydb", serviceDescription.getIdentifier());
-        assertEquals("postgres:9.5", serviceDescription.getSoftware());
-        assertEquals("node1", serviceDescription.getMachine());
-        assertEquals("testgroup", serviceDescription.getLabels().get("release"));
+        assertEquals("testgroup", itemDescription.getGroup());
+        assertEquals("mydb", itemDescription.getName());
+        assertEquals("mydb", itemDescription.getIdentifier());
+        assertEquals("postgres:9.5", itemDescription.getSoftware());
+        assertEquals("node1", itemDescription.getMachine());
+        assertEquals("testgroup", itemDescription.getLabels().get("release"));
 
         tearDown();
     }

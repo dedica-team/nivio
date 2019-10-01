@@ -6,9 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.api.dto.LandscapeDTO;
-import de.bonndan.nivio.landscape.LandscapeItem;
+import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
-import org.slf4j.helpers.NOPLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ public class ProcessLog {
     private final List<Entry> messages = new ArrayList<>();
 
     @JsonIgnore
-    private LandscapeItem landscape;
+    private Landscape landscape;
 
     @JsonIgnore
     private ProcessingException exception;
@@ -40,7 +39,7 @@ public class ProcessLog {
         logger.info(message);
     }
 
-    public void setLandscape(LandscapeItem landscape) {
+    public void setLandscape(Landscape landscape) {
         this.landscape = landscape;
     }
 
@@ -56,13 +55,13 @@ public class ProcessLog {
     }
 
     @JsonIgnore
-    public LandscapeItem getLandscape() {
+    public Landscape getLandscape() {
         return landscape;
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("landscape")
-    public LandscapeItem getLandscapeDTO() {
+    public Landscape getLandscapeDTO() {
         if (landscape == null)
             return null;
 

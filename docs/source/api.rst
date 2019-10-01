@@ -7,13 +7,13 @@ JSON Endpoints
 --------------
 
 * /landscape/{landscape.identifier}
-* /landscape/{landscape.identifier}/services
-* /landscape/{landscape.identifier}/services/{fully qualified service identifier} DELETE
+* /landscape/{landscape.identifier}/items
+* /landscape/{landscape.identifier}/items/{fully qualified item identifier} DELETE
 
 Document Endpoints
 ------------------
 
 * /render/{landscape.identifier}/graph.png returns the landscape as rendered graph
 * /docs/{landscape.identifier}/report.html returns a formatted html summary of the landscape
-* /docs/{landscape.identifier}/owners.html returns a formatted html summary of the service owners
+* /docs/{landscape.identifier}/owners.html returns a formatted html summary of the item owners
 

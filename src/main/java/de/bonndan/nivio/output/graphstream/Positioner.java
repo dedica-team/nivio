@@ -1,7 +1,7 @@
 package de.bonndan.nivio.output.graphstream;
 
-import de.bonndan.nivio.landscape.Groups;
-import de.bonndan.nivio.landscape.Service;
+import de.bonndan.nivio.model.Groups;
+import de.bonndan.nivio.model.Item;
 import org.graphstream.graph.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,13 +14,13 @@ public class Positioner {
 
     private static Logger logger = LoggerFactory.getLogger(Positioner.class);
 
-    private Map<Service, Node> pairs = new HashMap<>();
+    private Map<Item, Node> pairs = new HashMap<>();
 
     private Groups groups = new Groups();
 
-    public void add(Service service, Node node) {
-        pairs.put(service, node);
-        groups.add(service.getGroup(), service);
+    public void add(Item item, Node node) {
+        pairs.put(item, node);
+        groups.add(item.getGroup(), item);
     }
 
     public void compute () {

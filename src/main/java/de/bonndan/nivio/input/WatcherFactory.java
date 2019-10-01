@@ -1,7 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.input.dto.Environment;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ public class WatcherFactory {
         List<Runnable> runnables = new ArrayList<>();
         try {
             seed.getLocations().forEach(url -> {
-                Environment env;
+                LandscapeDescription env;
                 if (URLHelper.isLocal(url)) {
                     DirectoryWatcher directoryWatcher = null;
                     File file;

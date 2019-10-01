@@ -10,7 +10,7 @@ public class SourceReference {
 
     private String url;
 
-    private Environment environment;
+    private LandscapeDescription landscapeDescription;
 
     private SourceFormat format;
 
@@ -42,8 +42,8 @@ public class SourceReference {
         this.url = url;
     }
 
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
+    public void setLandscapeDescription(LandscapeDescription landscapeDescription) {
+        this.landscapeDescription = landscapeDescription;
     }
 
     public SourceFormat getFormat() {
@@ -58,8 +58,8 @@ public class SourceReference {
         this.format = format;
     }
 
-    public Environment getEnvironment() {
-        return environment;
+    public LandscapeDescription getLandscapeDescription() {
+        return landscapeDescription;
     }
 
     public boolean hasBasicAuth() {

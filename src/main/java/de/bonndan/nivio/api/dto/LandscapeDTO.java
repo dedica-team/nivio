@@ -1,15 +1,15 @@
 package de.bonndan.nivio.api.dto;
 
-import de.bonndan.nivio.landscape.LandscapeConfig;
-import de.bonndan.nivio.landscape.LandscapeItem;
-import de.bonndan.nivio.landscape.StateProviderConfig;
+import de.bonndan.nivio.model.LandscapeConfig;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.StateProviderConfig;
 
 import java.util.List;
 
 /**
  * @todo use HAL / ressource support etc
  */
-public class LandscapeDTO implements de.bonndan.nivio.landscape.LandscapeItem {
+public class LandscapeDTO implements Landscape {
 
     public static final String LANDSCAPE_PATH = "landscape";
 
@@ -19,7 +19,7 @@ public class LandscapeDTO implements de.bonndan.nivio.landscape.LandscapeItem {
     private List<StateProviderConfig> stateProviders;
     private String source;
 
-    public static LandscapeDTO from(LandscapeItem item) {
+    public static LandscapeDTO from(Landscape item) {
 
         LandscapeDTO l = new LandscapeDTO();
         if (item == null)

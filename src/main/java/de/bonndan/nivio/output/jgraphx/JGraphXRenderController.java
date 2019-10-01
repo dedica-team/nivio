@@ -1,8 +1,8 @@
 package de.bonndan.nivio.output.jgraphx;
 
 import de.bonndan.nivio.api.NotFoundException;
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.LandscapeRepository;
+import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.IconService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,7 @@ public class JGraphXRenderController {
 
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/graph.png")
     public ResponseEntity<byte[]> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(() ->
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(() ->
              new NotFoundException("Not found: " + landscapeIdentifier)
         );
 
@@ -69,7 +69,7 @@ public class JGraphXRenderController {
     //TODO todo provide officially supported 3d format like https://threejs.org/docs/#examples/loaders/OBJLoader
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/threejs.json")
     public ResponseEntity<String> json(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(() ->
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(() ->
                 new NotFoundException("Not found: " + landscapeIdentifier)
         );
 

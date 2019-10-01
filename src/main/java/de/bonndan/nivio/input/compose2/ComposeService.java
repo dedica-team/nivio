@@ -1,7 +1,7 @@
 package de.bonndan.nivio.input.compose2;
 
 import de.bonndan.nivio.input.dto.InterfaceDescription;
-import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
 
 import java.util.HashSet;
 import java.util.List;
@@ -23,8 +23,8 @@ public class ComposeService {
     /**
      * Transforms into a dto.
      */
-    public ServiceDescription toDto() {
-        ServiceDescription description = new ServiceDescription(identifier);
+    public ItemDescription toDto() {
+        ItemDescription description = new ItemDescription(identifier);
         if (networks != null) {
             List<String> nets = networks.stream().map(Network::getName).collect(Collectors.toList());
             description.setNetworks(new HashSet<>(nets));

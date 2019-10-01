@@ -2,9 +2,9 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.input.dto.Environment;
-import de.bonndan.nivio.input.dto.ServiceDescription;
-import de.bonndan.nivio.landscape.*;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.notification.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +31,13 @@ public class Indexer {
         this.notificationService = notificationService;
     }
 
-    public ProcessLog reIndex(final Environment input) {
+    public ProcessLog reIndex(final LandscapeDescription input) {
 
         ProcessLog logger = new ProcessLog(_logger);
 
-        Landscape landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier()).orElseGet(() -> {
+        LandscapeImpl landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier()).orElseGet(() -> {
             logger.info("Creating new landscape " + input.getIdentifier());
-            Landscape landscape1 = input.toLandscape();
+            LandscapeImpl landscape1 = input.toLandscape();
             landscapeRepo.save(landscape1);
             return landscape1;
         });
@@ -63,89 +63,89 @@ public class Indexer {
         return logger;
     }
 
-    private void diff(final Environment environment, final Landscape landscape, ProcessLog logger) {
+    private void diff(final LandscapeDescription landscapeDescription, final LandscapeImpl landscape, ProcessLog logger) {
 
-        Set<Service> existingServices = landscape.getServices();
+        Set<Item> existingItems = landscape.getItems();
 
         //insert new ones
-        List<ServiceItem> newItems = ServiceItems.added(environment.getServiceDescriptions(), existingServices);
-        Set<Service> inLandscape = new HashSet<>();
+        List<LandscapeItem> newItems = ServiceItems.added(landscapeDescription.getItemDescriptions(), existingItems);
+        Set<Item> inLandscape = new HashSet<>();
         logger.info("Adding " + newItems.size() + " items in env " + landscape.getIdentifier());
         newItems.forEach(
                 serviceDescription -> {
-                    logger.info("Creating new service " + serviceDescription.getIdentifier() + " in env " + environment.getIdentifier());
-                    Service created = ServiceFactory.fromDescription(serviceDescription, landscape);
-                    landscape.addService(created);
+                    logger.info("Creating new service " + serviceDescription.getIdentifier() + " in env " + landscapeDescription.getIdentifier());
+                    Item created = ServiceFactory.fromDescription(serviceDescription, landscape);
+                    landscape.addItem(created);
                     inLandscape.add(created);
                 }
         );
 
         //update existing
-        List<ServiceItem> kept = new ArrayList<>();
-        if (environment.isPartial()) {
-            kept.addAll(existingServices); //we want to keep all, increment does not contain all services
+        List<LandscapeItem> kept = new ArrayList<>();
+        if (landscapeDescription.isPartial()) {
+            kept.addAll(existingItems); //we want to keep all, increment does not contain all services
         } else {
-            kept = ServiceItems.kept(environment.getServiceDescriptions(), existingServices);
+            kept = ServiceItems.kept(landscapeDescription.getItemDescriptions(), existingItems);
         }
         logger.info("Updating " + kept.size() + " services in landscape " + landscape.getIdentifier());
         kept.forEach(
                 service -> {
 
-                    ServiceDescription description = (ServiceDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions()).orElse(null);
+                    ItemDescription description = (ItemDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), landscapeDescription.getItemDescriptions()).orElse(null);
                     if (description == null) {
-                        if (environment.isPartial()) {
-                            inLandscape.add((Service) service);
+                        if (landscapeDescription.isPartial()) {
+                            inLandscape.add((Item) service);
                             return;
                         } else {
-                            throw new ProcessingException(environment, "Service not found " + service.getIdentifier());
+                            throw new ProcessingException(landscapeDescription, "Service not found " + service.getIdentifier());
                         }
                     }
 
-                    logger.info("Updating service " + service.getIdentifier() + " in landscape " + environment.getIdentifier());
+                    logger.info("Updating service " + service.getIdentifier() + " in landscape " + landscapeDescription.getIdentifier());
 
-                    ServiceFactory.assignAll((Service) service, description);
-                    inLandscape.add((Service) service);
+                    ServiceFactory.assignAll((Item) service, description);
+                    inLandscape.add((Item) service);
                 }
         );
 
-        landscape.setServices(inLandscape);
-        linkAllProviders(inLandscape, environment, logger);
-        deleteUnreferenced(environment, inLandscape, existingServices, logger).forEach(serviceItem -> {
-            landscape.getServices().remove(serviceItem);
+        landscape.setItems(inLandscape);
+        linkAllProviders(inLandscape, landscapeDescription, logger);
+        deleteUnreferenced(landscapeDescription, inLandscape, existingItems, logger).forEach(serviceItem -> {
+            landscape.getItems().remove(serviceItem);
         });
     }
 
-    private List<ServiceItem> deleteUnreferenced(
-            final Environment environment,
-            Set<Service> kept,
-            Set<Service> all,
+    private List<LandscapeItem> deleteUnreferenced(
+            final LandscapeDescription landscapeDescription,
+            Set<Item> kept,
+            Set<Item> all,
             ProcessLog logger
     ) {
-        if (environment.isPartial()) {
+        if (landscapeDescription.isPartial()) {
             logger.info("Incremental change, will not remove any unreferenced services.");
             return new ArrayList<>();
         }
 
-        List<ServiceItem> removed = ServiceItems.removed(kept, all);
-        logger.info("Removing " + removed.size() + " sources in env " + environment.getIdentifier());
+        List<LandscapeItem> removed = ServiceItems.removed(kept, all);
+        logger.info("Removing " + removed.size() + " sources in env " + landscapeDescription.getIdentifier());
         return removed;
     }
 
     /**
      * Links all providers to a service
      */
-    private void linkAllProviders(Set<Service> services, Environment environment, ProcessLog logger) {
+    private void linkAllProviders(Set<Item> items, LandscapeDescription landscapeDescription, ProcessLog logger) {
 
-        boolean isPartial = environment.isPartial();
-        services.forEach(
+        boolean isPartial = landscapeDescription.isPartial();
+        items.forEach(
                 service -> {
-                    ServiceDescription description =
-                            (ServiceDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), environment.getServiceDescriptions()).orElse(null);
+                    ItemDescription description =
+                            (ItemDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), landscapeDescription.getItemDescriptions()).orElse(null);
                     if (description == null) {
                         if (isPartial)
                             return;
                         else
-                            throw new ProcessingException(environment, "Service not found " + service.getIdentifier());
+                            throw new ProcessingException(landscapeDescription, "Service not found " + service.getIdentifier());
                     }
 
                     if (!isPartial) {
@@ -153,12 +153,12 @@ public class Indexer {
                     }
 
                     description.getProvided_by().forEach(providerName -> {
-                        Service provider;
+                        Item provider;
                         try {
                             var fqi = FullyQualifiedIdentifier.from(providerName);
-                            provider = (Service) ServiceItems.find(fqi, services).orElse(null);
+                            provider = (Item) ServiceItems.find(fqi, items).orElse(null);
                             if (provider == null) {
-                                logger.warn("Could not find service " + fqi + " in landscape " + environment + " while linking providers for service " + description.getFullyQualifiedIdentifier());
+                                logger.warn("Could not find service " + fqi + " in landscape " + landscapeDescription + " while linking providers for service " + description.getFullyQualifiedIdentifier());
                                 return;
                             }
                         } catch (IllegalArgumentException ex) {
@@ -177,9 +177,9 @@ public class Indexer {
         );
     }
 
-    private void linkDataflow(final Environment input, final Landscape landscape, ProcessLog logger) {
-        input.getServiceDescriptions().forEach(serviceDescription -> {
-            Service origin = (Service) ServiceItems.pick(serviceDescription, landscape.getServices());
+    private void linkDataflow(final LandscapeDescription input, final LandscapeImpl landscape, ProcessLog logger) {
+        input.getItemDescriptions().forEach(serviceDescription -> {
+            Item origin = (Item) ServiceItems.pick(serviceDescription, landscape.getItems());
             if (!input.isPartial() && origin.getDataFlow().size() > 0) {
                 logger.info("Clearing dataflow of " + origin);
                 origin.getDataFlow().clear(); //delete all dataflow on full update
@@ -188,7 +188,7 @@ public class Indexer {
             serviceDescription.getDataFlow().forEach(description -> {
 
                 var fqi = FullyQualifiedIdentifier.from(description.getTarget());
-                Service target = (Service) ServiceItems.find(fqi, landscape.getServices()).orElse(null);
+                Item target = (Item) ServiceItems.find(fqi, landscape.getItems()).orElse(null);
                 if (target == null) {
                     logger.warn("Dataflow target service " + description.getTarget() + " not found");
                     return;

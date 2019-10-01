@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output.dld4e;
 
-import de.bonndan.nivio.landscape.Service;
+import de.bonndan.nivio.model.Item;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,13 +9,13 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 public class Icons {
 
-    private Map<Service, Icon> icons = new HashMap<>();
+    private Map<Item, Icon> icons = new HashMap<>();
 
-    public void add(Service service) {
-        Icon icon = new Icon(service);
+    public void add(Item item) {
+        Icon icon = new Icon(item);
         icon.merge("service");
-        icon.set("icon", "\"" + IconFamily.AzureEnterprise.iconFor(service) + "\"");
-        icons.put(service, icon);
+        icon.set("icon", "\"" + IconFamily.AzureEnterprise.iconFor(item) + "\"");
+        icons.put(item, icon);
     }
 
     public List<Icon> getAll() {
@@ -28,21 +28,21 @@ public class Icons {
     public String toString() {
         final StringBuilder sb = new StringBuilder("\nicons:\n");
         icons.forEach((service, icon) -> sb.append("  ")
-                .append(icon.getService().getIdentifier())
+                .append(icon.getItem().getIdentifier())
                 .append(": ")
                 .append(icon.inline()));
         sb.append("\n");
         return sb.toString();
     }
 
-    private String getName(Service service) {
-        return !isEmpty(service.getName()) ? service.getName() : service.getIdentifier();
+    private String getName(Item item) {
+        return !isEmpty(item.getName()) ? item.getName() : item.getIdentifier();
     }
 
-    public Optional<Icon> by(Service service) {
+    public Optional<Icon> by(Item item) {
 
         return icons.entrySet().stream()
                 .map(serviceIconEntry -> serviceIconEntry.getValue())
-                .filter(icon -> icon.getService() == service).findFirst();
+                .filter(icon -> icon.getItem() == item).findFirst();
     }
 }

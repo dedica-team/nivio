@@ -1,8 +1,8 @@
 package de.bonndan.nivio.stateaggregation.provider;
 
-import de.bonndan.nivio.landscape.FullyQualifiedIdentifier;
-import de.bonndan.nivio.landscape.Status;
-import de.bonndan.nivio.landscape.StatusItem;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.Status;
+import de.bonndan.nivio.model.StatusItem;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

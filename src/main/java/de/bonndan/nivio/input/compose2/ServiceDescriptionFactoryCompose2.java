@@ -7,7 +7,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.ServiceDescriptionFactory;
-import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +35,9 @@ public class ServiceDescriptionFactoryCompose2 implements ServiceDescriptionFact
         this.baseUrl = baseUrl;
     }
 
-    public List<de.bonndan.nivio.input.dto.ServiceDescription> getDescriptions(SourceReference reference) {
+    public List<ItemDescription> getDescriptions(SourceReference reference) {
 
-        List<ServiceDescription> services = new ArrayList<>();
+        List<ItemDescription> services = new ArrayList<>();
         String yml = fileFetcher.get(reference, baseUrl);
         DockerComposeFile source = null;
         try {

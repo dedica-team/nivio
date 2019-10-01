@@ -51,8 +51,8 @@ public class FileFetcher {
             String path = ref.getUrl();
             if (path == null)
                 return null;
-            if (ref.getEnvironment() != null) {
-                File file = new File(ref.getEnvironment().getSource());
+            if (ref.getLandscapeDescription() != null) {
+                File file = new File(ref.getLandscapeDescription().getSource());
                 path = file.getParent() + "/" + ref.getUrl();
             }
             File source = new File(path);
@@ -92,7 +92,7 @@ public class FileFetcher {
             return http.get(new URL(ref.getUrl()));
         } catch (IOException | AuthenticationException | URISyntaxException | RuntimeException e) {
             logger.error("Failed to fetch file " + ref.getUrl(), e);
-            throw new ReadingException(ref.getEnvironment(), "Failed to fetch file "+ ref.getUrl(), e);
+            throw new ReadingException(ref.getLandscapeDescription(), "Failed to fetch file "+ ref.getUrl(), e);
         }
     }
 

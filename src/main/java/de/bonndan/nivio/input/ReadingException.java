@@ -1,7 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.landscape.LandscapeItem;
+import de.bonndan.nivio.model.Landscape;
 
 
 public class ReadingException extends ProcessingException {
@@ -9,7 +9,7 @@ public class ReadingException extends ProcessingException {
         super(s,e);
     }
 
-    public ReadingException(LandscapeItem landscape, String s, Throwable e) {
+    public ReadingException(Landscape landscape, String s, Throwable e) {
         super(landscape, s,e);
     }
 }

@@ -1,8 +1,8 @@
 package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.api.NotFoundException;
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.LandscapeRepository;
+import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.IconService;
 import org.asciidoctor.Asciidoctor;
 
@@ -38,7 +38,7 @@ public class DocsController {
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}")
     public ResponseEntity<String> docResource(@PathVariable(name = "landscape") final String landscapeIdentifier) {
 
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
                 () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
         );
 
@@ -67,7 +67,7 @@ public class DocsController {
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/report.html")
     public ResponseEntity<String> htmlResource(@PathVariable(name = "landscape") final String landscapeIdentifier) {
 
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
                 () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
         );
 
@@ -86,7 +86,7 @@ public class DocsController {
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/owners.html")
     public ResponseEntity<String> owners(@PathVariable(name = "landscape") final String landscapeIdentifier) {
 
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
                 () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
         );
 

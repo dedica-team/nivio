@@ -1,13 +1,10 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.landscape.Lifecycle;
-import de.bonndan.nivio.landscape.ServiceItem;
+import de.bonndan.nivio.model.Lifecycle;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.*;
 
 import static de.bonndan.nivio.util.SafeAssign.assignSafe;
@@ -15,9 +12,9 @@ import static de.bonndan.nivio.util.SafeAssign.assignSafeIfAbsent;
 
 public interface ServiceDescriptionFactory {
 
-    List<ServiceDescription> getDescriptions(SourceReference reference);
+    List<ItemDescription> getDescriptions(SourceReference reference);
 
-    static void assignNotNull(ServiceDescription existing, ServiceDescription increment) {
+    static void assignNotNull(ItemDescription existing, ItemDescription increment) {
         
         if (increment.getName() != null)
             existing.setName(increment.getName());
@@ -93,7 +90,7 @@ public interface ServiceDescriptionFactory {
      * @param item target
      * @param template source
      */
-    static void assignTemplateValues(ServiceDescription item, ServiceDescription template) {
+    static void assignTemplateValues(ItemDescription item, ItemDescription template) {
 
         assignSafeIfAbsent(template.getType(), item.getType(), item::setType);
 

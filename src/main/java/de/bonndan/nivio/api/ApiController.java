@@ -3,11 +3,11 @@ package de.bonndan.nivio.api;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.input.*;
-import de.bonndan.nivio.input.dto.Environment;
-import de.bonndan.nivio.input.dto.ServiceDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.landscape.*;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.URLHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,7 +46,7 @@ public class ApiController {
      */
     @RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Iterable<LandscapeDTO> landscapes() {
-        Iterable<Landscape> all = landscapeRepository.findAll();
+        Iterable<LandscapeImpl> all = landscapeRepository.findAll();
 
         return StreamSupport.stream(all.spliterator(), false)
                 .map(LandscapeDTO::from)
@@ -55,7 +55,7 @@ public class ApiController {
 
     @RequestMapping(path = "/landscape/{identifier}")
     public ResponseEntity<LandscapeDTO> landscape(@PathVariable String identifier) {
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null)
             return ResponseEntity.notFound().build();
 
@@ -67,7 +67,7 @@ public class ApiController {
      */
     @RequestMapping(path = "/landscape", method = RequestMethod.POST)
     public ProcessLog create(@RequestBody String body) {
-        Environment env = EnvironmentFactory.fromString(body);
+        LandscapeDescription env = EnvironmentFactory.fromString(body);
         return indexer.reIndex(env);
     }
 
@@ -77,7 +77,7 @@ public class ApiController {
             @RequestHeader(name = "format") String format,
             @RequestBody String body
     ) {
-        Environment env = new Environment();
+        LandscapeDescription env = new LandscapeDescription();
         env.setIdentifier(identifier);
         env.setIsPartial(true);
 
@@ -86,9 +86,9 @@ public class ApiController {
         sourceReference.setContent(body);
 
         ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(sourceReference, env);
-        List<ServiceDescription> serviceDescriptions = factory.getDescriptions(sourceReference);
+        List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference);
 
-        env.setServiceDescriptions(serviceDescriptions);
+        env.setItemDescriptions(itemDescriptions);
 
         return indexer.reIndex(env);
     }
@@ -107,7 +107,7 @@ public class ApiController {
             @PathVariable String identifier,
             @PathVariable String fqi
     ) {
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null)
             return new ProcessLog(new ProcessingException(null, "Could not find lanscape " + identifier));
 
@@ -115,23 +115,23 @@ public class ApiController {
         if (from == null)
             return new ProcessLog(new ProcessingException(landscape, "Could use fully qualified identifier " + fqi));
 
-        Optional<ServiceItem> service = ServiceItems.find(FullyQualifiedIdentifier.build(from.getLandscape(), from.getGroup(), from.getIdentifier()), landscape.getServices());
+        Optional<LandscapeItem> service = ServiceItems.find(FullyQualifiedIdentifier.build(from.getLandscape(), from.getGroup(), from.getIdentifier()), landscape.getItems());
         if (!service.isPresent()) {
             return new ProcessLog(new ProcessingException(landscape, "Could find service " + fqi));
         }
 
-        landscape.getServices().remove(service);
+        landscape.getItems().remove(service);
         return process(landscape);
     }
 
     @RequestMapping(path = "/landscape/{identifier}/services", method = RequestMethod.GET)
-    public ResponseEntity<List<Service>> services(@PathVariable String identifier) {
+    public ResponseEntity<List<Item>> services(@PathVariable String identifier) {
 
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null)
             return ResponseEntity.notFound().build();
 
-        return new ResponseEntity<>(List.copyOf(landscape.getServices()), HttpStatus.OK);
+        return new ResponseEntity<>(List.copyOf(landscape.getItems()), HttpStatus.OK);
 
     }
 
@@ -140,29 +140,29 @@ public class ApiController {
      */
     @RequestMapping(path = "/reindex/{landscape}", method = RequestMethod.POST)
     public ProcessLog reindex(@PathVariable String landscape) {
-        Landscape distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape).orElse(null);
+        LandscapeImpl distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape).orElse(null);
         if (distinctByIdentifier == null)
             return new ProcessLog(new ProcessingException(null, "Could not find lanscape " + landscape));
 
         return process(distinctByIdentifier);
     }
 
-    private ProcessLog process(LandscapeItem item) {
-        if (item == null || StringUtils.isEmpty(item.getSource())) {
-            return new ProcessLog(new ProcessingException(item, "Cannot process empty source."));
+    private ProcessLog process(Landscape landscape) {
+        if (landscape == null || StringUtils.isEmpty(landscape.getSource())) {
+            return new ProcessLog(new ProcessingException(landscape, "Cannot process empty source."));
         }
 
-        File file = new File(item.getSource());
+        File file = new File(landscape.getSource());
         if (file.exists()) {
-            Environment environment = EnvironmentFactory.fromYaml(file);
-            return indexer.reIndex(environment);
+            LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+            return indexer.reIndex(landscapeDescription);
         }
 
-        URL url = URLHelper.getURL(item.getSource());
+        URL url = URLHelper.getURL(landscape.getSource());
         if (url != null) {
             return process(EnvironmentFactory.fromString(fileFetcher.get(url), url));
         }
 
-        return process(EnvironmentFactory.fromString(item.getSource()));
+        return process(EnvironmentFactory.fromString(landscape.getSource()));
     }
 }

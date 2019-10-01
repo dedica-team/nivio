@@ -2,8 +2,7 @@ package de.bonndan.nivio.output;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.matching.AnythingPattern;
-import de.bonndan.nivio.landscape.Service;
+import de.bonndan.nivio.model.Item;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,49 +32,49 @@ class IconServiceTest {
 
     @Test
     public void returnsServiceAsDefault() {
-        assertTrue(iconUrlContains("service", iconService.getIcon(new Service())));
+        assertTrue(iconUrlContains("service", iconService.getIcon(new Item())));
     }
 
     @Test
     public void returnsServiceWithUnknownType() {
-        Service service = new Service();
-        service.setType("asb");
-        assertTrue(iconUrlContains("service", iconService.getIcon(service)));
+        Item item = new Item();
+        item.setType("asb");
+        assertTrue(iconUrlContains("service", iconService.getIcon(item)));
     }
 
     @Test
     public void returnsType() {
-        Service service = new Service();
-        service.setType("firewall");
-        assertTrue(iconUrlContains("firewall", iconService.getIcon(service)));
+        Item item = new Item();
+        item.setType("firewall");
+        assertTrue(iconUrlContains("firewall", iconService.getIcon(item)));
     }
 
     @Test
     public void returnsTypeIgnoreCase() {
-        Service service = new Service();
-        service.setType("FireWall");
-        assertTrue(iconUrlContains("firewall", iconService.getIcon(service)));
+        Item item = new Item();
+        item.setType("FireWall");
+        assertTrue(iconUrlContains("firewall", iconService.getIcon(item)));
     }
 
     @Test
     public void returnsIcon() {
-        Service service = new Service();
-        service.setIcon("http://my.icon");
-        assertTrue(iconService.getIcon(service).getUrl().toString().contains("http://my.icon"));
+        Item item = new Item();
+        item.setIcon("http://my.icon");
+        assertTrue(iconService.getIcon(item).getUrl().toString().contains("http://my.icon"));
     }
 
     @Test
     public void isCustom() {
-        Service service = new Service();
-        service.setIcon("http://my.icon");
-        assertTrue(iconService.getIcon(service).isCustom());
+        Item item = new Item();
+        item.setIcon("http://my.icon");
+        assertTrue(iconService.getIcon(item).isCustom());
     }
 
     @Test
     public void usesVendorIcon() {
-        Service service = new Service();
-        service.setIcon(VENDOR_PREFIX + "redis");
-        assertTrue(iconService.getIcon(service).getUrl().toString().contains("http://download.redis.io/logocontest/82.png"));
+        Item item = new Item();
+        item.setIcon(VENDOR_PREFIX + "redis");
+        assertTrue(iconService.getIcon(item).getUrl().toString().contains("http://download.redis.io/logocontest/82.png"));
     }
 
     @Test
@@ -87,9 +86,9 @@ class IconServiceTest {
         iconService = new IconService();
         iconService.setImageProxy(urlprefix);
 
-        Service service = new Service();
-        service.setIcon(VENDOR_PREFIX + "redis");
-        assertEquals(urlprefix + "//" + "http://download.redis.io/logocontest/82.png", iconService.getIcon(service).getUrl().toString());
+        Item item = new Item();
+        item.setIcon(VENDOR_PREFIX + "redis");
+        assertEquals(urlprefix + "//" + "http://download.redis.io/logocontest/82.png", iconService.getIcon(item).getUrl().toString());
     }
 
     @Test
@@ -100,10 +99,10 @@ class IconServiceTest {
         iconService = new IconService();
         iconService.setImageProxy(String.format("http://localhost:%d", wireMockServer.port()));
 
-        Service service = new Service();
-        service.setIcon("http://my.icon");
+        Item item = new Item();
+        item.setIcon("http://my.icon");
         String urlprefix = String.format("http://localhost:%d", wireMockServer.port());
-        assertEquals(urlprefix + "//" + "http://my.icon", iconService.getIcon(service).getUrl().toString());
+        assertEquals(urlprefix + "//" + "http://my.icon", iconService.getIcon(item).getUrl().toString());
 
     }
 
