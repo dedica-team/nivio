@@ -90,7 +90,7 @@ public class LandscapeItemsTest {
         ArrayList<LandscapeItem> items2 = new ArrayList<>();
         items2.add(new ItemDescription("c"));
 
-        List<LandscapeItem> added = ServiceItems.added(items1, items2);
+        List<LandscapeItem> added = Indexer.added(items1, items2);
         assertEquals(2, added.size());
     }
 
@@ -107,7 +107,7 @@ public class LandscapeItemsTest {
         items2.add(new ItemDescription("b"));
         items2.add(new ItemDescription("c"));
 
-        List<LandscapeItem> added = ServiceItems.added(items1, items2);
+        List<LandscapeItem> added = Indexer.added(items1, items2);
         assertEquals(0, added.size());
     }
 
@@ -123,7 +123,7 @@ public class LandscapeItemsTest {
         items2.add(new ItemDescription("c"));
         items2.add(new ItemDescription("d"));
 
-        List<LandscapeItem> removed = ServiceItems.removed(items1, items2);
+        List<LandscapeItem> removed = Indexer.removed(items1, items2);
         assertEquals(1, removed.size());
     }
 
@@ -139,7 +139,7 @@ public class LandscapeItemsTest {
         items2.add(new ItemDescription("a"));
         items2.add(new ItemDescription("b"));
 
-        List<LandscapeItem> removed = ServiceItems.removed(items1, items2);
+        List<LandscapeItem> removed = Indexer.removed(items1, items2);
         assertEquals(0, removed.size());
     }
 
@@ -155,7 +155,7 @@ public class LandscapeItemsTest {
         items2.add(new ItemDescription("a"));
         items2.add(new ItemDescription("b"));
 
-        List<LandscapeItem> kept = ServiceItems.kept(items1, items2);
+        List<LandscapeItem> kept = Indexer.kept(items1, items2);
         assertEquals(2, kept.size());
     }
 
@@ -171,7 +171,7 @@ public class LandscapeItemsTest {
         items2.add(new ItemDescription("d"));
         items2.add(new ItemDescription("e"));
 
-        List<LandscapeItem> kept = ServiceItems.kept(items1, items2);
+        List<LandscapeItem> kept = Indexer.kept(items1, items2);
         assertEquals(0, kept.size());
     }
 }

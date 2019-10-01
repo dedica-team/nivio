@@ -20,35 +20,6 @@ import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
 public class ServiceItems {
 
     /**
-     * Returns all elements kept in the second list.
-     */
-    public static List<LandscapeItem> kept(Collection<? extends LandscapeItem> items1, Collection<? extends LandscapeItem> items2) {
-        return items2.stream().filter(item -> exists(item, items1)).collect(Collectors.toList());
-    }
-
-    /**
-     * Returns all elements removed from the second list.
-     */
-    public static List<LandscapeItem> removed(Collection<? extends LandscapeItem> items1, Collection<? extends LandscapeItem> items2) {
-        return items2.stream().filter(item -> !exists(item, items1)).collect(Collectors.toList());
-    }
-
-    /**
-     * Returns all elements which are not in the second list
-     */
-    public static List<LandscapeItem> added(Collection<? extends LandscapeItem> items1, Collection<? extends LandscapeItem> existing) {
-        return items1.stream()
-                .filter(item -> !exists(item, existing))
-                .collect(Collectors.toList());
-    }
-
-    private static boolean exists(LandscapeItem item, Collection<? extends LandscapeItem> items) {
-        return items.stream().anyMatch(
-                inList -> item.getFullyQualifiedIdentifier().isSimilarTo(inList)
-        );
-    }
-
-    /**
      * Ensures that the given item has a sibling in the list, returns the item from the list.
      *
      * @param item  item to search for

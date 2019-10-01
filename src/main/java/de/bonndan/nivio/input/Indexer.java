@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class Indexer {
@@ -66,7 +67,7 @@ public class Indexer {
         Set<Item> existingItems = landscape.getItems();
 
         //insert new ones
-        List<LandscapeItem> newItems = ServiceItems.added(input.getItemDescriptions(), existingItems);
+        List<LandscapeItem> newItems = added(input.getItemDescriptions(), existingItems);
         Set<Item> inLandscape = new HashSet<>();
         logger.info("Adding " + newItems.size() + " items in env " + landscape.getIdentifier());
         newItems.forEach(
@@ -83,7 +84,7 @@ public class Indexer {
         if (input.isPartial()) {
             kept.addAll(existingItems); //we want to keep all, increment does not contain all items
         } else {
-            kept = ServiceItems.kept(input.getItemDescriptions(), existingItems);
+            kept = kept(input.getItemDescriptions(), existingItems);
         }
         logger.info("Updating " + kept.size() + " items in landscape " + landscape.getIdentifier());
         kept.forEach(
@@ -123,7 +124,7 @@ public class Indexer {
             return new ArrayList<>();
         }
 
-        List<LandscapeItem> removed = ServiceItems.removed(kept, all);
+        List<LandscapeItem> removed = removed(kept, all);
         logger.info("Removing " + removed.size() + " sources in env " + landscapeDescription.getIdentifier());
         return removed;
     }
@@ -214,4 +215,34 @@ public class Indexer {
             });
         });
     }
+
+    /**
+     * Returns all elements kept in the second list.
+     */
+    static List<LandscapeItem> kept(Collection<? extends LandscapeItem> items1, Collection<? extends LandscapeItem> items2) {
+        return items2.stream().filter(item -> exists(item, items1)).collect(Collectors.toList());
+    }
+
+    /**
+     * Returns all elements removed from the second list.
+     */
+    static List<LandscapeItem> removed(Collection<? extends LandscapeItem> items1, Collection<? extends LandscapeItem> items2) {
+        return items2.stream().filter(item -> !exists(item, items1)).collect(Collectors.toList());
+    }
+
+    /**
+     * Returns all elements which are not in the second list
+     */
+    static List<LandscapeItem> added(Collection<? extends LandscapeItem> items1, Collection<? extends LandscapeItem> existing) {
+        return items1.stream()
+                .filter(item -> !exists(item, existing))
+                .collect(Collectors.toList());
+    }
+
+    private static boolean exists(LandscapeItem item, Collection<? extends LandscapeItem> items) {
+        return items.stream().anyMatch(
+                inList -> item.getFullyQualifiedIdentifier().isSimilarTo(inList)
+        );
+    }
+
 }
