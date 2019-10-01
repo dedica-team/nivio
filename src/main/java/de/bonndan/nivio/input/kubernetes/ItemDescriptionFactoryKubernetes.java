@@ -1,6 +1,6 @@
 package de.bonndan.nivio.input.kubernetes;
 
-import de.bonndan.nivio.input.ServiceDescriptionFactory;
+import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.LandscapeItem;
@@ -18,7 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
-public class ServiceDescriptionFactoryKubernetes implements ServiceDescriptionFactory {
+public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory {
 
     public static final String NAMESPACE = "namespace";
     public static final String GROUP_LABEL = "groupLabel";
@@ -27,7 +27,7 @@ public class ServiceDescriptionFactoryKubernetes implements ServiceDescriptionFa
     private String groupLabel = null;
     private KubernetesClient client;
 
-    public ServiceDescriptionFactoryKubernetes(SourceReference reference) {
+    public ItemDescriptionFactoryKubernetes(SourceReference reference) {
         try {
             if (!StringUtils.isEmpty(reference.getUrl())) {
                 URL url = new URL(reference.getUrl());
@@ -42,7 +42,7 @@ public class ServiceDescriptionFactoryKubernetes implements ServiceDescriptionFa
         }
     }
 
-    public ServiceDescriptionFactoryKubernetes(SourceReference reference, KubernetesClient client) {
+    public ItemDescriptionFactoryKubernetes(SourceReference reference, KubernetesClient client) {
         this(reference);
         this.client = client;
     }

@@ -85,7 +85,7 @@ public class ApiController {
         sourceReference.setUrl(null);
         sourceReference.setContent(body);
 
-        ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(sourceReference, env);
+        ItemDescriptionFactory factory = ItemDescriptionFormatFactory.getFactory(sourceReference, env);
         List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference);
 
         env.setItemDescriptions(itemDescriptions);
@@ -99,33 +99,33 @@ public class ApiController {
      * Reindexes the landscape on success.
      *
      * @param identifier landscape
-     * @param fqi fully qualified identifier of the service
+     * @param fqi fully qualified identifier of the item
      * @return the process log
      */
-    @RequestMapping(path = "/landscape/{identifier}/services/{fqi}", method = RequestMethod.DELETE)
+    @RequestMapping(path = "/landscape/{identifier}/items/{fqi}", method = RequestMethod.DELETE)
     public ProcessLog deleteService(
             @PathVariable String identifier,
             @PathVariable String fqi
     ) {
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null)
-            return new ProcessLog(new ProcessingException(null, "Could not find lanscape " + identifier));
+            return new ProcessLog(new ProcessingException(null, "Could not find landscape " + identifier));
 
         FullyQualifiedIdentifier from = FullyQualifiedIdentifier.from(fqi);
         if (from == null)
             return new ProcessLog(new ProcessingException(landscape, "Could use fully qualified identifier " + fqi));
 
-        Optional<LandscapeItem> service = ServiceItems.find(FullyQualifiedIdentifier.build(from.getLandscape(), from.getGroup(), from.getIdentifier()), landscape.getItems());
-        if (!service.isPresent()) {
-            return new ProcessLog(new ProcessingException(landscape, "Could find service " + fqi));
+        Optional<LandscapeItem> item = ServiceItems.find(FullyQualifiedIdentifier.build(from.getLandscape(), from.getGroup(), from.getIdentifier()), landscape.getItems());
+        if (!item.isPresent()) {
+            return new ProcessLog(new ProcessingException(landscape, "Could find item " + fqi));
         }
 
-        landscape.getItems().remove(service);
+        landscape.getItems().remove(item.get());
         return process(landscape);
     }
 
-    @RequestMapping(path = "/landscape/{identifier}/services", method = RequestMethod.GET)
-    public ResponseEntity<List<Item>> services(@PathVariable String identifier) {
+    @RequestMapping(path = "/landscape/{identifier}/items", method = RequestMethod.GET)
+    public ResponseEntity<List<Item>> items(@PathVariable String identifier) {
 
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null)

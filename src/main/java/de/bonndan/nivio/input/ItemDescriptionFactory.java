@@ -10,7 +10,7 @@ import java.util.function.*;
 import static de.bonndan.nivio.util.SafeAssign.assignSafe;
 import static de.bonndan.nivio.util.SafeAssign.assignSafeIfAbsent;
 
-public interface ServiceDescriptionFactory {
+public interface ItemDescriptionFactory {
 
     List<ItemDescription> getDescriptions(SourceReference reference);
 

@@ -10,5 +10,8 @@ import java.util.List;
  */
 public class Source {
 
+    public List<ItemDescription> items = new ArrayList<>();
+
+    @Deprecated
     public List<ItemDescription> services = new ArrayList<>();
 }

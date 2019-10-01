@@ -3,7 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.input.kubernetes.ServiceDescriptionFactoryKubernetes;
+import de.bonndan.nivio.input.kubernetes.ItemDescriptionFactoryKubernetes;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.PodBuilder;
 import io.fabric8.kubernetes.api.model.PodSpecBuilder;
@@ -67,7 +67,7 @@ public class KubernetesTest {
         sourceReference.setFormat(SourceFormat.KUBERNETES);
         sourceReference.setUrl("http://localhost:80?groupLabel=release&namespace=default");
 
-        ServiceDescriptionFactoryKubernetes factory = new ServiceDescriptionFactoryKubernetes(sourceReference, client);
+        ItemDescriptionFactoryKubernetes factory = new ItemDescriptionFactoryKubernetes(sourceReference, client);
         factory.getConfiguration().setNamespace("default");
 
         List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference);

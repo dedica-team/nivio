@@ -64,16 +64,16 @@ public class ServiceItems {
      *
      * @param identifier  service identifier
      * @param group       the group to search in
-     * @param serviceList all services
+     * @param items all items
      * @return the sibling with the given identifier
      */
-    public static LandscapeItem pick(final String identifier, String group, final Collection<? extends LandscapeItem> serviceList) {
+    public static LandscapeItem pick(final String identifier, String group, final Collection<? extends LandscapeItem> items) {
         if (StringUtils.isEmpty(identifier)) {
             throw new IllegalArgumentException("Identifier is empty");
         }
 
-        return find(identifier, group, serviceList).orElseThrow(() ->
-                new RuntimeException("Element not found " + identifier + " in collection " + serviceList)
+        return find(identifier, group, items).orElseThrow(() ->
+                new RuntimeException("Element not found " + identifier + " in collection " + items)
         );
     }
 
@@ -81,7 +81,7 @@ public class ServiceItems {
      * Returns a the item from the list or null. Uses the matching criteria of {@link FullyQualifiedIdentifier}
      *
      * @param identifier the service identifier
-     * @param items      all services
+     * @param items      all items
      * @return the service or null
      */
     public static Optional<LandscapeItem> find(String identifier, String group, Collection<? extends LandscapeItem> items) {
@@ -120,37 +120,37 @@ public class ServiceItems {
      * Returns a the item from the list or null. Uses the matching criteria of {@link FullyQualifiedIdentifier}
      *
      * @param fqi      the service identifier
-     * @param services all services
+     * @param items all items
      * @return the service or null
      */
-    public static Optional<LandscapeItem> find(FullyQualifiedIdentifier fqi, Collection<? extends LandscapeItem> services) {
-        List<LandscapeItem> found = findAll(fqi, services);
+    public static Optional<LandscapeItem> find(FullyQualifiedIdentifier fqi, Collection<? extends LandscapeItem> items) {
+        List<LandscapeItem> found = findAll(fqi, items);
 
         if (found.size() > 1)
-            throw new RuntimeException("Ambiguous result for " + fqi + ": " + found + " in collection " + services);
+            throw new RuntimeException("Ambiguous result for " + fqi + ": " + found + " in collection " + items);
 
         return Optional.ofNullable((found.size() == 1) ? found.get(0): null);
     }
 
-    public static List<? extends LandscapeItem> filter(String condition, List<? extends LandscapeItem> services) {
+    public static List<? extends LandscapeItem> filter(String condition, List<? extends LandscapeItem> items) {
 
         if ("*" .equals(condition))
-            return services;
+            return items;
 
         //single word compared against identifier
         if (condition.matches(IDENTIFIER_VALIDATION)) {
-            return services.stream()
+            return items.stream()
                     .filter(serviceItem -> serviceItem.getIdentifier().equals(condition))
                     .collect(Collectors.toList());
         }
 
         if (condition.contains("/")) {
             FullyQualifiedIdentifier from = FullyQualifiedIdentifier.from(condition);
-            return findAll(from, services);
+            return findAll(from, items);
         }
 
-        String query = "SELECT * FROM services WHERE " + condition;
-        return query(query, services);
+        String query = "SELECT * FROM items WHERE " + condition;
+        return query(query, items);
     }
 
     public static final Attribute<LandscapeItem, String> IDENTIFIER = attribute("identifier", LandscapeItem::getIdentifier);

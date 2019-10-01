@@ -13,23 +13,23 @@ public class GroupsTest {
 
     @Test
     public void testBy() {
-        List<LandscapeItem> services = new ArrayList<>();
+        List<LandscapeItem> items = new ArrayList<>();
         Item item1 = new Item();
         item1.setIdentifier("1");
         item1.setOwner("A");
-        services.add(item1);
+        items.add(item1);
 
         Item item2 = new Item();
         item2.setIdentifier("2");
         item2.setOwner("A");
-        services.add(item2);
+        items.add(item2);
 
         Item item3 = new Item();
         item3.setIdentifier("3");
         item3.setOwner("B");
-        services.add(item3);
+        items.add(item3);
 
-        Groups ownerGroups = Groups.by(LandscapeItem::getOwner, services);
+        Groups ownerGroups = Groups.by(LandscapeItem::getOwner, items);
         Map<String, List<LandscapeItem>> all = ownerGroups.getAll();
         assertNotNull(all);
         assertFalse(all.isEmpty());

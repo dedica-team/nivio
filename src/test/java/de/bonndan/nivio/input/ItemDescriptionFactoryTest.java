@@ -30,7 +30,7 @@ public class ItemDescriptionFactoryTest {
         df2.setTarget("another");
         increment.addDataFlow(df2);
 
-        ServiceDescriptionFactory.assignNotNull(sd1, increment);
+        ItemDescriptionFactory.assignNotNull(sd1, increment);
 
         assertEquals(2, sd1.getDataFlow().size());
     }
@@ -46,7 +46,7 @@ public class ItemDescriptionFactoryTest {
         increment.setIdentifier("sd1");
         increment.getNetworks().add("net2");
 
-        ServiceDescriptionFactory.assignNotNull(sd1, increment);
+        ItemDescriptionFactory.assignNotNull(sd1, increment);
 
         assertEquals(2, sd1.getNetworks().size());
     }
@@ -61,7 +61,7 @@ public class ItemDescriptionFactoryTest {
         increment.setIdentifier("sd1");
         increment.setStatus(new StatusDescription(StatusItem.STABILITY, Status.GREEN));
 
-        ServiceDescriptionFactory.assignNotNull(sd1, increment);
+        ItemDescriptionFactory.assignNotNull(sd1, increment);
 
         assertEquals(2, sd1.getStatuses().size());
     }
@@ -77,7 +77,7 @@ public class ItemDescriptionFactoryTest {
         increment.setIdentifier("sd1");
         increment.getProvided_by().add("redis");
 
-        ServiceDescriptionFactory.assignNotNull(sd1, increment);
+        ItemDescriptionFactory.assignNotNull(sd1, increment);
 
         assertEquals(2, sd1.getProvided_by().size());
     }
@@ -99,7 +99,7 @@ public class ItemDescriptionFactoryTest {
         increment.getInterfaces().add(if2);
 
 
-        ServiceDescriptionFactory.assignNotNull(sd1, increment);
+        ItemDescriptionFactory.assignNotNull(sd1, increment);
 
         assertEquals(2, sd1.getInterfaces().size());
     }
@@ -115,7 +115,7 @@ public class ItemDescriptionFactoryTest {
         increment.setLifecycle(Lifecycle.END_OF_LIFE);
 
 
-        ServiceDescriptionFactory.assignNotNull(sd1, increment);
+        ItemDescriptionFactory.assignNotNull(sd1, increment);
 
         assertEquals(Lifecycle.END_OF_LIFE, sd1.getLifecycle());
     }
@@ -133,7 +133,7 @@ public class ItemDescriptionFactoryTest {
         increment.getLabels().put("b", "3");
 
 
-        ServiceDescriptionFactory.assignNotNull(sd1, increment);
+        ItemDescriptionFactory.assignNotNull(sd1, increment);
 
         assertEquals("1", sd1.getLabels().get("a"));
         assertEquals("3", sd1.getLabels().get("b"));

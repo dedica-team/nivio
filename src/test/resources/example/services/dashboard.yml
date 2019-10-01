@@ -1,6 +1,6 @@
 document_version: 1.0
 
-services:
+items:
 
   - identifier: keycloak
     name: Keycloak SSO

@@ -30,9 +30,6 @@ public class LandscapeImpl implements Landscape {
 
     private String source;
 
-    /**
-     * List of configuration services.
-     */
     @JsonManagedReference
     private Set<Item> items = new HashSet<>();
 

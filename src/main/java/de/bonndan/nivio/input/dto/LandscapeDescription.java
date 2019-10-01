@@ -1,6 +1,6 @@
 package de.bonndan.nivio.input.dto;
 
-import de.bonndan.nivio.input.ServiceDescriptionFactory;
+import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.model.*;
 
 import java.io.File;
@@ -46,7 +46,7 @@ public class LandscapeDescription implements Landscape {
     private List<SourceReference> sources = new ArrayList<>();
 
     /**
-     * descriptions of services fetched and parsed from sources
+     * descriptions of items fetched and parsed from sources
      */
     private List<ItemDescription> itemDescriptions = new ArrayList<>();
 
@@ -139,7 +139,7 @@ public class LandscapeDescription implements Landscape {
         return landscape;
     }
 
-    public void addServices(List<ItemDescription> incoming) {
+    public void addItems(List<ItemDescription> incoming) {
         if (incoming == null)
             return;
 
@@ -149,7 +149,7 @@ public class LandscapeDescription implements Landscape {
             ItemDescription existing = (ItemDescription)
                     ServiceItems.find(desc.getIdentifier(), desc.getGroup(), itemDescriptions).orElse(null);
             if (existing != null) {
-                ServiceDescriptionFactory.assignNotNull(existing, desc);
+                ItemDescriptionFactory.assignNotNull(existing, desc);
             } else {
                 this.itemDescriptions.add(desc);
             }
@@ -157,10 +157,11 @@ public class LandscapeDescription implements Landscape {
     }
 
     /**
-     * For compatibility with source references, service can be added directly to the env description.
+     * For compatibility with source references, items can be added directly to the env description.
+     * @Deprecated
      */
     public void setServices(List<ItemDescription> services) {
-        addServices(services);
+        addItems(services);
     }
 
     @Override

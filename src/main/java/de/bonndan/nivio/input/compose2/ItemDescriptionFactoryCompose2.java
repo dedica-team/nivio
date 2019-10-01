@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.ServiceDescriptionFactory;
+import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import org.slf4j.Logger;
@@ -17,9 +17,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServiceDescriptionFactoryCompose2 implements ServiceDescriptionFactory {
+public class ItemDescriptionFactoryCompose2 implements ItemDescriptionFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(ServiceDescriptionFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(ItemDescriptionFactory.class);
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
     static {
@@ -30,14 +30,14 @@ public class ServiceDescriptionFactoryCompose2 implements ServiceDescriptionFact
     private final FileFetcher fileFetcher;
     private final URL baseUrl;
 
-    public ServiceDescriptionFactoryCompose2(FileFetcher fileFetcher, URL baseUrl) {
+    public ItemDescriptionFactoryCompose2(FileFetcher fileFetcher, URL baseUrl) {
         this.fileFetcher = fileFetcher;
         this.baseUrl = baseUrl;
     }
 
     public List<ItemDescription> getDescriptions(SourceReference reference) {
 
-        List<ItemDescription> services = new ArrayList<>();
+        List<ItemDescription> itemDescriptions = new ArrayList<>();
         String yml = fileFetcher.get(reference, baseUrl);
         DockerComposeFile source = null;
         try {
@@ -47,15 +47,15 @@ public class ServiceDescriptionFactoryCompose2 implements ServiceDescriptionFact
         }
         if (source == null) {
             logger.warn("Got null out of yml string " + yml);
-            return services;
+            return itemDescriptions;
         }
 
         source.services.forEach((identifier, composeService) -> {
             composeService.setIdentifier(identifier);
-            services.add(composeService.toDto());
+            itemDescriptions.add(composeService.toDto());
         });
 
-        return services;
+        return itemDescriptions;
 
     }
 

@@ -1,10 +1,10 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.compose2.ServiceDescriptionFactoryCompose2;
+import de.bonndan.nivio.input.compose2.ItemDescriptionFactoryCompose2;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
+import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -13,35 +13,35 @@ public class ItemDescriptionFormatFactoryTest {
 
     @Test
     public void defaultIfNull() {
-        ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(
+        ItemDescriptionFactory factory = ItemDescriptionFormatFactory.getFactory(
                 new SourceReference(),
                 new LandscapeDescription()
         );
 
-        assertTrue(factory instanceof ServiceDescriptionFactory);
-        assertTrue(factory instanceof ServiceDescriptionFactoryNivio);
+        assertTrue(factory instanceof ItemDescriptionFactory);
+        assertTrue(factory instanceof ItemDescriptionFactoryNivio);
     }
 
     @Test
     public void defaultIfOther() {
-        ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(
+        ItemDescriptionFactory factory = ItemDescriptionFormatFactory.getFactory(
                 new SourceReference(SourceFormat.from("abc")),
                 new LandscapeDescription()
         );
 
-        assertTrue(factory instanceof ServiceDescriptionFactory);
-        assertTrue(factory instanceof ServiceDescriptionFactoryNivio);
+        assertTrue(factory instanceof ItemDescriptionFactory);
+        assertTrue(factory instanceof ItemDescriptionFactoryNivio);
     }
 
     @Test
     public void compose2() {
 
-        ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(
+        ItemDescriptionFactory factory = ItemDescriptionFormatFactory.getFactory(
                 new SourceReference(SourceFormat.from("docker-compose-v2")),
                 new LandscapeDescription()
         );
 
-        assertTrue(factory instanceof ServiceDescriptionFactory);
-        assertTrue(factory instanceof ServiceDescriptionFactoryCompose2);
+        assertTrue(factory instanceof ItemDescriptionFactory);
+        assertTrue(factory instanceof ItemDescriptionFactoryCompose2);
     }
 }

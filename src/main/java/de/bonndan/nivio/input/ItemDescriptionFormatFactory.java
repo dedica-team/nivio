@@ -1,16 +1,16 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.compose2.ServiceDescriptionFactoryCompose2;
+import de.bonndan.nivio.input.compose2.ItemDescriptionFactoryCompose2;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.input.kubernetes.ServiceDescriptionFactoryKubernetes;
-import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
+import de.bonndan.nivio.input.kubernetes.ItemDescriptionFactoryKubernetes;
+import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.util.URLHelper;
 
 import java.net.URL;
 
-public class ServiceDescriptionFormatFactory {
+public class ItemDescriptionFormatFactory {
 
     /**
      * Returns the proper factory to generate/parse service descriptions based on the input format.
@@ -19,22 +19,22 @@ public class ServiceDescriptionFormatFactory {
      * @param landscapeDescription landscape, may contain a base url
      * @return the factory
      */
-    public static ServiceDescriptionFactory getFactory(SourceReference reference, LandscapeDescription landscapeDescription) {
+    public static ItemDescriptionFactory getFactory(SourceReference reference, LandscapeDescription landscapeDescription) {
 
         URL baseUrl = URLHelper.getParentPath(landscapeDescription.getSource());
 
         FileFetcher fetcher = new FileFetcher(new HttpService());
 
         if (reference == null || reference.getFormat() == null)
-            return new ServiceDescriptionFactoryNivio(fetcher, baseUrl);
+            return new ItemDescriptionFactoryNivio(fetcher, baseUrl);
 
         switch (reference.getFormat()) {
             case DOCKER_COMPOSE2:
-                return new ServiceDescriptionFactoryCompose2(new FileFetcher(new HttpService()), baseUrl);
+                return new ItemDescriptionFactoryCompose2(new FileFetcher(new HttpService()), baseUrl);
             case KUBERNETES:
-                return new ServiceDescriptionFactoryKubernetes(reference);
+                return new ItemDescriptionFactoryKubernetes(reference);
         }
 
-        return new ServiceDescriptionFactoryNivio(fetcher, baseUrl);
+        return new ItemDescriptionFactoryNivio(fetcher, baseUrl);
     }
 }

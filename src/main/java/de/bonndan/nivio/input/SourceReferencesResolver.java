@@ -18,26 +18,26 @@ public class SourceReferencesResolver {
 
         env.getSourceReferences().forEach(ref -> {
             try {
-                ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(ref, env);
+                ItemDescriptionFactory factory = ItemDescriptionFormatFactory.getFactory(ref, env);
 
                 List<ItemDescription> descriptions = factory.getDescriptions(ref);
 
-                ref.getAssignTemplates().entrySet().forEach(templateAssignments -> {
+                ref.getAssignTemplates().forEach((key, value) -> {
 
-                    LandscapeItem template = find(templateAssignments.getKey(), "", env.getTemplates()).orElse(null);
+                    LandscapeItem template = find(key, "", env.getTemplates()).orElse(null);
                     if (template == null) {
-                        log.warn("Could not find template to assign: " + templateAssignments.getKey());
+                        log.warn("Could not find template to assign: " + key);
                         return;
                     }
 
-                    templateAssignments.getValue().forEach(identifier -> {
+                    value.forEach(identifier -> {
                         ServiceItems.filter(identifier, descriptions)
-                                .forEach(item -> ServiceDescriptionFactory.assignTemplateValues((ItemDescription) item, (ItemDescription) template));
+                                .forEach(item -> ItemDescriptionFactory.assignTemplateValues((ItemDescription) item, (ItemDescription) template));
                     });
 
                 });
 
-                env.addServices(descriptions);
+                env.addItems(descriptions);
             } catch (ProcessingException ex) {
                 log.warn("Failed to resolve source reference " + ref, ex);
                 env.setIsPartial(true);
@@ -51,17 +51,17 @@ public class SourceReferencesResolver {
      * Finds providers or data flow targets named in queries.
      */
     private void resolveTemplateQueries(final List<ItemDescription> itemDescriptions) {
-        itemDescriptions.forEach(serviceDescription -> {
+        itemDescriptions.forEach(description -> {
 
             //provider
-            List<String> provided_by = serviceDescription.getProvided_by();
-            serviceDescription.setProvided_by(new ArrayList<>());
+            List<String> provided_by = description.getProvided_by();
+            description.setProvided_by(new ArrayList<>());
             provided_by.forEach(condition -> {
                 ServiceItems.filter(condition, itemDescriptions)
-                        .forEach(result -> serviceDescription.getProvided_by().add(result.getIdentifier()));
+                        .forEach(result -> description.getProvided_by().add(result.getIdentifier()));
             });
 
-            serviceDescription.getDataFlow().forEach(dataFlowItem -> {
+            description.getDataFlow().forEach(dataFlowItem -> {
                 ServiceItems.filter(dataFlowItem.getTarget(), itemDescriptions).stream()
                         .findFirst()
                         .ifPresent(service -> ((DataFlowDescription)dataFlowItem).setTarget(service.getFullyQualifiedIdentifier().toString()));

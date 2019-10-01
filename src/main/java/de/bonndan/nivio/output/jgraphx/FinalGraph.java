@@ -122,7 +122,7 @@ public class FinalGraph {
      * <p>
      * These edges are added after layouting in order not to influence it.
      *
-     * @param items all services
+     * @param items all items
      */
     private void addProviderEdges(List<Item> items) {
 
@@ -160,7 +160,7 @@ public class FinalGraph {
 
     private mxCell addServiceVertex(mxPoint offset, mxCell parent, LandscapeItem landscapeItem) {
 
-        String style = getServiceStyle(landscapeItem);
+        String style = getItemStyle(landscapeItem);
 
         String name = StringUtils.isEmpty(landscapeItem.getName()) ? landscapeItem.getIdentifier() : landscapeItem.getName();
         if (Lifecycle.PLANNED.equals(landscapeItem.getLifecycle())) {
@@ -251,7 +251,7 @@ public class FinalGraph {
 
     }
 
-    private String getServiceStyle(LandscapeItem landscapeItem) {
+    private String getItemStyle(LandscapeItem landscapeItem) {
         String style = getBaseStyle((Item) landscapeItem) + ";" + "type=" + landscapeItem.getType()
                 + ";group=" + landscapeItem.getGroup() + ";"
                 + "strokeColor=" + getGroupColor((Item) landscapeItem) + ";";

@@ -78,12 +78,12 @@ A item can have the following attributes:
   * format: media type or binary format
 * **provided_by** array of references to other items (identifiers)
 
-Service Identification and Referencing
---------------------------------------
+Item Identification and Referencing
+------------------------------------
 
 A item can be uniquely identified by its landscape, its group and its identifier. A fully qualified
-identifier is composed of these three: **mylandscape/agroup/theservice**. Since the group is optional, items with unique
-identifier can also be addressed using **mylandscape/theservice** or just **theservice**. Nivio tries to resolve the correct item and raises
+identifier is composed of these three: **mylandscape/agroup/theitem**. Since the group is optional, items with unique
+identifier can also be addressed using **mylandscape/theitem** or just **theitem**. Nivio tries to resolve the correct item and raises
 an error if it cannot be found or the result is ambiguous.
 
 Service references are required to describe a provider relation or dataflows.

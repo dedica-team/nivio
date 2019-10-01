@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 
 /**
- * Renders a graph of group containers only, not regarding services inside the containers.
+ * Renders a graph of group containers only, not regarding items inside the containers.
  */
 public class AllGroupsGraph {
 
@@ -26,7 +26,7 @@ public class AllGroupsGraph {
 
         graph = new mxGraph();
 
-        List<LandscapeItem> services = new ArrayList<>();
+        List<LandscapeItem> items = new ArrayList<>();
         groups.getAll().forEach((groupName, serviceItems) -> {
 
             mxRectangle groupGeometry = subgraphs.get(groupName).getBounds();
@@ -40,10 +40,10 @@ public class AllGroupsGraph {
                     ""
             );
             groupNodes.put(groupName, groupnode);
-            services.addAll(serviceItems);
+            items.addAll(serviceItems);
         });
 
-        addVirtualEdgesBetweenGroups(services);
+        addVirtualEdgesBetweenGroups(items);
 
         mxFastOrganicLayout layout = new mxFastOrganicLayout(graph);
         Optional.ofNullable(config.getJgraphx().getMaxIterations())
@@ -65,11 +65,11 @@ public class AllGroupsGraph {
     /**
      * Virtual edges between group containers enable organic layout of groups.
      *
-     * @param services
+     * @param items
      */
-    private void addVirtualEdgesBetweenGroups(List<LandscapeItem> services) {
+    private void addVirtualEdgesBetweenGroups(List<LandscapeItem> items) {
         HashMap<mxCell, mxCell> groupConnections = new HashMap<>();
-        services.forEach(service -> {
+        items.forEach(service -> {
             String group = service.getGroup();
             mxCell groupNode = groupNodes.get(group);
 
@@ -107,7 +107,7 @@ public class AllGroupsGraph {
             service.getDataFlow().forEach(dataFlowItem -> {
                 String target = dataFlowItem.getTarget();
                 if (target == null) return;
-                LandscapeItem targetItem = ServiceItems.find(target, null, services).orElse(null);
+                LandscapeItem targetItem = ServiceItems.find(target, null, items).orElse(null);
                 if (targetItem == null) return;
 
                 String pGroup = targetItem.getGroup() == null ? Groups.COMMON : targetItem.getGroup();

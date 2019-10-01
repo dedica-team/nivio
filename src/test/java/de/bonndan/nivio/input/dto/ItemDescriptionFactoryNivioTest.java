@@ -3,7 +3,7 @@ package de.bonndan.nivio.input.dto;
 
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.input.nivio.ServiceDescriptionFactoryNivio;
+import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.model.Status;
@@ -26,12 +26,12 @@ class ItemDescriptionFactoryNivioTest {
 
     private FileFetcher fileFetcher;
 
-    private ServiceDescriptionFactoryNivio descriptionFactory;
+    private ItemDescriptionFactoryNivio descriptionFactory;
 
     @BeforeEach
     public void setup() {
         fileFetcher = new FileFetcher(new HttpService());
-        descriptionFactory = new ServiceDescriptionFactoryNivio(fileFetcher, null);
+        descriptionFactory = new ItemDescriptionFactoryNivio(fileFetcher, null);
     }
 
     @Test

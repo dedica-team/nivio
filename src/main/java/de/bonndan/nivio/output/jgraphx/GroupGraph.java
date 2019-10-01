@@ -17,17 +17,17 @@ public class GroupGraph {
     private final mxGraph graph;
     private Map<LandscapeItem, mxCell> serviceVertexes = new HashMap<>();
 
-    public GroupGraph(List<LandscapeItem> services) {
+    public GroupGraph(List<LandscapeItem> items) {
         graph = new mxGraph();
 
-        services.forEach(service -> {
+        items.forEach(service -> {
             mxCell v1 = (mxCell) graph.insertVertex(graph.getDefaultParent(), service.getIdentifier(), service.getName(),
                     0, 0, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE);
             serviceVertexes.put(service, v1);
         });
 
         //inner group relations
-        services.forEach(service -> {
+        items.forEach(service -> {
             ((Item) service).getProvidedBy().forEach(provider -> {
 
                 if (service.getGroup().equals(provider.getGroup())) {

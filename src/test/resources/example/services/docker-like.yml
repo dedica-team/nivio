@@ -1,6 +1,6 @@
 document_version: 1.0
 
-services:
+items:
   - identifier: crappy_dockername-78345
     name: foo
   - identifier: crappy_dockername-2343a

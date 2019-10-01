@@ -8,7 +8,6 @@ import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.notification.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -23,7 +22,6 @@ public class Indexer {
 
     private final SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
 
-    @Autowired
     public Indexer(LandscapeRepository landscapeRepository,
                    NotificationService notificationService
     ) {
@@ -63,17 +61,17 @@ public class Indexer {
         return logger;
     }
 
-    private void diff(final LandscapeDescription landscapeDescription, final LandscapeImpl landscape, ProcessLog logger) {
+    private void diff(final LandscapeDescription input, final LandscapeImpl landscape, ProcessLog logger) {
 
         Set<Item> existingItems = landscape.getItems();
 
         //insert new ones
-        List<LandscapeItem> newItems = ServiceItems.added(landscapeDescription.getItemDescriptions(), existingItems);
+        List<LandscapeItem> newItems = ServiceItems.added(input.getItemDescriptions(), existingItems);
         Set<Item> inLandscape = new HashSet<>();
         logger.info("Adding " + newItems.size() + " items in env " + landscape.getIdentifier());
         newItems.forEach(
                 serviceDescription -> {
-                    logger.info("Creating new service " + serviceDescription.getIdentifier() + " in env " + landscapeDescription.getIdentifier());
+                    logger.info("Creating new service " + serviceDescription.getIdentifier() + " in env " + input.getIdentifier());
                     Item created = ServiceFactory.fromDescription(serviceDescription, landscape);
                     landscape.addItem(created);
                     inLandscape.add(created);
@@ -82,37 +80,36 @@ public class Indexer {
 
         //update existing
         List<LandscapeItem> kept = new ArrayList<>();
-        if (landscapeDescription.isPartial()) {
-            kept.addAll(existingItems); //we want to keep all, increment does not contain all services
+        if (input.isPartial()) {
+            kept.addAll(existingItems); //we want to keep all, increment does not contain all items
         } else {
-            kept = ServiceItems.kept(landscapeDescription.getItemDescriptions(), existingItems);
+            kept = ServiceItems.kept(input.getItemDescriptions(), existingItems);
         }
-        logger.info("Updating " + kept.size() + " services in landscape " + landscape.getIdentifier());
+        logger.info("Updating " + kept.size() + " items in landscape " + landscape.getIdentifier());
         kept.forEach(
-                service -> {
+                item -> {
 
-                    ItemDescription description = (ItemDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), landscapeDescription.getItemDescriptions()).orElse(null);
+                    ItemDescription description = (ItemDescription) ServiceItems.find(item.getFullyQualifiedIdentifier(), input.getItemDescriptions()).orElse(null);
                     if (description == null) {
-                        if (landscapeDescription.isPartial()) {
-                            inLandscape.add((Item) service);
+                        if (input.isPartial()) {
+                            inLandscape.add((Item) item);
                             return;
                         } else {
-                            throw new ProcessingException(landscapeDescription, "Service not found " + service.getIdentifier());
+                            throw new ProcessingException(input, "Item not found " + item.getIdentifier());
                         }
                     }
 
-                    logger.info("Updating service " + service.getIdentifier() + " in landscape " + landscapeDescription.getIdentifier());
+                    logger.info("Updating item " + item.getIdentifier() + " in landscape " + input.getIdentifier());
 
-                    ServiceFactory.assignAll((Item) service, description);
-                    inLandscape.add((Item) service);
+                    ServiceFactory.assignAll((Item) item, description);
+                    inLandscape.add((Item) item);
                 }
         );
 
         landscape.setItems(inLandscape);
-        linkAllProviders(inLandscape, landscapeDescription, logger);
-        deleteUnreferenced(landscapeDescription, inLandscape, existingItems, logger).forEach(serviceItem -> {
-            landscape.getItems().remove(serviceItem);
-        });
+        linkAllProviders(inLandscape, input, logger);
+        deleteUnreferenced(input, inLandscape, existingItems, logger)
+                .forEach(item -> landscape.getItems().remove(item));
     }
 
     private List<LandscapeItem> deleteUnreferenced(
@@ -122,7 +119,7 @@ public class Indexer {
             ProcessLog logger
     ) {
         if (landscapeDescription.isPartial()) {
-            logger.info("Incremental change, will not remove any unreferenced services.");
+            logger.info("Incremental change, will not remove any unreferenced items.");
             return new ArrayList<>();
         }
 

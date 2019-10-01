@@ -233,7 +233,7 @@ public class Item implements LandscapeItem {
             throw new IllegalArgumentException("Status item has no label");
 
         Optional<StatusItem> existing = this.statuses.stream()
-                .filter(serviceStatus -> statusItem.getLabel().equals(serviceStatus.getLabel()))
+                .filter(status -> statusItem.getLabel().equals(status.getLabel()))
                 .findFirst();
 
         existing.ifPresentOrElse(

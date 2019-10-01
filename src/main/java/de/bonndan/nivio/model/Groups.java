@@ -17,7 +17,7 @@ public class Groups {
     /**
      * Default grouping by group field.
      *
-     * @param landscape landscape containing the services
+     * @param landscape landscape containing the item
      * @return groups
      */
     public static Groups from(LandscapeImpl landscape) {

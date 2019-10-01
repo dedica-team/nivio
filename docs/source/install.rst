@@ -118,7 +118,7 @@ are scanned) and a label for building groups can be named. Both parameters and e
 Deleting items
 -----------------
 
-Services not referenced anymore in the descriptions will be deleted automatically on a complete and successful re-index run.
+Items not referenced anymore in the descriptions will be deleted automatically on a complete and successful re-index run.
 If an error occurs fetching the source while indexing, the behaviour of the indexer changes to treat the available data as
  partial input. This means only upserts will happen, and no deletion.
 

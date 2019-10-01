@@ -24,10 +24,10 @@ public class Positioner {
     }
 
     public void compute () {
-        groups.getAll().forEach((group, services) -> {
-            int width = services.size();
+        groups.getAll().forEach((group, items) -> {
+            int width = items.size();
             AtomicInteger i = new AtomicInteger(0);
-            services.forEach(service -> {
+            items.forEach(service -> {
                 Node n = pairs.getOrDefault(service, null);
                 position(n, i.getAndIncrement());
             });
