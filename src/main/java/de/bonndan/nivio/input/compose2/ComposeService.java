@@ -1,11 +1,11 @@
 package de.bonndan.nivio.input.compose2;
 
 import de.bonndan.nivio.input.dto.InterfaceDescription;
-import de.bonndan.nivio.input.dto.ServiceDescription;
-import de.bonndan.nivio.landscape.Groups;
+import de.bonndan.nivio.input.dto.ItemDescription;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ComposeService {
@@ -14,7 +14,7 @@ public class ComposeService {
 
     private List<String> links;
 
-    private List<String> labels;
+    private Map<String, String> labels;
 
     private List<String> ports;
 
@@ -23,8 +23,8 @@ public class ComposeService {
     /**
      * Transforms into a dto.
      */
-    public ServiceDescription toDto() {
-        ServiceDescription description = new ServiceDescription(identifier);
+    public ItemDescription toDto() {
+        ItemDescription description = new ItemDescription(identifier);
         if (networks != null) {
             List<String> nets = networks.stream().map(Network::getName).collect(Collectors.toList());
             description.setNetworks(new HashSet<>(nets));
@@ -71,11 +71,11 @@ public class ComposeService {
         this.links = links;
     }
 
-    public List<String> getLabels() {
+    public Map<String, String> getLabels() {
         return labels;
     }
 
-    public void setLabels(List<String> labels) {
+    public void setLabels(Map<String, String> labels) {
         this.labels = labels;
     }
 

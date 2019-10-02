@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output.dld4e;
 
-import de.bonndan.nivio.landscape.Service;
+import de.bonndan.nivio.model.Item;
 
 import java.util.Map;
 
@@ -19,8 +19,8 @@ public class IconFamily {
 
         public static final String name = "azureEnterprise";
 
-        public static String iconFor(Service service) {
-            return types.getOrDefault(service.getType(), "servergeneric");
+        public static String iconFor(Item item) {
+            return types.getOrDefault(item.getType(), "servergeneric");
         }
     }
 

@@ -3,11 +3,7 @@ package de.bonndan.nivio.output.jgraphx.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
-import de.bonndan.nivio.landscape.FullyQualifiedIdentifier;
-import de.bonndan.nivio.landscape.Service;
-import de.bonndan.nivio.landscape.ServiceItem;
-import de.bonndan.nivio.landscape.ServiceItems;
-import org.springframework.util.StringUtils;
+import de.bonndan.nivio.model.LandscapeItem;
 
 import java.io.Serializable;
 
@@ -24,9 +20,10 @@ public class Vertex implements Serializable {
     public String group;
     public String groupColor;
     public String type;
-    public ServiceItem service;
 
-    public Vertex(ServiceItem service, mxCell cell) {
+    public LandscapeItem service;
+
+    public Vertex(LandscapeItem service, mxCell cell) {
         type = "service";
         this.service = service;
 

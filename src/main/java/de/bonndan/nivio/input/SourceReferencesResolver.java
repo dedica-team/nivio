@@ -1,63 +1,72 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.input.dto.Environment;
-import de.bonndan.nivio.input.dto.ServiceDescription;
-import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.landscape.ServiceItem;
-import de.bonndan.nivio.util.URLHelper;
+import de.bonndan.nivio.input.dto.DataFlowDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.model.LandscapeItem;
+import de.bonndan.nivio.model.ServiceItems;
 
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
-import static de.bonndan.nivio.landscape.ServiceItems.find;
+import static de.bonndan.nivio.model.ServiceItems.find;
 
 public class SourceReferencesResolver {
 
-
-    private final FileFetcher fetcher = new FileFetcher(new HttpService());
-
-    public void resolve(final Environment env, final ProcessLog log) {
-
-        URL baseUrl = URLHelper.getParentPath(env.getSource());
+    public void resolve(final LandscapeDescription env, final ProcessLog log) {
 
         env.getSourceReferences().forEach(ref -> {
             try {
-                String source = fetcher.get(ref, baseUrl);
-                ServiceDescriptionFactory factory = ServiceDescriptionFormatFactory.getFactory(ref.getFormat());
-                List<ServiceDescription> descriptions = factory.fromString(source);
+                ItemDescriptionFactory factory = ItemDescriptionFormatFactory.getFactory(ref, env);
 
-                ref.getAssignTemplates().entrySet().forEach(templateAssignments -> {
+                List<ItemDescription> descriptions = factory.getDescriptions(ref);
 
-                    ServiceItem template = find(templateAssignments.getKey(), "", env.getTemplates());
+                ref.getAssignTemplates().forEach((key, value) -> {
+
+                    LandscapeItem template = find(key, "", env.getTemplates()).orElse(null);
                     if (template == null) {
-                        log.warn("Could not find template to assign: " + templateAssignments.getKey());
+                        log.warn("Could not find template to assign: " + key);
                         return;
                     }
 
-                    templateAssignments.getValue().forEach(identifier -> {
-                        if ("*".equals(identifier)) {
-                            descriptions.forEach(item -> ServiceDescriptionFactory.assignTemplateValues(item, (ServiceDescription)template));
-
-                        } else {
-                            ServiceItem item = find(identifier, "", descriptions);
-                            if (item == null) {
-                                log.warn("Could not assign template " + template.getIdentifier() + ", service " + identifier + " not found.");
-                                return;
-                            }
-                            ServiceDescriptionFactory.assignTemplateValues((ServiceDescription)item, (ServiceDescription)template);
-                        }
-
+                    value.forEach(identifier -> {
+                        ServiceItems.filter(identifier, descriptions)
+                                .forEach(item -> ItemDescriptionFactory.assignTemplateValues((ItemDescription) item, (ItemDescription) template));
                     });
 
                 });
 
-                env.addServices(descriptions);
+                env.addItems(descriptions);
             } catch (ProcessingException ex) {
                 log.warn("Failed to resolve source reference " + ref, ex);
                 env.setIsPartial(true);
             }
         });
 
+        resolveTemplateQueries(env.getItemDescriptions());
     }
+
+    /**
+     * Finds providers or data flow targets named in queries.
+     */
+    private void resolveTemplateQueries(final List<ItemDescription> itemDescriptions) {
+        itemDescriptions.forEach(description -> {
+
+            //provider
+            List<String> provided_by = description.getProvided_by();
+            description.setProvided_by(new ArrayList<>());
+            provided_by.forEach(condition -> {
+                ServiceItems.filter(condition, itemDescriptions)
+                        .forEach(result -> description.getProvided_by().add(result.getIdentifier()));
+            });
+
+            description.getDataFlow().forEach(dataFlowItem -> {
+                ServiceItems.filter(dataFlowItem.getTarget(), itemDescriptions).stream()
+                        .findFirst()
+                        .ifPresent(service -> ((DataFlowDescription)dataFlowItem).setTarget(service.getFullyQualifiedIdentifier().toString()));
+            });
+        });
+    }
+
 }

@@ -1,9 +1,8 @@
 package de.bonndan.nivio.input;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import de.bonndan.nivio.input.dto.Environment;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.util.Mappers;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookupFactory;
 import org.slf4j.Logger;
@@ -18,15 +17,9 @@ import java.nio.file.Files;
 public class EnvironmentFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EnvironmentFactory.class);
-    private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    private static final ObjectMapper mapper = Mappers.gracefulYamlMapper;
 
-    static {
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-        mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
-    }
-
-    public static Environment fromYaml(File file) {
+    public static LandscapeDescription fromYaml(File file) {
 
         try {
             String content = new String(Files.readAllBytes(file.toPath()));
@@ -34,10 +27,10 @@ public class EnvironmentFactory {
                 LOGGER.warn("Got a seemingly empty file " + file + ". Skipping"); //TODO watcher issue
                 return null;
             }
-            Environment environment = fromString(content);
-            environment.setSource(file.toString());
-            environment.getSourceReferences().forEach(ref -> ref.setEnvironment(environment));
-            return environment;
+            LandscapeDescription landscapeDescription = fromString(content);
+            landscapeDescription.setSource(file.toString());
+            landscapeDescription.getSourceReferences().forEach(ref -> ref.setLandscapeDescription(landscapeDescription));
+            return landscapeDescription;
         } catch (IOException e) {
             throw new ReadingException("Failed to create an environment from file " + file.getAbsolutePath(), e);
         }
@@ -49,16 +42,16 @@ public class EnvironmentFactory {
      * @param yaml source
      * @return environment description
      */
-    public static Environment fromString(String yaml) {
+    public static LandscapeDescription fromString(String yaml) {
 
         yaml = (new StringSubstitutor(StringLookupFactory.INSTANCE.environmentVariableStringLookup())).replace(yaml);
 
         try {
-            Environment environment = mapper.readValue(yaml, Environment.class);
-            environment.setSource(yaml);
-            environment.getSourceReferences().forEach(ref -> ref.setEnvironment(environment));
-            sanitizeTemplates(environment);
-            return environment;
+            LandscapeDescription landscapeDescription = mapper.readValue(yaml, LandscapeDescription.class);
+            landscapeDescription.setSource(yaml);
+            landscapeDescription.getSourceReferences().forEach(ref -> ref.setLandscapeDescription(landscapeDescription));
+            sanitizeTemplates(landscapeDescription);
+            return landscapeDescription;
         } catch (IOException e) {
             throw new ReadingException("Failed to create an environment from yaml input string: " + e.getMessage(), e);
         }
@@ -72,16 +65,16 @@ public class EnvironmentFactory {
      * @param url  for updates
      * @return env description
      */
-    public static Environment fromString(String yaml, URL url) {
-        Environment env = fromString(yaml);
+    public static LandscapeDescription fromString(String yaml, URL url) {
+        LandscapeDescription env = fromString(yaml);
         env.setSource(url.toString());
         return env;
     }
 
-    private static void sanitizeTemplates(Environment environment) {
+    private static void sanitizeTemplates(LandscapeDescription landscapeDescription) {
         //sanitize templates, unset properties which are not reusable
-        if (environment.getTemplates() != null) {
-            environment.getTemplates().forEach(tpl -> {
+        if (landscapeDescription.getTemplates() != null) {
+            landscapeDescription.getTemplates().forEach(tpl -> {
                 tpl.setName("");
                 tpl.setShort_name("");
             });

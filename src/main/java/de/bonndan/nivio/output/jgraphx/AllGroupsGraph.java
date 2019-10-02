@@ -5,7 +5,7 @@ import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
-import de.bonndan.nivio.landscape.*;
+import de.bonndan.nivio.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 
 /**
- * Renders a graph of group containers only, not regarding services inside the containers.
+ * Renders a graph of group containers only, not regarding items inside the containers.
  */
 public class AllGroupsGraph {
 
@@ -26,7 +26,7 @@ public class AllGroupsGraph {
 
         graph = new mxGraph();
 
-        List<ServiceItem> services = new ArrayList<>();
+        List<LandscapeItem> items = new ArrayList<>();
         groups.getAll().forEach((groupName, serviceItems) -> {
 
             mxRectangle groupGeometry = subgraphs.get(groupName).getBounds();
@@ -40,10 +40,10 @@ public class AllGroupsGraph {
                     ""
             );
             groupNodes.put(groupName, groupnode);
-            services.addAll(serviceItems);
+            items.addAll(serviceItems);
         });
 
-        addVirtualEdgesBetweenGroups(services);
+        addVirtualEdgesBetweenGroups(items);
 
         mxFastOrganicLayout layout = new mxFastOrganicLayout(graph);
         Optional.ofNullable(config.getJgraphx().getMaxIterations())
@@ -65,11 +65,11 @@ public class AllGroupsGraph {
     /**
      * Virtual edges between group containers enable organic layout of groups.
      *
-     * @param services
+     * @param items
      */
-    private void addVirtualEdgesBetweenGroups(List<ServiceItem> services) {
+    private void addVirtualEdgesBetweenGroups(List<LandscapeItem> items) {
         HashMap<mxCell, mxCell> groupConnections = new HashMap<>();
-        services.forEach(service -> {
+        items.forEach(service -> {
             String group = service.getGroup();
             mxCell groupNode = groupNodes.get(group);
 
@@ -91,7 +91,7 @@ public class AllGroupsGraph {
             };
 
             //provider
-            ((Service) service).getProvidedBy().forEach(provider -> {
+            ((Item) service).getProvidedBy().forEach(provider -> {
                 String pGroup = provider.getGroup() == null ? Groups.COMMON : provider.getGroup();
                 mxCell pGroupNode = groupNodes.get(pGroup);
                 if (canLink.apply(groupNode, pGroupNode)) {
@@ -107,7 +107,7 @@ public class AllGroupsGraph {
             service.getDataFlow().forEach(dataFlowItem -> {
                 String target = dataFlowItem.getTarget();
                 if (target == null) return;
-                ServiceItem targetItem = ServiceItems.find(target, null, services);
+                LandscapeItem targetItem = ServiceItems.find(target, null, items).orElse(null);
                 if (targetItem == null) return;
 
                 String pGroup = targetItem.getGroup() == null ? Groups.COMMON : targetItem.getGroup();

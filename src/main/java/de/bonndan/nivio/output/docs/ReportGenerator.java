@@ -1,11 +1,10 @@
 package de.bonndan.nivio.output.docs;
 
-import de.bonndan.nivio.landscape.Groups;
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.ServiceItem;
+import de.bonndan.nivio.model.Groups;
+import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.IconService;
-import de.bonndan.nivio.output.Icons;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.util.Color;
 import j2html.tags.ContainerTag;
@@ -23,12 +22,12 @@ public class ReportGenerator extends HtmlGenerator {
         this.iconService = iconService;
     }
 
-    public String toDocument(Landscape landscape) {
+    public String toDocument(LandscapeImpl landscape) {
 
         return writeLandscape(landscape);
     }
 
-    private String writeLandscape(Landscape landscape) {
+    private String writeLandscape(LandscapeImpl landscape) {
 
         return html(
                 getHead(landscape),
@@ -59,7 +58,7 @@ public class ReportGenerator extends HtmlGenerator {
         return builder.toString();
     }
 
-    private ContainerTag writeItem(ServiceItem item) {
+    private ContainerTag writeItem(LandscapeItem item) {
         boolean hasDataflow = item.getDataFlow() != null && item.getDataFlow().size() > 0;
         boolean hasInterfaces = item.getInterfaces() != null && item.getInterfaces().size() > 0;
         String groupColor = "#" + Color.nameToRGB(item.getGroup());

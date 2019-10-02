@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output.graphstream;
 
-import de.bonndan.nivio.landscape.Landscape;
+import de.bonndan.nivio.model.LandscapeImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,7 +23,7 @@ public class GraphstreamRendererTest {
 
     @Test
     public void dump() throws IOException {
-        Landscape landscape = new Landscape();
+        LandscapeImpl landscape = new LandscapeImpl();
         landscape.setIdentifier("x");
         landscape.setName("x");
 

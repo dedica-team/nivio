@@ -1,9 +1,6 @@
 package de.bonndan.nivio.output.graphstream;
 
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.Service;
-import de.bonndan.nivio.landscape.Status;
-import de.bonndan.nivio.landscape.StatusItem;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.Renderer;
 import de.bonndan.nivio.util.Color;
@@ -26,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.landscape.Status.GREEN;
+import static de.bonndan.nivio.model.Status.GREEN;
 
 
 public class GraphStreamRenderer implements Renderer<Graph> {
@@ -55,7 +52,7 @@ public class GraphStreamRenderer implements Renderer<Graph> {
     };
 
     @Override
-    public Graph render(Landscape landscape) {
+    public Graph render(LandscapeImpl landscape) {
         graph = new SingleGraph(landscape.getName());
         graph.addAttribute("ui.quality");
         graph.addAttribute("ui.antialias");
@@ -66,7 +63,7 @@ public class GraphStreamRenderer implements Renderer<Graph> {
 
         Positioner positioner = new Positioner();
 
-        landscape.getServices().forEach(service -> {
+        landscape.getItems().forEach(service -> {
             Node n = graph.addNode(service.getIdentifier());
             n.addAttribute("ui.label", StringUtils.isEmpty(service.getName()) ? service.getIdentifier() : service.getName());
             n.addAttribute("ui.class", service.getLayer());
@@ -88,7 +85,7 @@ public class GraphStreamRenderer implements Renderer<Graph> {
         positioner.compute();
 
         //provider
-        landscape.getServices().forEach(service -> service.getProvidedBy().forEach(providedBy -> {
+        landscape.getItems().forEach(service -> service.getProvidedBy().forEach(providedBy -> {
             Edge e = graph.addEdge(
                     providedBy.getIdentifier() + service.getIdentifier(),
                     providedBy.getIdentifier(),
@@ -100,7 +97,7 @@ public class GraphStreamRenderer implements Renderer<Graph> {
         }));
 
         //dataflow
-        landscape.getServices().forEach(service -> service.getDataFlow().forEach(df -> {
+        landscape.getItems().forEach(service -> service.getDataFlow().forEach(df -> {
 
             if (df.getSource().equals(df.getTarget()))
                 return;
@@ -125,12 +122,12 @@ public class GraphStreamRenderer implements Renderer<Graph> {
          *
          *
          */
-        landscape.getServices().forEach(this::addInterfaces);
+        landscape.getItems().forEach(this::addInterfaces);
 
         /*
          * statuses
          */
-        landscape.getServices().forEach(this::addStatuses);
+        landscape.getItems().forEach(this::addStatuses);
 
 
         return graph;
@@ -138,7 +135,7 @@ public class GraphStreamRenderer implements Renderer<Graph> {
     }
 
     @Override
-    public void render(Landscape landscape, File file) throws IOException {
+    public void render(LandscapeImpl landscape, File file) throws IOException {
 
         graph = render(landscape);
 
@@ -156,36 +153,36 @@ public class GraphStreamRenderer implements Renderer<Graph> {
         fsi.writeAll(graph, file.getAbsolutePath());
     }
 
-    private void addInterfaces(Service service) {
+    private void addInterfaces(Item item) {
 
-        if (service.getInterfaces().size() == 0)
+        if (item.getInterfaces().size() == 0)
             return;
-        Node serviceNode = graph.getNode(service.getIdentifier());
+        Node serviceNode = graph.getNode(item.getIdentifier());
 
 
         AtomicInteger i = new AtomicInteger(1);
-        service.getInterfaces().forEach(inter -> {
+        item.getInterfaces().forEach(inter -> {
 
-            String intfID = "interface_" + service.getIdentifier() + i.getAndIncrement();
+            String intfID = "interface_" + item.getIdentifier() + i.getAndIncrement();
 
             Sprite sprite = spriteManager.addSprite(intfID);
             sprite.attachToNode(serviceNode.getId());
             int rotation = 45;
-            int offset = -90 - (rotation / 2) * (service.getInterfaces().size() - 1);
+            int offset = -90 - (rotation / 2) * (item.getInterfaces().size() - 1);
             int z = offset + i.get() * rotation;
             sprite.setPosition(StyleConstants.Units.GU, 0.13, 2, z);
             sprite.setAttribute("ui.label", " " + inter.getDescription());
             sprite.setAttribute("ui.class", "interface");
-            sprite.setAttribute("ui.style", "fill-color: #" + Color.nameToRGB(service.getGroup()) + "; ");
+            sprite.setAttribute("ui.style", "fill-color: #" + Color.nameToRGB(item.getGroup()) + "; ");
         });
     }
 
-    private String getStatusColor(Service service) {
+    private String getStatusColor(Item item) {
         var ref = new Object() {
             Status current = Status.UNKNOWN;
         };
 
-        service.getStatuses().forEach(statusItem -> {
+        item.getStatuses().forEach(statusItem -> {
             if (statusItem.getStatus().isHigherThan(ref.current))
                 ref.current = statusItem.getStatus();
         });
@@ -193,15 +190,15 @@ public class GraphStreamRenderer implements Renderer<Graph> {
         return ref.current.toString();
     }
 
-    private void addStatuses(Service service) {
-        List<StatusItem> displayed = service.getStatuses().stream()
-                .filter(item -> !GREEN.equals(item.getStatus()))
+    private void addStatuses(LandscapeItem item) {
+        List<StatusItem> displayed = item.getStatuses().stream()
+                .filter(statusItem -> !GREEN.equals(statusItem.getStatus()))
                 .collect(Collectors.toList());
 
         if (displayed.size() == 0)
             return;
 
-        Node serviceNode = graph.getNode(service.getIdentifier());
+        Node serviceNode = graph.getNode(item.getIdentifier());
 
         AtomicInteger i = new AtomicInteger(1);
         displayed.forEach(value -> {
@@ -224,15 +221,15 @@ public class GraphStreamRenderer implements Renderer<Graph> {
         });
     }
 
-    private String getIcon(Service service) {
-        if (StringUtils.isEmpty(service.getType()))
+    private String getIcon(Item item) {
+        if (StringUtils.isEmpty(item.getType()))
             return "service";
 
         //fallback to service
-        if (!Arrays.asList(KNOWN_ICONS).contains(service.getType().toLowerCase()))
+        if (!Arrays.asList(KNOWN_ICONS).contains(item.getType().toLowerCase()))
             return "service";
 
-        return service.getType().toLowerCase();
+        return item.getType().toLowerCase();
     }
 
     public String getGraphDump() {

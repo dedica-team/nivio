@@ -1,16 +1,16 @@
 package de.bonndan.nivio.output.dld4e;
 
-import de.bonndan.nivio.landscape.Service;
+import de.bonndan.nivio.model.Item;
 
 public class Icon extends DiagramItem {
 
-    private final Service service;
+    private final Item item;
 
-    public Icon (Service service) {
-        this.service = service;
+    public Icon (Item item) {
+        this.item = item;
     }
 
-    public Service getService() {
-        return service;
+    public Item getItem() {
+        return item;
     }
 }

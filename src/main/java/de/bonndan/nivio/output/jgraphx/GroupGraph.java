@@ -5,8 +5,8 @@ import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxPoint;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
-import de.bonndan.nivio.landscape.Service;
-import de.bonndan.nivio.landscape.ServiceItem;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.LandscapeItem;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,20 +15,20 @@ import java.util.Map;
 public class GroupGraph {
     public final int DEFAULT_ICON_SIZE = 50;
     private final mxGraph graph;
-    private Map<ServiceItem, mxCell> serviceVertexes = new HashMap<>();
+    private Map<LandscapeItem, mxCell> serviceVertexes = new HashMap<>();
 
-    public GroupGraph(List<ServiceItem> services) {
+    public GroupGraph(List<LandscapeItem> items) {
         graph = new mxGraph();
 
-        services.forEach(service -> {
+        items.forEach(service -> {
             mxCell v1 = (mxCell) graph.insertVertex(graph.getDefaultParent(), service.getIdentifier(), service.getName(),
                     0, 0, DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE);
             serviceVertexes.put(service, v1);
         });
 
         //inner group relations
-        services.forEach(service -> {
-            ((Service) service).getProvidedBy().forEach(provider -> {
+        items.forEach(service -> {
+            ((Item) service).getProvidedBy().forEach(provider -> {
 
                 if (service.getGroup().equals(provider.getGroup())) {
                     graph.insertEdge(
@@ -50,9 +50,9 @@ public class GroupGraph {
         return graph.getGraphBounds();
     }
 
-    public Map<ServiceItem, mxPoint> getServiceVertexesWithRelativeOffset() {
+    public Map<LandscapeItem, mxPoint> getServiceVertexesWithRelativeOffset() {
         mxRectangle graphBounds = graph.getGraphBounds();
-        Map<ServiceItem, mxPoint> relativeOffsets = new HashMap<>();
+        Map<LandscapeItem, mxPoint> relativeOffsets = new HashMap<>();
         serviceVertexes.forEach((key, value) -> relativeOffsets.put(
                 key,
                 new mxPoint(

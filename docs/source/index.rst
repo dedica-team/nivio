@@ -8,7 +8,7 @@ Welcome to Nivio's documentation!
 
 Nivio is a tool for application landscape management targeted at teams (developers, operators, managers). It follows a no-op
 approach, i.e. there is no interface for manual data maintenance. Instead, nivio pulls all its information from data
-sources like files or web apis (e.g. monitoring services) or allows pushing information via its API.
+sources like files or web apis (e.g. monitoring items) or allows pushing information via its API.
 
 .. toctree::
    :maxdepth: 2

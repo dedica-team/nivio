@@ -1,7 +1,7 @@
 package de.bonndan.nivio.input.dto;
 
-import de.bonndan.nivio.landscape.Status;
-import de.bonndan.nivio.landscape.StatusItem;
+import de.bonndan.nivio.model.Status;
+import de.bonndan.nivio.model.StatusItem;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;

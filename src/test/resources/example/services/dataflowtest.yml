@@ -1,6 +1,6 @@
 document_version: 1.0
 
-services:
+items:
 
 # data flow within group, without group identifier
 - identifier: something

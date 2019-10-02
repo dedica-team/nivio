@@ -1,8 +1,8 @@
 package de.bonndan.nivio.stateaggregation;
 
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.input.dto.Environment;
-import de.bonndan.nivio.landscape.StateProviderConfig;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.StateProviderConfig;
 import de.bonndan.nivio.stateaggregation.provider.PrometheusExporter;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +17,7 @@ public class ProviderFactoryTest {
         cfg.setTarget("malformedurl");
 
         ProviderFactory providerFactory = new ProviderFactory();
-        assertThrows(ProcessingException.class,() -> providerFactory.createFor(new Environment(), cfg));
+        assertThrows(ProcessingException.class,() -> providerFactory.createFor(new LandscapeDescription(), cfg));
     }
 
     @Test
@@ -27,7 +27,7 @@ public class ProviderFactoryTest {
         cfg.setTarget("http://good.url");
 
         ProviderFactory providerFactory = new ProviderFactory();
-        assertThrows(ProcessingException.class,() -> providerFactory.createFor(new Environment(), cfg));
+        assertThrows(ProcessingException.class,() -> providerFactory.createFor(new LandscapeDescription(), cfg));
     }
 
     public void testSuccess() {
@@ -37,7 +37,7 @@ public class ProviderFactoryTest {
         cfg.setTarget("http://good.url");
 
         ProviderFactory providerFactory = new ProviderFactory();
-        Provider provider = providerFactory.createFor(new Environment(), cfg);
+        Provider provider = providerFactory.createFor(new LandscapeDescription(), cfg);
         assertNotNull(provider);
         assertTrue(provider instanceof PrometheusExporter);
     }

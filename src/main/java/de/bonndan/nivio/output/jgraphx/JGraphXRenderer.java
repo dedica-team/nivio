@@ -2,8 +2,9 @@ package de.bonndan.nivio.output.jgraphx;
 
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
-import de.bonndan.nivio.landscape.Groups;
-import de.bonndan.nivio.landscape.Landscape;
+import de.bonndan.nivio.model.Groups;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.Renderer;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
     }
 
     @Override
-    public mxGraph render(Landscape landscape) {
+    public mxGraph render(LandscapeImpl landscape) {
 
         Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
         Groups groups = Groups.from(landscape);
@@ -45,7 +46,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
     }
 
     @Override
-    public void render(Landscape landscape, File file) throws IOException {
+    public void render(LandscapeImpl landscape, File file) throws IOException {
 
         mxGraph graph = render(landscape);
         BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, null, true, null);
@@ -54,7 +55,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
 
     }
 
-    public mxGraph getFinalGraph(Landscape landscape, FinalGraph finalGraph) {
+    public mxGraph getFinalGraph(LandscapeImpl landscape, FinalGraph finalGraph) {
         Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
         Groups groups = Groups.from(landscape);
         groups.getAll().forEach((groupName, serviceItems) -> {

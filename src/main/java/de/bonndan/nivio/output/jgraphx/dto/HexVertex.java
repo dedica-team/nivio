@@ -1,7 +1,7 @@
 package de.bonndan.nivio.output.jgraphx.dto;
 
 import com.mxgraph.model.mxCell;
-import de.bonndan.nivio.landscape.Service;
+import de.bonndan.nivio.model.Item;
 
 import static java.lang.Math.sqrt;
 
@@ -10,7 +10,7 @@ public class HexVertex extends Vertex {
 
     private int size;
 
-    public HexVertex(Service service, mxCell mxCell, int size) {
+    public HexVertex(Item service, mxCell mxCell, int size) {
         super(service, mxCell);
         this.size = size;
     }

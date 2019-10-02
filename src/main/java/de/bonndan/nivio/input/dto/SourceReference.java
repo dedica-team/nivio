@@ -10,7 +10,7 @@ public class SourceReference {
 
     private String url;
 
-    private Environment environment;
+    private LandscapeDescription landscapeDescription;
 
     private SourceFormat format;
 
@@ -21,12 +21,17 @@ public class SourceReference {
     private String headerTokenValue;
 
     private Map<String, List<String>> assignTemplates = new HashMap<>();
+    private String content;
 
     public SourceReference() {
     }
 
     public SourceReference(String url) {
         this.url = url;
+    }
+
+    public SourceReference(SourceFormat format) {
+        this.format = format;
     }
 
     public String getUrl() {
@@ -37,8 +42,8 @@ public class SourceReference {
         this.url = url;
     }
 
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
+    public void setLandscapeDescription(LandscapeDescription landscapeDescription) {
+        this.landscapeDescription = landscapeDescription;
     }
 
     public SourceFormat getFormat() {
@@ -53,8 +58,8 @@ public class SourceReference {
         this.format = format;
     }
 
-    public Environment getEnvironment() {
-        return environment;
+    public LandscapeDescription getLandscapeDescription() {
+        return landscapeDescription;
     }
 
     public boolean hasBasicAuth() {
@@ -103,5 +108,16 @@ public class SourceReference {
 
     public void setAssignTemplates(Map<String, List<String>> assignTemplates) {
         this.assignTemplates = assignTemplates;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    /**
+     * A source reference has content in case of http api pushes.
+     */
+    public String getContent() {
+        return content;
     }
 }

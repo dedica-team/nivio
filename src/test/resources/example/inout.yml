@@ -22,7 +22,7 @@ config:
     # higher value is cpu intensive, but can lead to better layouts
     maxIterations: 1000
 
-services:
+items:
 
   - identifier: nivio-prop
     name: Nivio proprietary

@@ -1,7 +1,7 @@
 package de.bonndan.nivio.output.dld4e;
 
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.Service;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.Renderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +24,10 @@ public class Dld4eRenderer implements Renderer<String> {
     private Icons icons = new Icons();
 
     @Override
-    public String render(Landscape landscape) {
+    public String render(LandscapeImpl landscape) {
 
-        landscape.getServices().forEach(this::addService);
-        landscape.getServices().forEach(this::addLinks);
+        landscape.getItems().forEach(this::addService);
+        landscape.getItems().forEach(this::addLinks);
 
         layouter.arrange(icons, groups);
 
@@ -93,35 +93,35 @@ public class Dld4eRenderer implements Renderer<String> {
 
 
     @Override
-    public void render(Landscape landscape, File file) throws IOException {
+    public void render(LandscapeImpl landscape, File file) throws IOException {
         render(landscape);
         FileWriter fileWriter = new FileWriter(file);
         fileWriter.append(ymlSource.toString());
         fileWriter.close();
     }
 
-    private void addService(Service service) {
-        logger.info("Adding service " + service + " to d4dle diagram");
-        networks.add(service);
-        groups.add(service);
-        icons.add(service);
+    private void addService(Item item) {
+        logger.info("Adding service " + item + " to d4dle diagram");
+        networks.add(item);
+        groups.add(item);
+        icons.add(item);
 
-        service.getProvidedBy().forEach(this::addService);
+        item.getProvidedBy().forEach(this::addService);
     }
 
-    private void addLinks(Service service) {
-        service.getDataFlow().forEach(flow -> connections.add(flow));
-        service.getProvides().forEach(provider -> connections.add(provider, service));
+    private void addLinks(Item item) {
+        item.getDataFlow().forEach(flow -> connections.add(flow));
+        item.getProvides().forEach(provider -> connections.add(provider, item));
     }
 
     private static class Networks {
 
         private List<String> networks = new ArrayList<>();
 
-        public void add(Service service) {
-            if (service.getNetworks() == null)
+        public void add(Item item) {
+            if (item.getNetworks() == null)
                 return;
-            service.getNetworks().forEach(s -> {
+            item.getNetworks().forEach(s -> {
                 if (!networks.contains(s)) {
                     networks.add(s);
                 }

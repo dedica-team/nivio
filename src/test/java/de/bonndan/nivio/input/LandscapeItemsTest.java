@@ -1,10 +1,10 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.ServiceDescription;
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.ServiceItem;
-import de.bonndan.nivio.landscape.ServiceItems;
-import de.bonndan.nivio.landscape.Service;
+import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.LandscapeItem;
+import de.bonndan.nivio.model.ServiceItems;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,161 +17,161 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LandscapeItemsTest {
 
-    private ArrayList<Service> services;
-    private Landscape landscape;
+    private ArrayList<Item> items;
+    private LandscapeImpl landscape;
 
     @BeforeEach
     public void setup() {
 
-        landscape = new Landscape();
+        landscape = new LandscapeImpl();
         landscape.setIdentifier("l");
 
-        services = new ArrayList<>();
+        items = new ArrayList<>();
 
-        Service s1 = new Service();
+        Item s1 = new Item();
         s1.setIdentifier("s1");
         s1.setGroup("g1");
         s1.setLandscape(landscape);
-        services.add(s1);
+        items.add(s1);
 
-        Service s2 = new Service();
+        Item s2 = new Item();
         s2.setIdentifier("s2");
         s2.setGroup("g1");
         s2.setLandscape(landscape);
-        services.add(s2);
+        items.add(s2);
     }
 
     @Test
     public void pickFails() {
 
-        assertThrows(RuntimeException.class,() -> ServiceItems.pick("s1", "xxx", services));
-        assertThrows(RuntimeException.class,() -> ServiceItems.pick("s3", "g1", services));
+        assertThrows(RuntimeException.class,() -> ServiceItems.pick("s1", "xxx", items));
+        assertThrows(RuntimeException.class,() -> ServiceItems.pick("s3", "g1", items));
     }
 
     @Test
     public void pick() {
 
-        assertNotNull(ServiceItems.pick("s1", "g1", services));
-        assertNotNull(ServiceItems.pick("s2", "g1", services));
+        assertNotNull(ServiceItems.pick("s1", "g1", items));
+        assertNotNull(ServiceItems.pick("s2", "g1", items));
 
-        Service s2 = new Service();
+        Item s2 = new Item();
         s2.setIdentifier("s2");
         s2.setGroup("g1");
         s2.setLandscape(landscape);
 
-        assertNotNull(ServiceItems.pick(s2, services));
+        assertNotNull(ServiceItems.pick(s2, items));
     }
 
     @Test
     public void pickGracefulWithoutGroup() {
 
-        assertNotNull(ServiceItems.pick("s2", null, services));
+        assertNotNull(ServiceItems.pick("s2", null, items));
     }
 
     @Test
     public void pickGracefulFails() {
 
-        Service s2 = new Service();
+        Item s2 = new Item();
         s2.setIdentifier("s2");
         s2.setGroup("g2"); //othergroup
         s2.setLandscape(landscape);
-        services.add(s2);
+        items.add(s2);
 
-        assertThrows(RuntimeException.class,() -> ServiceItems.pick("s2", null, services));
+        assertThrows(RuntimeException.class,() -> ServiceItems.pick("s2", null, items));
     }
     @Test
     public void added() {
 
-        ArrayList<ServiceItem> items1 = new ArrayList<>();
-        items1.add(new ServiceDescription("a"));
-        items1.add(new ServiceDescription("b"));
-        items1.add(new ServiceDescription("c"));
+        ArrayList<LandscapeItem> items1 = new ArrayList<>();
+        items1.add(new ItemDescription("a"));
+        items1.add(new ItemDescription("b"));
+        items1.add(new ItemDescription("c"));
 
-        ArrayList<ServiceItem> items2 = new ArrayList<>();
-        items2.add(new ServiceDescription("c"));
+        ArrayList<LandscapeItem> items2 = new ArrayList<>();
+        items2.add(new ItemDescription("c"));
 
-        List<ServiceItem> added = ServiceItems.added(items1, items2);
+        List<LandscapeItem> added = Indexer.added(items1, items2);
         assertEquals(2, added.size());
     }
 
     @Test
     public void addedNone() {
 
-        ArrayList<ServiceItem> items1 = new ArrayList<>();
-        items1.add(new ServiceDescription("a"));
-        items1.add(new ServiceDescription("b"));
-        items1.add(new ServiceDescription("c"));
+        ArrayList<LandscapeItem> items1 = new ArrayList<>();
+        items1.add(new ItemDescription("a"));
+        items1.add(new ItemDescription("b"));
+        items1.add(new ItemDescription("c"));
 
-        ArrayList<ServiceItem> items2 = new ArrayList<>();
-        items2.add(new ServiceDescription("a"));
-        items2.add(new ServiceDescription("b"));
-        items2.add(new ServiceDescription("c"));
+        ArrayList<LandscapeItem> items2 = new ArrayList<>();
+        items2.add(new ItemDescription("a"));
+        items2.add(new ItemDescription("b"));
+        items2.add(new ItemDescription("c"));
 
-        List<ServiceItem> added = ServiceItems.added(items1, items2);
+        List<LandscapeItem> added = Indexer.added(items1, items2);
         assertEquals(0, added.size());
     }
 
     @Test
     public void removed() {
 
-        ArrayList<ServiceItem> items1 = new ArrayList<>();
-        items1.add(new ServiceDescription("a"));
-        items1.add(new ServiceDescription("b"));
-        items1.add(new ServiceDescription("c"));
+        ArrayList<LandscapeItem> items1 = new ArrayList<>();
+        items1.add(new ItemDescription("a"));
+        items1.add(new ItemDescription("b"));
+        items1.add(new ItemDescription("c"));
 
-        ArrayList<ServiceItem> items2 = new ArrayList<>();
-        items2.add(new ServiceDescription("c"));
-        items2.add(new ServiceDescription("d"));
+        ArrayList<LandscapeItem> items2 = new ArrayList<>();
+        items2.add(new ItemDescription("c"));
+        items2.add(new ItemDescription("d"));
 
-        List<ServiceItem> removed = ServiceItems.removed(items1, items2);
+        List<LandscapeItem> removed = Indexer.removed(items1, items2);
         assertEquals(1, removed.size());
     }
 
     @Test
     public void removedNone() {
 
-        ArrayList<ServiceItem> items1 = new ArrayList<>();
-        items1.add(new ServiceDescription("a"));
-        items1.add(new ServiceDescription("b"));
-        items1.add(new ServiceDescription("c"));
+        ArrayList<LandscapeItem> items1 = new ArrayList<>();
+        items1.add(new ItemDescription("a"));
+        items1.add(new ItemDescription("b"));
+        items1.add(new ItemDescription("c"));
 
-        ArrayList<ServiceItem> items2 = new ArrayList<>();
-        items2.add(new ServiceDescription("a"));
-        items2.add(new ServiceDescription("b"));
+        ArrayList<LandscapeItem> items2 = new ArrayList<>();
+        items2.add(new ItemDescription("a"));
+        items2.add(new ItemDescription("b"));
 
-        List<ServiceItem> removed = ServiceItems.removed(items1, items2);
+        List<LandscapeItem> removed = Indexer.removed(items1, items2);
         assertEquals(0, removed.size());
     }
 
     @Test
     public void kept() {
 
-        ArrayList<ServiceItem> items1 = new ArrayList<>();
-        items1.add(new ServiceDescription("a"));
-        items1.add(new ServiceDescription("b"));
-        items1.add(new ServiceDescription("c"));
+        ArrayList<LandscapeItem> items1 = new ArrayList<>();
+        items1.add(new ItemDescription("a"));
+        items1.add(new ItemDescription("b"));
+        items1.add(new ItemDescription("c"));
 
-        ArrayList<ServiceItem> items2 = new ArrayList<>();
-        items2.add(new ServiceDescription("a"));
-        items2.add(new ServiceDescription("b"));
+        ArrayList<LandscapeItem> items2 = new ArrayList<>();
+        items2.add(new ItemDescription("a"));
+        items2.add(new ItemDescription("b"));
 
-        List<ServiceItem> kept = ServiceItems.kept(items1, items2);
+        List<LandscapeItem> kept = Indexer.kept(items1, items2);
         assertEquals(2, kept.size());
     }
 
     @Test
     public void keptNone() {
 
-        ArrayList<ServiceItem> items1 = new ArrayList<>();
-        items1.add(new ServiceDescription("a"));
-        items1.add(new ServiceDescription("b"));
-        items1.add(new ServiceDescription("c"));
+        ArrayList<LandscapeItem> items1 = new ArrayList<>();
+        items1.add(new ItemDescription("a"));
+        items1.add(new ItemDescription("b"));
+        items1.add(new ItemDescription("c"));
 
-        ArrayList<ServiceItem> items2 = new ArrayList<>();
-        items2.add(new ServiceDescription("d"));
-        items2.add(new ServiceDescription("e"));
+        ArrayList<LandscapeItem> items2 = new ArrayList<>();
+        items2.add(new ItemDescription("d"));
+        items2.add(new ItemDescription("e"));
 
-        List<ServiceItem> kept = ServiceItems.kept(items1, items2);
+        List<LandscapeItem> kept = Indexer.kept(items1, items2);
         assertEquals(0, kept.size());
     }
 }

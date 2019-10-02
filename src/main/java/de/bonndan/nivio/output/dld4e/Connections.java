@@ -1,7 +1,7 @@
 package de.bonndan.nivio.output.dld4e;
 
-import de.bonndan.nivio.landscape.DataFlowItem;
-import de.bonndan.nivio.landscape.Service;
+import de.bonndan.nivio.model.DataFlowItem;
+import de.bonndan.nivio.model.Item;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +15,9 @@ class Connections {
                 .set("endpoints", "[" + flow.getSource() + "," + flow.getTarget() + "]"));
     }
 
-    public void add(Service provider, Service service) {
+    public void add(Item provider, Item item) {
         connections.add(new DiagramItem().merge("provides")
-                .set("endpoints", "[" + provider.getIdentifier() + "," + service.getIdentifier() + "]"));
+                .set("endpoints", "[" + provider.getIdentifier() + "," + item.getIdentifier() + "]"));
     }
 
     @Override
