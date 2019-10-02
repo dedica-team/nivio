@@ -7,3 +7,5 @@ Nivio is heavily inspired by [pivio.io](http://pivio.io) and uses similar semant
 * https://github.com/jgrapht/jgrapht/blob/master/jgrapht-demo/src/main/java/org/jgrapht/demo/GraphMLDemo.java
 * https://github.com/jgrapht/jgrapht/wiki/HelloWorld
 * https://stackoverflow.com/questions/51574/good-java-graph-algorithm-library
+* https://github.com/hootsuite/microservice-graph-explorer
+* https://github.com/duo-labs/cloudmapper
