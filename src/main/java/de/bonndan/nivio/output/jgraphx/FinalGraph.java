@@ -13,8 +13,7 @@ import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Icon;
 import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.LocalServer;
-import de.bonndan.nivio.output.jgraphx.dto.HexVertex;
-import de.bonndan.nivio.output.jgraphx.dto.RenderedGraph;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -102,16 +101,6 @@ public class FinalGraph {
 
         return graph;
     }
-
-    public RenderedGraph getRenderedGraph() {
-
-        RenderedGraph renderedGraph = new RenderedGraph();
-        itemVertexes.forEach((service, mxCell) -> renderedGraph.services.add(new HexVertex(service, mxCell, 1000)));
-        groups.forEach((groupName, mxCell) -> renderedGraph.groups.add(new HexVertex(groupName, mxCell, 1000)));
-
-        return renderedGraph;
-    }
-
 
     /**
      * Adds dataflow edges.
@@ -372,5 +361,13 @@ public class FinalGraph {
         return config.getGroupConfig(name)
                 .map(LandscapeConfig.GroupConfig::getColor)
                 .orElse(de.bonndan.nivio.util.Color.nameToRGB(name, "333333"));
+    }
+
+    public Map<String, mxCell> getGroupVertexes() {
+        return groups;
+    }
+
+    public Map<Item, mxCell> getItemVertexes() {
+        return itemVertexes;
     }
 }

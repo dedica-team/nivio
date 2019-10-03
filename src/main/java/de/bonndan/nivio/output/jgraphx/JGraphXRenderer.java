@@ -3,7 +3,6 @@ package de.bonndan.nivio.output.jgraphx;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.model.Groups;
-import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.Renderer;
@@ -42,7 +41,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
         //return allGroupsGraph.getGraph();
 
         FinalGraph finalGraph = new FinalGraph(iconService);
-        return getFinalGraph(landscape, finalGraph);
+        return getMxGraph(landscape, finalGraph);
     }
 
     @Override
@@ -55,7 +54,7 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
 
     }
 
-    public mxGraph getFinalGraph(LandscapeImpl landscape, FinalGraph finalGraph) {
+    public mxGraph getMxGraph(LandscapeImpl landscape, FinalGraph finalGraph) {
         Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
         Groups groups = Groups.from(landscape);
         groups.getAll().forEach((groupName, serviceItems) -> {

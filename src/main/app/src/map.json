@@ -1,0 +1,478 @@
+{
+  "items": [
+    {
+      "type": "service",
+      "landscapeItem": {
+        "identifier": "wordpress-redis",
+        "layer": "infrastructure",
+        "type": "cache",
+        "name": null,
+        "short_name": null,
+        "icon": "vendor://redis",
+        "owner": null,
+        "team": "ops guys",
+        "contact": null,
+        "homepage": null,
+        "description": "Cache for Wordpress",
+        "version": "1.0",
+        "software": "Redis",
+        "repository": null,
+        "group": null,
+        "visibility": null,
+        "tags": null,
+        "networks": [
+          "content"
+        ],
+        "machine": "Pentium 1 1GB RAM",
+        "scale": null,
+        "host_type": "native",
+        "costs": null,
+        "capability": null,
+        "statuses": [],
+        "dataFlow": [],
+        "note": null,
+        "interfaces": [],
+        "lifecycle": "PLANNED",
+        "labels": {},
+        "fullyQualifiedIdentifier": {
+          "landscape": "nivio:example",
+          "group": null,
+          "identifier": "wordpress-redis"
+        }
+      },
+      "hex": {
+        "q": 3,
+        "r": 1,
+        "s": -4
+      }
+    },
+    {
+      "group": "content",
+      "type": "service",
+      "landscapeItem": {
+        "identifier": "wordpress-web",
+        "layer": "ingress",
+        "type": "server",
+        "name": null,
+        "short_name": null,
+        "icon": "vendor://apache/httpd",
+        "owner": null,
+        "team": "ops guys",
+        "contact": null,
+        "homepage": null,
+        "description": "Webserver",
+        "version": "2.4",
+        "software": "Apache",
+        "repository": null,
+        "group": "content",
+        "visibility": null,
+        "tags": null,
+        "networks": [
+          "content"
+        ],
+        "machine": "Pentium 1 512MB RAM",
+        "scale": null,
+        "host_type": "docker",
+        "costs": null,
+        "capability": null,
+        "statuses": [],
+        "dataFlow": [],
+        "note": null,
+        "interfaces": [],
+        "lifecycle": "PRODUCTION",
+        "labels": {},
+        "fullyQualifiedIdentifier": {
+          "landscape": "nivio:example",
+          "group": "content",
+          "identifier": "wordpress-web"
+        }
+      },
+      "hex": {
+        "q": 6,
+        "r": -1,
+        "s": -5
+      }
+    },
+    {
+      "group": "dashboard",
+      "type": "service",
+      "landscapeItem": {
+        "identifier": "kpi-dashboard",
+        "layer": "applications",
+        "type": "service",
+        "name": "Demo Dashboard",
+        "short_name": "dashboard",
+        "icon": null,
+        "owner": "Marketing",
+        "team": "alphateam",
+        "contact": "alphateam@acme.io",
+        "homepage": "https://acme.io",
+        "description": "Show our most important KPIs",
+        "version": "0.7",
+        "software": "custom",
+        "repository": "https://git.acme.io/dashboard",
+        "group": "dashboard",
+        "visibility": "public",
+        "tags": null,
+        "networks": [],
+        "machine": "s",
+        "scale": "1",
+        "host_type": "docker",
+        "costs": null,
+        "capability": null,
+        "statuses": [
+          {
+            "label": "stability",
+            "message": null,
+            "status": "green"
+          },
+          {
+            "label": "business_capability",
+            "message": null,
+            "status": "green"
+          }
+        ],
+        "dataFlow": [],
+        "note": null,
+        "interfaces": [
+          {
+            "description": "kpis",
+            "format": "json",
+            "url": "http://dashboard.acme.io/kpis"
+          }
+        ],
+        "lifecycle": "PRODUCTION",
+        "labels": {},
+        "fullyQualifiedIdentifier": {
+          "landscape": "nivio:example",
+          "group": "dashboard",
+          "identifier": "kpi-dashboard"
+        }
+      },
+      "hex": {
+        "q": 4,
+        "r": -2,
+        "s": -2
+      }
+    },
+    {
+      "group": "content",
+      "type": "service",
+      "landscapeItem": {
+        "identifier": "emailer",
+        "layer": "applications",
+        "type": "application",
+        "name": null,
+        "short_name": null,
+        "icon": null,
+        "owner": null,
+        "team": null,
+        "contact": null,
+        "homepage": null,
+        "description": "Reminder",
+        "version": "2.4",
+        "software": "PHP",
+        "repository": null,
+        "group": "content",
+        "visibility": null,
+        "tags": null,
+        "networks": [
+          "content"
+        ],
+        "machine": null,
+        "scale": null,
+        "host_type": "docker",
+        "costs": null,
+        "capability": null,
+        "statuses": [],
+        "dataFlow": [],
+        "note": null,
+        "interfaces": [],
+        "lifecycle": null,
+        "labels": {},
+        "fullyQualifiedIdentifier": {
+          "landscape": "nivio:example",
+          "group": "content",
+          "identifier": "emailer"
+        }
+      },
+      "hex": {
+        "q": 5,
+        "r": 0,
+        "s": -5
+      }
+    },
+    {
+      "group": "dashboard",
+      "type": "service",
+      "landscapeItem": {
+        "identifier": "dashboard-db",
+        "layer": "infrastructure",
+        "type": "database",
+        "name": null,
+        "short_name": null,
+        "icon": null,
+        "owner": null,
+        "team": "ops guys",
+        "contact": null,
+        "homepage": null,
+        "description": "Database for Dashboard",
+        "version": "10.3.11",
+        "software": "MariaDB",
+        "repository": null,
+        "group": "dashboard",
+        "visibility": null,
+        "tags": null,
+        "networks": [],
+        "machine": "Pentium 1 512MB RAM",
+        "scale": null,
+        "host_type": "docker",
+        "costs": null,
+        "capability": null,
+        "statuses": [],
+        "dataFlow": [],
+        "note": null,
+        "interfaces": [],
+        "lifecycle": null,
+        "labels": {},
+        "fullyQualifiedIdentifier": {
+          "landscape": "nivio:example",
+          "group": "dashboard",
+          "identifier": "dashboard-db"
+        }
+      },
+      "hex": {
+        "q": 2,
+        "r": -1,
+        "s": -1
+      }
+    },
+    {
+      "group": "ingress",
+      "type": "service",
+      "landscapeItem": {
+        "identifier": "keycloak",
+        "layer": "applications",
+        "type": "service",
+        "name": "Keycloak SSO",
+        "short_name": null,
+        "icon": "https://raw.githubusercontent.com/keycloak/keycloak-misc/master/logo/keycloak_icon_256px.png",
+        "owner": "Ops",
+        "team": null,
+        "contact": null,
+        "homepage": null,
+        "description": null,
+        "version": "4.4.0",
+        "software": null,
+        "repository": null,
+        "group": "ingress",
+        "visibility": null,
+        "tags": null,
+        "networks": [],
+        "machine": null,
+        "scale": null,
+        "host_type": null,
+        "costs": null,
+        "capability": null,
+        "statuses": [],
+        "dataFlow": [],
+        "note": null,
+        "interfaces": [],
+        "lifecycle": null,
+        "labels": {},
+        "fullyQualifiedIdentifier": {
+          "landscape": "nivio:example",
+          "group": "ingress",
+          "identifier": "keycloak"
+        }
+      },
+      "hex": {
+        "q": 0,
+        "r": 0,
+        "s": 0
+      }
+    },
+    {
+      "group": "content",
+      "type": "service",
+      "landscapeItem": {
+        "identifier": "blog-server",
+        "layer": "applications",
+        "type": "webservice",
+        "name": "Demo Blog",
+        "short_name": "blog",
+        "icon": "https://s.w.org/style/images/about/WordPress-logotype-wmark.png",
+        "owner": "Marketing",
+        "team": "alphateam",
+        "contact": "alphateam@acme.io",
+        "homepage": "https://acme.io",
+        "description": "Company blog",
+        "version": "1.0",
+        "software": "Wordpress",
+        "repository": "https://git.acme.io/blog-server",
+        "group": "content",
+        "visibility": "public",
+        "tags": [
+          "CMS"
+        ],
+        "networks": [
+          "content"
+        ],
+        "machine": "s",
+        "scale": "5",
+        "host_type": "docker",
+        "costs": null,
+        "capability": null,
+        "statuses": [
+          {
+            "label": "stability",
+            "message": null,
+            "status": "green"
+          },
+          {
+            "label": "business_capability",
+            "message": "needs finer control of content publishing like ACLs",
+            "status": "yellow"
+          },
+          {
+            "label": "security",
+            "message": "uses outdated version",
+            "status": "red"
+          }
+        ],
+        "dataFlow": [
+          {
+            "target": "nivio:example/dashboard/kpi-dashboard",
+            "description": "push",
+            "format": "json",
+            "source": "blog-server"
+          },
+          {
+            "target": "nivio:example/content/emailer",
+            "description": "reminder",
+            "format": null,
+            "source": "blog-server"
+          }
+        ],
+        "note": "to be replaced",
+        "interfaces": [
+          {
+            "description": "posts",
+            "format": "form",
+            "url": "http://acme.io/create"
+          },
+          {
+            "description": "api calls",
+            "format": "json",
+            "url": "http://acme.io/api"
+          },
+          {
+            "description": "user data",
+            "format": "form",
+            "url": "http://acme.io/whoami"
+          }
+        ],
+        "lifecycle": "END_OF_LIFE",
+        "labels": {},
+        "fullyQualifiedIdentifier": {
+          "landscape": "nivio:example",
+          "group": "content",
+          "identifier": "blog-server"
+        }
+      },
+      "hex": {
+        "q": 6,
+        "r": -1,
+        "s": -5
+      }
+    },
+    {
+      "type": "service",
+      "landscapeItem": {
+        "identifier": "wordpress-mariadb",
+        "layer": "infrastructure",
+        "type": "database",
+        "name": null,
+        "short_name": null,
+        "icon": null,
+        "owner": null,
+        "team": "ops guys",
+        "contact": null,
+        "homepage": null,
+        "description": "Database for Wordpress",
+        "version": "10.3.11",
+        "software": "MariaDB",
+        "repository": null,
+        "group": null,
+        "visibility": null,
+        "tags": null,
+        "networks": [
+          "content"
+        ],
+        "machine": "Pentium 1 512MB RAM",
+        "scale": null,
+        "host_type": "docker",
+        "costs": null,
+        "capability": null,
+        "statuses": [],
+        "dataFlow": [],
+        "note": null,
+        "interfaces": [],
+        "lifecycle": null,
+        "labels": {},
+        "fullyQualifiedIdentifier": {
+          "landscape": "nivio:example",
+          "group": null,
+          "identifier": "wordpress-mariadb"
+        }
+      },
+      "hex": {
+        "q": 2,
+        "r": 1,
+        "s": -3
+      }
+    }
+  ],
+  "groups": [
+    {
+      "id": "ingress",
+      "name": "ingress",
+      "group": "ingress",
+      "type": "group",
+      "x": -41,
+      "y": -1,
+      "width": 164,
+      "height": 130
+    },
+    {
+      "id": "content",
+      "name": "content",
+      "group": "content",
+      "type": "group",
+      "x": 549,
+      "y": 219,
+      "width": 274,
+      "height": 201
+    },
+    {
+      "id": "dashboard",
+      "name": "dashboard",
+      "group": "dashboard",
+      "type": "group",
+      "x": 279,
+      "y": -41,
+      "width": 240,
+      "height": 132
+    },
+    {
+      "id": "Common",
+      "name": "Common",
+      "group": "Common",
+      "type": "group",
+      "x": 159,
+      "y": 279,
+      "width": 222,
+      "height": 165
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-package de.bonndan.nivio.output.jgraphx.dto;
+package de.bonndan.nivio.output.map;
 
 
 // Generated code -- CC0 -- No Rights Reserved -- http://www.redblobgames.com/grids/hexagons/

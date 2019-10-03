@@ -27,4 +27,9 @@ To **get started** read the [documentation](https://nivio.readthedocs.io/en/mast
     git clone https://github.com/bonndan/nivio.git && cd nivio
     mvn clean package
     docker build -t nivio:latest
-    docker run -e SEED=/tmp/inout.yml --mount type=bind,source="$(pwd)"/src/test/resources/example,target=/tmp -p 8089:8080 nivio:latest 
+    docker run -e SEED=/tmp/inout.yml --mount type=bind,source="$(pwd)"/src/test/resources/example,target=/tmp -p 8089:8080 nivio:latest
+    
+https://medium.com/@itzgeoff/including-react-in-your-spring-boot-maven-build-ae3b8f8826e
+   * install nvm oder node > 5
+   nvm install-latest-npm  https://www.hostingadvice.com/how-to/update-node-js-latest-version/
+ 
