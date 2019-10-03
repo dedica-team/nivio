@@ -1,4 +1,4 @@
-package de.bonndan.nivio.output.jgraphx.dto;
+package de.bonndan.nivio.output.map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.bonndan.nivio.model.Item;
@@ -6,12 +6,17 @@ import de.bonndan.nivio.model.LandscapeItem;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
-
+import de.bonndan.nivio.model.LandscapeItem;
 
 import java.io.Serializable;
 
+/**
+ * JSON representation for custom rendering.
+ *
+ * The x,y coordinates are derived from the rendered mxGraph.
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Vertex implements Serializable {
+class XYMapItem extends MapItem {
 
     public String id;
     public String name;
@@ -23,9 +28,10 @@ public class Vertex implements Serializable {
     public String group;
     public String groupColor;
     public String type;
+
     public LandscapeItem service;
 
-    public Vertex(Item service, mxCell cell) {
+    XYMapItem(LandscapeItem service, mxCell cell) {
         type = "service";
         this.service = service;
 
@@ -46,7 +52,7 @@ public class Vertex implements Serializable {
         height = Math.round(geometry.getHeight());
     }
 
-    public Vertex(String groupName, mxCell cell) {
+    XYMapItem(String groupName, mxCell cell) {
         type = "group";
 
         mxGeometry geometry = cell.getGeometry();
@@ -66,8 +72,7 @@ public class Vertex implements Serializable {
         height = Math.round(geometry.getHeight());
     }
 
-    public Vertex() {
+    XYMapItem() {
 
     }
-
 }

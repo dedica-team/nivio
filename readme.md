@@ -32,3 +32,8 @@ Clone nivio, build and run a Docker image:
     docker run -e SEED=/tmp/inout.yml --mount type=bind,source="$(pwd)"/src/test/resources/example,target=/tmp -p 8080:8080 nivio:latest
     
   then open http://localhost:8080
+  
+https://medium.com/@itzgeoff/including-react-in-your-spring-boot-maven-build-ae3b8f8826e
+   * install nvm oder node > 5
+   nvm install-latest-npm  https://www.hostingadvice.com/how-to/update-node-js-latest-version/
+ 

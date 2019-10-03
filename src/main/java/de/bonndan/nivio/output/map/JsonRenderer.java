@@ -1,4 +1,4 @@
-package de.bonndan.nivio.output.jgraphx;
+package de.bonndan.nivio.output.map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,7 +8,6 @@ import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Renderer;
-import de.bonndan.nivio.output.jgraphx.dto.Vertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -27,7 +26,7 @@ public class JsonRenderer implements Renderer<String> {
 
     private final Renderer<mxGraph> mxGraphRenderer;
 
-    public JsonRenderer(Renderer<mxGraph> mxGraphRenderer) {
+    JsonRenderer(Renderer<mxGraph> mxGraphRenderer) {
         this.mxGraphRenderer = mxGraphRenderer;
     }
 
@@ -64,32 +63,11 @@ public class JsonRenderer implements Renderer<String> {
 
     private Serializable toDto(mxCell cell, Collection<Item> items) {
 
-        mxGeometry geometry = cell.getGeometry();
-
         LandscapeItem landscapeItem = null;
         if (!StringUtils.isEmpty(cell.getId()))
             landscapeItem = Items.find(FullyQualifiedIdentifier.from(cell.getId()), items).orElse(null);
-        Vertex vertex = new Vertex();
-        vertex.id = cell.getId();
-        vertex.name = (String) cell.getValue();
 
-        if (cell.getParent().getGeometry() != null) {
-            vertex.x = Math.round(geometry.getX() + cell.getParent().getGeometry().getX());
-            vertex.y = Math.round(geometry.getY() + cell.getParent().getGeometry().getY());
-        } else {
-            vertex.x = Math.round(geometry.getX());
-            vertex.y = Math.round(geometry.getY());
-        }
-        vertex.width = Math.round(geometry.getWidth());
-        vertex.height = Math.round(geometry.getHeight());
-
-        if (vertex.x == 0 && vertex.y == 0)
-            return null;
-
-        if (landscapeItem != null) {
-            vertex.service = landscapeItem;
-        }
-        return vertex;
+        return new XYMapItem(landscapeItem, cell);
     }
 
     @Override

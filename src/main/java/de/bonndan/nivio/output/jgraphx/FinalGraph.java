@@ -17,9 +17,6 @@ import de.bonndan.nivio.util.RootPath;
 import de.bonndan.nivio.output.Icon;
 import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.LocalServer;
-import de.bonndan.nivio.output.jgraphx.dto.HexVertex;
-import de.bonndan.nivio.output.jgraphx.dto.RenderedGraph;
-import de.bonndan.nivio.output.jgraphx.dto.Vertex;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +43,7 @@ public class FinalGraph {
     private final IconService iconService;
 
     private Logger logger = LoggerFactory.getLogger(FinalGraph.class);
-    private Map<Item, mxCell> serviceVertexes = new HashMap<>();
+    private Map<Item, mxCell> itemVertexes = new HashMap<>();
     private mxStylesheet stylesheet;
     private mxGraph graph;
     private Map<String, mxCell> groups = new HashMap<>();
@@ -76,8 +73,10 @@ public class FinalGraph {
         allGroupsGraph.getLayoutedGroups().forEach((groupName, mxCell) -> {
 
             Optional<Item> serviceItem = subgraphs.get(groupName).getServiceVertexesWithRelativeOffset().entrySet().stream()
-                    .findFirst().map(serviceItemmxPointEntry -> (Item) serviceItemmxPointEntry.getKey());
-            LandscapeImpl landscape = serviceItem.map(Item::getLandscape).orElse(null); //TODO inefficient
+                    .findFirst()
+                    .map(entry -> (Item) entry.getKey());
+
+            LandscapeImpl landscape = serviceItem.map(service -> service.getLandscape()).orElse(null);
 
             mxGeometry groupGeo = mxCell.getGeometry();
             mxCell groupContainer = (mxCell) graph.insertVertex(
@@ -93,7 +92,7 @@ public class FinalGraph {
 
             GroupGraph groupGraph = subgraphs.get(groupName);
             groupGraph.getServiceVertexesWithRelativeOffset().forEach((service, offset) -> {
-                serviceVertexes.put(
+                itemVertexes.put(
                         (Item) service,
                         addServiceVertex(offset, groupContainer, service)
                 );
@@ -104,20 +103,11 @@ public class FinalGraph {
         });
 
         addDataFlow(items);
-        renderExtras(serviceVertexes);
+
+        renderExtras(itemVertexes);
 
         return graph;
     }
-
-    public RenderedGraph getRenderedGraph() {
-
-        RenderedGraph renderedGraph = new RenderedGraph();
-        serviceVertexes.forEach((service, mxCell) -> renderedGraph.services.add(new HexVertex(service, mxCell, 1000)));
-        groups.forEach((groupName, mxCell) -> renderedGraph.groups.add(new HexVertex(groupName, mxCell, 1000)));
-
-        return renderedGraph;
-    }
-
 
     /**
      * Adds dataflow edges.
@@ -139,8 +129,8 @@ public class FinalGraph {
             String id = "df_" + service.getIdentifier() + "_" + rel.getTarget();
             logger.info("Adding relation " + id);
             graph.insertEdge(graph.getDefaultParent(), id, rel.getFormat(),
-                    serviceVertexes.get(rel.getSource()),
-                    serviceVertexes.get(rel.getTarget()),
+                    itemVertexes.get(rel.getSource()),
+                    itemVertexes.get(rel.getTarget()),
                     astyle
             );
 
@@ -351,4 +341,12 @@ public class FinalGraph {
         return mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
     }
 
+
+    public Map<String, mxCell> getGroupVertexes() {
+        return groups;
+    }
+
+    public Map<Item, mxCell> getItemVertexes() {
+        return itemVertexes;
+    }
 }
