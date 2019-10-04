@@ -1,7 +1,9 @@
 package de.bonndan.nivio.output.map;
 
 
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeItem;
+import de.bonndan.nivio.output.jgraphx.FinalGraph;
 
 import static java.lang.Math.sqrt;
 
@@ -14,7 +16,7 @@ import static java.lang.Math.sqrt;
 class HexMapItem extends MapItem {
 
     public final String type;
-    public final String group;
+    public final String groupColor;
     private final long x;
     private final long y;
     private final int size;
@@ -22,7 +24,7 @@ class HexMapItem extends MapItem {
     public HexMapItem(XYMapItem i, int size) {
         this.size = size;
         this.type = i.type;
-        this.group = i.group;
+        this.groupColor = FinalGraph.getGroupColor(i.service.getGroup(), ((Item)i.service).getLandscape().getConfig()); //TODO
         this.landscapeItem = i.service;
         this.x = i.x;
         this.y = i.y;

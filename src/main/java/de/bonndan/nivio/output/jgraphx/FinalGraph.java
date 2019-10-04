@@ -353,7 +353,7 @@ public class FinalGraph {
         return getGroupColor(item.getGroup(), item.getLandscape().getConfig());
     }
 
-    private String getGroupColor(String name, LandscapeConfig config) {
+    public static String getGroupColor(String name, LandscapeConfig config) {
 
         if (config == null)
             return "333333";

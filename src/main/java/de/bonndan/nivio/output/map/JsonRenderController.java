@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.api.NotFoundException;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
+import de.bonndan.nivio.output.Icon;
 import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.jgraphx.FinalGraph;
 import de.bonndan.nivio.output.jgraphx.JGraphXRenderer;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +22,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Controller
@@ -53,16 +58,13 @@ public class JsonRenderController {
         try {
             FinalGraph graph = new FinalGraph(iconService);
             jGraphXRenderer.getMxGraph(landscape.get(), graph);
-            RenderedMap from = RenderedMap.from(graph);
-            MapItem[] items = from.items.toArray(MapItem[]::new);
-            from.items.clear();
-            Arrays.stream(items).forEach((i -> from.items.add(new HexMapItem((XYMapItem) i, size == null ? 100 : size))));
+            RenderedXYMap xyMap = getRenderedMap(graph);
 
             HttpHeaders headers = new HttpHeaders();
             ObjectMapper objectMapper = new ObjectMapper();
             headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
             return new ResponseEntity<>(
-                    objectMapper.writeValueAsString(from),
+                    objectMapper.writeValueAsString(getRenderedHexMap(xyMap)),
                     headers,
                     HttpStatus.OK
             );
@@ -70,6 +72,67 @@ public class JsonRenderController {
             logger.warn("Could not render graph: " );
             throw ex;
         }
+    }
+
+    private RenderedXYMap getRenderedMap(FinalGraph graph) {
+        RenderedXYMap renderedMap = RenderedXYMap.from(graph);
+
+        AtomicInteger minX = new AtomicInteger(0);
+        AtomicInteger maxX = new AtomicInteger(0);
+        AtomicInteger minY = new AtomicInteger(0);
+        AtomicInteger maxY =  new AtomicInteger(0);
+        renderedMap.items.forEach(item -> {
+            if (item.x < minX.get())
+                minX.set((int) item.x);
+            if (item.x > maxX.get())
+                maxX.set((int) item.x);
+            if (item.y < minY.get())
+                minY.set((int) item.y);
+            if (item.y > maxY.get())
+                maxY.set((int) item.y);
+        });
+
+        renderedMap.width = maxX.get() - minX.get();
+        renderedMap.height = maxY.get() - minY.get();
+
+        return renderedMap;
+    }
+
+    @NotNull
+    private RenderedHexMap getRenderedHexMap(RenderedXYMap renderedMap) {
+        MapItem[] items = renderedMap.items.toArray(MapItem[]::new);
+        int size = Math.max(renderedMap.width, renderedMap.height) / 40;
+
+        List<HexMapItem> hexmapItems = new ArrayList<>();
+        RenderedHexMap renderedHexMap = new RenderedHexMap();
+        Arrays.stream(items).forEach((i -> {
+            HexMapItem hmi = new HexMapItem((XYMapItem) i, size);
+            hexmapItems.add(hmi);
+        }));
+        renderedHexMap.items.addAll(hexmapItems);
+
+        AtomicInteger minQ = new AtomicInteger(0);
+        AtomicInteger maxQ = new AtomicInteger(0);
+        AtomicInteger minR = new AtomicInteger(0);
+        AtomicInteger maxR =  new AtomicInteger(0);
+        hexmapItems.forEach(xyMapItem -> {
+            Hex hex = xyMapItem.getHex();
+            if (hex.q < minQ.get())
+                minQ.set(hex.q);
+            if (hex.q > maxQ.get())
+                maxQ.set(hex.q);
+            if (hex.r < minR.get())
+                minR.set(hex.r);
+            if (hex.r > maxR.get())
+                maxR.set(hex.r);
+        });
+
+        renderedHexMap.minQ = minQ.get();
+        renderedHexMap.maxQ = maxQ.get();
+        renderedHexMap.minR = minR.get();
+        renderedHexMap.maxR = maxR.get();
+
+        return renderedHexMap;
     }
 
     /**
