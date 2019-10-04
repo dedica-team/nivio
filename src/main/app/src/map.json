@@ -1,6 +1,7 @@
 {
   "items": [
     {
+      "groupColor": "333333",
       "type": "service",
       "landscapeItem": {
         "identifier": "wordpress-redis",
@@ -41,13 +42,13 @@
         }
       },
       "hex": {
-        "q": 3,
-        "r": 1,
-        "s": -4
+        "q": 11,
+        "r": 6,
+        "s": -17
       }
     },
     {
-      "group": "content",
+      "groupColor": "24a0ed",
       "type": "service",
       "landscapeItem": {
         "identifier": "wordpress-web",
@@ -88,13 +89,13 @@
         }
       },
       "hex": {
-        "q": 6,
-        "r": -1,
-        "s": -5
+        "q": 27,
+        "r": -3,
+        "s": -24
       }
     },
     {
-      "group": "dashboard",
+      "groupColor": "C18AEA",
       "type": "service",
       "landscapeItem": {
         "identifier": "kpi-dashboard",
@@ -122,12 +123,12 @@
         "capability": null,
         "statuses": [
           {
-            "label": "stability",
+            "label": "business_capability",
             "message": null,
             "status": "green"
           },
           {
-            "label": "business_capability",
+            "label": "stability",
             "message": null,
             "status": "green"
           }
@@ -150,13 +151,13 @@
         }
       },
       "hex": {
-        "q": 4,
-        "r": -2,
-        "s": -2
+        "q": 15,
+        "r": -7,
+        "s": -8
       }
     },
     {
-      "group": "content",
+      "groupColor": "24a0ed",
       "type": "service",
       "landscapeItem": {
         "identifier": "emailer",
@@ -197,13 +198,13 @@
         }
       },
       "hex": {
-        "q": 5,
-        "r": 0,
-        "s": -5
+        "q": 22,
+        "r": -1,
+        "s": -21
       }
     },
     {
-      "group": "dashboard",
+      "groupColor": "C18AEA",
       "type": "service",
       "landscapeItem": {
         "identifier": "dashboard-db",
@@ -242,13 +243,13 @@
         }
       },
       "hex": {
-        "q": 2,
-        "r": -1,
-        "s": -1
+        "q": 12,
+        "r": -6,
+        "s": -6
       }
     },
     {
-      "group": "ingress",
+      "groupColor": "740432",
       "type": "service",
       "landscapeItem": {
         "identifier": "keycloak",
@@ -287,13 +288,13 @@
         }
       },
       "hex": {
-        "q": 0,
-        "r": 0,
-        "s": 0
+        "q": 1,
+        "r": 1,
+        "s": -2
       }
     },
     {
-      "group": "content",
+      "groupColor": "24a0ed",
       "type": "service",
       "landscapeItem": {
         "identifier": "blog-server",
@@ -330,14 +331,14 @@
             "status": "green"
           },
           {
-            "label": "business_capability",
-            "message": "needs finer control of content publishing like ACLs",
-            "status": "yellow"
-          },
-          {
             "label": "security",
             "message": "uses outdated version",
             "status": "red"
+          },
+          {
+            "label": "business_capability",
+            "message": "needs finer control of content publishing like ACLs",
+            "status": "yellow"
           }
         ],
         "dataFlow": [
@@ -362,14 +363,14 @@
             "url": "http://acme.io/create"
           },
           {
-            "description": "api calls",
-            "format": "json",
-            "url": "http://acme.io/api"
-          },
-          {
             "description": "user data",
             "format": "form",
             "url": "http://acme.io/whoami"
+          },
+          {
+            "description": "api calls",
+            "format": "json",
+            "url": "http://acme.io/api"
           }
         ],
         "lifecycle": "END_OF_LIFE",
@@ -381,12 +382,13 @@
         }
       },
       "hex": {
-        "q": 6,
-        "r": -1,
-        "s": -5
+        "q": 26,
+        "r": -5,
+        "s": -21
       }
     },
     {
+      "groupColor": "333333",
       "type": "service",
       "landscapeItem": {
         "identifier": "wordpress-mariadb",
@@ -427,52 +429,15 @@
         }
       },
       "hex": {
-        "q": 2,
-        "r": 1,
-        "s": -3
+        "q": 7,
+        "r": 7,
+        "s": -14
       }
     }
   ],
-  "groups": [
-    {
-      "id": "ingress",
-      "name": "ingress",
-      "group": "ingress",
-      "type": "group",
-      "x": -41,
-      "y": -1,
-      "width": 164,
-      "height": 130
-    },
-    {
-      "id": "content",
-      "name": "content",
-      "group": "content",
-      "type": "group",
-      "x": 549,
-      "y": 219,
-      "width": 274,
-      "height": 201
-    },
-    {
-      "id": "dashboard",
-      "name": "dashboard",
-      "group": "dashboard",
-      "type": "group",
-      "x": 279,
-      "y": -41,
-      "width": 240,
-      "height": 132
-    },
-    {
-      "id": "Common",
-      "name": "Common",
-      "group": "Common",
-      "type": "group",
-      "x": 159,
-      "y": 279,
-      "width": 222,
-      "height": 165
-    }
-  ]
+  "groups": [],
+  "minQ": 0,
+  "maxQ": 27,
+  "minR": -7,
+  "maxR": 7
 }

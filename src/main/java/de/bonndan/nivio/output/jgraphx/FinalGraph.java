@@ -341,7 +341,6 @@ public class FinalGraph {
         return mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
     }
 
-
     public Map<String, mxCell> getGroupVertexes() {
         return groups;
     }

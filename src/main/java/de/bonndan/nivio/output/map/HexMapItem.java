@@ -1,8 +1,9 @@
 package de.bonndan.nivio.output.map;
 
 
-import de.bonndan.nivio.model.LandscapeItem;
+import de.bonndan.nivio.model.Item;
 
+import static de.bonndan.nivio.output.Color.getGroupColor;
 import static java.lang.Math.sqrt;
 
 /**
@@ -11,10 +12,10 @@ import static java.lang.Math.sqrt;
  * https://stackoverflow.com/questions/20734438/algorithm-to-generate-a-hexagonal-grid-with-coordinate-system/20751975#20751975
  * https://www.redblobgames.com/grids/hexagons/#rounding
  */
-class HexMapItem extends MapItem {
+class HexMapItem extends XYMapItem {
 
     public final String type;
-    public final String group;
+    public final String groupColor;
     private final long x;
     private final long y;
     private final int size;
@@ -22,7 +23,7 @@ class HexMapItem extends MapItem {
     public HexMapItem(XYMapItem i, int size) {
         this.size = size;
         this.type = i.type;
-        this.group = i.group;
+        this.groupColor = getGroupColor(i.service.getGroup(), ((Item)i.service).getLandscape()); //TODO
         this.landscapeItem = i.service;
         this.x = i.x;
         this.y = i.y;

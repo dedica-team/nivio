@@ -19,10 +19,21 @@ body {
 svg {
 
 }
+
 svg g {
+  stroke: #3F51B5;
+  stroke-width: 0.3;
+}
+
+svg g .service {
   fill: #3F51B5;
   fill-opacity: 0.6;
 }
+
+svg g .other {
+  fill: transparent;
+}
+
 svg g:hover {
   fill-opacity: 1;
 }
@@ -36,8 +47,7 @@ svg g polygon {
   transition: fill-opacity .2s;
 }
 svg g text {
-  font-size: 0.3em;
-  fill: #FFFFFF;
+
   fill-opacity: 0.4;
   transition: fill-opacity .2s;
 }
