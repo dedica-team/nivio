@@ -9,6 +9,7 @@ import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.URLHelper;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,6 +21,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -49,8 +51,17 @@ public class ApiController {
         Iterable<LandscapeImpl> all = landscapeRepository.findAll();
 
         return StreamSupport.stream(all.spliterator(), false)
-                .map(LandscapeDTO::from)
+                .map(createDTO())
                 .collect(Collectors.toList());
+    }
+
+    @NotNull
+    private Function<LandscapeImpl, LandscapeDTO> createDTO() {
+        return landscape -> {
+            LandscapeDTO dto = LandscapeDTOFactory.from(landscape);
+            LandscapeDTOFactory.addLinks(dto);
+            return dto;
+        };
     }
 
     @RequestMapping(path = "/landscape/{identifier}")
@@ -59,7 +70,7 @@ public class ApiController {
         if (landscape == null)
             return ResponseEntity.notFound().build();
 
-        return new ResponseEntity<>(LandscapeDTO.from(landscape), HttpStatus.OK);
+        return new ResponseEntity<>(createDTO().apply(landscape), HttpStatus.OK);
     }
 
     /**

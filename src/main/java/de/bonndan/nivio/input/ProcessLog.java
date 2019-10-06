@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.api.LandscapeDTOFactory;
 import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
@@ -65,7 +66,7 @@ public class ProcessLog {
         if (landscape == null)
             return null;
 
-        return LandscapeDTO.from(landscape);
+        return LandscapeDTOFactory.from(landscape);
     }
 
     public List<Entry> getMessages() {
