@@ -9,14 +9,15 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
 import java.net.MalformedURLException;
 
 @SpringBootApplication
 @EnableConfigurationProperties
+@EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 public class Application {
 
     private final static Logger log = LoggerFactory.getLogger(Application.class);
