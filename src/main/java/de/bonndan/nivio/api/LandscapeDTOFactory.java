@@ -4,6 +4,7 @@ import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.docs.DocsController;
 import de.bonndan.nivio.output.jgraphx.JGraphXRenderController;
+import org.springframework.http.MediaType;
 
 import java.io.IOException;
 
@@ -29,11 +30,22 @@ public class LandscapeDTOFactory {
     }
 
     public static void addLinks(LandscapeDTO dto) {
-        dto.add(linkTo(methodOn(ApiController.class).landscape(dto.getIdentifier())).withSelfRel());
+        dto.add(linkTo(methodOn(ApiController.class).landscape(dto.getIdentifier()))
+                .withSelfRel()
+                .withMedia(MediaType.APPLICATION_JSON_UTF8_VALUE)
+        );
         dto.add(linkTo(methodOn(ApiController.class).items(dto.getIdentifier())).withRel("items"));
-        dto.add(linkTo(methodOn(ApiController.class).reindex(dto.getIdentifier())).withRel("reindex"));
+        dto.add(linkTo(methodOn(ApiController.class).reindex(dto.getIdentifier()))
+                .withRel("reindex")
+                .withMedia(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .withTitle("Reindex the source")
+        );
         try {
-            dto.add(linkTo(methodOn(JGraphXRenderController.class).pngResource(dto.getIdentifier())).withRel("png"));
+            dto.add(linkTo(methodOn(JGraphXRenderController.class).pngResource(dto.getIdentifier()))
+                    .withRel("png")
+                    .withMedia(MediaType.IMAGE_PNG_VALUE)
+                    .withTitle("Rendered Landscape")
+            );
         } catch (IOException e) {
             e.printStackTrace();
         }
