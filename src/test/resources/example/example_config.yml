@@ -5,3 +5,14 @@ config:
   groups:
     test1:
       color: "#234234"
+
+groups:
+  - identifier: groupA
+    owner: Joe
+    team: A-Team
+    note: abc
+    contact: mailq@asd.com
+    color: "#234234"
+    items:
+      - blog-server
+      - "identifier LIKE 'crappy_dockername-23%'"

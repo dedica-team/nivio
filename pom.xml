@@ -195,6 +195,7 @@
     </dependencies>
 
     <build>
+        <finalName>nivio</finalName>
         <resources>
             <resource>
                 <directory>src/test/resources</directory>
