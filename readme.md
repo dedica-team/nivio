@@ -29,6 +29,6 @@ Clone nivio, build and run a Docker image:
     git clone https://github.com/bonndan/nivio.git && cd nivio
     mvn clean package
     docker build -t nivio:latest .
-    docker run -e SEED=/tmp/inout.yml --mount type=bind,source="$(pwd)"/src/test/resources/example,target=/tmp nivio:latest
+    docker run -e SEED=/tmp/inout.yml --mount type=bind,source="$(pwd)"/src/test/resources/example,target=/tmp -p 8080:8080 nivio:latest
     
   then open http://localhost:8080

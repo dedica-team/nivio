@@ -158,10 +158,9 @@ public class LandscapeDescription implements Landscape {
 
     /**
      * For compatibility with source references, items can be added directly to the env description.
-     * @Deprecated
      */
-    public void setServices(List<ItemDescription> services) {
-        addItems(services);
+    public void setItems(List<ItemDescription> items) {
+        addItems(items);
     }
 
     @Override
