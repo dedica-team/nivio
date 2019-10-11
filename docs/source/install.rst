@@ -13,7 +13,7 @@ The Docker image is about 350MB and can be started with:
 
 .. code-block:: bash
 
-    docker run -e DEMO=1 bonndan/nivio:latest
+    docker run -e DEMO=1 bonndan/nivio
 
 Demo mode
 ---------
