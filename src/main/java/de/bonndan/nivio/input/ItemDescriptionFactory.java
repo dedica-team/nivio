@@ -24,14 +24,10 @@ public interface ItemDescriptionFactory {
             existing.setLayer(increment.getLayer());
         if (increment.getDescription() != null)
             existing.setDescription(increment.getDescription());
-        if (increment.getShort_name() != null)
-            existing.setShort_name(increment.getShort_name());
+        if (increment.getShortName() != null)
+            existing.setShortName(increment.getShortName());
         if (increment.getIcon() != null)
             existing.setIcon(increment.getIcon());
-        if (increment.getHomepage() != null)
-            existing.setHomepage(increment.getHomepage());
-        if (increment.getRepository() != null)
-            existing.setRepository(increment.getRepository());
         if (increment.getContact() != null)
             existing.setContact(increment.getContact());
 
@@ -62,7 +58,7 @@ public interface ItemDescriptionFactory {
             existing.setLifecycle(increment.getLifecycle());
 
         assignSafe(increment.getScale(), existing::setScale);
-        assignSafe(increment.getHost_type(), existing::setHost_type);
+        assignSafe(increment.getHostType(), existing::setHostType);
 
         assignSafe(increment.getCosts(), existing::setCosts);
         assignSafe(increment.getCapability(), existing::setCapability);
@@ -74,11 +70,13 @@ public interface ItemDescriptionFactory {
             increment.getStatuses().forEach(existing::setStatus);
         }
 
+        existing.getLinks().putAll(increment.getLinks());
+
         assignSafe(increment.getDataFlow(), (df) -> df.forEach(existing::addDataFlow));
 
         assignSafe(increment.getInterfaces(), (set) -> set.forEach(intf -> existing.getInterfaces().add(intf)));
 
-        assignSafe(increment.getProvided_by(), (providers) -> providers.forEach(s -> existing.getProvided_by().add(s)));
+        assignSafe(increment.getProvidedBy(), (providers) -> providers.forEach(s -> existing.getProvidedBy().add(s)));
 
         assignSafe(increment.getNetworks(), (nets) -> nets.forEach(net -> existing.getNetworks().add(net)));
 
@@ -102,10 +100,6 @@ public interface ItemDescriptionFactory {
 
         assignSafeIfAbsent(template.getNote(), item.getNote(), item::setNote);
 
-        assignSafeIfAbsent(template.getHomepage(), item.getHomepage(), item::setHomepage);
-
-        assignSafeIfAbsent(template.getRepository(), item.getRepository(), item::setRepository);
-
         assignSafeIfAbsent(template.getContact(), item.getContact(), item::setContact);
 
         assignSafeIfAbsent(template.getOwner(), item.getOwner(), item::setOwner);
@@ -126,7 +120,7 @@ public interface ItemDescriptionFactory {
 
         assignSafeIfAbsent(template.getScale(), item.getScale(), item::setScale);
 
-        assignSafeIfAbsent(template.getHost_type(), item.getHost_type(), item::setHost_type);
+        assignSafeIfAbsent(template.getHostType(), item.getHostType(), item::setHostType);
 
         if (template.getTags() != null && item.getTags() == null)
             item.setTags(template.getTags());
@@ -155,10 +149,10 @@ public interface ItemDescriptionFactory {
             });
         }
 
-        if (template.getProvided_by() != null) {
-            template.getProvided_by().forEach(provider -> {
-                if (!item.getProvided_by().contains(provider))
-                    item.getProvided_by().add(provider);
+        if (template.getProvidedBy() != null) {
+            template.getProvidedBy().forEach(provider -> {
+                if (!item.getProvidedBy().contains(provider))
+                    item.getProvidedBy().add(provider);
             });
         }
 

@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,7 +37,7 @@ public interface LandscapeItem {
     String getType();
 
     String getName();
-    String getShort_name();
+    String getShortName();
     String getIcon();
 
     String getGroup();
@@ -45,9 +46,7 @@ public interface LandscapeItem {
 
     String getVersion();
 
-    String getHomepage();
-
-    String getRepository();
+    Map<String, URL> getLinks();
 
     String getContact();
 
@@ -65,7 +64,7 @@ public interface LandscapeItem {
 
     String getScale();
 
-    String getHost_type();
+    String getHostType();
 
     Set<String> getNetworks();
 

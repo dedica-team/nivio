@@ -76,7 +76,7 @@ public class EnvironmentFactory {
         if (landscapeDescription.getTemplates() != null) {
             landscapeDescription.getTemplates().forEach(tpl -> {
                 tpl.setName("");
-                tpl.setShort_name("");
+                tpl.setShortName("");
             });
         }
     }

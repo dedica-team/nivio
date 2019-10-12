@@ -45,20 +45,20 @@ class ItemDescriptionFactoryNivioTest {
         assertEquals("Demo Blog", service.getName());
         assertEquals("to be replaced", service.getNote());
         assertEquals("blog-server", service.getIdentifier());
-        assertEquals("blog", service.getShort_name());
+        assertEquals("blog", service.getShortName());
         assertEquals("1.0", service.getVersion());
         assertEquals("public", service.getVisibility());
         assertEquals("Wordpress", service.getSoftware());
         assertEquals("5", service.getScale());
-        assertEquals("https://acme.io", service.getHomepage());
-        assertEquals("https://git.acme.io/blog-server", service.getRepository());
+        assertEquals("https://acme.io", service.getLinks().get("homepage").toString());
+        assertEquals("https://git.acme.io/blog-server", service.getLinks().get("repository").toString());
         assertEquals("s", service.getMachine());
         assertNotNull(service.getNetworks());
         assertEquals("content", service.getNetworks().toArray()[0]);
         assertEquals("alphateam", service.getTeam());
         assertEquals("alphateam@acme.io", service.getContact());
         assertEquals("content", service.getGroup());
-        assertEquals("docker", service.getHost_type());
+        assertEquals("docker", service.getHostType());
         assertEquals(1, service.getTags().length);
         assertTrue(Arrays.asList(service.getTags()).contains("CMS"));
         assertEquals(Lifecycle.END_OF_LIFE, service.getLifecycle());
@@ -101,7 +101,7 @@ class ItemDescriptionFactoryNivioTest {
         assertEquals("Pentium 1 512MB RAM", web.getMachine());
         assertEquals("ops guys", web.getTeam());
         assertEquals("content", web.getNetworks().toArray()[0]);
-        assertEquals("docker", web.getHost_type());
+        assertEquals("docker", web.getHostType());
     }
 
     @Test

@@ -9,5 +9,7 @@ public interface InterfaceItem {
     String getFormat();
 
     URL getUrl();
+
+    String getProtection();
 }
 

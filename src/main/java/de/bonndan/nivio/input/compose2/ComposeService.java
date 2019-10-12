@@ -45,7 +45,7 @@ public class ComposeService {
           link targets become providers
          */
         if (links != null) {
-            links.forEach(s -> description.getProvided_by().add(s));
+            links.forEach(s -> description.getProvidedBy().add(s));
         }
 
         return description;

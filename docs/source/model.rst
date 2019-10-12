@@ -23,11 +23,11 @@ for technical separation. Any item can only be part of one group and layer.
 
     items:
       - identifier: blog-server
-        short_name: blog1
+        shortName: blog1
         group: content
 
       - identifier: auth-gateway
-        short_name: blog1
+        shortName: blog1
         layer: ingress
         group: content
 
@@ -45,7 +45,7 @@ A item can have the following attributes:
 * **name** human readable, displayed name
 * **type** e.g. item, database, proxy, loadbalancer, ...
 * **layer** ingress, applications, or infrastructure
-* **short_name** abbreviation
+* **shortName** abbreviation
 * **capability** the capability the item provides for the business, or in case of infrastructure the technical purpose like enabling item discovery, configuration, secrets or persistence.
 * **version** any string describing a item version (e.g. 1.2.5)
 * **software** optional name of the used software/product
@@ -53,14 +53,13 @@ A item can have the following attributes:
 * **description** a short description
 * **team** technical owner
 * **contact** support/notification contact (email) may be addressed in case of errors
-* **homepage** url to more information
-* **repository** source code repo url
+* **link** a map/dictionary of urls to more information
 * **visibility** whether the item is publicly exposed
 * **tags** list of strings used as tag
 * **networks** list of network names (can be defined somewhere else)
 * **machine** description of the underlying virtual or physical machine
 * **scale** number of instances (or other description)
-* **host_type** e.g. docker, VM, bare metal
+* **hostType** e.g. docker, VM, bare metal
 * **note** any note attached to the item
 * **costs** running costs of the item. Stored as string
 * **lifecycle** life cycle phase. One of "planned", "integration", "production", "end of life" (abbrevs work)
@@ -76,7 +75,7 @@ A item can have the following attributes:
   * description: description
   * target: a item identifier
   * format: media type or binary format
-* **provided_by** array of references to other items (identifiers)
+* **providedBy** array of references to other items (identifiers)
 
 Item Identification and Referencing
 ------------------------------------

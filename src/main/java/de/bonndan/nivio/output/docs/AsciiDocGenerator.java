@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import static org.springframework.util.StringUtils.isEmpty;
 
@@ -63,10 +64,11 @@ public class AsciiDocGenerator {
         builder.append("[horizontal]" + NL);
         builder.append("FQI:: " + item.getFullyQualifiedIdentifier() + NL);
         builder.append("Name:: " + nice(item.getName()) + NL);
-        builder.append("Short Name:: " + nice(item.getShort_name()) + NL);
+        builder.append("Short Name:: " + nice(item.getShortName()) + NL);
         builder.append("Type:: " + item.getType() + NL);
-        builder.append("Homepage:: " + nice(item.getHomepage()) + NL);
-        builder.append("Repository:: " + nice(item.getRepository()) + NL);
+        builder.append("Links:: " + item.getLinks().entrySet().stream()
+                .map(stringURLEntry -> stringURLEntry.getValue().toString() + "[" + stringURLEntry.getKey() + "]")
+                .collect(Collectors.joining(" ")) + NL);
         builder.append("Tags:: " + nice(item.getTags()) + NL);
         builder.append("Contact:: " + nice(item.getContact()) + NL);
         builder.append("Team:: " + nice(item.getTeam()) + NL);

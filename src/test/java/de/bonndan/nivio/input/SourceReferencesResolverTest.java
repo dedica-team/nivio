@@ -42,7 +42,7 @@ public class SourceReferencesResolverTest {
 
         ItemDescription mapped = (ItemDescription) pick("blog-server", null, landscapeDescription.getItemDescriptions());
         assertNotNull(mapped);
-        assertEquals("blog1", mapped.getShort_name());
+        assertEquals("blog1", mapped.getShortName());
         assertEquals("name2", mapped.getName());
     }
 
@@ -129,7 +129,7 @@ public class SourceReferencesResolverTest {
 
         //other values from template
         assertNull(web.getName());
-        assertNull(web.getShort_name());
+        assertNull(web.getShortName());
         assertEquals("Wordpress", web.getSoftware());
         assertEquals("alphateam", web.getTeam());
         assertEquals("alphateam@acme.io", web.getContact());
@@ -165,8 +165,8 @@ public class SourceReferencesResolverTest {
         //the provider has been resolved using a query instead of naming a service
         ItemDescription providedbyBar = (ItemDescription) pick("crappy_dockername-78345", null, landscapeDescription.getItemDescriptions());
         assertNotNull(providedbyBar);
-        assertNotNull(providedbyBar.getProvided_by());
-        List<String> provided_by = providedbyBar.getProvided_by();
+        assertNotNull(providedbyBar.getProvidedBy());
+        List<String> provided_by = providedbyBar.getProvidedBy();
         String s = provided_by.get(0);
         assertEquals("crappy_dockername-2343a", s);
     }

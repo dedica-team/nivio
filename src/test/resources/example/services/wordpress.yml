@@ -4,7 +4,7 @@ items:
 - identifier: blog-server
   name: Demo Blog
   type: webservice
-  short_name: blog
+  shortName: blog
   icon: https://s.w.org/style/images/about/WordPress-logotype-wmark.png
   version: 1.0
   software: Wordpress
@@ -12,8 +12,9 @@ items:
   description: Company blog
   team: alphateam
   contact: alphateam@acme.io
-  homepage: https://acme.io
-  repository: https://git.acme.io/blog-server
+  links:
+    homepage: https://acme.io
+    repository: https://git.acme.io/blog-server
   group: content
   visibility: public
   tags:
@@ -22,7 +23,7 @@ items:
   - content
   machine: s
   scale: 5
-  host_type: docker
+  hostType: docker
   note: to be replaced
   lifecycle: EOL
   statuses:
@@ -52,7 +53,7 @@ items:
     target: external-billing
   - description: reminder
     target: emailer
-  provided_by:
+  providedBy:
   - wordpress-web
   - wordpress-mariadb
   - wordpress-redis
@@ -64,7 +65,7 @@ items:
   type: application
   networks:
     - content
-  host_type: docker
+  hostType: docker
   group: content
 
 #
@@ -84,7 +85,7 @@ items:
   team: ops guys
   networks:
   - content
-  host_type: docker
+  hostType: docker
   group: content
   lifecycle: production
 
@@ -99,7 +100,7 @@ items:
   team: ops guys
   networks:
   - content
-  host_type: docker
+  hostType: docker
   layer: infrastructure
 
 - description: Cache for Wordpress
@@ -114,7 +115,7 @@ items:
   team: ops guys
   networks:
   - content
-  host_type: native
+  hostType: native
   layer: infrastructure
   lifecycle: planned
 

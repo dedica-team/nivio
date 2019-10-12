@@ -140,7 +140,7 @@ class LandscapeDescriptionFactoryTest {
 
         assertEquals("webservice", template.getType());
         assertTrue(template.getName().isEmpty());
-        assertTrue(template.getShort_name().isEmpty());
+        assertTrue(template.getShortName().isEmpty());
     }
 
     @Test

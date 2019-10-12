@@ -71,15 +71,15 @@ public class ItemDescriptionFactoryTest {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
-        sd1.getProvided_by().add("db1");
+        sd1.getProvidedBy().add("db1");
 
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
-        increment.getProvided_by().add("redis");
+        increment.getProvidedBy().add("redis");
 
         ItemDescriptionFactory.assignNotNull(sd1, increment);
 
-        assertEquals(2, sd1.getProvided_by().size());
+        assertEquals(2, sd1.getProvidedBy().size());
     }
 
     @Test

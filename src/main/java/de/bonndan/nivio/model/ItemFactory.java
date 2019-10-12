@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.util.SafeAssign.assignSafe;
 
-public class ServiceFactory {
+public class ItemFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(ServiceFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(ItemFactory.class);
 
     public static Item fromDescription(LandscapeItem item, LandscapeImpl landscape) {
         if (item == null) {
@@ -24,7 +24,7 @@ public class ServiceFactory {
     }
 
     /**
-     * Assigns all values from the description except data flow and provided_by/provides. Description values
+     * Assigns all values from the description except data flow and providedBy/provides. Description values
      * overwrite all fields except the group
      */
     public static void assignAll(Item item, LandscapeItem description) {
@@ -37,7 +37,7 @@ public class ServiceFactory {
         item.setType(description.getType() != null ? description.getType() : LandscapeItem.TYPE_SERVICE);
 
         item.setNote(description.getNote());
-        item.setShort_name(description.getShort_name());
+        item.setShort_name(description.getShortName());
         item.setIcon(description.getIcon());
         item.setDescription(description.getDescription());
         item.setTags(description.getTags());
@@ -47,8 +47,7 @@ public class ServiceFactory {
         item.setVersion(description.getVersion());
         item.setInterfaces(description.getInterfaces().stream().map(ServiceInterface::new).collect(Collectors.toSet()));
 
-        item.setHomepage(description.getHomepage());
-        item.setRepository(description.getRepository());
+        item.getLinks().putAll(description.getLinks());
         item.setContact(description.getContact());
         item.setTeam(description.getTeam());
 
@@ -68,7 +67,7 @@ public class ServiceFactory {
                 }
             });
 
-        item.setHost_type(description.getHost_type());
+        item.setHostType(description.getHostType());
         item.setNetworks(description.getNetworks());
         item.setMachine(description.getMachine());
         item.setScale(description.getScale());

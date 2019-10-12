@@ -73,7 +73,7 @@ public class Indexer {
         newItems.forEach(
                 serviceDescription -> {
                     logger.info("Creating new service " + serviceDescription.getIdentifier() + " in env " + input.getIdentifier());
-                    Item created = ServiceFactory.fromDescription(serviceDescription, landscape);
+                    Item created = ItemFactory.fromDescription(serviceDescription, landscape);
                     landscape.addItem(created);
                     inLandscape.add(created);
                 }
@@ -102,7 +102,7 @@ public class Indexer {
 
                     logger.info("Updating item " + item.getIdentifier() + " in landscape " + input.getIdentifier());
 
-                    ServiceFactory.assignAll((Item) item, description);
+                    ItemFactory.assignAll((Item) item, description);
                     inLandscape.add((Item) item);
                 }
         );
@@ -150,7 +150,7 @@ public class Indexer {
                         service.getProvidedBy().clear();
                     }
 
-                    description.getProvided_by().forEach(providerName -> {
+                    description.getProvidedBy().forEach(providerName -> {
                         Item provider;
                         try {
                             var fqi = FullyQualifiedIdentifier.from(providerName);

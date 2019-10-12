@@ -12,6 +12,7 @@ public class ServiceInterface implements InterfaceItem {
     private String description;
     private String format;
     private URL url;
+    private String protection;
 
     public ServiceInterface() {
 
@@ -38,6 +39,11 @@ public class ServiceInterface implements InterfaceItem {
         return url;
     }
 
+    @Override
+    public String getProtection() {
+        return protection;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -56,5 +62,9 @@ public class ServiceInterface implements InterfaceItem {
 
     public void setItem(Item item) {
         this.item = item;
+    }
+
+    public void setProtection(String protection) {
+        this.protection = protection;
     }
 }

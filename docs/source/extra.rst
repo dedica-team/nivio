@@ -10,7 +10,7 @@ URL.
 
    items:
       - identifier: foo
-        short_name: blog1
+        shortName: blog1
         icon: http://my.custom/icon.png
 
 

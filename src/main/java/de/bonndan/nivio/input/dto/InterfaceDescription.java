@@ -11,6 +11,7 @@ public class InterfaceDescription implements InterfaceItem, Serializable {
     private String description;
     private String format;
     private URL url;
+    private String protection;
 
     public InterfaceDescription() {
 
@@ -39,6 +40,15 @@ public class InterfaceDescription implements InterfaceItem, Serializable {
     @Override
     public URL getUrl() {
         return url;
+    }
+
+    @Override
+    public String getProtection() {
+        return protection;
+    }
+
+    public void setProtection(String protection) {
+        this.protection = protection;
     }
 
     public void setUrl(URL url) {

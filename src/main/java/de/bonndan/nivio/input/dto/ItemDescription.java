@@ -6,6 +6,7 @@ import de.bonndan.nivio.model.*;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -29,7 +30,7 @@ public class ItemDescription implements LandscapeItem {
 
     private String note;
 
-    private String short_name;
+    private String shortName;
     private String icon;
 
     private String version;
@@ -38,15 +39,14 @@ public class ItemDescription implements LandscapeItem {
     private String description;
     private String team;
     private String contact;
-    private String homepage;
-    private String repository;
+    private Map<String, URL> links = new HashMap<>();
     private String group;
     private String visibility;
     private String[] tags;
     private Set<String> networks = new HashSet<>();
     private String machine;
     private String scale;
-    private String host_type;
+    private String hostType;
 
     private String costs;
     private String capability;
@@ -60,7 +60,7 @@ public class ItemDescription implements LandscapeItem {
     @JsonDeserialize(contentAs = DataFlowDescription.class)
     private Set<DataFlowDescription> dataFlow = new HashSet<>();
 
-    private List<String> provided_by = new ArrayList<>();
+    private List<String> providedBy = new ArrayList<>();
 
     private Lifecycle lifecycle;
 
@@ -127,12 +127,12 @@ public class ItemDescription implements LandscapeItem {
         this.note = note;
     }
 
-    public String getShort_name() {
-        return short_name;
+    public String getShortName() {
+        return shortName;
     }
 
-    public void setShort_name(String short_name) {
-        this.short_name = short_name;
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 
     @Override
@@ -192,20 +192,13 @@ public class ItemDescription implements LandscapeItem {
         this.contact = contact;
     }
 
-    public String getHomepage() {
-        return homepage;
+    @Override
+    public Map<String, URL> getLinks() {
+        return links;
     }
 
-    public void setHomepage(String homepage) {
-        this.homepage = homepage;
-    }
-
-    public String getRepository() {
-        return repository;
-    }
-
-    public void setRepository(String repository) {
-        this.repository = repository;
+    public void setLinks(Map<String, URL> links) {
+        this.links = links;
     }
 
     public String getGroup() {
@@ -266,16 +259,16 @@ public class ItemDescription implements LandscapeItem {
         this.scale = scale;
     }
 
-    public String getHost_type() {
-        return host_type;
+    public String getHostType() {
+        return hostType;
     }
 
     public Set<String> getNetworks() {
         return networks;
     }
 
-    public void setHost_type(String host_type) {
-        this.host_type = host_type;
+    public void setHostType(String hostType) {
+        this.hostType = hostType;
     }
 
     public Set<InterfaceItem> getInterfaces() {
@@ -300,12 +293,12 @@ public class ItemDescription implements LandscapeItem {
         this.dataFlow.add((DataFlowDescription) dataFlow);
     }
 
-    public List<String> getProvided_by() {
-        return provided_by;
+    public List<String> getProvidedBy() {
+        return providedBy;
     }
 
-    public void setProvided_by(List<String> provided_by) {
-        this.provided_by = provided_by;
+    public void setProvidedBy(List<String> providedBy) {
+        this.providedBy = providedBy;
     }
 
     public Set<StatusItem> getStatuses() {

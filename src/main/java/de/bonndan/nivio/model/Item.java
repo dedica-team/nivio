@@ -6,6 +6,7 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.net.URL;
 import java.util.*;
 
 public class Item implements LandscapeItem {
@@ -34,15 +35,13 @@ public class Item implements LandscapeItem {
 
     private String contact;
 
-    private String homepage;
+    private Map<String, URL> links = new HashMap<>();
 
     private String description;
 
     private String version;
 
     private String software;
-
-    private String repository;
 
     private String group;
 
@@ -56,7 +55,7 @@ public class Item implements LandscapeItem {
 
     private String scale;
 
-    private String host_type;
+    private String hostType;
 
     private String costs;
 
@@ -114,7 +113,7 @@ public class Item implements LandscapeItem {
         this.name = name;
     }
 
-    public String getShort_name() {
+    public String getShortName() {
         return short_name;
     }
 
@@ -179,20 +178,8 @@ public class Item implements LandscapeItem {
         this.contact = contact;
     }
 
-    public String getHomepage() {
-        return homepage;
-    }
-
-    public void setHomepage(String homepage) {
-        this.homepage = homepage;
-    }
-
-    public String getRepository() {
-        return repository;
-    }
-
-    public void setRepository(String repository) {
-        this.repository = repository;
+    public Map<String, URL> getLinks() {
+        return links;
     }
 
     public String getGroup() {
@@ -292,12 +279,12 @@ public class Item implements LandscapeItem {
         this.scale = scale;
     }
 
-    public String getHost_type() {
-        return host_type;
+    public String getHostType() {
+        return hostType;
     }
 
-    public void setHost_type(String host_type) {
-        this.host_type = host_type;
+    public void setHostType(String hostType) {
+        this.hostType = hostType;
     }
 
     public Set<DataFlowItem> getDataFlow() {

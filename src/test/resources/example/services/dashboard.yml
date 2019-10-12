@@ -11,21 +11,22 @@ items:
 
   - identifier: kpi-dashboard
     name: Demo Dashboard
-    short_name: dashboard
+    shortName: dashboard
     version: 0.7
     software: custom
     owner: Marketing
     description: Show our most important KPIs
     team: alphateam
     contact: alphateam@acme.io
-    homepage: https://acme.io
-    repository: https://git.acme.io/dashboard
+    links:
+      hompage: https://acme.io
+      repo: https://git.acme.io/dashboard
     group: dashboard
     visibility: public
     network: content
     machine: s
     scale: 1
-    host_type: docker
+    hostType: docker
     lifecycle: production
     statuses:
       - label: stability
@@ -36,7 +37,7 @@ items:
       - description: kpis
         format: json
         url: http://dashboard.acme.io/kpis
-    provided_by:
+    providedBy:
       - dashboard-db
       - keycloak
 
@@ -51,7 +52,7 @@ items:
     type: database
     team: ops guys
     network: content
-    host_type: docker
+    hostType: docker
     group: dashboard
 
 

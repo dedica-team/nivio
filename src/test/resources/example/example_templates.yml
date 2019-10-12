@@ -12,15 +12,16 @@ templates:
   - identifier: myfirsttemplate
     name: willnotbeused
     type: webservice
-    short_name: willnotbeused
+    shortName: willnotbeused
     version: 1.0
     software: Wordpress
     owner: Marketing
     description: Company blog
     team: alphateam
     contact: alphateam@acme.io
-    homepage: https://acme.io
-    repository: https://git.acme.io/blog-server
+    links:
+      homepage: https://acme.io
+      repository: https://git.acme.io/blog-server
     group: content
     visibility: public
     tags:
@@ -29,7 +30,7 @@ templates:
       - content
     machine: s
     scale: 5
-    host_type: docker
+    hostType: docker
     note: to be replaced
     lifecycle: production
     statuses:
@@ -57,7 +58,7 @@ templates:
         format: json
       - description: in-app purchases
         target: external-billing
-    provided_by:
+    providedBy:
       - wordpress-web
       - wordpress-mariadb
       - wordpress-redis

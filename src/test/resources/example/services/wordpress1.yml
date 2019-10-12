@@ -2,5 +2,5 @@ document_version: 1.0
 
 items:
   - identifier: blog-server
-    short_name: blog1
+    shortName: blog1
 

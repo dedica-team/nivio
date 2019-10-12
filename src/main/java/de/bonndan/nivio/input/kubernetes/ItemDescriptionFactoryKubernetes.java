@@ -88,7 +88,7 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
              targetId = selector.getOrDefault("app", null);
         if (!StringUtils.isEmpty(targetId)) {
             ServiceItems.find(targetId, group, items).ifPresent(provider -> {
-                ((ItemDescription) provider).getProvided_by().add(description.getIdentifier());
+                ((ItemDescription) provider).getProvidedBy().add(description.getIdentifier());
             });
         }
 

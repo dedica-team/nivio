@@ -186,7 +186,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(landscape1.getItems());
         Item blog1 = (Item) ServiceItems.pick("blog-server", null,landscape1.getItems());
         Assertions.assertNotNull(blog1);
-        assertEquals("blog", blog1.getShort_name());
+        assertEquals("blog", blog1.getShortName());
 
         Assertions.assertNotNull(landscape2);
         assertEquals("nivio:other", landscape2.getIdentifier());
@@ -194,7 +194,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(landscape2.getItems());
         Item blog2 = (Item) ServiceItems.pick("blog-server", null,landscape2.getItems());
         Assertions.assertNotNull(blog2);
-        assertEquals("blog1", blog2.getShort_name());
+        assertEquals("blog1", blog2.getShortName());
     }
 
     /**

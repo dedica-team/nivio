@@ -54,11 +54,11 @@ public class SourceReferencesResolver {
         itemDescriptions.forEach(description -> {
 
             //provider
-            List<String> provided_by = description.getProvided_by();
-            description.setProvided_by(new ArrayList<>());
-            provided_by.forEach(condition -> {
+            List<String> providedBy = description.getProvidedBy();
+            description.setProvidedBy(new ArrayList<>());
+            providedBy.forEach(condition -> {
                 ServiceItems.filter(condition, itemDescriptions)
-                        .forEach(result -> description.getProvided_by().add(result.getIdentifier()));
+                        .forEach(result -> description.getProvidedBy().add(result.getIdentifier()));
             });
 
             description.getDataFlow().forEach(dataFlowItem -> {

@@ -8,5 +8,5 @@ sources:
 
 templates:
   - identifier: providedByMariaDB
-    provided_by:
+    providedBy:
       - "identifier LIKE 'vehement_gerbil_mariabdb*'"
