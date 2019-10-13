@@ -9,24 +9,23 @@ import io.fabric8.kubernetes.api.model.PodBuilder;
 import io.fabric8.kubernetes.api.model.PodSpecBuilder;
 import io.fabric8.kubernetes.client.NamespacedKubernetesClient;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
-import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class KubernetesTest {
 
     private NamespacedKubernetesClient client;
     private KubernetesServer server;
 
-    //TODO check why @BeforeEach does not work
     @BeforeEach
     void setup() {
 
@@ -62,7 +61,6 @@ public class KubernetesTest {
     @Test
     public void testRead() throws IOException {
 
-        setup();
         SourceReference sourceReference = new SourceReference();
         sourceReference.setFormat(SourceFormat.KUBERNETES);
         sourceReference.setUrl("http://localhost:80?groupLabel=release&namespace=default");
