@@ -40,7 +40,7 @@ public class ServiceItems {
      */
     public static LandscapeItem pick(final String identifier, String group, final Collection<? extends LandscapeItem> items) {
         if (StringUtils.isEmpty(identifier)) {
-            throw new IllegalArgumentException("Identifier is empty");
+            throw new IllegalArgumentException("Identifier to pick is empty");
         }
 
         return find(identifier, group, items).orElseThrow(() ->
@@ -57,7 +57,7 @@ public class ServiceItems {
      */
     public static Optional<LandscapeItem> find(String identifier, String group, Collection<? extends LandscapeItem> items) {
         if (StringUtils.isEmpty(identifier)) {
-            throw new IllegalArgumentException("Identifier is empty");
+            throw new IllegalArgumentException("Identifier to find is empty");
         }
 
         List<LandscapeItem> found = findAll(identifier, group, items);

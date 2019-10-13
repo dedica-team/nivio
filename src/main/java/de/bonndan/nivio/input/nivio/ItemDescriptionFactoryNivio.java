@@ -22,11 +22,6 @@ public class ItemDescriptionFactoryNivio implements ItemDescriptionFactory {
     private static final Logger logger = LoggerFactory.getLogger(ItemDescriptionFactoryNivio.class);
     private static final ObjectMapper mapper = Mappers.gracefulYamlMapper;
 
-    static {
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-    }
-
     private final FileFetcher fetcher;
     private final URL baseUrl;
 

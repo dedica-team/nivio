@@ -191,7 +191,7 @@ class LandscapeDescriptionFactoryTest {
             return;
         }
 
-        fail();
+        fail("ReadingException was not thrown");
     }
 
     @Test
@@ -206,6 +206,6 @@ class LandscapeDescriptionFactoryTest {
             return;
         }
 
-        fail();
+        fail("ReadingException was not thrown");
     }
 }

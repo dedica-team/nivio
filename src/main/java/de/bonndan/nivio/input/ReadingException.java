@@ -33,7 +33,7 @@ public class ReadingException extends ProcessingException {
         }
 
 
-        return new ReadingException("XXX" + e.getPathReference(), e);
+        return new ReadingException(e.getMessage() + " in " + source, e);
     }
 
 }

@@ -1,5 +1,3 @@
-document_version: 1.0
-
 items:
 
   - identifier: keycloak
@@ -23,7 +21,8 @@ items:
       repo: https://git.acme.io/dashboard
     group: dashboard
     visibility: public
-    network: content
+    networks:
+      - content
     machine: s
     scale: 1
     hostType: docker
@@ -46,12 +45,11 @@ items:
     software: MariaDB
     version: 10.3.11
     identifier: dashboard-db
-    protocol: tcp
-    port: 3006
     machine: Pentium 1 512MB RAM
     type: database
     team: ops guys
-    network: content
+    networks:
+      - content
     hostType: docker
     group: dashboard
 

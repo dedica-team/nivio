@@ -1,5 +1,3 @@
-document_version: 1.0
-
 items:
 - identifier: blog-server
   name: Demo Blog
@@ -78,8 +76,6 @@ items:
   layer: ingress
   software: Apache
   version: 2.4
-  protocol: https
-  port: 443
   machine: Pentium 1 512MB RAM
   type: server
   team: ops guys
@@ -93,8 +89,6 @@ items:
   software: MariaDB
   version: 10.3.11
   identifier: wordpress-mariadb
-  protocol: tcp
-  port: 3006
   machine: Pentium 1 512MB RAM
   type: database
   team: ops guys
@@ -108,8 +102,6 @@ items:
   version: 1.0
   icon: vendor://redis
   identifier: wordpress-redis
-  protocol: tcp
-  port: 6379
   machine: Pentium 1 1GB RAM
   type: cache
   team: ops guys

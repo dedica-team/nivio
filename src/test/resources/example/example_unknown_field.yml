@@ -7,6 +7,7 @@ config:
       color: "#234234"
 
 items:
-  - match: "identifier LIKE 'crappy_dockername-23%'"
+  - identifier: abc
+    match: "identifier LIKE 'crappy_dockername-23%'"
     dataflow:
       - target: blog-server
