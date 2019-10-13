@@ -76,7 +76,7 @@ public class ApiController {
      */
     @RequestMapping(path = "/landscape", method = RequestMethod.POST)
     public ProcessLog create(@RequestBody String body) {
-        LandscapeDescription env = EnvironmentFactory.fromString(body);
+        LandscapeDescription env = EnvironmentFactory.fromString(body, "request body");
         return indexer.reIndex(env);
     }
 
@@ -172,6 +172,6 @@ public class ApiController {
             return process(EnvironmentFactory.fromString(fileFetcher.get(url), url));
         }
 
-        return process(EnvironmentFactory.fromString(landscape.getSource()));
+        return process(EnvironmentFactory.fromString(landscape.getSource(), landscape.getIdentifier() + " source"));
     }
 }

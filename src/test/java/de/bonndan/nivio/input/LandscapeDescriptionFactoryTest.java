@@ -23,8 +23,7 @@ import java.util.Map;
 
 import static de.bonndan.nivio.model.ServiceItems.pick;
 import static junit.framework.TestCase.assertNull;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -54,7 +53,7 @@ class LandscapeDescriptionFactoryTest {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_env.yml");
         String yaml = new String(Files.readAllBytes(file.toPath()));
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromString(yaml);
+        LandscapeDescription landscapeDescription = EnvironmentFactory.fromString(yaml, file.toString());
         assertEquals("Landscape example", landscapeDescription.getName());
         assertEquals("nivio:example", landscapeDescription.getIdentifier());
         assertEquals("mail@acme.org", landscapeDescription.getContact());
@@ -108,12 +107,13 @@ class LandscapeDescriptionFactoryTest {
             if ("java.util.Collections$UnmodifiableMap".equals(c.getName())) {
                 Field m = c.getDeclaredField("m");
                 m.setAccessible(true);
-                var x = (Map<String, String>)m.get(System.getenv());
+                var x = (Map<String, String>) m.get(System.getenv());
                 x.put("PRIVATE_TOKEN", "veryPrivateToken");
             }
-        };
+        }
+        ;
 
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromString(read);
+        LandscapeDescription landscapeDescription = EnvironmentFactory.fromString(read, file.toString());
         assertNotNull(landscapeDescription);
         assertEquals("veryPrivateToken", landscapeDescription.getSourceReferences().get(0).getHeaderTokenValue());
     }
@@ -178,5 +178,34 @@ class LandscapeDescriptionFactoryTest {
         assertFalse(config.getGroupConfig("notpresent").isPresent());
         assertTrue(config.getGroupConfig("test1").isPresent());
         assertEquals("#234234", config.getGroupConfig("test1").map(GroupConfig::getColor).get());
+    }
+
+    @Test
+    public void testReadUnknownField() {
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_unknown_field.yml");
+
+        try {
+            EnvironmentFactory.fromYaml(file);
+        } catch (ReadingException ex) {
+            assertTrue(ex.getMessage().contains("src/test/resources/example/example_unknown_field.yml contains unknown field 'match' in items/0/match"), ex.getMessage());
+            return;
+        }
+
+        fail();
+    }
+
+    @Test
+    public void testReadUnkownFile() {
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_xxx.yml");
+
+
+        try {
+            EnvironmentFactory.fromYaml(file);
+        } catch (ReadingException ex) {
+            assertTrue(ex.getMessage().contains("Could not find file"));
+            return;
+        }
+
+        fail();
     }
 }

@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.util.Mappers;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 
 public class EnvironmentFactory {
 
@@ -27,10 +29,12 @@ public class EnvironmentFactory {
                 LOGGER.warn("Got a seemingly empty file " + file + ". Skipping"); //TODO watcher issue
                 return null;
             }
-            LandscapeDescription landscapeDescription = fromString(content);
+            LandscapeDescription landscapeDescription = fromString(content, file.toString());
             landscapeDescription.setSource(file.toString());
             landscapeDescription.getSourceReferences().forEach(ref -> ref.setLandscapeDescription(landscapeDescription));
             return landscapeDescription;
+        } catch (NoSuchFileException e) {
+            throw new ReadingException("Could not find file " + file.getAbsolutePath(), e);
         } catch (IOException e) {
             throw new ReadingException("Failed to create an environment from file " + file.getAbsolutePath(), e);
         }
@@ -40,9 +44,10 @@ public class EnvironmentFactory {
      * Creates a new environment description and sets the given yaml as source.
      *
      * @param yaml source
+     * @param origin origin of the yaml for debugging
      * @return environment description
      */
-    public static LandscapeDescription fromString(String yaml) {
+    public static LandscapeDescription fromString(String yaml, String origin) {
 
         yaml = (new StringSubstitutor(StringLookupFactory.INSTANCE.environmentVariableStringLookup())).replace(yaml);
 
@@ -52,6 +57,8 @@ public class EnvironmentFactory {
             landscapeDescription.getSourceReferences().forEach(ref -> ref.setLandscapeDescription(landscapeDescription));
             sanitizeTemplates(landscapeDescription);
             return landscapeDescription;
+        } catch (JsonMappingException e) {
+            throw ReadingException.from(origin, e);
         } catch (IOException e) {
             throw new ReadingException("Failed to create an environment from yaml input string: " + e.getMessage(), e);
         }
@@ -66,7 +73,7 @@ public class EnvironmentFactory {
      * @return env description
      */
     public static LandscapeDescription fromString(String yaml, URL url) {
-        LandscapeDescription env = fromString(yaml);
+        LandscapeDescription env = fromString(yaml, url.toString());
         env.setSource(url.toString());
         return env;
     }

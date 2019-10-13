@@ -5,3 +5,8 @@ config:
   groups:
     test1:
       color: "#234234"
+
+items:
+  - match: "identifier LIKE 'crappy_dockername-23%'"
+    dataflow:
+      - target: blog-server
