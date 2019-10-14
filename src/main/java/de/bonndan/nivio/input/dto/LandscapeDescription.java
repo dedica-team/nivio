@@ -1,11 +1,14 @@
 package de.bonndan.nivio.input.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.model.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Configures an input.
@@ -55,6 +58,8 @@ public class LandscapeDescription implements Landscape {
     private LandscapeConfig config;
 
     private boolean isPartial = false;
+
+    private Set<GroupItem> groups = new HashSet<>();
 
     public void setIsPartial(boolean isPartial) {
         this.isPartial = isPartial;
@@ -185,5 +190,15 @@ public class LandscapeDescription implements Landscape {
     @Override
     public LandscapeConfig getConfig() {
         return config;
+    }
+
+    @Override
+    public Set<GroupItem> getGroups() {
+        return groups;
+    }
+
+    @JsonDeserialize(contentAs = GroupDescription.class)
+    public void setGroups(Set<GroupItem> groups) {
+        this.groups = groups;
     }
 }

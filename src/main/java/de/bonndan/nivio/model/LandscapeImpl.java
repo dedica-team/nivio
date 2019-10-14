@@ -37,6 +37,8 @@ public class LandscapeImpl implements Landscape {
 
     private LandscapeConfig config;
 
+    private Set<GroupItem> groups = new HashSet<>();
+
     public String getIdentifier() {
         return identifier;
     }
@@ -82,6 +84,11 @@ public class LandscapeImpl implements Landscape {
     @Override
     public LandscapeConfig getConfig() {
         return config == null ? new LandscapeConfig() : config;
+    }
+
+    @Override
+    public Set<GroupItem> getGroups() {
+        return groups;
     }
 
     public void setContact(String contact) {

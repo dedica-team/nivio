@@ -1,6 +1,7 @@
 package de.bonndan.nivio.model;
 
 import java.util.List;
+import java.util.Set;
 
 public interface Landscape {
 
@@ -18,4 +19,6 @@ public interface Landscape {
     List<StateProviderConfig> getStateProviders();
 
     LandscapeConfig getConfig();
+
+    Set<GroupItem> getGroups();
 }

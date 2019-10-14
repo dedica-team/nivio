@@ -5,11 +5,8 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.model.DataFlowItem;
-import de.bonndan.nivio.model.LandscapeConfig;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.model.LandscapeConfig.GroupConfig;
-import de.bonndan.nivio.model.LandscapeItem;
-import de.bonndan.nivio.model.StateProviderConfig;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.Test;
 
@@ -20,6 +17,7 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static de.bonndan.nivio.model.ServiceItems.pick;
 import static junit.framework.TestCase.assertNull;
@@ -207,5 +205,18 @@ class LandscapeDescriptionFactoryTest {
         }
 
         fail("ReadingException was not thrown");
+    }
+
+    @Test
+    public void testReadGroups() {
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_groups.yml");
+        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+
+        Set<GroupItem> groups = landscapeDescription.getGroups();
+        assertNotNull(groups);
+        assertEquals(1, groups.size());
+        GroupItem groupItem = groups.iterator().next();
+        assertNotNull(groupItem);
+        assertEquals("groupA", groupItem.getIdentifier());
     }
 }

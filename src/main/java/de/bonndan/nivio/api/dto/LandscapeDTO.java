@@ -1,11 +1,13 @@
 package de.bonndan.nivio.api.dto;
 
+import de.bonndan.nivio.model.GroupItem;
 import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.StateProviderConfig;
 import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * API representation of a landscape.
@@ -45,6 +47,11 @@ public class LandscapeDTO extends ResourceSupport implements Landscape  {
 
     @Override
     public LandscapeConfig getConfig() {
+        return null;
+    }
+
+    @Override
+    public Set<GroupItem> getGroups() {
         return null;
     }
 }

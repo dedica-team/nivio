@@ -10,7 +10,7 @@ groups:
   - identifier: groupA
     owner: Joe
     team: A-Team
-    note: abc
+    description: abc
     contact: mailq@asd.com
     color: "#234234"
     items:
