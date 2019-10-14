@@ -1,21 +1,18 @@
-package de.bonndan.nivio.input.dto;
+package de.bonndan.nivio.model;
 
-import de.bonndan.nivio.model.GroupItem;
-import de.bonndan.nivio.model.LandscapeItem;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-public class GroupDescription implements GroupItem {
+public class Group implements GroupItem {
 
     private String identifier;
     private String owner;
-    private String team;
     private String description;
     private String contact;
+    private String team;
     private String color;
-    private List<String> items = new ArrayList<>();
+    private Map<String, URL> links = new HashMap<>();
 
     @Override
     public String getIdentifier() {
@@ -47,6 +44,11 @@ public class GroupDescription implements GroupItem {
         return color;
     }
 
+    @Override
+    public Map<String, URL> getLinks() {
+        return links;
+    }
+
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
@@ -55,29 +57,19 @@ public class GroupDescription implements GroupItem {
         this.owner = owner;
     }
 
-    public void setTeam(String team) {
-        this.team = team;
-    }
-
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public void setContact(String contact) {
-        this.contact = contact;
+    public void setTeam(String team) {
+        this.team = team;
     }
 
     public void setColor(String color) {
         this.color = color;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof GroupDescription) {
-            return identifier != null && ((GroupDescription) obj).identifier != null &&
-                    identifier.equals(((GroupDescription) obj).getIdentifier());
-        } else {
-            return false;
-        }
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 }

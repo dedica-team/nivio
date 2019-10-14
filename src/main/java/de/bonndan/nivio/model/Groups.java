@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static de.bonndan.nivio.util.SafeAssign.assignSafeIfAbsent;
 import static org.springframework.util.StringUtils.isEmpty;
 
 public class Groups {
@@ -27,10 +28,23 @@ public class Groups {
     }
 
     /**
+     * Merges all absent values from the second param into the first.
+     */
+    public static void merge(final Group group, GroupItem groupItem) {
+        assignSafeIfAbsent(groupItem.getColor(), group.getColor(), group::setColor);
+        assignSafeIfAbsent(groupItem.getTeam(), group.getTeam(), group::setTeam);
+        assignSafeIfAbsent(groupItem.getContact(), group.getColor(), group::setContact);
+        assignSafeIfAbsent(groupItem.getDescription(), group.getDescription(), group::setDescription);
+        assignSafeIfAbsent(groupItem.getOwner(), group.getOwner(), group::setOwner);
+        assignSafeIfAbsent(groupItem.getOwner(), group.getOwner(), group::setOwner);
+        groupItem.getLinks().forEach((s, url) -> group.getLinks().putIfAbsent(s, url));
+    }
+
+    /**
      * Add a service into a group by a custom field
      *
      * @param groupKey the group key
-     * @param service service to add
+     * @param service  service to add
      */
     public void add(String groupKey, LandscapeItem service) {
 
@@ -55,7 +69,7 @@ public class Groups {
      * Groups services by any string field (e.g. owner).
      *
      * @param supplier function providing the group key for each item
-     * @param items services
+     * @param items    services
      * @return grouped services
      */
     public static Groups by(Function<LandscapeItem, String> supplier, List<LandscapeItem> items) {

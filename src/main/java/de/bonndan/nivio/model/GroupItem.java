@@ -1,6 +1,7 @@
 package de.bonndan.nivio.model;
 
-import java.util.Set;
+import java.net.URL;
+import java.util.Map;
 
 public interface GroupItem {
 
@@ -16,5 +17,5 @@ public interface GroupItem {
 
     String getColor();
 
-    Set<LandscapeItem> getItems();
+    Map<String, URL> getLinks();
 }

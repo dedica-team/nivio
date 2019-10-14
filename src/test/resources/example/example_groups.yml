@@ -7,7 +7,8 @@ config:
       color: "#234234"
 
 groups:
-  - identifier: groupA
+  groupA:
+    identifier: groupA
     owner: Joe
     team: A-Team
     description: abc

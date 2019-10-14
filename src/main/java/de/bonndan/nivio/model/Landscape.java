@@ -1,7 +1,7 @@
 package de.bonndan.nivio.model;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 public interface Landscape {
 
@@ -20,5 +20,8 @@ public interface Landscape {
 
     LandscapeConfig getConfig();
 
-    Set<GroupItem> getGroups();
+    /**
+     * Return the groups by their identifier.
+     */
+    Map<String, GroupItem> getGroups();
 }

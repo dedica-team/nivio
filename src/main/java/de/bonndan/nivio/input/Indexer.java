@@ -48,6 +48,13 @@ public class Indexer {
 
         try {
             sourceReferencesResolver.resolve(input, logger);
+            input.getGroups().forEach( (identifier, groupItem) -> {
+                Group g = new Group();
+                g.setIdentifier(identifier);
+                Groups.merge(g, groupItem);
+
+                landscape.addGroup(g);
+            });
 
             diff(input, landscape, logger);
             linkDataflow(input, landscape, logger);

@@ -99,4 +99,23 @@ public class GroupsTest {
         assertFalse(all.containsKey(Groups.COMMON));
         assertFalse(all.containsKey("content"));
     }
+
+    @Test
+    public void testMerge() {
+        Group one = new Group();
+        one.setColor("#123123");
+        one.setDescription("a");
+        one.setOwner("Joe");
+
+        Group two = new Group();
+        two.setOwner("Matt");
+        two.setContact("mail");
+
+        Groups.merge(one, two);
+
+        assertEquals("Joe", one.getOwner());
+        assertEquals("a", one.getDescription());
+        assertEquals("mail", one.getContact());
+        assertEquals("#123123", one.getColor());
+    }
 }

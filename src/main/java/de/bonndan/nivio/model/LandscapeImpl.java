@@ -37,7 +37,7 @@ public class LandscapeImpl implements Landscape {
 
     private LandscapeConfig config;
 
-    private Set<GroupItem> groups = new HashSet<>();
+    private Map<String, GroupItem> groups = new HashMap<>();
 
     public String getIdentifier() {
         return identifier;
@@ -87,7 +87,7 @@ public class LandscapeImpl implements Landscape {
     }
 
     @Override
-    public Set<GroupItem> getGroups() {
+    public Map<String, GroupItem> getGroups() {
         return groups;
     }
 
@@ -121,5 +121,14 @@ public class LandscapeImpl implements Landscape {
 
     public void setConfig(LandscapeConfig config) {
         this.config = config;
+    }
+
+    public void addGroup(Group g) {
+        if (groups.containsKey(g.getIdentifier())) {
+            Groups.merge((Group) groups.get(g.getIdentifier()), g);
+            return;
+        }
+
+        groups.put(g.getIdentifier(), g);
     }
 }
