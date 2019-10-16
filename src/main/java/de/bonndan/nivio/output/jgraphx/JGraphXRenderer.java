@@ -38,10 +38,10 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
 
         AllGroupsGraph allGroupsGraph = new AllGroupsGraph(landscape.getConfig(), groups, subgraphs);
 
-        //return allGroupsGraph.getGraph();
+        return allGroupsGraph.getGraph();
 
-        FinalGraph finalGraph = new FinalGraph(iconService);
-        return finalGraph.render(allGroupsGraph, subgraphs);
+        //FinalGraph finalGraph = new FinalGraph(iconService);
+        //return finalGraph.render(allGroupsGraph, subgraphs);
     }
 
     @Override
