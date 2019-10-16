@@ -37,10 +37,23 @@ class CurvedEdgeStyle implements mxEdgeStyle.mxEdgeStyleFunction {
             else
                 xShift = xDiff /2;
 
-            if (source.getCenterX() > target.getCenterX())
+            boolean xAscending  = false;
+            if (source.getCenterX() > target.getCenterX()) {
                 xShift *= -1;
-            if (source.getCenterY() > target.getCenterY())
+                xAscending = true;
+            }
+
+            boolean yAscending = false;
+            if (source.getCenterY() > target.getCenterY()) {
                 yShift *= -1;
+                yAscending = true;
+            }
+
+            //fixes two connections between same nodes: inverse shift if vector descending in coord system
+            if (xAscending) {
+                xShift *= -1;
+                yShift *= -1;
+            }
 
             x = source.getCenterX() + xDiff/2 - xShift;
             y = source.getCenterY() + yDiff/2 - yShift;
