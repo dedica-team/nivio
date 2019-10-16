@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import java.awt.geom.Rectangle2D;
 import java.util.*;
 
 /**
@@ -50,13 +51,16 @@ public class AllGroupsGraph {
         mxOrganicLayout layout = new mxOrganicLayout(graph);
         Optional.ofNullable(config.getJgraphx().getMaxIterations())
                 .ifPresent(layout::setMaxIterations);
-        layout.setEdgeLengthCostFactor(layout.getEdgeLengthCostFactor() * 0.0001); //edges tend to be longer
-        //layout.setMinMoveRadius(layout.getMinMoveRadius() * 30);
+        layout.setEdgeLengthCostFactor(layout.getEdgeLengthCostFactor() * 0.001); //edges tend to be longer
+
+        layout.setApproxNodeDimensions(false);
 
 
-        //layout.setAverageNodeArea(layout.getAverageNodeArea() * 3);
-        layout.setTriesPerCell(16);
+        //edges much longer, good since we enlarge groups with padding
+        layout.setAverageNodeArea(layout.getAverageNodeArea() * 25);
 
+        //slighty better layout
+        layout.setTriesPerCell(Optional.ofNullable(config.getJgraphx().getTriesPerCell()).orElse(16));
 
         Optional.ofNullable(config.getJgraphx().getMinDistanceLimitFactor())
                 .ifPresent(f -> layout.setMinDistanceLimit(layout.getMinDistanceLimit() * f));
@@ -69,7 +73,6 @@ public class AllGroupsGraph {
     /**
      * Virtual edges between group containers enable organic layout of groups.
      *
-     * @param items
      */
     private void addVirtualEdgesBetweenGroups(List<LandscapeItem> items) {
 
@@ -83,7 +86,7 @@ public class AllGroupsGraph {
             ((Item) service).getProvidedBy().forEach(provider -> {
                 String pGroup = provider.getGroup() == null ? Groups.COMMON : provider.getGroup();
                 mxCell providerGroupNode = groupNodes.get(pGroup);
-                String providerGroup = providerGroupNode.getAttribute("id");
+                String providerGroup = providerGroupNode.getId();
 
                 if (groupConnections.canConnect(group, providerGroup)) {
                     graph.insertEdge(graph.getDefaultParent(), "", "provider", groupNode, providerGroupNode,

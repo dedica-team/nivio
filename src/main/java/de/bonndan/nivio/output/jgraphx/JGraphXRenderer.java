@@ -19,8 +19,8 @@ import java.util.Map;
 public class JGraphXRenderer implements Renderer<mxGraph> {
 
     private final IconService iconService;
+    private boolean debugMode;
 
-    private Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);
     private Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
 
     public JGraphXRenderer(IconService iconService) {
@@ -38,10 +38,11 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
 
         AllGroupsGraph allGroupsGraph = new AllGroupsGraph(landscape.getConfig(), groups, subgraphs);
 
-        return allGroupsGraph.getGraph();
+        if (isDebugMode())
+            return allGroupsGraph.getGraph();
 
-        //FinalGraph finalGraph = new FinalGraph(iconService);
-        //return finalGraph.render(allGroupsGraph, subgraphs);
+        FinalGraph finalGraph = new FinalGraph(iconService);
+        return finalGraph.render(allGroupsGraph, subgraphs);
     }
 
     @Override
@@ -52,5 +53,16 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
 
         ImageIO.write(image, "PNG", file);
 
+    }
+
+    private boolean isDebugMode() {
+        return debugMode;
+    }
+
+    /**
+     * Triggers debug rendering of groups
+     */
+    void setDebugMode(boolean debugMode) {
+        this.debugMode = debugMode;
     }
 }

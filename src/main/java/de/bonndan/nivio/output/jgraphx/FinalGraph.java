@@ -12,11 +12,15 @@ import com.mxgraph.view.mxStylesheet;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Icon;
 import de.bonndan.nivio.output.IconService;
+import de.bonndan.nivio.output.Icons;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.util.RootPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -262,7 +266,17 @@ public class FinalGraph {
     }
 
     private String getBaseStyle(Item item) {
-        Icon type = iconService.getIcon(item);
+        Icon type;
+        if (iconService == null) {
+            try {
+                type = new Icon(new File(RootPath.get() + "src/main/resources/static/icons/service.png").toURI().toURL());
+            } catch (MalformedURLException e) {
+                return "";
+            }
+        } else {
+            type = iconService.getIcon(item);
+        }
+
         if (stylesheet.getStyles().containsKey(type.getUrl().toString())) {
             return type.getUrl().toString();
         }
