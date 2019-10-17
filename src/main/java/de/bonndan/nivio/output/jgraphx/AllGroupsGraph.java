@@ -47,7 +47,6 @@ public class AllGroupsGraph {
 
         addVirtualEdgesBetweenGroups(items);
 
-        //mxFastOrganicLayout layout = new mxFastOrganicLayout(graph);
         mxOrganicLayout layout = new mxOrganicLayout(graph);
         Optional.ofNullable(config.getJgraphx().getMaxIterations())
                 .ifPresent(layout::setMaxIterations);
