@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class IconServiceTest {
 
-    IconService iconService;
+    private IconService iconService;
     private WireMockServer wireMockServer;
 
     @BeforeEach

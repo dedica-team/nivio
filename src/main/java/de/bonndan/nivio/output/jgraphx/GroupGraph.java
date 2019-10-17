@@ -42,8 +42,11 @@ public class GroupGraph {
         });
 
         //organic layout between group containers
-        mxOrganicLayout outer = new mxOrganicLayout(graph);
-        outer.execute(graph.getDefaultParent());
+        mxOrganicLayout layout = new mxOrganicLayout(graph);
+        layout.setTriesPerCell(16);
+        layout.setEdgeLengthCostFactor(layout.getEdgeLengthCostFactor() * 0.1); //edges tend to be longer
+        layout.setUseBoundingBox(false);
+        layout.execute(graph.getDefaultParent());
     }
 
     public mxRectangle getBounds() {

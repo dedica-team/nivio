@@ -4,13 +4,15 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import java.net.InetAddress;
+
 @Component
 public class LocalServer implements EnvironmentAware {
 
     private static Environment env;
 
     public static String host() {
-        return "localhost";
+        return InetAddress.getLoopbackAddress().getHostName();
     }
 
     public static String port() {
