@@ -1,10 +1,22 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.util.Color;
+
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import static de.bonndan.nivio.model.Groups.COMMON;
+
 public class Group implements GroupItem {
+
+    public static final Group DEFAULT_GROUP;
+
+    static {
+        DEFAULT_GROUP = new Group();
+        DEFAULT_GROUP.setColor(Color.DARKGRAY);
+        DEFAULT_GROUP.setIdentifier(COMMON);
+    }
 
     private String identifier;
     private String owner;

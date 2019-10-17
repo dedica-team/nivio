@@ -8,6 +8,7 @@ import org.springframework.util.StringUtils;
 public class Color {
 
     public static String DARK = "111111";
+    public static String DARKGRAY = "333333";
     public static String GRAY = "aaaaaa";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Color.class);

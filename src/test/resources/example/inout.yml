@@ -1,11 +1,11 @@
 identifier: inout
 name: Input and Output
 
-config:
-  groups:
-    input:
-      color: "24a0ed"
+groups:
+  input:
+    color: "24a0ed"
 
+config:
   # https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxOrganicLayout.html
   jgraphx:
     triesPerCell: 8

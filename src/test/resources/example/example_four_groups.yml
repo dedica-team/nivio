@@ -4,12 +4,11 @@ contact: basseur@mail.de
 
 
 # Landscape configuration
-config:
-  groups:
-    input:
-      color: "0c8e3e"
-    Frontend:
-      color: "24a0ed"
+groups:
+  input:
+    color: "0c8e3e"
+  Frontend:
+    color: "24a0ed"
 
 items:
 

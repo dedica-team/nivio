@@ -1,26 +1,8 @@
 package de.bonndan.nivio.model;
 
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 public class LandscapeConfig {
 
     private JGraphXConfig jgraphx = new JGraphXConfig();
-    private Map<String, GroupConfig> groups = new HashMap<>();
-
-    public Optional<GroupConfig> getGroupConfig(String group) {
-        return Optional.ofNullable(groups.get(group));
-    }
-
-    public Map<String, GroupConfig> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(Map<String, GroupConfig> groups) {
-        this.groups = groups;
-    }
 
     public JGraphXConfig getJgraphx() {
         return jgraphx;
@@ -28,18 +10,6 @@ public class LandscapeConfig {
 
     public void setJgraphx(JGraphXConfig jgraphx) {
         this.jgraphx = jgraphx;
-    }
-
-    public static class GroupConfig {
-        private String color;
-
-        public String getColor() {
-            return color;
-        }
-
-        public void setColor(String color) {
-            this.color = color;
-        }
     }
 
     /**

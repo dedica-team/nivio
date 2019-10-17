@@ -33,7 +33,7 @@ public class Groups {
     public static void merge(final Group group, GroupItem groupItem) {
         assignSafeIfAbsent(groupItem.getColor(), group.getColor(), group::setColor);
         assignSafeIfAbsent(groupItem.getTeam(), group.getTeam(), group::setTeam);
-        assignSafeIfAbsent(groupItem.getContact(), group.getColor(), group::setContact);
+        assignSafeIfAbsent(groupItem.getContact(), group.getContact(), group::setContact);
         assignSafeIfAbsent(groupItem.getDescription(), group.getDescription(), group::setDescription);
         assignSafeIfAbsent(groupItem.getOwner(), group.getOwner(), group::setOwner);
         assignSafeIfAbsent(groupItem.getOwner(), group.getOwner(), group::setOwner);

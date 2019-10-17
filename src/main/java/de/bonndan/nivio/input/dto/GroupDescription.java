@@ -3,9 +3,8 @@ package de.bonndan.nivio.input.dto;
 import de.bonndan.nivio.model.GroupItem;
 import de.bonndan.nivio.model.LandscapeItem;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.net.URL;
+import java.util.*;
 
 public class GroupDescription implements GroupItem {
 
@@ -16,6 +15,7 @@ public class GroupDescription implements GroupItem {
     private String contact;
     private String color;
     private List<String> items = new ArrayList<>();
+    private Map<String, URL> links = new HashMap<>();
 
     @Override
     public String getIdentifier() {
@@ -47,6 +47,11 @@ public class GroupDescription implements GroupItem {
         return color;
     }
 
+    @Override
+    public Map<String, URL> getLinks() {
+        return links;
+    }
+
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
@@ -69,6 +74,10 @@ public class GroupDescription implements GroupItem {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public void setLinks(Map<String, URL> links) {
+        this.links = links;
     }
 
     @Override

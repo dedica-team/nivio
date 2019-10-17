@@ -1,7 +1,15 @@
 identifier: nivio:broken
 name: Landscape example
 contact: mail@acme.org
+
 config:
-  groups:
-    test1:
-      color: "#234234"
+  jgraphx:
+    #nodeDistributionCostFactor: 9000000.0
+    #edgeLengthCostFactor;
+    #borderLineCostFactor;
+
+    # the higher, the longer the edges between groups
+    forceConstantFactor: 8
+
+    # higher value is cpu intensive, but can lead to better layouts
+    #maxIterations: 1000

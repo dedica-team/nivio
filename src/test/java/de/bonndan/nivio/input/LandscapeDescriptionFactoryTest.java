@@ -6,7 +6,6 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.model.LandscapeConfig.GroupConfig;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +42,6 @@ class LandscapeDescriptionFactoryTest {
         assertNotNull(mapped);
         assertEquals(SourceFormat.NIVIO, mapped.getFormat());
         assertNotNull(landscapeDescription.getConfig());
-        assertTrue(landscapeDescription.getConfig().getGroupConfig("content").isPresent());
     }
 
     @Test
@@ -109,7 +107,6 @@ class LandscapeDescriptionFactoryTest {
                 x.put("PRIVATE_TOKEN", "veryPrivateToken");
             }
         }
-        ;
 
         LandscapeDescription landscapeDescription = EnvironmentFactory.fromString(read, file.toString());
         assertNotNull(landscapeDescription);
@@ -173,9 +170,8 @@ class LandscapeDescriptionFactoryTest {
         LandscapeConfig config = landscapeDescription.getConfig();
 
         assertNotNull(config);
-        assertFalse(config.getGroupConfig("notpresent").isPresent());
-        assertTrue(config.getGroupConfig("test1").isPresent());
-        assertEquals("#234234", config.getGroupConfig("test1").map(GroupConfig::getColor).get());
+        assertNotNull(config.getJgraphx());
+        assertNotNull(config.getJgraphx().getForceConstantFactor());
     }
 
     @Test
@@ -212,10 +208,10 @@ class LandscapeDescriptionFactoryTest {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_groups.yml");
         LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
 
-        Set<GroupItem> groups = landscapeDescription.getGroups();
+        Map<String, GroupItem> groups = landscapeDescription.getGroups();
         assertNotNull(groups);
         assertEquals(1, groups.size());
-        GroupItem groupItem = groups.iterator().next();
+        GroupItem groupItem = groups.entrySet().iterator().next().getValue();
         assertNotNull(groupItem);
         assertEquals("groupA", groupItem.getIdentifier());
     }

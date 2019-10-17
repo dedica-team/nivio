@@ -12,8 +12,8 @@ import com.mxgraph.view.mxStylesheet;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Icon;
 import de.bonndan.nivio.output.IconService;
-import de.bonndan.nivio.output.Icons;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.util.Color;
 import de.bonndan.nivio.util.RootPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +64,7 @@ public class FinalGraph {
 
             Optional<Item> serviceItem = subgraphs.get(groupName).getServiceVertexesWithRelativeOffset().entrySet().stream()
                     .findFirst().map(serviceItemmxPointEntry -> (Item) serviceItemmxPointEntry.getKey());
-            LandscapeConfig landscapeConfig = serviceItem.map(service -> service.getLandscape().getConfig()).orElse(null);
+            LandscapeImpl landscape = serviceItem.map(service -> service.getLandscape()).orElse(null); //TODO inefficient
             mxGeometry groupGeo = mxCell.getGeometry();
             mxCell groupContainer = (mxCell) graph.insertVertex(
                     graph.getDefaultParent(),
@@ -73,7 +73,7 @@ public class FinalGraph {
                     groupGeo.getY(),
                     groupGeo.getWidth(),
                     groupGeo.getHeight(),
-                    getGroupStyle(groupName, getGroupColor(groupName, landscapeConfig))
+                    getGroupStyle(groupName, getGroupColor(groupName, landscape))
             );
 
 
@@ -355,16 +355,14 @@ public class FinalGraph {
         if (item.getGroup() == null || item.getGroup().startsWith(Groups.COMMON))
             return GRAY;
 
-        return getGroupColor(item.getGroup(), item.getLandscape().getConfig());
+        return getGroupColor(item.getGroup(), item.getLandscape());
     }
 
-    private String getGroupColor(String name, LandscapeConfig config) {
+    private String getGroupColor(String name, LandscapeImpl landscape) {
 
-        if (config == null)
-            return "333333";
+        GroupItem group = landscape.getGroups().getOrDefault(name, Group.DEFAULT_GROUP);
 
-        return config.getGroupConfig(name)
-                .map(LandscapeConfig.GroupConfig::getColor)
-                .orElse(de.bonndan.nivio.util.Color.nameToRGB(name, "333333"));
+        return Optional.ofNullable(group.getColor())
+                .orElse(de.bonndan.nivio.util.Color.nameToRGB(name, Color.DARKGRAY));
     }
 }

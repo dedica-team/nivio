@@ -18,6 +18,6 @@ config:
     # higher value is cpu intensive, but can lead to better layouts
     #maxIterations: 1000
 
-  groups:
-    content:
-      color: "24a0ed"
+groups:
+  content:
+    color: "24a0ed"
