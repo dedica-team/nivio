@@ -245,6 +245,14 @@ public class IndexerIntegrationTest {
         assertEquals(1, ingress.getItems().size());
     }
 
+    @Test
+    public void readGroupsContains() {
+        LandscapeImpl landscape1 = index("/src/test/resources/example/example_groups.yml");
+        Group a = (Group) landscape1.getGroups().get("groupA");
+        assertNotNull(pick("blog-server", null, a.getItems()));
+        assertNotNull(pick("crappy_dockername-234234", null, a.getItems()));
+    }
+
     private String getRootPath() {
         Path currentRelativePath = Paths.get("");
         return currentRelativePath.toAbsolutePath().toString();

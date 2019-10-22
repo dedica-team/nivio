@@ -2,6 +2,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.*;
@@ -48,7 +49,7 @@ public class Indexer {
 
         try {
             sourceReferencesResolver.resolve(input, logger);
-            input.getGroups().forEach( (identifier, groupItem) -> {
+            input.getGroups().forEach((identifier, groupItem) -> {
                 Group g = new Group();
                 g.setIdentifier(identifier);
                 Groups.merge(g, groupItem);
@@ -57,7 +58,7 @@ public class Indexer {
             });
 
             diff(input, landscape, logger);
-            fillGroups(landscape);
+            fillGroups(input, landscape);
             linkDataflow(input, landscape, logger);
             landscapeRepo.save(landscape);
         } catch (ProcessingException e) {
@@ -121,10 +122,18 @@ public class Indexer {
                 .forEach(item -> landscape.getItems().remove(item));
     }
 
-    private void fillGroups(LandscapeImpl landscape) {
+    private void fillGroups(LandscapeDescription input, LandscapeImpl landscape) {
         landscape.getItems().forEach(item -> {
             Group group = (Group) landscape.getGroups().computeIfAbsent(item.getGroup(), Group::new);
             group.getItems().add(item);
+        });
+
+        input.getGroups().forEach((s, groupItem) -> {
+            GroupDescription description = (GroupDescription) groupItem;
+            Group group = (Group) landscape.getGroups().get(description.getIdentifier());
+            description.getContains().forEach(condition -> {
+                group.getItems().addAll(ServiceItems.filter(condition, List.copyOf(landscape.getItems())));
+            });
         });
     }
 

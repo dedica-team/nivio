@@ -16,3 +16,9 @@ groups:
 
   B:
     owner: Jill
+
+items:
+  - identifier: blog-server
+    name: foo
+  - identifier: crappy_dockername-234234
+    name: bar

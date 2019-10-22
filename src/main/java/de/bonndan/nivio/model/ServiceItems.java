@@ -44,7 +44,7 @@ public class ServiceItems {
         }
 
         return find(identifier, group, items).orElseThrow(() ->
-                new RuntimeException("Element not found " + identifier + " in collection " + items)
+                new RuntimeException("Element '" + identifier + "' not found  in collection " + items)
         );
     }
 
@@ -103,7 +103,7 @@ public class ServiceItems {
         return Optional.ofNullable((found.size() == 1) ? found.get(0): null);
     }
 
-    public static List<? extends LandscapeItem> filter(String condition, List<? extends LandscapeItem> items) {
+    public static Collection<? extends LandscapeItem> filter(String condition, Collection<? extends LandscapeItem> items) {
 
         if ("*" .equals(condition))
             return items;
@@ -131,15 +131,15 @@ public class ServiceItems {
      * Run the condition as CQN query. See https://github.com/npgall/cqengine
      *
      * @param condition query where part
-     * @param serviceItems list to operate on
+     * @param items collection to operate on
      * @return resultset
      */
-    public static List<? extends LandscapeItem> query(String condition, List<? extends LandscapeItem> serviceItems) {
+    public static List<? extends LandscapeItem> query(String condition, Collection<? extends LandscapeItem> items) {
         SQLParser<LandscapeItem> parser = SQLParser.forPojoWithAttributes(LandscapeItem.class,
                 Map.of("identifier", IDENTIFIER, "name", NAME)
         );
         IndexedCollection<LandscapeItem> index = new ConcurrentIndexedCollection<>();
-        index.addAll(serviceItems);
+        index.addAll(items);
 
         ResultSet<LandscapeItem> results = parser.retrieve(index, condition);
 
