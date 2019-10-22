@@ -1,7 +1,6 @@
 package de.bonndan.nivio.input.dto;
 
 import de.bonndan.nivio.model.GroupItem;
-import de.bonndan.nivio.model.LandscapeItem;
 
 import java.net.URL;
 import java.util.*;
@@ -14,7 +13,7 @@ public class GroupDescription implements GroupItem {
     private String description;
     private String contact;
     private String color;
-    private List<String> items = new ArrayList<>();
+    private List<String> contains = new ArrayList<>();
     private Map<String, URL> links = new HashMap<>();
 
     @Override
@@ -88,5 +87,13 @@ public class GroupDescription implements GroupItem {
         } else {
             return false;
         }
+    }
+
+    public List<String> getContains() {
+        return contains;
+    }
+
+    public void setContains(List<String> contains) {
+        this.contains = contains;
     }
 }

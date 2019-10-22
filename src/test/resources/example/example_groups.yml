@@ -10,6 +10,9 @@ groups:
     description: abc
     contact: mailq@asd.com
     color: "#234234"
-    items:
+    contains:
       - blog-server
       - "identifier LIKE 'crappy_dockername-23%'"
+
+  B:
+    owner: Jill

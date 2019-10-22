@@ -23,11 +23,11 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Set;
 
 import static de.bonndan.nivio.model.ServiceItems.pick;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -51,7 +51,7 @@ public class IndexerIntegrationTest {
 
     private LandscapeImpl index(String path) {
         File file = new File(getRootPath() + path);
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
         Indexer indexer = new Indexer(landscapeRepository, notificationService);
 
@@ -228,6 +228,21 @@ public class IndexerIntegrationTest {
         Assert.assertNotNull(web);
         assertEquals("web", web.getIdentifier());
         assertEquals("webservice", web.getType());
+    }
+
+    @Test
+    public void readGroups() {
+        LandscapeImpl landscape1 = index("/src/test/resources/example/example_env.yml");
+        Map<String, GroupItem> groups = landscape1.getGroups();
+        assertTrue(groups.containsKey("content"));
+        Group content = (Group) groups.get("content");
+        assertFalse(content.getItems().isEmpty());
+        assertEquals(3, content.getItems().size());
+
+        assertTrue(groups.containsKey("ingress"));
+        Group ingress = (Group) groups.get("ingress");
+        assertFalse(ingress.getItems().isEmpty());
+        assertEquals(1, ingress.getItems().size());
     }
 
     private String getRootPath() {

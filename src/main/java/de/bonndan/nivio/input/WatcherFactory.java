@@ -52,9 +52,9 @@ public class WatcherFactory {
                     }
                     runnables.add(directoryWatcher);
                     logger.info("Created directory watcher for url " + url);
-                    env = EnvironmentFactory.fromYaml(file);
+                    env = LandscapeDescriptionFactory.fromYaml(file);
                 } else {
-                    env = EnvironmentFactory.fromString(fileFetcher.get(url), url);
+                    env = LandscapeDescriptionFactory.fromString(fileFetcher.get(url), url);
                 }
                 indexer.reIndex(env);
             });

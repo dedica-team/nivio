@@ -46,6 +46,7 @@ public class Groups {
      * @param groupKey the group key
      * @param service  service to add
      */
+    @Deprecated
     public void add(String groupKey, LandscapeItem service) {
 
         String key = isEmpty(groupKey) ? COMMON : groupKey;

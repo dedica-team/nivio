@@ -76,7 +76,7 @@ public class ApiController {
      */
     @RequestMapping(path = "/landscape", method = RequestMethod.POST)
     public ProcessLog create(@RequestBody String body) {
-        LandscapeDescription env = EnvironmentFactory.fromString(body, "request body");
+        LandscapeDescription env = LandscapeDescriptionFactory.fromString(body, "request body");
         return indexer.reIndex(env);
     }
 
@@ -163,15 +163,15 @@ public class ApiController {
 
         File file = new File(landscape.getSource());
         if (file.exists()) {
-            LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+            LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
             return indexer.reIndex(landscapeDescription);
         }
 
         URL url = URLHelper.getURL(landscape.getSource());
         if (url != null) {
-            return process(EnvironmentFactory.fromString(fileFetcher.get(url), url));
+            return process(LandscapeDescriptionFactory.fromString(fileFetcher.get(url), url));
         }
 
-        return process(EnvironmentFactory.fromString(landscape.getSource(), landscape.getIdentifier() + " source"));
+        return process(LandscapeDescriptionFactory.fromString(landscape.getSource(), landscape.getIdentifier() + " source"));
     }
 }

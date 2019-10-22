@@ -16,7 +16,6 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static de.bonndan.nivio.model.ServiceItems.pick;
 import static junit.framework.TestCase.assertNull;
@@ -31,7 +30,7 @@ class LandscapeDescriptionFactoryTest {
     public void read() {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_env.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
         assertEquals("Landscape example", landscapeDescription.getName());
         assertEquals("nivio:example", landscapeDescription.getIdentifier());
         assertEquals("mail@acme.org", landscapeDescription.getContact());
@@ -49,7 +48,7 @@ class LandscapeDescriptionFactoryTest {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_env.yml");
         String yaml = new String(Files.readAllBytes(file.toPath()));
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromString(yaml, file.toString());
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromString(yaml, file.toString());
         assertEquals("Landscape example", landscapeDescription.getName());
         assertEquals("nivio:example", landscapeDescription.getIdentifier());
         assertEquals("mail@acme.org", landscapeDescription.getContact());
@@ -66,7 +65,7 @@ class LandscapeDescriptionFactoryTest {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_env.yml");
         String yaml = new String(Files.readAllBytes(file.toPath()));
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromString(yaml, file.toURI().toURL());
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromString(yaml, file.toURI().toURL());
         assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource());
     }
 
@@ -74,7 +73,7 @@ class LandscapeDescriptionFactoryTest {
     public void readIncremental() {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_incremental_env.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
         assertEquals("Incremental update example", landscapeDescription.getName());
         assertEquals("nivio:incremental", landscapeDescription.getIdentifier());
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
@@ -84,7 +83,7 @@ class LandscapeDescriptionFactoryTest {
     public void readStateProviders() {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_providers.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
         assertFalse(landscapeDescription.getStateProviders().isEmpty());
 
         StateProviderConfig cfg = landscapeDescription.getStateProviders().get(0);
@@ -108,7 +107,7 @@ class LandscapeDescriptionFactoryTest {
             }
         }
 
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromString(read, file.toString());
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromString(read, file.toString());
         assertNotNull(landscapeDescription);
         assertEquals("veryPrivateToken", landscapeDescription.getSourceReferences().get(0).getHeaderTokenValue());
     }
@@ -116,7 +115,7 @@ class LandscapeDescriptionFactoryTest {
     @Test
     public void environmentTemplatesRead() {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
         assertNotNull(landscapeDescription.getTemplates());
         assertEquals(2, landscapeDescription.getTemplates().size());
 
@@ -129,7 +128,7 @@ class LandscapeDescriptionFactoryTest {
     @Test
     public void environmentTemplatesSanitized() {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
         LandscapeItem template = pick("myfirsttemplate", null, landscapeDescription.getTemplates());
 
@@ -141,7 +140,7 @@ class LandscapeDescriptionFactoryTest {
     @Test
     public void templatesAssigned() {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
         SourceReference ref = landscapeDescription.getSourceReferences().get(0);
 
@@ -155,7 +154,7 @@ class LandscapeDescriptionFactoryTest {
     @Test
     public void templatesAssignedWithDataflow() {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates2.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
         ItemDescription template = landscapeDescription.getTemplates().get(3);
         DataFlowItem df = (DataFlowItem) template.getDataFlow().toArray()[0];
@@ -165,7 +164,7 @@ class LandscapeDescriptionFactoryTest {
     @Test
     public void configRead() {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_config.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
         LandscapeConfig config = landscapeDescription.getConfig();
 
@@ -179,7 +178,7 @@ class LandscapeDescriptionFactoryTest {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_unknown_field.yml");
 
         try {
-            EnvironmentFactory.fromYaml(file);
+            LandscapeDescriptionFactory.fromYaml(file);
         } catch (ReadingException ex) {
             assertTrue(ex.getMessage().contains("src/test/resources/example/example_unknown_field.yml contains unknown field 'match' in items/0/match"), ex.getMessage());
             return;
@@ -194,7 +193,7 @@ class LandscapeDescriptionFactoryTest {
 
 
         try {
-            EnvironmentFactory.fromYaml(file);
+            LandscapeDescriptionFactory.fromYaml(file);
         } catch (ReadingException ex) {
             assertTrue(ex.getMessage().contains("Could not find file"));
             return;
@@ -206,13 +205,17 @@ class LandscapeDescriptionFactoryTest {
     @Test
     public void testReadGroups() {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_groups.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
         Map<String, GroupItem> groups = landscapeDescription.getGroups();
         assertNotNull(groups);
-        assertEquals(1, groups.size());
-        GroupItem groupItem = groups.entrySet().iterator().next().getValue();
+        assertEquals(2, groups.size());
+        GroupItem groupItem = groups.get("groupA");
         assertNotNull(groupItem);
         assertEquals("groupA", groupItem.getIdentifier());
+
+        GroupItem b = groups.get("B");
+        assertNotNull(b);
+        assertEquals("B", b.getIdentifier());
     }
 }

@@ -57,6 +57,7 @@ public class Indexer {
             });
 
             diff(input, landscape, logger);
+            fillGroups(landscape);
             linkDataflow(input, landscape, logger);
             landscapeRepo.save(landscape);
         } catch (ProcessingException e) {
@@ -119,6 +120,14 @@ public class Indexer {
         deleteUnreferenced(input, inLandscape, existingItems, logger)
                 .forEach(item -> landscape.getItems().remove(item));
     }
+
+    private void fillGroups(LandscapeImpl landscape) {
+        landscape.getItems().forEach(item -> {
+            Group group = (Group) landscape.getGroups().computeIfAbsent(item.getGroup(), Group::new);
+            group.getItems().add(item);
+        });
+    }
+
 
     private List<LandscapeItem> deleteUnreferenced(
             final LandscapeDescription landscapeDescription,

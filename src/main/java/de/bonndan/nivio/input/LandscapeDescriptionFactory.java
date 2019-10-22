@@ -16,9 +16,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 
-public class EnvironmentFactory {
+public class LandscapeDescriptionFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EnvironmentFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeDescriptionFactory.class);
     private static final ObjectMapper mapper = Mappers.gracefulYamlMapper;
 
     public static LandscapeDescription fromYaml(File file) {

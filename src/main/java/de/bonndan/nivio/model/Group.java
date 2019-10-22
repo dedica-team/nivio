@@ -3,7 +3,9 @@ package de.bonndan.nivio.model;
 import de.bonndan.nivio.util.Color;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static de.bonndan.nivio.model.Groups.COMMON;
@@ -25,6 +27,16 @@ public class Group implements GroupItem {
     private String team;
     private String color;
     private Map<String, URL> links = new HashMap<>();
+    private List<LandscapeItem> items = new ArrayList<>();
+
+
+    public Group() {
+
+    }
+
+    public Group(String identifier) {
+        this.identifier = identifier;
+    }
 
     @Override
     public String getIdentifier() {
@@ -83,5 +95,9 @@ public class Group implements GroupItem {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public List<LandscapeItem> getItems() {
+        return items;
     }
 }

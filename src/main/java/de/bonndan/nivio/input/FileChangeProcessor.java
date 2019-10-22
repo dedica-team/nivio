@@ -28,7 +28,7 @@ public class FileChangeProcessor implements ApplicationListener<FSChangeEvent> {
     }
 
     public ProcessLog process(File envFile) {
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(envFile);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(envFile);
         if (landscapeDescription == null) {
             return new ProcessLog(new ProcessingException("Could not read environment from " + envFile, new RuntimeException()));
         }
@@ -46,7 +46,7 @@ public class FileChangeProcessor implements ApplicationListener<FSChangeEvent> {
 
         AtomicReference<ProcessLog> process = new AtomicReference<>();
         landscapeRepository.findAll().forEach(landscape -> {
-            LandscapeDescription env1 = EnvironmentFactory.fromYaml(new File(landscape.getSource()));
+            LandscapeDescription env1 = LandscapeDescriptionFactory.fromYaml(new File(landscape.getSource()));
             if (env1 != null && env1.hasReference(landscapeDescription.getSource())) {
 
                 Optional.ofNullable(process(env1)).ifPresent(processLog -> {

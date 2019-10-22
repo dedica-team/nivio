@@ -34,7 +34,7 @@ public class SourceReferencesResolverTest {
     public void resolve() {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_incremental_env.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
 
         SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
@@ -51,7 +51,7 @@ public class SourceReferencesResolverTest {
 
         //given
         File file = new File(RootPath.get() + "/src/test/resources/example/example_broken.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
         assertFalse(landscapeDescription.isPartial());
 
@@ -68,7 +68,7 @@ public class SourceReferencesResolverTest {
     public void assignTemplateToAll() {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
 
         SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
@@ -92,7 +92,7 @@ public class SourceReferencesResolverTest {
     public void assignTemplateWithRegex() {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates2.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
 
         SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
@@ -115,7 +115,7 @@ public class SourceReferencesResolverTest {
     public void assignsAllValues() {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
 
         SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
@@ -140,7 +140,7 @@ public class SourceReferencesResolverTest {
     public void assignsOnlyToReferences() {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
 
         SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
@@ -156,7 +156,7 @@ public class SourceReferencesResolverTest {
     public void resolvesTemplatePlaceholdersInProviders() {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates2.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
         SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
         sourceReferencesResolver.resolve(landscapeDescription, log);
@@ -175,7 +175,7 @@ public class SourceReferencesResolverTest {
     public void resolvesTemplatePlaceholdersInDataflow() {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates2.yml");
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
         SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
         sourceReferencesResolver.resolve(landscapeDescription, log);

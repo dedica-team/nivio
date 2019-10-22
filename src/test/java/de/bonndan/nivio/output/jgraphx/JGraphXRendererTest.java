@@ -2,7 +2,7 @@ package de.bonndan.nivio.output.jgraphx;
 
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
-import de.bonndan.nivio.input.EnvironmentFactory;
+import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.Indexer;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.LandscapeImpl;
@@ -32,7 +32,7 @@ class JGraphXRendererTest {
 
     private LandscapeImpl getLandscape(String path) {
         File file = new File(RootPath.get() + path);
-        LandscapeDescription landscapeDescription = EnvironmentFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
         indexer.reIndex(landscapeDescription);
         return landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
     }

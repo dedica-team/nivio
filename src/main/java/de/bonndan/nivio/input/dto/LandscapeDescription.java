@@ -3,6 +3,9 @@ package de.bonndan.nivio.input.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.util.*;
@@ -13,6 +16,8 @@ import java.util.*;
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
 public class LandscapeDescription implements Landscape {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeDescription.class);
 
     public static final LandscapeDescription NONE = new LandscapeDescription();
 
@@ -194,8 +199,18 @@ public class LandscapeDescription implements Landscape {
         return groups;
     }
 
+    /**
+     * Manually set Identifiers are overridden by keys.
+     *
+     * @param groups the configured groups
+     */
     @JsonDeserialize(contentAs = GroupDescription.class)
     public void setGroups(Map<String, GroupItem> groups) {
+        groups.forEach((s, groupItem) -> {
+            if (!s.equals(groupItem.getIdentifier()) && !StringUtils.isEmpty(groupItem.getIdentifier()))
+                LOGGER.warn("Group map key {} and identifier {} are both set and differ. Overriding with map key.", s, groupItem.getIdentifier());
+            ((GroupDescription) groupItem).setIdentifier(s);
+        });
         this.groups = groups;
     }
 }
