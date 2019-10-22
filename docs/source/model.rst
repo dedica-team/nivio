@@ -10,7 +10,7 @@ or tagging to further separate the applications. A second landscape could be use
 infrastructure. Both landscapes could have items in common (like a database, load balancer etc.), so their configuration can be reused.
 
 
-Landscape Items and Layers
+Landscape Items and Groups
 --------------------------
 
 A landscape consists of several groups (think of bounded contexts) and the three layers ingress, items, and infrastructure
@@ -36,7 +36,23 @@ for technical separation. Any item can only be part of one group and layer.
         version: 10.3.11
         type: database
         layer: infrastructure
-        group: content
+
+    groups:
+      content:
+        description: All services responsible to provide information on the web.
+        owner: Joe Armstrong
+        team: Team Content
+        contact: joe@acme.org
+        color: "#345345"
+        links:
+          wiki: http://wiki.acme.org/teamContent
+
+      infrastructure:
+        team: Admins
+        contains:
+          - DB1
+          - "identifier LIKE 'DB1'" #same
+
 
 A item can have the following attributes:
 
@@ -53,7 +69,7 @@ A item can have the following attributes:
 * **description** a short description
 * **team** technical owner
 * **contact** support/notification contact (email) may be addressed in case of errors
-* **link** a map/dictionary of urls to more information
+* **links** a map/dictionary of urls to more information
 * **visibility** whether the item is publicly exposed
 * **tags** list of strings used as tag
 * **networks** list of network names (can be defined somewhere else)
@@ -76,6 +92,18 @@ A item can have the following attributes:
   * target: a item identifier
   * format: media type or binary format
 * **providedBy** array of references to other items (identifiers)
+
+
+Groups can have the following attributes:
+
+* **identifier**: a unique identifier in the landscape. Provided automatically via the dictionary key, do not set it
+* **contains** array of references to other items (identifiers and CQN queries)
+* **owner** owning party (e.g. Marketing)
+* **description** a short description
+* **team** technical owner
+* **contact** support/notification contact (email) may be addressed in case of errors
+* **color** a hex color code for rendering
+* **links** a map/dictionary of urls to more information
 
 Item Identification and Referencing
 ------------------------------------
@@ -101,7 +129,7 @@ Service references are required to describe a provider relation or dataflows.
 
 
 
-Using Templates
+Using Templates to dynamically assign data
 ---------------
 
 To prevent repetitive configuration of items, i.e. entering the same owner again and again,
