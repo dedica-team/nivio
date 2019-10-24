@@ -1,10 +1,9 @@
-package de.bonndan.nivio.stateaggregation.provider;
+package de.bonndan.nivio.input.rancher1;
 
+import de.bonndan.nivio.input.ItemDescriptionFactory;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.StatusDescription;
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.Status;
-import de.bonndan.nivio.model.StatusItem;
-import de.bonndan.nivio.stateaggregation.Provider;
+import de.bonndan.nivio.model.*;
 import org.hawkular.agent.prometheus.PrometheusDataFormat;
 import org.hawkular.agent.prometheus.PrometheusScraper;
 import org.hawkular.agent.prometheus.types.Gauge;
@@ -16,11 +15,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class PrometheusExporter implements Provider {
+public class PrometheusExporter {
 
     private static final Logger logger = LoggerFactory.getLogger(PrometheusExporter.class);
 
@@ -38,9 +35,9 @@ public class PrometheusExporter implements Provider {
         this.target = target;
     }
 
-    public Map<FullyQualifiedIdentifier, StatusItem> getStates() {
+    public List<ItemDescription> getDescriptions() {
         PrometheusScraper prometheusScraper = getScraper();
-        final Map<FullyQualifiedIdentifier, StatusItem> tmp = new HashMap<>();
+        final Map<FullyQualifiedIdentifier, ItemDescription> tmp = new HashMap<>();
         try {
             List<MetricFamily> scrape = prometheusScraper.scrape();
             scrape.forEach(metricFamily -> {
@@ -52,22 +49,20 @@ public class PrometheusExporter implements Provider {
                 if ("rancher_stack_state".equals(metricFamily.getName()))
                     return;
 
-                metricFamily.getMetrics().forEach(metric -> {
-
-                    FullyQualifiedIdentifier fqi = toFQI(metric);
-                    if (fqi == null)
-                        return;
-                    StatusItem item = toStatusItem(metric);
-                    if (item != null)
-                        putIfHigher(fqi, item, tmp);
-                });
+                metricFamily.getMetrics().stream()
+                        .map(this::toItem)
+                        .filter(Objects::nonNull)
+                        .forEach(itemDescription -> {
+                            ItemDescription inMap = tmp.computeIfAbsent(itemDescription.getFullyQualifiedIdentifier(), ItemDescription::new);
+                            ItemDescriptionFactory.assignNotNull(inMap, itemDescription);
+                        });
             });
 
         } catch (IOException e) {
             logger.error("Failed to scrape " + target, e);
         }
 
-        return tmp;
+        return new ArrayList<>(tmp.values());
     }
 
     private void putIfHigher(FullyQualifiedIdentifier fqi, StatusItem serviceState, Map<FullyQualifiedIdentifier, StatusItem> tmp) {
@@ -84,27 +79,45 @@ public class PrometheusExporter implements Provider {
 
     }
 
-    private StatusItem toStatusItem(Metric metric) {
+    private ItemDescription toItem(Metric metric) {
 
-        StatusItem state = null;
+        ItemDescription itemDescription = null;
         if (metric instanceof Gauge) {
-            state = processGauge((Gauge) metric);
+
+            itemDescription = processGauge((Gauge) metric);
+            FullyQualifiedIdentifier fqi = toFQI(metric);
+            if (fqi != null) {
+                itemDescription.setIdentifier(fqi.getIdentifier());
+                itemDescription.setGroup(fqi.getGroup());
+            }
         }
 
-        return state;
+        return itemDescription;
     }
 
-    private StatusItem processGauge(Gauge metric) {
+    private ItemDescription processGauge(Gauge metric) {
+
+        ItemDescription itemDescription = new ItemDescription();
         if (metric.getName().equals("rancher_service_health_status")) {
+
+            StatusDescription health_state = null;
             if (metric.getLabels().getOrDefault("health_state", "").equals("healthy") && metric.getValue() > 0) {
-                return new StatusDescription(StatusItem.HEALTH, Status.GREEN, metric.getLabels().getOrDefault("health_state", ""));
-            }
-            if (metric.getLabels().getOrDefault("health_state", "").equals("unhealthy") && metric.getValue() > 0) {
-                return new StatusDescription(StatusItem.HEALTH, Status.ORANGE, metric.getLabels().getOrDefault("health_state", ""));
+                health_state = new StatusDescription(StatusItem.HEALTH, Status.GREEN, metric.getLabels().getOrDefault("health_state", ""));
             }
 
+            if (metric.getLabels().getOrDefault("health_state", "").equals("unhealthy") && metric.getValue() > 0) {
+                health_state = new StatusDescription(StatusItem.HEALTH, Status.ORANGE, metric.getLabels().getOrDefault("health_state", ""));
+            }
+
+            if (health_state != null)
+                itemDescription.setStatus(health_state);
         }
-        return null;
+
+        //TODO add scale gauge
+
+        //TODO add service state (active...)
+
+        return itemDescription;
     }
 
     private FullyQualifiedIdentifier toFQI(Metric metric) {

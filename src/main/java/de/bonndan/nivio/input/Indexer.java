@@ -99,7 +99,7 @@ public class Indexer {
         kept.forEach(
                 item -> {
 
-                    ItemDescription description = (ItemDescription) ServiceItems.find(item.getFullyQualifiedIdentifier(), input.getItemDescriptions()).orElse(null);
+                    ItemDescription description = (ItemDescription) Items.find(item.getFullyQualifiedIdentifier(), input.getItemDescriptions()).orElse(null);
                     if (description == null) {
                         if (input.isPartial()) {
                             inLandscape.add((Item) item);
@@ -132,7 +132,7 @@ public class Indexer {
             GroupDescription description = (GroupDescription) groupItem;
             Group group = (Group) landscape.getGroups().get(description.getIdentifier());
             description.getContains().forEach(condition -> {
-                group.getItems().addAll(ServiceItems.filter(condition, List.copyOf(landscape.getItems())));
+                group.getItems().addAll(Items.filter(condition, List.copyOf(landscape.getItems())));
             });
         });
     }
@@ -163,7 +163,7 @@ public class Indexer {
         items.forEach(
                 service -> {
                     ItemDescription description =
-                            (ItemDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), landscapeDescription.getItemDescriptions()).orElse(null);
+                            (ItemDescription) Items.find(service.getFullyQualifiedIdentifier(), landscapeDescription.getItemDescriptions()).orElse(null);
                     if (description == null) {
                         if (isPartial)
                             return;
@@ -179,7 +179,7 @@ public class Indexer {
                         Item provider;
                         try {
                             var fqi = FullyQualifiedIdentifier.from(providerName);
-                            provider = (Item) ServiceItems.find(fqi, items).orElse(null);
+                            provider = (Item) Items.find(fqi, items).orElse(null);
                             if (provider == null) {
                                 logger.warn("Could not find service " + fqi + " in landscape " + landscapeDescription + " while linking providers for service " + description.getFullyQualifiedIdentifier());
                                 return;
@@ -202,7 +202,7 @@ public class Indexer {
 
     private void linkDataflow(final LandscapeDescription input, final LandscapeImpl landscape, ProcessLog logger) {
         input.getItemDescriptions().forEach(serviceDescription -> {
-            Item origin = (Item) ServiceItems.pick(serviceDescription, landscape.getItems());
+            Item origin = (Item) Items.pick(serviceDescription, landscape.getItems());
             if (!input.isPartial() && origin.getDataFlow().size() > 0) {
                 logger.info("Clearing dataflow of " + origin);
                 origin.getDataFlow().clear(); //delete all dataflow on full update
@@ -211,7 +211,7 @@ public class Indexer {
             serviceDescription.getDataFlow().forEach(description -> {
 
                 var fqi = FullyQualifiedIdentifier.from(description.getTarget());
-                Item target = (Item) ServiceItems.find(fqi, landscape.getItems()).orElse(null);
+                Item target = (Item) Items.find(fqi, landscape.getItems()).orElse(null);
                 if (target == null) {
                     logger.warn("Dataflow target service " + description.getTarget() + " not found");
                     return;

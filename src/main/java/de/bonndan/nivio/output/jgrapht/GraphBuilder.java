@@ -29,7 +29,7 @@ public class GraphBuilder {
 
     private void addLinks(Item item) {
         item.getDataFlow().forEach(flow -> {
-            LandscapeItem target = ServiceItems.pick(flow.getTarget(), null, landscape.getItems());
+            LandscapeItem target = Items.pick(flow.getTarget(), null, landscape.getItems());
             graph.addEdge(item, target, new LabeledEdge(flow.getDescription()));
         });
     }

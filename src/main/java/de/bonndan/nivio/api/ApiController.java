@@ -124,7 +124,7 @@ public class ApiController {
         if (from == null)
             return new ProcessLog(new ProcessingException(landscape, "Could use fully qualified identifier " + fqi));
 
-        Optional<LandscapeItem> item = ServiceItems.find(FullyQualifiedIdentifier.build(from.getLandscape(), from.getGroup(), from.getIdentifier()), landscape.getItems());
+        Optional<LandscapeItem> item = Items.find(FullyQualifiedIdentifier.build(from.getLandscape(), from.getGroup(), from.getIdentifier()), landscape.getItems());
         if (!item.isPresent()) {
             return new ProcessLog(new ProcessingException(landscape, "Could find item " + fqi));
         }
