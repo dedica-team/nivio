@@ -163,20 +163,3 @@ will not be overwritten by templates applied later.
         statuses
 
 For CQ queries, read https://github.com/npgall/cqengine#string-based-queries-sql-and-cqn-dialects.
-
-Service state (alpha)
----------------------
-
-You can also add state providers which are used to gather live data and thereby provide state for the items. Currently only prometheus is supported.
-
-.. code-block:: yaml
-   :linenos:
-
-    identifier: nivio:example
-    name: Landscape example
-
-    ...
-
-    stateProviders:
-      - type: prometheus-exporter
-        target: http://prometheus_exporter.url
