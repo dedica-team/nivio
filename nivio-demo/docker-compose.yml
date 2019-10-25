@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+
+  webserver:
+    image: nginx
+    ports:
+      - 3000:80
+    volumes:
+      - ../src/test/resources/example:/usr/share/nginx/html:ro
+
+  nivio:
+    image: bonndan/nivio:latest
+    #environment:
+      # enable DEMO to have a preloaded landscape
+      # DEMO: 1
+      # SEED also loads data, but uses the sources from the webserver
+      # SEED: http://localhost:3000/example_env.yml
+    ports: 
+      - 8080:8080
+

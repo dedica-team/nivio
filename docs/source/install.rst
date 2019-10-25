@@ -26,7 +26,7 @@ In the demo mode Nivio loads sample data for demonstration purposes. Run
 
 then point your browser to http://localhost:8080/render/nivio:example/graph.png
 
-There is also a demo project at https://github.com/bonndan/nivio-demo
+There is also a demo project "nivio-demo" in the repository, which starts an nginx to simulate a remote server.
 
 
 Seed config
