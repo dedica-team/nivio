@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.compose2;
 
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +46,8 @@ public class ComposeService {
           link targets become providers
          */
         if (links != null) {
-            links.forEach(s -> description.getProvidedBy().add(s));
+
+            links.forEach(s -> description.addRelation(RelationDescription.provides(s, description)));
         }
 
         return description;

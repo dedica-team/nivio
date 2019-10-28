@@ -87,7 +87,8 @@ A item can have the following attributes:
   * description: description
   * format: media type or binary format
   * url: an url pointing to the interface
-* **dataflow** connections to other items
+* **relations** connections to other items
+  * type: provider (hard dependency) or data flow (soft dependency)
   * description: description
   * target: a item identifier
   * format: media type or binary format
@@ -113,7 +114,7 @@ identifier is composed of these three: **mylandscape/agroup/theitem**. Since the
 identifier can also be addressed using **mylandscape/theitem** or just **theitem**. Nivio tries to resolve the correct item and raises
 an error if it cannot be found or the result is ambiguous.
 
-Service references are required to describe a provider relation or dataflows.
+Service references are required to describe a provider relation or data flows.
 
 .. code-block:: yaml
    :linenos:
@@ -121,9 +122,10 @@ Service references are required to describe a provider relation or dataflows.
     items:
       - identifier: theservice
         group: agroup
-        dataflow:
+        relations:
           - target: anothergroup/anotherservice
             format: json
+            type: dataflow
 
 
 
@@ -155,10 +157,10 @@ will not be overwritten by templates applied later.
 
     templates:
 
-      - identifier: myGroupTemplate
+      myGroupTemplate:
         group: billing
 
-      - identifier: endOfLife
+      endOfLife:
         tags: [eol]
         statuses
 

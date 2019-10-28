@@ -1,8 +1,11 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.Lifecycle;
+import de.bonndan.nivio.model.ServiceItems;
 
 import java.util.List;
 import java.util.function.*;
@@ -72,96 +75,12 @@ public interface ItemDescriptionFactory {
 
         existing.getLinks().putAll(increment.getLinks());
 
-        assignSafe(increment.getDataFlow(), (df) -> df.forEach(existing::addDataFlow));
+        assignSafe(increment.getRelations(), (rel) -> rel.forEach(existing::addRelation));
 
         assignSafe(increment.getInterfaces(), (set) -> set.forEach(intf -> existing.getInterfaces().add(intf)));
-
-        assignSafe(increment.getProvidedBy(), (providers) -> providers.forEach(s -> existing.getProvidedBy().add(s)));
 
         assignSafe(increment.getNetworks(), (nets) -> nets.forEach(net -> existing.getNetworks().add(net)));
 
     }
 
-    /**
-     * Writes the values of the second object to the first where first is null.
-     *
-     * @param item target
-     * @param template source
-     */
-    static void assignTemplateValues(ItemDescription item, ItemDescription template) {
-
-        assignSafeIfAbsent(template.getType(), item.getType(), item::setType);
-
-        assignSafeIfAbsent(template.getLayer(), item.getLayer(), item::setLayer);
-
-        assignSafeIfAbsent(template.getDescription(), item.getDescription(), item::setDescription);
-
-        assignSafeIfAbsent(template.getIcon(), item.getIcon(), item::setIcon);
-
-        assignSafeIfAbsent(template.getNote(), item.getNote(), item::setNote);
-
-        assignSafeIfAbsent(template.getContact(), item.getContact(), item::setContact);
-
-        assignSafeIfAbsent(template.getOwner(), item.getOwner(), item::setOwner);
-
-        assignSafeIfAbsent(template.getTeam(), item.getTeam(), item::setTeam);
-
-        assignSafeIfAbsent(template.getGroup(), item.getGroup(), item::setGroup);
-
-        assignSafeIfAbsent(template.getMachine(), item.getMachine(), item::setMachine);
-
-        assignSafeIfAbsent(template.getSoftware(), item.getSoftware(), item::setSoftware);
-
-        assignSafeIfAbsent(template.getVersion(), item.getVersion(), item::setVersion);
-
-        assignSafeIfAbsent(template.getVisibility(), item.getVisibility(), item::setVisibility);
-
-        assignLifecycleIfAbsent(template.getLifecycle(), item.getLifecycle(), item::setLifecycle);
-
-        assignSafeIfAbsent(template.getScale(), item.getScale(), item::setScale);
-
-        assignSafeIfAbsent(template.getHostType(), item.getHostType(), item::setHostType);
-
-        if (template.getTags() != null && item.getTags() == null)
-            item.setTags(template.getTags());
-
-        template.getLabels().forEach((s, s2) -> item.getLabels().putIfAbsent(s,s2));
-
-
-        if (template.getStatuses() != null) {
-            template.getStatuses().forEach(statusItem -> {
-                if (!item.getStatuses().contains(statusItem))
-                    item.getStatuses().add(statusItem);
-            });
-        }
-
-        if (template.getDataFlow() != null) {
-            template.getDataFlow().forEach(dataFlowItem -> {
-                if (!item.getDataFlow().contains(dataFlowItem))
-                    item.addDataFlow(dataFlowItem);
-            });
-        }
-
-        if (template.getInterfaces() != null) {
-            template.getInterfaces().forEach(interfaceItem -> {
-                if (!item.getInterfaces().contains(interfaceItem))
-                    item.getInterfaces().add(interfaceItem);
-            });
-        }
-
-        if (template.getProvidedBy() != null) {
-            template.getProvidedBy().forEach(provider -> {
-                if (!item.getProvidedBy().contains(provider))
-                    item.getProvidedBy().add(provider);
-            });
-        }
-
-        if (template.getNetworks() != null) {
-            template.getNetworks().forEach(net -> item.getNetworks().add(net));
-        }
-    }
-
-    private static void assignLifecycleIfAbsent(Lifecycle s, Lifecycle absent, Consumer<Lifecycle> c) {
-        if (s != null && absent == null) c.accept(s);
-    }
 }

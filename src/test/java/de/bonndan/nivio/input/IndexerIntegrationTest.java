@@ -22,9 +22,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static de.bonndan.nivio.model.ServiceItems.pick;
 import static org.junit.jupiter.api.Assertions.*;
@@ -71,11 +69,11 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
 
-        Item webserver = (Item) ServiceItems.pick("wordpress-web", null, new ArrayList<>(blog.getProvidedBy()));
+        Item webserver = (Item) ServiceItems.pick("wordpress-web", null, List.copyOf(blog.getProvidedBy()));
         Assertions.assertNotNull(webserver);
-        assertEquals(1, webserver.getProvides().size());
+        assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
 
-        DataFlow push = (DataFlow) blog.getDataFlow().stream()
+        Relation push = (Relation) blog.getRelations().stream()
                 .filter(d -> d.getDescription().equals("push"))
                 .findFirst()
                 .orElse(null);
@@ -111,9 +109,9 @@ public class IndexerIntegrationTest {
 
         Item webserver = (Item) ServiceItems.pick("wordpress-web", null, new ArrayList<LandscapeItem>(blog.getProvidedBy()));
         Assertions.assertNotNull(webserver);
-        assertEquals(1, webserver.getProvides().size());
+        assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
 
-        DataFlow push = (DataFlow) blog.getDataFlow().stream()
+        RelationItem push = blog.getRelations().stream()
                 .filter(d -> d.getDescription().equals("push"))
                 .findFirst()
                 .orElse(null);
@@ -122,7 +120,7 @@ public class IndexerIntegrationTest {
 
         assertEquals("push", push.getDescription());
         assertEquals("json", push.getFormat());
-        assertEquals(blog.getIdentifier(), push.getSourceEntity().getIdentifier());
+        assertEquals(blog.getIdentifier(), push.getSource());
         assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget());
 
         Set<InterfaceItem> interfaces = blog.getInterfaces();
@@ -216,8 +214,8 @@ public class IndexerIntegrationTest {
                 blog1.toString()
         );
 
-        assertNotNull(blog1.getDataFlow());
-        assertEquals(1, blog1.getDataFlow().size());
+        assertNotNull(blog1.getRelations());
+        assertEquals(1, blog1.getRelations().size());
     }
 
     @Test

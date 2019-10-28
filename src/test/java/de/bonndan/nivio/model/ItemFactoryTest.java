@@ -58,7 +58,7 @@ public class ItemFactoryTest {
         assertEquals(landscapeItem.getVersion(), created.getVersion());
         assertEquals(landscapeItem.getVisibility(), created.getVisibility());
         assertEquals(landscapeItem.getInterfaces(), created.getInterfaces());
-        assertEquals(landscapeItem.getDataFlow(), created.getDataFlow());
+        assertEquals(landscapeItem.getRelations(), created.getRelations());
         assertEquals(landscapeItem.getNetworks(), created.getNetworks());
         assertEquals(landscapeItem.getCosts(), created.getCosts());
         assertEquals(landscapeItem.getCapability(), created.getCapability());

@@ -80,7 +80,17 @@ public interface LandscapeItem {
 
     Set<InterfaceItem> getInterfaces();
 
-    Set<DataFlowItem> getDataFlow();
+    Set<RelationItem> getRelations();
+
+    /**
+     * Returns a filtered subset of relations.
+     *
+     * Do not use to add new relations to the set.
+     *
+     * @param type relation type
+     * @return filtered set
+     */
+    Set<RelationItem>  getRelations(RelationType type);
 
     /**
      * Describes the capability the service provides for the business, or in case of infrastructure the technical
@@ -96,4 +106,6 @@ public interface LandscapeItem {
      * @return the raw string
      */
     String getCosts();
+
+
 }

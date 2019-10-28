@@ -1,12 +1,10 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.DataFlowDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.StatusDescription;
-import de.bonndan.nivio.model.Lifecycle;
-import de.bonndan.nivio.model.Status;
-import de.bonndan.nivio.model.StatusItem;
+import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,21 +16,17 @@ public class ItemDescriptionFactoryTest {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
-        DataFlowDescription df1 = new DataFlowDescription();
-        df1.setSource("sd1");
-        df1.setTarget("other");
-        sd1.addDataFlow(df1);
+        RelationDescription other = RelationBuilder.createDataflowDescription(sd1, "other");
+        sd1.addRelation(other);
 
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
-        DataFlowDescription df2 = new DataFlowDescription();
-        df2.setSource("sd1");
-        df2.setTarget("another");
-        increment.addDataFlow(df2);
+        RelationDescription another = RelationBuilder.createDataflowDescription(increment, "another");
+        increment.addRelation(another);
 
         ItemDescriptionFactory.assignNotNull(sd1, increment);
 
-        assertEquals(2, sd1.getDataFlow().size());
+        assertEquals(2, sd1.getRelations().size());
     }
 
     @Test
@@ -71,15 +65,18 @@ public class ItemDescriptionFactoryTest {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
-        sd1.getProvidedBy().add("db1");
+        RelationDescription dbProvider = RelationBuilder.createProviderDescription(sd1, "db1");
+        sd1.addRelation(dbProvider);
+
 
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
-        increment.getProvidedBy().add("redis");
+        RelationDescription redisProvider = RelationBuilder.createProviderDescription(sd1, "redis");
+        increment.addRelation(redisProvider);
 
         ItemDescriptionFactory.assignNotNull(sd1, increment);
 
-        assertEquals(2, sd1.getProvidedBy().size());
+        assertEquals(2, sd1.getRelations(RelationType.PROVIDER).size());
     }
 
     @Test

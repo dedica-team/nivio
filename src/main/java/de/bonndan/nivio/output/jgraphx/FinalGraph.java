@@ -102,7 +102,7 @@ public class FinalGraph {
      */
     private void addDataFlow(List<Item> items) {
 
-        items.forEach(service -> service.getDataFlow().forEach(df -> {
+        items.forEach(service -> service.getRelations().forEach(df -> {
 
             if (df.getSource().equals(df.getTarget()))
                 return;

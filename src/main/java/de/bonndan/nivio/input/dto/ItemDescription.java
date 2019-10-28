@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.model.*;
 import org.springframework.util.StringUtils;
@@ -8,6 +9,7 @@ import org.springframework.util.StringUtils;
 import javax.validation.constraints.NotEmpty;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This is representation of a service in the textual form as described in a source file.
@@ -57,14 +59,14 @@ public class ItemDescription implements LandscapeItem {
     @JsonDeserialize(contentAs = InterfaceDescription.class)
     private Set<InterfaceItem> interfaces = new HashSet<>();
 
-    @JsonDeserialize(contentAs = DataFlowDescription.class)
-    private Set<DataFlowDescription> dataFlow = new HashSet<>();
-
-    private List<String> providedBy = new ArrayList<>();
+    @JsonDeserialize(contentAs = RelationDescription.class)
+    private Set<RelationItem> relations = new HashSet<>();
 
     private Lifecycle lifecycle;
 
     private Map<String, String> labels = new HashMap<>();
+
+    private List<String> providedBy = new ArrayList<>();
 
     public ItemDescription() {
     }
@@ -279,30 +281,38 @@ public class ItemDescription implements LandscapeItem {
         this.interfaces = interfaces;
     }
 
-    /**
-     * Returns a copy, do not use for adding elements
-     *
-     * @return
-     */
-    public Set<DataFlowItem> getDataFlow() {
-        dataFlow.forEach(dataFlowItem -> dataFlowItem.setSource(identifier));
-        return new HashSet<>(dataFlow);
-    }
-
-    public void addDataFlow(DataFlowItem dataFlow) {
-        this.dataFlow.add((DataFlowDescription) dataFlow);
-    }
-
-    public List<String> getProvidedBy() {
-        return providedBy;
-    }
-
     public void setProvidedBy(List<String> providedBy) {
         this.providedBy = providedBy;
     }
 
+
+    /**
+     * Syntactic sugar to create relations from providers.
+     *
+     * @return provider identifier
+     */
+    public List<String> getProvidedBy() {
+        return providedBy;
+    }
+
+    public Set<RelationItem> getRelations() {
+        return Collections.unmodifiableSet(relations);
+    }
+
+    @Override
+    public Set<RelationItem> getRelations(RelationType type) {
+        return relations.stream()
+                .filter(relationItem -> type.equals(relationItem.getType()))
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public void addRelation(RelationItem relationItem) {
+        Objects.requireNonNull(relationItem);
+        this.relations.add(relationItem);
+    }
+
     public Set<StatusItem> getStatuses() {
-        return (Set<StatusItem>) statuses;
+        return statuses;
     }
 
     @Override

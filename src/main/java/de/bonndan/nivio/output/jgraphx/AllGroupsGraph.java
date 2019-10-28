@@ -96,7 +96,7 @@ public class AllGroupsGraph {
             });
 
             //dataflow
-            service.getDataFlow().forEach(dataFlowItem -> {
+            service.getRelations(RelationType.DATAFLOW).forEach(dataFlowItem -> {
                 String target = dataFlowItem.getTarget();
                 if (target == null) return;
                 LandscapeItem targetItem = ServiceItems.find(target, null, items).orElse(null);

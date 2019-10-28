@@ -1,72 +1,43 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.input.dto.DataFlowDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.model.ServiceItems;
+import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static de.bonndan.nivio.model.ServiceItems.find;
 
+/**
+ * Resolves source references into collections of item descriptions.
+ *
+ *
+ */
 public class SourceReferencesResolver {
 
-    public void resolve(final LandscapeDescription env, final ProcessLog log) {
+    private final ProcessLog log;
 
-        env.getSourceReferences().forEach(ref -> {
+    public SourceReferencesResolver(ProcessLog logger) {
+        this.log = logger;
+    }
+
+    public void resolve(final LandscapeDescription landscapeDescription, Map<ItemDescription, List<String>> templatesAndTargets) {
+
+        landscapeDescription.getSourceReferences().forEach(ref -> {
             try {
-                ItemDescriptionFactory factory = ItemDescriptionFormatFactory.getFactory(ref, env);
-
-                List<ItemDescription> descriptions = factory.getDescriptions(ref);
-
-                ref.getAssignTemplates().forEach((key, value) -> {
-
-                    LandscapeItem template = find(key, "", env.getTemplates()).orElse(null);
-                    if (template == null) {
-                        log.warn("Could not find template to assign: " + key);
-                        return;
-                    }
-
-                    value.forEach(identifier -> {
-                        ServiceItems.filter(identifier, descriptions)
-                                .forEach(item -> ItemDescriptionFactory.assignTemplateValues((ItemDescription) item, (ItemDescription) template));
-                    });
-
-                });
-
-                env.addItems(descriptions);
+                ItemDescriptionFactory factory = ItemDescriptionFormatFactory.getFactory(ref, landscapeDescription);
+                landscapeDescription.addItems(factory.getDescriptions(ref));
+                ref.getAssignTemplates().forEach((key, identifiers) -> templatesAndTargets.put(landscapeDescription.getTemplates().get(key), identifiers));
             } catch (ProcessingException ex) {
                 log.warn("Failed to resolve source reference " + ref, ex);
-                env.setIsPartial(true);
+                landscapeDescription.setIsPartial(true);
             }
         });
 
-        resolveTemplateQueries(env.getItemDescriptions());
-    }
-
-    /**
-     * Finds providers or data flow targets named in queries.
-     */
-    private void resolveTemplateQueries(final List<ItemDescription> itemDescriptions) {
-        itemDescriptions.forEach(description -> {
-
-            //provider
-            List<String> providedBy = description.getProvidedBy();
-            description.setProvidedBy(new ArrayList<>());
-            providedBy.forEach(condition -> {
-                ServiceItems.filter(condition, itemDescriptions)
-                        .forEach(result -> description.getProvidedBy().add(result.getIdentifier()));
-            });
-
-            description.getDataFlow().forEach(dataFlowItem -> {
-                ServiceItems.filter(dataFlowItem.getTarget(), itemDescriptions).stream()
-                        .findFirst()
-                        .ifPresent(service -> ((DataFlowDescription)dataFlowItem).setTarget(service.getFullyQualifiedIdentifier().toString()));
-            });
-        });
     }
 
 }

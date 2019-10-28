@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.kubernetes;
 
 import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.model.ServiceItems;
@@ -74,25 +75,27 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
     private Collection<? extends ItemDescription> createDescriptionFromService(Service kubernetesService, List<ItemDescription> items) {
         List<ItemDescription> descriptions = new ArrayList<>();
 
-        ItemDescription description = new ItemDescription();
-        description.setIdentifier(kubernetesService.getMetadata().getName());
-        description.setLayer(LandscapeItem.LAYER_INGRESS);
-        description.setType(kubernetesService.getSpec().getType());
+        ItemDescription service = new ItemDescription();
+        service.setIdentifier(kubernetesService.getMetadata().getName());
+        service.setLayer(LandscapeItem.LAYER_INGRESS);
+        service.setType(kubernetesService.getSpec().getType());
 
         String group = getGroup(kubernetesService);
-        description.setGroup(group);
+        service.setGroup(group);
 
         String targetId = "";
         Map<String, String> selector = kubernetesService.getSpec().getSelector();
         if (selector != null)
              targetId = selector.getOrDefault("app", null);
         if (!StringUtils.isEmpty(targetId)) {
-            ServiceItems.find(targetId, group, items).ifPresent(provider -> {
-                ((ItemDescription) provider).getProvidedBy().add(description.getIdentifier());
+            ServiceItems.find(targetId, group, items).ifPresent(target -> {
+                RelationDescription provides = RelationDescription.provides(service, target);
+                ((ItemDescription) target).addRelation(provides);
+                service.addRelation(provides);
             });
         }
 
-        descriptions.add(description);
+        descriptions.add(service);
 
         return descriptions;
     }

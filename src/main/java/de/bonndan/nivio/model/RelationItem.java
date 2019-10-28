@@ -1,13 +1,15 @@
 package de.bonndan.nivio.model;
 
-public interface DataFlowItem {
+public interface RelationItem {
+
+    RelationType getType();
 
     String getDescription();
 
     String getFormat();
 
-    String getTarget();
-
     String getSource();
+
+    String getTarget();
 
 }

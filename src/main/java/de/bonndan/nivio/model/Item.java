@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Item implements LandscapeItem {
 
@@ -65,13 +66,7 @@ public class Item implements LandscapeItem {
     private Set<StatusItem> statuses = new HashSet<>();
 
     @JsonManagedReference
-    private Set<DataFlowItem> dataFlow = new HashSet<>();
-
-    @JsonBackReference
-    private Set<Item> providedBy = new HashSet<>();
-
-    @JsonBackReference
-    private Set<Item> provides = new HashSet<>();
+    private Set<RelationItem> relations = new HashSet<>();
 
     private String note;
 
@@ -260,7 +255,7 @@ public class Item implements LandscapeItem {
     }
 
     public void setNetworks(Set<String> networks) {
-        this.networks = networks.stream().toArray(String[]::new);
+        this.networks = networks.toArray(new String[0]);
     }
 
     public String getMachine() {
@@ -287,16 +282,19 @@ public class Item implements LandscapeItem {
         this.hostType = hostType;
     }
 
-    public Set<DataFlowItem> getDataFlow() {
-        return dataFlow;
+    public Set<RelationItem> getRelations() {
+        return relations;
     }
 
-    public void setDataFlow(Set<DataFlowItem> outgoing) {
-        dataFlow.addAll(outgoing);
+    @Override
+    public Set<RelationItem> getRelations(RelationType type) {
+        return relations.stream()
+                .filter(relationItem -> type.equals(relationItem.getType()))
+                .collect(Collectors.toSet());
     }
 
-    public Set<Item> getProvidedBy() {
-        return providedBy;
+    public void setRelations(Set<RelationItem> outgoing) {
+        relations.addAll(outgoing);
     }
 
     public String getLayer() {
@@ -323,12 +321,11 @@ public class Item implements LandscapeItem {
         return note;
     }
 
-    public Set<Item> getProvides() {
-        return provides;
-    }
-
-    public void setProvides(Set<Item> provides) {
-        this.provides = provides;
+    public Set<Item> getProvidedBy() {
+        return relations.stream()
+                .filter(relationItem -> relationItem.getTarget().equals(identifier))
+                .map(relationItem -> ((Relation)relationItem).getSourceEntity())
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public void setInterfaces(Set<InterfaceItem> interfaces) {

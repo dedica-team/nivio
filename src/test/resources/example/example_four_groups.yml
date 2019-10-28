@@ -16,21 +16,21 @@ items:
     name: User
     type: humanuser
     group: input
-    dataFlow:
+    relations:
       - target: fe-react
         description: User inputs data into React Frontend
 
   - identifier: fe-react
     name: React
     group: Frontend
-    dataflow:
+    relations:
       - target: be-controller
         description: Using a REST-API, the data is sent to the backend
 
   - identifier: be-controller
     name: Controller
     group: Backend
-    dataflow:
+    relations:
       - target: be-services
         description: Sends puzzle input to services
       - target: fe-react
@@ -39,7 +39,7 @@ items:
   - identifier: be-services
     name: Services
     group: Backend
-    dataflow:
+    relations:
       - target: be-persistence
         description: Sends puzzle results to the persistence layer
       - target: be-controller
@@ -49,7 +49,7 @@ items:
   - identifier: be-persistence
     name: Persistence
     group: Backend
-    dataflow:
+    relations:
       - target: postgres
         description: Data is stored in a PostgreSQL DB
       - target: be-service

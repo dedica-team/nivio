@@ -21,7 +21,7 @@ public class GraphBuilderTest {
         Item a1 = new Item();
         a1.setLayer(LandscapeItem.LAYER_INFRASTRUCTURE);
         a1.setIdentifier("a1");
-        a.getProvidedBy().add(a1);
+        a.getRelations().add(RelationBuilder.createProviderRelation(a1, a));
         landscape.addItem(a1);
 
         Item b = new Item();
@@ -29,10 +29,10 @@ public class GraphBuilderTest {
         b.setIdentifier("b");
         landscape.addItem(b);
 
-        DataFlow df = new DataFlow(a, b.getFullyQualifiedIdentifier());
+        Relation df = new Relation(a, b.getFullyQualifiedIdentifier());
         df.setFormat("json");
         df.setDescription("push");
-        a.getDataFlow().add(df);
+        a.getRelations().add(df);
     }
 
     @Test

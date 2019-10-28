@@ -5,5 +5,5 @@ contact: mail@acme.org
 items:
   - identifier: abc
     match: "identifier LIKE 'crappy_dockername-23%'"
-    dataflow:
+    relations:
       - target: blog-server

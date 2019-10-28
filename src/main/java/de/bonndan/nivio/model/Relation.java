@@ -1,15 +1,18 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Indication of an incoming or outgoing data flow.
+ * Indication of an incoming or outgoing relation like data flow or dependency (provider).
+ *
  * <p>
  * Outgoing flows having a target which matches a service identifier will cause a relation to be created.
  */
-public class DataFlow implements DataFlowItem, Serializable {
+//TODO make it typed
+public class Relation implements RelationItem, Serializable {
 
     @JsonBackReference
     private Item sourceEntity;
@@ -20,14 +23,26 @@ public class DataFlow implements DataFlowItem, Serializable {
 
     private String format;
 
-    public DataFlow() {
+    private RelationType type;
+
+    public Relation() {
     }
 
-    public DataFlow(Item origin, FullyQualifiedIdentifier fullyQualifiedIdentifier) {
+    public Relation(Item origin, FullyQualifiedIdentifier fullyQualifiedIdentifier) {
         this.sourceEntity = origin;
         this.target = fullyQualifiedIdentifier.toString();
     }
 
+    @Override
+    public RelationType getType() {
+        return type;
+    }
+
+    public void setType(RelationType type) {
+        this.type = type;
+    }
+
+    @Override
     public String getDescription() {
         return description;
     }
@@ -36,6 +51,7 @@ public class DataFlow implements DataFlowItem, Serializable {
         this.description = description;
     }
 
+    @Override
     public String getFormat() {
         return format;
     }
@@ -52,10 +68,18 @@ public class DataFlow implements DataFlowItem, Serializable {
         this.sourceEntity = sourceEntity;
     }
 
+    @Override
     public String getTarget() {
         return target;
     }
 
+    public void setTarget(String target) {
+        this.target = target;
+    }
+
+    public void getTargetEntity() {
+
+    }
     @Override
     public String getSource() {
         return sourceEntity.getIdentifier();
@@ -65,9 +89,10 @@ public class DataFlow implements DataFlowItem, Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DataFlow dataFlow = (DataFlow) o;
-        return Objects.equals(sourceEntity.getIdentifier(), dataFlow.sourceEntity.getIdentifier()) &&
-                Objects.equals(target, dataFlow.target);
+
+        Relation relation = (Relation) o;
+        return Objects.equals(sourceEntity.getIdentifier(), relation.sourceEntity.getIdentifier()) &&
+                Objects.equals(target, relation.target);
     }
 
     @Override

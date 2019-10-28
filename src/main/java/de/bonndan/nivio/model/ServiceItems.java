@@ -103,25 +103,25 @@ public class ServiceItems {
         return Optional.ofNullable((found.size() == 1) ? found.get(0): null);
     }
 
-    public static Collection<? extends LandscapeItem> filter(String condition, Collection<? extends LandscapeItem> items) {
+    public static Collection<? extends LandscapeItem> query(String term, Collection<? extends LandscapeItem> items) {
 
-        if ("*" .equals(condition))
+        if ("*" .equals(term))
             return items;
 
         //single word compared against identifier
-        if (condition.matches(IDENTIFIER_VALIDATION)) {
+        if (term.matches(IDENTIFIER_VALIDATION)) {
             return items.stream()
-                    .filter(serviceItem -> serviceItem.getIdentifier().equals(condition))
+                    .filter(serviceItem -> serviceItem.getIdentifier().equals(term))
                     .collect(Collectors.toList());
         }
 
-        if (condition.contains("/")) {
-            FullyQualifiedIdentifier from = FullyQualifiedIdentifier.from(condition);
+        if (term.contains("/")) {
+            FullyQualifiedIdentifier from = FullyQualifiedIdentifier.from(term);
             return findAll(from, items);
         }
 
-        String query = "SELECT * FROM items WHERE " + condition;
-        return query(query, items);
+        String query = "SELECT * FROM items WHERE " + term;
+        return cqnQuery(query, items);
     }
 
     public static final Attribute<LandscapeItem, String> IDENTIFIER = attribute("identifier", LandscapeItem::getIdentifier);
@@ -134,7 +134,7 @@ public class ServiceItems {
      * @param items collection to operate on
      * @return resultset
      */
-    public static List<? extends LandscapeItem> query(String condition, Collection<? extends LandscapeItem> items) {
+    private static List<? extends LandscapeItem> cqnQuery(String condition, Collection<? extends LandscapeItem> items) {
         SQLParser<LandscapeItem> parser = SQLParser.forPojoWithAttributes(LandscapeItem.class,
                 Map.of("identifier", IDENTIFIER, "name", NAME)
         );

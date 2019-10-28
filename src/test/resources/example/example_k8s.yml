@@ -7,6 +7,6 @@ sources:
       providedByMariaDB: ["identifier LIKE 'vehement_gerbil_wordpress%'"]
 
 templates:
-  - identifier: providedByMariaDB
+  providedByMariaDB:
     providedBy:
       - "identifier LIKE 'vehement_gerbil_mariabdb*'"

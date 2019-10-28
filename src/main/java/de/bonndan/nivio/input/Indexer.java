@@ -22,7 +22,6 @@ public class Indexer {
     private final LandscapeRepository landscapeRepo;
     private final NotificationService notificationService;
 
-    private final SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
 
     public Indexer(LandscapeRepository landscapeRepository,
                    NotificationService notificationService
@@ -48,7 +47,9 @@ public class Indexer {
         logger.setLandscape(landscape);
 
         try {
-            sourceReferencesResolver.resolve(input, logger);
+            Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
+            new SourceReferencesResolver(logger).resolve(input, templatesAndTargets);
+            new TemplateResolver().processTemplates(input, templatesAndTargets);
             input.getGroups().forEach((identifier, groupItem) -> {
                 Group g = new Group();
                 g.setIdentifier(identifier);
@@ -59,7 +60,7 @@ public class Indexer {
 
             diff(input, landscape, logger);
             fillGroups(input, landscape);
-            linkDataflow(input, landscape, logger);
+            linkItems(input, landscape, logger);
             landscapeRepo.save(landscape);
         } catch (ProcessingException e) {
             final String msg = "Error while reindexing landscape " + input.getIdentifier();
@@ -117,7 +118,6 @@ public class Indexer {
         );
 
         landscape.setItems(inLandscape);
-        linkAllProviders(inLandscape, input, logger);
         deleteUnreferenced(input, inLandscape, existingItems, logger)
                 .forEach(item -> landscape.getItems().remove(item));
     }
@@ -132,7 +132,7 @@ public class Indexer {
             GroupDescription description = (GroupDescription) groupItem;
             Group group = (Group) landscape.getGroups().get(description.getIdentifier());
             description.getContains().forEach(condition -> {
-                group.getItems().addAll(ServiceItems.filter(condition, List.copyOf(landscape.getItems())));
+                group.getItems().addAll(ServiceItems.query(condition, List.copyOf(landscape.getItems())));
             });
         });
     }
@@ -154,75 +154,31 @@ public class Indexer {
         return removed;
     }
 
-    /**
-     * Links all providers to a service
-     */
-    private void linkAllProviders(Set<Item> items, LandscapeDescription landscapeDescription, ProcessLog logger) {
+    private void linkItems(final LandscapeDescription input, final LandscapeImpl landscape, ProcessLog logger) {
 
-        boolean isPartial = landscapeDescription.isPartial();
-        items.forEach(
-                service -> {
-                    ItemDescription description =
-                            (ItemDescription) ServiceItems.find(service.getFullyQualifiedIdentifier(), landscapeDescription.getItemDescriptions()).orElse(null);
-                    if (description == null) {
-                        if (isPartial)
-                            return;
-                        else
-                            throw new ProcessingException(landscapeDescription, "Service not found " + service.getIdentifier());
-                    }
-
-                    if (!isPartial) {
-                        service.getProvidedBy().clear();
-                    }
-
-                    description.getProvidedBy().forEach(providerName -> {
-                        Item provider;
-                        try {
-                            var fqi = FullyQualifiedIdentifier.from(providerName);
-                            provider = (Item) ServiceItems.find(fqi, items).orElse(null);
-                            if (provider == null) {
-                                logger.warn("Could not find service " + fqi + " in landscape " + landscapeDescription + " while linking providers for service " + description.getFullyQualifiedIdentifier());
-                                return;
-                            }
-                        } catch (IllegalArgumentException ex) {
-                            logger.warn("Misconfigured provider in service " + description.getFullyQualifiedIdentifier());
-                            return;
-                        }
-
-
-                        if (!service.getProvidedBy().contains(provider)) {
-                            service.getProvidedBy().add(provider);
-                            provider.getProvides().add(service); //deprecated
-                            logger.info("Adding provider " + provider + " to service " + service);
-                        }
-                    });
-                }
-        );
-    }
-
-    private void linkDataflow(final LandscapeDescription input, final LandscapeImpl landscape, ProcessLog logger) {
         input.getItemDescriptions().forEach(serviceDescription -> {
             Item origin = (Item) ServiceItems.pick(serviceDescription, landscape.getItems());
-            if (!input.isPartial() && origin.getDataFlow().size() > 0) {
+            if (!input.isPartial() && origin.getRelations().size() > 0) {
                 logger.info("Clearing dataflow of " + origin);
-                origin.getDataFlow().clear(); //delete all dataflow on full update
+                origin.getRelations().clear(); //delete all relations on full update
             }
 
-            serviceDescription.getDataFlow().forEach(description -> {
+            serviceDescription.getRelations().forEach(description -> {
 
                 var fqi = FullyQualifiedIdentifier.from(description.getTarget());
                 Item target = (Item) ServiceItems.find(fqi, landscape.getItems()).orElse(null);
                 if (target == null) {
-                    logger.warn("Dataflow target service " + description.getTarget() + " not found");
+                    logger.warn("Relation target " + description.getTarget() + " not found");
                     return;
                 }
-                Iterator<DataFlowItem> iterator = origin.getDataFlow().iterator();
-                DataFlow existing = null;
-                DataFlow dataFlow = new DataFlow(origin, target.getFullyQualifiedIdentifier());
+
+                Iterator<RelationItem> iterator = origin.getRelations().iterator();
+                Relation existing = null;
+                Relation relation = new Relation(origin, target.getFullyQualifiedIdentifier());
                 while (iterator.hasNext()) {
-                    existing = (DataFlow) iterator.next();
-                    if (existing.equals(dataFlow)) {
-                        logger.info(String.format("Updating dataflow between %s and %s", existing.getSource(), existing.getTarget()));
+                    existing = (Relation) iterator.next();
+                    if (existing.equals(relation)) {
+                        logger.info(String.format("Updating relation between %s and %s", existing.getSource(), existing.getTarget()));
                         existing.setDescription(description.getDescription());
                         existing.setFormat(description.getFormat());
                         break;
@@ -231,11 +187,15 @@ public class Indexer {
                 }
 
                 if (existing == null) {
-                    dataFlow.setDescription(description.getDescription());
-                    dataFlow.setFormat(description.getFormat());
+                    relation.setDescription(description.getDescription());
+                    relation.setFormat(description.getFormat());
+                    relation.setType(description.getType());
 
-                    origin.getDataFlow().add(dataFlow);
-                    logger.info(String.format("Adding dataflow between %s and %s", dataFlow.getSource(), dataFlow.getTarget()));
+                    origin.getRelations().add(relation);
+                    logger.info(
+                            String.format("Adding relation %s between %s and %s",
+                            relation.getType(), relation.getSource(), relation.getTarget())
+                    );
                 }
             });
         });

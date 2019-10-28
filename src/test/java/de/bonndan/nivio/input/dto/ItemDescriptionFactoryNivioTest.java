@@ -4,10 +4,7 @@ package de.bonndan.nivio.input.dto;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
-import de.bonndan.nivio.model.Lifecycle;
-import de.bonndan.nivio.model.LandscapeItem;
-import de.bonndan.nivio.model.Status;
-import de.bonndan.nivio.model.StatusItem;
+import de.bonndan.nivio.model.*;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -84,10 +82,14 @@ class ItemDescriptionFactoryNivioTest {
             }
         });
 
-        assertNotNull(service.getDataFlow());
-        assertEquals(3, service.getDataFlow().size());
-        service.getDataFlow().forEach(dataFlow -> {
-            if (dataFlow.getDescription().equals("kpis")) {
+        assertNotNull(service.getRelations(RelationType.PROVIDER));
+        assertEquals(3, service.getProvidedBy().size());
+
+        Set<RelationItem> dataflows = service.getRelations(RelationType.DATAFLOW);
+        assertNotNull(dataflows);
+        assertEquals(3, dataflows.size());
+        dataflows.forEach(dataFlow -> {
+             if (dataFlow.getDescription().equals("kpis")) {
                 Assert.assertEquals("content-kpi-dashboard", dataFlow.getTarget());
             }
         });

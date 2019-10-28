@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.dld4e;
 
+import static de.bonndan.nivio.model.RelationType.PROVIDER;
 import static org.springframework.util.StringUtils.isEmpty;
 
 /**
@@ -21,7 +22,7 @@ public class Layouter {
         groups.getAll().forEach((name, serviceList) -> {
             serviceList.forEach(service -> {
                 icons.by(service).ifPresent(icon1 -> {
-                    if (service.getProvides().isEmpty()) { //application level
+                    if (service.getRelations(PROVIDER).isEmpty()) { //application level
                         icon1.set("x", xServices[0]).set("y", APPLICATION_LEVEL);
                         xServices[0]++;
                     } else {

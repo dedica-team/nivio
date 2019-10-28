@@ -4,7 +4,7 @@ items:
 - identifier: something
   name: Same Group
   group: content1
-  dataflow:
+  relations:
     - description: push
       target: content1/blog-server
       format: json
@@ -13,7 +13,7 @@ items:
 - identifier: blog-server
   name: Demo Blog
   group: content1
-  dataflow:
+  relations:
   - description: push
     target: content2/blog-server
     format: json
@@ -21,7 +21,7 @@ items:
 - identifier: blog-server
   name: Demo Blog
   group: content2
-  dataflow:
+  relations:
     - description: push
       target: kpi-dashboard
       format: json

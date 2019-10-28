@@ -24,7 +24,7 @@ public class ItemFactory {
     }
 
     /**
-     * Assigns all values from the description except data flow and providedBy/provides. Description values
+     * Assigns all values from the description except relations. Description values
      * overwrite all fields except the group
      */
     public static void assignAll(Item item, LandscapeItem description) {

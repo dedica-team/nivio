@@ -9,7 +9,7 @@ sources:
       insamegroup: ["*"]
 
 templates:
-  - identifier: myfirsttemplate
+  myfirsttemplate:
     name: willnotbeused
     type: webservice
     shortName: willnotbeused
@@ -52,17 +52,19 @@ templates:
       - description: api calls
         format: json
         url: http://acme.io/api
-    dataflow:
+    relations:
       - description: push
         target: kpi-dashboard
         format: json
+        type: dataflow
       - description: in-app purchases
         target: external-billing
+        type: dataflow
     providedBy:
       - wordpress-web
       - wordpress-mariadb
       - wordpress-redis
 
   # template for grouping
-  - identifier: insamegroup
+  insamegroup:
     group: foo

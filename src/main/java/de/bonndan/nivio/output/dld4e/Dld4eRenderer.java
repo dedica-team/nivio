@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.dld4e;
 
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.output.Renderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +10,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Dld4eRenderer implements Renderer<String> {
 
@@ -110,8 +112,8 @@ public class Dld4eRenderer implements Renderer<String> {
     }
 
     private void addLinks(Item item) {
-        item.getDataFlow().forEach(flow -> connections.add(flow));
-        item.getProvides().forEach(provider -> connections.add(provider, item));
+        item.getRelations(RelationType.DATAFLOW).forEach(flow -> connections.addDataflow(flow));
+        item.getRelations(RelationType.PROVIDER).forEach(provider -> connections.addProvider(provider.getSource(), item));
     }
 
     private static class Networks {

@@ -97,7 +97,7 @@ public class GraphStreamRenderer implements Renderer<Graph> {
         }));
 
         //dataflow
-        landscape.getItems().forEach(service -> service.getDataFlow().forEach(df -> {
+        landscape.getItems().forEach(service -> service.getRelations().forEach(df -> {
 
             if (df.getSource().equals(df.getTarget()))
                 return;

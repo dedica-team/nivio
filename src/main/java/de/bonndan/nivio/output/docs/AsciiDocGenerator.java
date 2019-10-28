@@ -86,9 +86,9 @@ public class AsciiDocGenerator {
 
         builder.append(NL);
 
-        if (item.getDataFlow() != null && item.getDataFlow().size() > 0) {
-            builder.append(".Data flow" + NL);
-            item.getDataFlow().forEach(df -> {
+        if (item.getRelations() != null && item.getRelations().size() > 0) {
+            builder.append(".Relations" + NL);
+            item.getRelations().forEach(df -> {
                 builder.append("* " + df.getTarget() + ": ");
                 builder.append(df.getFormat() + " " + df.getDescription());
                 builder.append(NL);

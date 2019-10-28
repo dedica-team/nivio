@@ -81,7 +81,7 @@ public class LandscapeDescriptionFactory {
     private static void sanitizeTemplates(LandscapeDescription landscapeDescription) {
         //sanitize templates, unset properties which are not reusable
         if (landscapeDescription.getTemplates() != null) {
-            landscapeDescription.getTemplates().forEach(tpl -> {
+            landscapeDescription.getTemplates().forEach((s, tpl) -> {
                 tpl.setName("");
                 tpl.setShortName("");
             });

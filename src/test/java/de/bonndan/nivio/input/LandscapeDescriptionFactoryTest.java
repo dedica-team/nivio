@@ -119,9 +119,9 @@ class LandscapeDescriptionFactoryTest {
         assertNotNull(landscapeDescription.getTemplates());
         assertEquals(2, landscapeDescription.getTemplates().size());
 
-        LandscapeItem template = pick("myfirsttemplate", null, landscapeDescription.getTemplates());
+        LandscapeItem template = pick("myfirsttemplate", null, landscapeDescription.getTemplates().values());
         assertNotNull(template);
-        LandscapeItem groupTemplate = pick("insamegroup", null, landscapeDescription.getTemplates());
+        LandscapeItem groupTemplate = pick("insamegroup", null, landscapeDescription.getTemplates().values());
         assertNotNull(groupTemplate);
     }
 
@@ -130,7 +130,7 @@ class LandscapeDescriptionFactoryTest {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
-        LandscapeItem template = pick("myfirsttemplate", null, landscapeDescription.getTemplates());
+        LandscapeItem template = pick("myfirsttemplate", null, landscapeDescription.getTemplates().values());
 
         assertEquals("webservice", template.getType());
         assertTrue(template.getName().isEmpty());
@@ -156,8 +156,8 @@ class LandscapeDescriptionFactoryTest {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates2.yml");
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
-        ItemDescription template = landscapeDescription.getTemplates().get(3);
-        DataFlowItem df = (DataFlowItem) template.getDataFlow().toArray()[0];
+        ItemDescription template = landscapeDescription.getTemplates().get("addDataFlow");
+        RelationItem df = (RelationItem) template.getRelations().toArray()[0];
         assertEquals("identifier LIKE 'other_crappy_name%'", df.getTarget());
     }
 

@@ -41,7 +41,7 @@ public class LandscapeDescription implements Landscape {
      */
     private String contact;
 
-    private List<ItemDescription> templates;
+    private Map<String, ItemDescription> templates = new HashMap<>();
 
     private String source;
 
@@ -127,11 +127,12 @@ public class LandscapeDescription implements Landscape {
         return itemDescriptions;
     }
 
-    public List<ItemDescription> getTemplates() {
+    public Map<String, ItemDescription> getTemplates() {
         return templates;
     }
 
-    public void setTemplates(List<ItemDescription> templates) {
+    public void setTemplates(Map<String, ItemDescription> templates) {
+        templates.forEach((s, itemDescription) -> itemDescription.setIdentifier(s));
         this.templates = templates;
     }
 
