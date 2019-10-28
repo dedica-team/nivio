@@ -15,7 +15,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
-import static de.bonndan.nivio.model.ServiceItems.pick;
+import static de.bonndan.nivio.model.Items.pick;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;

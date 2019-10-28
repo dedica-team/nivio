@@ -69,7 +69,7 @@ public class JsonRenderer implements Renderer<String> {
 
         LandscapeItem landscapeItem = null;
         if (!StringUtils.isEmpty(cell.getId()))
-            landscapeItem = ServiceItems.find(FullyQualifiedIdentifier.from(cell.getId()), items).orElse(null);
+            landscapeItem = Items.find(FullyQualifiedIdentifier.from(cell.getId()), items).orElse(null);
         Vertex vertex = new Vertex();
         vertex.id = cell.getId();
         vertex.name = (String) cell.getValue();

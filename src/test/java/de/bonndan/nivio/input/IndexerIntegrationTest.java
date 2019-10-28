@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
-import static de.bonndan.nivio.model.ServiceItems.pick;
+import static de.bonndan.nivio.model.Items.pick;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -67,11 +67,11 @@ public class IndexerIntegrationTest {
         assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getItems());
         assertEquals(8, landscape.getItems().size());
-        Item blog = (Item) ServiceItems.pick("blog-server", null, landscape.getItems());
+        Item blog = (Item) Items.pick("blog-server", null, landscape.getItems());
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
 
-        Item webserver = (Item) ServiceItems.pick("wordpress-web", null, new ArrayList<>(blog.getProvidedBy()));
+        Item webserver = (Item) Items.pick("wordpress-web", null, new ArrayList<>(blog.getProvidedBy()));
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getProvides().size());
 
@@ -105,11 +105,11 @@ public class IndexerIntegrationTest {
         assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getItems());
         assertEquals(8, landscape.getItems().size());
-        Item blog = (Item) ServiceItems.pick("blog-server", null,landscape.getItems());
+        Item blog = (Item) Items.pick("blog-server", null,landscape.getItems());
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
 
-        Item webserver = (Item) ServiceItems.pick("wordpress-web", null, new ArrayList<LandscapeItem>(blog.getProvidedBy()));
+        Item webserver = (Item) Items.pick("wordpress-web", null, new ArrayList<LandscapeItem>(blog.getProvidedBy()));
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getProvides().size());
 
@@ -140,7 +140,7 @@ public class IndexerIntegrationTest {
     @Test
     public void testIncrementalUpdate() {
         LandscapeImpl landscape = index();
-        Item blog = (Item) ServiceItems.pick("blog-server", null, landscape.getItems());
+        Item blog = (Item) Items.pick("blog-server", null, landscape.getItems());
         int before = landscape.getItems().size();
 
         LandscapeDescription landscapeDescription = new LandscapeDescription();
@@ -161,12 +161,12 @@ public class IndexerIntegrationTest {
 
         //created
         landscape = (LandscapeImpl) indexer.reIndex(landscapeDescription).getLandscape();
-        blog = (Item) ServiceItems.pick("blog-server", "completelyNewGroup", landscape.getItems());
+        blog = (Item) Items.pick("blog-server", "completelyNewGroup", landscape.getItems());
         assertEquals("completelyNewGroup", blog.getGroup());
         assertEquals(before +1, landscape.getItems().size());
 
         //updated
-        Item wordpress = (Item) ServiceItems.pick("wordpress-web", "content", landscape.getItems());
+        Item wordpress = (Item) Items.pick("wordpress-web", "content", landscape.getItems());
         assertEquals("Other name", wordpress.getName());
         assertEquals("content", wordpress.getGroup());
 
@@ -184,7 +184,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(landscape1);
         assertEquals("mail@acme.org", landscape1.getContact());
         Assertions.assertNotNull(landscape1.getItems());
-        Item blog1 = (Item) ServiceItems.pick("blog-server", null,landscape1.getItems());
+        Item blog1 = (Item) Items.pick("blog-server", null,landscape1.getItems());
         Assertions.assertNotNull(blog1);
         assertEquals("blog", blog1.getShortName());
 
@@ -192,7 +192,7 @@ public class IndexerIntegrationTest {
         assertEquals("nivio:other", landscape2.getIdentifier());
         assertEquals("mail@other.org", landscape2.getContact());
         Assertions.assertNotNull(landscape2.getItems());
-        Item blog2 = (Item) ServiceItems.pick("blog-server", null,landscape2.getItems());
+        Item blog2 = (Item) Items.pick("blog-server", null,landscape2.getItems());
         Assertions.assertNotNull(blog2);
         assertEquals("blog1", blog2.getShortName());
     }
@@ -206,9 +206,9 @@ public class IndexerIntegrationTest {
 
         Assertions.assertNotNull(landscape1);
         Assertions.assertNotNull(landscape1.getItems());
-        Item blog1 = (Item) ServiceItems.pick("blog-server", "content1",landscape1.getItems());
+        Item blog1 = (Item) Items.pick("blog-server", "content1",landscape1.getItems());
         Assertions.assertNotNull(blog1);
-        Item blog2 = (Item) ServiceItems.pick("blog-server", "content2",landscape1.getItems());
+        Item blog2 = (Item) Items.pick("blog-server", "content2",landscape1.getItems());
         Assertions.assertNotNull(blog2);
         assertEquals("Demo Blog", blog1.getName());
         assertEquals(

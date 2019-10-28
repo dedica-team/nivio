@@ -23,7 +23,6 @@ public class LandscapeDTOFactory {
         l.identifier = item.getIdentifier();
         l.name = item.getName();
         l.contact = item.getContact();
-        l.stateProviders = item.getStateProviders();
         l.source = item.getSource();
 
         return l;

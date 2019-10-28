@@ -4,7 +4,7 @@ import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.LandscapeItem;
-import de.bonndan.nivio.model.ServiceItems;
+import de.bonndan.nivio.model.Items;
 import de.bonndan.nivio.util.URLHelper;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -87,7 +87,7 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
         if (selector != null)
              targetId = selector.getOrDefault("app", null);
         if (!StringUtils.isEmpty(targetId)) {
-            ServiceItems.find(targetId, group, items).ifPresent(provider -> {
+            Items.find(targetId, group, items).ifPresent(provider -> {
                 ((ItemDescription) provider).getProvidedBy().add(description.getIdentifier());
             });
         }

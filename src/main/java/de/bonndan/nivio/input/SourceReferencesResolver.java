@@ -5,12 +5,12 @@ import de.bonndan.nivio.input.dto.DataFlowDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.LandscapeItem;
-import de.bonndan.nivio.model.ServiceItems;
+import de.bonndan.nivio.model.Items;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.bonndan.nivio.model.ServiceItems.find;
+import static de.bonndan.nivio.model.Items.find;
 
 public class SourceReferencesResolver {
 
@@ -31,7 +31,7 @@ public class SourceReferencesResolver {
                     }
 
                     value.forEach(identifier -> {
-                        ServiceItems.filter(identifier, descriptions)
+                        Items.filter(identifier, descriptions)
                                 .forEach(item -> ItemDescriptionFactory.assignTemplateValues((ItemDescription) item, (ItemDescription) template));
                     });
 
@@ -57,12 +57,12 @@ public class SourceReferencesResolver {
             List<String> providedBy = description.getProvidedBy();
             description.setProvidedBy(new ArrayList<>());
             providedBy.forEach(condition -> {
-                ServiceItems.filter(condition, itemDescriptions)
+                Items.filter(condition, itemDescriptions)
                         .forEach(result -> description.getProvidedBy().add(result.getIdentifier()));
             });
 
             description.getDataFlow().forEach(dataFlowItem -> {
-                ServiceItems.filter(dataFlowItem.getTarget(), itemDescriptions).stream()
+                Items.filter(dataFlowItem.getTarget(), itemDescriptions).stream()
                         .findFirst()
                         .ifPresent(service -> ((DataFlowDescription)dataFlowItem).setTarget(service.getFullyQualifiedIdentifier().toString()));
             });

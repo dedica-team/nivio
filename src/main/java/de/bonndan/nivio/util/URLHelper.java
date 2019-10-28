@@ -44,6 +44,9 @@ public class URLHelper {
         if (part == null)
             return baseUrl.toString();
 
+        if (part.startsWith(baseUrl.toString()))
+            return part;
+
         String combined = baseUrl.toString().endsWith("/") ? baseUrl.toString() : baseUrl.toString() + "/";
         return combined + (part.startsWith("./") ? part.substring(2) : part);
     }

@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import java.awt.geom.Rectangle2D;
 import java.util.*;
 
 /**
@@ -99,7 +98,7 @@ public class AllGroupsGraph {
             service.getDataFlow().forEach(dataFlowItem -> {
                 String target = dataFlowItem.getTarget();
                 if (target == null) return;
-                LandscapeItem targetItem = ServiceItems.find(target, null, items).orElse(null);
+                LandscapeItem targetItem = Items.find(target, null, items).orElse(null);
                 if (targetItem == null) return;
 
                 String targetGroup = targetItem.getGroup() == null ? Groups.COMMON : targetItem.getGroup();

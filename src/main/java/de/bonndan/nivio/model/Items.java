@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import static com.googlecode.cqengine.query.QueryFactory.attribute;
 import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
 
-public class ServiceItems {
+public class Items {
 
     /**
      * Ensures that the given item has a sibling in the list, returns the item from the list.
@@ -33,7 +33,7 @@ public class ServiceItems {
     /**
      * Makes sure the sibling of the item is returned or throws an exception.
      *
-     * @param identifier  service identifier
+     * @param identifier  identifier
      * @param group       the group to search in
      * @param items all items
      * @return the sibling with the given identifier
@@ -51,9 +51,9 @@ public class ServiceItems {
     /**
      * Returns a the item from the list or null. Uses the matching criteria of {@link FullyQualifiedIdentifier}
      *
-     * @param identifier the service identifier
+     * @param identifier the identifier
      * @param items      all items
-     * @return the service or null
+     * @return the item or null
      */
     public static Optional<LandscapeItem> find(String identifier, String group, Collection<? extends LandscapeItem> items) {
         if (StringUtils.isEmpty(identifier)) {
@@ -71,18 +71,18 @@ public class ServiceItems {
     private static List<LandscapeItem> findAll(
             final String identifier,
             final String group,
-            final Collection<? extends LandscapeItem> serviceList
+            final Collection<? extends LandscapeItem> items
     ) {
         FullyQualifiedIdentifier fqi;
         if (group == null)
             fqi = FullyQualifiedIdentifier.from(identifier);
         else
             fqi = FullyQualifiedIdentifier.build(null, group, identifier);
-        return findAll(fqi, serviceList);
+        return findAll(fqi, items);
     }
 
-    private static List<LandscapeItem> findAll(FullyQualifiedIdentifier fqi, Collection<? extends LandscapeItem> serviceList) {
-        return serviceList.stream()
+    private static List<LandscapeItem> findAll(FullyQualifiedIdentifier fqi, Collection<? extends LandscapeItem> items) {
+        return items.stream()
                 .filter(fqi::isSimilarTo)
                 .collect(Collectors.toList());
     }
@@ -90,9 +90,9 @@ public class ServiceItems {
     /**
      * Returns a the item from the list or null. Uses the matching criteria of {@link FullyQualifiedIdentifier}
      *
-     * @param fqi      the service identifier
+     * @param fqi      the identifier
      * @param items all items
-     * @return the service or null
+     * @return the or null
      */
     public static Optional<LandscapeItem> find(FullyQualifiedIdentifier fqi, Collection<? extends LandscapeItem> items) {
         List<LandscapeItem> found = findAll(fqi, items);
@@ -111,7 +111,7 @@ public class ServiceItems {
         //single word compared against identifier
         if (condition.matches(IDENTIFIER_VALIDATION)) {
             return items.stream()
-                    .filter(serviceItem -> serviceItem.getIdentifier().equals(condition))
+                    .filter(item -> item.getIdentifier().equals(condition))
                     .collect(Collectors.toList());
         }
 
