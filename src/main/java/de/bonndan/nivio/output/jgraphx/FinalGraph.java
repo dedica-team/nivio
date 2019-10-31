@@ -90,7 +90,6 @@ public class FinalGraph {
         });
 
         addDataFlow(items);
-        addProviderEdges(items);
         renderExtras(serviceVertexes);
 
         return graph;
@@ -102,47 +101,27 @@ public class FinalGraph {
      */
     private void addDataFlow(List<Item> items) {
 
-        items.forEach(service -> service.getRelations().forEach(df -> {
+        items.forEach(service -> service.getRelations().forEach(rel -> {
 
-            if (df.getSource().equals(df.getTarget()))
+            if (rel.getSource().equals(rel.getTarget()))
                 return;
 
-            String id = "df_" + service.getIdentifier() + df.getTarget();
-            logger.info("Adding dataflow " + id);
-            graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(),
+            String astyle;
+            if (RelationType.PROVIDER.equals(rel.getType())) {
+                astyle = getProviderEdgeStyle(rel.getSource());
+            } else {
+                astyle = getDataFlowStyle(service);
+            }
+
+            String id = "df_" + service.getIdentifier() + rel.getTarget();
+            logger.info("Adding relation " + rel.getType() + " " + id);
+            graph.insertEdge(graph.getDefaultParent(), id, rel.getFormat(),
                     serviceVertexes.get(service),
-                    serviceVertexes.get(df.getTarget()),
-                    getDataFlowStyle(service)
+                    serviceVertexes.get(rel.getTarget()),
+                    astyle
             );
 
         }));
-    }
-
-
-    /**
-     * Adds only the edges which cross group boundaries.
-     * <p>
-     * These edges are added after layouting in order not to influence it.
-     *
-     * @param items all items
-     */
-    private void addProviderEdges(List<Item> items) {
-
-        items.forEach(service -> {
-
-
-            service.getProvidedBy().forEach(provider -> {
-
-                final String astyle = getProviderEdgeStyle(provider);
-
-                graph.insertEdge(
-                        graph.getDefaultParent(), null, "",
-                        serviceVertexes.get(provider),
-                        serviceVertexes.get(service),
-                        astyle
-                );
-            });
-        });
     }
 
     private void resizeContainer(mxCell cell) {
