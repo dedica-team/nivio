@@ -85,7 +85,7 @@ class ItemDescriptionFactoryNivioTest {
         assertNotNull(service.getRelations(RelationType.PROVIDER));
         assertEquals(3, service.getProvidedBy().size());
 
-        Set<RelationItem> dataflows = service.getRelations(RelationType.DATAFLOW);
+        Set<RelationItem<String>> dataflows = service.getRelations(RelationType.DATAFLOW);
         assertNotNull(dataflows);
         assertEquals(3, dataflows.size());
         dataflows.forEach(dataFlow -> {

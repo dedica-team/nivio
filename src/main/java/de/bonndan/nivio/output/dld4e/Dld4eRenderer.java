@@ -113,7 +113,7 @@ public class Dld4eRenderer implements Renderer<String> {
 
     private void addLinks(Item item) {
         item.getRelations(RelationType.DATAFLOW).forEach(flow -> connections.addDataflow(flow));
-        item.getRelations(RelationType.PROVIDER).forEach(provider -> connections.addProvider(provider.getSource(), item));
+        item.getRelations(RelationType.PROVIDER).forEach(provider -> connections.addProvider(provider.getSource().getIdentifier(), item));
     }
 
     private static class Networks {

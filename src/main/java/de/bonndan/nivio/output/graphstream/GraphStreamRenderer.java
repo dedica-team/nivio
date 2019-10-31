@@ -103,11 +103,12 @@ public class GraphStreamRenderer implements Renderer<Graph> {
                 return;
 
             String id = "df_" + service.getIdentifier() + df.getTarget();
+            Item target = (Item) df.getTarget();
             logger.info("Adding dataflow " + id);
             Edge e = graph.addEdge(
                     id,
                     service.getIdentifier(),
-                    df.getTarget(),
+                    target.getIdentifier(),
                     true //directed
             );
 

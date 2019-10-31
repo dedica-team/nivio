@@ -2,7 +2,6 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.*;
 import org.springframework.util.StringUtils;
 
@@ -12,7 +11,7 @@ import java.util.function.Consumer;
 import static de.bonndan.nivio.util.SafeAssign.assignSafeIfAbsent;
 
 /**
- * Responsible to apply template to landscape items.
+ * Responsible to apply templates to landscape items.
  * <p>
  * Resolves the items the templates are assigned to as well as dynamic endpoints of relation in templates.
  */
@@ -26,13 +25,7 @@ public class TemplateResolver {
      *                            certain items.
      */
     public void processTemplates(LandscapeDescription landscape, Map<ItemDescription, List<String>> templatesAndTargets) {
-        templatesAndTargets.forEach((landscapeItem, identifiers) -> {
-            applyTemplateValues(landscapeItem, identifiers, landscape);
-        });
-
-        templatesAndTargets.forEach((landscapeItem, identifiers) -> {
-            resolveTemplateRelations(landscapeItem, identifiers, landscape);
-        });
+        templatesAndTargets.forEach((landscapeItem, identifiers) -> applyTemplateValues(landscapeItem, identifiers, landscape));
     }
 
     /**
@@ -95,6 +88,13 @@ public class TemplateResolver {
 
         template.getLabels().forEach((s, s2) -> item.getLabels().putIfAbsent(s, s2));
 
+        if (template.getProvidedBy() != null) {
+            template.getProvidedBy().stream()
+                    .filter(s -> !StringUtils.isEmpty(s) && !item.getProvidedBy().contains(s))
+                    .forEach(s -> item.getProvidedBy().add(s));
+        }
+
+        template.getRelations().forEach(item::addRelation);
 
         if (template.getStatuses() != null) {
             template.getStatuses().forEach(statusItem -> {
@@ -120,57 +120,4 @@ public class TemplateResolver {
         if (s != null && absent == null) c.accept(s);
     }
 
-
-    /**
-     * Finds relation named in queries.
-     */
-    private void resolveTemplateRelations(
-            ItemDescription template,
-            List<String> templateTargets,
-            LandscapeDescription landscape
-    ) {
-        templateTargets.forEach(term ->
-                ServiceItems.query(term, landscape.getItemDescriptions())
-                        .forEach(item -> resolveTemplateRelations((ItemDescription) item, template, landscape.getItemDescriptions()))
-        );
-    }
-
-    private static void resolveTemplateRelations(
-            ItemDescription description,
-            ItemDescription template,
-            List<ItemDescription> allItems
-    ) {
-
-        //providers
-        template.getProvidedBy().forEach(term -> {
-            ServiceItems.query(term, allItems).stream().findFirst().ifPresent(o -> {
-                RelationDescription rel = RelationBuilder.createProviderDescription((ItemDescription) o, description.getIdentifier());
-                description.addRelation(rel);
-            });
-        });
-
-        //other relations
-        template.getRelations().forEach(rel -> {
-
-            List<ItemDescription> sources = new ArrayList<>();
-            if (StringUtils.isEmpty(rel.getSource())) {
-                sources.add(description);
-            } else {
-                ServiceItems.query(rel.getSource(), allItems).forEach(o -> sources.add((ItemDescription) o));
-            }
-
-            sources.forEach(source -> {
-                RelationDescription copy = RelationBuilder.copy(rel);
-                copy.setSource(source.getFullyQualifiedIdentifier().toString());
-                resolveTarget(copy, allItems);
-                source.addRelation(copy);
-            });
-        });
-
-    }
-
-    private static void resolveTarget(RelationDescription rel, List<ItemDescription> allItems) {
-        ServiceItems.query(rel.getTarget(), allItems).stream().findFirst()
-                .ifPresent(item -> rel.setTarget(item.getFullyQualifiedIdentifier().toString()));
-    }
 }

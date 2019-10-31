@@ -29,7 +29,7 @@ public class GraphBuilderTest {
         b.setIdentifier("b");
         landscape.addItem(b);
 
-        Relation df = new Relation(a, b.getFullyQualifiedIdentifier());
+        Relation df = new Relation(a, b);
         df.setFormat("json");
         df.setDescription("push");
         a.getRelations().add(df);

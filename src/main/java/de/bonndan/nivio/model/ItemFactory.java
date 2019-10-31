@@ -45,7 +45,9 @@ public class ItemFactory {
 
         item.setSoftware(description.getSoftware());
         item.setVersion(description.getVersion());
-        item.setInterfaces(description.getInterfaces().stream().map(ServiceInterface::new).collect(Collectors.toSet()));
+        item.setInterfaces(description.getInterfaces().stream()
+                .map(ServiceInterface::new)
+                .collect(Collectors.toSet()));
 
         item.getLinks().putAll(description.getLinks());
         item.setContact(description.getContact());

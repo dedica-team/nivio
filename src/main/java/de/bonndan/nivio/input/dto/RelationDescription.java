@@ -3,9 +3,8 @@ package de.bonndan.nivio.input.dto;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.model.RelationItem;
 import de.bonndan.nivio.model.RelationType;
-import org.springframework.util.StringUtils;
 
-public class RelationDescription implements RelationItem {
+public class RelationDescription implements RelationItem<String> {
 
     private RelationType type;
     private String description;
@@ -13,17 +12,7 @@ public class RelationDescription implements RelationItem {
     private String source;
     private String target;
 
-    public static RelationDescription provides(LandscapeItem source, LandscapeItem target) {
-        return provides(source.getIdentifier(), target);
-    }
-
-    public static RelationDescription provides(String source, LandscapeItem target) {
-        RelationDescription relationDescription = new RelationDescription();
-        relationDescription.source = source;
-        relationDescription.target = target.getIdentifier();
-        relationDescription.type = RelationType.PROVIDER;
-        return relationDescription;
-    }
+    public RelationDescription(){}
 
     public String getDescription() {
         return description;

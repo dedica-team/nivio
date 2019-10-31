@@ -1,7 +1,6 @@
 package de.bonndan.nivio.input.dto;
 
 
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.model.*;
 import org.springframework.util.StringUtils;
@@ -60,7 +59,7 @@ public class ItemDescription implements LandscapeItem {
     private Set<InterfaceItem> interfaces = new HashSet<>();
 
     @JsonDeserialize(contentAs = RelationDescription.class)
-    private Set<RelationItem> relations = new HashSet<>();
+    private Set<RelationItem<String>> relations = new HashSet<>();
 
     private Lifecycle lifecycle;
 
@@ -295,18 +294,18 @@ public class ItemDescription implements LandscapeItem {
         return providedBy;
     }
 
-    public Set<RelationItem> getRelations() {
-        return Collections.unmodifiableSet(relations);
+    public Set<RelationItem<String>> getRelations() {
+        return relations;
     }
 
     @Override
-    public Set<RelationItem> getRelations(RelationType type) {
+    public Set<RelationItem<String>> getRelations(RelationType type) {
         return relations.stream()
                 .filter(relationItem -> type.equals(relationItem.getType()))
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(Collectors.toSet());
     }
 
-    public void addRelation(RelationItem relationItem) {
+    public void addRelation(RelationItem<String> relationItem) {
         Objects.requireNonNull(relationItem);
         this.relations.add(relationItem);
     }

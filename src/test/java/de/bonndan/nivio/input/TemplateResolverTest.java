@@ -102,7 +102,7 @@ class TemplateResolverTest {
     }
 
     @Test
-    public void assignsOnlyToReferences() {
+    public void assignsOnlyToGivenTargets() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates.yml");
         Map<ItemDescription, List<String>> templates = getTemplates(landscapeDescription);
@@ -111,39 +111,6 @@ class TemplateResolverTest {
         ItemDescription redis = (ItemDescription) pick("redis", null, landscapeDescription.getItemDescriptions());
         assertNotNull(redis);
         assertNull(redis.getSoftware());
-    }
-
-    @Test
-    public void resolvesTemplatePlaceholdersInProviders() {
-
-        LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates2.yml");
-        Map<ItemDescription, List<String>> templates = getTemplates(landscapeDescription);
-        templateResolver.processTemplates(landscapeDescription, templates);
-
-        //the provider has been resolved using a query instead of naming a service
-        ItemDescription providedbyBar = (ItemDescription) pick("crappy_dockername-78345", null, landscapeDescription.getItemDescriptions());
-        assertNotNull(providedbyBar);
-        Set<RelationItem> relations = providedbyBar.getRelations(RelationType.PROVIDER);
-        assertNotNull(relations);
-        assertEquals(1, relations.size());
-        RelationItem s = relations.iterator().next();
-        assertEquals("crappy_dockername-2343a", s.getSource());
-    }
-
-    @Test
-    public void resolvesTemplatePlaceholdersInDataflow() {
-
-        LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates2.yml");
-        Map<ItemDescription, List<String>> templates = getTemplates(landscapeDescription);
-        templateResolver.processTemplates(landscapeDescription, templates);
-
-        ItemDescription hasdataFlow = (ItemDescription) pick("crappy_dockername-78345", null, landscapeDescription.getItemDescriptions());
-        assertNotNull(hasdataFlow);
-        assertNotNull(hasdataFlow.getRelations());
-        Set<RelationItem> relations = hasdataFlow.getRelations(RelationType.DATAFLOW);
-        assertFalse(relations.isEmpty());
-        RelationItem next = relations.iterator().next();
-        assertEquals("nivio:templates2/beta/other_crappy_name-2343a", next.getTarget());
     }
 
     private Map<ItemDescription, List<String>> getTemplates(LandscapeDescription landscapeDescription) {

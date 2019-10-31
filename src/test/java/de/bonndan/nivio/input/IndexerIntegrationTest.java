@@ -74,7 +74,7 @@ public class IndexerIntegrationTest {
         assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
 
         Relation push = (Relation) blog.getRelations().stream()
-                .filter(d -> d.getDescription().equals("push"))
+                .filter(d -> "push".equals(d.getDescription()))
                 .findFirst()
                 .orElse(null);
 
@@ -82,8 +82,8 @@ public class IndexerIntegrationTest {
 
         assertEquals("push", push.getDescription());
         assertEquals("json", push.getFormat());
-        assertEquals(blog.getIdentifier(), push.getSourceEntity().getIdentifier());
-        assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget());
+        assertEquals(blog.getIdentifier(), push.getSource().getIdentifier());
+        assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget().getFullyQualifiedIdentifier().toString());
 
         Set<InterfaceItem> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());
@@ -111,8 +111,8 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
 
-        RelationItem push = blog.getRelations().stream()
-                .filter(d -> d.getDescription().equals("push"))
+        Relation push = (Relation) blog.getRelations().stream()
+                .filter(d -> "push".equals(d.getDescription()))
                 .findFirst()
                 .orElse(null);
 
@@ -120,8 +120,8 @@ public class IndexerIntegrationTest {
 
         assertEquals("push", push.getDescription());
         assertEquals("json", push.getFormat());
-        assertEquals(blog.getIdentifier(), push.getSource());
-        assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget());
+        assertEquals("nivio:example/content/blog-server", push.getSource().getFullyQualifiedIdentifier().toString());
+        assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget().getFullyQualifiedIdentifier().toString());
 
         Set<InterfaceItem> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());
@@ -215,7 +215,7 @@ public class IndexerIntegrationTest {
         );
 
         assertNotNull(blog1.getRelations());
-        assertEquals(1, blog1.getRelations().size());
+        assertEquals(2, blog1.getRelations().size());
     }
 
     @Test

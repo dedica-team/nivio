@@ -50,6 +50,7 @@ public class Indexer {
             Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
             new SourceReferencesResolver(logger).resolve(input, templatesAndTargets);
             new TemplateResolver().processTemplates(input, templatesAndTargets);
+            new RelationResolver(logger).processRelations(input);
             input.getGroups().forEach((identifier, groupItem) -> {
                 Group g = new Group();
                 g.setIdentifier(identifier);
@@ -158,43 +159,56 @@ public class Indexer {
 
         input.getItemDescriptions().forEach(serviceDescription -> {
             Item origin = (Item) ServiceItems.pick(serviceDescription, landscape.getItems());
-            if (!input.isPartial() && origin.getRelations().size() > 0) {
-                logger.info("Clearing dataflow of " + origin);
+            if (!input.isPartial()) {
+                logger.info("Clearing relations of " + origin);
                 origin.getRelations().clear(); //delete all relations on full update
             }
+        });
 
-            serviceDescription.getRelations().forEach(description -> {
+        input.getItemDescriptions().forEach(serviceDescription -> {
+            Item origin = (Item) ServiceItems.pick(serviceDescription, landscape.getItems());
+            serviceDescription.getRelations().forEach(relationDescription -> {
 
-                var fqi = FullyQualifiedIdentifier.from(description.getTarget());
-                Item target = (Item) ServiceItems.find(fqi, landscape.getItems()).orElse(null);
+                var fqiSource = FullyQualifiedIdentifier.from(relationDescription.getSource());
+                var fqiTarget = FullyQualifiedIdentifier.from(relationDescription.getTarget());
+                Item source = (Item) ServiceItems.find(fqiSource, landscape.getItems()).orElse(null);
+                if (source == null) {
+                    logger.warn("Relation source " + relationDescription.getSource() + " not found");
+                    return;
+                }
+                Item target = (Item) ServiceItems.find(fqiTarget, landscape.getItems()).orElse(null);
                 if (target == null) {
-                    logger.warn("Relation target " + description.getTarget() + " not found");
+                    logger.warn("Relation target " + relationDescription.getTarget() + " not found");
                     return;
                 }
 
-                Iterator<RelationItem> iterator = origin.getRelations().iterator();
+                Iterator<RelationItem<Item>> iterator = origin.getRelations().iterator();
                 Relation existing = null;
-                Relation relation = new Relation(origin, target.getFullyQualifiedIdentifier());
+                Relation created = new Relation(source, target);
                 while (iterator.hasNext()) {
                     existing = (Relation) iterator.next();
-                    if (existing.equals(relation)) {
+                    if (existing.equals(created)) {
                         logger.info(String.format("Updating relation between %s and %s", existing.getSource(), existing.getTarget()));
-                        existing.setDescription(description.getDescription());
-                        existing.setFormat(description.getFormat());
+                        existing.setDescription(relationDescription.getDescription());
+                        existing.setFormat(relationDescription.getFormat());
                         break;
                     }
-                    existing = null;
+                    existing = null; //no break: no hit, will be created below
                 }
 
                 if (existing == null) {
-                    relation.setDescription(description.getDescription());
-                    relation.setFormat(description.getFormat());
-                    relation.setType(description.getType());
+                    created.setDescription(relationDescription.getDescription());
+                    created.setFormat(relationDescription.getFormat());
+                    created.setType(relationDescription.getType());
 
-                    origin.getRelations().add(relation);
+                    origin.getRelations().add(created);
+                    if (source == origin)
+                        target.getRelations().add(created);
+                    else
+                        source.getRelations().add(created);
+
                     logger.info(
-                            String.format("Adding relation %s between %s and %s",
-                            relation.getType(), relation.getSource(), relation.getTarget())
+                            String.format("Adding relation %s between %s and %s", created.getType(), created.getSource(), created.getTarget())
                     );
                 }
             });

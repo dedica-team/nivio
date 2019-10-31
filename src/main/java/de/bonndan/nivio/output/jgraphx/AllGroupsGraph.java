@@ -96,11 +96,9 @@ public class AllGroupsGraph {
             });
 
             //dataflow
-            service.getRelations(RelationType.DATAFLOW).forEach(dataFlowItem -> {
-                String target = dataFlowItem.getTarget();
-                if (target == null) return;
-                LandscapeItem targetItem = ServiceItems.find(target, null, items).orElse(null);
-                if (targetItem == null) return;
+            Set<? extends RelationItem> relations = service.getRelations(RelationType.DATAFLOW);
+            relations.forEach(dataFlowItem -> {
+                Item targetItem = (Item) dataFlowItem.getTarget();
 
                 String targetGroup = targetItem.getGroup() == null ? Groups.COMMON : targetItem.getGroup();
                 mxCell targetGroupNode = groupNodes.get(targetGroup);

@@ -21,7 +21,6 @@ public class RelationBuilder {
 
     /**
      * Creates a new relation description of type dataflow and adds it to the source.
-     *
      */
     public static RelationDescription createDataflowDescription(LandscapeItem source, String target) {
         RelationDescription relationDescription = new RelationDescription();
@@ -32,21 +31,21 @@ public class RelationBuilder {
     }
 
     public static Relation createProviderRelation(Item source, Item target) {
-        Relation relation = new Relation();
+        Relation relation = new Relation(source, target);
         relation.setType(RelationType.PROVIDER);
-        relation.setSourceEntity(source);
-        relation.setTarget(target.getIdentifier());
 
         return relation;
     }
 
-    public static RelationDescription copy(RelationItem rel) {
-        RelationDescription copy = new RelationDescription();
-        copy.setSource(rel.getSource());
-        copy.setTarget(rel.getTarget());
-        copy.setDescription(rel.getDescription());
-        copy.setFormat(rel.getFormat());
-        copy.setType(rel.getType());
-        return copy;
+    public static RelationDescription provides(LandscapeItem source, LandscapeItem target) {
+        return provides(source.getIdentifier(), target);
+    }
+
+    public static RelationDescription provides(String source, LandscapeItem target) {
+        RelationDescription relationDescription = new RelationDescription();
+        relationDescription.setSource(source);
+        relationDescription.setTarget(target.getFullyQualifiedIdentifier().toString());
+        relationDescription.setType(RelationType.PROVIDER);
+        return relationDescription;
     }
 }

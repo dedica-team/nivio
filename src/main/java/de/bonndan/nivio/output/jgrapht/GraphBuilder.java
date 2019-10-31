@@ -28,9 +28,11 @@ public class GraphBuilder {
     }
 
     private void addLinks(Item item) {
-        item.getRelations().forEach(flow -> {
-            LandscapeItem target = ServiceItems.pick(flow.getTarget(), null, landscape.getItems());
-            graph.addEdge(item, target, new LabeledEdge(flow.getDescription()));
-        });
+        item.getRelations().stream()
+                .filter(rel -> rel.getSource().equals(item))
+                .forEach(flow -> {
+                    LandscapeItem target = ServiceItems.pick(flow.getTarget().getIdentifier(), null, landscape.getItems());
+                    graph.addEdge(item, target, new LabeledEdge(flow.getDescription()));
+                });
     }
 }

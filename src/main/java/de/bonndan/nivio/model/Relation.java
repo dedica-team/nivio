@@ -11,13 +11,12 @@ import java.util.Objects;
  * <p>
  * Outgoing flows having a target which matches a service identifier will cause a relation to be created.
  */
-//TODO make it typed
-public class Relation implements RelationItem, Serializable {
+public class Relation implements RelationItem<Item>, Serializable {
 
     @JsonBackReference
-    private Item sourceEntity;
+    private Item source;
 
-    private String target;
+    private Item target;
 
     private String description;
 
@@ -25,12 +24,18 @@ public class Relation implements RelationItem, Serializable {
 
     private RelationType type;
 
-    public Relation() {
+    Relation() {
     }
 
-    public Relation(Item origin, FullyQualifiedIdentifier fullyQualifiedIdentifier) {
-        this.sourceEntity = origin;
-        this.target = fullyQualifiedIdentifier.toString();
+    public Relation(Item source, Item target) {
+        if (source == null || target == null)
+            throw new IllegalArgumentException("Null arguments passed.");
+
+        if (source.equals(target))
+            throw new IllegalArgumentException("Relation source and target are equal.");
+
+        this.source = source;
+        this.target = target;
     }
 
     @Override
@@ -60,29 +65,18 @@ public class Relation implements RelationItem, Serializable {
         this.format = format;
     }
 
-    public Item getSourceEntity() {
-        return sourceEntity;
-    }
-
-    public void setSourceEntity(Item sourceEntity) {
-        this.sourceEntity = sourceEntity;
-    }
-
     @Override
-    public String getTarget() {
+    public Item getTarget() {
         return target;
     }
 
-    public void setTarget(String target) {
+    public void setTarget(Item target) {
         this.target = target;
     }
 
-    public void getTargetEntity() {
-
-    }
     @Override
-    public String getSource() {
-        return sourceEntity.getIdentifier();
+    public Item getSource() {
+        return source;
     }
 
     @Override
@@ -91,13 +85,12 @@ public class Relation implements RelationItem, Serializable {
         if (o == null || getClass() != o.getClass()) return false;
 
         Relation relation = (Relation) o;
-        return Objects.equals(sourceEntity.getIdentifier(), relation.sourceEntity.getIdentifier()) &&
-                Objects.equals(target, relation.target);
+        return Objects.equals(source, relation.source) && Objects.equals(target, relation.target);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sourceEntity.getIdentifier(), target);
+        return Objects.hash(source, target);
     }
 
 }

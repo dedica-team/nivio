@@ -109,13 +109,11 @@ public class FinalGraph {
 
             String id = "df_" + service.getIdentifier() + df.getTarget();
             logger.info("Adding dataflow " + id);
-            ServiceItems.find(FullyQualifiedIdentifier.from(df.getTarget()), items).ifPresent(target -> {
-                graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(),
-                        serviceVertexes.get(service),
-                        serviceVertexes.get(target),
-                        getDataFlowStyle(service)
-                );
-            });
+            graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(),
+                    serviceVertexes.get(service),
+                    serviceVertexes.get(df.getTarget()),
+                    getDataFlowStyle(service)
+            );
 
         }));
     }

@@ -1,6 +1,11 @@
 package de.bonndan.nivio.model;
 
-public interface RelationItem {
+/**
+ * A relation between two landscape items.
+ *
+ * @param <T> Strings for relation descriptions, LandscapeItems in the final graph
+ */
+public interface RelationItem<T> {
 
     RelationType getType();
 
@@ -8,8 +13,14 @@ public interface RelationItem {
 
     String getFormat();
 
-    String getSource();
+    /**
+     * @return the start item of the relation (e.g. a provider)
+     */
+    T getSource();
 
-    String getTarget();
+    /**
+     * @return the target item
+     */
+    T getTarget();
 
 }

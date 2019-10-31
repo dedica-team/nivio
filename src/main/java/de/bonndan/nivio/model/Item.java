@@ -66,7 +66,7 @@ public class Item implements LandscapeItem {
     private Set<StatusItem> statuses = new HashSet<>();
 
     @JsonManagedReference
-    private Set<RelationItem> relations = new HashSet<>();
+    private Set<RelationItem<Item>> relations = new HashSet<>();
 
     private String note;
 
@@ -282,18 +282,18 @@ public class Item implements LandscapeItem {
         this.hostType = hostType;
     }
 
-    public Set<RelationItem> getRelations() {
+    public Set<RelationItem<Item>> getRelations() {
         return relations;
     }
 
     @Override
-    public Set<RelationItem> getRelations(RelationType type) {
+    public Set<RelationItem<Item>> getRelations(RelationType type) {
         return relations.stream()
                 .filter(relationItem -> type.equals(relationItem.getType()))
                 .collect(Collectors.toSet());
     }
 
-    public void setRelations(Set<RelationItem> outgoing) {
+    public void setRelations(Set<RelationItem<Item>> outgoing) {
         relations.addAll(outgoing);
     }
 
@@ -321,10 +321,14 @@ public class Item implements LandscapeItem {
         return note;
     }
 
+    /**
+     * Returns all providers.
+     *
+     */
     public Set<Item> getProvidedBy() {
-        return relations.stream()
-                .filter(relationItem -> relationItem.getTarget().equals(identifier))
-                .map(relationItem -> ((Relation)relationItem).getSourceEntity())
+        return getRelations(RelationType.PROVIDER).stream()
+                .filter(relationItem -> relationItem.getTarget().equals(this))
+                .map(RelationItem::getSource)
                 .collect(Collectors.toUnmodifiableSet());
     }
 

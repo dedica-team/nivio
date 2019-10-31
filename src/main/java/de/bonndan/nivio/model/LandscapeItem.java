@@ -17,7 +17,6 @@ public interface LandscapeItem {
 
     /**
      * Returns the landscape-wide unique identifier of a server or application.
-     *
      */
     String getIdentifier();
 
@@ -37,7 +36,9 @@ public interface LandscapeItem {
     String getType();
 
     String getName();
+
     String getShortName();
+
     String getIcon();
 
     String getGroup();
@@ -80,17 +81,17 @@ public interface LandscapeItem {
 
     Set<InterfaceItem> getInterfaces();
 
-    Set<RelationItem> getRelations();
+    Set<? extends RelationItem> getRelations();
 
     /**
      * Returns a filtered subset of relations.
-     *
+     * <p>
      * Do not use to add new relations to the set.
      *
      * @param type relation type
      * @return filtered set
      */
-    Set<RelationItem>  getRelations(RelationType type);
+    Set<? extends RelationItem> getRelations(RelationType type);
 
     /**
      * Describes the capability the service provides for the business, or in case of infrastructure the technical
