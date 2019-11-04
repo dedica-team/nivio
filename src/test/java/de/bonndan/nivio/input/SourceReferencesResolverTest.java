@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.DataFlowItem;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
@@ -187,5 +188,15 @@ public class SourceReferencesResolverTest {
         assertFalse(dataFlow.isEmpty());
         DataFlowItem s = (DataFlowItem) dataFlow.toArray()[0];
         assertEquals("nivio:templates2/beta/other_crappy_name-2343a", s.getTarget());
+    }
+
+    @Test
+    public void readsExtraFields() {
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_extrafields.yml");
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
+        SourceReference sourceReference = landscapeDescription.getSourceReferences().get(0);
+        assertNotNull(sourceReference);
+        assertNotNull(sourceReference.getProperty("foo"));
+        assertEquals("bar", sourceReference.getProperty("foo"));
     }
 }

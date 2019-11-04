@@ -161,20 +161,6 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void testReadUnknownField() {
-        File file = new File(RootPath.get() + "/src/test/resources/example/example_unknown_field.yml");
-
-        try {
-            LandscapeDescriptionFactory.fromYaml(file);
-        } catch (ReadingException ex) {
-            assertTrue(ex.getMessage().contains("src/test/resources/example/example_unknown_field.yml contains unknown field 'match' in items/0/match"), ex.getMessage());
-            return;
-        }
-
-        fail("ReadingException was not thrown");
-    }
-
-    @Test
     public void testReadUnkownFile() {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_xxx.yml");
 
