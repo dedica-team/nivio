@@ -33,8 +33,6 @@ public class LandscapeImpl implements Landscape {
     @JsonManagedReference
     private Set<Item> items = new HashSet<>();
 
-    private List<StateProviderConfig> stateProviders = new ArrayList<>();
-
     private LandscapeConfig config;
 
     private Map<String, GroupItem> groups = new HashMap<>();
@@ -77,11 +75,6 @@ public class LandscapeImpl implements Landscape {
     }
 
     @Override
-    public List<StateProviderConfig> getStateProviders() {
-        return stateProviders;
-    }
-
-    @Override
     public LandscapeConfig getConfig() {
         return config == null ? new LandscapeConfig() : config;
     }
@@ -113,10 +106,6 @@ public class LandscapeImpl implements Landscape {
     @Override
     public int hashCode() {
         return Objects.hash(StringUtils.trimAllWhitespace(identifier));
-    }
-
-    public void setStateProviders(List<StateProviderConfig> stateProviders) {
-        this.stateProviders = stateProviders;
     }
 
     public void setConfig(LandscapeConfig config) {

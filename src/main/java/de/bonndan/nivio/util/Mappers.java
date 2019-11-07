@@ -13,6 +13,6 @@ public class Mappers {
         gracefulYamlMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
         gracefulYamlMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
         gracefulYamlMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
-        gracefulYamlMapper.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        gracefulYamlMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 }

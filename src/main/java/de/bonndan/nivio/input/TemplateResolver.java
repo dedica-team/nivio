@@ -37,7 +37,7 @@ public class TemplateResolver {
             LandscapeDescription landscape
     ) {
         templateTargets.forEach(term ->
-                ServiceItems.query(term, landscape.getItemDescriptions())
+                Items.query(term, landscape.getItemDescriptions())
                         .forEach(item -> assignTemplateValues((ItemDescription) item, template))
         );
     }

@@ -1,5 +1,7 @@
 package de.bonndan.nivio.input.dto;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
@@ -22,6 +24,8 @@ public class SourceReference {
 
     private Map<String, List<String>> assignTemplates = new HashMap<>();
     private String content;
+
+    private Map<String, Object> props = new HashMap<>();
 
     public SourceReference() {
     }
@@ -119,5 +123,15 @@ public class SourceReference {
      */
     public String getContent() {
         return content;
+    }
+
+    @JsonAnyGetter
+    public Object getProperty(String key) {
+        return props.get(key);
+    }
+
+    @JsonAnySetter
+    public void setProperty(String key, Object value) {
+        props.put(key, value);
     }
 }

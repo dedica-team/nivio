@@ -31,7 +31,7 @@ public class GraphBuilder {
         item.getRelations().stream()
                 .filter(rel -> rel.getSource().equals(item))
                 .forEach(flow -> {
-                    LandscapeItem target = ServiceItems.pick(flow.getTarget().getIdentifier(), null, landscape.getItems());
+                    LandscapeItem target = Items.pick(flow.getTarget().getIdentifier(), null, landscape.getItems());
                     graph.addEdge(item, target, new LabeledEdge(flow.getDescription()));
                 });
     }

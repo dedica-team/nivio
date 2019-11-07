@@ -1,0 +1,7 @@
+identifier: nivio:example
+name: Landscape example
+sources:
+  - url: "./services/docker-compose.yml"
+    format: docker-compose-v2
+    foo: bar
+    bar: baz

@@ -1,16 +1,12 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.model.ServiceItems;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
 
-import static de.bonndan.nivio.model.ServiceItems.find;
 
 /**
  * Resolves source references into collections of item descriptions.
@@ -37,7 +33,6 @@ public class SourceReferencesResolver {
                 landscapeDescription.setIsPartial(true);
             }
         });
-
     }
 
 }

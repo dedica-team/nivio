@@ -101,7 +101,7 @@ public class Indexer {
         kept.forEach(
                 item -> {
 
-                    ItemDescription description = (ItemDescription) ServiceItems.find(item.getFullyQualifiedIdentifier(), input.getItemDescriptions()).orElse(null);
+                    ItemDescription description = (ItemDescription) Items.find(item.getFullyQualifiedIdentifier(), input.getItemDescriptions()).orElse(null);
                     if (description == null) {
                         if (input.isPartial()) {
                             inLandscape.add((Item) item);
@@ -133,7 +133,7 @@ public class Indexer {
             GroupDescription description = (GroupDescription) groupItem;
             Group group = (Group) landscape.getGroups().get(description.getIdentifier());
             description.getContains().forEach(condition -> {
-                group.getItems().addAll(ServiceItems.query(condition, List.copyOf(landscape.getItems())));
+                group.getItems().addAll(Items.query(condition, List.copyOf(landscape.getItems())));
             });
         });
     }
@@ -155,10 +155,11 @@ public class Indexer {
         return removed;
     }
 
+
     private void linkItems(final LandscapeDescription input, final LandscapeImpl landscape, ProcessLog logger) {
 
         input.getItemDescriptions().forEach(serviceDescription -> {
-            Item origin = (Item) ServiceItems.pick(serviceDescription, landscape.getItems());
+            Item origin = (Item) Items.pick(serviceDescription, landscape.getItems());
             if (!input.isPartial()) {
                 logger.info("Clearing relations of " + origin);
                 origin.getRelations().clear(); //delete all relations on full update
@@ -166,17 +167,18 @@ public class Indexer {
         });
 
         input.getItemDescriptions().forEach(serviceDescription -> {
-            Item origin = (Item) ServiceItems.pick(serviceDescription, landscape.getItems());
+            Item origin = (Item) Items.pick(serviceDescription, landscape.getItems());
             serviceDescription.getRelations().forEach(relationDescription -> {
 
                 var fqiSource = FullyQualifiedIdentifier.from(relationDescription.getSource());
                 var fqiTarget = FullyQualifiedIdentifier.from(relationDescription.getTarget());
-                Item source = (Item) ServiceItems.find(fqiSource, landscape.getItems()).orElse(null);
+                Item source = (Item) Items.find(fqiSource, landscape.getItems()).orElse(null);
                 if (source == null) {
                     logger.warn("Relation source " + relationDescription.getSource() + " not found");
                     return;
                 }
-                Item target = (Item) ServiceItems.find(fqiTarget, landscape.getItems()).orElse(null);
+                Item target = (Item) Items.find(fqiTarget, landscape.getItems()).orElse(null);
+
                 if (target == null) {
                     logger.warn("Relation target " + relationDescription.getTarget() + " not found");
                     return;

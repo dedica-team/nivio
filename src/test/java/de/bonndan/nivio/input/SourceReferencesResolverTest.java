@@ -1,10 +1,7 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.RelationItem;
-import de.bonndan.nivio.model.RelationType;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,12 +14,12 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import static de.bonndan.nivio.model.ServiceItems.pick;
+import static de.bonndan.nivio.model.Items.pick;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SourceReferencesResolverTest {
 

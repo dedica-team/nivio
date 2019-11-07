@@ -74,6 +74,11 @@ public class ItemDescription implements LandscapeItem {
         this.identifier = identifier;
     }
 
+    public ItemDescription(FullyQualifiedIdentifier fqi) {
+        this.identifier = fqi.getIdentifier();
+        this.group = fqi.getGroup();
+    }
+
     public String getIdentifier() {
         return identifier;
     }

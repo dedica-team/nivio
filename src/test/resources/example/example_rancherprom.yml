@@ -1,0 +1,5 @@
+identifier: nivio:rancherprom
+
+sources:
+  - url: http://localhost:3000/rancher_prometheus_exporter.txt
+    format: rancher1-prometheus

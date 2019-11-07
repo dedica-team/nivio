@@ -1,3 +1,4 @@
 .git
 .idea
-src
+src/main
+src/test/java

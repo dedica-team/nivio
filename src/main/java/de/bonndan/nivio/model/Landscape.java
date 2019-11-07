@@ -1,6 +1,5 @@
 package de.bonndan.nivio.model;
 
-import java.util.List;
 import java.util.Map;
 
 public interface Landscape {
@@ -15,8 +14,6 @@ public interface Landscape {
      * @return path or yaml content
      */
     String getSource();
-
-    List<StateProviderConfig> getStateProviders();
 
     LandscapeConfig getConfig();
 

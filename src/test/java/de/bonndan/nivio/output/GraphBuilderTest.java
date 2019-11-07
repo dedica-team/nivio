@@ -41,9 +41,9 @@ public class GraphBuilderTest {
         Graph graph = graphBuilder.build(landscape);
         Assertions.assertNotNull(graph);
 
-        Item a = (Item) ServiceItems.pick("a", null, landscape.getItems());
-        Item a1 = (Item) ServiceItems.pick("a1", null, landscape.getItems());
-        Item b = (Item) ServiceItems.pick("b", null, landscape.getItems());
+        Item a = (Item) Items.pick("a", null, landscape.getItems());
+        Item a1 = (Item) Items.pick("a1", null, landscape.getItems());
+        Item b = (Item) Items.pick("b", null, landscape.getItems());
         Assertions.assertTrue(graph.containsVertex(a));
 
         Object edge1 = graph.getEdge(a, a1);

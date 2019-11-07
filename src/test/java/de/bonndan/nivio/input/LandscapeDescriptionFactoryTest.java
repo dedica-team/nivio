@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static de.bonndan.nivio.model.ServiceItems.pick;
+import static de.bonndan.nivio.model.Items.pick;
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -77,19 +77,6 @@ class LandscapeDescriptionFactoryTest {
         assertEquals("Incremental update example", landscapeDescription.getName());
         assertEquals("nivio:incremental", landscapeDescription.getIdentifier());
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
-    }
-
-    @Test
-    public void readStateProviders() {
-
-        File file = new File(RootPath.get() + "/src/test/resources/example/example_providers.yml");
-        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
-        assertFalse(landscapeDescription.getStateProviders().isEmpty());
-
-        StateProviderConfig cfg = landscapeDescription.getStateProviders().get(0);
-        assertNotNull(cfg);
-        assertEquals("prometheus-exporter", cfg.getType());
-        assertTrue(cfg.getTarget().contains("example/rancher_prometheus_exporter.txt"));
     }
 
     @Test
@@ -171,20 +158,6 @@ class LandscapeDescriptionFactoryTest {
         assertNotNull(config);
         assertNotNull(config.getJgraphx());
         assertNotNull(config.getJgraphx().getForceConstantFactor());
-    }
-
-    @Test
-    public void testReadUnknownField() {
-        File file = new File(RootPath.get() + "/src/test/resources/example/example_unknown_field.yml");
-
-        try {
-            LandscapeDescriptionFactory.fromYaml(file);
-        } catch (ReadingException ex) {
-            assertTrue(ex.getMessage().contains("src/test/resources/example/example_unknown_field.yml contains unknown field 'match' in items/0/match"), ex.getMessage());
-            return;
-        }
-
-        fail("ReadingException was not thrown");
     }
 
     @Test

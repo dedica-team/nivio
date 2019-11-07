@@ -3,13 +3,11 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
+import de.bonndan.nivio.model.Items;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.model.RelationBuilder;
-import de.bonndan.nivio.model.RelationItem;
-import de.bonndan.nivio.model.ServiceItems;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +32,7 @@ public class RelationResolver {
 
         //providers
         description.getProvidedBy().forEach(term -> {
-            ServiceItems.query(term, allItems).stream().findFirst().ifPresentOrElse(o -> {
+            Items.query(term, allItems).stream().findFirst().ifPresentOrElse(o -> {
                 RelationDescription rel = RelationBuilder.createProviderDescription((ItemDescription) o, description.getIdentifier());
                 description.addRelation(rel);
             }, () -> log.warn(description.getIdentifier() + ": no provider target found for term " + term));
@@ -60,7 +58,7 @@ public class RelationResolver {
             return Optional.of(description);
         }
 
-        Collection<? extends LandscapeItem> result = ServiceItems.query(term, allItems);
+        Collection<? extends LandscapeItem> result = Items.query(term, allItems);
         if (result.size() > 1) {
             log.warn(description.getIdentifier() + ": Found ambiguous sources matching " + term);
             return Optional.empty();

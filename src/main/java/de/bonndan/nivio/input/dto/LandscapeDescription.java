@@ -55,8 +55,6 @@ public class LandscapeDescription implements Landscape {
      */
     private List<ItemDescription> itemDescriptions = new ArrayList<>();
 
-    private List<StateProviderConfig> stateProviders;
-
     private LandscapeConfig config;
 
     private boolean isPartial = false;
@@ -92,15 +90,6 @@ public class LandscapeDescription implements Landscape {
 
     public String getContact() {
         return contact;
-    }
-
-    @Override
-    public List<StateProviderConfig> getStateProviders() {
-        return stateProviders;
-    }
-
-    public void setStateProviders(List<StateProviderConfig> stateProviders) {
-        this.stateProviders = stateProviders;
     }
 
     public List<SourceReference> getSourceReferences() {
@@ -142,7 +131,6 @@ public class LandscapeDescription implements Landscape {
         landscape.setName(name);
         landscape.setContact(contact);
         landscape.setSource(source);
-        landscape.setStateProviders(stateProviders);
         landscape.setConfig(config);
         return landscape;
     }
@@ -155,7 +143,7 @@ public class LandscapeDescription implements Landscape {
             desc.setEnvironment(this.identifier);
 
             ItemDescription existing = (ItemDescription)
-                    ServiceItems.find(desc.getIdentifier(), desc.getGroup(), itemDescriptions).orElse(null);
+                    Items.find(desc.getIdentifier(), desc.getGroup(), itemDescriptions).orElse(null);
             if (existing != null) {
                 ItemDescriptionFactory.assignNotNull(existing, desc);
             } else {
