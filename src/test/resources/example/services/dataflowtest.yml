@@ -1,12 +1,10 @@
-document_version: 1.0
-
-services:
+items:
 
 # data flow within group, without group identifier
 - identifier: something
   name: Same Group
   group: content1
-  dataflow:
+  relations:
     - description: push
       target: content1/blog-server
       format: json
@@ -15,7 +13,7 @@ services:
 - identifier: blog-server
   name: Demo Blog
   group: content1
-  dataflow:
+  relations:
   - description: push
     target: content2/blog-server
     format: json
@@ -23,7 +21,7 @@ services:
 - identifier: blog-server
   name: Demo Blog
   group: content2
-  dataflow:
+  relations:
     - description: push
       target: kpi-dashboard
       format: json

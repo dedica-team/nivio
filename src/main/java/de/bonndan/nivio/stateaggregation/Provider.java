@@ -1,7 +1,7 @@
 package de.bonndan.nivio.stateaggregation;
 
-import de.bonndan.nivio.landscape.FullyQualifiedIdentifier;
-import de.bonndan.nivio.landscape.StatusItem;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.StatusItem;
 
 import java.util.Map;
 

@@ -41,7 +41,6 @@ public class FileFetcher {
         }
     }
 
-
     public String get(SourceReference ref) {
 
         try {
@@ -50,8 +49,10 @@ public class FileFetcher {
             return fetchUrl(ref);
         } catch (MalformedURLException | URISyntaxException e) {
             String path = ref.getUrl();
-            if (ref.getEnvironment() != null) {
-                File file = new File(ref.getEnvironment().getSource());
+            if (path == null)
+                return null;
+            if (ref.getLandscapeDescription() != null) {
+                File file = new File(ref.getLandscapeDescription().getSource());
                 path = file.getParent() + "/" + ref.getUrl();
             }
             File source = new File(path);
@@ -66,6 +67,8 @@ public class FileFetcher {
             return get(ref);
         }
 
+        if (ref.getUrl() == null)
+            return null;
         //assemble new absolute url
         ref.setUrl(URLHelper.combine(baseUrl, ref.getUrl()));
         return get(ref);
@@ -89,7 +92,7 @@ public class FileFetcher {
             return http.get(new URL(ref.getUrl()));
         } catch (IOException | AuthenticationException | URISyntaxException | RuntimeException e) {
             logger.error("Failed to fetch file " + ref.getUrl(), e);
-            throw new ReadingException(ref.getEnvironment(), "Failed to fetch file "+ ref.getUrl(), e);
+            throw new ReadingException(ref.getLandscapeDescription(), "Failed to fetch file "+ ref.getUrl(), e);
         }
     }
 

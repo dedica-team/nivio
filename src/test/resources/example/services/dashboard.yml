@@ -1,6 +1,4 @@
-document_version: 1.0
-
-services:
+items:
 
   - identifier: keycloak
     name: Keycloak SSO
@@ -11,21 +9,23 @@ services:
 
   - identifier: kpi-dashboard
     name: Demo Dashboard
-    short_name: dashboard
+    shortName: dashboard
     version: 0.7
     software: custom
     owner: Marketing
     description: Show our most important KPIs
     team: alphateam
     contact: alphateam@acme.io
-    homepage: https://acme.io
-    repository: https://git.acme.io/dashboard
+    links:
+      hompage: https://acme.io
+      repo: https://git.acme.io/dashboard
     group: dashboard
     visibility: public
-    network: content
+    networks:
+      - content
     machine: s
     scale: 1
-    host_type: docker
+    hostType: docker
     lifecycle: production
     statuses:
       - label: stability
@@ -36,7 +36,7 @@ services:
       - description: kpis
         format: json
         url: http://dashboard.acme.io/kpis
-    provided_by:
+    providedBy:
       - dashboard-db
       - keycloak
 
@@ -45,13 +45,12 @@ services:
     software: MariaDB
     version: 10.3.11
     identifier: dashboard-db
-    protocol: tcp
-    port: 3006
     machine: Pentium 1 512MB RAM
     type: database
     team: ops guys
-    network: content
-    host_type: docker
+    networks:
+      - content
+    hostType: docker
     group: dashboard
 
 

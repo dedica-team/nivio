@@ -1,10 +1,8 @@
-document_version: 1.0
-
-services:
+items:
 - identifier: blog-server
   name: Demo Blog
   type: webservice
-  short_name: blog
+  shortName: blog
   icon: https://s.w.org/style/images/about/WordPress-logotype-wmark.png
   version: 1.0
   software: Wordpress
@@ -12,8 +10,9 @@ services:
   description: Company blog
   team: alphateam
   contact: alphateam@acme.io
-  homepage: https://acme.io
-  repository: https://git.acme.io/blog-server
+  links:
+    homepage: https://acme.io
+    repository: https://git.acme.io/blog-server
   group: content
   visibility: public
   tags:
@@ -22,7 +21,7 @@ services:
   - content
   machine: s
   scale: 5
-  host_type: docker
+  hostType: docker
   note: to be replaced
   lifecycle: EOL
   statuses:
@@ -44,15 +43,18 @@ services:
   - description: api calls
     format: json
     url: http://acme.io/api
-  dataflow:
+  relations:
   - description: push
     target: kpi-dashboard
     format: json
+    type: dataflow
   - description: in-app purchases
     target: external-billing
+    type: dataflow
   - description: reminder
     target: emailer
-  provided_by:
+    type: dataflow
+  providedBy:
   - wordpress-web
   - wordpress-mariadb
   - wordpress-redis
@@ -64,7 +66,7 @@ services:
   type: application
   networks:
     - content
-  host_type: docker
+  hostType: docker
   group: content
 
 #
@@ -77,14 +79,12 @@ services:
   layer: ingress
   software: Apache
   version: 2.4
-  protocol: https
-  port: 443
   machine: Pentium 1 512MB RAM
   type: server
   team: ops guys
   networks:
   - content
-  host_type: docker
+  hostType: docker
   group: content
   lifecycle: production
 
@@ -92,14 +92,12 @@ services:
   software: MariaDB
   version: 10.3.11
   identifier: wordpress-mariadb
-  protocol: tcp
-  port: 3006
   machine: Pentium 1 512MB RAM
   type: database
   team: ops guys
   networks:
   - content
-  host_type: docker
+  hostType: docker
   layer: infrastructure
 
 - description: Cache for Wordpress
@@ -107,14 +105,12 @@ services:
   version: 1.0
   icon: vendor://redis
   identifier: wordpress-redis
-  protocol: tcp
-  port: 6379
   machine: Pentium 1 1GB RAM
   type: cache
   team: ops guys
   networks:
   - content
-  host_type: native
+  hostType: native
   layer: infrastructure
   lifecycle: planned
 

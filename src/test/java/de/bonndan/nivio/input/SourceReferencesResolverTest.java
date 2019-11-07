@@ -1,12 +1,11 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.Environment;
-import de.bonndan.nivio.input.dto.ServiceDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.landscape.ServiceItem;
-import de.bonndan.nivio.landscape.ServiceItems;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.RelationItem;
+import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.util.RootPath;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -15,13 +14,15 @@ import org.slf4j.Logger;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static de.bonndan.nivio.landscape.ServiceItems.find;
-import static de.bonndan.nivio.landscape.ServiceItems.pick;
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static de.bonndan.nivio.model.ServiceItems.pick;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SourceReferencesResolverTest {
 
@@ -37,15 +38,16 @@ public class SourceReferencesResolverTest {
     public void resolve() {
 
         File file = new File(RootPath.get() + "/src/test/resources/example/example_incremental_env.yml");
-        Environment environment = EnvironmentFactory.fromYaml(file);
-        assertFalse(environment.getSourceReferences().isEmpty());
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
+        assertFalse(landscapeDescription.getSourceReferences().isEmpty());
 
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
-        sourceReferencesResolver.resolve(environment, log);
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(log);
+        Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
+        sourceReferencesResolver.resolve(landscapeDescription, templatesAndTargets);
 
-        ServiceDescription mapped = (ServiceDescription) pick("blog-server", null, environment.getServiceDescriptions());
+        ItemDescription mapped = (ItemDescription) pick("blog-server", null, landscapeDescription.getItemDescriptions());
         assertNotNull(mapped);
-        assertEquals("blog1", mapped.getShort_name());
+        assertEquals("blog1", mapped.getShortName());
         assertEquals("name2", mapped.getName());
     }
 
@@ -54,81 +56,35 @@ public class SourceReferencesResolverTest {
 
         //given
         File file = new File(RootPath.get() + "/src/test/resources/example/example_broken.yml");
-        Environment environment = EnvironmentFactory.fromYaml(file);
-        assertFalse(environment.getSourceReferences().isEmpty());
-        assertFalse(environment.isPartial());
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
+        assertFalse(landscapeDescription.getSourceReferences().isEmpty());
+        assertFalse(landscapeDescription.isPartial());
 
         //when
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
-        sourceReferencesResolver.resolve(environment, log);
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(log);
+        Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
+        sourceReferencesResolver.resolve(landscapeDescription, templatesAndTargets);
 
         //then
         assertFalse(StringUtils.isEmpty(log.getError()));
-        assertTrue(environment.isPartial());
+        assertTrue(landscapeDescription.isPartial());
     }
 
     @Test
-    public void assignTemplateToAll() {
+    public void readsTemplates() {
 
+        //given
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
-        Environment environment = EnvironmentFactory.fromYaml(file);
-        assertFalse(environment.getSourceReferences().isEmpty());
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
-        sourceReferencesResolver.resolve(environment, log);
+        //when
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(log);
+        Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
+        sourceReferencesResolver.resolve(landscapeDescription, templatesAndTargets);
 
-        ServiceDescription redis = (ServiceDescription) pick("redis", null, environment.getServiceDescriptions());
-        assertNotNull(redis);
-        assertEquals("allinsamegroup", redis.getGroup());
-
-        ServiceDescription datadog = (ServiceDescription) pick("datadog", null, environment.getServiceDescriptions());
-        assertNotNull(datadog);
-        assertEquals("allinsamegroup", datadog.getGroup());
-
-        //web has previously been assigned to group "content" and will not be overwritten by further templates
-        ServiceDescription web = (ServiceDescription) pick("web", null, environment.getServiceDescriptions());
-        assertNotNull(web);
-        assertEquals("content", web.getGroup());
+        //then
+        assertFalse(templatesAndTargets.isEmpty());
+        assertEquals(2, templatesAndTargets.size());
     }
 
-    @Test
-    public void assignsAllValues() {
-
-        File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
-        Environment environment = EnvironmentFactory.fromYaml(file);
-        assertFalse(environment.getSourceReferences().isEmpty());
-
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
-        sourceReferencesResolver.resolve(environment, log);
-
-
-        //web has previously been assigned to group "content" and will not be overwritten by further templates
-        ServiceDescription web = (ServiceDescription) pick("web", null, environment.getServiceDescriptions());
-        assertNotNull(web);
-        assertEquals("content", web.getGroup());
-
-        //other values from template
-        assertNull(web.getName());
-        assertNull(web.getShort_name());
-        assertEquals("Wordpress", web.getSoftware());
-        assertEquals("alphateam", web.getTeam());
-        assertEquals("alphateam@acme.io", web.getContact());
-        assertEquals(1, web.getTags().length);
-    }
-
-    @Test
-    public void assignsOnlyToReferences() {
-
-        File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
-        Environment environment = EnvironmentFactory.fromYaml(file);
-        assertFalse(environment.getSourceReferences().isEmpty());
-
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver();
-        sourceReferencesResolver.resolve(environment, log);
-
-
-        ServiceDescription redis = (ServiceDescription) pick("redis", null, environment.getServiceDescriptions());
-        assertNotNull(redis);
-        assertNull(redis.getSoftware());
-    }
 }

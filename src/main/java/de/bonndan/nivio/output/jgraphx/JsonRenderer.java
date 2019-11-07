@@ -6,7 +6,7 @@ import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
-import de.bonndan.nivio.landscape.*;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Renderer;
 import de.bonndan.nivio.output.jgraphx.dto.Vertex;
 import org.slf4j.Logger;
@@ -32,16 +32,16 @@ public class JsonRenderer implements Renderer<String> {
     }
 
     @Override
-    public String render(Landscape landscape) {
+    public String render(LandscapeImpl landscape) {
         mxGraph graph = mxGraphRenderer.render(landscape);
 
-        List<Service> services = landscape.getServices();
+        Set<Item> items = landscape.getItems();
 
         //this is to have the final layout
         mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
 
         List<Serializable> dtos = new ArrayList<>();
-        getAllChildren(dtos, graph, (mxCell) graph.getDefaultParent(), services);
+        getAllChildren(dtos, graph, (mxCell) graph.getDefaultParent(), items);
 
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -52,24 +52,24 @@ public class JsonRenderer implements Renderer<String> {
         }
     }
 
-    private void getAllChildren(List<Serializable> dtos, mxGraph graph, mxCell cell, List<Service> services) {
+    private void getAllChildren(List<Serializable> dtos, mxGraph graph, mxCell cell, Collection<Item> items) {
         dtos.addAll(
                 Arrays.stream(graph.getChildCells(cell))
-                        .map(o -> toDto((mxCell) o, services))
+                        .map(o -> toDto((mxCell) o, items))
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList())
         );
-        Arrays.stream(graph.getChildCells(cell)).forEach(o -> getAllChildren(dtos, graph, (mxCell) o, services));
+        Arrays.stream(graph.getChildCells(cell)).forEach(o -> getAllChildren(dtos, graph, (mxCell) o, items));
     }
 
-    private Serializable toDto(mxCell cell, List<Service> services) {
+    private Serializable toDto(mxCell cell, Collection<Item> items) {
 
         mxGeometry geometry = cell.getGeometry();
         Map<String, String> style = parseStyle(cell.getStyle());
 
-        ServiceItem serviceItem = null;
+        LandscapeItem landscapeItem = null;
         if (!StringUtils.isEmpty(cell.getId()))
-            serviceItem = ServiceItems.find(FullyQualifiedIdentifier.from(cell.getId()), services);
+            landscapeItem = ServiceItems.find(FullyQualifiedIdentifier.from(cell.getId()), items).orElse(null);
         Vertex vertex = new Vertex();
         vertex.id = cell.getId();
         vertex.name = (String) cell.getValue();
@@ -89,8 +89,8 @@ public class JsonRenderer implements Renderer<String> {
         if (vertex.x == 0 && vertex.y == 0)
             return null;
 
-        if (serviceItem != null) {
-            vertex.service = serviceItem;
+        if (landscapeItem != null) {
+            vertex.service = landscapeItem;
         }
         return vertex;
     }
@@ -109,7 +109,7 @@ public class JsonRenderer implements Renderer<String> {
     }
 
     @Override
-    public void render(Landscape landscape, File file) throws IOException {
+    public void render(LandscapeImpl landscape, File file) throws IOException {
         String json = render(landscape);
     }
 }

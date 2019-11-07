@@ -2,9 +2,9 @@ package de.bonndan.nivio.stateaggregation;
 
 import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.input.dto.Environment;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.StatusDescription;
-import de.bonndan.nivio.landscape.*;
+import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -16,6 +16,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -30,22 +31,32 @@ public class AggregatorTest {
     @Mock
     LandscapeRepository landscapeRepo;
 
-    @Mock
-    ServiceRepository serviceRepo;
-
     private Aggregator aggregator;
 
+    private LandscapeImpl landscape;
+
+    private Item item;
 
     @BeforeEach
     void configureSystemUnderTest() {
         initMocks(this);
-        aggregator = new Aggregator(landscapeRepo, serviceRepo, factory, publisher);
+
+        landscape = new LandscapeImpl();
+        landscape.setIdentifier("x");
+
+        item = new Item();
+        item.setIdentifier("z");
+        item.setGroup("y");
+        landscape.addItem(item);
+
+        when(landscapeRepo.findDistinctByIdentifier(any())).thenReturn(Optional.of(landscape));
+        aggregator = new Aggregator(landscapeRepo, factory, publisher);
     }
 
     @Test
     public void testWithFactoryErrors() {
 
-        Environment e = new Environment();
+        LandscapeDescription e = new LandscapeDescription();
         e.setIdentifier("test");
         e.setStateProviders(List.of(new StateProviderConfig("type", "target")));
 
@@ -58,9 +69,9 @@ public class AggregatorTest {
     @Test
     public void testAppliesState() {
 
-        Environment e = new Environment();
-        e.setIdentifier("test");
-        e.setStateProviders(List.of(new StateProviderConfig(StateProviderConfig.TYPE_PROMETHEUS_EXPORTER, "target")));
+        LandscapeDescription landscapeDescription = new LandscapeDescription();
+        landscapeDescription.setIdentifier("test");
+        landscapeDescription.setStateProviders(List.of(new StateProviderConfig(StateProviderConfig.TYPE_PROMETHEUS_EXPORTER, "target")));
 
         FullyQualifiedIdentifier fullyQualifiedIdentifier = FullyQualifiedIdentifier.build("x", "y", "z");
         Provider mockProvider = Mockito.mock(Provider.class);
@@ -72,13 +83,8 @@ public class AggregatorTest {
         Mockito.when(factory.createFor(Mockito.any(), Mockito.any()))
                 .thenReturn(mockProvider);
 
-        var service = new Service();
-        Mockito.when(serviceRepo.findByLandscapeAndGroupAndIdentifier(Mockito.any(),Mockito.any(),Mockito.any()))
-                .thenReturn(Optional.of(service));
-
-
-        aggregator.fetch(e);
-        Set<StatusItem> statuses = service.getStatuses();
+        aggregator.fetch(landscapeDescription);
+        Set<StatusItem> statuses = item.getStatuses();
         assertFalse(statuses.isEmpty());
         assertEquals(1, statuses.size());
         StatusItem s1 = statuses.iterator().next();
@@ -90,12 +96,9 @@ public class AggregatorTest {
     @Test
     public void testServiceDeteriorates() {
 
-        var service = new Service();
-        service.setStatus(new StatusDescription(StatusItem.HEALTH, Status.GREEN, "ok"));
-        Mockito.when(serviceRepo.findByLandscapeAndGroupAndIdentifier(Mockito.any(),Mockito.any(),Mockito.any()))
-                .thenReturn(Optional.of(service));
+        item.setStatus(new StatusDescription(StatusItem.HEALTH, Status.GREEN, "ok"));
 
-        Environment e = new Environment();
+        LandscapeDescription e = new LandscapeDescription();
         e.setIdentifier("test");
         e.setStateProviders(List.of(new StateProviderConfig(StateProviderConfig.TYPE_PROMETHEUS_EXPORTER, "target")));
 
@@ -111,7 +114,7 @@ public class AggregatorTest {
         Mockito.when(factory.createFor(Mockito.any(), Mockito.any())).thenReturn(mockProvider);
 
         aggregator.fetch(e);
-        Set<StatusItem> statuses = service.getStatuses();
+        Set<StatusItem> statuses = item.getStatuses();
         assertFalse(statuses.isEmpty());
         assertEquals(1, statuses.size());
         StatusItem s1 = statuses.iterator().next();
@@ -124,12 +127,9 @@ public class AggregatorTest {
     @Test
     public void testServiceRecovers() {
 
-        var service = new Service();
-        service.setStatus(new StatusDescription(StatusItem.HEALTH, Status.RED, "error"));
-        Mockito.when(serviceRepo.findByLandscapeAndGroupAndIdentifier(Mockito.any(),Mockito.any(),Mockito.any()))
-                .thenReturn(Optional.of(service));
+        item.setStatus(new StatusDescription(StatusItem.HEALTH, Status.RED, "error"));
 
-        Environment e = new Environment();
+        LandscapeDescription e = new LandscapeDescription();
         e.setIdentifier("test");
         e.setStateProviders(List.of(new StateProviderConfig(StateProviderConfig.TYPE_PROMETHEUS_EXPORTER, "target")));
         FullyQualifiedIdentifier fullyQualifiedIdentifier = FullyQualifiedIdentifier.build("x", "y", "z");
@@ -145,7 +145,7 @@ public class AggregatorTest {
 
         aggregator.fetch(e);
 
-        Set<StatusItem> statuses = service.getStatuses();
+        Set<StatusItem> statuses = item.getStatuses();
         assertFalse(statuses.isEmpty());
         assertEquals(1, statuses.size());
         StatusItem s1 = statuses.iterator().next();

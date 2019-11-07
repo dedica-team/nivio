@@ -1,0 +1,24 @@
+identifier: nivio:broken
+name: Landscape example
+contact: mail@acme.org
+
+groups:
+  groupA:
+    identifier: groupA
+    owner: Joe
+    team: A-Team
+    description: abc
+    contact: mailq@asd.com
+    color: "#234234"
+    contains:
+      - blog-server
+      - "identifier LIKE 'crappy_dockername-23%'"
+
+  B:
+    owner: Jill
+
+items:
+  - identifier: blog-server
+    name: foo
+  - identifier: crappy_dockername-234234
+    name: bar

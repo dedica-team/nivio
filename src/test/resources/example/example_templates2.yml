@@ -1,0 +1,24 @@
+identifier: nivio:templates2
+name: Templates2 example
+sources:
+  - url: "./services/docker-like.yml"
+    format: nivio
+    assignTemplates:
+      putIntoGroupAlpha: ["identifier LIKE 'crappy_dockername%'"]
+      putIntoGroupBeta: ["name = 'baz'"]
+      providedByBar: ["identifier LIKE 'crappy_dockername-78%'"]
+      addDataFlow: ["name = 'foo'"]
+
+templates:
+  putIntoGroupAlpha:
+    group: alpha
+  putIntoGroupBeta:
+    group: beta
+  providedByBar:
+    providedBy:
+    - "identifier LIKE 'crappy_dockername-23%'"
+  addDataFlow:
+    relations:
+    - description: foo to other
+      target: "identifier LIKE 'other_crappy_name%'"
+      type: dataflow

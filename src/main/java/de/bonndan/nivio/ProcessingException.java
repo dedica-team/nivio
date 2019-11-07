@@ -1,8 +1,8 @@
 package de.bonndan.nivio;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import de.bonndan.nivio.input.dto.Environment;
-import de.bonndan.nivio.landscape.LandscapeItem;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.Landscape;
 
 /**
  * Generic exception tied to a landscape.
@@ -12,24 +12,24 @@ import de.bonndan.nivio.landscape.LandscapeItem;
  */
 public class ProcessingException extends RuntimeException {
 
-    private final LandscapeItem landscape;
+    private final Landscape landscape;
 
-    public ProcessingException(LandscapeItem landscape, String message) {
+    public ProcessingException(Landscape landscape, String message) {
         super(message);
         this.landscape = landscape;
     }
 
     public ProcessingException(String message, Throwable throwable) {
         super(message, throwable);
-        this.landscape = Environment.NONE;
+        this.landscape = LandscapeDescription.NONE;
     }
 
-    public ProcessingException(LandscapeItem landscape, String message, Throwable throwable) {
+    public ProcessingException(Landscape landscape, String message, Throwable throwable) {
         super(message, throwable);
         this.landscape = landscape;
     }
 
-    public static ProcessingException of(LandscapeItem landscape, Throwable throwable) {
+    public static ProcessingException of(Landscape landscape, Throwable throwable) {
         if (throwable instanceof ProcessingException)
             return (ProcessingException) throwable;
 
@@ -39,7 +39,7 @@ public class ProcessingException extends RuntimeException {
         return new ProcessingException(landscape, throwable.getMessage(), throwable);
     }
 
-    public LandscapeItem getLandscape() {
+    public Landscape getLandscape() {
         return landscape;
     }
 

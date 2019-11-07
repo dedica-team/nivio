@@ -1,11 +1,11 @@
 identifier: inout
 name: Input and Output
 
-config:
-  groups:
-    input:
-      color: "24a0ed"
+groups:
+  input:
+    color: "24a0ed"
 
+config:
   # https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxOrganicLayout.html
   jgraphx:
     triesPerCell: 8
@@ -22,13 +22,13 @@ config:
     # higher value is cpu intensive, but can lead to better layouts
     maxIterations: 1000
 
-services:
+items:
 
   - identifier: nivio-prop
     name: Nivio proprietary
     type: humanuser
     group: input
-    dataFlow:
+    relations:
       - target: nivio
         description: alpha
 
@@ -36,7 +36,7 @@ services:
     name: Docker Compose files
     icon: https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Docker_%28container_engine%29_logo.svg/250px-Docker_%28container_engine%29_logo.svg.png
     group: input
-    dataFlow:
+    relations:
       - target: nivio
         description: alpha
 
@@ -45,7 +45,7 @@ services:
     group: input
     lifecycle: planned
     icon: https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
-    dataFlow:
+    relations:
       - target: nivio
         description: alpha
 
@@ -53,14 +53,14 @@ services:
     group: input
     lifecycle: planned
     icon: https://raw.githubusercontent.com/prometheus/docs/master/static/prometheus_logo.png
-    dataFlow:
+    relations:
       - target: nivio
         description: maybe
 
   - identifier: nivio
     name: Nivio
     group: nivio
-    dataFlow:
+    relations:
       - target: png
       - target: report
 

@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output.dld4e;
 
-import de.bonndan.nivio.landscape.Service;
+import de.bonndan.nivio.model.Item;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -12,16 +12,16 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 public class Groups {
 
-    private Map<String, List<Service>> groups = new HashMap<>();
+    private Map<String, List<Item>> groups = new HashMap<>();
 
-    public void add(Service service) {
-        if (isEmpty(service.getGroup()))
+    public void add(Item item) {
+        if (isEmpty(item.getGroup()))
             return;
 
-        if (!groups.containsKey(service.getGroup())) {
-            groups.put(service.getGroup(), new ArrayList<>());
+        if (!groups.containsKey(item.getGroup())) {
+            groups.put(item.getGroup(), new ArrayList<>());
         }
-        groups.get(service.getGroup()).add(service);
+        groups.get(item.getGroup()).add(item);
     }
 
     @Override
@@ -30,14 +30,14 @@ public class Groups {
         groups.forEach((g, members) -> {
             sb.append("  " + g + ": {<<: *group, ");
             sb.append("name: " + g + ", ");
-            String[] ids = members.stream().map(Service::getIdentifier).toArray(String[]::new);
+            String[] ids = members.stream().map(Item::getIdentifier).toArray(String[]::new);
             sb.append("members: [" + StringUtils.arrayToDelimitedString(ids, ",") + "]");
             sb.append("}\n");
         });
         return sb.toString();
     }
 
-    public Map<String, List<Service>> getAll() {
+    public Map<String, List<Item>> getAll() {
         return groups;
     }
 }

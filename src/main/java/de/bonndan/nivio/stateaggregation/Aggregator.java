@@ -3,7 +3,7 @@ package de.bonndan.nivio.stateaggregation;
 import com.jasongoodwin.monads.Try;
 import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.landscape.*;
+import de.bonndan.nivio.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,6 @@ public class Aggregator {
     private final static Logger logger = LoggerFactory.getLogger(Aggregator.class);
 
     private final LandscapeRepository landscapeRepository;
-    private final ServiceRepository serviceRepo;
 
     private final ProviderFactory factory;
 
@@ -28,17 +27,15 @@ public class Aggregator {
 
     @Autowired
     public Aggregator(LandscapeRepository landscapeRepository,
-                      ServiceRepository serviceRepo,
                       ProviderFactory factory,
                       ApplicationEventPublisher publisher
     ) {
         this.landscapeRepository = landscapeRepository;
-        this.serviceRepo = serviceRepo;
         this.factory = factory;
         this.publisher = publisher;
     }
 
-    public void fetch(LandscapeItem landscape) {
+    public void fetch(Landscape landscape) {
 
         getProviders(landscape).forEach(provider -> {
             try {
@@ -53,13 +50,17 @@ public class Aggregator {
 
     private void applyUpdates(Map<FullyQualifiedIdentifier, StatusItem> updates) {
         updates.forEach((fqi, item) -> {
-            Landscape landscape = landscapeRepository.findDistinctByIdentifier(fqi.getLandscape());
-            serviceRepo.findByLandscapeAndGroupAndIdentifier(landscape, fqi.getGroup(), fqi.getIdentifier())
-                    .ifPresent(service -> service.setStatus(item));
+            landscapeRepository.findDistinctByIdentifier(fqi.getLandscape())
+                    .ifPresentOrElse(landscape -> {
+                                ServiceItems.find(fqi, landscape.getItems()).ifPresent(serviceItem -> serviceItem.setStatus(item));
+                            },
+                            () -> {
+                            }
+                    );
         });
     }
 
-    private List<Provider> getProviders(LandscapeItem landscape) {
+    private List<Provider> getProviders(Landscape landscape) {
         List<Provider> providers = new ArrayList<>();
         landscape.getStateProviders()
                 .forEach(config ->
@@ -72,7 +73,7 @@ public class Aggregator {
         return providers;
     }
 
-    private void handleError(LandscapeItem landscape, Throwable throwable, String msg) {
+    private void handleError(Landscape landscape, Throwable throwable, String msg) {
         logger.error(msg, throwable);
         publisher.publishEvent(new ProcessingErrorEvent(this, ProcessingException.of(landscape, throwable)));
     }

@@ -1,0 +1,9 @@
+identifier: nivio:broken
+name: Landscape example
+contact: mail@acme.org
+
+items:
+  - identifier: abc
+    match: "identifier LIKE 'crappy_dockername-23%'"
+    relations:
+      - target: blog-server

@@ -1,14 +1,13 @@
 package de.bonndan.nivio.output.docs;
 
-import de.bonndan.nivio.landscape.Groups;
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.ServiceItem;
-import de.bonndan.nivio.landscape.ServiceItems;
+import de.bonndan.nivio.model.Groups;
+import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.LandscapeItem;
 import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.springframework.util.StringUtils.isEmpty;
 
@@ -22,12 +21,12 @@ public class AsciiDocGenerator {
 
     private static final String NL = "\n";
 
-    public String toDocument(Landscape landscape) {
+    public String toDocument(LandscapeImpl landscape) {
 
         return writeLandscape(landscape);
     }
 
-    private String writeLandscape(Landscape landscape) {
+    private String writeLandscape(LandscapeImpl landscape) {
         final StringBuilder builder = new StringBuilder();
 
         builder.append("= " + landscape.getName() + NL);
@@ -53,7 +52,7 @@ public class AsciiDocGenerator {
         return builder.toString();
     }
 
-    private String writeItem(ServiceItem item) {
+    private String writeItem(LandscapeItem item) {
         final StringBuilder builder = new StringBuilder();
 
         builder.append(NL + "=== " + (isEmpty(item.getName()) ? item.getIdentifier() : item.getName()) + NL);
@@ -65,10 +64,11 @@ public class AsciiDocGenerator {
         builder.append("[horizontal]" + NL);
         builder.append("FQI:: " + item.getFullyQualifiedIdentifier() + NL);
         builder.append("Name:: " + nice(item.getName()) + NL);
-        builder.append("Short Name:: " + nice(item.getShort_name()) + NL);
+        builder.append("Short Name:: " + nice(item.getShortName()) + NL);
         builder.append("Type:: " + item.getType() + NL);
-        builder.append("Homepage:: " + nice(item.getHomepage()) + NL);
-        builder.append("Repository:: " + nice(item.getRepository()) + NL);
+        builder.append("Links:: " + item.getLinks().entrySet().stream()
+                .map(stringURLEntry -> stringURLEntry.getValue().toString() + "[" + stringURLEntry.getKey() + "]")
+                .collect(Collectors.joining(" ")) + NL);
         builder.append("Tags:: " + nice(item.getTags()) + NL);
         builder.append("Contact:: " + nice(item.getContact()) + NL);
         builder.append("Team:: " + nice(item.getTeam()) + NL);
@@ -86,9 +86,9 @@ public class AsciiDocGenerator {
 
         builder.append(NL);
 
-        if (item.getDataFlow() != null && item.getDataFlow().size() > 0) {
-            builder.append(".Data flow" + NL);
-            item.getDataFlow().forEach(df -> {
+        if (item.getRelations() != null && item.getRelations().size() > 0) {
+            builder.append(".Relations" + NL);
+            item.getRelations().forEach(df -> {
                 builder.append("* " + df.getTarget() + ": ");
                 builder.append(df.getFormat() + " " + df.getDescription());
                 builder.append(NL);

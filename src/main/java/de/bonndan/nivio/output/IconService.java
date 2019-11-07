@@ -1,14 +1,13 @@
 package de.bonndan.nivio.output;
 
 import de.bonndan.nivio.api.iconcache.IconsController;
-import de.bonndan.nivio.landscape.ServiceItem;
+import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.PostConstruct;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -67,7 +66,7 @@ public class IconService {
         return proxiedUrl(vendorIcons.get(key));
     }
 
-    public Icon getIcon(ServiceItem service) {
+    public Icon getIcon(LandscapeItem service) {
 
         if (!StringUtils.isEmpty(service.getIcon())) {
             URL vendorUrl = get(service.getIcon());

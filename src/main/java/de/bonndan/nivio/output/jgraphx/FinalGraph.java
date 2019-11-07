@@ -9,19 +9,23 @@ import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStyleRegistry;
 import com.mxgraph.view.mxStylesheet;
-import de.bonndan.nivio.landscape.*;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Icon;
 import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.util.Color;
+import de.bonndan.nivio.util.RootPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-import static de.bonndan.nivio.landscape.Status.UNKNOWN;
+import static de.bonndan.nivio.model.Status.UNKNOWN;
 import static de.bonndan.nivio.util.Color.GRAY;
 
 public class FinalGraph {
@@ -30,7 +34,7 @@ public class FinalGraph {
     private final IconService iconService;
 
     private Logger logger = LoggerFactory.getLogger(FinalGraph.class);
-    private Map<Service, mxCell> serviceVertexes = new HashMap<>();
+    private Map<Item, mxCell> serviceVertexes = new HashMap<>();
     private mxStylesheet stylesheet;
     private mxGraph graph;
 
@@ -54,13 +58,13 @@ public class FinalGraph {
 
 
         //graph.orderCells(true, virtualNodes.toArray());
-        final List<Service> services = new ArrayList<>();
+        final List<Item> items = new ArrayList<>();
 
         allGroupsGraph.getLayoutedGroups().forEach((groupName, mxCell) -> {
 
-            Optional<Service> serviceItem = subgraphs.get(groupName).getServiceVertexesWithRelativeOffset().entrySet().stream()
-                    .findFirst().map(serviceItemmxPointEntry -> (Service) serviceItemmxPointEntry.getKey());
-            LandscapeConfig landscapeConfig = serviceItem.map(service -> service.getLandscape().getConfig()).orElse(null);
+            Optional<Item> serviceItem = subgraphs.get(groupName).getServiceVertexesWithRelativeOffset().entrySet().stream()
+                    .findFirst().map(serviceItemmxPointEntry -> (Item) serviceItemmxPointEntry.getKey());
+            LandscapeImpl landscape = serviceItem.map(service -> service.getLandscape()).orElse(null); //TODO inefficient
             mxGeometry groupGeo = mxCell.getGeometry();
             mxCell groupContainer = (mxCell) graph.insertVertex(
                     graph.getDefaultParent(),
@@ -69,24 +73,23 @@ public class FinalGraph {
                     groupGeo.getY(),
                     groupGeo.getWidth(),
                     groupGeo.getHeight(),
-                    getGroupStyle(groupName, getGroupColor(groupName, landscapeConfig))
+                    getGroupStyle(groupName, getGroupColor(groupName, landscape))
             );
 
 
             GroupGraph groupGraph = subgraphs.get(groupName);
             groupGraph.getServiceVertexesWithRelativeOffset().forEach((service, offset) -> {
                 serviceVertexes.put(
-                        (Service) service,
+                        (Item) service,
                         addServiceVertex(offset, groupContainer, service)
                 );
-                services.add((Service) service);
+                items.add((Item) service);
             });
 
             resizeContainer(groupContainer);
         });
 
-        addDataFlow(services);
-        addProviderEdges(services);
+        addDataFlow(items);
         renderExtras(serviceVertexes);
 
         return graph;
@@ -96,49 +99,29 @@ public class FinalGraph {
     /**
      * Adds dataflow edges.
      */
-    private void addDataFlow(List<Service> services) {
+    private void addDataFlow(List<Item> items) {
 
-        services.forEach(service -> service.getDataFlow().forEach(df -> {
+        items.forEach(service -> service.getRelations().forEach(rel -> {
 
-            if (df.getSource().equals(df.getTarget()))
+            if (rel.getSource().equals(rel.getTarget()))
                 return;
 
-            String id = "df_" + service.getIdentifier() + df.getTarget();
-            logger.info("Adding dataflow " + id);
-            ServiceItem target = ServiceItems.find(FullyQualifiedIdentifier.from(df.getTarget()), services);
-            graph.insertEdge(graph.getDefaultParent(), id, df.getFormat(),
+            String astyle;
+            if (RelationType.PROVIDER.equals(rel.getType())) {
+                astyle = getProviderEdgeStyle(rel.getSource());
+            } else {
+                astyle = getDataFlowStyle(service);
+            }
+
+            String id = "df_" + service.getIdentifier() + rel.getTarget();
+            logger.info("Adding relation " + rel.getType() + " " + id);
+            graph.insertEdge(graph.getDefaultParent(), id, rel.getFormat(),
                     serviceVertexes.get(service),
-                    serviceVertexes.get(target),
-                    getDataFlowStyle(service)
+                    serviceVertexes.get(rel.getTarget()),
+                    astyle
             );
+
         }));
-    }
-
-
-    /**
-     * Adds only the edges which cross group boundaries.
-     * <p>
-     * These edges are added after layouting in order not to influence it.
-     *
-     * @param services all services
-     */
-    private void addProviderEdges(List<Service> services) {
-
-        services.forEach(service -> {
-
-
-            service.getProvidedBy().forEach(provider -> {
-
-                final String astyle = getProviderEdgeStyle(provider);
-
-                graph.insertEdge(
-                        graph.getDefaultParent(), null, "",
-                        serviceVertexes.get(provider),
-                        serviceVertexes.get(service),
-                        astyle
-                );
-            });
-        });
     }
 
     private void resizeContainer(mxCell cell) {
@@ -156,18 +139,18 @@ public class FinalGraph {
         });
     }
 
-    private mxCell addServiceVertex(mxPoint offset, mxCell parent, ServiceItem serviceItem) {
+    private mxCell addServiceVertex(mxPoint offset, mxCell parent, LandscapeItem landscapeItem) {
 
-        String style = getServiceStyle(serviceItem);
+        String style = getItemStyle(landscapeItem);
 
-        String name = StringUtils.isEmpty(serviceItem.getName()) ? serviceItem.getIdentifier() : serviceItem.getName();
-        if (Lifecycle.PLANNED.equals(serviceItem.getLifecycle())) {
+        String name = StringUtils.isEmpty(landscapeItem.getName()) ? landscapeItem.getIdentifier() : landscapeItem.getName();
+        if (Lifecycle.PLANNED.equals(landscapeItem.getLifecycle())) {
             name = name + "\n(planned)";
         }
 
         return (mxCell) graph.insertVertex(
                 parent,
-                serviceItem.getFullyQualifiedIdentifier().toString(),
+                landscapeItem.getFullyQualifiedIdentifier().toString(),
                 name,
                 offset.getX(), offset.getY(),
                 DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE,
@@ -175,16 +158,16 @@ public class FinalGraph {
         );
     }
 
-    private void renderExtras(Map<Service, mxCell> map) {
+    private void renderExtras(Map<Item, mxCell> map) {
 
         map.entrySet().forEach(entry -> {
             mxCell cell = entry.getValue();
             mxRectangle cellBounds = graph.getCellBounds(cell);
 
             //sort statuses, pick worst
-            Service service = entry.getKey();
-            Optional<StatusItem> displayed = service.getStatuses().stream()
-                    .filter(item -> !UNKNOWN.equals(item.getStatus()) && !Status.GREEN.equals(item.getStatus()))
+            Item item = entry.getKey();
+            Optional<StatusItem> displayed = item.getStatuses().stream()
+                    .filter(item1 -> !UNKNOWN.equals(item1.getStatus()) && !Status.GREEN.equals(item1.getStatus()))
                     .min((statusItem, t1) -> {
                         if (statusItem.getStatus().equals(t1.getStatus())) {
                             return statusItem.getLabel().compareToIgnoreCase(t1.getLabel());
@@ -195,7 +178,7 @@ public class FinalGraph {
             //statuses at left
             int statusBoxSize = DEFAULT_ICON_SIZE / 2;
             if (cellBounds == null) {
-                logger.warn("Render extras: no cell bounds for {}", service);
+                logger.warn("Render extras: no cell bounds for {}", item);
                 return;
             }
 
@@ -216,12 +199,12 @@ public class FinalGraph {
                     + mxConstants.STYLE_FONTCOLOR + "=black;"
                     + mxConstants.STYLE_LABEL_POSITION + "=right;"
                     + mxConstants.STYLE_ALIGN + "=left;"
-                    + mxConstants.STYLE_FILLCOLOR + "=#" + getGroupColor(service) + ";"
+                    + mxConstants.STYLE_FILLCOLOR + "=#" + getGroupColor(item) + ";"
                     + mxConstants.STYLE_STROKEWIDTH + "=0;";
 
 
             AtomicInteger count = new AtomicInteger(0);
-            Stream<InterfaceItem> sorted = service.getInterfaces().stream()
+            Stream<InterfaceItem> sorted = item.getInterfaces().stream()
                     .sorted((interfaceItem, t1) -> interfaceItem.getDescription().compareToIgnoreCase(t1.getDescription()));
             sorted.forEach(intf -> {
 
@@ -242,25 +225,35 @@ public class FinalGraph {
                         v1,
                         mxConstants.STYLE_ENDARROW + "=none;"
                                 + mxConstants.STYLE_STROKEWIDTH + "=2;"
-                                + mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(service) + ";"
+                                + mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(item) + ";"
                 );
             });
         });
 
     }
 
-    private String getServiceStyle(ServiceItem serviceItem) {
-        String style = getBaseStyle((Service) serviceItem) + ";" + "type=" + serviceItem.getType()
-                + ";group=" + serviceItem.getGroup() + ";"
-                + "strokeColor=" + getGroupColor((Service) serviceItem) + ";";
-        if (Lifecycle.PLANNED.equals(serviceItem.getLifecycle())) {
+    private String getItemStyle(LandscapeItem landscapeItem) {
+        String style = getBaseStyle((Item) landscapeItem) + ";" + "type=" + landscapeItem.getType()
+                + ";group=" + landscapeItem.getGroup() + ";"
+                + "strokeColor=" + getGroupColor((Item) landscapeItem) + ";";
+        if (Lifecycle.PLANNED.equals(landscapeItem.getLifecycle())) {
             style = style + mxConstants.STYLE_DASHED + "=1";
         }
         return style;
     }
 
-    private String getBaseStyle(Service service) {
-        Icon type = iconService.getIcon(service);
+    private String getBaseStyle(Item item) {
+        Icon type;
+        if (iconService == null) {
+            try {
+                type = new Icon(new File(RootPath.get() + "src/main/resources/static/icons/service.png").toURI().toURL());
+            } catch (MalformedURLException e) {
+                return "";
+            }
+        } else {
+            type = iconService.getIcon(item);
+        }
+
         if (stylesheet.getStyles().containsKey(type.getUrl().toString())) {
             return type.getUrl().toString();
         }
@@ -279,17 +272,17 @@ public class FinalGraph {
         return type.getUrl().toString();
     }
 
-    private String getDataFlowStyle(Service service) {
-        String groupColor = getGroupColor(service);
+    private String getDataFlowStyle(Item item) {
+        String groupColor = getGroupColor(item);
         String style = mxConstants.STYLE_STROKEWIDTH + "=4;"
                 + mxConstants.STYLE_VERTICAL_LABEL_POSITION + "=bottom;"
                 + mxConstants.STYLE_SHAPE + "=" + CurvedShape.KEY + ";"
                 + mxConstants.STYLE_EDGE + "=" + CurvedEdgeStyle.KEY + ";"
                 + mxConstants.STYLE_LABEL_BACKGROUNDCOLOR + "=#" + groupColor + ";"
                 + mxConstants.STYLE_FONTCOLOR + "=black;"
-                + getStrokeColor(service);
+                + getStrokeColor(item);
 
-        if (Lifecycle.PLANNED.equals(service.getLifecycle()) || Lifecycle.END_OF_LIFE.equals(service.getLifecycle())) {
+        if (Lifecycle.PLANNED.equals(item.getLifecycle()) || Lifecycle.END_OF_LIFE.equals(item.getLifecycle())) {
             style = style + mxConstants.STYLE_DASHED + "=1";
         }
 
@@ -310,7 +303,7 @@ public class FinalGraph {
         return style;
     }
 
-    private String getProviderEdgeStyle(Service provider) {
+    private String getProviderEdgeStyle(Item provider) {
         String style = mxConstants.STYLE_STROKEWIDTH + "=2;"
                 + mxConstants.STYLE_ENDARROW + "=oval;"
                 + mxConstants.STYLE_STARTARROW + "=false;"
@@ -323,32 +316,30 @@ public class FinalGraph {
         return style;
     }
 
-    private String getStrokeColor(Service serviceItem) {
-        Status providerStatus = Status.highestOf(serviceItem.getStatuses());
+    private String getStrokeColor(Item itemImplItem) {
+        Status providerStatus = Status.highestOf(itemImplItem.getStatuses());
         if (Status.RED.equals(providerStatus))
             return mxConstants.STYLE_STROKECOLOR + "=red;";
         if (Status.ORANGE.equals(providerStatus))
             return mxConstants.STYLE_STROKECOLOR + "=orange;";
 
-        String groupColor = getGroupColor(serviceItem);
-        logger.info("Dataflow stroke color {} for service {} group {}", groupColor, serviceItem.getIdentifier(), serviceItem.getGroup());
+        String groupColor = getGroupColor(itemImplItem);
+        logger.info("Dataflow stroke color {} for service {} group {}", groupColor, itemImplItem.getIdentifier(), itemImplItem.getGroup());
         return mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
     }
 
-    private String getGroupColor(Service service) {
-        if (service.getGroup() == null || service.getGroup().startsWith(Groups.COMMON))
+    private String getGroupColor(Item item) {
+        if (item.getGroup() == null || item.getGroup().startsWith(Groups.COMMON))
             return GRAY;
 
-        return getGroupColor(service.getGroup(), service.getLandscape().getConfig());
+        return getGroupColor(item.getGroup(), item.getLandscape());
     }
 
-    private String getGroupColor(String name, LandscapeConfig config) {
+    private String getGroupColor(String name, LandscapeImpl landscape) {
 
-        if (config == null)
-            return "333333";
+        GroupItem group = landscape.getGroups().getOrDefault(name, Group.DEFAULT_GROUP);
 
-        return config.getGroupConfig(name)
-                .map(LandscapeConfig.GroupConfig::getColor)
-                .orElse(de.bonndan.nivio.util.Color.nameToRGB(name, "333333"));
+        return Optional.ofNullable(group.getColor())
+                .orElse(de.bonndan.nivio.util.Color.nameToRGB(name, Color.DARKGRAY));
     }
 }

@@ -1,8 +1,8 @@
 package de.bonndan.nivio.output;
 
-import de.bonndan.nivio.landscape.Groups;
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.Service;
+import de.bonndan.nivio.model.Groups;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.docs.AsciiDocGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,11 +12,11 @@ import static org.junit.Assert.assertTrue;
 public class AsciiDocGeneratorTest {
 
     private AsciiDocGenerator asciiDocGenerator;
-    private Landscape landscape;
+    private LandscapeImpl landscape;
 
     @BeforeEach
     public void setup() {
-        landscape = new Landscape();
+        landscape = new LandscapeImpl();
         landscape.setIdentifier("doc:test");
         landscape.setName("DocTest");
         landscape.setContact("me@acme.org");
@@ -36,11 +36,11 @@ public class AsciiDocGeneratorTest {
     @Test
     public void testGroupsDivisor() {
 
-        Service service = new Service();
-        service.setIdentifier("s");
-        service.setName("example");
-        service.setGroup("g1");
-        landscape.addService(service);
+        Item item = new Item();
+        item.setIdentifier("s");
+        item.setName("example");
+        item.setGroup("g1");
+        landscape.addItem(item);
 
         String document = asciiDocGenerator.toDocument(landscape);
 
@@ -50,10 +50,10 @@ public class AsciiDocGeneratorTest {
     @Test
     public void testUnGrouped() {
 
-        Service service = new Service();
-        service.setIdentifier("s");
-        service.setName("not in a group");
-        landscape.addService(service);
+        Item item = new Item();
+        item.setIdentifier("s");
+        item.setName("not in a group");
+        landscape.addItem(item);
 
         String document = asciiDocGenerator.toDocument(landscape);
 

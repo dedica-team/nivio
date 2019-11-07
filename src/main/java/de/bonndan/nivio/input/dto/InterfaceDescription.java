@@ -1,8 +1,7 @@
 package de.bonndan.nivio.input.dto;
 
-import de.bonndan.nivio.landscape.InterfaceItem;
+import de.bonndan.nivio.model.InterfaceItem;
 
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.net.URL;
 
@@ -12,6 +11,7 @@ public class InterfaceDescription implements InterfaceItem, Serializable {
     private String description;
     private String format;
     private URL url;
+    private String protection;
 
     public InterfaceDescription() {
 
@@ -40,6 +40,15 @@ public class InterfaceDescription implements InterfaceItem, Serializable {
     @Override
     public URL getUrl() {
         return url;
+    }
+
+    @Override
+    public String getProtection() {
+        return protection;
+    }
+
+    public void setProtection(String protection) {
+        this.protection = protection;
     }
 
     public void setUrl(URL url) {

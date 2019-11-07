@@ -4,30 +4,30 @@ Model and Syntax
 Landscape
 ---------
 
-A landscape is defined as a collection of services and applications which somehow belong together, be it for technical
+A landscape is defined as a collection of items and applications which somehow belong together, be it for technical
 or business reasons. For example, a company department might model ALL its applications in production as one landscape and use grouping
 or tagging to further separate the applications. A second landscape could be used to model a future layout with a different
-infrastructure. Both landscapes could have services in common (like a database, load balancer etc.), so their configuration can be reused.
+infrastructure. Both landscapes could have items in common (like a database, load balancer etc.), so their configuration can be reused.
 
 
-Landscape Items and Layers
+Landscape Items and Groups
 --------------------------
 
-A landscape consists of several groups (think of bounded contexts) and the three layers ingress, services, and infrastructure
-for technical separation. Any service can only be part of one group and layer.
+A landscape consists of several groups (think of bounded contexts) and the three layers ingress, items, and infrastructure
+for technical separation. Any item can only be part of one group and layer.
 
 **Service configuration file**
 
 .. code-block:: yaml
    :linenos:
 
-    services:
+    items:
       - identifier: blog-server
-        short_name: blog1
+        shortName: blog1
         group: content
 
       - identifier: auth-gateway
-        short_name: blog1
+        shortName: blog1
         layer: ingress
         group: content
 
@@ -36,33 +36,48 @@ for technical separation. Any service can only be part of one group and layer.
         version: 10.3.11
         type: database
         layer: infrastructure
-        group: content
 
-A service can have the following attributes:
+    groups:
+      content:
+        description: All services responsible to provide information on the web.
+        owner: Joe Armstrong
+        team: Team Content
+        contact: joe@acme.org
+        color: "#345345"
+        links:
+          wiki: http://wiki.acme.org/teamContent
+
+      infrastructure:
+        team: Admins
+        contains:
+          - DB1
+          - "identifier LIKE 'DB1'" #same
+
+
+A item can have the following attributes:
 
 * **identifier**: a unique identifier in the landscape. Use a name or an URN, validated against ^[a-z0-9\\.\\:_-]{3,256}$
 * **group** name of the group (optional). If a group is given it becomes part of the global identifier
 * **name** human readable, displayed name
-* **type** e.g. service, database, proxy, loadbalancer, ...
+* **type** e.g. item, database, proxy, loadbalancer, ...
 * **layer** ingress, applications, or infrastructure
-* **short_name** abbreviation
-* **capability** the capability the service provides for the business, or in case of infrastructure the technical purpose like enabling service discovery, configuration, secrets or persistence.
-* **version** any string describing a service version (e.g. 1.2.5)
+* **shortName** abbreviation
+* **capability** the capability the item provides for the business, or in case of infrastructure the technical purpose like enabling item discovery, configuration, secrets or persistence.
+* **version** any string describing a item version (e.g. 1.2.5)
 * **software** optional name of the used software/product
 * **owner** owning party (e.g. Marketing)
 * **description** a short description
 * **team** technical owner
 * **contact** support/notification contact (email) may be addressed in case of errors
-* **homepage** url to more information
-* **repository** source code repo url
-* **visibility** whether the service is publicly exposed
+* **links** a map/dictionary of urls to more information
+* **visibility** whether the item is publicly exposed
 * **tags** list of strings used as tag
 * **networks** list of network names (can be defined somewhere else)
 * **machine** description of the underlying virtual or physical machine
 * **scale** number of instances (or other description)
-* **host_type** e.g. docker, VM, bare metal
-* **note** any note attached to the service
-* **costs** running costs of the service. Stored as string
+* **hostType** e.g. docker, VM, bare metal
+* **note** any note attached to the item
+* **costs** running costs of the item. Stored as string
 * **lifecycle** life cycle phase. One of "planned", "integration", "production", "end of life" (abbrevs work)
 * **statuses** status objects, represented in colors
   * label: stability, capability, health, security ....)
@@ -72,45 +87,59 @@ A service can have the following attributes:
   * description: description
   * format: media type or binary format
   * url: an url pointing to the interface
-* **dataflow** connections to other services
+* **relations** connections to other items
+  * type: provider (hard dependency) or data flow (soft dependency)
   * description: description
-  * target: a service identifier
+  * target: a item identifier
   * format: media type or binary format
-* **provided_by** array of references to other services (identifiers)
+* **providedBy** array of references to other items (identifiers)
 
-Service Identification and Referencing
---------------------------------------
 
-A service can be uniquely identified by its landscape, its group and its identifier. A fully qualified
-identifier is composed of these three: **mylandscape/agroup/theservice**. Since the group is optional, services with unique
-identifier can also be addressed using **mylandscape/theservice** or just **theservice**. Nivio tries to resolve the correct service and raises
+Groups can have the following attributes:
+
+* **identifier**: a unique identifier in the landscape. Provided automatically via the dictionary key, do not set it
+* **contains** array of references to other items (identifiers and CQN queries)
+* **owner** owning party (e.g. Marketing)
+* **description** a short description
+* **team** technical owner
+* **contact** support/notification contact (email) may be addressed in case of errors
+* **color** a hex color code for rendering
+* **links** a map/dictionary of urls to more information
+
+Item Identification and Referencing
+------------------------------------
+
+A item can be uniquely identified by its landscape, its group and its identifier. A fully qualified
+identifier is composed of these three: **mylandscape/agroup/theitem**. Since the group is optional, items with unique
+identifier can also be addressed using **mylandscape/theitem** or just **theitem**. Nivio tries to resolve the correct item and raises
 an error if it cannot be found or the result is ambiguous.
 
-Service references are required to describe a provider relation or dataflows.
+Service references are required to describe a provider relation or data flows.
 
 .. code-block:: yaml
    :linenos:
 
-    services:
+    items:
       - identifier: theservice
         group: agroup
-        dataflow:
+        relations:
           - target: anothergroup/anotherservice
             format: json
+            type: dataflow
 
 
 
 
 
-Using Templates
+Using Templates to dynamically assign data
 ---------------
 
-To prevent repetitive configuration of services, i.e. entering the same owner again and again,
-templates can be used to prefill values. Templates a just service descriptions, except that
+To prevent repetitive configuration of items, i.e. entering the same owner again and again,
+templates can be used to prefill values. Templates a just item descriptions, except that
 the identifier is used for referencing and that names are ignored. A template value is ony applied
 if the target value is null.
 
-Multiple templates can be assigned to services, too. In this case the first assigned value "wins" and
+Multiple templates can be assigned to items, too. In this case the first assigned value "wins" and
 will not be overwritten by templates applied later.
 
 .. code-block:: yaml
@@ -120,7 +149,7 @@ will not be overwritten by templates applied later.
     name: Landscape example
 
     sources:
-      - url: "./services/docker-compose.yml"
+      - url: "./items/docker-compose.yml"
         format: docker-compose-v2
         assignTemplates:
           endOfLife: [web]
@@ -128,18 +157,19 @@ will not be overwritten by templates applied later.
 
     templates:
 
-      - identifier: myGroupTemplate
+      myGroupTemplate:
         group: billing
 
-      - identifier: endOfLife
+      endOfLife:
         tags: [eol]
         statuses
 
+For CQ queries, read https://github.com/npgall/cqengine#string-based-queries-sql-and-cqn-dialects.
 
 Service state (alpha)
 ---------------------
 
-You can also add state providers which are used to gather live data and thereby provide state for the services. Currently only prometheus is supported.
+You can also add state providers which are used to gather live data and thereby provide state for the items. Currently only prometheus is supported.
 
 .. code-block:: yaml
    :linenos:

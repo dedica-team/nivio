@@ -18,19 +18,48 @@ class CurvedEdgeStyle implements mxEdgeStyle.mxEdgeStyleFunction {
     public void apply(mxCellState state, mxCellState source, mxCellState target, List<mxPoint> points, List<mxPoint> result) {
         mxPoint pt = (points != null && points.size() > 0) ? points.get(0) : null;
         if (source != null && target != null) {
-            double x = 0;
-            double y = 0;
             if (pt != null) {
                 result.add(pt);
-            } else {
-
-                double offsetx = target.getCenterX() > source.getCenterX() ? 1.85 : 2.15;
-                double offsety = target.getCenterY() > source.getCenterY() ? 1.50 : 2.50;
-                x = (target.getCenterX() + source.getCenterX()) / offsetx; //shift x center to right
-                y = (target.getCenterY() + source.getCenterY()) / offsety;
-                mxPoint point = new mxPoint(x, y);
-                result.add(point);
+                return;
             }
+
+            double x = 0;
+            double y = 0;
+            double xShift = 0;
+            double yShift = 0;
+            /*
+             * if the x difference is higher than y difference, we move the y controlpoint off the center and vice versa
+             */
+            double xDiff = target.getCenterX() - source.getCenterX();
+            double yDiff = target.getCenterY() - source.getCenterY();
+            if (Math.abs(xDiff) > Math.abs(yDiff))
+                yShift = yDiff / 2;
+            else
+                xShift = xDiff /2;
+
+            boolean xAscending  = false;
+            if (source.getCenterX() > target.getCenterX()) {
+                xShift *= -1;
+                xAscending = true;
+            }
+
+            boolean yAscending = false;
+            if (source.getCenterY() > target.getCenterY()) {
+                yShift *= -1;
+                yAscending = true;
+            }
+
+            //fixes two connections between same nodes: inverse shift if vector descending in coord system
+            if (xAscending) {
+                xShift *= -1;
+                yShift *= -1;
+            }
+
+            x = source.getCenterX() + xDiff/2 - xShift;
+            y = source.getCenterY() + yDiff/2 - yShift;
+            mxPoint point = new mxPoint(x, y);
+            result.add(point);
+
         }
     }
 

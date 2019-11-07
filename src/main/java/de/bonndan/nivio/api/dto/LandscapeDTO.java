@@ -1,38 +1,24 @@
 package de.bonndan.nivio.api.dto;
 
-import de.bonndan.nivio.landscape.LandscapeConfig;
-import de.bonndan.nivio.landscape.LandscapeItem;
-import de.bonndan.nivio.landscape.StateProviderConfig;
+import de.bonndan.nivio.model.GroupItem;
+import de.bonndan.nivio.model.LandscapeConfig;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.StateProviderConfig;
+import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
+import java.util.Map;
 
 /**
- * @todo use HAL / ressource support etc
+ * API representation of a landscape.
  */
-public class LandscapeDTO implements de.bonndan.nivio.landscape.LandscapeItem {
+public class LandscapeDTO extends ResourceSupport implements Landscape  {
 
-    public static final String LANDSCAPE_PATH = "landscape";
-
-    private String identifier;
-    private String name;
-    private String contact;
-    private List<StateProviderConfig> stateProviders;
-    private String source;
-
-    public static LandscapeDTO from(LandscapeItem item) {
-
-        LandscapeDTO l = new LandscapeDTO();
-        if (item == null)
-            return l;
-
-        l.identifier = item.getIdentifier();
-        l.name = item.getName();
-        l.contact = item.getContact();
-        l.stateProviders = item.getStateProviders();
-        l.source = item.getSource();
-
-        return l;
-    }
+    public String identifier;
+    public String name;
+    public String contact;
+    public List<StateProviderConfig> stateProviders;
+    public String source;
 
     @Override
     public String getIdentifier() {
@@ -64,7 +50,8 @@ public class LandscapeDTO implements de.bonndan.nivio.landscape.LandscapeItem {
         return null;
     }
 
-    public String getUrl() {
-        return "/" + LANDSCAPE_PATH + "/" + identifier;
+    @Override
+    public Map<String, GroupItem> getGroups() {
+        return null;
     }
 }

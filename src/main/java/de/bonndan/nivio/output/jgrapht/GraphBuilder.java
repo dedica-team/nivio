@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output.jgrapht;
 
-import de.bonndan.nivio.landscape.*;
+import de.bonndan.nivio.model.*;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.SimpleGraph;
 import org.springframework.stereotype.Component;
@@ -8,28 +8,31 @@ import org.springframework.stereotype.Component;
 @Component
 public class GraphBuilder {
 
-    private Graph<ServiceItem, LabeledEdge> graph;
-    private Landscape landscape;
+    private Graph<LandscapeItem, LabeledEdge> graph;
+    private LandscapeImpl landscape;
 
-    public Graph build(Landscape landscape) {
+    public Graph build(LandscapeImpl landscape) {
         graph = new SimpleGraph<>(LabeledEdge.class);
         this.landscape = landscape;
-        landscape.getServices().forEach(this::addService);
-        landscape.getServices().forEach(this::addLinks);
+        landscape.getItems().forEach(this::addService);
+        landscape.getItems().forEach(this::addLinks);
         return graph;
     }
 
-    private void addService(Service service) {
-        graph.addVertex(service);
-        service.getProvidedBy().forEach(infra -> {
+    private void addService(Item item) {
+        graph.addVertex(item);
+        item.getProvidedBy().forEach(infra -> {
             addService(infra);
-            graph.addEdge(infra, service, new LabeledEdge("provides"));
+            graph.addEdge(infra, item, new LabeledEdge("provides"));
         });
     }
 
-    private void addLinks(Service service) {
-        service.getDataFlow().forEach(flow -> {
-            graph.addEdge(service, ServiceItems.pick(((DataFlow)flow).getTarget(), null, landscape.getServices()), new LabeledEdge(flow.getDescription()));
-        });
+    private void addLinks(Item item) {
+        item.getRelations().stream()
+                .filter(rel -> rel.getSource().equals(item))
+                .forEach(flow -> {
+                    LandscapeItem target = ServiceItems.pick(flow.getTarget().getIdentifier(), null, landscape.getItems());
+                    graph.addEdge(item, target, new LabeledEdge(flow.getDescription()));
+                });
     }
 }

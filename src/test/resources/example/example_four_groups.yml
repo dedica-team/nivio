@@ -1,0 +1,61 @@
+identifier: AdventOfCode
+name: Advent Of Code App
+
+
+# Landscape configuration
+groups:
+  input:
+    color: "0c8e3e"
+  Frontend:
+    color: "24a0ed"
+
+items:
+
+  - identifier: user
+    name: User
+    type: humanuser
+    group: input
+    relations:
+      - target: fe-react
+        description: User inputs data into React Frontend
+
+  - identifier: fe-react
+    name: React
+    group: Frontend
+    relations:
+      - target: be-controller
+        description: Using a REST-API, the data is sent to the backend
+
+  - identifier: be-controller
+    name: Controller
+    group: Backend
+    relations:
+      - target: be-services
+        description: Sends puzzle input to services
+      - target: fe-react
+        description: Sends puzzle output to frontent
+
+  - identifier: be-services
+    name: Services
+    group: Backend
+    relations:
+      - target: be-persistence
+        description: Sends puzzle results to the persistence layer
+      - target: be-controller
+        description: Sends puzzle results to the controller
+
+
+  - identifier: be-persistence
+    name: Persistence
+    group: Backend
+    relations:
+      - target: postgres
+        description: Data is stored in a PostgreSQL DB
+      - target: be-service
+        description: Returns retrieved data
+
+  - identifier: postgres
+    name: PostgreSQL DB
+    group: Persistence
+    type: database
+    lifecycle: planned

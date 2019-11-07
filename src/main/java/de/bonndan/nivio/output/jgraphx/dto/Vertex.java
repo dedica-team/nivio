@@ -1,7 +1,7 @@
 package de.bonndan.nivio.output.jgraphx.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.bonndan.nivio.landscape.ServiceItem;
+import de.bonndan.nivio.model.LandscapeItem;
 
 import java.io.Serializable;
 
@@ -18,5 +18,5 @@ public class Vertex implements Serializable {
     public String group;
     public String groupColor;
     public String type;
-    public ServiceItem service;
+    public LandscapeItem service;
 }

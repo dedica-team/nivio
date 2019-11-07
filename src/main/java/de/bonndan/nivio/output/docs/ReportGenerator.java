@@ -1,15 +1,18 @@
 package de.bonndan.nivio.output.docs;
 
-import de.bonndan.nivio.landscape.Groups;
-import de.bonndan.nivio.landscape.Landscape;
-import de.bonndan.nivio.landscape.ServiceItem;
+import de.bonndan.nivio.model.Groups;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.IconService;
-import de.bonndan.nivio.output.Icons;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.util.Color;
 import j2html.tags.ContainerTag;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static j2html.TagCreator.*;
 import static j2html.TagCreator.a;
@@ -23,12 +26,12 @@ public class ReportGenerator extends HtmlGenerator {
         this.iconService = iconService;
     }
 
-    public String toDocument(Landscape landscape) {
+    public String toDocument(LandscapeImpl landscape) {
 
         return writeLandscape(landscape);
     }
 
-    private String writeLandscape(Landscape landscape) {
+    private String writeLandscape(LandscapeImpl landscape) {
 
         return html(
                 getHead(landscape),
@@ -59,10 +62,14 @@ public class ReportGenerator extends HtmlGenerator {
         return builder.toString();
     }
 
-    private ContainerTag writeItem(ServiceItem item) {
-        boolean hasDataflow = item.getDataFlow() != null && item.getDataFlow().size() > 0;
+    private ContainerTag writeItem(LandscapeItem item) {
+        boolean ĥasRelations = item.getRelations() != null && item.getRelations().size() > 0;
         boolean hasInterfaces = item.getInterfaces() != null && item.getInterfaces().size() > 0;
         String groupColor = "#" + Color.nameToRGB(item.getGroup());
+
+        var links = item.getLinks().entrySet().stream()
+                .map(stringURLEntry -> a(stringURLEntry.getKey()).attr("href", stringURLEntry.getValue().toString()))
+                .collect(Collectors.toList());
         return div(
                 div(
                         iff(!isEmpty(item.getNote()), div(item.getNote()).attr("class", "alert alert-warning float float-right")),
@@ -76,15 +83,14 @@ public class ReportGenerator extends HtmlGenerator {
                         ul().with(
                                 li("Name: " + FormatUtils.nice(item.getName()))
                                 , li("Full identifier: " + item.getFullyQualifiedIdentifier().toString())
-                                , li("Short Name: " + FormatUtils.nice(item.getShort_name()))
+                                , li("Short Name: " + FormatUtils.nice(item.getShortName()))
                                 , li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">&#9899;</span> " + FormatUtils.nice(item.getGroup())))
                                 , li("Contact: " + FormatUtils.nice(item.getContact()))
                                 , li("Team: " + FormatUtils.nice(item.getTeam()))
                                 , li("Owner: " + FormatUtils.nice(item.getOwner()))
                                 , li("Type: " + item.getType())
                                 , li("Capability: " + FormatUtils.nice(item.getCapability()))
-                                , iff(!StringUtils.isEmpty(item.getHomepage()), li(span("Homepage: "), a(item.getHomepage()).attr("href", item.getHomepage())))
-                                , li("Repository: " + FormatUtils.nice(item.getRepository()))
+                                , li("Links: ").with(links)
                                 , li("Tags: " + FormatUtils.nice(item.getTags()))
                                 , li("Software: " + FormatUtils.nice(item.getSoftware()))
                                 , li("Version: " + FormatUtils.nice(item.getVersion()))
@@ -114,9 +120,9 @@ public class ReportGenerator extends HtmlGenerator {
                         ),
 
                         //data flow
-                        iff(hasDataflow, h4("Data Flow")),
-                        iff(hasDataflow, ul().with(
-                                item.getDataFlow().stream().map(df -> li(rawHtml(df.getFormat() + " " + df.getDescription() + " &#10142; " + df.getTarget())))
+                        iff(ĥasRelations, h4("Relations")),
+                        iff(ĥasRelations, ul().with(
+                                item.getRelations().stream().map(df -> li(rawHtml(df.getType() + " " + df.getFormat() + " " + df.getDescription() + " &#10142; " + df.getTarget())))
                                 )
                         ),
 
