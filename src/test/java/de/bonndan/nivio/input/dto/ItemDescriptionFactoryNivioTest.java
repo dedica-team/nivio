@@ -29,7 +29,7 @@ class ItemDescriptionFactoryNivioTest {
     @BeforeEach
     public void setup() {
         fileFetcher = new FileFetcher(new HttpService());
-        descriptionFactory = new ItemDescriptionFactoryNivio(fileFetcher, null);
+        descriptionFactory = new ItemDescriptionFactoryNivio(fileFetcher);
     }
 
     @Test
@@ -37,7 +37,7 @@ class ItemDescriptionFactoryNivioTest {
 
         SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/wordpress.yml");
 
-        List<ItemDescription> services = descriptionFactory.getDescriptions(file);
+        List<ItemDescription> services = descriptionFactory.getDescriptions(file, null);
         ItemDescription service = services.get(0);
         assertEquals(LandscapeItem.LAYER_APPLICATION, service.getLayer());
         assertEquals("Demo Blog", service.getName());
@@ -111,7 +111,7 @@ class ItemDescriptionFactoryNivioTest {
 
         SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/dashboard.yml");
 
-        List<ItemDescription> services = descriptionFactory.getDescriptions(file);
+        List<ItemDescription> services = descriptionFactory.getDescriptions(file, null);
         ItemDescription service = services.get(0);
         assertEquals(LandscapeItem.LAYER_INGRESS, service.getGroup());
         assertEquals("Keycloak SSO", service.getName());

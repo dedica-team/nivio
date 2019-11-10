@@ -1,18 +1,19 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.input.compose2.ItemDescriptionFactoryCompose2;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static de.bonndan.nivio.model.Items.pick;
 import static org.junit.Assert.assertNotNull;
@@ -28,7 +29,7 @@ class TemplateResolverTest {
 
     @BeforeEach
     public void setup() {
-        log = new ProcessLog(Mockito.mock(Logger.class));
+        log = new ProcessLog(LoggerFactory.getLogger(TemplateResolver.class));
         templateResolver = new TemplateResolver();
     }
 
@@ -111,7 +112,10 @@ class TemplateResolverTest {
     }
 
     private Map<ItemDescription, List<String>> getTemplates(LandscapeDescription landscapeDescription) {
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(log);
+        ItemDescriptionFormatFactory ff = new ItemDescriptionFormatFactory(
+                new ArrayList<>(Arrays.asList(ItemDescriptionFactoryNivio.forTesting(), ItemDescriptionFactoryCompose2.forTesting()))
+        );
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(ff, log);
         Map<ItemDescription, List<String>> templateAndTargets = new HashMap<>();
         sourceReferencesResolver.resolve(landscapeDescription, templateAndTargets);
         return templateAndTargets;

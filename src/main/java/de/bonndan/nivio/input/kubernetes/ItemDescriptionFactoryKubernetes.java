@@ -1,6 +1,8 @@
 package de.bonndan.nivio.input.kubernetes;
 
+import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.ItemDescriptionFactory;
+import de.bonndan.nivio.input.ItemDescriptionFormatFactory;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
@@ -20,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
+@org.springframework.stereotype.Service
 public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory {
 
     public static final String NAMESPACE = "namespace";
@@ -29,7 +32,23 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
     private String groupLabel = null;
     private KubernetesClient client;
 
-    public ItemDescriptionFactoryKubernetes(SourceReference reference) {
+
+    public ItemDescriptionFactoryKubernetes() {
+
+    }
+
+    public ItemDescriptionFactoryKubernetes(KubernetesClient client) {
+        this.client = client;
+    }
+
+    @Override
+    public List<String> getFormats() {
+        return Arrays.asList("kubernetes", "k8s");
+    }
+
+    @Override
+    public List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl) {
+
         try {
             if (!StringUtils.isEmpty(reference.getUrl())) {
                 URL url = new URL(reference.getUrl());
@@ -42,15 +61,7 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
         } catch (MalformedURLException ignored) {
 
         }
-    }
 
-    public ItemDescriptionFactoryKubernetes(SourceReference reference, KubernetesClient client) {
-        this(reference);
-        this.client = client;
-    }
-
-    @Override
-    public List<ItemDescription> getDescriptions(SourceReference reference) {
         KubernetesClient client = getClient(reference.getUrl());
 
         List<ItemDescription> descriptions = new ArrayList<>();

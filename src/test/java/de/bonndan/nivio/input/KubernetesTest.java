@@ -1,7 +1,6 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.kubernetes.ItemDescriptionFactoryKubernetes;
 import io.fabric8.kubernetes.api.model.Container;
@@ -61,14 +60,13 @@ public class KubernetesTest {
     @Test
     public void testRead() throws IOException {
 
-        SourceReference sourceReference = new SourceReference();
-        sourceReference.setFormat(SourceFormat.KUBERNETES);
+        SourceReference sourceReference = new SourceReference(null, "k8s");
         sourceReference.setUrl("http://localhost:80?groupLabel=release&namespace=default");
 
-        ItemDescriptionFactoryKubernetes factory = new ItemDescriptionFactoryKubernetes(sourceReference, client);
+        ItemDescriptionFactoryKubernetes factory = new ItemDescriptionFactoryKubernetes(client);
         factory.getConfiguration().setNamespace("default");
 
-        List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference);
+        List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference, null);
         assertNotNull(itemDescriptions);
         assertEquals(1, itemDescriptions.size());
 

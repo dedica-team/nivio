@@ -14,7 +14,7 @@ public class SourceReference {
 
     private LandscapeDescription landscapeDescription;
 
-    private SourceFormat format;
+    private String format;
 
     private String basicAuthUsername;
     private String basicAuthPassword;
@@ -34,7 +34,8 @@ public class SourceReference {
         this.url = url;
     }
 
-    public SourceReference(SourceFormat format) {
+    public SourceReference(String url, String format) {
+        this.url = url;
         this.format = format;
     }
 
@@ -50,15 +51,11 @@ public class SourceReference {
         this.landscapeDescription = landscapeDescription;
     }
 
-    public SourceFormat getFormat() {
+    public String getFormat() {
         return format;
     }
 
     public void setFormat(String format) {
-        this.format = SourceFormat.from(format);
-    }
-
-    public void setFormat(SourceFormat format) {
         this.format = format;
     }
 
