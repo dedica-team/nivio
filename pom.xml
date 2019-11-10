@@ -193,6 +193,21 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-hateoas</artifactId>
         </dependency>
+
+        <!-- rancher api -->
+        <!-- https://mvnrepository.com/artifact/br.com.basis/rancher-java-sdk -->
+        <dependency>
+            <groupId>br.com.basis</groupId>
+            <artifactId>rancher-java-sdk</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
