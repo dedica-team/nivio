@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.rancher1;
 
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import io.rancher.Rancher;
 import io.rancher.service.ProjectService;
@@ -21,6 +22,12 @@ import java.util.stream.Collectors;
 import static de.bonndan.nivio.input.rancher1.ItemDescriptionFactoryRancher1API.API_ACCESS_KEY;
 import static de.bonndan.nivio.input.rancher1.ItemDescriptionFactoryRancher1API.API_SECRET_KEY;
 
+/**
+ * Gathers projects, stacks and services from a Rancher 1.6 API
+ *
+ *
+ *
+ */
 class APIWalker {
 
     private Rancher rancher;
@@ -61,10 +68,10 @@ class APIWalker {
         StackService stackService = rancher.type(StackService.class);
         Map<String, Stack> stacks = new HashMap<>();
         try {
-             stackService.list().execute().body().getData().stream()
+            stackService.list().execute().body().getData().stream()
                     .filter(stack -> stack.getAccountId().equals(accountId))
                     .forEach(stack -> stacks.put(stack.getId(), stack));
-             return stacks;
+            return stacks;
         } catch (IOException e) {
             throw new ProcessingException(reference.getLandscapeDescription(), "Could not access Rancher API", e);
         }
@@ -88,9 +95,24 @@ class APIWalker {
 
         data.forEach(service -> {
             ItemDescription item = new ItemDescription();
-            item.setIdentifier(service.getName());
+            item.setIdentifier(service.getId());
+            item.setName(service.getName());
+            item.setScale(String.valueOf(service.getScale()));
             Stack stack = stacks.get(service.getStackId());
-            item.setGroup(stack.getName());
+            if (stack != null)
+                item.setGroup(stack.getName());
+
+            if (service.getLinkedServices() != null) {
+                service.getLinkedServices().forEach((key, value) -> {
+                    RelationDescription rd = new RelationDescription();
+                    rd.setSource((String) value);
+                    rd.setTarget(item.getIdentifier());
+                    item.addRelation(rd);
+                });
+            }
+
+            //TODO data/metadata to labels
+
             descriptions.add(item);
         });
 
