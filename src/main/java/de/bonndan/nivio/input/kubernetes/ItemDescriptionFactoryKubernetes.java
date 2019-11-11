@@ -1,14 +1,12 @@
 package de.bonndan.nivio.input.kubernetes;
 
-import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.ItemDescriptionFactory;
-import de.bonndan.nivio.input.ItemDescriptionFormatFactory;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.model.Items;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.model.RelationBuilder;
-import de.bonndan.nivio.model.Items;
 import de.bonndan.nivio.util.URLHelper;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Pod;

@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.rancher1;
 
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LabelProcessor;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import io.rancher.Rancher;
@@ -24,9 +25,6 @@ import static de.bonndan.nivio.input.rancher1.ItemDescriptionFactoryRancher1API.
 
 /**
  * Gathers projects, stacks and services from a Rancher 1.6 API
- *
- *
- *
  */
 class APIWalker {
 
@@ -111,14 +109,15 @@ class APIWalker {
                 });
             }
 
-            //TODO data/metadata to labels
+            //copy all labels
+            if (service.getLaunchConfig() != null && service.getLaunchConfig().getLabels() != null)
+                service.getLaunchConfig().getLabels().forEach((s, o) -> LabelProcessor.applyLabel(item, s, o));
 
             descriptions.add(item);
         });
 
         return descriptions;
     }
-
 
     private Rancher.Config getConfig(SourceReference reference) {
         Rancher.Config config = null;
