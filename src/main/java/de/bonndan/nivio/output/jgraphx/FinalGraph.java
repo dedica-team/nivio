@@ -113,10 +113,10 @@ public class FinalGraph {
                 astyle = getDataFlowStyle(service);
             }
 
-            String id = "df_" + service.getIdentifier() + rel.getTarget();
-            logger.info("Adding relation " + rel.getType() + " " + id);
+            String id = "df_" + service.getIdentifier() + "_" + rel.getTarget();
+            logger.info("Adding relation " + id);
             graph.insertEdge(graph.getDefaultParent(), id, rel.getFormat(),
-                    serviceVertexes.get(service),
+                    serviceVertexes.get(rel.getSource()),
                     serviceVertexes.get(rel.getTarget()),
                     astyle
             );
