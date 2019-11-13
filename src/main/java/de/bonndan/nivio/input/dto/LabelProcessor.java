@@ -2,10 +2,15 @@ package de.bonndan.nivio.input.dto;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.NotWritablePropertyException;
+import org.springframework.beans.PropertyAccessor;
+import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.util.StringUtils;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LabelProcessor {
 
@@ -31,16 +36,23 @@ public class LabelProcessor {
     }
 
     private static void setValue(ItemDescription item, String name, String value) {
-        Field[] declaredFields = item.getClass().getDeclaredFields();
-        Optional<Field> field = Arrays.stream(declaredFields).filter(field1 -> field1.getName().equals(name)).findFirst();
-        field.ifPresent(field1 -> {
-            try {
-                field1.setAccessible(true);
-                field1.set(item, value);
-                field1.setAccessible(false);
-            } catch (IllegalAccessException e) {
-                LOGGER.warn("Failed to set field {} via label: " + e.getMessage(), name);
-            }
-        });
+
+        if (value == null)
+            return;
+
+        PropertyAccessor myAccessor = PropertyAccessorFactory.forBeanPropertyAccess(item);
+        Class<?> propertyType = myAccessor.getPropertyType(name);
+        Object o = value;
+        if (propertyType != null && propertyType.isAssignableFrom(List.class)) {
+            o = Arrays.stream(StringUtils.split(value, ",")).map(String::trim).collect(Collectors.toList());
+        }
+        if (propertyType != null && propertyType.isAssignableFrom(Set.class)) {
+            o = Arrays.stream(StringUtils.split(value, ",")).map(String::trim).collect(Collectors.toSet());
+        }
+        try {
+            myAccessor.setPropertyValue(name, o);
+        } catch (NotWritablePropertyException e) {
+            LOGGER.warn("Failed to write field {} via label", name);
+        }
     }
 }

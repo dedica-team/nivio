@@ -1,6 +1,8 @@
 package de.bonndan.nivio.input.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.model.*;
 import org.springframework.util.StringUtils;
@@ -223,6 +225,11 @@ public class ItemDescription implements LandscapeItem {
         this.lifecycle = lifecycle;
     }
 
+    public void setLifecycle(String lifecycle) {
+        if (!StringUtils.isEmpty(lifecycle))
+            setLifecycle(Lifecycle.from(lifecycle));
+    }
+
     @Override
     public Lifecycle getLifecycle() {
         return lifecycle;
@@ -313,6 +320,19 @@ public class ItemDescription implements LandscapeItem {
     public void addRelation(RelationItem<String> relationItem) {
         Objects.requireNonNull(relationItem);
         this.relations.add(relationItem);
+    }
+
+    /**
+     * Setter for relation targets (via labels).
+     *
+     * @param relations target identifiers
+     */
+    @JsonIgnore
+    public void setRelations(List<String> relations) {
+        relations.stream()
+                .filter(s -> !StringUtils.isEmpty(s))
+                .map(s -> RelationBuilder.createDataflowDescription(this, s))
+                .forEach(relationDescription -> addRelation(relationDescription));
     }
 
     public Set<StatusItem> getStatuses() {
