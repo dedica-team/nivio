@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.RelationItem;
 import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.util.RootPath;
@@ -56,8 +57,6 @@ class RelationResolverTest {
     }
 
 
-
-
     @Test
     public void resolvesTemplatePlaceholdersInProviders() {
 
@@ -90,7 +89,7 @@ class RelationResolverTest {
     }
 
     private Map<ItemDescription, List<String>> getTemplates(LandscapeDescription landscapeDescription) {
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(log);
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(ItemDescriptionFormatFactory.with(ItemDescriptionFactoryNivio.forTesting()), log);
         Map<ItemDescription, List<String>> templateAndTargets = new HashMap<>();
         sourceReferencesResolver.resolve(landscapeDescription, templateAndTargets);
         return templateAndTargets;

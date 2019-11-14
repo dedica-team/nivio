@@ -5,7 +5,6 @@ import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.URLHelper;
@@ -29,12 +28,14 @@ import java.util.stream.StreamSupport;
 public class ApiController {
 
     private final LandscapeRepository landscapeRepository;
+    private final ItemDescriptionFormatFactory formatFactory;
     private final Indexer indexer;
     private final FileFetcher fileFetcher;
 
     @Autowired
-    public ApiController(LandscapeRepository landscapeRepository, Indexer indexer, FileFetcher fileFetcher) {
+    public ApiController(LandscapeRepository landscapeRepository, ItemDescriptionFormatFactory formatFactory, Indexer indexer, FileFetcher fileFetcher) {
         this.landscapeRepository = landscapeRepository;
+        this.formatFactory = formatFactory;
         this.indexer = indexer;
         this.fileFetcher = fileFetcher;
     }
@@ -90,12 +91,13 @@ public class ApiController {
         env.setIdentifier(identifier);
         env.setIsPartial(true);
 
-        SourceReference sourceReference = new SourceReference(SourceFormat.from(format));
-        sourceReference.setUrl(null);
+        SourceReference sourceReference = new SourceReference(null, format);
         sourceReference.setContent(body);
 
-        ItemDescriptionFactory factory = ItemDescriptionFormatFactory.getFactory(sourceReference, env);
-        List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference);
+        ItemDescriptionFactory factory = formatFactory.getFactory(sourceReference, env);
+        URL baseUrl = URLHelper.getParentPath(env.getSource());
+
+        List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference, baseUrl);
 
         env.setItemDescriptions(itemDescriptions);
 

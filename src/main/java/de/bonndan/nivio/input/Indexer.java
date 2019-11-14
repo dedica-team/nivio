@@ -20,13 +20,16 @@ public class Indexer {
     private static final Logger _logger = LoggerFactory.getLogger(Indexer.class);
 
     private final LandscapeRepository landscapeRepo;
+    private final ItemDescriptionFormatFactory formatFactory;
     private final NotificationService notificationService;
 
 
     public Indexer(LandscapeRepository landscapeRepository,
+                   ItemDescriptionFormatFactory formatFactory,
                    NotificationService notificationService
     ) {
         this.landscapeRepo = landscapeRepository;
+        this.formatFactory = formatFactory;
         this.notificationService = notificationService;
     }
 
@@ -48,7 +51,7 @@ public class Indexer {
 
         try {
             Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
-            new SourceReferencesResolver(logger).resolve(input, templatesAndTargets);
+            new SourceReferencesResolver(formatFactory, logger).resolve(input, templatesAndTargets);
             new TemplateResolver().processTemplates(input, templatesAndTargets);
             new RelationResolver(logger).processRelations(input);
             input.getGroups().forEach((identifier, groupItem) -> {

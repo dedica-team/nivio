@@ -37,6 +37,9 @@ public class IndexerIntegrationTest {
     @Autowired
     LandscapeRepository landscapeRepository;
 
+    @Autowired
+    ItemDescriptionFormatFactory formatFactory;
+
     @Mock
     NotificationService notificationService;
 
@@ -51,7 +54,7 @@ public class IndexerIntegrationTest {
         File file = new File(getRootPath() + path);
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
-        Indexer indexer = new Indexer(landscapeRepository, notificationService);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, notificationService);
 
         ProcessLog processLog = indexer.reIndex(landscapeDescription);
         return (LandscapeImpl) processLog.getLandscape();
@@ -156,7 +159,7 @@ public class IndexerIntegrationTest {
         exsistingWordPress.setName("Other name");
         landscapeDescription.getItemDescriptions().add(exsistingWordPress);
 
-        Indexer indexer = new Indexer(landscapeRepository, notificationService);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, notificationService);
 
         //created
         landscape = (LandscapeImpl) indexer.reIndex(landscapeDescription).getLandscape();

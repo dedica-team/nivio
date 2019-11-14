@@ -115,6 +115,27 @@ are scanned) and a label for building groups can be named. Both parameters and e
       - url: http://192.168.99.100?namespace=mynamespace&groupLabel=labelToUseForGrouping
         format: kubernetes
 
+
+
+Rancher 1 Cluster Inspection
+----------------------------
+
+Rancher clusters can be indexed one project (aka environment in the GUI speak) at a time. Access credentials can be read
+from environment variables.
+
+.. code-block:: yaml
+   :linenos:
+
+    identifier: rancher:example
+    name: Rancher 1.6 API example
+    sources:
+      - url: "http://rancher-server/v2-beta/"
+        projectName: Default
+        apiAccessKey: ${API_ACCESS_KEY}
+        apiSecretKey: ${API_SECRET_KEY}
+        format: rancher1
+
+
 Deleting items
 -----------------
 

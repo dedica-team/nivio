@@ -3,7 +3,6 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.RootPath;
@@ -39,7 +38,7 @@ class LandscapeDescriptionFactoryTest {
 
         SourceReference mapped = landscapeDescription.getSourceReferences().get(1);
         assertNotNull(mapped);
-        assertEquals(SourceFormat.NIVIO, mapped.getFormat());
+        assertEquals("nivio", mapped.getFormat());
         assertNotNull(landscapeDescription.getConfig());
     }
 
@@ -57,7 +56,7 @@ class LandscapeDescriptionFactoryTest {
 
         SourceReference mapped = landscapeDescription.getSourceReferences().get(1);
         assertNotNull(mapped);
-        assertEquals(SourceFormat.NIVIO, mapped.getFormat());
+        assertEquals("nivio", mapped.getFormat());
     }
 
     @Test

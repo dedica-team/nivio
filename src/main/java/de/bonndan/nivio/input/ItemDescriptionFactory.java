@@ -3,13 +3,22 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 
+import java.net.URL;
 import java.util.List;
 
 import static de.bonndan.nivio.util.SafeAssign.assignSafe;
 
+/**
+ * Processors of input sources must implement this interface.
+ *
+ *
+ */
 public interface ItemDescriptionFactory {
 
-    List<ItemDescription> getDescriptions(SourceReference reference);
+    List<String> getFormats();
+
+    List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl);
+
 
     static void assignNotNull(ItemDescription existing, ItemDescription increment) {
         

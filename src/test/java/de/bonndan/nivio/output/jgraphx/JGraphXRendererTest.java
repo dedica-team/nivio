@@ -2,9 +2,11 @@ package de.bonndan.nivio.output.jgraphx;
 
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
+import de.bonndan.nivio.input.ItemDescriptionFormatFactory;
 import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.Indexer;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.notification.NotificationService;
@@ -22,12 +24,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class JGraphXRendererTest {
 
     private LandscapeRepository landscapeRepository;
+    private ItemDescriptionFormatFactory formatFactory;
     private Indexer indexer;
 
     @BeforeEach
     public void setup() {
         landscapeRepository = new LandscapeRepository();
-        indexer = new Indexer(landscapeRepository, new NotificationService(null));
+        formatFactory = ItemDescriptionFormatFactory.with(ItemDescriptionFactoryNivio.forTesting());
+
+        indexer = new Indexer(landscapeRepository, formatFactory, new NotificationService(null));
     }
 
     private LandscapeImpl getLandscape(String path) {
