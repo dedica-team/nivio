@@ -4,3 +4,4 @@ docs/build
 _static
 _templates
 /.env
+/.iml
