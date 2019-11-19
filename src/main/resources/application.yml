@@ -32,8 +32,8 @@ logging:
   level:
     root: INFO
 
-#server:
-#  port: 8081
+server:
+  port: 8081
 ---
 spring:
   profiles: test
