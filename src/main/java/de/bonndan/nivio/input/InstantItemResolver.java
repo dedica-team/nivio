@@ -21,10 +21,12 @@ public class InstantItemResolver {
     }
 
     public void processTargets(LandscapeDescription landscape) {
-        List<ItemDescription> all = landscape.getItemDescriptions();
 
-        if (!landscape.getConfig().isGreedy())
+        if (!landscape.getConfig().isGreedy()) {
             return;
+        }
+
+        List<ItemDescription> all = landscape.getItemDescriptions();
 
         HashSet<ItemDescription> newItems = new HashSet<>();
         all.forEach(itemDescription -> newItems.addAll(resolveTargets(itemDescription, all)));
