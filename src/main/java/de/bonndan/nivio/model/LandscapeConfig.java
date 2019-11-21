@@ -2,6 +2,8 @@ package de.bonndan.nivio.model;
 
 public class LandscapeConfig {
 
+    private boolean greedy = true;
+
     private JGraphXConfig jgraphx = new JGraphXConfig();
 
     public JGraphXConfig getJgraphx() {
@@ -10,6 +12,14 @@ public class LandscapeConfig {
 
     public void setJgraphx(JGraphXConfig jgraphx) {
         this.jgraphx = jgraphx;
+    }
+
+    public boolean isGreedy() {
+        return greedy;
+    }
+
+    public void setGreedy(boolean greedy) {
+        this.greedy = greedy;
     }
 
     /**

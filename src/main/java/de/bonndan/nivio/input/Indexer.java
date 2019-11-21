@@ -53,6 +53,7 @@ public class Indexer {
             Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
             new SourceReferencesResolver(formatFactory, logger).resolve(input, templatesAndTargets);
             new TemplateResolver().processTemplates(input, templatesAndTargets);
+            new InstantItemResolver(logger).processTargets(input);
             new RelationResolver(logger).processRelations(input);
             input.getGroups().forEach((identifier, groupItem) -> {
                 Group g = new Group();

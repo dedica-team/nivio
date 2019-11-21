@@ -55,7 +55,7 @@ public class LandscapeDescription implements Landscape {
      */
     private List<ItemDescription> itemDescriptions = new ArrayList<>();
 
-    private LandscapeConfig config;
+    private LandscapeConfig config = new LandscapeConfig();
 
     private boolean isPartial = false;
 
@@ -135,7 +135,7 @@ public class LandscapeDescription implements Landscape {
         return landscape;
     }
 
-    public void addItems(List<ItemDescription> incoming) {
+    public void addItems(Collection<ItemDescription> incoming) {
         if (incoming == null)
             return;
 
