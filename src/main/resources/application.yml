@@ -33,7 +33,7 @@ logging:
     root: INFO
 
 server:
-  port: 8081
+  port: 8080
 ---
 spring:
   profiles: test
