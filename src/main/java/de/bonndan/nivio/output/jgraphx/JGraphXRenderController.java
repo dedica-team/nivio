@@ -42,7 +42,7 @@ public class JGraphXRenderController {
         );
 
         JGraphXRenderer graphStreamRenderer = new JGraphXRenderer(iconService);
-        File png = File.createTempFile(landscapeIdentifier, "png");
+        File png = File.createTempFile(landscapeIdentifier.replace(":", "_"), "png");
         try {
             graphStreamRenderer.render(landscape, png);
         } catch (Exception ex) {
