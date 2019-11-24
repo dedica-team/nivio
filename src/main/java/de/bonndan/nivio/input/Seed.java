@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ public class Seed {
     public static final String DEMO = "DEMO";
 
     static final String NIVIO_ENV_DIRECTORY = "file:/opt/nivio/environments";
+    static boolean ESCAPE_AUTHORITY = SystemUtils.IS_OS_WINDOWS;
 
     public static File getDemoFile() {
         Path currentRelativePath = Paths.get("");
@@ -39,8 +41,8 @@ public class Seed {
         this.seed = seed;
     }
 
-    public String getSeed() {
-        return seed;
+    public boolean hasValue() {
+        return !StringUtils.isEmpty(seed);
     }
 
     public List<URL> getLocations() throws MalformedURLException {
@@ -60,6 +62,11 @@ public class Seed {
     }
 
     private URL toURL(String s) throws MalformedURLException {
+
+        if (ESCAPE_AUTHORITY && s.matches("^[a-zA-Z]\\:.*")) {
+            s = "file://" + s.replace(":","");
+        }
+
         if (!s.contains(":/")) {
             s = "file://" + s;
         }

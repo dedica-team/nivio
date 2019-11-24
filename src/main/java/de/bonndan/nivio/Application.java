@@ -36,11 +36,11 @@ public class Application {
         return new Seed();
     }
 
-    public static void main(String[] args) throws MalformedURLException {
+    public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
 
         Seed seed = (Seed) context.getBean("seed");
-        if (!StringUtils.isEmpty(seed.getSeed())) {
+        if (seed.hasValue()) {
             ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) context.getBean("taskExecutor");
             WatcherFactory watcher = context.getBean(WatcherFactory.class);
             watcher.getWatchers().forEach(taskExecutor::execute);
