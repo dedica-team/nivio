@@ -11,8 +11,6 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 public class Groups {
 
-    public static final String COMMON = "Common";
-
     private Map<String, List<LandscapeItem>> groups = new HashMap<>();
 
     /**
@@ -31,6 +29,9 @@ public class Groups {
      * Merges all absent values from the second param into the first.
      */
     public static void merge(final Group group, GroupItem groupItem) {
+        if (groupItem == null)
+            return;
+
         assignSafeIfAbsent(groupItem.getColor(), group.getColor(), group::setColor);
         assignSafeIfAbsent(groupItem.getTeam(), group.getTeam(), group::setTeam);
         assignSafeIfAbsent(groupItem.getContact(), group.getContact(), group::setContact);
@@ -49,7 +50,7 @@ public class Groups {
     @Deprecated
     public void add(String groupKey, LandscapeItem service) {
 
-        String key = isEmpty(groupKey) ? COMMON : groupKey;
+        String key = isEmpty(groupKey) ? Group.COMMON : groupKey;
 
         if (!groups.containsKey(key)) {
             groups.put(key, new ArrayList<>());

@@ -3,7 +3,7 @@ package de.bonndan.nivio.output.graphstream;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.Renderer;
-import de.bonndan.nivio.util.Color;
+import de.bonndan.nivio.output.Color;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;

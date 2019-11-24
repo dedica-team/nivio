@@ -10,10 +10,7 @@ import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStyleRegistry;
 import com.mxgraph.view.mxStylesheet;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.Icon;
-import de.bonndan.nivio.output.IconService;
-import de.bonndan.nivio.output.LocalServer;
-import de.bonndan.nivio.util.Color;
+import de.bonndan.nivio.output.*;
 import de.bonndan.nivio.util.RootPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static de.bonndan.nivio.model.Status.UNKNOWN;
-import static de.bonndan.nivio.util.Color.GRAY;
+import static de.bonndan.nivio.output.Color.getGroupColor;
 
 public class FinalGraph {
 
@@ -64,7 +61,7 @@ public class FinalGraph {
 
             Optional<Item> serviceItem = subgraphs.get(groupName).getServiceVertexesWithRelativeOffset().entrySet().stream()
                     .findFirst().map(serviceItemmxPointEntry -> (Item) serviceItemmxPointEntry.getKey());
-            LandscapeImpl landscape = serviceItem.map(service -> service.getLandscape()).orElse(null); //TODO inefficient
+            LandscapeImpl landscape = serviceItem.map(Item::getLandscape).orElse(null); //TODO inefficient
             mxGeometry groupGeo = mxCell.getGeometry();
             mxCell groupContainer = (mxCell) graph.insertVertex(
                     graph.getDefaultParent(),
@@ -291,7 +288,7 @@ public class FinalGraph {
 
     private String getGroupStyle(String groupName, String groupColor) {
 
-        String lightened = de.bonndan.nivio.util.Color.lighten(groupColor);
+        String lightened = Color.lighten(groupColor);
         String style = "type=group;groupColor=" + groupColor + ";"
                 + "strokeColor=" + groupColor + ";"
                 + "strokeWidth=1;"
@@ -328,18 +325,4 @@ public class FinalGraph {
         return mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
     }
 
-    private String getGroupColor(Item item) {
-        if (item.getGroup() == null || item.getGroup().startsWith(Groups.COMMON))
-            return GRAY;
-
-        return getGroupColor(item.getGroup(), item.getLandscape());
-    }
-
-    private String getGroupColor(String name, LandscapeImpl landscape) {
-
-        GroupItem group = landscape.getGroups().getOrDefault(name, Group.DEFAULT_GROUP);
-
-        return Optional.ofNullable(group.getColor())
-                .orElse(de.bonndan.nivio.util.Color.nameToRGB(name, Color.DARKGRAY));
-    }
 }

@@ -120,4 +120,10 @@ public class LandscapeImpl implements Landscape {
 
         groups.put(g.getIdentifier(), g);
     }
+
+    public Group getGroup(String group) {
+        if (StringUtils.isEmpty(group))
+            group = Group.COMMON;
+        return (Group) groups.get(group);
+    }
 }

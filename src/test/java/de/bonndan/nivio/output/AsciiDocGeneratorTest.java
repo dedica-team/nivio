@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output;
 
-import de.bonndan.nivio.model.Groups;
+import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.docs.AsciiDocGenerator;
@@ -57,6 +57,6 @@ public class AsciiDocGeneratorTest {
 
         String document = asciiDocGenerator.toDocument(landscape);
 
-        assertTrue(document.contains("== Group: " + Groups.COMMON));
+        assertTrue(document.contains("== Group: " + Group.COMMON));
     }
 }

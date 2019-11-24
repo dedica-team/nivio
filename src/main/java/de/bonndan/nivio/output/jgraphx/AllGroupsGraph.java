@@ -82,7 +82,7 @@ public class AllGroupsGraph {
 
             //provider
             ((Item) service).getProvidedBy().forEach(provider -> {
-                String pGroup = provider.getGroup() == null ? Groups.COMMON : provider.getGroup();
+                String pGroup = provider.getGroup() == null ? Group.COMMON : provider.getGroup();
                 mxCell providerGroupNode = groupNodes.get(pGroup);
                 String providerGroup = providerGroupNode.getId();
 
@@ -101,7 +101,7 @@ public class AllGroupsGraph {
                 if (targetItem == null) return;
 
 
-                String targetGroup = targetItem.getGroup() == null ? Groups.COMMON : targetItem.getGroup();
+                String targetGroup = targetItem.getGroup() == null ? Group.COMMON : targetItem.getGroup();
                 mxCell targetGroupNode = groupNodes.get(targetGroup);
 
                 if (groupConnections.canConnect(group, targetGroup)) {

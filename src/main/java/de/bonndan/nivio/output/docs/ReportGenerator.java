@@ -1,19 +1,17 @@
 package de.bonndan.nivio.output.docs;
 
-import de.bonndan.nivio.model.Groups;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.model.LandscapeItem;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.LocalServer;
-import de.bonndan.nivio.util.Color;
+import de.bonndan.nivio.output.Color;
 import j2html.tags.ContainerTag;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import static de.bonndan.nivio.output.FormatUtils.ifPresent;
 import static j2html.TagCreator.*;
 import static j2html.TagCreator.a;
 import static org.springframework.util.StringUtils.isEmpty;
@@ -40,21 +38,23 @@ public class ReportGenerator extends HtmlGenerator {
                         p("Contact: " + landscape.getContact()),
                         div(img().attr("src", LocalServer.url("/render/" + landscape.getIdentifier() + "/graph.png")).attr("class", "img-fluid img-thumbnail mx-auto d-block")),
                         br(), br(),
-                        rawHtml(writeGroups(Groups.from(landscape)))
+                        rawHtml(writeGroups(landscape))
                 )
         ).renderFormatted();
     }
 
-    private String writeGroups(Groups groups) {
+    private String writeGroups(LandscapeImpl landscape) {
         final StringBuilder builder = new StringBuilder();
-        groups.getAll().forEach((s, landscapeItems) -> {
-            String color = "#" + Color.nameToRGB(s);
+        Map<String, GroupItem> groups = landscape.getGroups();
+        groups.forEach((s, groupItem) -> {
+            String color = "#" + Color.getGroupColor(s, landscape);
             builder.append(
                     h2(rawHtml("Group: " + "<span style=\"color: " + color + "\">&#9899;</span> " + s))
                             .attr("class", "rounded").render()
             );
             builder.append(
-                    div().attr("class", "group").with(landscapeItems.stream().map(this::writeItem))
+                    div().attr("class", "group")
+                            .with(((Group) groupItem).getItems().stream().map(this::writeItem))
                             .render()
             );
         });
@@ -122,7 +122,12 @@ public class ReportGenerator extends HtmlGenerator {
                         //data flow
                         iff(ĥasRelations, h4("Relations")),
                         iff(ĥasRelations, ul().with(
-                                item.getRelations().stream().map(df -> li(rawHtml(df.getType() + " " + df.getFormat() + " " + df.getDescription() + " &#10142; " + df.getTarget())))
+                                item.getRelations().stream()
+                                        .map(df -> li(rawHtml(df.getType() + " "
+                                                + ifPresent(df.getFormat()) + " "
+                                                + ifPresent(df.getDescription())
+                                                + " &#10142; " + df.getTarget()))
+                                        )
                                 )
                         ),
 

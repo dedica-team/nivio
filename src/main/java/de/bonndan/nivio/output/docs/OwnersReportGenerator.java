@@ -4,7 +4,7 @@ import de.bonndan.nivio.model.Groups;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.FormatUtils;
-import de.bonndan.nivio.util.Color;
+import de.bonndan.nivio.output.Color;
 import j2html.tags.ContainerTag;
 
 import java.util.ArrayList;

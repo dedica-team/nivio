@@ -1,9 +1,15 @@
-package de.bonndan.nivio.util;
+package de.bonndan.nivio.output;
 
 import com.lowagie.text.html.WebColors;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.GroupItem;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.LandscapeImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+
+import java.util.Optional;
 
 public class Color {
 
@@ -38,5 +44,20 @@ public class Color {
             LOGGER.error(color + " --> "+ ex.getMessage());
             return color;
         }
+    }
+
+    public static String getGroupColor(Item item) {
+        if (item.getGroup() == null || item.getGroup().startsWith(Group.COMMON))
+            return GRAY;
+
+        return getGroupColor(item.getGroup(), item.getLandscape());
+    }
+
+    public static String getGroupColor(String name, LandscapeImpl landscape) {
+
+        GroupItem group = landscape.getGroups().getOrDefault(name, Group.DEFAULT_GROUP);
+
+        return Optional.ofNullable(group.getColor())
+                .orElse(Color.nameToRGB(name, Color.DARKGRAY));
     }
 }

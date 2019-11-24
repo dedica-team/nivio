@@ -55,13 +55,8 @@ public class Indexer {
             new TemplateResolver().processTemplates(input, templatesAndTargets);
             new InstantItemResolver(logger).processTargets(input);
             new RelationResolver(logger).processRelations(input);
-            input.getGroups().forEach((identifier, groupItem) -> {
-                Group g = new Group();
-                g.setIdentifier(identifier);
-                Groups.merge(g, groupItem);
+            new GroupResolver(logger).process(input, landscape);
 
-                landscape.addGroup(g);
-            });
 
             diff(input, landscape, logger);
             fillGroups(input, landscape);
@@ -128,9 +123,10 @@ public class Indexer {
     }
 
     private void fillGroups(LandscapeDescription input, LandscapeImpl landscape) {
+
+        //todo check if this can run in GroupResolver
         landscape.getItems().forEach(item -> {
-            Group group = (Group) landscape.getGroups().computeIfAbsent(item.getGroup(), Group::new);
-            group.getItems().add(item);
+            landscape.getGroup(item.getGroup()).getItems().add(item);
         });
 
         input.getGroups().forEach((s, groupItem) -> {

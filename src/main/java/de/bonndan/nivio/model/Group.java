@@ -1,6 +1,6 @@
 package de.bonndan.nivio.model;
 
-import de.bonndan.nivio.util.Color;
+import org.springframework.util.StringUtils;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -8,15 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static de.bonndan.nivio.model.Groups.COMMON;
-
 public class Group implements GroupItem {
 
     public static final Group DEFAULT_GROUP;
+    public static final String COMMON = "Common";
 
     static {
         DEFAULT_GROUP = new Group();
-        DEFAULT_GROUP.setColor(Color.DARKGRAY);
         DEFAULT_GROUP.setIdentifier(COMMON);
     }
 
@@ -35,7 +33,7 @@ public class Group implements GroupItem {
     }
 
     public Group(String identifier) {
-        this.identifier = identifier;
+        setIdentifier(identifier);
     }
 
     @Override
@@ -74,6 +72,9 @@ public class Group implements GroupItem {
     }
 
     public void setIdentifier(String identifier) {
+        if (StringUtils.isEmpty(identifier))
+            identifier = COMMON;
+
         this.identifier = identifier;
     }
 
