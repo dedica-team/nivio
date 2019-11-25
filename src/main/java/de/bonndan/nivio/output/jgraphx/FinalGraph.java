@@ -243,7 +243,7 @@ public class FinalGraph {
         Icon type;
         if (iconService == null) {
             try {
-                type = new Icon(new File(RootPath.get() + "src/main/resources/static/icons/service.png").toURI().toURL());
+                type = new Icon(new File(RootPath.get() + "/src/main/resources/static/icons/service.png").toURI().toURL());
             } catch (MalformedURLException e) {
                 return "";
             }
