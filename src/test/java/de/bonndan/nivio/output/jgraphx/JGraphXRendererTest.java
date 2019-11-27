@@ -5,6 +5,8 @@ import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.input.ItemDescriptionFormatFactory;
 import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.Indexer;
+import de.bonndan.nivio.input.dto.GroupDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.LandscapeImpl;
@@ -18,6 +20,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,11 +46,14 @@ class JGraphXRendererTest {
     }
 
     private mxGraph debugRender(String path) throws IOException {
-
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(null);
-        jGraphXRenderer.setDebugMode(true);
-
         LandscapeImpl landscape = getLandscape(path + ".yml");
+        return debugRenderLandscape(path, landscape, true);
+    }
+
+    private mxGraph debugRenderLandscape(String path, LandscapeImpl landscape, boolean debugMode) throws IOException {
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(null);
+        jGraphXRenderer.setDebugMode(debugMode);
+
         mxGraph graph = jGraphXRenderer.render(landscape);
 
         BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, null, true, null);
@@ -72,5 +78,37 @@ class JGraphXRendererTest {
     @Test
     public void debugRenderInout() throws IOException {
         debugRender("/src/test/resources/example/inout");
+    }
+
+    @Test
+    public void debugRenderLargeGraph() throws IOException {
+
+        LandscapeDescription input = new LandscapeDescription();
+        input.setIdentifier("largetest");
+        input.setName("largetest");
+
+        int g = 0;
+        while (g < 30) {
+
+            int i = 0;
+            int max = g % 2 > 0 ? 5 :8;
+            GroupDescription gd = new GroupDescription();
+            String groupIdentifier = "group" + g;
+            gd.setIdentifier(groupIdentifier);
+            input.getGroups().put(groupIdentifier, gd);
+            while (i < max) {
+                ItemDescription itemDescription = new ItemDescription();
+                itemDescription.setIdentifier(groupIdentifier + "_item_" + i);
+                itemDescription.setGroup(groupIdentifier);
+                input.getItemDescriptions().add(itemDescription);
+                i++;
+            }
+            g++;
+        }
+
+        indexer.reIndex(input);
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
+
+        debugRenderLandscape("/src/test/resources/example/large", landscape, false);
     }
 }

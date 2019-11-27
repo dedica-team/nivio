@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.jgraphx;
 
+import com.mxgraph.layout.mxFastOrganicLayout;
 import com.mxgraph.layout.mxOrganicLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxConstants;
@@ -11,7 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.util.*;
+import java.util.List;
 
 /**
  * Renders a graph of group containers only, not regarding items inside the containers.
@@ -46,25 +50,17 @@ public class AllGroupsGraph {
 
         addVirtualEdgesBetweenGroups(items);
 
-        mxOrganicLayout layout = new mxOrganicLayout(graph);
+        NivioGroupLayout layout = new NivioGroupLayout(graph);
         Optional.ofNullable(config.getJgraphx().getMaxIterations())
                 .ifPresent(layout::setMaxIterations);
-        layout.setEdgeLengthCostFactor(layout.getEdgeLengthCostFactor() * 0.001); //edges tend to be longer
 
-        layout.setApproxNodeDimensions(false);
-
-
-        //edges much longer, good since we enlarge groups with padding
-        layout.setAverageNodeArea(layout.getAverageNodeArea() * 25);
-
-        //slighty better layout
-        layout.setTriesPerCell(Optional.ofNullable(config.getJgraphx().getTriesPerCell()).orElse(16));
 
         Optional.ofNullable(config.getJgraphx().getMinDistanceLimitFactor())
                 .ifPresent(f -> layout.setMinDistanceLimit(layout.getMinDistanceLimit() * f));
 
 
         layout.execute(graph.getDefaultParent());
+        logger.info("AllGroupsGraph bounds: {}", graph.getGraphBounds());
     }
 
 
@@ -114,6 +110,7 @@ public class AllGroupsGraph {
         });
 
         //add connections from unconnected groups to each other group to keep it at distance
+        /*
         groupNodes.forEach((s, groupNode) -> {
             boolean connected = groupConnections.isConnected(s);
 
@@ -131,6 +128,8 @@ public class AllGroupsGraph {
                 groupConnections.connect(s, s1, "Connecting unconnected group to all ");
             });
         });
+
+         */
     }
 
     public Map<String, mxCell> getLayoutedGroups() {
