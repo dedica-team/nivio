@@ -57,7 +57,6 @@ public class Indexer {
             new RelationResolver(logger).processRelations(input);
             new GroupResolver(logger).process(input, landscape);
 
-
             diff(input, landscape, logger);
             fillGroups(input, landscape);
             linkItems(input, landscape, logger);

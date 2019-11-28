@@ -75,6 +75,7 @@ For jgraphx output, some force directed graph params can be set. More configurat
 
     # landscape configuration
     config:
+      groupBlacklist: [".*infra.*", "hidden"]
       groups:
         content:
           color: "24a0ed"
