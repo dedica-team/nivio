@@ -75,6 +75,7 @@ For jgraphx output, some force directed graph params can be set. More configurat
 
     # landscape configuration
     config:
+      groupBlacklist: [".*infra.*", "hidden"]
       groups:
         content:
           color: "24a0ed"
@@ -121,13 +122,16 @@ Rancher 1 Cluster Inspection
 ----------------------------
 
 Rancher clusters can be indexed one project (aka environment in the GUI speak) at a time. Access credentials can be read
-from environment variables.
+from environment variables. To exclude internal stacks (like those responsible for internal networking), blacklist them.
 
 .. code-block:: yaml
    :linenos:
 
     identifier: rancher:example
     name: Rancher 1.6 API example
+    config:
+      groupBlacklist: [".*infra.*"]
+
     sources:
       - url: "http://rancher-server/v2-beta/"
         projectName: Default

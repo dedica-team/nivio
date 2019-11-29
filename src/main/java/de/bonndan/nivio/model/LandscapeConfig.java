@@ -1,10 +1,15 @@
 package de.bonndan.nivio.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LandscapeConfig {
 
     private boolean greedy = true;
 
     private JGraphXConfig jgraphx = new JGraphXConfig();
+
+    private List<String> groupBlacklist = new ArrayList<>();
 
     public JGraphXConfig getJgraphx() {
         return jgraphx;
@@ -20,6 +25,13 @@ public class LandscapeConfig {
 
     public void setGreedy(boolean greedy) {
         this.greedy = greedy;
+    }
+
+    /**
+     * @return a list of group identifiers which are excluded from the landscape
+     */
+    public List<String> getGroupBlacklist() {
+        return groupBlacklist;
     }
 
     /**
