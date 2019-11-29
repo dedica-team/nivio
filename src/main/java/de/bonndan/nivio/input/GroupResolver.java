@@ -50,10 +50,11 @@ public class GroupResolver {
                 group = Group.COMMON;
             }
 
-            if (!isBlacklisted(group, specs))
+            if (!isBlacklisted(group, specs)) {
                 landscape.getGroups().computeIfAbsent(group, s -> getGroup(s, null));
-            else
+            } else {
                 input.getItemDescriptions().remove(item);
+            }
         });
     }
 
