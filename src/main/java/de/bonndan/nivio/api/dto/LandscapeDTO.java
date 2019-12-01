@@ -3,15 +3,14 @@ package de.bonndan.nivio.api.dto;
 import de.bonndan.nivio.model.GroupItem;
 import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.model.Landscape;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
-import java.util.List;
 import java.util.Map;
 
 /**
  * API representation of a landscape.
  */
-public class LandscapeDTO extends ResourceSupport implements Landscape  {
+public class LandscapeDTO extends RepresentationModel implements Landscape  {
 
     public String identifier;
     public String name;
