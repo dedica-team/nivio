@@ -54,6 +54,7 @@ public class Indexer {
             new SourceReferencesResolver(formatFactory, logger).resolve(input, templatesAndTargets);
             new TemplateResolver().processTemplates(input, templatesAndTargets);
             new InstantItemResolver(logger).processTargets(input);
+            new MagicLabelRelations().process(input, landscape);
             new RelationResolver(logger).processRelations(input);
             new GroupResolver(logger).process(input, landscape);
 

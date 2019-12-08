@@ -134,7 +134,7 @@ public class Items {
      * @param items collection to operate on
      * @return resultset
      */
-    private static List<? extends LandscapeItem> cqnQuery(String condition, Collection<? extends LandscapeItem> items) {
+    public static List<? extends LandscapeItem> cqnQuery(String condition, Collection<? extends LandscapeItem> items) {
         SQLParser<LandscapeItem> parser = SQLParser.forPojoWithAttributes(LandscapeItem.class,
                 Map.of("identifier", IDENTIFIER, "name", NAME)
         );
@@ -145,4 +145,6 @@ public class Items {
 
         return results.stream().collect(Collectors.toList());
     }
+
+
 }
