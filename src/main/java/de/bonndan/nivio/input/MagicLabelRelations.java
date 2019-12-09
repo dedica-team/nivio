@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input;
 
+import com.googlecode.cqengine.IndexedCollection;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
@@ -34,10 +35,11 @@ public class MagicLabelRelations {
         });
 
         //search for targets in the landscape
+        IndexedCollection<LandscapeItem> index = Items.index(landscape.getItems());
         itemMatches.forEach((key, value) -> value.forEach(toFind -> {
 
-            //TODO this is very ineffective, create an indexed collection once.
-            Collection<? extends LandscapeItem> possibleTargets = Items.cqnQuery("SELECT * FROM items WHERE (identifier = '"  + toFind  + "' OR name ='"  + toFind  + "')", landscape.getItems());
+            Collection<? extends LandscapeItem> possibleTargets = Items.cqnQueryOnIndex(
+                    "SELECT * FROM items WHERE (identifier = '"  + toFind  + "' OR name ='"  + toFind  + "')", index);
 
             if (possibleTargets.size() == 1) {
                 String target = possibleTargets.iterator().next().getIdentifier();
@@ -64,8 +66,7 @@ public class MagicLabelRelations {
             return null;
         }
 
-        List<String> aliasesToFind = new ArrayList<>();
-        aliasesToFind.addAll(keyParts);
+        List<String> aliasesToFind = new ArrayList<>(keyParts);
         try {
             URL url = new URL(value);
             aliasesToFind.add(url.getHost());
