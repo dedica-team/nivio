@@ -142,6 +142,24 @@ class MagicLabelRelationsTest {
         assertEquals("baz", rel.getTarget());
     }
 
+    @Test
+    public void hasProviderRelation() {
+        //given
+        Item db = new Item();
+        db.setIdentifier("x.y.z");
+        LandscapeImpl landscape = getLandscape(db);
+
+        //when
+        resolver.process(input, landscape);
+
+        //then
+        assertEquals(1, item.getRelations().size());
+        RelationItem<String> rel = item.getRelations().iterator().next();
+        assertEquals("x.y.z", rel.getSource());
+        assertEquals("x.y.z", rel.getSource());
+        assertEquals(RelationType.PROVIDER, rel.getType());
+    }
+
 
     private LandscapeImpl getLandscape(Item target) {
         LandscapeImpl landscape = new LandscapeImpl();

@@ -7,7 +7,6 @@ import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -16,9 +15,6 @@ import java.util.stream.Collectors;
 
 /**
  * Examines the labels of an item for parts that point to being an url and could point to targets in the landscape.
- *
- *
- *
  */
 public class MagicLabelRelations {
 
@@ -29,41 +25,68 @@ public class MagicLabelRelations {
      */
     private static final List<String> URL_PARTS = Arrays.asList("uri", "url", "host");
 
+    private static final List<String> PROVIDER_INDICATORS = Arrays.asList("db", "database", "provider");
+
     public void process(LandscapeDescription input, LandscapeImpl landscape) {
 
-        Map<ItemDescription, Set<String>> itemMatches = new HashMap<>();
-        input.getItemDescriptions().forEach(itemDescription -> {
-            Set<String> urlMatches = parseLabels(itemDescription);
-            itemMatches.put(itemDescription, urlMatches);
-        });
+        Map<ItemDescription, List<LabelMatch>> itemMatches = new HashMap<>();
+        input.getItemDescriptions().forEach(item -> itemMatches.put(item, getMatches(item)));
 
         //search for targets in the landscape
         IndexedCollection<LandscapeItem> index = Items.index(landscape.getItems());
-        itemMatches.forEach((key, value) -> value.forEach(toFind -> {
+        itemMatches.forEach((description, labelMatches) -> {
+            labelMatches.forEach(labelMatch -> {
+                labelMatch.possibleTargets.forEach(toFind -> {
+                    Collection<? extends LandscapeItem> possibleTargets = Items.cqnQueryOnIndex(
+                            "SELECT * FROM items WHERE (identifier = '" + toFind + "' OR name ='" + toFind + "')", index);
 
-            Collection<? extends LandscapeItem> possibleTargets = Items.cqnQueryOnIndex(
-                    "SELECT * FROM items WHERE (identifier = '"  + toFind  + "' OR name ='"  + toFind  + "')", index);
+                    if (possibleTargets.size() != 1) {
+                        LOGGER.debug("Found no target of magic relation from item {} using '{}'", description.getIdentifier(), toFind);
+                        return;
+                    }
 
-            if (possibleTargets.size() == 1) {
-                String target = possibleTargets.iterator().next().getIdentifier();
-                LOGGER.info("Found a target of magic relation from {} to {} using '{}'", key.getIdentifier(), target, toFind);
-                key.addRelation(new RelationDescription(key.getIdentifier(), target));
-            } else {
-                LOGGER.trace("Found no target of magic relation from item {} using '{}'", key.getIdentifier(), toFind);
-            }
-        }));
+                    String source = description.getIdentifier();
+                    String target = possibleTargets.iterator().next().getIdentifier();
+                    LOGGER.info("Found a target of magic relation from {} to {} using '{}'", description.getIdentifier(), target, toFind);
+                    boolean relationExists = description.getRelations().stream()
+                            .anyMatch(r -> hasRelation(source, target, r));
+                    if (!relationExists) {
+                        RelationDescription relation = new RelationDescription(source, target);
+                        //inverse
+                        if (isProvider(labelMatch)) {
+                            relation = new RelationDescription(target, source);
+                            relation.setType(RelationType.PROVIDER);
+                        }
+                        description.addRelation(relation);
+                    } else {
+                        LOGGER.info("Relation between {} and {} already exists, not adding magic one.", source, target);
+                    }
+                });
+            });
+        });
     }
 
-    private Set<String> parseLabels(ItemDescription itemDescription) {
+    private boolean isProvider(LabelMatch labelMatch) {
+        List<String> labelParts = Arrays.stream(labelMatch.key.split("_"))
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
+
+        return labelParts.stream().anyMatch(PROVIDER_INDICATORS::contains);
+    }
+
+    private boolean hasRelation(String source, String target, RelationItem<String> r) {
+        return r.getSource().equals(source) && r.getTarget().equals(target) ||
+                r.getSource().equals(target) && r.getTarget().equals(source);
+    }
+
+    private List<LabelMatch> getMatches(ItemDescription itemDescription) {
         return itemDescription.getLabels().entrySet().stream()
-                .map(entry -> getUrlMatches(entry.getKey(), entry.getValue()))
+                .map(entry -> getPossibleTargetsForLabel(entry.getKey(), entry.getValue()))
                 .filter(Objects::nonNull)
-                .flatMap(Collection::stream)
-                .filter(s -> !StringUtils.isEmpty(s))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
-    private List<String> getUrlMatches(String key, String value) {
+    private LabelMatch getPossibleTargetsForLabel(String key, String value) {
         List<String> keyParts = Arrays.stream(key.split("_")).map(String::toLowerCase).collect(Collectors.toList());
         if (URL_PARTS.stream().noneMatch(keyParts::contains)) {
             return null;
@@ -75,9 +98,22 @@ public class MagicLabelRelations {
             aliasesToFind.add(url.getHost());
             aliasesToFind.addAll(Arrays.asList(url.getPath().split("/"))); //add all path parts
         } catch (MalformedURLException ignored) {
-            aliasesToFind.add(value);
+            aliasesToFind.addAll(Arrays.asList(value.split(":")));
         }
 
-        return aliasesToFind;
+        return new LabelMatch(key, value, aliasesToFind);
+    }
+
+    private static class LabelMatch {
+        String key;
+        String value;
+        private final List<String> possibleTargets;
+        RelationType relationType;
+
+        LabelMatch(String key, String value, List<String> possibleTargets) {
+            this.key = key;
+            this.value = value;
+            this.possibleTargets = possibleTargets;
+        }
     }
 }
