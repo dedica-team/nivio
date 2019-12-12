@@ -19,6 +19,9 @@ import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
 
 public class Items {
 
+    private static final Attribute<LandscapeItem, String> IDENTIFIER = attribute("identifier", LandscapeItem::getIdentifier);
+    private static final Attribute<LandscapeItem, String> NAME = attribute("name", LandscapeItem::getName);
+    
     /**
      * Ensures that the given item has a sibling in the list, returns the item from the list.
      *
@@ -124,9 +127,6 @@ public class Items {
         return cqnQueryOnIndex(query, index(items));
     }
 
-    private static final Attribute<LandscapeItem, String> IDENTIFIER = attribute("identifier", LandscapeItem::getIdentifier);
-    private static final Attribute<LandscapeItem, String> NAME = attribute("name", LandscapeItem::getName);
-
     /**
      * Puts all items into an indexed collection for querying.
      *
@@ -137,7 +137,6 @@ public class Items {
         IndexedCollection<LandscapeItem> index = new ConcurrentIndexedCollection<>();
         index.addAll(items);
         return index;
-
     }
 
     public static List<? extends LandscapeItem> cqnQueryOnIndex(String condition, IndexedCollection<LandscapeItem> index) {

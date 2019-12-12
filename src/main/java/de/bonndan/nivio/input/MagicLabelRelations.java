@@ -24,7 +24,10 @@ public class MagicLabelRelations {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MagicLabelRelations.class);
 
-    private static final List<String> urlParts = Arrays.asList("uri", "url", "host");
+    /**
+     * this could be made configurable later
+     */
+    private static final List<String> URL_PARTS = Arrays.asList("uri", "url", "host");
 
     public void process(LandscapeDescription input, LandscapeImpl landscape) {
 
@@ -62,7 +65,7 @@ public class MagicLabelRelations {
 
     private List<String> getUrlMatches(String key, String value) {
         List<String> keyParts = Arrays.stream(key.split("_")).map(String::toLowerCase).collect(Collectors.toList());
-        if (urlParts.stream().noneMatch(keyParts::contains)) {
+        if (URL_PARTS.stream().noneMatch(keyParts::contains)) {
             return null;
         }
 
