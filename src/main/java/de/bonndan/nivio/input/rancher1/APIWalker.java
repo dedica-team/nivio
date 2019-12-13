@@ -110,8 +110,14 @@ class APIWalker {
             }
 
             //copy all labels
-            if (service.getLaunchConfig() != null && service.getLaunchConfig().getLabels() != null)
-                service.getLaunchConfig().getLabels().forEach((s, o) -> LabelProcessor.applyLabel(item, s, o));
+            if (service.getLaunchConfig() != null) {
+                if (service.getLaunchConfig().getLabels() != null) {
+                    service.getLaunchConfig().getLabels().forEach((s, o) -> LabelProcessor.applyLabel(item, s, o));
+                }
+                if (service.getLaunchConfig().getEnvironment() != null) {
+                    service.getLaunchConfig().getEnvironment().forEach((s, o) -> LabelProcessor.applyLabel(item, s, o));
+                }
+            }
 
             descriptions.add(item);
         });
