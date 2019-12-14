@@ -7,6 +7,7 @@ import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeItem;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +31,9 @@ public class GroupGraph {
         items.forEach(service -> {
             ((Item) service).getProvidedBy().forEach(provider -> {
 
-                if (service.getGroup().equals(provider.getGroup())) {
+                boolean sameGroup = (service.getGroup() == null && provider.getGroup() == null)
+                        || service.getGroup().equals(provider.getGroup());
+                if (sameGroup) {
                     graph.insertEdge(
                             graph.getDefaultParent(), null, "",
                             serviceVertexes.get(provider),

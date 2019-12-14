@@ -68,4 +68,32 @@ class LabelProcessorTest {
         next = relations.iterator().next();
         assertTrue("bar".equals(next.getTarget()) || "baz".equals(next.getTarget()));
     }
+
+    @Test
+    public void ignoreBlacklisted() {
+        LabelProcessor.applyLabel(item, "pass", "x");
+        assertEquals(0, item.getLabels().size());
+
+        LabelProcessor.applyLabel(item, "a.pass_", "x");
+        assertEquals(0, item.getLabels().size());
+
+        LabelProcessor.applyLabel(item, "secret", "x");
+        assertEquals(0, item.getLabels().size());
+
+        LabelProcessor.applyLabel(item, "my_secret_x", "x");
+        assertEquals(0, item.getLabels().size());
+
+        LabelProcessor.applyLabel(item, "credentials", "x");
+        assertEquals(0, item.getLabels().size());
+
+        LabelProcessor.applyLabel(item, "_credentials_", "x");
+        assertEquals(0, item.getLabels().size());
+
+        LabelProcessor.applyLabel(item, "token", "x");
+        assertEquals(0, item.getLabels().size());
+
+        LabelProcessor.applyLabel(item, "a_token_", "x");
+        assertEquals(0, item.getLabels().size());
+
+    }
 }

@@ -14,6 +14,11 @@ public class RelationDescription implements RelationItem<String> {
 
     public RelationDescription(){}
 
+    public RelationDescription(String source, String target) {
+        this.source = source;
+        this.target = target;
+    }
+
     public String getDescription() {
         return description;
     }

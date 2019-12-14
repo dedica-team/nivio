@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.jgraphx;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.input.ItemDescriptionFormatFactory;
@@ -20,6 +21,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -110,5 +112,33 @@ class JGraphXRendererTest {
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
         debugRenderLandscape("/src/test/resources/example/large", landscape, false);
+    }
+
+    @Test
+    public void renderLandscapeItemModelWithMagicLabels() throws IOException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        ItemDescription model = new ItemDescription();
+        model.setIdentifier("item");
+        model.setName("Item Description");
+
+        Map<String, Object> map = mapper.convertValue(model, Map.class);
+
+        LandscapeDescription landscapeDescription = new LandscapeDescription();
+        landscapeDescription.setIdentifier("landscapeItem:model");
+        landscapeDescription.setName("Landscape Item Model");
+        landscapeDescription.getItemDescriptions().add(model);
+
+        map.forEach((field, o) -> {
+            ItemDescription d = new ItemDescription();
+            d.setIdentifier(field);
+            landscapeDescription.getItemDescriptions().add(d);
+            model.getLabels().put(field + "_PROVIDER_URL", field.toLowerCase());
+        });
+
+        indexer.reIndex(landscapeDescription);
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
+
+        debugRenderLandscape("/src/test/resources/example/model", landscape, false);
     }
 }

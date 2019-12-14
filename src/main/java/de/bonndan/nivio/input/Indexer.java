@@ -59,7 +59,10 @@ public class Indexer {
 
             diff(input, landscape, logger);
             fillGroups(input, landscape);
+
+            new MagicLabelRelations().process(input, landscape);
             linkItems(input, landscape, logger);
+
             landscapeRepo.save(landscape);
         } catch (ProcessingException e) {
             final String msg = "Error while reindexing landscape " + input.getIdentifier();

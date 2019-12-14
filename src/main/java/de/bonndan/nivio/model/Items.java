@@ -19,6 +19,9 @@ import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
 
 public class Items {
 
+    private static final Attribute<LandscapeItem, String> IDENTIFIER = attribute("identifier", LandscapeItem::getIdentifier);
+    private static final Attribute<LandscapeItem, String> NAME = attribute("name", LandscapeItem::getName);
+    
     /**
      * Ensures that the given item has a sibling in the list, returns the item from the list.
      *
@@ -33,9 +36,9 @@ public class Items {
     /**
      * Makes sure the sibling of the item is returned or throws an exception.
      *
-     * @param identifier  identifier
-     * @param group       the group to search in
-     * @param items all items
+     * @param identifier identifier
+     * @param group      the group to search in
+     * @param items      all items
      * @return the sibling with the given identifier
      */
     public static LandscapeItem pick(final String identifier, String group, final Collection<? extends LandscapeItem> items) {
@@ -65,7 +68,7 @@ public class Items {
         if (found.size() > 1)
             throw new RuntimeException("Ambiguous result for " + group + "/" + identifier + ": " + found + " in collection " + items);
 
-        return Optional.ofNullable((found.size() == 1) ? found.get(0): null);
+        return Optional.ofNullable((found.size() == 1) ? found.get(0) : null);
     }
 
     private static List<LandscapeItem> findAll(
@@ -90,7 +93,7 @@ public class Items {
     /**
      * Returns a the item from the list or null. Uses the matching criteria of {@link FullyQualifiedIdentifier}
      *
-     * @param fqi      the identifier
+     * @param fqi   the identifier
      * @param items all items
      * @return the or null
      */
@@ -100,12 +103,12 @@ public class Items {
         if (found.size() > 1)
             throw new RuntimeException("Ambiguous result for " + fqi + ": " + found + " in collection " + items);
 
-        return Optional.ofNullable((found.size() == 1) ? found.get(0): null);
+        return Optional.ofNullable((found.size() == 1) ? found.get(0) : null);
     }
 
     public static Collection<? extends LandscapeItem> query(String term, Collection<? extends LandscapeItem> items) {
 
-        if ("*" .equals(term))
+        if ("*".equals(term))
             return items;
 
         //single word compared against identifier
@@ -121,25 +124,25 @@ public class Items {
         }
 
         String query = "SELECT * FROM items WHERE " + term;
-        return cqnQuery(query, items);
+        return cqnQueryOnIndex(query, index(items));
     }
 
-    public static final Attribute<LandscapeItem, String> IDENTIFIER = attribute("identifier", LandscapeItem::getIdentifier);
-    public static final Attribute<LandscapeItem, String> NAME = attribute("name", LandscapeItem::getName);
-
     /**
-     * Run the condition as CQN query. See https://github.com/npgall/cqengine
+     * Puts all items into an indexed collection for querying.
      *
-     * @param condition query where part
-     * @param items collection to operate on
-     * @return resultset
+     * @param items landscape items
+     * @return indexed collection
      */
-    private static List<? extends LandscapeItem> cqnQuery(String condition, Collection<? extends LandscapeItem> items) {
+    public static IndexedCollection<LandscapeItem> index(Collection<? extends LandscapeItem> items) {
+        IndexedCollection<LandscapeItem> index = new ConcurrentIndexedCollection<>();
+        index.addAll(items);
+        return index;
+    }
+
+    public static List<? extends LandscapeItem> cqnQueryOnIndex(String condition, IndexedCollection<LandscapeItem> index) {
         SQLParser<LandscapeItem> parser = SQLParser.forPojoWithAttributes(LandscapeItem.class,
                 Map.of("identifier", IDENTIFIER, "name", NAME)
         );
-        IndexedCollection<LandscapeItem> index = new ConcurrentIndexedCollection<>();
-        index.addAll(items);
 
         ResultSet<LandscapeItem> results = parser.retrieve(index, condition);
 

@@ -17,6 +17,8 @@ public class LabelProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(LabelProcessor.class);
     public static final String NIVIO_LABEL_PREFIX = "nivio.";
 
+    private static final List<String> keyBlacklist = Arrays.asList("secret", "pass", "credentials", "token");
+
     /**
      * Copies label key and value to item labels, or, if prefixed "nivio.", sets the field to the value.
      *
@@ -26,6 +28,9 @@ public class LabelProcessor {
      */
     public static void applyLabel(ItemDescription item, String key, Object value) {
 
+        if (inBlacklist(key)) {
+            return;
+        }
         if (!key.toLowerCase().startsWith(NIVIO_LABEL_PREFIX)) {
             item.getLabels().put(key, (String) value);
             return;
@@ -33,6 +38,11 @@ public class LabelProcessor {
 
         String field = key.substring(NIVIO_LABEL_PREFIX.length());
         setValue(item, field, (String) value);
+    }
+
+    private static boolean inBlacklist(String key) {
+        String lk = key.toLowerCase();
+        return keyBlacklist.stream().anyMatch(lk::contains);
     }
 
     private static void setValue(ItemDescription item, String name, String value) {

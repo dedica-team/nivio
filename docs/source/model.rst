@@ -130,7 +130,6 @@ Service references are required to describe a provider relation or data flows.
 
 
 
-
 Using Templates to dynamically assign data
 ---------------
 
@@ -165,3 +164,41 @@ will not be overwritten by templates applied later.
         statuses
 
 For CQ queries, read https://github.com/npgall/cqengine#string-based-queries-sql-and-cqn-dialects.
+
+
+Using Labels to assign data
+---------------------------
+
+You can set labels (string:string) to items which are evaluated as model fields if
+
+* the key contains "nivio." AND
+* the rest of the key equals a field name.
+
+For instance
+
+.. code-block:: yaml
+   :linenos:
+
+    items:
+      - identifier: theservice
+        labels:
+          nivio.name: A nice name
+          nivio.providedBy: ["foo", "bar"]
+
+
+will set the related values (here: name and relations). Remember to scape URLs with double quotes.
+
+
+Relations between landscape items
+---------------------------------
+
+Usually environments such as Docker, K8s provide few to none information on the relation between landscape items (e.g.
+which database a service uses). However, in 12-factor apps there is configuration through environment variables (https://12factor.net/config)
+and these can be parsed hopefully. Nivio provides an experimental feature which regards these env vars as DSL. Env vars
+are read and assigned as item labels, then examined in the following way:
+
+* the key contains words like "url", "uri" etc.
+* the value is an URL
+
+If a criteria is matched, the value of the label is examined. In the of being an URL, the host and name path components are extracted as names or identifiers.
+Using these, the landscape is searched for possible relation targets.
