@@ -58,6 +58,14 @@ class LabelProcessorTest {
     }
 
     @Test
+    public void listFieldLabelWithoutDelimiter() {
+        LabelProcessor.applyLabel(item, "nivio.providedBy", "bar ");
+
+        List<String> providedBy = item.getProvidedBy();
+        assertEquals("bar", providedBy.get(0));
+    }
+
+    @Test
     public void relations() {
         LabelProcessor.applyLabel(item, "nivio.relations", "bar , baz ");
 
