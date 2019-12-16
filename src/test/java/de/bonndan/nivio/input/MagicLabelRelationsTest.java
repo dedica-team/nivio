@@ -143,6 +143,23 @@ class MagicLabelRelationsTest {
     }
 
     @Test
+    @DisplayName("does not link same service to itself")
+    public void doesNotLinkSame() {
+        //given
+        Item hihi = new Item();
+        hihi.setIdentifier(IDENTIFIER);
+
+        input.getItemDescriptions().get(0).getLabels().put("BASE_URL", IDENTIFIER);
+        LandscapeImpl landscape = getLandscape(hihi);
+
+        //when
+        resolver.process(input, landscape);
+
+        //then
+        assertEquals(0, item.getRelations().size());
+    }
+
+    @Test
     public void hasProviderRelation() {
         //given
         Item db = new Item();

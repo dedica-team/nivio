@@ -50,7 +50,8 @@ public class MagicLabelRelations {
                     LOGGER.info("Found a target of magic relation from {} to {} using '{}'", description.getIdentifier(), target, toFind);
                     boolean relationExists = description.getRelations().stream()
                             .anyMatch(r -> hasRelation(source, target, r));
-                    if (!relationExists) {
+                    boolean isEqual = source.equals(target);
+                    if (!relationExists && !isEqual) {
                         RelationDescription relation = new RelationDescription(source, target);
                         //inverse
                         if (isProvider(labelMatch)) {
