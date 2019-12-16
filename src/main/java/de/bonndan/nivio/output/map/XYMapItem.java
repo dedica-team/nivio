@@ -1,14 +1,9 @@
 package de.bonndan.nivio.output.map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeItem;
-
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import de.bonndan.nivio.model.LandscapeItem;
-
-import java.io.Serializable;
 
 /**
  * JSON representation for custom rendering.

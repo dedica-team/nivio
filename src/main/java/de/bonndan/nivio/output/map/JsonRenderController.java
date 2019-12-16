@@ -50,8 +50,9 @@ public class JsonRenderController {
             @RequestParam(value = "size", required = false) Integer size
     ) throws IOException {
         Optional<LandscapeImpl> landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
-        if (landscape.isEmpty())
+        if (landscape.isEmpty()) {
             throw new NotFoundException("Not found");
+        }
 
         JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
 

@@ -22,9 +22,6 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
     private final IconService iconService;
     private boolean debugMode;
 
-    private Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
-
-
     public JGraphXRenderer(IconService iconService) {
         this.iconService = iconService;
     }
@@ -57,7 +54,6 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
         ImageIO.write(image, "PNG", file);
 
     }
-
 
     private boolean isDebugMode() {
         return debugMode;
