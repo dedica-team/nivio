@@ -22,6 +22,8 @@
         <mockito.version>2.24.0</mockito.version>
         <frontend-src-dir>${project.basedir}/src/main/app</frontend-src-dir>
         <node.version>v10.16.3</node.version>
+        <!--<node.version>v12.3.1</node.version>-->
+        <yarn.version>v1.16.0</yarn.version>
         <frontend-maven-plugin.version>1.7.6</frontend-maven-plugin.version>
     </properties>
 
@@ -163,14 +165,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
             <version>1.3</version>
-        </dependency>
-
-
-        <!-- hex -->
-        <dependency>
-            <groupId>com.github.Hexworks.mixite</groupId>
-            <artifactId>mixite.core-jvm</artifactId>
-            <version>2018.2.0-RELEASE</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.fabric8/kubernetes-client -->

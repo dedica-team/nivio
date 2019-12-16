@@ -35,5 +35,10 @@ Clone nivio, build and run a Docker image:
   
 https://medium.com/@itzgeoff/including-react-in-your-spring-boot-maven-build-ae3b8f8826e
    * install nvm oder node > 5
-   nvm install-latest-npm  https://www.hostingadvice.com/how-to/update-node-js-latest-version/
+ 
+https://www.hostingadvice.com/how-to/update-node-js-latest-version/
+
+   nvm install v10.16.3
+   cd src/main/app
+   npm install -g yarn
  

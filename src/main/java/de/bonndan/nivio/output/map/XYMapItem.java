@@ -21,20 +21,17 @@ class XYMapItem extends MapItem {
     public double height;
     public String image;
     public String group;
-    public String groupColor;
     public String type;
 
-    public LandscapeItem service;
-
-    XYMapItem(LandscapeItem service, mxCell cell) {
+    XYMapItem(LandscapeItem item, mxCell cell) {
         type = "service";
-        this.service = service;
+        this.landscapeItem = item;
 
         mxGeometry geometry = cell.getGeometry();
 
         id = cell.getId();
         name = (String) cell.getValue();
-        group = service.getGroup();
+        group = item.getGroup();
 
         if (cell.getParent().getGeometry() != null) {
             x = Math.round(geometry.getX() + cell.getParent().getGeometry().getX());

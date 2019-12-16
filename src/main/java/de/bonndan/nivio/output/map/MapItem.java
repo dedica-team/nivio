@@ -17,7 +17,6 @@ class MapItem implements Serializable {
     public String name;
     public String image;
     public String group;
-    public String groupColor;
     public String type;
     public LandscapeItem landscapeItem;
 }
