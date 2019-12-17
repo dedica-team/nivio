@@ -260,6 +260,10 @@ public class IndexerIntegrationTest {
         LandscapeImpl landscape = index("/src/test/resources/example/example_label_relations.yml");
         assertEquals(1, landscape.getGroups().size());
         assertEquals(2, landscape.getItems().size());
+
+        Item foo = landscape.getItems().iterator().next();
+        assertEquals("foo", foo.getIdentifier());
+        assertEquals(1, foo.getRelations().size());
     }
 
     private String getRootPath() {

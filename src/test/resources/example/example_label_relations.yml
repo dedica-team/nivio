@@ -5,7 +5,8 @@ items:
   - identifier: foo
     group: one
     labels:
-      providedBy: bar
+      nivio.providedBy: bar
 
-  - identifier: bar
+  - identifier: 1s123
+    name: bar
     group: one

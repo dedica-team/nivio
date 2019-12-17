@@ -21,7 +21,7 @@ public class Items {
 
     private static final Attribute<LandscapeItem, String> IDENTIFIER = attribute("identifier", LandscapeItem::getIdentifier);
     private static final Attribute<LandscapeItem, String> NAME = attribute("name", LandscapeItem::getName);
-    
+
     /**
      * Ensures that the given item has a sibling in the list, returns the item from the list.
      *
@@ -111,20 +111,18 @@ public class Items {
         if ("*".equals(term))
             return items;
 
-        //single word compared against identifier
-        if (term.matches(IDENTIFIER_VALIDATION)) {
-            return items.stream()
-                    .filter(serviceItem -> serviceItem.getIdentifier().equals(term))
-                    .collect(Collectors.toList());
-        }
-
         if (term.contains("/")) {
             FullyQualifiedIdentifier from = FullyQualifiedIdentifier.from(term);
             return findAll(from, items);
         }
 
-        String query = "SELECT * FROM items WHERE " + term;
+        //single word compared against identifier
+        String query = term.matches(IDENTIFIER_VALIDATION) ? selectByIdentifierOrName(term) : "SELECT * FROM items WHERE " + term;
         return cqnQueryOnIndex(query, index(items));
+    }
+
+    public static String selectByIdentifierOrName(String term) {
+        return "SELECT * FROM items WHERE (identifier = '" + term + "' OR name = '" + term + "')";
     }
 
     /**

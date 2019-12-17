@@ -29,53 +29,14 @@ class LabelProcessorTest {
     }
 
     @Test
-    public void noField() {
-        LabelProcessor.applyLabel(item, "foo", "bar");
-        LabelProcessor.applyLabel(item, "nivio.foo", "baz");
-
-        assertEquals(1, item.getLabels().size());
-        assertEquals("bar", item.getLabels().get("foo"));
-        assertNull(item.getLabels().get("nivio.foo"));
-    }
-
-    @Test
     public void fieldLabel() {
         LabelProcessor.applyLabel(item, "foo", "bar");
         LabelProcessor.applyLabel(item, "nivio.description", "baz");
 
-        assertEquals(1, item.getLabels().size());
+        assertEquals(2, item.getLabels().size());
         assertEquals("bar", item.getLabels().get("foo"));
-        assertEquals("baz", item.getDescription());
     }
 
-    @Test
-    public void listFieldLabel() {
-        LabelProcessor.applyLabel(item, "nivio.providedBy", "bar , baz ");
-
-        List<String> providedBy = item.getProvidedBy();
-        assertEquals("bar", providedBy.get(0));
-        assertEquals("baz", providedBy.get(1));
-    }
-
-    @Test
-    public void listFieldLabelWithoutDelimiter() {
-        LabelProcessor.applyLabel(item, "nivio.providedBy", "bar ");
-
-        List<String> providedBy = item.getProvidedBy();
-        assertEquals("bar", providedBy.get(0));
-    }
-
-    @Test
-    public void relations() {
-        LabelProcessor.applyLabel(item, "nivio.relations", "bar , baz ");
-
-        Set<RelationItem<String>> relations = item.getRelations();
-        assertEquals(2, relations.size());
-        RelationItem<String> next = relations.iterator().next();
-        assertTrue("bar".equals(next.getTarget()) || "baz".equals(next.getTarget()));
-        next = relations.iterator().next();
-        assertTrue("bar".equals(next.getTarget()) || "baz".equals(next.getTarget()));
-    }
 
     @Test
     public void ignoreBlacklisted() {
