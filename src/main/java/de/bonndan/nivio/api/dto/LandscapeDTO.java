@@ -16,6 +16,7 @@ public class LandscapeDTO extends RepresentationModel implements Landscape  {
     public String name;
     public String contact;
     public String source;
+    public Map<String, GroupItem> groups;
 
     @Override
     public String getIdentifier() {
@@ -44,6 +45,6 @@ public class LandscapeDTO extends RepresentationModel implements Landscape  {
 
     @Override
     public Map<String, GroupItem> getGroups() {
-        return null;
+        return groups;
     }
 }

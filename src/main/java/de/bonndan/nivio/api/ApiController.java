@@ -143,6 +143,16 @@ public class ApiController {
             return ResponseEntity.notFound().build();
 
         return new ResponseEntity<>(List.copyOf(landscape.getItems()), HttpStatus.OK);
+    }
+
+    @RequestMapping(path = "/landscape/{identifier}/log", method = RequestMethod.GET)
+    public ResponseEntity<ProcessLog> log(@PathVariable String identifier) {
+
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
+        if (landscape == null)
+            return ResponseEntity.notFound().build();
+
+        return new ResponseEntity<>(landscape.getLog(), HttpStatus.OK);
 
     }
 

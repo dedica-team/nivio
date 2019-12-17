@@ -71,6 +71,7 @@ public class Indexer {
         }
 
         logger.info("Reindexed landscape " + input.getIdentifier());
+        landscape.setProcessLog(logger);
         return logger;
     }
 
