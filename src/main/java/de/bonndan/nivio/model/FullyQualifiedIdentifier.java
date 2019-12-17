@@ -36,20 +36,24 @@ public class FullyQualifiedIdentifier {
      * @return fqi
      */
     public static FullyQualifiedIdentifier from(String string) {
-        if (StringUtils.isEmpty(string))
+        if (StringUtils.isEmpty(string)) {
             throw new IllegalArgumentException("identifier must not be empty");
+        }
 
         String[] split = string.split(SEPARATOR);
-        if (split.length == 1)
+        if (split.length == 1) {
             return FullyQualifiedIdentifier.build(null, null, split[0]);
+        }
 
-        if (split.length == 2)
+        if (split.length == 2) {
             return FullyQualifiedIdentifier.build(null, split[0], split[1]);
+        }
 
-        if (split.length == 3)
+        if (split.length == 3) {
             return FullyQualifiedIdentifier.build(split[0], split[1], split[2]);
+        }
 
-        return null;
+        throw new IllegalArgumentException("Given string '" + string + "' contains too many parts to build a fqi.");
     }
 
     @Override
