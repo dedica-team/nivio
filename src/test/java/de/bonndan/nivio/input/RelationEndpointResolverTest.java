@@ -24,9 +24,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class RelationResolverTest {
+class RelationEndpointResolverTest {
 
-    private RelationResolver relationResolver;
+    private RelationEndpointResolver relationEndpointResolver;
 
     @Mock
     ProcessLog log;
@@ -34,14 +34,14 @@ class RelationResolverTest {
     @BeforeEach
     public void setup() {
         log = new ProcessLog(Mockito.mock(Logger.class));
-        relationResolver = new RelationResolver(log);
+        relationEndpointResolver = new RelationEndpointResolver(log);
     }
 
     @Test
     public void assignTemplateWithRegex() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates("/src/test/resources/example/example_templates2.yml");
-        relationResolver.processRelations(landscapeDescription);
+        relationEndpointResolver.processRelations(landscapeDescription);
 
         ItemDescription one = (ItemDescription) pick("crappy_dockername-78345", null, landscapeDescription.getItemDescriptions());
         assertNotNull(one);
@@ -61,7 +61,7 @@ class RelationResolverTest {
     public void resolvesTemplatePlaceholdersInProviders() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates("/src/test/resources/example/example_templates2.yml");
-        relationResolver.processRelations(landscapeDescription);
+        relationEndpointResolver.processRelations(landscapeDescription);
 
         //the provider has been resolved using a query instead of naming a service
         ItemDescription providedbyBar = (ItemDescription) pick("crappy_dockername-78345", null, landscapeDescription.getItemDescriptions());
@@ -77,7 +77,7 @@ class RelationResolverTest {
     public void resolvesTemplatePlaceholdersInDataflow() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates("/src/test/resources/example/example_templates2.yml");
-        relationResolver.processRelations(landscapeDescription);
+        relationEndpointResolver.processRelations(landscapeDescription);
 
         ItemDescription hasdataFlow = (ItemDescription) pick("crappy_dockername-78345", null, landscapeDescription.getItemDescriptions());
         assertNotNull(hasdataFlow);

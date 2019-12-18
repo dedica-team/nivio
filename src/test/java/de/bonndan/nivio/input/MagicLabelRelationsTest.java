@@ -6,10 +6,12 @@ import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class MagicLabelRelationsTest {
 
@@ -24,7 +26,7 @@ class MagicLabelRelationsTest {
         input = new LandscapeDescription();
         input.getItemDescriptions().add(item);
 
-        resolver = new MagicLabelRelations();
+        resolver = new MagicLabelRelations(new ProcessLog(mock(Logger.class)));
     }
 
     @Test

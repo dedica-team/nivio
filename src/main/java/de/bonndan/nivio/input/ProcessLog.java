@@ -35,6 +35,11 @@ public class ProcessLog {
         landscape = e.getLandscape();
     }
 
+    public void debug(String message) {
+        messages.add(new Entry("DEBUG", message));
+        logger.debug(message);
+    }
+
     public void info(String message) {
         messages.add(new Entry("INFO", message));
         logger.info(message);

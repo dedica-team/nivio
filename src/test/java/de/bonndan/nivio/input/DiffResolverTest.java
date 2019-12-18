@@ -15,7 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class LandscapeItemsTest {
+public class DiffResolverTest {
 
     private ArrayList<Item> items;
     private LandscapeImpl landscape;
@@ -79,6 +79,7 @@ public class LandscapeItemsTest {
 
         assertThrows(RuntimeException.class,() -> Items.pick("s2", null, items));
     }
+
     @Test
     public void added() {
 
@@ -90,7 +91,7 @@ public class LandscapeItemsTest {
         ArrayList<LandscapeItem> items2 = new ArrayList<>();
         items2.add(new ItemDescription("c"));
 
-        List<LandscapeItem> added = Indexer.added(items1, items2);
+        List<LandscapeItem> added = DiffResolver.added(items1, items2);
         assertEquals(2, added.size());
     }
 
@@ -107,7 +108,7 @@ public class LandscapeItemsTest {
         items2.add(new ItemDescription("b"));
         items2.add(new ItemDescription("c"));
 
-        List<LandscapeItem> added = Indexer.added(items1, items2);
+        List<LandscapeItem> added = DiffResolver.added(items1, items2);
         assertEquals(0, added.size());
     }
 
@@ -123,7 +124,7 @@ public class LandscapeItemsTest {
         items2.add(new ItemDescription("c"));
         items2.add(new ItemDescription("d"));
 
-        List<LandscapeItem> removed = Indexer.removed(items1, items2);
+        List<LandscapeItem> removed = DiffResolver.removed(items1, items2);
         assertEquals(1, removed.size());
     }
 
@@ -139,7 +140,7 @@ public class LandscapeItemsTest {
         items2.add(new ItemDescription("a"));
         items2.add(new ItemDescription("b"));
 
-        List<LandscapeItem> removed = Indexer.removed(items1, items2);
+        List<LandscapeItem> removed = DiffResolver.removed(items1, items2);
         assertEquals(0, removed.size());
     }
 
@@ -155,7 +156,7 @@ public class LandscapeItemsTest {
         items2.add(new ItemDescription("a"));
         items2.add(new ItemDescription("b"));
 
-        List<LandscapeItem> kept = Indexer.kept(items1, items2);
+        List<LandscapeItem> kept = DiffResolver.kept(items1, items2);
         assertEquals(2, kept.size());
     }
 
@@ -171,7 +172,7 @@ public class LandscapeItemsTest {
         items2.add(new ItemDescription("d"));
         items2.add(new ItemDescription("e"));
 
-        List<LandscapeItem> kept = Indexer.kept(items1, items2);
+        List<LandscapeItem> kept = DiffResolver.kept(items1, items2);
         assertEquals(0, kept.size());
     }
 }

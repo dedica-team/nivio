@@ -16,9 +16,7 @@ import java.util.stream.Collectors;
 /**
  * Examines the labels of an item for parts that point to being an url and could point to targets in the landscape.
  */
-public class MagicLabelRelations {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MagicLabelRelations.class);
+public class MagicLabelRelations extends Resolver {
 
     /**
      * this could be made configurable later
@@ -26,6 +24,10 @@ public class MagicLabelRelations {
     private static final List<String> URL_PARTS = Arrays.asList("uri", "url", "host");
 
     private static final List<String> PROVIDER_INDICATORS = Arrays.asList("db", "database", "provider");
+
+    protected MagicLabelRelations(ProcessLog processLog) {
+        super(processLog);
+    }
 
     public void process(LandscapeDescription input, LandscapeImpl landscape) {
 
@@ -40,13 +42,14 @@ public class MagicLabelRelations {
                     Collection<? extends LandscapeItem> possibleTargets = Items.cqnQueryOnIndex(Items.selectByIdentifierOrName(toFind), index);
 
                     if (possibleTargets.size() != 1) {
-                        LOGGER.debug("Found no target of magic relation from item {} using '{}'", description.getIdentifier(), toFind);
+                        processLog.debug("Found no target of magic relation from item " + description.getIdentifier() + " using '" + toFind + "'");
                         return;
                     }
 
                     String source = description.getIdentifier();
                     String target = possibleTargets.iterator().next().getIdentifier();
-                    LOGGER.info("Found a target of magic relation from {} to {} using '{}'", description.getIdentifier(), target, toFind);
+                    processLog.info("Found a target of magic relation from " + description.getIdentifier()
+                            + " to target '" + target + "' using '" + toFind + "'");
                     boolean relationExists = description.getRelations().stream()
                             .anyMatch(r -> hasRelation(source, target, r));
                     boolean isEqual = source.equals(target);
@@ -58,9 +61,10 @@ public class MagicLabelRelations {
                             relation.setType(RelationType.PROVIDER);
                         }
                         description.addRelation(relation);
-                    } else {
-                        LOGGER.info("Relation between {} and {} already exists, not adding magic one.", source, target);
+                        return;
                     }
+
+                    processLog.debug("Relation between " + source + " and " + target + " already exists, not adding magic one.");
                 });
             });
         });

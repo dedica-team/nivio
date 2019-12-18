@@ -15,11 +15,11 @@ import java.util.Optional;
 /**
  * Resolves the dynamic endpoints of relations.
  */
-public class RelationResolver {
+public class RelationEndpointResolver {
 
     private final ProcessLog log;
 
-    public RelationResolver(ProcessLog log) {
+    public RelationEndpointResolver(ProcessLog log) {
         this.log = log;
     }
 
