@@ -53,6 +53,7 @@ public class Indexer {
             Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
             new SourceReferencesResolver(formatFactory, logger).resolve(input, templatesAndTargets);
             new TemplateResolver().processTemplates(input, templatesAndTargets);
+            new LabelToFieldProcessor(logger).process(input, landscape);
             new InstantItemResolver(logger).processTargets(input);
             new RelationResolver(logger).processRelations(input);
             new GroupResolver(logger).process(input, landscape);
@@ -71,6 +72,7 @@ public class Indexer {
         }
 
         logger.info("Reindexed landscape " + input.getIdentifier());
+        landscape.setProcessLog(logger);
         return logger;
     }
 

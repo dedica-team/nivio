@@ -24,6 +24,7 @@ public class LandscapeDTOFactory {
         l.name = item.getName();
         l.contact = item.getContact();
         l.source = item.getSource();
+        l.groups = item.getGroups();
 
         return l;
     }
@@ -31,12 +32,12 @@ public class LandscapeDTOFactory {
     public static void addLinks(LandscapeDTO dto) {
         dto.add(linkTo(methodOn(ApiController.class).landscape(dto.getIdentifier()))
                 .withSelfRel()
-                .withMedia(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .withMedia(MediaType.APPLICATION_JSON_VALUE)
         );
         dto.add(linkTo(methodOn(ApiController.class).items(dto.getIdentifier())).withRel("items"));
         dto.add(linkTo(methodOn(ApiController.class).reindex(dto.getIdentifier()))
                 .withRel("reindex")
-                .withMedia(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .withMedia(MediaType.APPLICATION_JSON_VALUE)
                 .withTitle("Reindex the source")
         );
         try {
@@ -49,6 +50,16 @@ public class LandscapeDTOFactory {
             e.printStackTrace();
         }
         //dto.add(linkTo(methodOn(DocsController.class).docResource(dto.getIdentifier())).withRel("docs"));
-        dto.add(linkTo(methodOn(DocsController.class).htmlResource(dto.getIdentifier())).withRel("report"));
+        dto.add(
+                linkTo(methodOn(DocsController.class).htmlResource(dto.getIdentifier()))
+                        .withRel("report")
+                        .withTitle("Written landscape report")
+        );
+        dto.add(
+                linkTo(methodOn(ApiController.class).log(dto.getIdentifier()))
+                        .withRel("log")
+                        .withMedia(MediaType.APPLICATION_JSON_VALUE)
+                        .withTitle("Processing log")
+        );
     }
 }

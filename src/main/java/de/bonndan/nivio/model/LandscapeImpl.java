@@ -1,6 +1,8 @@
 package de.bonndan.nivio.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import de.bonndan.nivio.input.ProcessLog;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
@@ -36,6 +38,8 @@ public class LandscapeImpl implements Landscape {
     private LandscapeConfig config;
 
     private Map<String, GroupItem> groups = new HashMap<>();
+
+    private ProcessLog processLog;
 
     public String getIdentifier() {
         return identifier;
@@ -125,5 +129,14 @@ public class LandscapeImpl implements Landscape {
         if (StringUtils.isEmpty(group))
             group = Group.COMMON;
         return (Group) groups.get(group);
+    }
+
+    public void setProcessLog(ProcessLog processLog) {
+        this.processLog = processLog;
+    }
+
+    @JsonIgnore
+    public ProcessLog getLog() {
+        return processLog;
     }
 }

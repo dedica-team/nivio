@@ -37,8 +37,7 @@ public class MagicLabelRelations {
         itemMatches.forEach((description, labelMatches) -> {
             labelMatches.forEach(labelMatch -> {
                 labelMatch.possibleTargets.forEach(toFind -> {
-                    Collection<? extends LandscapeItem> possibleTargets = Items.cqnQueryOnIndex(
-                            "SELECT * FROM items WHERE (identifier = '" + toFind + "' OR name ='" + toFind + "')", index);
+                    Collection<? extends LandscapeItem> possibleTargets = Items.cqnQueryOnIndex(Items.selectByIdentifierOrName(toFind), index);
 
                     if (possibleTargets.size() != 1) {
                         LOGGER.debug("Found no target of magic relation from item {} using '{}'", description.getIdentifier(), toFind);
@@ -50,7 +49,8 @@ public class MagicLabelRelations {
                     LOGGER.info("Found a target of magic relation from {} to {} using '{}'", description.getIdentifier(), target, toFind);
                     boolean relationExists = description.getRelations().stream()
                             .anyMatch(r -> hasRelation(source, target, r));
-                    if (!relationExists) {
+                    boolean isEqual = source.equals(target);
+                    if (!relationExists && !isEqual) {
                         RelationDescription relation = new RelationDescription(source, target);
                         //inverse
                         if (isProvider(labelMatch)) {

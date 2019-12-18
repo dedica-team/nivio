@@ -12,6 +12,8 @@ import io.rancher.service.StackService;
 import io.rancher.type.Project;
 import io.rancher.type.Service;
 import io.rancher.type.Stack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -27,6 +29,8 @@ import static de.bonndan.nivio.input.rancher1.ItemDescriptionFactoryRancher1API.
  * Gathers projects, stacks and services from a Rancher 1.6 API
  */
 class APIWalker {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(APIWalker.class);
 
     private Rancher rancher;
     private SourceReference reference;
@@ -56,10 +60,21 @@ class APIWalker {
         try {
             return service.list().execute().body().getData().stream()
                     .filter(service1 -> service1.getAccountId().equals(accountId))
+                    .filter(service1 -> hasInstances(service1))
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new ProcessingException(reference.getLandscapeDescription(), "Could not load services from Rancher API", e);
         }
+    }
+
+    /**
+     * Ignoring services which do not have instances (probably db orphans).
+     */
+    private boolean hasInstances(Service service) {
+        if (service == null)
+            return false;
+
+        return service.getInstanceIds() != null && !service.getInstanceIds().isEmpty();
     }
 
     private Map<String, Stack> getStacksById(String accountId) {
@@ -97,8 +112,13 @@ class APIWalker {
             item.setName(service.getName());
             item.setScale(String.valueOf(service.getScale()));
             Stack stack = stacks.get(service.getStackId());
-            if (stack != null)
+            if (stack != null) {
                 item.setGroup(stack.getName());
+            } else {
+                LOGGER.warn("Rancher 1 Service {} has no stack or references unknown stack '{}', cannot set group",
+                        service.getId(), service.getStackId()
+                );
+            }
 
             if (service.getLinkedServices() != null) {
                 service.getLinkedServices().forEach((key, value) -> {
@@ -107,6 +127,10 @@ class APIWalker {
                     rd.setTarget(item.getIdentifier());
                     item.addRelation(rd);
                 });
+            }
+
+            if (service.getLaunchConfig() != null) {
+                item.setVersion(service.getLaunchConfig().getImageUuid());
             }
 
             //copy all labels

@@ -48,10 +48,7 @@ public class InstantItemResolver {
 
         //other relations
         description.getRelations().forEach(rel -> {
-
-            //skip sources, since only the targets are in the list
-
-            //find targets
+            //skip sources, since only the targets are in the list, find targets
             if (!StringUtils.isEmpty(rel.getTarget()) && !hasTarget(rel.getTarget().toLowerCase(), allItems)) {
                 newItems.add(createItem(rel.getTarget()));
             }
@@ -68,6 +65,7 @@ public class InstantItemResolver {
         FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(term);
         itemDescription.setGroup(fqi.getGroup());
         itemDescription.setIdentifier(fqi.getIdentifier());
+        log.info("Creating a new landscape item instantly: "+  fqi);
         return itemDescription;
     }
 

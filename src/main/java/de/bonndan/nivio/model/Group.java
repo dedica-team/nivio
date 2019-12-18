@@ -1,5 +1,7 @@
 package de.bonndan.nivio.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.util.StringUtils;
 
 import java.net.URL;
@@ -98,6 +100,7 @@ public class Group implements GroupItem {
         this.contact = contact;
     }
 
+    @JsonBackReference
     public List<LandscapeItem> getItems() {
         return items;
     }

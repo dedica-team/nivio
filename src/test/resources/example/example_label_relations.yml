@@ -1,0 +1,12 @@
+identifier: nivio:labelrelatoins
+name: Landscape Relations Example
+
+items:
+  - identifier: foo
+    group: one
+    labels:
+      nivio.providedBy: bar
+
+  - identifier: 1s123
+    name: bar
+    group: one
