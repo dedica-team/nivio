@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Assertions;
 
 public class GraphBuilderTest {
 
-    private LandscapeImpl landscape= new LandscapeImpl();
+    private LandscapeImpl landscape = new LandscapeImpl();
 
     @Before
     public void setUp() {
@@ -36,14 +36,14 @@ public class GraphBuilderTest {
     }
 
     @Test
-    public void build(){
+    public void build() {
         GraphBuilder graphBuilder = new GraphBuilder();
         Graph graph = graphBuilder.build(landscape);
         Assertions.assertNotNull(graph);
 
-        Item a = (Item) Items.pick("a", null, landscape.getItems());
-        Item a1 = (Item) Items.pick("a1", null, landscape.getItems());
-        Item b = (Item) Items.pick("b", null, landscape.getItems());
+        Item a = landscape.getItems().pick("a", null);
+        Item a1 = landscape.getItems().pick("a1", null);
+        Item b = landscape.getItems().pick("b", null);
         Assertions.assertTrue(graph.containsVertex(a));
 
         Object edge1 = graph.getEdge(a, a1);

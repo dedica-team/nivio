@@ -35,7 +35,7 @@ public class JsonRenderer implements Renderer<String> {
     public String render(LandscapeImpl landscape) {
         mxGraph graph = mxGraphRenderer.render(landscape);
 
-        Set<Item> items = landscape.getItems();
+        Set<Item> items = landscape.getItems().all();
 
         //this is to have the final layout
         mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);

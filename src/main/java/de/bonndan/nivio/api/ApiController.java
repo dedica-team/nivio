@@ -126,12 +126,13 @@ public class ApiController {
         if (from == null)
             return new ProcessLog(new ProcessingException(landscape, "Could use fully qualified identifier " + fqi));
 
-        Optional<LandscapeItem> item = Items.find(FullyQualifiedIdentifier.build(from.getLandscape(), from.getGroup(), from.getIdentifier()), landscape.getItems());
+        FullyQualifiedIdentifier tmp = FullyQualifiedIdentifier.build(from.getLandscape(), from.getGroup(), from.getIdentifier());
+        Optional<Item> item = landscape.getItems().find(tmp);
         if (!item.isPresent()) {
             return new ProcessLog(new ProcessingException(landscape, "Could find item " + fqi));
         }
 
-        landscape.getItems().remove(item.get());
+        landscape.getItems().all().remove(item.get());
         return process(landscape);
     }
 
@@ -142,7 +143,7 @@ public class ApiController {
         if (landscape == null)
             return ResponseEntity.notFound().build();
 
-        return new ResponseEntity<>(List.copyOf(landscape.getItems()), HttpStatus.OK);
+        return new ResponseEntity<>(List.copyOf(landscape.getItems().all()), HttpStatus.OK);
     }
 
     @RequestMapping(path = "/landscape/{identifier}/log", method = RequestMethod.GET)

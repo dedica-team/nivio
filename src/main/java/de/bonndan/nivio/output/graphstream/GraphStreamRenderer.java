@@ -63,41 +63,41 @@ public class GraphStreamRenderer implements Renderer<Graph> {
 
         Positioner positioner = new Positioner();
 
-        landscape.getItems().forEach(service -> {
-            Node n = graph.addNode(service.getIdentifier());
-            n.addAttribute("ui.label", StringUtils.isEmpty(service.getName()) ? service.getIdentifier() : service.getName());
-            n.addAttribute("ui.class", service.getLayer());
-            String style = "fill-color: #" + Color.nameToRGB(service.getGroup()) + "; ";
-            String statusColor = getStatusColor(service);
+        landscape.getItems().stream().forEach(item -> {
+            Node n = graph.addNode(item.getIdentifier());
+            n.addAttribute("ui.label", StringUtils.isEmpty(item.getName()) ? item.getIdentifier() : item.getName());
+            n.addAttribute("ui.class", item.getLayer());
+            String style = "fill-color: #" + Color.nameToRGB(item.getGroup()) + "; ";
+            String statusColor = getStatusColor(item);
             if (!Status.UNKNOWN.toString().equals(statusColor)) {
                 style += "stroke-color: " + statusColor + "; stroke-width: 3px; ";
             }
             n.addAttribute("ui.style", style);
 
-            Sprite icon = spriteManager.addSprite("icon_" + service.getIdentifier());
+            Sprite icon = spriteManager.addSprite("icon_" + item.getIdentifier());
             icon.setPosition(0, 0, 0);
             icon.attachToNode(n.getId());
-            icon.addAttribute("ui.style", "size: 30px; fill-image: url('" + LocalServer.url("/icons/" + getIcon(service) + ".png") + "') ;");
+            icon.addAttribute("ui.style", "size: 30px; fill-image: url('" + LocalServer.url("/icons/" + getIcon(item) + ".png") + "') ;");
 
-            positioner.add(service, n);
+            positioner.add(item, n);
         });
 
         positioner.compute();
 
         //provider
-        landscape.getItems().forEach(service -> service.getProvidedBy().forEach(providedBy -> {
+        landscape.getItems().stream().forEach(item -> item.getProvidedBy().forEach(providedBy -> {
             Edge e = graph.addEdge(
-                    providedBy.getIdentifier() + service.getIdentifier(),
+                    providedBy.getIdentifier() + item.getIdentifier(),
                     providedBy.getIdentifier(),
-                    service.getIdentifier()
+                    item.getIdentifier()
             );
             e.addAttribute("ui.class", "provides");
-            e.addAttribute("ui.style", "text-background-color: #" + Color.nameToRGB(service.getGroup()) + "; ");
+            e.addAttribute("ui.style", "text-background-color: #" + Color.nameToRGB(item.getGroup()) + "; ");
             e.addAttribute("layout.weight", 0.5);
         }));
 
         //dataflow
-        landscape.getItems().forEach(service -> service.getRelations().forEach(df -> {
+        landscape.getItems().stream().forEach(service -> service.getRelations().forEach(df -> {
 
             if (df.getSource().equals(df.getTarget()))
                 return;
@@ -123,12 +123,12 @@ public class GraphStreamRenderer implements Renderer<Graph> {
          *
          *
          */
-        landscape.getItems().forEach(this::addInterfaces);
+        landscape.getItems().stream().forEach(this::addInterfaces);
 
         /*
          * statuses
          */
-        landscape.getItems().forEach(this::addStatuses);
+        landscape.getItems().stream().forEach(this::addStatuses);
 
 
         return graph;

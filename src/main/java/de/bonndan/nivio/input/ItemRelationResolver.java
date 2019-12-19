@@ -14,7 +14,7 @@ public class ItemRelationResolver extends Resolver {
     @Override
     public void process(LandscapeDescription input, LandscapeImpl landscape) {
         input.getItemDescriptions().forEach(serviceDescription -> {
-            Item origin = (Item) Items.pick(serviceDescription, landscape.getItems());
+            Item origin = (Item) landscape.getItems().pick(serviceDescription);
             if (!input.isPartial()) {
                 processLog.info("Clearing relations of " + origin);
                 origin.getRelations().clear(); //delete all relations on full update
@@ -22,17 +22,17 @@ public class ItemRelationResolver extends Resolver {
         });
 
         input.getItemDescriptions().forEach(serviceDescription -> {
-            Item origin = (Item) Items.pick(serviceDescription, landscape.getItems());
+            Item origin = (Item) landscape.getItems().pick(serviceDescription);
             serviceDescription.getRelations().forEach(relationDescription -> {
 
                 var fqiSource = FullyQualifiedIdentifier.from(relationDescription.getSource());
                 var fqiTarget = FullyQualifiedIdentifier.from(relationDescription.getTarget());
-                Item source = (Item) Items.find(fqiSource, landscape.getItems()).orElse(null);
+                Item source = landscape.getItems().find(fqiSource).orElse(null);
                 if (source == null) {
                     processLog.warn("Relation source " + relationDescription.getSource() + " not found");
                     return;
                 }
-                Item target = (Item) Items.find(fqiTarget, landscape.getItems()).orElse(null);
+                Item target = landscape.getItems().find(fqiTarget).orElse(null);
 
                 if (target == null) {
                     processLog.warn("Relation target " + relationDescription.getTarget() + " not found");

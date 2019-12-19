@@ -29,7 +29,6 @@ public class Group implements GroupItem {
     private Map<String, URL> links = new HashMap<>();
     private List<LandscapeItem> items = new ArrayList<>();
 
-
     public Group() {
 
     }

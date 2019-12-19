@@ -20,7 +20,7 @@ public class GroupQueryResolver extends Resolver {
     @Override
     public void process(LandscapeDescription input, LandscapeImpl landscape) {
 
-        landscape.getItems().forEach(item -> {
+        landscape.getItems().stream().forEach(item -> {
             landscape.getGroup(item.getGroup()).getItems().add(item);
         });
 
@@ -28,7 +28,7 @@ public class GroupQueryResolver extends Resolver {
             GroupDescription description = (GroupDescription) groupItem;
             Group group = (Group) landscape.getGroups().get(description.getIdentifier());
             description.getContains().forEach(condition -> {
-                group.getItems().addAll(Items.query(condition, List.copyOf(landscape.getItems())));
+                group.getItems().addAll(landscape.getItems().query(condition));
             });
         });
     }

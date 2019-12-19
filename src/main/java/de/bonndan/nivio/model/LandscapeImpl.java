@@ -33,7 +33,7 @@ public class LandscapeImpl implements Landscape {
     private String source;
 
     @JsonManagedReference
-    private Set<Item> items = new HashSet<>();
+    private LandscapeItems items = new LandscapeItems();
 
     private LandscapeConfig config;
 
@@ -57,12 +57,12 @@ public class LandscapeImpl implements Landscape {
         this.name = name;
     }
 
-    public Set<Item> getItems() {
+    public LandscapeItems getItems() {
         return items;
     }
 
     public void setItems(Set<Item> items) {
-        this.items = items;
+        this.items.setItems(items);
     }
 
     public String getSource() {

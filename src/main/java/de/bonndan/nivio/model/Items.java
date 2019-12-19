@@ -121,7 +121,7 @@ public class Items {
         return cqnQueryOnIndex(query, index(items));
     }
 
-    public static String selectByIdentifierOrName(String term) {
+    private static String selectByIdentifierOrName(String term) {
         return "SELECT * FROM items WHERE (identifier = '" + term + "' OR name = '" + term + "')";
     }
 
@@ -131,13 +131,13 @@ public class Items {
      * @param items landscape items
      * @return indexed collection
      */
-    public static IndexedCollection<LandscapeItem> index(Collection<? extends LandscapeItem> items) {
+    private static IndexedCollection<LandscapeItem> index(Collection<? extends LandscapeItem> items) {
         IndexedCollection<LandscapeItem> index = new ConcurrentIndexedCollection<>();
         index.addAll(items);
         return index;
     }
 
-    public static List<? extends LandscapeItem> cqnQueryOnIndex(String condition, IndexedCollection<LandscapeItem> index) {
+    private static List<? extends LandscapeItem> cqnQueryOnIndex(String condition, IndexedCollection<LandscapeItem> index) {
         SQLParser<LandscapeItem> parser = SQLParser.forPojoWithAttributes(LandscapeItem.class,
                 Map.of("identifier", IDENTIFIER, "name", NAME)
         );

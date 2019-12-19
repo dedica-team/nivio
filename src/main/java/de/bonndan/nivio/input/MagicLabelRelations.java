@@ -35,11 +35,10 @@ public class MagicLabelRelations extends Resolver {
         input.getItemDescriptions().forEach(item -> itemMatches.put(item, getMatches(item)));
 
         //search for targets in the landscape
-        IndexedCollection<LandscapeItem> index = Items.index(landscape.getItems());
         itemMatches.forEach((description, labelMatches) -> {
             labelMatches.forEach(labelMatch -> {
                 labelMatch.possibleTargets.forEach(toFind -> {
-                    Collection<? extends LandscapeItem> possibleTargets = Items.cqnQueryOnIndex(Items.selectByIdentifierOrName(toFind), index);
+                    Collection<? extends LandscapeItem> possibleTargets = landscape.getItems().cqnQueryOnIndex(landscape.getItems().selectByIdentifierOrName(toFind));
 
                     if (possibleTargets.size() != 1) {
                         processLog.debug("Found no target of magic relation from item " + description.getIdentifier() + " using '" + toFind + "'");

@@ -21,7 +21,7 @@ public class DiffResolver extends Resolver {
 
     @Override
     public void process(LandscapeDescription input, LandscapeImpl landscape) {
-        Set<Item> existingItems = landscape.getItems();
+        Set<Item> existingItems = landscape.getItems().all();
 
         //insert new ones
         List<LandscapeItem> newItems = added(input.getItemDescriptions(), existingItems);
@@ -66,7 +66,7 @@ public class DiffResolver extends Resolver {
 
         landscape.setItems(inLandscape);
         deleteUnreferenced(input, inLandscape, existingItems, processLog)
-                .forEach(item -> landscape.getItems().remove(item));
+                .forEach(item -> landscape.getItems().all().remove(item));
     }
 
     private List<LandscapeItem> deleteUnreferenced(
