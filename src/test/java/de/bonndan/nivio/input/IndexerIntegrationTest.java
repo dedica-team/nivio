@@ -24,7 +24,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static de.bonndan.nivio.model.Items.pick;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -72,7 +71,8 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
 
-        Item webserver = (Item) Items.pick("wordpress-web", null, List.copyOf(blog.getProvidedBy()));
+        Optional<Item> first = blog.getProvidedBy().stream().filter(i -> i.getIdentifier().equals("wordpress-web")).findFirst();
+        Item webserver = first.orElseThrow();
 
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
@@ -111,7 +111,8 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
 
-        Item webserver = (Item) Items.pick("wordpress-web", null, new ArrayList<LandscapeItem>(blog.getProvidedBy()));
+        ArrayList<Item> landscapeItems = new ArrayList<>(blog.getProvidedBy());
+        Item webserver = LandscapeItems.of(landscapeItems).pick("wordpress-web", null);
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
 
@@ -251,8 +252,9 @@ public class IndexerIntegrationTest {
     public void readGroupsContains() {
         LandscapeImpl landscape1 = index("/src/test/resources/example/example_groups.yml");
         Group a = (Group) landscape1.getGroups().get("groupA");
-        assertNotNull(pick("blog-server", null, a.getItems()));
-        assertNotNull(pick("crappy_dockername-234234", null, a.getItems()));
+        LandscapeItems items = LandscapeItems.of(a.getItems());
+        assertNotNull(items.pick("blog-server", null));
+        assertNotNull(items.pick("crappy_dockername-234234", null));
     }
 
     @Test

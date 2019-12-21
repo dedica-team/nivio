@@ -21,6 +21,15 @@ public class LandscapeItems {
 
     IndexedCollection<Item> index = new ConcurrentIndexedCollection<>();
 
+    /**
+     * @deprecated use only for testing
+     */
+    public static LandscapeItems of(List<Item> items) {
+        LandscapeItems landscapeItems = new LandscapeItems();
+        landscapeItems.setItems(new HashSet<>(items));
+        return landscapeItems;
+    }
+
     public Stream<Item> stream() {
         return index.stream();
     }
@@ -34,7 +43,7 @@ public class LandscapeItems {
         index.add(item);
     }
 
-    public Collection<? extends LandscapeItem> query(String term) {
+    public Collection<Item> query(String term) {
         if ("*".equals(term))
             return all();
 
@@ -58,7 +67,7 @@ public class LandscapeItems {
     /**
      * Ensures that the given item has a sibling in the list, returns the item from the list.
      *
-     * @param item  item to search for
+     * @param item item to search for
      * @return the sibling from the list
      */
     public Item pick(final LandscapeItem item) {
@@ -104,7 +113,7 @@ public class LandscapeItems {
     /**
      * Returns a the item from the list or null. Uses the matching criteria of {@link FullyQualifiedIdentifier}
      *
-     * @param fqi   the identifier
+     * @param fqi the identifier
      * @return the or null
      */
     public Optional<Item> find(FullyQualifiedIdentifier fqi) {

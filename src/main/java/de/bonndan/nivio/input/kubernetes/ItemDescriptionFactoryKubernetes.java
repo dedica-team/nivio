@@ -2,11 +2,8 @@ package de.bonndan.nivio.input.kubernetes;
 
 import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.model.Items;
 import de.bonndan.nivio.model.LandscapeItem;
-import de.bonndan.nivio.model.RelationBuilder;
 import de.bonndan.nivio.util.URLHelper;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -29,7 +26,6 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
     private String namespace = null;
     private String groupLabel = null;
     private KubernetesClient client;
-
 
     public ItemDescriptionFactoryKubernetes() {
 
@@ -95,14 +91,13 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
 
         String targetId = "";
         Map<String, String> selector = kubernetesService.getSpec().getSelector();
-        if (selector != null)
-             targetId = selector.getOrDefault("app", null);
+        if (selector != null) {
+            targetId = selector.getOrDefault("app", null);
+        }
+
+        //TODO, check if this is reliable
         if (!StringUtils.isEmpty(targetId)) {
-            Items.find(targetId, group, items).ifPresent(target -> {
-                RelationDescription provides = RelationBuilder.provides(service, target);
-                ((ItemDescription) target).addRelation(provides);
-                service.addRelation(provides);
-            });
+            service.getLabels().put("nivio.relations", "[" + targetId + "]");
         }
 
         descriptions.add(service);

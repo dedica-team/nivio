@@ -3,10 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Items;
 import de.bonndan.nivio.model.LandscapeImpl;
-
-import java.util.List;
 
 /**
  * @todo check if this can run earlier in GroupResolver (perhaps condition would not match items added in between)

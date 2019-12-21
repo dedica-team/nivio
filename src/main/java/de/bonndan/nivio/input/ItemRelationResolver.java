@@ -13,16 +13,16 @@ public class ItemRelationResolver extends Resolver {
 
     @Override
     public void process(LandscapeDescription input, LandscapeImpl landscape) {
-        input.getItemDescriptions().forEach(serviceDescription -> {
-            Item origin = (Item) landscape.getItems().pick(serviceDescription);
+        input.getItemDescriptions().all().forEach(serviceDescription -> {
+            Item origin = landscape.getItems().pick(serviceDescription);
             if (!input.isPartial()) {
                 processLog.info("Clearing relations of " + origin);
                 origin.getRelations().clear(); //delete all relations on full update
             }
         });
 
-        input.getItemDescriptions().forEach(serviceDescription -> {
-            Item origin = (Item) landscape.getItems().pick(serviceDescription);
+        input.getItemDescriptions().all().forEach(serviceDescription -> {
+            Item origin = landscape.getItems().pick(serviceDescription);
             serviceDescription.getRelations().forEach(relationDescription -> {
 
                 var fqiSource = FullyQualifiedIdentifier.from(relationDescription.getSource());

@@ -40,7 +40,7 @@ public class GroupResolver extends Resolver {
             }
         });
 
-        ArrayList<ItemDescription> copy = new ArrayList<>(input.getItemDescriptions());
+        ArrayList<ItemDescription> copy = new ArrayList<>(input.getItemDescriptions().all());
         copy.forEach(item -> {
 
             String group = item.getGroup();

@@ -32,7 +32,7 @@ public class MagicLabelRelations extends Resolver {
     public void process(LandscapeDescription input, LandscapeImpl landscape) {
 
         Map<ItemDescription, List<LabelMatch>> itemMatches = new HashMap<>();
-        input.getItemDescriptions().forEach(item -> itemMatches.put(item, getMatches(item)));
+        input.getItemDescriptions().all().forEach(item -> itemMatches.put(item, getMatches(item)));
 
         //search for targets in the landscape
         itemMatches.forEach((description, labelMatches) -> {
