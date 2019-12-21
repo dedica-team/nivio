@@ -332,7 +332,7 @@ public class ItemDescription implements LandscapeItem {
         relations.stream()
                 .filter(s -> !StringUtils.isEmpty(s))
                 .map(s -> RelationBuilder.createDataflowDescription(this, s))
-                .forEach(relationDescription -> addRelation(relationDescription));
+                .forEach(this::addRelation);
     }
 
     public Set<StatusItem> getStatuses() {

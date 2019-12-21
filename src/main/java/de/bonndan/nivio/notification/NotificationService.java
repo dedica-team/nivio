@@ -8,7 +8,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.util.StringUtils;
 
@@ -21,7 +20,6 @@ public class NotificationService implements ApplicationListener<ProcessingErrorE
 
     private final JavaMailSender emailSender;
 
-    @Autowired
     public NotificationService(JavaMailSender sender) {
         this.emailSender = sender;
     }

@@ -35,7 +35,7 @@ public class LandscapeItems {
     }
 
     public void setItems(Set<Item> items) {
-        index = new ConcurrentIndexedCollection<Item>();
+        index = new ConcurrentIndexedCollection<>();
         index.addAll(items);
     }
 

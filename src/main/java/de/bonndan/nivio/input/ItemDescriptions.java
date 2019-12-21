@@ -2,7 +2,6 @@ package de.bonndan.nivio.input;
 
 
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
-import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
@@ -118,18 +117,6 @@ public class ItemDescriptions {
 
     private static String selectByIdentifierOrName(String term) {
         return "SELECT * FROM items WHERE (identifier = '" + term + "' OR name = '" + term + "')";
-    }
-
-    /**
-     * Puts all items into an indexed collection for querying.
-     *
-     * @param items landscape items
-     * @return indexed collection
-     */
-    private static IndexedCollection<LandscapeItem> index(Collection<? extends LandscapeItem> items) {
-        IndexedCollection<LandscapeItem> index = new ConcurrentIndexedCollection<>();
-        index.addAll(items);
-        return index;
     }
 
     private List<ItemDescription> cqnQueryOnIndex(String condition) {

@@ -6,8 +6,6 @@ import de.bonndan.nivio.model.Groups;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.Renderer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

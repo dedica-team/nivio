@@ -2,7 +2,7 @@ package de.bonndan.nivio.input.rancher1;
 
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.LabelProcessor;
+import de.bonndan.nivio.input.LabelProcessor;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import io.rancher.Rancher;
@@ -150,7 +150,7 @@ class APIWalker {
     }
 
     private Rancher.Config getConfig(SourceReference reference) {
-        Rancher.Config config = null;
+        Rancher.Config config;
         try {
             config = new Rancher.Config(
                     new URL(reference.getUrl()),

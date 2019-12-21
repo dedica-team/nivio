@@ -65,20 +65,6 @@ public class PrometheusExporter {
         return new ArrayList<>(tmp.values());
     }
 
-    private void putIfHigher(FullyQualifiedIdentifier fqi, StatusItem serviceState, Map<FullyQualifiedIdentifier, StatusItem> tmp) {
-        if (fqi == null || serviceState == null) {
-            return;
-        }
-
-        StatusItem old = tmp.get(fqi);
-        if (old == null) {
-            tmp.put(fqi, serviceState);
-        } else if (serviceState.getStatus().isHigherThan(old.getStatus())) {
-            tmp.put(fqi, serviceState);
-        }
-
-    }
-
     private ItemDescription toItem(Metric metric) {
 
         ItemDescription itemDescription = null;

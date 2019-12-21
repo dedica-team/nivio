@@ -13,8 +13,6 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.StringUtils;
 
-import java.net.MalformedURLException;
-
 @SpringBootApplication
 @EnableConfigurationProperties
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)

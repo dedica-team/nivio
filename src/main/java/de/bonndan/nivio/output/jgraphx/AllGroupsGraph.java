@@ -72,12 +72,12 @@ public class AllGroupsGraph {
 
         GroupConnections groupConnections = new GroupConnections();
 
-        items.forEach(service -> {
-            String group = service.getGroup();
+        items.forEach(item -> {
+            String group = item.getGroup();
             mxCell groupNode = groupNodes.get(group);
 
             //provider
-            ((Item) service).getProvidedBy().forEach(provider -> {
+            ((Item) item).getProvidedBy().forEach(provider -> {
                 String pGroup = provider.getGroup() == null ? Group.COMMON : provider.getGroup();
                 mxCell providerGroupNode = groupNodes.get(pGroup);
                 String providerGroup = providerGroupNode.getId();
@@ -91,7 +91,7 @@ public class AllGroupsGraph {
             });
 
             //dataflow
-            Set<? extends RelationItem> relations = service.getRelations(RelationType.DATAFLOW);
+            Set<? extends RelationItem> relations = item.getRelations(RelationType.DATAFLOW);
             relations.forEach(dataFlowItem -> {
                 Item targetItem = (Item) dataFlowItem.getTarget();
                 if (targetItem == null) return;

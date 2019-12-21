@@ -167,14 +167,13 @@ public class LandscapeDescription implements Landscape {
     public boolean hasReference(String source) {
         return sources.stream().anyMatch(sourceReference -> {
 
-            if (sourceReference.getUrl().equals(source))
+            if (sourceReference.getUrl().equals(source)) {
                 return true;
+            }
 
             File file = new File(source);
-            if (sourceReference.getUrl().contains(file.getName())) //TODO
-                return true;
-
-            return false;
+            //TODO
+            return sourceReference.getUrl().contains(file.getName());
         });
     }
 
