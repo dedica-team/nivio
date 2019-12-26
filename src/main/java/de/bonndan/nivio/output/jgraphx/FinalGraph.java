@@ -40,6 +40,7 @@ import static de.bonndan.nivio.output.Color.getGroupColor;
  */
 public class FinalGraph implements Rendered<mxGraph, mxCell> {
 
+    public static final int GRID_SIZE = 20;
     private final int DEFAULT_ICON_SIZE = 50;
     private final IconService iconService;
 
@@ -63,7 +64,8 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
         mxStyleRegistry.putValue(CurvedEdgeStyle.KEY, new CurvedEdgeStyle());
 
         graph = new mxGraph();
-
+        graph.setGridEnabled(true);
+        graph.setGridSize(GRID_SIZE);
         graph.setHtmlLabels(true);
         stylesheet = graph.getStylesheet();
 
@@ -89,7 +91,7 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
             groupGraph.getServiceVertexesWithRelativeOffset().forEach((service, offset) -> {
                 itemVertexes.put(
                         (Item) service,
-                        addServiceVertex(offset, groupContainer, service)
+                        addItemVertex(offset, groupContainer, service)
                 );
                 items.add((Item) service);
             });
@@ -152,7 +154,7 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
         });
     }
 
-    private mxCell addServiceVertex(mxPoint offset, mxCell parent, LandscapeItem landscapeItem) {
+    private mxCell addItemVertex(mxPoint offset, mxCell parent, LandscapeItem landscapeItem) {
 
         String style = getItemStyle(landscapeItem);
 
@@ -165,7 +167,8 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
                 parent,
                 landscapeItem.getFullyQualifiedIdentifier().toString(),
                 name,
-                offset.getX(), offset.getY(),
+                graph.snap(offset.getX()),
+                graph.snap(offset.getY()),
                 DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE,
                 style
         );
