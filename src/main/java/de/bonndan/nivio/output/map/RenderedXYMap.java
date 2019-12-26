@@ -1,6 +1,8 @@
 package de.bonndan.nivio.output.map;
 
-import de.bonndan.nivio.output.jgraphx.FinalGraph;
+import com.mxgraph.model.mxCell;
+import com.mxgraph.view.mxGraph;
+import de.bonndan.nivio.output.Rendered;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +15,10 @@ public class RenderedXYMap {
     public Integer width;
     public Integer height;
 
-    public static RenderedXYMap from(FinalGraph finalGraph) {
+    public static RenderedXYMap from(Rendered<mxGraph, mxCell> rendered) {
         RenderedXYMap renderedMap = new RenderedXYMap();
-        finalGraph.getItemVertexes().forEach((service, mxCell) -> renderedMap.items.add(new XYMapItem(service, mxCell)));
-        finalGraph.getGroupVertexes().forEach((groupName, mxCell) -> renderedMap.groups.add(new XYMapItem(groupName, mxCell)));
+        rendered.getItemObjects().forEach((item, mxCell) -> renderedMap.items.add(new XYMapItem(item, mxCell)));
+        rendered.getGroupObjects().forEach((group, mxCell) -> renderedMap.groups.add(new XYMapItem(group, mxCell)));
 
         return renderedMap;
     }

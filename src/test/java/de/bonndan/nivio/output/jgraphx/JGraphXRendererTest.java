@@ -56,7 +56,7 @@ class JGraphXRendererTest {
         JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(null);
         jGraphXRenderer.setDebugMode(debugMode);
 
-        mxGraph graph = jGraphXRenderer.render(landscape);
+        mxGraph graph = jGraphXRenderer.render(landscape).getRendered();
 
         BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, null, true, null);
         assertNotNull(image);

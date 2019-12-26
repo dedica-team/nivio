@@ -3,6 +3,8 @@ package de.bonndan.nivio.output.map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeItem;
 
 /**
@@ -23,7 +25,7 @@ class XYMapItem extends MapItem {
     public String group;
     public String type;
 
-    XYMapItem(LandscapeItem item, mxCell cell) {
+    XYMapItem(Item item, mxCell cell) {
         type = "service";
         this.landscapeItem = item;
 
@@ -44,14 +46,13 @@ class XYMapItem extends MapItem {
         height = Math.round(geometry.getHeight());
     }
 
-    XYMapItem(String groupName, mxCell cell) {
+    XYMapItem(Group group, mxCell cell) {
         type = "group";
 
         mxGeometry geometry = cell.getGeometry();
 
         id = cell.getId();
         name = (String) cell.getValue();
-        group = groupName;
 
         if (cell.getParent().getGeometry() != null) {
             x = Math.round(geometry.getX() + cell.getParent().getGeometry().getX());

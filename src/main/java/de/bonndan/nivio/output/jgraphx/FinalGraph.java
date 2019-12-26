@@ -12,6 +12,7 @@ import com.mxgraph.view.mxStylesheet;
 
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.*;
+import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.util.RootPath;
 
 import de.bonndan.nivio.output.Icon;
@@ -37,7 +38,7 @@ import static de.bonndan.nivio.output.Color.getGroupColor;
  *
  * It receives
  */
-public class FinalGraph {
+public class FinalGraph implements Rendered<mxGraph, mxCell> {
 
     private final int DEFAULT_ICON_SIZE = 50;
     private final IconService iconService;
@@ -46,7 +47,7 @@ public class FinalGraph {
     private Map<Item, mxCell> itemVertexes = new HashMap<>();
     private mxStylesheet stylesheet;
     private mxGraph graph;
-    private Map<String, mxCell> groups = new HashMap<>();
+    private Map<Group, mxCell> groups = new HashMap<>();
 
     public FinalGraph(IconService iconService) {
         this.iconService = iconService;
@@ -70,27 +71,21 @@ public class FinalGraph {
         //graph.orderCells(true, virtualNodes.toArray());
         final List<Item> items = new ArrayList<>();
 
-        allGroupsGraph.getLayoutedGroups().forEach((groupName, mxCell) -> {
-
-            Optional<Item> serviceItem = subgraphs.get(groupName).getServiceVertexesWithRelativeOffset().entrySet().stream()
-                    .findFirst()
-                    .map(entry -> (Item) entry.getKey());
-
-            LandscapeImpl landscape = serviceItem.map(service -> service.getLandscape()).orElse(null);
+        allGroupsGraph.getGroupObjects().forEach((group, mxCell) -> {
 
             mxGeometry groupGeo = mxCell.getGeometry();
             mxCell groupContainer = (mxCell) graph.insertVertex(
                     graph.getDefaultParent(),
-                    groupName, groupName,
+                    group.getIdentifier(), group.getIdentifier(),
                     groupGeo.getX(),
                     groupGeo.getY(),
                     groupGeo.getWidth(),
                     groupGeo.getHeight(),
-                    getGroupStyle(groupName, getGroupColor(groupName, landscape))
+                    getGroupStyle(group)
             );
-            groups.put(groupName, groupContainer);
+            groups.put(group, groupContainer);
 
-            GroupGraph groupGraph = subgraphs.get(groupName);
+            GroupGraph groupGraph = subgraphs.get(group.getIdentifier());
             groupGraph.getServiceVertexesWithRelativeOffset().forEach((service, offset) -> {
                 itemVertexes.put(
                         (Item) service,
@@ -106,6 +101,11 @@ public class FinalGraph {
 
         renderExtras(itemVertexes);
 
+        return graph;
+    }
+
+    @Override
+    public mxGraph getRendered() {
         return graph;
     }
 
@@ -302,10 +302,11 @@ public class FinalGraph {
         return style;
     }
 
-    private String getGroupStyle(String groupName, String groupColor) {
+    private String getGroupStyle(Group group) {
 
+        String groupColor = Color.getGroupColor(group);
         String lightened = Color.lighten(groupColor);
-        String style = "type=group;groupColor=" + groupColor + ";"
+        return "type=group;groupColor=" + groupColor + ";"
                 + "strokeColor=" + groupColor + ";"
                 + "strokeWidth=1;"
                 + "rounded=1;"
@@ -313,7 +314,6 @@ public class FinalGraph {
                 + mxConstants.STYLE_VERTICAL_ALIGN + "=" + mxConstants.ALIGN_BOTTOM + ";"
                 + mxConstants.STYLE_VERTICAL_LABEL_POSITION + "=" + mxConstants.ALIGN_TOP + ";"
                 + mxConstants.STYLE_FONTCOLOR + "=#" + groupColor + ";";
-        return style;
     }
 
     private String getProviderEdgeStyle(Item provider) {
@@ -329,23 +329,23 @@ public class FinalGraph {
         return style;
     }
 
-    private String getStrokeColor(Item itemImplItem) {
-        Status providerStatus = Status.highestOf(itemImplItem.getStatuses());
+    private String getStrokeColor(Item item) {
+        Status providerStatus = Status.highestOf(item.getStatuses());
         if (Status.RED.equals(providerStatus))
             return mxConstants.STYLE_STROKECOLOR + "=red;";
         if (Status.ORANGE.equals(providerStatus))
             return mxConstants.STYLE_STROKECOLOR + "=orange;";
 
-        String groupColor = getGroupColor(itemImplItem);
-        logger.info("Dataflow stroke color {} for service {} group {}", groupColor, itemImplItem.getIdentifier(), itemImplItem.getGroup());
+        String groupColor = getGroupColor(item);
+        logger.info("Dataflow stroke color {} for service {} group {}", groupColor, item.getIdentifier(), item.getGroup());
         return mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
     }
 
-    public Map<String, mxCell> getGroupVertexes() {
+    public Map<Group, mxCell> getGroupObjects() {
         return groups;
     }
 
-    public Map<Item, mxCell> getItemVertexes() {
+    public Map<Item, mxCell> getItemObjects() {
         return itemVertexes;
     }
 }

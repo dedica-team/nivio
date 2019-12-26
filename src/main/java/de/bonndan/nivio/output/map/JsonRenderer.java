@@ -6,6 +6,7 @@ import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.Renderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,19 +24,20 @@ public class JsonRenderer implements Renderer<String> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonRenderer.class);
 
-    private final Renderer<mxGraph> mxGraphRenderer;
+    private final Renderer<Rendered<mxGraph, mxCell>> mxGraphRenderer;
 
-    JsonRenderer(Renderer<mxGraph> mxGraphRenderer) {
+    JsonRenderer(Renderer<Rendered<mxGraph, mxCell>> mxGraphRenderer) {
         this.mxGraphRenderer = mxGraphRenderer;
     }
 
     @Override
     public String render(LandscapeImpl landscape) {
-        mxGraph graph = mxGraphRenderer.render(landscape);
+        Rendered<mxGraph, mxCell> rendered = mxGraphRenderer.render(landscape);
 
         Set<Item> items = landscape.getItems();
 
         //this is to have the final layout
+        mxGraph graph = rendered.getRendered();
         mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
 
         List<Serializable> dtos = new ArrayList<>();
@@ -62,11 +64,11 @@ public class JsonRenderer implements Renderer<String> {
 
     private Serializable toDto(mxCell cell, Collection<Item> items) {
 
-        LandscapeItem landscapeItem = null;
+        Item item = null;
         if (!StringUtils.isEmpty(cell.getId()))
-            landscapeItem = Items.find(FullyQualifiedIdentifier.from(cell.getId()), items).orElse(null);
+            item = (Item) Items.find(FullyQualifiedIdentifier.from(cell.getId()), items).orElse(null);
 
-        return new XYMapItem(landscapeItem, cell);
+        return new XYMapItem(item, cell);
     }
 
     @Override

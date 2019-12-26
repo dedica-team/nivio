@@ -1,22 +1,30 @@
 package de.bonndan.nivio.output.jgraphx;
 
+import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
-import de.bonndan.nivio.model.Groups;
+import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.Renderer;
+import de.bonndan.nivio.output.Rendered;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class JGraphXRenderer implements Renderer<mxGraph> {
+@Component
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class JGraphXRenderer implements Renderer<Rendered<mxGraph, mxCell>> {
 
     private static final Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);
     private final IconService iconService;
@@ -27,32 +35,33 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
     }
 
     @Override
-    public mxGraph render(LandscapeImpl landscape) {
+    public Rendered<mxGraph, mxCell> render(LandscapeImpl landscape) {
 
         Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
-        Groups groups = Groups.from(landscape);
-        groups.getAll().forEach((groupName, serviceItems) -> {
-            GroupGraph groupGraph = new GroupGraph(serviceItems);
-            subgraphs.put(groupName, groupGraph);
+        landscape.getGroups().forEach((name, groupItem) ->  {
+            GroupGraph groupGraph = new GroupGraph(((Group)groupItem).getItems());
+            subgraphs.put(name, groupGraph);
         });
 
-        AllGroupsGraph allGroupsGraph = new AllGroupsGraph(landscape.getConfig(), groups, subgraphs);
+        Map<String, Group> groupMap = new HashMap<>();
+        landscape.getGroups().forEach((s, groupItem) -> groupMap.put(s, (Group)groupItem)); //TODO
+        AllGroupsGraph allGroupsGraph = new AllGroupsGraph(landscape.getConfig(), groupMap, subgraphs);
 
         if (isDebugMode())
-            return allGroupsGraph.getGraph();
+            return allGroupsGraph;
 
         FinalGraph finalGraph = new FinalGraph(iconService);
-        return getFinalGraph(landscape, finalGraph);
+        finalGraph.render(allGroupsGraph, subgraphs);
+        return finalGraph;
     }
 
     @Override
     public void render(LandscapeImpl landscape, File file) throws IOException {
 
-        mxGraph graph = render(landscape);
+        mxGraph graph = render(landscape).getRendered();
         BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, null, true, null);
 
         ImageIO.write(image, "PNG", file);
-
     }
 
     private boolean isDebugMode() {
@@ -64,17 +73,5 @@ public class JGraphXRenderer implements Renderer<mxGraph> {
      */
     void setDebugMode(boolean debugMode) {
         this.debugMode = debugMode;
-    }
-
-    public mxGraph getFinalGraph(LandscapeImpl landscape, FinalGraph finalGraph) {
-        Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
-        Groups groups = Groups.from(landscape);
-        groups.getAll().forEach((groupName, items) -> {
-            GroupGraph groupGraph = new GroupGraph(items);
-            subgraphs.put(groupName, groupGraph);
-        });
-
-        AllGroupsGraph allGroupsGraph = new AllGroupsGraph(landscape.getConfig(), groups, subgraphs);
-        return finalGraph.render(allGroupsGraph, subgraphs);
     }
 }

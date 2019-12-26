@@ -1,17 +1,17 @@
 package de.bonndan.nivio.output.map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mxgraph.model.mxCell;
+import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.api.NotFoundException;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
-import de.bonndan.nivio.output.Icon;
 import de.bonndan.nivio.output.IconService;
-import de.bonndan.nivio.output.jgraphx.FinalGraph;
+import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.jgraphx.JGraphXRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +38,6 @@ public class JsonRenderController {
     private final LandscapeRepository landscapeRepository;
     private final IconService iconService;
 
-    @Autowired
     public JsonRenderController(LandscapeRepository landscapeRepository, IconService iconService) {
         this.landscapeRepository = landscapeRepository;
         this.iconService = iconService;
@@ -46,6 +45,7 @@ public class JsonRenderController {
 
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/hex.json")
     public ResponseEntity<String> hex(
+            JGraphXRenderer jGraphXRenderer,
             @PathVariable(name = "landscape") final String landscapeIdentifier,
             @RequestParam(value = "size", required = false) Integer size
     ) throws IOException {
@@ -54,13 +54,11 @@ public class JsonRenderController {
             throw new NotFoundException("Not found");
         }
 
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
 
         try {
-            FinalGraph graph = new FinalGraph(iconService);
 
-            jGraphXRenderer.getFinalGraph(landscape.get(), graph);
-            RenderedXYMap xyMap = getRenderedMap(graph);
+            Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape.get());
+            RenderedXYMap xyMap = getRenderedMap(render);
             MapItem[] items = xyMap.items.toArray(MapItem[]::new);
             xyMap.items.clear();
             Arrays.stream(items).forEach((i -> xyMap.items.add(new HexMapItem((XYMapItem) i, size == null ? 100 : size))));
@@ -79,7 +77,7 @@ public class JsonRenderController {
         }
     }
 
-    private RenderedXYMap getRenderedMap(FinalGraph graph) {
+    private RenderedXYMap getRenderedMap(Rendered<mxGraph, mxCell> graph) {
         RenderedXYMap renderedMap = RenderedXYMap.from(graph);
 
         AtomicInteger minX = new AtomicInteger(0);
@@ -147,12 +145,13 @@ public class JsonRenderController {
      */
     //TODO todo provide officially supported 3d format like https://threejs.org/docs/#examples/loaders/OBJLoader
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/threejs.json")
-    public ResponseEntity<String> json(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
+    public ResponseEntity<String> json(
+            JGraphXRenderer jGraphXRenderer,
+            @PathVariable(name = "landscape") final String landscapeIdentifier) {
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(() ->
                 new NotFoundException("Not found: " + landscapeIdentifier)
         );
 
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
         JsonRenderer renderer = new JsonRenderer(jGraphXRenderer);
 
         try {
