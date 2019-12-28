@@ -8,15 +8,23 @@ import java.io.Serializable;
 /**
  * JSON representation for custom rendering.
  *
- * The x,y coordinates are derived from the rendered mxGraph.
+ *
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class MapItem implements Serializable {
+abstract class MapItem implements Serializable {
 
-    public String id;
-    public String name;
-    public String image;
-    public String group;
-    public String type;
-    public LandscapeItem landscapeItem;
+    public final String id;
+    public final String name;
+    public final String image;
+    public final String type;
+    public final String color;
+
+
+    MapItem(String id, String name, String image, String type, String color) {
+        this.id = id;
+        this.name = name;
+        this.image = image;
+        this.type = type;
+        this.color = color;
+    }
 }
