@@ -47,11 +47,11 @@ public class JsonRenderController {
             throw new NotFoundException("Not found");
         }
 
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
             Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape.get());
             RenderedXYMap renderedMap = mapFactory.getRenderedMap(render);
             HttpHeaders headers = new HttpHeaders();
-            ObjectMapper objectMapper = new ObjectMapper();
             headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
             return new ResponseEntity<>(
                     objectMapper.writeValueAsString(renderedMap),
@@ -59,7 +59,7 @@ public class JsonRenderController {
                     HttpStatus.OK
             );
         } catch (Exception ex) {
-            LOGGER.warn("Could not render graph: " );
+            LOGGER.warn("Could not render graph: ", ex);
             throw ex;
         }
     }

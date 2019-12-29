@@ -36,8 +36,9 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
         AtomicInteger maxQ = new AtomicInteger(0);
         AtomicInteger minR = new AtomicInteger(0);
         AtomicInteger maxR = new AtomicInteger(0);
-        renderedMap.items.forEach(item -> {
 
+        renderedMap.items.forEach(item -> {
+            item.size = size;
             Hex hex = item.getHex();
             if (hex.q < minQ.get())
                 minQ.set(hex.q);
@@ -50,7 +51,10 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
             item.size = size;
         });
 
-
+        renderedMap.minQ = minQ.get();
+        renderedMap.maxQ = maxQ.get();
+        renderedMap.minR = minR.get();
+        renderedMap.maxR = maxR.get();
         return renderedMap;
     }
 

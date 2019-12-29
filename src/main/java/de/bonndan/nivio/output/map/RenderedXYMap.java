@@ -10,4 +10,9 @@ public class RenderedXYMap {
 
     public Integer width;
     public Integer height;
+
+    public Integer minQ;
+    public Integer maxQ;
+    public Integer minR;
+    public Integer maxR;
 }
