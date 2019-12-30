@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import './App.css';
-import {HexGrid, Layout, Text, Pattern, Hex, GridGenerator, HexUtils} from 'react-hexgrid';
+import {HexGrid, Layout, Text, Hex, GridGenerator, HexUtils} from 'react-hexgrid';
 import Nexagon from "./Nexagon";
 import NPath from "./NPath";
 import PathFinder from "./PathFinder";
 import TilePath from "./TilePath";
+import NPattern from "./NPattern";
 
 class App extends Component {
 
@@ -38,7 +39,7 @@ class App extends Component {
             return <div>Hold tight while items are being fetched...</div>;
         }
 
-        const hexagons = GridGenerator.orientedRectangle(map.maxQ + 5, 2 * map.maxR);
+        const hexagons = GridGenerator.orientedRectangle(map.maxQ + 10, 3 * map.maxR);
 
         let byId = {};
         let occupied = [];
@@ -54,26 +55,10 @@ class App extends Component {
                 <HexGrid viewBox="600 -50 1000 1600" width="100%" height={1200}>
                     <Layout size={{x: 40, y: 40}} flat={true} spacing={1.1}>
 
-                        {hexagons.map(hex => <Nexagon q={hex.q} r={hex.r} s={hex.s} className="other"></Nexagon>)}
                         {/*
                         {hexagons.map(hex => <Nexagon q={hex.q} r={hex.r} s={hex.s} className="other"><Text>{hex.q + "," + hex.r}</Text></Nexagon>)}
-
+                        {hexagons.map(hex => <Nexagon q={hex.q} r={hex.r} s={hex.s} className="other"></Nexagon>)}
                         */}
-
-                        {/*
-                        {map.items.map(vertex =>
-
-                            HexUtils.neighbours(vertex.hex).map(neigh =>
-                                <Nexagon q={neigh.q} r={neigh.r} s={neigh.s} cellStyle={{
-                                    stroke: vertex.color,
-                                    fill: "transparent",
-                                    strokeWidth: 4
-                                }}></Nexagon>
-                            )
-                        )}
-                        */}
-
-
 
                         {
                             map.items.map(vertex => {
@@ -86,29 +71,35 @@ class App extends Component {
                                 pathFinder.findPaths(paths, target);
                                 let path = pathFinder.sortAndFilterPaths(paths);
                                 return (<NPath tilePath={path} fill={vertex.color}/>);
-
-                                {/*
-                                    return paths.map(path => {
-                                    return (
-                                        <NPath tiles={path.tiles} />
-                                    );
-                                });
-                                */}
                             });
                             }
                         )}
 
-                        {
-                            /* todo text-anchor is hardcoded */
-                            map.items.map(vertex =>
+                        {map.items.map(vertex => {
 
-                            <Nexagon key={vertex.landscapeItem.identifier} q={vertex.hex.q} r={vertex.hex.r}
-                                     s={vertex.hex.s} className={"service"} cellStyle={{fill: vertex.color}}>"
-                                <Text x={50} textAnchor={'left'}>{vertex.name}</Text>
-                            </Nexagon>
-                        )}
+                                let fill = '';
+                                if (vertex.image)
+                                    fill = btoa(vertex.id);
+
+                                return (
+
+                                    <Nexagon key={vertex.landscapeItem.identifier} q={vertex.hex.q} r={vertex.hex.r}
+                                                 s={vertex.hex.s} className={"service"} fill={fill} cellStyle={{stroke: vertex.color}}>"
+                                    <text x="50" text-anchor="left">{vertex.name}</text>
+                                    </Nexagon>
+                                );
+                        })
+                        }
 
                     </Layout>
+                    {map.items.map(vertex => {
+                        if (vertex.image.length > 0) {
+                            let fill = vertex.image;
+                            let id = btoa(vertex.id);
+                            let size = {x:30, y:30};
+                            return (<NPattern id={id} link={fill} size={ size }></NPattern>);
+                        }
+                    })}
                 </HexGrid>
             </div>
         );

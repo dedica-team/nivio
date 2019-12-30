@@ -61,7 +61,8 @@ class Nexagon extends Component {
                 onClick={e => this.onClick(e)}
             >
                 <g className="hexagon">
-                    <polygon points={points} fill={fillId} style={cellStyle}/>
+                    <circle cx="0" cy="0" r="40" fill={fillId} style={cellStyle}/>
+                    {/*<polygon points={points} fill={fillId} style={cellStyle}/>*/}
                     {this.props.children}
                 </g>
             </g>

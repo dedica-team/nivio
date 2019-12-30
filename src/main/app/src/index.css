@@ -41,6 +41,11 @@ svg g polygon {
   stroke-width: 0.2;
   transition: fill-opacity .2s;
 }
+
+svg g circle {
+  stroke-width: 0.4em;
+}
+
 svg g text {
   fill-opacity: 0.4;
   transition: fill-opacity .2s;
