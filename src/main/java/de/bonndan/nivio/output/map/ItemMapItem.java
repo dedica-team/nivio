@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.Color;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ class ItemMapItem extends MapItem {
     public final List<String> relations = new ArrayList<>();
 
     public ItemMapItem(Item item, String image, long x, long y, long width, long height) {
-        super(item.getFullyQualifiedIdentifier().toString(), item.getName(), image, "item", Color.getGroupColor(item));
+        super(item.getFullyQualifiedIdentifier().toString(), StringUtils.isEmpty(item.getName()) ? item.getIdentifier() : item.getName(), image, "item", Color.getGroupColor(item));
 
         this.x = x;
         this.y = y;
