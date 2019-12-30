@@ -53,9 +53,8 @@ svg g text {
 }
 svg path {
   fill: none;
-  stroke: hsl(60, 20%, 70%);
   stroke-width: 0.4em;
-  stroke-opacity: 0.3;
+  stroke-opacity: 0.8;
   stroke-linecap: round;
   stroke-linejoin: round;
 }

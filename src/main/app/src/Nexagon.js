@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import {Text, Pattern, Path, Hex, HexUtils} from 'react-hexgrid';
+import {Text, Pattern, Hex, HexUtils} from 'react-hexgrid';
 
 
 class Nexagon extends Component {
