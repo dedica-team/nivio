@@ -14,7 +14,7 @@ class PathFinder {
             let distance = HexUtils.distance(source, target);
 
             if (distance === 0) {
-                path.closed = true;
+                path.close();
             }
 
             let possibleSteps = HexUtils.neighbours(source)
@@ -31,7 +31,7 @@ class PathFinder {
              */
 
             if (possibleSteps.length === 0) { //TODO wrong, wont go back
-                path.closed = true;
+                path.close()
             } else {
 
                 //prolong path and create clones if there are more possibilties
@@ -40,10 +40,13 @@ class PathFinder {
                 path.tiles.push(possibleSteps.shift());
 
                 for (var i = 0; i < possibleSteps.length; i++) {
-                    let clone = {...template};
+                    let clone = new TilePath();
+                    path.tiles.forEach(tile => clone.tiles.push(tile));
+                    clone.tiles.pop();
                     //console.log("cloned path to add " + possibleSteps[i].q + "," + possibleSteps[i].r);
                     //console.log("new clone:");
                     //console.log(clone);
+                    clone.tiles.push(possibleSteps[i]);
                     paths.push(clone);
                 }
             }
@@ -53,7 +56,11 @@ class PathFinder {
         //continue search if unclosed paths remain
         if (paths.find(path => !path.closed) !== undefined) {
             this.findPaths(paths, target)
+        } else {
+            this.sortAndFilterPaths(paths);
         }
+
+        //TODO pick one path, mark tiles as occupied to avoid path crossings
 
     }
 
@@ -63,6 +70,17 @@ class PathFinder {
 
     isSame(t1, t2) {
         return t1.r === t2.r && t1.q === t2.q;
+    }
+
+
+    sortAndFilterPaths(paths) {
+        paths.sort((first, second) => {
+            if (first.getSpeed() === second.getSpeed())
+                return 0;
+
+            return first.getSpeed() > second.getSpeed() ? -1 : 1;
+        });
+        return paths[0];
     }
 }
 

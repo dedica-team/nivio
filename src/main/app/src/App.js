@@ -54,10 +54,10 @@ class App extends Component {
                 <HexGrid viewBox="600 -50 1000 1600" width="100%" height={1200}>
                     <Layout size={{x: 40, y: 40}} flat={true} spacing={1.1}>
 
-                        {hexagons.map(hex => <Nexagon q={hex.q} r={hex.r} s={hex.s} className="other"><Text>{hex.q + "," + hex.r}</Text></Nexagon>)}
-                        {/*
-
                         {hexagons.map(hex => <Nexagon q={hex.q} r={hex.r} s={hex.s} className="other"></Nexagon>)}
+                        {/*
+                        {hexagons.map(hex => <Nexagon q={hex.q} r={hex.r} s={hex.s} className="other"><Text>{hex.q + "," + hex.r}</Text></Nexagon>)}
+
                         */}
 
                         {/*
@@ -84,12 +84,16 @@ class App extends Component {
                                 paths.push(path0);
                                 let target = byId[rel].hex;
                                 pathFinder.findPaths(paths, target);
+                                let path = pathFinder.sortAndFilterPaths(paths);
+                                return (<NPath tiles={path.tiles} fill={vertex.color}/>);
 
-                                return paths.map(path => {
+                                {/*
+                                    return paths.map(path => {
                                     return (
-                                        <NPath tiles={path.tiles} fill={vertex.color}/>
+                                        <NPath tiles={path.tiles} />
                                     );
                                 });
+                                */}
                             });
                             }
                         )}
