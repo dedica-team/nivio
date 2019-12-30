@@ -71,8 +71,7 @@ class TilePath {
                 points += ` ${p.x},${p.y} L` ;
             }
         }
-console.log(points);
-        return points;
+        return points.substr(0, points.length -1);
     }
 
     _isBend(hex) {
