@@ -47,12 +47,44 @@ class TilePath {
 
     getPoints(layout) {
         let points = 'M';
-        points += this.tiles.map(hex => {
-            let p = HexUtils.hexToPixel(hex, layout);
-            return ` ${p.x},${p.y} `;
-        }).join('L');
+        for (var i = 0; i < this.tiles.length; i++) {
+            let hex = this.tiles[i];
+            if (this._isBend(hex)) {
+                //cubic curve
+                let prev = HexUtils.hexToPixel(this.tiles[i-1], layout);
+                let point = HexUtils.hexToPixel(this.tiles[i], layout);
+                let next = HexUtils.hexToPixel(this.tiles[i+1], layout);
 
+                let newBefore = {};
+                newBefore.x = prev.x + (point.x -prev.x)/2;
+                newBefore.y = prev.y + (point.y -prev.y)/2;
+                points += ` ${newBefore.x},${newBefore.y} ` ;
+                //points = points.substr(0, points.length-1);
+                points += `Q ${point.x},${point.y} ` ;
+
+                let newAfter = {};
+                newAfter.x = next.x + (point.x -next.x)/2;
+                newAfter.y = next.y + (point.y -next.y)/2;
+                points += ` ${newAfter.x},${newAfter.y} L` ;
+            } else {
+                let p = HexUtils.hexToPixel(hex, layout);
+                points += ` ${p.x},${p.y} L` ;
+            }
+        }
+console.log(points);
         return points;
+    }
+
+    _isBend(hex) {
+        if (this.bends.length === 0)
+            return false;
+
+        for (var i = 0; i < this.bends.length; i++) {
+            if (this.bends[i].q === hex.q && this.bends[i].r === hex.r)
+                return true;
+        }
+
+        return false;
     }
 
     getSpeed() {

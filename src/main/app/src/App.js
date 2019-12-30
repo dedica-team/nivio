@@ -85,7 +85,7 @@ class App extends Component {
                                 let target = byId[rel].hex;
                                 pathFinder.findPaths(paths, target);
                                 let path = pathFinder.sortAndFilterPaths(paths);
-                                return (<NPath tiles={path.tiles} fill={vertex.color}/>);
+                                return (<NPath tilePath={path} fill={vertex.color}/>);
 
                                 {/*
                                     return paths.map(path => {
@@ -98,11 +98,13 @@ class App extends Component {
                             }
                         )}
 
-                        {map.items.map(vertex =>
+                        {
+                            /* todo text-anchor is hardcoded */
+                            map.items.map(vertex =>
 
                             <Nexagon key={vertex.landscapeItem.identifier} q={vertex.hex.q} r={vertex.hex.r}
                                      s={vertex.hex.s} className={"service"} cellStyle={{fill: vertex.color}}>"
-                                <Text>{vertex.name}</Text>
+                                <Text x={50} textAnchor={'left'}>{vertex.name}</Text>
                             </Nexagon>
                         )}
 

@@ -5,7 +5,7 @@ import {HexUtils} from 'react-hexgrid';
 class NPath extends Component {
     static propTypes = {
         fill: PropTypes.string,
-        tiles: PropTypes.array,
+        tilePath: PropTypes.object,
         layout: PropTypes.object
     };
     static contextTypes = {
@@ -13,21 +13,9 @@ class NPath extends Component {
     };
 
     getPoints() {
-        const { tiles } = this.props;
+        const { tilePath } = this.props;
         const { layout } = this.context;
-
-        //for (let i=0; i<=distance; i++) {
-         //   intersects.push(HexUtils.round(HexUtils.hexLerp(start, end, step * i)));
-        //}
-
-        // Construct Path points out of all the intersecting hexes (e.g. M 0,0 L 10,20, L 30,20)
-        let points = 'M';
-        points += tiles.map(hex => {
-            let p = HexUtils.hexToPixel(hex, layout);
-            return ` ${p.x},${p.y} `;
-        }).join('L');
-
-        return points;
+        return tilePath.getPoints(layout);
     }
 
     render() {
