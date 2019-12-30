@@ -35,12 +35,13 @@ import static de.bonndan.nivio.output.Color.getGroupColor;
 
 /**
  * This class is responsible for rendering services and groups nicely with bells and whistles.
- *
+ * <p>
  * It receives
  */
 public class FinalGraph implements Rendered<mxGraph, mxCell> {
 
     public static final int GRID_SIZE = 20;
+    private static final String ICON_ATTRIBUTE = "icon";
     private final int DEFAULT_ICON_SIZE = 50;
     private final IconService iconService;
 
@@ -91,7 +92,7 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
             groupGraph.getServiceVertexesWithRelativeOffset().forEach((service, offset) -> {
                 itemVertexes.put(
                         (Item) service,
-                        addItemVertex(offset, groupContainer, service)
+                        addItemVertex(offset, groupContainer, (Item)service)
                 );
                 items.add((Item) service);
             });
@@ -154,7 +155,7 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
         });
     }
 
-    private mxCell addItemVertex(mxPoint offset, mxCell parent, LandscapeItem landscapeItem) {
+    private mxCell addItemVertex(mxPoint offset, mxCell parent, Item landscapeItem) {
 
         String style = getItemStyle(landscapeItem);
 
@@ -258,17 +259,22 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
         return style;
     }
 
-    private String getBaseStyle(Item item) {
-        Icon type;
-        if (iconService == null) {
-            try {
-                type = new Icon(new File(RootPath.get() + "/src/main/resources/static/icons/service.png").toURI().toURL());
-            } catch (MalformedURLException e) {
-                return "";
-            }
-        } else {
-            type = iconService.getIcon(item);
+    private Icon getIconType(Item item) {
+        if (iconService != null) {
+            return iconService.getIcon(item);
         }
+
+        Icon type = null;
+        try {
+            type = new Icon(new File(RootPath.get() + "/src/main/resources/static/icons/service.png").toURI().toURL());
+        } catch (MalformedURLException ignored) {
+        }
+
+        return type;
+    }
+
+    private String getBaseStyle(Item item) {
+        Icon type = getIconType(item);
 
         if (stylesheet.getStyles().containsKey(type.getUrl().toString())) {
             return type.getUrl().toString();

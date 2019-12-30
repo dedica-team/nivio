@@ -25,7 +25,6 @@ class ItemMapItem extends MapItem {
     public long y;
     public double width;
     public double height;
-    public String image;
     public int size;
     public final String group;
     public final LandscapeItem landscapeItem;

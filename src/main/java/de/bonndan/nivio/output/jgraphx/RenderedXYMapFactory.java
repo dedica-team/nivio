@@ -3,12 +3,19 @@ package de.bonndan.nivio.output.jgraphx;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.view.mxGraph;
+import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.map.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
+
+    private final IconService iconService;
+
+    public RenderedXYMapFactory(IconService iconService) {
+        this.iconService = iconService;
+    }
 
     public RenderedXYMap getRenderedMap(Rendered<mxGraph, mxCell> rendered) {
         RenderedXYMap renderedMap = from(rendered);
@@ -75,7 +82,8 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
             }
             long width = Math.round(geometry.getWidth());
             long height = Math.round(geometry.getHeight());
-            renderedMap.items.add(new ItemMapItem(item, "", x, y, width, height));
+
+            renderedMap.items.add(new ItemMapItem(item, iconService.getIcon(item).getUrl().toString(), x, y, width, height));
         });
 
         rendered.getGroupObjects().forEach((group, cell) -> {

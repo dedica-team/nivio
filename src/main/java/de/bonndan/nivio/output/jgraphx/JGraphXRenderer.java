@@ -6,13 +6,10 @@ import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.IconService;
-import de.bonndan.nivio.output.Renderer;
 import de.bonndan.nivio.output.Rendered;
+import de.bonndan.nivio.output.Renderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -22,8 +19,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@Component
-@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class JGraphXRenderer implements Renderer<Rendered<mxGraph, mxCell>> {
 
     private static final Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);

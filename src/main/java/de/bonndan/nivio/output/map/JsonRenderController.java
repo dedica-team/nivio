@@ -6,9 +6,9 @@ import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.api.NotFoundException;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
+import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.jgraphx.JGraphXRenderer;
-import de.bonndan.nivio.output.jgraphx.RenderedXYMapFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -28,17 +28,21 @@ public class JsonRenderController {
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonRenderController.class);
 
     private final LandscapeRepository landscapeRepository;
+    private final IconService iconService;
     private final MapFactory<mxGraph, mxCell> mapFactory;
 
-    public JsonRenderController(LandscapeRepository landscapeRepository, MapFactory<mxGraph, mxCell> mapFactory) {
+    public JsonRenderController(LandscapeRepository landscapeRepository,
+                                IconService iconService,
+                                MapFactory<mxGraph, mxCell> mapFactory
+    ) {
         this.landscapeRepository = landscapeRepository;
+        this.iconService = iconService;
         this.mapFactory = mapFactory;
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/map.json")
     public ResponseEntity<String> hex(
-            JGraphXRenderer jGraphXRenderer,
             @PathVariable(name = "landscape") final String landscapeIdentifier,
             @RequestParam(value = "size", required = false) Integer size
     ) throws IOException {
@@ -48,6 +52,8 @@ public class JsonRenderController {
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
+
         try {
             Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape.get());
             RenderedXYMap renderedMap = mapFactory.getRenderedMap(render);
