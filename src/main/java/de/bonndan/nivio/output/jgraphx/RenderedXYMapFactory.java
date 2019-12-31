@@ -55,8 +55,9 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
                 minR.set(hex.r);
             if (hex.r > maxR.get())
                 maxR.set(hex.r);
-            item.size = size;
         });
+
+        renderedMap.groups.forEach(groupMapItem -> groupMapItem.size = size);
 
         renderedMap.minQ = minQ.get();
         renderedMap.maxQ = maxQ.get();
