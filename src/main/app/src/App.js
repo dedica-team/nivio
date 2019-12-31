@@ -97,7 +97,7 @@ class App extends Component {
                             let fill = vertex.image;
                             let id = btoa(vertex.id);
                             let size = {x:30, y:30};
-                            return (<NPattern id={id} link={fill} size={ size }></NPattern>);
+                            return (<NPattern id={id} link={fill} size={size} padding={10}></NPattern>);
                         }
                     })}
                 </HexGrid>
