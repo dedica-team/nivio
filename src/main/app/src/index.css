@@ -51,6 +51,17 @@ svg g text {
   transition: fill-opacity .2s;
 }
 
+svg g rect {
+  fill-opacity: 0.4;
+  transition: fill-opacity .2s;
+  stroke-width: 0.0em;
+}
+
+svg g rect.label {
+  fill-opacity: 1;
+  stroke-width: 0.1em;
+}
+
 svg path {
   fill: none;
   stroke-width: 0.4em;

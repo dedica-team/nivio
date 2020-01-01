@@ -21,7 +21,7 @@ class Nexagon extends Component {
     };
 
     static contextTypes = {
-        layout: PropTypes.object, // TODO Shape
+        layout: PropTypes.object,
         points: PropTypes.string
     };
 
@@ -51,7 +51,7 @@ class Nexagon extends Component {
 
     render() {
         const {fill, cellStyle, className} = this.props;
-        const {points} = this.context;
+        //const {points} = this.context;
         const {hex, pixel} = this.state;
         const fillId = (fill) ? `url(#${fill})` : null;
         return (

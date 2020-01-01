@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {HexUtils} from 'react-hexgrid';
 
 class NPath extends Component {
     static propTypes = {

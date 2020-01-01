@@ -8,9 +8,11 @@ import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.map.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
 
+    public static final int SIZE_FACTOR = 40;
     private final IconService iconService;
 
     public RenderedXYMapFactory(IconService iconService) {
@@ -37,7 +39,7 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
 
         renderedMap.width = maxX.get() - minX.get();
         renderedMap.height = maxY.get() - minY.get();
-        int size = Math.max(renderedMap.width, renderedMap.height) / 40;
+        int size = Math.max(renderedMap.width, renderedMap.height) / SIZE_FACTOR;
 
         AtomicInteger minQ = new AtomicInteger(0);
         AtomicInteger maxQ = new AtomicInteger(0);
@@ -88,6 +90,24 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
         });
 
         rendered.getGroupObjects().forEach((group, cell) -> {
+
+            AtomicLong minX = new AtomicLong(Long.MAX_VALUE);
+            AtomicLong maxX = new AtomicLong(Long.MIN_VALUE);
+            AtomicLong minY = new AtomicLong(Long.MAX_VALUE);
+            AtomicLong maxY = new AtomicLong(Long.MIN_VALUE);
+
+            group.getItems().forEach(landscapeItem -> {
+                mxCell mxCell = rendered.getItemObjects().get(landscapeItem);
+                mxGeometry geometry = mxCell.getGeometry();
+                long x = Math.round(geometry.getX());
+                long y = Math.round(geometry.getY());
+
+                if (x < minX.get()) minX.set(x);
+                if (x > maxX.get()) maxX.set(x);
+                if (y < minY.get()) minY.set(y);
+                if (y > maxY.get()) maxY.set(y);
+            });
+
             mxGeometry geometry = cell.getGeometry();
             long x;
             long y;
@@ -98,9 +118,16 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
                 x = Math.round(geometry.getX());
                 y = Math.round(geometry.getY());
             }
-            long width = Math.round(geometry.getWidth());
-            long height = Math.round(geometry.getHeight());
-            renderedMap.groups.add(new GroupMapItem(group, x, y, width, height));
+
+            renderedMap.groups.add(
+                    new GroupMapItem(
+                            group,
+                            x + minX.get(),
+                            y + minY.get(),
+                            x + maxX.get(),
+                            y + maxY.get()
+                    )
+            );
         });
 
         return renderedMap;
