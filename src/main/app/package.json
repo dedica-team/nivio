@@ -7,6 +7,7 @@
     "react-dom": "^16.10.1",
     "react-hexgrid": "^1.0.3",
     "react-scripts": "3.2.0",
+    "react-svg-pan-zoom": "^3.7.1",
     "yarn": "^1.21.1"
   },
   "scripts": {

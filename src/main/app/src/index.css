@@ -16,12 +16,9 @@ body {
   user-drag: element;
 }
 
-svg {
-
-}
 
 svg g {
-  stroke: #3F51B5;
+
   stroke-width: 0.3;
 }
 
@@ -51,7 +48,7 @@ svg g text {
   transition: fill-opacity .2s;
 }
 
-svg g rect {
+svg g rect.group {
   fill-opacity: 0.4;
   transition: fill-opacity .2s;
   stroke-width: 0.0em;
@@ -60,6 +57,7 @@ svg g rect {
 svg g rect.label {
   fill-opacity: 1;
   stroke-width: 0.1em;
+  stroke: #3F51B5;
 }
 
 svg path {

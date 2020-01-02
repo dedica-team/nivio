@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import {Text, Pattern, Hex, HexUtils} from 'react-hexgrid';
+import {Hex, HexUtils} from 'react-hexgrid';
 
 
 class Nexagon extends Component {
@@ -34,15 +34,6 @@ class Nexagon extends Component {
         this.state = {hex, pixel};
     }
 
-    // TODO Refactor to reduce duplicate
-    componentWillReceiveProps(nextProps) {
-        const {q, r, s} = nextProps;
-        const {layout} = this.context;
-        const hex = new Hex(q, r, s);
-        const pixel = HexUtils.hexToPixel(hex, layout);
-        this.setState({hex, pixel});
-    }
-
     onClick(e) {
         if (this.props.onClick) {
             this.props.onClick(e, this);
@@ -50,16 +41,13 @@ class Nexagon extends Component {
     }
 
     render() {
+        const pixel = this.state.pixel;
         const {fill, cellStyle, className} = this.props;
-        //const {points} = this.context;
-        const {hex, pixel} = this.state;
         const fillId = (fill) ? `url(#${fill})` : null;
         return (
-            <g
-                className={classNames('hexagon-group', className)}
+            <g className={classNames('hexagon-group', className)}
                 transform={`translate(${pixel.x}, ${pixel.y})`}
-                onClick={e => this.onClick(e)}
-            >
+                onClick={e => this.onClick(e)}>
                 <g className="hexagon">
                     <circle cx="0" cy="0" r="40" fill={fillId} style={cellStyle}/>
                     {/*<polygon points={points} fill={fillId} style={cellStyle}/>*/}

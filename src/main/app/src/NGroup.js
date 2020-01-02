@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Hex, HexUtils} from 'react-hexgrid';
+import {HexUtils} from 'react-hexgrid';
 
 class NGroup extends Component {
 
@@ -17,10 +17,6 @@ class NGroup extends Component {
     static contextTypes = {
         layout: PropTypes.object
     };
-
-    constructor(props, context) {
-        super(props, context);
-    }
 
     render() {
         const {start, end, fill, cellStyle} = this.props;
