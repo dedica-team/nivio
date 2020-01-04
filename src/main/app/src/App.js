@@ -44,7 +44,14 @@ class App extends Component {
     }
 
     getMap() {
-        fetch(`http://localhost:8081/render/nivio:example/map.json`)
+        let params = new URLSearchParams(window.location.search);
+        let landscape = params.get('landscape');
+        if (landscape === undefined) {
+            alert("landscape param missing");
+            return;
+        }
+
+        fetch('http://localhost:8081/render/' + landscape + '/map.json')
             .then((response) => {
                 return response.json()
             })
