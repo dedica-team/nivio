@@ -54,7 +54,11 @@ svg g rect.group {
   stroke-width: 0.0em;
 }
 
-svg g rect.label {
+svg g.label {
+  cursor: pointer;
+}
+
+svg g.label rect {
   fill-opacity: 1;
   stroke-width: 0.1em;
   stroke: #3F51B5;
@@ -66,4 +70,10 @@ svg path {
   stroke-opacity: 0.8;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+svg div.details {
+  border: 1px solid #3F51B5;
+  border-radius: 10px;
+  background-color: white;
 }

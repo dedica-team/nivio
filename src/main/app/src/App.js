@@ -7,6 +7,7 @@ import PathFinder from "./PathFinder";
 import TilePath from "./TilePath";
 import NPattern from "./NPattern";
 import NGroup from "./NGroup";
+import NLabel from "./NLabel";
 import {INITIAL_VALUE, ReactSVGPanZoom, TOOL_AUTO} from 'react-svg-pan-zoom';
 
 class App extends Component {
@@ -91,11 +92,13 @@ class App extends Component {
                 <button className="btn" onClick={() => this.fitSelection()}>Zoom area 200x200</button>
                 <button className="btn" onClick={() => this.fitToViewer()}>Fit</button>
                 <ReactSVGPanZoom key={'panzoom'}
-                    width={window.innerWidth * 0.95} height={window.innerHeight * 0.95} background={'white'}
-                    miniatureProps={{position: 'none'}} toolbarProps={{position: 'none'}} detectAutoPan={false}
-                    ref={Viewer => this.Viewer = Viewer}
-                    tool={this.state.tool} onChangeTool={tool => this.changeTool(tool)}
-                    value={this.state.value} onChangeValue={value => this.changeValue(value)}
+                                 width={window.innerWidth * 0.95} height={window.innerHeight * 0.95}
+                                 background={'white'}
+                                 miniatureProps={{position: 'none'}} toolbarProps={{position: 'none'}}
+                                 detectAutoPan={false}
+                                 ref={Viewer => this.Viewer = Viewer}
+                                 tool={this.state.tool} onChangeTool={tool => this.changeTool(tool)}
+                                 value={this.state.value} onChangeValue={value => this.changeValue(value)}
                 >
                     <HexGrid viewBox={viewBox} key={'viewbox'}>
                         <Layout key={'layout'} size={{x: size, y: size}} flat={true} spacing={1.1}>
@@ -108,8 +111,7 @@ class App extends Component {
                             {
                                 map.groups.map(group => {
                                     map.items.filter(item => item.group === group.name);
-                                    return (<NGroup key={group.name} start={group.start} end={group.end}
-                                                    fill={group.color}/>);
+                                    return (<NGroup key={group.name} start={group.start} end={group.end} fill={group.color}/>);
                                 })
                             }
 
@@ -133,19 +135,13 @@ class App extends Component {
                                 let fill = '';
                                 if (vertex.image)
                                     fill = btoa(vertex.id);
-
+                                const width = 200;
                                 return (
 
                                     <Nexagon key={vertex.landscapeItem.identifier} q={vertex.hex.q} r={vertex.hex.r}
-                                             s={vertex.hex.s} className={"service"} fill={fill}
+                                             s={vertex.hex.s} className={"service"} fill={fill} data={vertex}
                                              cellStyle={{stroke: vertex.color}}>
-                                        <g>
-                                            <rect x={size + padding} y={-10} rx="10" ry="10" fill={'white'} width={200}
-                                                  height={20} className={'label'}/>
-                                            <text x={size + padding + 100} y={5} width={200}
-                                                  textAnchor="middle">{vertex.name}</text>
-
-                                        </g>
+                                        <NLabel width={width} size={size} item={vertex} padding={padding}/>
                                     </Nexagon>
                                 );
                             })
