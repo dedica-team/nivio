@@ -56,7 +56,7 @@ public class JsonRenderController {
 
         try {
             Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape.get());
-            RenderedXYMap renderedMap = mapFactory.getRenderedMap(render);
+            RenderedXYMap renderedMap = mapFactory.getRenderedMap(landscape.get(), render);
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
             return new ResponseEntity<>(

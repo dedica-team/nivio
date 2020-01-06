@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.map;
 
+import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.Rendered;
 
 /**
@@ -10,5 +11,5 @@ import de.bonndan.nivio.output.Rendered;
  */
 public interface MapFactory<T,R> {
 
-    RenderedXYMap getRenderedMap(Rendered<T,R> rendered);
+    RenderedXYMap getRenderedMap(LandscapeImpl landscape, Rendered<T, R> rendered);
 }

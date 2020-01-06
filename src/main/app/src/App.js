@@ -78,7 +78,7 @@ class App extends Component {
         let byId = {};
         let occupied = [];
 
-        map.items.map(vertex => {
+        map.items.forEach(vertex => {
             byId[vertex.id] = vertex;
             occupied.push(vertex.hex);
         });
@@ -86,11 +86,14 @@ class App extends Component {
         let maxX = map.width;
         let maxY = map.height;
         let viewBox = '-100 -100 ' + maxX * 4 + ' ' + maxY * 4;
+        document.title = map.landscape
         return (
             <div className="App">
-                <button className="btn" onClick={() => this.zoomOnViewerCenter()}>Zoom in</button>
-                <button className="btn" onClick={() => this.fitSelection()}>Zoom area 200x200</button>
-                <button className="btn" onClick={() => this.fitToViewer()}>Fit</button>
+                <div style={ {float: 'right'}}>
+                    <button className="btn" onClick={() => this.zoomOnViewerCenter()}>Zoom in</button>
+                    <button className="btn" onClick={() => this.fitSelection()}>Zoom area 200x200</button>
+                    <button className="btn" onClick={() => this.fitToViewer()}>Fit</button>
+                </div>
                 <ReactSVGPanZoom key={'panzoom'}
                                  width={window.innerWidth * 0.95} height={window.innerHeight * 0.95}
                                  background={'white'}
@@ -111,7 +114,7 @@ class App extends Component {
                             {
                                 map.groups.map(group => {
                                     map.items.filter(item => item.group === group.name);
-                                    return (<NGroup key={group.name} start={group.start} end={group.end} fill={group.color}/>);
+                                    return (<NGroup key={group.name} group={group}/>);
                                 })
                             }
 
@@ -156,6 +159,7 @@ class App extends Component {
                                     <NPattern key={id} id={id} link={fill} size={{x: size - padding, y: size - padding}}
                                               padding={padding}></NPattern>);
                             }
+                            return null;
                         })}
 
                     </HexGrid>

@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.jgraphx;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.view.mxGraph;
+import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.map.*;
@@ -19,7 +20,7 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
         this.iconService = iconService;
     }
 
-    public RenderedXYMap getRenderedMap(Rendered<mxGraph, mxCell> rendered) {
+    public RenderedXYMap getRenderedMap(LandscapeImpl landscape, Rendered<mxGraph, mxCell> rendered) {
         RenderedXYMap renderedMap = from(rendered);
 
         AtomicInteger minX = new AtomicInteger(0);
@@ -37,34 +38,15 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
                 maxY.set((int) item.y);
         });
 
+        renderedMap.landscape = landscape.getName();
+        renderedMap.sizeFactor = SIZE_FACTOR;
         renderedMap.width = maxX.get() - minX.get();
         renderedMap.height = maxY.get() - minY.get();
         int size = Math.max(renderedMap.width, renderedMap.height) / SIZE_FACTOR;
 
-        AtomicInteger minQ = new AtomicInteger(0);
-        AtomicInteger maxQ = new AtomicInteger(0);
-        AtomicInteger minR = new AtomicInteger(0);
-        AtomicInteger maxR = new AtomicInteger(0);
-
-        renderedMap.items.forEach(item -> {
-            item.size = size;
-            Hex hex = item.getHex();
-            if (hex.q < minQ.get())
-                minQ.set(hex.q);
-            if (hex.q > maxQ.get())
-                maxQ.set(hex.q);
-            if (hex.r < minR.get())
-                minR.set(hex.r);
-            if (hex.r > maxR.get())
-                maxR.set(hex.r);
-        });
-
+        renderedMap.items.forEach(item -> item.size = size);
         renderedMap.groups.forEach(groupMapItem -> groupMapItem.size = size);
 
-        renderedMap.minQ = minQ.get();
-        renderedMap.maxQ = maxQ.get();
-        renderedMap.minR = minR.get();
-        renderedMap.maxR = maxR.get();
         return renderedMap;
     }
 
