@@ -41,8 +41,13 @@ class NLabel extends Component {
 
                 <foreignObject width={width} height="220" y={padding} x={size + padding } style={style}>
                     <div className="details">
-                        {item.landscapeItem.description && (<div >"{item.landscapeItem.description}"</div>)}
+                        {item.landscapeItem.description && (<div >"{item.landscapeItem.description}"<br /></div>)}
                         {item.landscapeItem.owner && (<div >Owner: {item.landscapeItem.owner}</div>)}
+                        {item.landscapeItem.team && (<div >Team: {item.landscapeItem.team}</div>)}
+                        {item.landscapeItem.contact && (<div >Contact: {item.landscapeItem.contact}</div>)}
+                        {item.landscapeItem.software && (<div >Software: {item.landscapeItem.software}</div>)}
+                        {item.landscapeItem.version && (<div >Version: {item.landscapeItem.version}</div>)}
+                        {item.landscapeItem.lifecycle && (<div >Lifecycle: {item.landscapeItem.lifecycle}</div>)}
                     </div>
                 </foreignObject>
 
