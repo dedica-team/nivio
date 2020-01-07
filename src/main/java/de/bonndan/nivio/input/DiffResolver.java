@@ -21,10 +21,10 @@ public class DiffResolver extends Resolver {
 
     @Override
     public void process(LandscapeDescription input, LandscapeImpl landscape) {
-        Set<Item> existingItems = landscape.getItems();
+        Set<Item> existingItems = landscape.getItems().all();
 
         //insert new ones
-        List<LandscapeItem> newItems = added(input.getItemDescriptions(), existingItems);
+        List<LandscapeItem> newItems = added(input.getItemDescriptions().all(), existingItems);
         Set<Item> inLandscape = new HashSet<>();
         processLog.info("Adding " + newItems.size() + " items in env " + landscape.getIdentifier());
         newItems.forEach(
@@ -41,13 +41,13 @@ public class DiffResolver extends Resolver {
         if (input.isPartial()) {
             kept.addAll(existingItems); //we want to keep all, increment does not contain all items
         } else {
-            kept = kept(input.getItemDescriptions(), existingItems);
+            kept = kept(input.getItemDescriptions().all(), existingItems);
         }
         processLog.info("Updating " + kept.size() + " items in landscape " + landscape.getIdentifier());
         kept.forEach(
                 item -> {
 
-                    ItemDescription description = (ItemDescription) Items.find(item.getFullyQualifiedIdentifier(), input.getItemDescriptions()).orElse(null);
+                    ItemDescription description = (ItemDescription) input.getItemDescriptions().find(item.getFullyQualifiedIdentifier()).orElse(null);
                     if (description == null) {
                         if (input.isPartial()) {
                             inLandscape.add((Item) item);
@@ -66,7 +66,7 @@ public class DiffResolver extends Resolver {
 
         landscape.setItems(inLandscape);
         deleteUnreferenced(input, inLandscape, existingItems, processLog)
-                .forEach(item -> landscape.getItems().remove(item));
+                .forEach(item -> landscape.getItems().all().remove(item));
     }
 
     private List<LandscapeItem> deleteUnreferenced(

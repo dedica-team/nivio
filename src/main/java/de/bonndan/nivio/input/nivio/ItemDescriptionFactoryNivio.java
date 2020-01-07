@@ -44,7 +44,7 @@ public class ItemDescriptionFactoryNivio implements ItemDescriptionFactory {
 
         List<ItemDescription> descriptions = new ArrayList<>();
         String yml = fetcher.get(reference, baseUrl);
-        Source source = null;
+        Source source;
         try {
             source = mapper.readValue(yml, Source.class);
         } catch (IOException e) {

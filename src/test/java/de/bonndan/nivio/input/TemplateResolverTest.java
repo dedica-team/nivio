@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.*;
 
-import static de.bonndan.nivio.model.Items.pick;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -40,16 +39,16 @@ class TemplateResolverTest {
         templateResolver.processTemplates(landscapeDescription, templates);
 
 
-        ItemDescription redis = (ItemDescription) pick("redis", null, landscapeDescription.getItemDescriptions());
+        ItemDescription redis = landscapeDescription.getItemDescriptions().pick("redis", null);
         assertNotNull(redis);
         assertEquals("foo", redis.getGroup());
 
-        ItemDescription datadog = (ItemDescription) pick("datadog", null, landscapeDescription.getItemDescriptions());
+        ItemDescription datadog = landscapeDescription.getItemDescriptions().pick("datadog", null);
         assertNotNull(datadog);
         assertEquals("foo", datadog.getGroup());
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
-        ItemDescription web = (ItemDescription) pick("web", null, landscapeDescription.getItemDescriptions());
+        ItemDescription web = landscapeDescription.getItemDescriptions().pick("web", null);
         assertNotNull(web);
         assertEquals("content", web.getGroup());
     }
@@ -62,15 +61,15 @@ class TemplateResolverTest {
         Map<ItemDescription, List<String>> templates = getTemplates(landscapeDescription);
         templateResolver.processTemplates(landscapeDescription, templates);
 
-        ItemDescription one = (ItemDescription) pick("crappy_dockername-78345", null, landscapeDescription.getItemDescriptions());
+        ItemDescription one = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
         assertNotNull(one);
         assertEquals("alpha", one.getGroup());
 
-        ItemDescription two = (ItemDescription) pick("crappy_dockername-2343a", null, landscapeDescription.getItemDescriptions());
+        ItemDescription two = landscapeDescription.getItemDescriptions().pick("crappy_dockername-2343a", null);
         assertNotNull(two);
         assertEquals("alpha", two.getGroup());
 
-        ItemDescription three = (ItemDescription) pick("other_crappy_name-2343a", null, landscapeDescription.getItemDescriptions());
+        ItemDescription three = landscapeDescription.getItemDescriptions().pick("other_crappy_name-2343a", null);
         assertNotNull(three);
         assertEquals("beta", three.getGroup());
     }
@@ -84,7 +83,7 @@ class TemplateResolverTest {
 
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
-        ItemDescription web = (ItemDescription) pick("web", null, landscapeDescription.getItemDescriptions());
+        ItemDescription web = landscapeDescription.getItemDescriptions().pick("web", null);
         assertNotNull(web);
         assertEquals("content", web.getGroup());
 
@@ -104,7 +103,7 @@ class TemplateResolverTest {
         Map<ItemDescription, List<String>> templates = getTemplates(landscapeDescription);
         templateResolver.processTemplates(landscapeDescription, templates);
 
-        ItemDescription redis = (ItemDescription) pick("redis", null, landscapeDescription.getItemDescriptions());
+        ItemDescription redis = landscapeDescription.getItemDescriptions().pick("redis", null);
         assertNotNull(redis);
         assertNull(redis.getSoftware());
     }

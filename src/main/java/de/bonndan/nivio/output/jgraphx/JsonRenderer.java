@@ -35,13 +35,11 @@ public class JsonRenderer implements Renderer<String> {
     public String render(LandscapeImpl landscape) {
         mxGraph graph = mxGraphRenderer.render(landscape);
 
-        Set<Item> items = landscape.getItems();
-
         //this is to have the final layout
         mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
 
         List<Serializable> dtos = new ArrayList<>();
-        getAllChildren(dtos, graph, (mxCell) graph.getDefaultParent(), items);
+        getAllChildren(dtos, graph, (mxCell) graph.getDefaultParent(), landscape.getItems());
 
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -52,7 +50,7 @@ public class JsonRenderer implements Renderer<String> {
         }
     }
 
-    private void getAllChildren(List<Serializable> dtos, mxGraph graph, mxCell cell, Collection<Item> items) {
+    private void getAllChildren(List<Serializable> dtos, mxGraph graph, mxCell cell, LandscapeItems items) {
         dtos.addAll(
                 Arrays.stream(graph.getChildCells(cell))
                         .map(o -> toDto((mxCell) o, items))
@@ -62,14 +60,14 @@ public class JsonRenderer implements Renderer<String> {
         Arrays.stream(graph.getChildCells(cell)).forEach(o -> getAllChildren(dtos, graph, (mxCell) o, items));
     }
 
-    private Serializable toDto(mxCell cell, Collection<Item> items) {
+    private Serializable toDto(mxCell cell, LandscapeItems items) {
 
         mxGeometry geometry = cell.getGeometry();
         Map<String, String> style = parseStyle(cell.getStyle());
 
         LandscapeItem landscapeItem = null;
         if (!StringUtils.isEmpty(cell.getId()))
-            landscapeItem = Items.find(FullyQualifiedIdentifier.from(cell.getId()), items).orElse(null);
+            landscapeItem = items.find(FullyQualifiedIdentifier.from(cell.getId())).orElse(null);
         Vertex vertex = new Vertex();
         vertex.id = cell.getId();
         vertex.name = (String) cell.getValue();

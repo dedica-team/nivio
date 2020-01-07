@@ -26,20 +26,18 @@ public class InstantItemResolver {
             return;
         }
 
-        List<ItemDescription> all = landscape.getItemDescriptions();
-
         HashSet<ItemDescription> newItems = new HashSet<>();
-        all.forEach(itemDescription -> newItems.addAll(resolveTargets(itemDescription, all)));
+        landscape.getItemDescriptions().all().forEach(itemDescription -> newItems.addAll(resolveTargets(itemDescription, landscape.getItemDescriptions())));
 
         landscape.addItems(newItems);
     }
 
-    private List<ItemDescription> resolveTargets(ItemDescription description, List<ItemDescription> allItems) {
+    private List<ItemDescription> resolveTargets(ItemDescription description, ItemDescriptions allItems) {
 
         List<ItemDescription> newItems = new ArrayList<>();
         //providers
         description.getProvidedBy().forEach(term -> {
-            Optional<? extends LandscapeItem> provider = Items.query(term.toLowerCase(), allItems).stream().findFirst();
+            Optional<? extends LandscapeItem> provider = allItems.query(term.toLowerCase()).stream().findFirst();
 
             if (provider.isEmpty()) {
                 newItems.add(createItem(term));
@@ -69,13 +67,13 @@ public class InstantItemResolver {
         return itemDescription;
     }
 
-    private boolean hasTarget(String term, List<ItemDescription> allItems) {
+    private boolean hasTarget(String term, ItemDescriptions allItems) {
 
         if (StringUtils.isEmpty(term)) {
             return true;
         }
 
-        Collection<? extends LandscapeItem> result = Items.query(term, allItems);
+        Collection<? extends LandscapeItem> result = allItems.query(term);
         if (result.size() > 1) {
             log.warn("Found ambiguous sources matching " + term);
             return true;

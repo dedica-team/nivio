@@ -92,7 +92,7 @@ class GroupResolverTest {
         groupResolver.process(input, landscape);
 
         assertEquals(1, landscape.getGroups().size());
-        assertEquals(1, input.getItemDescriptions().size());
+        assertEquals(1, input.getItemDescriptions().all().size());
     }
 
     private LandscapeDescription getLandscapeDescription() {
