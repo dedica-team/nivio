@@ -1,6 +1,5 @@
 package de.bonndan.nivio.output;
 
-import com.lowagie.text.html.WebColors;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.GroupItem;
 import de.bonndan.nivio.model.Item;
@@ -38,10 +37,10 @@ public class Color {
 
     public static String lighten(String color) {
         try {
-            java.awt.Color col = WebColors.getRGBColor("#" + color).brighter();
-            return Integer.toHexString(col.getRGB());
+            java.awt.Color col = java.awt.Color.decode(color.startsWith("#") ? color : "#" + color);
+            return Integer.toHexString(col.brighter().getRGB());
         } catch (IllegalArgumentException ex) {
-            LOGGER.error(color + " --> "+ ex.getMessage());
+            LOGGER.error(color + " --> " + ex.getMessage());
             return color;
         }
     }
