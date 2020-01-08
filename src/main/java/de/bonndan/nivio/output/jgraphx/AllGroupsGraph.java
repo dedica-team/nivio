@@ -1,21 +1,17 @@
 package de.bonndan.nivio.output.jgraphx;
 
-import com.mxgraph.layout.mxFastOrganicLayout;
-import com.mxgraph.layout.mxOrganicLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.model.*;
-import org.apache.commons.math3.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
 import java.util.*;
-import java.util.List;
 
 /**
  * Renders a graph of group containers only, not regarding items inside the containers.
@@ -154,7 +150,7 @@ public class AllGroupsGraph {
 
         void connect(String a, String b, String message) {
             logger.info(message + a + " and " + b);
-            groupConnections.add(new Pair(a, b));
+            groupConnections.add(new ImmutablePair(a, b));
         }
 
         boolean canConnect(String a, String b) {
