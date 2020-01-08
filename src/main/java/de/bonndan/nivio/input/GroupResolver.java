@@ -19,12 +19,10 @@ import java.util.stream.Collectors;
  *
  * Blacklists groups and removes items from the input which are part of a blacklisted group.
  */
-public class GroupResolver {
+public class GroupResolver extends Resolver {
 
-    private final ProcessLog log;
-
-    public GroupResolver(ProcessLog log) {
-        this.log = log;
+    protected GroupResolver(ProcessLog processLog) {
+        super(processLog);
     }
 
     public void process(LandscapeDescription input, LandscapeImpl landscape) {
@@ -35,14 +33,14 @@ public class GroupResolver {
             Group g = getGroup(identifier, groupItem);
 
             if (!isBlacklisted(g.getIdentifier(), specs)){
-                log.info("Adding or updating group " + g.getIdentifier());
+                processLog.info("Adding or updating group " + g.getIdentifier());
                 landscape.addGroup(g);
             } else {
-                log.info("Ignoring blacklisted group " + g.getIdentifier());
+                processLog.info("Ignoring blacklisted group " + g.getIdentifier());
             }
         });
 
-        ArrayList<ItemDescription> copy = new ArrayList<>(input.getItemDescriptions());
+        ArrayList<ItemDescription> copy = new ArrayList<>(input.getItemDescriptions().all());
         copy.forEach(item -> {
 
             String group = item.getGroup();
@@ -64,7 +62,7 @@ public class GroupResolver {
                 Pattern p = Pattern.compile(s);
                 return (Function<String, Boolean>) s1 -> p.matcher(s1).matches();
             } catch (Exception e) {
-                log.warn("Failed to compile group matcher pattern " + s);
+                processLog.warn("Failed to compile group matcher pattern " + s);
                 return (Function<String, Boolean>) s1 -> s1.contains(s);
             }
 

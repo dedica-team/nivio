@@ -29,7 +29,7 @@ public class AllGroupsGraph implements Rendered<mxGraph, mxCell> {
 
         List<LandscapeItem> items = new ArrayList<>();
         groups.forEach((groupName, groupItem) -> {
-            List<LandscapeItem> serviceItems = groupItem.getItems();
+            List<Item> serviceItems = groupItem.getItems();
             mxRectangle groupGeometry = subgraphs.get(groupName).getBounds();
             mxCell groupnode = (mxCell) graph.insertVertex(
                     graph.getDefaultParent(),
@@ -67,12 +67,13 @@ public class AllGroupsGraph implements Rendered<mxGraph, mxCell> {
 
         GroupConnections groupConnections = new GroupConnections();
 
-        items.forEach(service -> {
-            final String group = service.getGroup();
+        items.forEach(item -> {
+            final String group = item.getGroup();
             mxCell groupNode = findGroupCell(group);
 
+
             //provider
-            ((Item) service).getProvidedBy().forEach(provider -> {
+            ((Item) item).getProvidedBy().forEach(provider -> {
                 String pGroup = provider.getGroup() == null ? Group.COMMON : provider.getGroup();
                 mxCell providerGroupNode = findGroupCell(pGroup);
                 String providerGroup = providerGroupNode.getId();
@@ -86,7 +87,7 @@ public class AllGroupsGraph implements Rendered<mxGraph, mxCell> {
             });
 
             //dataflow
-            Set<? extends RelationItem> relations = service.getRelations(RelationType.DATAFLOW);
+            Set<? extends RelationItem> relations = item.getRelations(RelationType.DATAFLOW);
             relations.forEach(dataFlowItem -> {
                 Item targetItem = (Item) dataFlowItem.getTarget();
                 if (targetItem == null) return;

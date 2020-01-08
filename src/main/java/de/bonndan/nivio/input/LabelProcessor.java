@@ -1,4 +1,6 @@
-package de.bonndan.nivio.input.dto;
+package de.bonndan.nivio.input;
+
+import de.bonndan.nivio.input.dto.ItemDescription;
 
 import java.util.Arrays;
 import java.util.List;

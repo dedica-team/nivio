@@ -28,8 +28,8 @@ public class Dld4eRenderer implements Renderer<String> {
     @Override
     public String render(LandscapeImpl landscape) {
 
-        landscape.getItems().forEach(this::addService);
-        landscape.getItems().forEach(this::addLinks);
+        landscape.getItems().stream().forEach(this::addService);
+        landscape.getItems().stream().forEach(this::addLinks);
 
         layouter.arrange(icons, groups);
 

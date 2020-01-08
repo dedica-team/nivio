@@ -4,18 +4,15 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeItem;
-import de.bonndan.nivio.model.Items;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class LandscapeItemsTest {
+public class DiffResolverTest {
 
     private ArrayList<Item> items;
     private LandscapeImpl landscape;
@@ -42,44 +39,6 @@ public class LandscapeItemsTest {
     }
 
     @Test
-    public void pickFails() {
-
-        assertThrows(RuntimeException.class,() -> Items.pick("s1", "xxx", items));
-        assertThrows(RuntimeException.class,() -> Items.pick("s3", "g1", items));
-    }
-
-    @Test
-    public void pick() {
-
-        assertNotNull(Items.pick("s1", "g1", items));
-        assertNotNull(Items.pick("s2", "g1", items));
-
-        Item s2 = new Item();
-        s2.setIdentifier("s2");
-        s2.setGroup("g1");
-        s2.setLandscape(landscape);
-
-        assertNotNull(Items.pick(s2, items));
-    }
-
-    @Test
-    public void pickGracefulWithoutGroup() {
-
-        assertNotNull(Items.pick("s2", null, items));
-    }
-
-    @Test
-    public void pickGracefulFails() {
-
-        Item s2 = new Item();
-        s2.setIdentifier("s2");
-        s2.setGroup("g2"); //othergroup
-        s2.setLandscape(landscape);
-        items.add(s2);
-
-        assertThrows(RuntimeException.class,() -> Items.pick("s2", null, items));
-    }
-    @Test
     public void added() {
 
         ArrayList<LandscapeItem> items1 = new ArrayList<>();
@@ -90,7 +49,7 @@ public class LandscapeItemsTest {
         ArrayList<LandscapeItem> items2 = new ArrayList<>();
         items2.add(new ItemDescription("c"));
 
-        List<LandscapeItem> added = Indexer.added(items1, items2);
+        List<LandscapeItem> added = DiffResolver.added(items1, items2);
         assertEquals(2, added.size());
     }
 
@@ -107,7 +66,7 @@ public class LandscapeItemsTest {
         items2.add(new ItemDescription("b"));
         items2.add(new ItemDescription("c"));
 
-        List<LandscapeItem> added = Indexer.added(items1, items2);
+        List<LandscapeItem> added = DiffResolver.added(items1, items2);
         assertEquals(0, added.size());
     }
 
@@ -123,7 +82,7 @@ public class LandscapeItemsTest {
         items2.add(new ItemDescription("c"));
         items2.add(new ItemDescription("d"));
 
-        List<LandscapeItem> removed = Indexer.removed(items1, items2);
+        List<LandscapeItem> removed = DiffResolver.removed(items1, items2);
         assertEquals(1, removed.size());
     }
 
@@ -139,7 +98,7 @@ public class LandscapeItemsTest {
         items2.add(new ItemDescription("a"));
         items2.add(new ItemDescription("b"));
 
-        List<LandscapeItem> removed = Indexer.removed(items1, items2);
+        List<LandscapeItem> removed = DiffResolver.removed(items1, items2);
         assertEquals(0, removed.size());
     }
 
@@ -155,7 +114,7 @@ public class LandscapeItemsTest {
         items2.add(new ItemDescription("a"));
         items2.add(new ItemDescription("b"));
 
-        List<LandscapeItem> kept = Indexer.kept(items1, items2);
+        List<LandscapeItem> kept = DiffResolver.kept(items1, items2);
         assertEquals(2, kept.size());
     }
 
@@ -171,7 +130,7 @@ public class LandscapeItemsTest {
         items2.add(new ItemDescription("d"));
         items2.add(new ItemDescription("e"));
 
-        List<LandscapeItem> kept = Indexer.kept(items1, items2);
+        List<LandscapeItem> kept = DiffResolver.kept(items1, items2);
         assertEquals(0, kept.size());
     }
 }

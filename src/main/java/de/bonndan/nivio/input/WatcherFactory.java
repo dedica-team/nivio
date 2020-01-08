@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class WatcherFactory {
@@ -42,7 +43,7 @@ public class WatcherFactory {
             seed.getLocations().forEach(url -> {
                 LandscapeDescription env;
                 if (URLHelper.isLocal(url)) {
-                    DirectoryWatcher directoryWatcher = null;
+                    DirectoryWatcher directoryWatcher;
                     File file;
                     try {
                         file = new File(url.toURI());
@@ -56,6 +57,7 @@ public class WatcherFactory {
                 } else {
                     env = LandscapeDescriptionFactory.fromString(fileFetcher.get(url), url);
                 }
+                Objects.requireNonNull(env);
                 indexer.reIndex(env);
             });
         } catch (MalformedURLException e) {

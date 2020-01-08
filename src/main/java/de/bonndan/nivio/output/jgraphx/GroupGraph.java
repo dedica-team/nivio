@@ -7,7 +7,6 @@ import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeItem;
-import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +17,7 @@ public class GroupGraph {
     private final mxGraph graph;
     private Map<LandscapeItem, mxCell> serviceVertexes = new HashMap<>();
 
-    public GroupGraph(List<LandscapeItem> items) {
+    public GroupGraph(List<Item> items) {
         graph = new mxGraph();
 
         items.forEach(service -> {

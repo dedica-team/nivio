@@ -26,8 +26,7 @@ public class Group implements GroupItem {
     private String team;
     private String color;
     private Map<String, URL> links = new HashMap<>();
-    private List<LandscapeItem> items = new ArrayList<>();
-
+    private List<Item> items = new ArrayList<>();
 
     public Group() {
 
@@ -100,7 +99,7 @@ public class Group implements GroupItem {
     }
 
     @JsonBackReference
-    public List<LandscapeItem> getItems() {
+    public List<Item> getItems() {
         return items;
     }
 }

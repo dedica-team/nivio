@@ -3,7 +3,6 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.model.Items;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.model.RelationBuilder;
 import org.springframework.util.StringUtils;
@@ -15,24 +14,23 @@ import java.util.Optional;
 /**
  * Resolves the dynamic endpoints of relations.
  */
-public class RelationResolver {
+public class RelationEndpointResolver {
 
     private final ProcessLog log;
 
-    public RelationResolver(ProcessLog log) {
+    public RelationEndpointResolver(ProcessLog log) {
         this.log = log;
     }
 
     public void processRelations(LandscapeDescription landscape) {
-        List<ItemDescription> all = landscape.getItemDescriptions();
-        all.forEach(itemDescription -> resolveRelations(itemDescription, all));
+        landscape.getItemDescriptions().all().forEach(itemDescription -> resolveRelations(itemDescription, landscape.getItemDescriptions()));
     }
 
-    private void resolveRelations(ItemDescription description, List<ItemDescription> allItems) {
+    private void resolveRelations(ItemDescription description, ItemDescriptions allItems) {
 
         //providers
         description.getProvidedBy().forEach(term -> {
-            Items.query(term, allItems).stream().findFirst().ifPresentOrElse(o -> {
+            allItems.query(term).stream().findFirst().ifPresentOrElse(o -> {
                 RelationDescription rel = RelationBuilder.createProviderDescription((ItemDescription) o, description.getIdentifier());
                 description.addRelation(rel);
             }, () -> log.warn(description.getIdentifier() + ": no provider target found for term " + term));
@@ -52,13 +50,13 @@ public class RelationResolver {
 
     }
 
-    private Optional<ItemDescription> resolveOne(ItemDescription description, String term, List<ItemDescription> allItems) {
+    private Optional<ItemDescription> resolveOne(ItemDescription description, String term, ItemDescriptions allItems) {
 
         if (StringUtils.isEmpty(term)) {
             return Optional.of(description);
         }
 
-        Collection<? extends LandscapeItem> result = Items.query(term, allItems);
+        Collection<? extends LandscapeItem> result = allItems.query(term);
         if (result.size() > 1) {
             log.warn(description.getIdentifier() + ": Found ambiguous sources matching " + term);
             return Optional.empty();

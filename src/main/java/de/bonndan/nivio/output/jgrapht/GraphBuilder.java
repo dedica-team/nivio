@@ -14,8 +14,8 @@ public class GraphBuilder {
     public Graph build(LandscapeImpl landscape) {
         graph = new SimpleGraph<>(LabeledEdge.class);
         this.landscape = landscape;
-        landscape.getItems().forEach(this::addService);
-        landscape.getItems().forEach(this::addLinks);
+        landscape.getItems().stream().forEach(this::addService);
+        landscape.getItems().stream().forEach(this::addLinks);
         return graph;
     }
 
@@ -31,7 +31,7 @@ public class GraphBuilder {
         item.getRelations().stream()
                 .filter(rel -> rel.getSource().equals(item))
                 .forEach(flow -> {
-                    LandscapeItem target = Items.pick(flow.getTarget().getIdentifier(), null, landscape.getItems());
+                    LandscapeItem target = landscape.getItems().pick(flow.getTarget().getIdentifier(), null );
                     graph.addEdge(item, target, new LabeledEdge(flow.getDescription()));
                 });
     }

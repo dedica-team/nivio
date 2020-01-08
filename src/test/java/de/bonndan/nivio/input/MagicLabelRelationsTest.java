@@ -6,10 +6,12 @@ import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class MagicLabelRelationsTest {
 
@@ -24,7 +26,7 @@ class MagicLabelRelationsTest {
         input = new LandscapeDescription();
         input.getItemDescriptions().add(item);
 
-        resolver = new MagicLabelRelations();
+        resolver = new MagicLabelRelations(new ProcessLog(mock(Logger.class)));
     }
 
     @Test
@@ -36,7 +38,7 @@ class MagicLabelRelationsTest {
         elastic.setIdentifier("elastic-server-as89");
         elastic.setName("elastic");
 
-        LandscapeImpl landscape = getLandscape(elastic);
+        LandscapeImpl landscape = getLandscapeWith(elastic);
 
         //when
         resolver.process(input, landscape);
@@ -54,7 +56,7 @@ class MagicLabelRelationsTest {
         Item elastic = new Item();
         elastic.setIdentifier("elastic");
 
-        LandscapeImpl landscape = getLandscape(elastic);
+        LandscapeImpl landscape = getLandscapeWith(elastic);
 
         //when
         resolver.process(input, landscape);
@@ -72,7 +74,7 @@ class MagicLabelRelationsTest {
         Item api = new Item();
         api.setIdentifier("api-foo");
 
-        LandscapeImpl landscape = getLandscape(api);
+        LandscapeImpl landscape = getLandscapeWith(api);
 
         //when
         resolver.process(input, landscape);
@@ -91,7 +93,7 @@ class MagicLabelRelationsTest {
         api.setIdentifier("api.foo.123");
         api.setName("api-foo");
 
-        LandscapeImpl landscape = getLandscape(api);
+        LandscapeImpl landscape = getLandscapeWith(api);
 
         //when
         resolver.process(input, landscape);
@@ -109,7 +111,7 @@ class MagicLabelRelationsTest {
         Item api = new Item();
         api.setIdentifier("api.foo.123");
         api.setName("api-foo");
-        LandscapeImpl landscape = getLandscape(api);
+        LandscapeImpl landscape = getLandscapeWith(api);
 
         Item api2 = new Item();
         api2.setIdentifier("api.foo.234");
@@ -131,7 +133,7 @@ class MagicLabelRelationsTest {
         //given
         Item hihi = new Item();
         hihi.setIdentifier("baz");
-        LandscapeImpl landscape = getLandscape(hihi);
+        LandscapeImpl landscape = getLandscapeWith(hihi);
 
         //when
         resolver.process(input, landscape);
@@ -149,8 +151,8 @@ class MagicLabelRelationsTest {
         Item hihi = new Item();
         hihi.setIdentifier(IDENTIFIER);
 
-        input.getItemDescriptions().get(0).getLabels().put("BASE_URL", IDENTIFIER);
-        LandscapeImpl landscape = getLandscape(hihi);
+        item.getLabels().put("BASE_URL", IDENTIFIER);
+        LandscapeImpl landscape = getLandscapeWith(hihi);
 
         //when
         resolver.process(input, landscape);
@@ -164,7 +166,7 @@ class MagicLabelRelationsTest {
         //given
         Item db = new Item();
         db.setIdentifier("x.y.z");
-        LandscapeImpl landscape = getLandscape(db);
+        LandscapeImpl landscape = getLandscapeWith(db);
 
         //when
         resolver.process(input, landscape);
@@ -178,7 +180,7 @@ class MagicLabelRelationsTest {
     }
 
 
-    private LandscapeImpl getLandscape(Item target) {
+    private LandscapeImpl getLandscapeWith(Item target) {
         LandscapeImpl landscape = new LandscapeImpl();
         landscape.addItem(target);
         return landscape;

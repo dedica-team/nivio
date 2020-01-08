@@ -29,7 +29,7 @@ public class LabelToFieldProcessor {
     }
 
     public void process(LandscapeDescription input, LandscapeImpl landscape) {
-        input.getItemDescriptions().forEach(item -> {
+        input.getItemDescriptions().all().forEach(item -> {
             item.getLabels().entrySet().stream()
                     .filter(entry -> entry.getKey().toLowerCase().startsWith(NIVIO_LABEL_PREFIX))
                     .forEach(entry -> {

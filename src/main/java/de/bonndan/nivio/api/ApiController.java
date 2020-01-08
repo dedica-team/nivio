@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -47,7 +48,7 @@ public class ApiController {
      *
      * @return dto list
      */
-    @RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public Iterable<LandscapeDTO> landscapes() {
         Iterable<LandscapeImpl> all = landscapeRepository.findAll();
 
@@ -124,15 +125,14 @@ public class ApiController {
             return new ProcessLog(new ProcessingException(null, "Could not find landscape " + identifier));
 
         FullyQualifiedIdentifier from = FullyQualifiedIdentifier.from(fqi);
-        if (from == null)
-            return new ProcessLog(new ProcessingException(landscape, "Could use fully qualified identifier " + fqi));
 
-        Optional<LandscapeItem> item = Items.find(FullyQualifiedIdentifier.build(from.getLandscape(), from.getGroup(), from.getIdentifier()), landscape.getItems());
-        if (!item.isPresent()) {
+        FullyQualifiedIdentifier tmp = FullyQualifiedIdentifier.build(from.getLandscape(), from.getGroup(), from.getIdentifier());
+        Optional<Item> item = landscape.getItems().find(tmp);
+        if (item.isEmpty()) {
             return new ProcessLog(new ProcessingException(landscape, "Could find item " + fqi));
         }
 
-        landscape.getItems().remove(item.get());
+        landscape.getItems().all().remove(item.get());
         return process(landscape);
     }
 
@@ -143,7 +143,7 @@ public class ApiController {
         if (landscape == null)
             return ResponseEntity.notFound().build();
 
-        return new ResponseEntity<>(List.copyOf(landscape.getItems()), HttpStatus.OK);
+        return new ResponseEntity<>(List.copyOf(landscape.getItems().all()), HttpStatus.OK);
     }
 
     @RequestMapping(path = "/landscape/{identifier}/log", method = RequestMethod.GET)
@@ -177,7 +177,7 @@ public class ApiController {
         File file = new File(landscape.getSource());
         if (file.exists()) {
             LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
-            return indexer.reIndex(landscapeDescription);
+            return indexer.reIndex(Objects.requireNonNull(landscapeDescription));
         }
 
         URL url = URLHelper.getURL(landscape.getSource());

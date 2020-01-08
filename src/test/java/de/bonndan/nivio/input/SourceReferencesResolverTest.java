@@ -8,15 +8,12 @@ import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.util.*;
 
-import static de.bonndan.nivio.model.Items.pick;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,7 +47,7 @@ public class SourceReferencesResolverTest {
         Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
         sourceReferencesResolver.resolve(landscapeDescription, templatesAndTargets);
 
-        ItemDescription mapped = (ItemDescription) pick("blog-server", null, landscapeDescription.getItemDescriptions());
+        ItemDescription mapped = landscapeDescription.getItemDescriptions().pick("blog-server", null);
         assertNotNull(mapped);
         assertEquals("blog1", mapped.getShortName());
         assertEquals("name2", mapped.getName());
