@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
 
-    public static final int SIZE_FACTOR = 40;
+    public static final int SIZE_DIVISOR = 40;
     private final IconService iconService;
 
     public RenderedXYMapFactory(IconService iconService) {
@@ -39,13 +39,9 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
         });
 
         renderedMap.landscape = landscape.getName();
-        renderedMap.sizeFactor = SIZE_FACTOR;
         renderedMap.width = maxX.get() - minX.get();
         renderedMap.height = maxY.get() - minY.get();
-        int size = Math.max(renderedMap.width, renderedMap.height) / SIZE_FACTOR;
-
-        renderedMap.items.forEach(item -> item.size = size);
-        renderedMap.groups.forEach(groupMapItem -> groupMapItem.size = size);
+        renderedMap.sizeFactor = Math.max(renderedMap.width, renderedMap.height) / SIZE_DIVISOR;
 
         return renderedMap;
     }

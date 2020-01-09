@@ -29,12 +29,4 @@ class GroupMapItem extends MapItem {
         this.x2 = x2;
         this.y2 = y2;
     }
-
-    public Hex getStart() {
-        return asHex(x1, y1, size);
-    }
-
-    public Hex getEnd() {
-        return asHex(x2, y2, size);
-    }
 }

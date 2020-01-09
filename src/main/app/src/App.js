@@ -9,6 +9,7 @@ import NPattern from "./NPattern";
 import NGroup from "./NGroup";
 import NLabel from "./NLabel";
 import {INITIAL_VALUE, ReactSVGPanZoom, TOOL_AUTO} from 'react-svg-pan-zoom';
+import HexCoords from "./HexCoords";
 
 class App extends Component {
 
@@ -79,8 +80,17 @@ class App extends Component {
         let occupied = [];
 
         map.items.forEach(vertex => {
+            let hexCoords = new HexCoords(vertex.x, vertex.y, map.sizeFactor);
+            vertex.hex = hexCoords.toHex();
             byId[vertex.id] = vertex;
             occupied.push(vertex.hex);
+        });
+
+        map.groups.forEach(group => {
+            let hexCoords1 = new HexCoords(group.x1, group.y1, map.sizeFactor);
+            let hexCoords2 = new HexCoords(group.x2, group.y2, map.sizeFactor);
+            group.start = hexCoords1.toHex();
+            group.end = hexCoords2.toHex();
         });
         let pathFinder = new PathFinder(occupied);
         let maxX = map.width;

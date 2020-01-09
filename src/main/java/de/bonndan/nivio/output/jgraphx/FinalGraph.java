@@ -12,12 +12,7 @@ import com.mxgraph.view.mxStylesheet;
 
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.*;
-import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.util.RootPath;
-
-import de.bonndan.nivio.output.Icon;
-import de.bonndan.nivio.output.IconService;
-import de.bonndan.nivio.output.LocalServer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +21,6 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -35,13 +29,12 @@ import static de.bonndan.nivio.output.Color.getGroupColor;
 
 /**
  * This class is responsible for rendering services and groups nicely with bells and whistles.
- * <p>
- * It receives
+ *
+ * The output is now mainly used as basis for further processing of landscape items.
  */
 public class FinalGraph implements Rendered<mxGraph, mxCell> {
 
     public static final int GRID_SIZE = 20;
-    private static final String ICON_ATTRIBUTE = "icon";
     private final int DEFAULT_ICON_SIZE = 50;
     private final IconService iconService;
 
@@ -280,7 +273,7 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
             return type.getUrl().toString();
         }
 
-        Hashtable<String, Object> style = new Hashtable<String, Object>();
+        Hashtable<String, Object> style = new Hashtable<>();
         style.put(mxConstants.STYLE_SHAPE, mxCircularImageShape.NAME);
         style.put(mxConstants.STYLE_STROKEWIDTH, 3);
         style.put(mxConstants.STYLE_FILLCOLOR, "white");

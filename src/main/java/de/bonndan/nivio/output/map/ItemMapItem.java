@@ -43,8 +43,4 @@ class ItemMapItem extends MapItem {
         relations.addAll(collect);
     }
 
-    public Hex getHex() {
-        return asHex(x, y, size);
-    }
-
 }
