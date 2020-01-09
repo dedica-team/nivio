@@ -27,13 +27,15 @@ class NGroup extends Component {
         let startPoint = HexUtils.hexToPixel(start, layout);
         let endPoint = HexUtils.hexToPixel(end, layout);
         let width = endPoint.x - startPoint.x + 4 * size;
-        let height = endPoint.y - startPoint.y + 5*size;
+        let height = endPoint.y - startPoint.y + 5 * size;
         return (
             <g>
-                <rect x={startPoint.x - 2 * size} y={startPoint.y - 2* size} rx="50" ry="50" width={width} height={height}
+                <rect x={startPoint.x - 2 * size} y={startPoint.y - 2 * size} rx="50" ry="50" width={width}
+                      height={height}
                       style={cellStyle}
                       stroke={fillId} fill={fillId} className="group"/>
-                <text x={startPoint.x - 2 * size + width/2} y={startPoint.y + height - 3*size} fill={fillId}  font-size="24" width={width} textAnchor={'middle'}>{group.name}</text>
+                <text x={startPoint.x - 2 * size + width / 2} y={startPoint.y + height - 3 * size} fill={fillId}
+                      font-size="24" width={width} textAnchor={'middle'}>{group.name}</text>
             </g>
         );
     }

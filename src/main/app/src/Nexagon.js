@@ -46,11 +46,10 @@ class Nexagon extends Component {
         const fillId = (fill) ? `url(#${fill})` : null;
         return (
             <g className={classNames('hexagon-group', className)}
-                transform={`translate(${pixel.x}, ${pixel.y})`}
-                onClick={e => this.onClick(e)}>
+               transform={`translate(${pixel.x}, ${pixel.y})`}
+               onClick={e => this.onClick(e)}>
                 <g className="hexagon">
                     <circle cx="0" cy="0" r="40" fill={fillId} style={cellStyle}/>
-                    {/*<polygon points={points} fill={fillId} style={cellStyle}/>*/}
                     {this.props.children}
                 </g>
             </g>

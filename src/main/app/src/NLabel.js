@@ -39,15 +39,15 @@ class NLabel extends Component {
                 <NText key={item.identifier} x={size + padding + (width / 2)} y={5}
                        width={width} item={item} onClick={e => this.itemPopup(e, this)}/>
 
-                <foreignObject width={width} height="220" y={padding} x={size + padding } style={style}>
+                <foreignObject width={width} height="220" y={padding} x={size + padding} style={style}>
                     <div className="details">
-                        {item.landscapeItem.description && (<div >"{item.landscapeItem.description}"<br /></div>)}
-                        {item.landscapeItem.owner && (<div >Owner: {item.landscapeItem.owner}</div>)}
-                        {item.landscapeItem.team && (<div >Team: {item.landscapeItem.team}</div>)}
-                        {item.landscapeItem.contact && (<div >Contact: {item.landscapeItem.contact}</div>)}
-                        {item.landscapeItem.software && (<div >Software: {item.landscapeItem.software}</div>)}
-                        {item.landscapeItem.version && (<div >Version: {item.landscapeItem.version}</div>)}
-                        {item.landscapeItem.lifecycle && (<div >Lifecycle: {item.landscapeItem.lifecycle}</div>)}
+                        {item.landscapeItem.description && (<div>"{item.landscapeItem.description}"<br/></div>)}
+                        {item.landscapeItem.owner && (<div>Owner: {item.landscapeItem.owner}</div>)}
+                        {item.landscapeItem.team && (<div>Team: {item.landscapeItem.team}</div>)}
+                        {item.landscapeItem.contact && (<div>Contact: {item.landscapeItem.contact}</div>)}
+                        {item.landscapeItem.software && (<div>Software: {item.landscapeItem.software}</div>)}
+                        {item.landscapeItem.version && (<div>Version: {item.landscapeItem.version}</div>)}
+                        {item.landscapeItem.lifecycle && (<div>Lifecycle: {item.landscapeItem.lifecycle}</div>)}
                     </div>
                 </foreignObject>
 
