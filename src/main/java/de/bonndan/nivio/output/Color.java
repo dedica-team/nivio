@@ -53,10 +53,11 @@ public class Color {
     }
 
     public static String getGroupColor(String name, LandscapeImpl landscape) {
+        return getGroupColor(landscape.getGroups().getOrDefault(name, Group.DEFAULT_GROUP));
+    }
 
-        GroupItem group = landscape.getGroups().getOrDefault(name, Group.DEFAULT_GROUP);
-
+    public static String getGroupColor(GroupItem group) {
         return Optional.ofNullable(group.getColor())
-                .orElse(Color.nameToRGB(name, Color.DARKGRAY));
+                .orElse(Color.nameToRGB(group.getIdentifier(), Color.DARKGRAY));
     }
 }

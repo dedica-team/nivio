@@ -2,11 +2,15 @@ package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.docs.DocsController;
 import de.bonndan.nivio.output.jgraphx.JGraphXRenderController;
+import org.springframework.hateoas.Link;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -61,5 +65,13 @@ public class LandscapeDTOFactory {
                         .withMedia(MediaType.APPLICATION_JSON_VALUE)
                         .withTitle("Processing log")
         );
+
+        Link appLink = new Link(LocalServer.url("/app/index.html?landscape=") + URLEncoder.encode(dto.getIdentifier(), StandardCharsets.UTF_8));
+        dto.add(
+                appLink.withRel("app")
+                        .withMedia(MediaType.TEXT_HTML_VALUE)
+                        .withTitle("Landscape map")
+        );
+
     }
 }

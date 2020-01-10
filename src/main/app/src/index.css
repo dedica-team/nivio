@@ -1,0 +1,79 @@
+body {
+  margin: 0;
+  padding: 1em;
+  font-family: sans-serif;
+  background: #f0f0f0;
+}
+
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -moz-user-drag: element;
+  -webkit-user-drag: element;
+  -khtml-user-drag: element;
+  user-drag: element;
+}
+
+
+svg g {
+
+  stroke-width: 0.3;
+}
+
+svg g .other {
+  fill: transparent;
+}
+
+svg g:hover {
+  fill-opacity: 1;
+}
+svg g:hover text {
+  fill-opacity: 1;
+}
+
+svg g polygon {
+  stroke: #3F51B5;
+  stroke-width: 0.2;
+  transition: fill-opacity .2s;
+}
+
+svg g circle {
+  stroke-width: 0.4em;
+}
+
+svg g text {
+  fill-opacity: 0.4;
+  transition: fill-opacity .2s;
+}
+
+svg g rect.group {
+  fill-opacity: 0.4;
+  transition: fill-opacity .2s;
+  stroke-width: 0.0em;
+}
+
+svg g.label {
+  cursor: pointer;
+}
+
+svg g.label rect {
+  fill-opacity: 1;
+  stroke-width: 0.1em;
+  stroke: #3F51B5;
+}
+
+svg path {
+  fill: none;
+  stroke-width: 0.4em;
+  stroke-opacity: 0.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+svg div.details {
+  border: 1px solid #3F51B5;
+  border-radius: 10px;
+  background-color: white;
+}

@@ -5,7 +5,7 @@ import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.net.MalformedURLException;
@@ -20,7 +20,7 @@ import static de.bonndan.nivio.output.Icons.DEFAULT_ICON;
  * <p>
  * Rather than shipping copyright protected trademark logos Nivio uses this
  */
-@Component
+@Service
 public class IconService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IconService.class);
