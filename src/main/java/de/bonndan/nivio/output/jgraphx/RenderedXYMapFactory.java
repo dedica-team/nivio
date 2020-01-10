@@ -50,21 +50,8 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
         RenderedXYMap renderedMap = new RenderedXYMap();
 
         rendered.getItemObjects().forEach((item, cell) -> {
-            mxGeometry geometry = cell.getGeometry();
-
-            long x;
-            long y;
-            if (cell.getParent().getGeometry() != null) {
-                x = Math.round(geometry.getX() + cell.getParent().getGeometry().getX());
-                y = Math.round(geometry.getY() + cell.getParent().getGeometry().getY());
-            } else {
-                x = Math.round(geometry.getX());
-                y = Math.round(geometry.getY());
-            }
-            long width = Math.round(geometry.getWidth());
-            long height = Math.round(geometry.getHeight());
-
-            renderedMap.items.add(new ItemMapItem(item, iconService.getIcon(item).getUrl().toString(), x, y, width, height));
+            DimensionsFromCell dim = getDimensionsFromCell(cell);
+            renderedMap.items.add(new ItemMapItem(item, iconService.getIcon(item).getUrl().toString(), dim.getX(), dim.getY(), dim.getWidth(), dim.getHeight()));
         });
 
         rendered.getGroupObjects().forEach((group, cell) -> {
@@ -86,24 +73,15 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
                 if (y > maxY.get()) maxY.set(y);
             });
 
-            mxGeometry geometry = cell.getGeometry();
-            long x;
-            long y;
-            if (cell.getParent().getGeometry() != null) {
-                x = Math.round(geometry.getX() + cell.getParent().getGeometry().getX());
-                y = Math.round(geometry.getY() + cell.getParent().getGeometry().getY());
-            } else {
-                x = Math.round(geometry.getX());
-                y = Math.round(geometry.getY());
-            }
+            DimensionsFromCell dim = getDimensionsFromCell(cell);
 
             renderedMap.groups.add(
                     new GroupMapItem(
                             group,
-                            x + minX.get(),
-                            y + minY.get(),
-                            x + maxX.get(),
-                            y + maxY.get()
+                            dim.getX() + minX.get(),
+                            dim.getY() + minY.get(),
+                            dim.getX() + maxX.get(),
+                            dim.getY() + maxY.get()
                     )
             );
         });
@@ -111,4 +89,50 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
         return renderedMap;
     }
 
+    private DimensionsFromCell getDimensionsFromCell(mxCell cell) {
+        mxGeometry geometry = cell.getGeometry();
+        long x;
+        long y;
+        if (cell.getParent().getGeometry() != null) {
+            x = Math.round(geometry.getX() + cell.getParent().getGeometry().getX());
+            y = Math.round(geometry.getY() + cell.getParent().getGeometry().getY());
+        } else {
+            x = Math.round(geometry.getX());
+            y = Math.round(geometry.getY());
+        }
+        long width = Math.round(geometry.getWidth());
+        long height = Math.round(geometry.getHeight());
+        return new DimensionsFromCell(x, y, width, height);
+    }
+
+    private static class DimensionsFromCell {
+
+        private long x;
+        private long y;
+        private long width;
+        private long height;
+
+        public DimensionsFromCell(long x, long y, long width, long height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+        }
+
+        public long getX() {
+            return x;
+        }
+
+        public long getY() {
+            return y;
+        }
+
+        public long getWidth() {
+            return width;
+        }
+
+        public long getHeight() {
+            return height;
+        }
+    }
 }
