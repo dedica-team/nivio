@@ -39,7 +39,7 @@ class PathFinder {
                 template.tiles = path.tiles;
                 path.tiles.push(possibleSteps.shift());
 
-                for (var i = 0; i < possibleSteps.length; i++) {
+                for (let i = 0; i < possibleSteps.length; i++) {
                     let clone = new TilePath();
                     path.tiles.forEach(tile => clone.tiles.push(tile));
                     clone.tiles.pop();
