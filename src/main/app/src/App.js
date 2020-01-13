@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import './App.css';
 import {HexGrid, Layout} from 'react-hexgrid';
 import Nexagon from "./Nexagon";
 import NPath from "./NPath";
@@ -65,7 +64,7 @@ class App extends Component {
     }
 
     render() {
-
+        const css = require('./svg.css').toString();
         const size = 40;
         const padding = 10;
 
@@ -114,6 +113,9 @@ class App extends Component {
                                  value={this.state.value} onChangeValue={value => this.changeValue(value)}
                 >
                     <HexGrid viewBox={viewBox} key={'viewbox'}>
+                        <style>
+                            {css}
+                        </style>
                         <Layout key={'layout'} size={{x: size, y: size}} flat={true} spacing={1.1}>
 
                             {/*

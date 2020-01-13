@@ -1,24 +1,8 @@
-body {
-  margin: 0;
-  padding: 1em;
+svg {
   font-family: sans-serif;
-  background: #f0f0f0;
 }
-
-[draggable] {
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
-  -moz-user-drag: element;
-  -webkit-user-drag: element;
-  -khtml-user-drag: element;
-  user-drag: element;
-}
-
 
 svg g {
-
   stroke-width: 0.3;
 }
 
