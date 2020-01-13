@@ -135,10 +135,10 @@ class App extends Component {
                                             let paths = [];
                                             let path0 = new TilePath(vertex.hex);
                                             paths.push(path0);
-                                            let target = byId[rel].hex;
+                                            let target = byId[rel.target].hex;
                                             pathFinder.findPaths(paths, target);
                                             let path = pathFinder.sortAndFilterPaths(paths);
-                                            return (<NPath tilePath={path} fill={vertex.color}/>);
+                                            return (<NPath tilePath={path} fill={vertex.color} relation={rel}/>);
                                         });
                                     }
                                 )}

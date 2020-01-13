@@ -8,6 +8,8 @@
     "react-hexgrid": "^1.0.3",
     "react-scripts": "^3.3.0",
     "react-svg-pan-zoom": "^3.7.1",
+    "svg-path-interpolator": "^0.2.5",
+    "svg-path-properties": "^1.0.2",
     "yarn": "^1.21.1"
   },
   "scripts": {

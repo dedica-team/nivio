@@ -3,6 +3,8 @@ package de.bonndan.nivio.output.map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeItem;
+import de.bonndan.nivio.model.RelationItem;
+import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.output.Color;
 import org.springframework.util.StringUtils;
 
@@ -25,7 +27,7 @@ class ItemMapItem extends MapItem {
     public double height;
     public final String group;
     public final LandscapeItem landscapeItem;
-    public final List<String> relations = new ArrayList<>();
+    public final List<Relation> relations = new ArrayList<>();
 
     public ItemMapItem(Item item, String image, long x, long y, long width, long height) {
         super(item.getFullyQualifiedIdentifier().toString(), StringUtils.isEmpty(item.getName()) ? item.getIdentifier() : item.getName(), image, "item", Color.getGroupColor(item));
@@ -36,11 +38,23 @@ class ItemMapItem extends MapItem {
         this.height = height;
         this.group = item.getGroup();
         this.landscapeItem = item;
-        List<String> collect = item.getRelations().stream()
+        List<Relation> collect = item.getRelations().stream()
                 .filter(rel -> rel.getSource().equals(item))
-                .map(rel -> rel.getTarget().getFullyQualifiedIdentifier().toString())
+                .map(Relation::new)
                 .collect(Collectors.toList());
         relations.addAll(collect);
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private static class Relation {
+        public final String target;
+        public final String type;
+        public final String format;
+
+        public Relation(RelationItem<Item> rel) {
+            this.target = rel.getTarget().getFullyQualifiedIdentifier().toString();
+            this.type = rel.getType().name();
+            this.format = rel.getFormat();
+        }
+    }
 }
