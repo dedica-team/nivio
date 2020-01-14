@@ -16,7 +16,9 @@ public class LandscapeConfig {
     }
 
     public void setJgraphx(JGraphXConfig jgraphx) {
-        this.jgraphx = jgraphx;
+        if (jgraphx != null) {
+            this.jgraphx = jgraphx;
+        }
     }
 
     public boolean isGreedy() {
