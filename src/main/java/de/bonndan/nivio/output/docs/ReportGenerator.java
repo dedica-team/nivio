@@ -73,6 +73,7 @@ public class ReportGenerator extends HtmlGenerator {
         return div(
                 div(
                         iff(!isEmpty(item.getNote()), div(item.getNote()).attr("class", "alert alert-warning float float-right")),
+                        a().attr("id", item.getFullyQualifiedIdentifier().toString()),
                         h3(
                                 img().attr("src", iconService.getIcon(item).getUrl()).attr("width", "30px").attr("class", "img-fluid"),
                                 rawHtml(" "),
@@ -127,7 +128,8 @@ public class ReportGenerator extends HtmlGenerator {
                                         .map(df -> li(rawHtml(df.getType() + " "
                                                 + ifPresent(df.getFormat()) + " "
                                                 + ifPresent(df.getDescription())
-                                                + " &#10142; " + df.getTarget()))
+                                                + " &#10142; "),
+                                                a(df.getTarget().toString()).attr("href", "#" +((Item)df.getTarget()).getFullyQualifiedIdentifier()))
                                         )
                                 )
                         ),
