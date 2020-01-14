@@ -68,7 +68,7 @@ public class ReportGenerator extends HtmlGenerator {
         String groupColor = "#" + Color.nameToRGB(item.getGroup());
 
         var links = item.getLinks().entrySet().stream()
-                .map(stringURLEntry -> a(stringURLEntry.getKey()).attr("href", stringURLEntry.getValue().toString()))
+                .map(stringURLEntry -> a(" " + stringURLEntry.getKey()).attr("href", stringURLEntry.getValue().toString()))
                 .collect(Collectors.toList());
         return div(
                 div(
@@ -125,12 +125,19 @@ public class ReportGenerator extends HtmlGenerator {
                         iff(ĥasRelations, h4("Relations")),
                         iff(ĥasRelations, ul().with(
                                 item.getRelations().stream()
-                                        .map(df -> li(rawHtml(df.getType() + " "
-                                                + ifPresent(df.getFormat()) + " "
-                                                + ifPresent(df.getDescription())
-                                                + " &#10142; "),
-                                                a(df.getTarget().toString()).attr("href", "#" +((Item)df.getTarget()).getFullyQualifiedIdentifier()))
-                                        )
+                                        .map(df -> {
+
+                                            String direction = (df.getSource().equals(item)) ?
+                                                    " &#10142; " : " incoming from ";
+                                            Item end = (df.getSource().equals(item)) ?
+                                                    (Item)df.getTarget() : (Item)df.getSource();
+
+                                            return li(rawHtml(df.getType() + " "
+                                                            + ifPresent(df.getFormat()) + " "
+                                                            + ifPresent(df.getDescription())
+                                                            + direction),
+                                                    a(end.toString()).attr("href", "#" + end.getFullyQualifiedIdentifier()));
+                                        })
                                 )
                         ),
 
