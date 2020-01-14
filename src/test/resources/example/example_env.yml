@@ -17,7 +17,7 @@ config:
     forceConstantFactor: 8
 
     # higher value is cpu intensive, but can lead to better layouts
-    #maxIterations: 1000
+    maxIterations: 1000
 
 groups:
   content:
