@@ -26,7 +26,7 @@ class NPath extends Component {
         let path = this.getPoints();
 
         if (relation.type === "PROVIDER") {
-            return (<path d={path} stroke={fillId} d={path} />)
+            return (<path d={path} stroke={fillId} />)
         }
 
         const properties = new svgPathProperties(path);
