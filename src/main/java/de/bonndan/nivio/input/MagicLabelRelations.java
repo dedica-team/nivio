@@ -1,12 +1,12 @@
 package de.bonndan.nivio.input;
 
-import com.googlecode.cqengine.IndexedCollection;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.model.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.LandscapeItem;
+import de.bonndan.nivio.model.RelationItem;
+import de.bonndan.nivio.model.RelationType;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -111,7 +111,6 @@ public class MagicLabelRelations extends Resolver {
         String key;
         String value;
         private final List<String> possibleTargets;
-        RelationType relationType;
 
         LabelMatch(String key, String value, List<String> possibleTargets) {
             this.key = key;
