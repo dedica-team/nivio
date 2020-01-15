@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+import static de.bonndan.nivio.output.map.JsonRenderController.MAP_JSON_ENDPOINT;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -66,7 +67,11 @@ public class LandscapeDTOFactory {
                         .withTitle("Processing log")
         );
 
-        Link appLink = new Link(LocalServer.url("/app/index.html?landscape=") + URLEncoder.encode(dto.getIdentifier(), StandardCharsets.UTF_8));
+        String data = URLEncoder.encode(
+                LocalServer.url("/render/" + dto.getIdentifier() + "/" + MAP_JSON_ENDPOINT),
+                StandardCharsets.UTF_8
+        );
+        Link appLink = new Link(LocalServer.url("/app/index.html?data=" + data));
         dto.add(
                 appLink.withRel("app")
                         .withMedia(MediaType.TEXT_HTML_VALUE)

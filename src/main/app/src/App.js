@@ -46,13 +46,13 @@ class App extends Component {
 
     getMap() {
         let params = new URLSearchParams(window.location.search);
-        let landscape = params.get('landscape');
-        if (landscape === undefined) {
-            alert("landscape param missing");
+        let data = params.get('data');
+        if (data === undefined) {
+            alert("data param missing");
             return;
         }
 
-        fetch('http://localhost:8081/render/' + landscape + '/map.json')
+        fetch(data)
             .then((response) => {
                 return response.json()
             })

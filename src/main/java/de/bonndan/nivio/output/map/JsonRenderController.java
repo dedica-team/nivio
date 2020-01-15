@@ -26,6 +26,7 @@ import java.util.Optional;
 public class JsonRenderController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonRenderController.class);
+    public static final String MAP_JSON_ENDPOINT = "map.json";
 
     private final LandscapeRepository landscapeRepository;
     private final IconService iconService;
@@ -41,7 +42,7 @@ public class JsonRenderController {
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/map.json")
+    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/" + MAP_JSON_ENDPOINT)
     public ResponseEntity<String> hex(
             @PathVariable(name = "landscape") final String landscapeIdentifier,
             @RequestParam(value = "size", required = false) Integer size
