@@ -1,10 +1,7 @@
 package de.bonndan.nivio.output.map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeItem;
-import de.bonndan.nivio.model.RelationItem;
-import de.bonndan.nivio.model.RelationType;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Color;
 import org.springframework.util.StringUtils;
 
@@ -25,6 +22,7 @@ class ItemMapItem extends MapItem {
     public long y;
     public double width;
     public double height;
+    public final String status;
     public final String group;
     public final LandscapeItem landscapeItem;
     public final List<Relation> relations = new ArrayList<>();
@@ -38,6 +36,7 @@ class ItemMapItem extends MapItem {
         this.height = height;
         this.group = item.getGroup();
         this.landscapeItem = item;
+        this.status = Status.highestOf(item.getStatuses()).toString();
         List<Relation> collect = item.getRelations().stream()
                 .filter(rel -> rel.getSource().equals(item))
                 .map(Relation::new)

@@ -32,14 +32,20 @@ class NLabel extends Component {
     render() {
         const {size, item, padding, width} = this.props;
         let showDetails = this.state.showDetails;
-        let style = showDetails ? {display: 'block'} : {display: 'none'};
+        let style =  {
+            stroke: item.status
+        };
+        let detailsStyle =  {
+            display: showDetails ? 'block':'none'
+        };
+
         return (
             <g className={'label'}>
-                <rect x={size + padding} y={-10} rx="10" ry="10" fill={'white'} width={width} height={size / 2}/>
+                <rect x={size + padding} y={-10} rx="10" ry="10" fill={'white'} width={width} height={size / 2}  style={style}/>
                 <NText key={item.identifier} x={size + padding + (width / 2)} y={5}
                        width={width} item={item} onClick={e => this.itemPopup(e, this)}/>
 
-                <foreignObject width={width} height="220" y={padding} x={size + padding} style={style}>
+                <foreignObject width={width} height="220" y={padding} x={size + padding} style={detailsStyle}>
                     <div className="details">
                         {item.landscapeItem.description && (<div>"{item.landscapeItem.description}"<br/></div>)}
                         {item.landscapeItem.owner && (<div>Owner: {item.landscapeItem.owner}</div>)}

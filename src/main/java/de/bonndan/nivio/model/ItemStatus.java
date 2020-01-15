@@ -3,7 +3,7 @@ package de.bonndan.nivio.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.validation.constraints.NotEmpty;
 
-public class ServiceStatus implements StatusItem {
+public class ItemStatus implements StatusItem {
 
     @JsonBackReference
     private Item item;

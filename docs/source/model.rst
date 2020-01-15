@@ -80,18 +80,18 @@ A item can have the following attributes:
 * **costs** running costs of the item. Stored as string
 * **lifecycle** life cycle phase. One of "planned", "integration", "production", "end of life" (abbrevs work)
 * **statuses** status objects, represented in colors
-  * label: stability, capability, health, security ....)
-  * status: green, yellow, orange, red, brown
-  * message: Everything ok.
+    * label: stability, capability, health, security ....)
+    * status: green, yellow, orange, red, brown
+    * message: Everything ok.
 * **interfaces** an array of provided interfaces or endpoints
-  * description: description
-  * format: media type or binary format
-  * url: an url pointing to the interface
+    * description: description
+    * format: media type or binary format
+    * url: an url pointing to the interface
 * **relations** connections to other items
-  * type: provider (hard dependency) or data flow (soft dependency)
-  * description: description
-  * target: a item identifier
-  * format: media type or binary format
+    * type: provider (hard dependency) or data flow (soft dependency)
+    * description: description
+    * target: a item identifier
+    * format: media type or binary format
 * **providedBy** array of references to other items (identifiers)
 
 
@@ -187,6 +187,17 @@ For instance
 
 
 will set the related values (here: name and relations). Remember to scape URLs with double quotes.
+
+Labels can be set using docker-compose files, too. However, docker labels not not allow arrays, so use comma separated strings:
+
+.. code-block:: yaml
+   :linenos:
+
+    services:
+      foo:
+        labels:
+          nivio.name: A nice name
+          nivio.providedBy: "bar, baz"
 
 
 Relations between landscape items

@@ -220,11 +220,11 @@ public class Item implements LandscapeItem {
 
         existing.ifPresentOrElse(
                 serviceStatus -> {
-                    ((ServiceStatus) serviceStatus).setStatus(statusItem.getStatus());
-                    ((ServiceStatus) serviceStatus).setMessage(statusItem.getMessage());
+                    ((ItemStatus) serviceStatus).setStatus(statusItem.getStatus());
+                    ((ItemStatus) serviceStatus).setMessage(statusItem.getMessage());
                 },
                 () -> {
-                    var added = new ServiceStatus();
+                    var added = new ItemStatus();
                     added.setItem(this);
                     added.setLabel(statusItem.getLabel());
                     added.setStatus(statusItem.getStatus());
