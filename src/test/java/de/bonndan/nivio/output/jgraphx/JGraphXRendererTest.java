@@ -78,8 +78,10 @@ class JGraphXRendererTest {
     }
 
     @Test
-    public void debugRenderInout() throws IOException {
-        debugRender("/src/test/resources/example/inout");
+    public void renderInout() throws IOException {
+        String path = "/src/test/resources/example/inout";
+        LandscapeImpl landscape = getLandscape(path + ".yml");
+        debugRenderLandscape(path, landscape, false);
     }
 
     @Test

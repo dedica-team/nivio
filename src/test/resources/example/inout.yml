@@ -57,15 +57,27 @@ items:
       - target: nivio
         description: maybe
 
+  - identifier: csv
+    group: input
+    name: CSV files
+    relations:
+      - target: nivio
+
   - identifier: nivio
     name: Nivio
     group: nivio
     relations:
       - target: png
       - target: report
+      - target: svg
 
   - identifier: png
     name: Rendered Graph
+    type: nivio
+    group: output
+
+  - identifier: svg
+    name: Interactive Graph
     type: nivio
     group: output
 
