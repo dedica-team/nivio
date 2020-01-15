@@ -182,11 +182,11 @@
             <version>2.3.0</version>
         </dependency>
 
-        <!-- hex -->
+        <!-- csv parsing -->
         <dependency>
-            <groupId>com.github.Hexworks.mixite</groupId>
-            <artifactId>mixite.core-jvm</artifactId>
-            <version>2018.2.0-RELEASE</version>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.0</version>
         </dependency>
     </dependencies>
 
