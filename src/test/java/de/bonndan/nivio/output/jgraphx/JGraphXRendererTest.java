@@ -16,8 +16,10 @@ import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.notification.NotificationService;
+import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -60,7 +62,9 @@ class JGraphXRendererTest {
     }
 
     private mxGraph debugRenderLandscape(String path, LandscapeImpl landscape, boolean debugMode) throws IOException {
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(null);
+        IconService iconService = new IconService();
+        iconService.setImageProxy("");
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(debugMode ? null : iconService);
         jGraphXRenderer.setDebugMode(debugMode);
 
         mxGraph graph = jGraphXRenderer.render(landscape).getRendered();
@@ -85,6 +89,7 @@ class JGraphXRendererTest {
     }
 
     @Test
+    @Disabled("Requires network connection without debug mode")
     public void renderInout() throws IOException {
         String path = "/src/test/resources/example/inout";
         LandscapeImpl landscape = getLandscape(path + ".yml");
@@ -152,6 +157,7 @@ class JGraphXRendererTest {
     }
 
     @Test
+    @Disabled("Requires network connection without debug mode")
     public void renderCSV() throws IOException {
 
         formatFactory = ItemDescriptionFormatFactory.with(new ItemDescriptionFactoryCSV(new FileFetcher(new HttpService())));
