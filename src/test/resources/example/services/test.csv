@@ -1,4 +1,4 @@
-service;id;desc
-foo;foo;This does nothing
-bar;bar;
-Super Service;super1;superior
+service;id;desc;targets
+foo;foo;This does nothing;
+bar;bar;;foo, super1
+Super Service;super1;superior;foo

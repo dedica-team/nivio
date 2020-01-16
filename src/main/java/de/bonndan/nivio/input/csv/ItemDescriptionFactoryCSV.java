@@ -37,7 +37,7 @@ public class ItemDescriptionFactoryCSV implements ItemDescriptionFactory {
         String content = fileFetcher.get(reference, baseUrl);
         CSVReader reader = getReader(reference, content);
 
-        Map<String, String> mapping = (Map<String, String>) reference.getProperty("mapping");
+        Map<String, Object> mapping = (Map<String, Object>) reference.getProperty("mapping");
         if (mapping == null) {
             throw new ProcessingException(reference.getLandscapeDescription(), "mapping must be present in configuration.");
         }
@@ -48,13 +48,16 @@ public class ItemDescriptionFactoryCSV implements ItemDescriptionFactory {
         reader.iterator().forEachRemaining(strings -> {
             ItemDescription itemDescription = new ItemDescription();
             mapping.forEach((key, value) -> {
-                Integer colNum = Integer.valueOf(value);
+                Integer colNum = (Integer) value;
 
                 if (IDENTIFIER_KEY.equals(key)) {
                     itemDescription.setIdentifier(strings[colNum]);
                     return;
                 }
 
+                if (colNum >= strings.length) {
+                    return;
+                }
                 //relies on LabelToFieldProcessor running later
                 itemDescription.getLabels().put(LabelToFieldProcessor.NIVIO_LABEL_PREFIX + key, strings[colNum]);
             });
