@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
  */
 public class ItemDescription implements LandscapeItem {
 
+    public static final String LINKS_FIELD = "links";
+
     @NotEmpty
     private String environment;
 

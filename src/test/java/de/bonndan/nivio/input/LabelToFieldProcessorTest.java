@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URL;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class LabelToFieldProcessorTest {
@@ -59,5 +62,25 @@ class LabelToFieldProcessorTest {
         assertEquals("foo", item1.getName());
         assertEquals("bar", item1.getDescription());
         assertEquals(1, item1.getProvidedBy().size());
+    }
+
+    @Test
+    public void links() {
+        ItemDescription item1 = new ItemDescription();
+        item1.getLabels().put("a", "b");
+        item1.getLabels().put("nivio.links", "http://one.com, https://two.net");
+
+        LandscapeDescription input = new LandscapeDescription();
+        input.getItemDescriptions().add(item1);
+
+        //when
+        processor.process(input, null);
+
+        //then
+        Map<String, URL> links = item1.getLinks();
+        assertFalse(links.isEmpty());
+        URL url = links.get("1");
+        assertNotNull(url);
+        assertEquals("http://one.com", url.toString());
     }
 }

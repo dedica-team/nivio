@@ -8,8 +8,11 @@ import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.StringUtils;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -21,6 +24,7 @@ import java.util.Set;
 public class LabelToFieldProcessor {
 
     public static final String NIVIO_LABEL_PREFIX = "nivio.";
+    public static final String COLLECTION_DELIMITER = ",";
 
     private final ProcessLog logger;
 
@@ -54,9 +58,27 @@ public class LabelToFieldProcessor {
                 myAccessor.setPropertyValue(name, Arrays.asList(o));
                 return;
             }
+
             if (propertyType != null && propertyType.isAssignableFrom(Set.class)) {
                 String[] o = getParts(value);
                 myAccessor.setPropertyValue(name, Set.of(o));
+                return;
+            }
+
+            if (propertyType != null && propertyType.isAssignableFrom(Map.class)) {
+                String[] o = getParts(value);
+                Map propertyValue = (Map) myAccessor.getPropertyValue(name);
+                for (int i = 0; i < o.length; i++) {
+                    if (ItemDescription.LINKS_FIELD.equals(name)) {
+                        try {
+                            propertyValue.put(String.valueOf(i+1), new URL(o[i]));
+                        } catch (MalformedURLException e) {
+                            logger.warn("Failed to parse link " + o[i]);
+                        }
+                    } else {
+                        propertyValue.put(String.valueOf(i+1), o[i]);
+                    }
+                }
                 return;
             }
 
@@ -67,7 +89,7 @@ public class LabelToFieldProcessor {
     }
 
     private static String[] getParts(String value) {
-        String[] split = StringUtils.split(value, ",");
+        String[] split = StringUtils.split(value, COLLECTION_DELIMITER);
         if (split == null) {
             return new String[]{value.trim()};
         }
