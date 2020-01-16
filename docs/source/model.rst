@@ -9,50 +9,8 @@ or business reasons. For example, a company department might model ALL its appli
 or tagging to further separate the applications. A second landscape could be used to model a future layout with a different
 infrastructure. Both landscapes could have items in common (like a database, load balancer etc.), so their configuration can be reused.
 
-
-Landscape Items and Groups
---------------------------
-
-A landscape consists of several groups (think of bounded contexts) and the three layers ingress, items, and infrastructure
-for technical separation. Any item can only be part of one group and layer.
-
-**Service configuration file**
-
-.. code-block:: yaml
-   :linenos:
-
-    items:
-      - identifier: blog-server
-        shortName: blog1
-        group: content
-
-      - identifier: auth-gateway
-        shortName: blog1
-        layer: ingress
-        group: content
-
-      - identifier: DB1
-        software: MariaDB
-        version: 10.3.11
-        type: database
-        layer: infrastructure
-
-    groups:
-      content:
-        description: All services responsible to provide information on the web.
-        owner: Joe Armstrong
-        team: Team Content
-        contact: joe@acme.org
-        color: "#345345"
-        links:
-          wiki: http://wiki.acme.org/teamContent
-
-      infrastructure:
-        team: Admins
-        contains:
-          - DB1
-          - "identifier LIKE 'DB1'" #same
-
+Landscape Items
+---------------
 
 A item can have the following attributes:
 
@@ -95,6 +53,8 @@ A item can have the following attributes:
 * **providedBy** array of references to other items (identifiers)
 
 
+Item Groups
+-----------
 Groups can have the following attributes:
 
 * **identifier**: a unique identifier in the landscape. Provided automatically via the dictionary key, do not set it
@@ -105,6 +65,44 @@ Groups can have the following attributes:
 * **contact** support/notification contact (email) may be addressed in case of errors
 * **color** a hex color code for rendering
 * **links** a map/dictionary of urls to more information
+
+**Service configuration file**
+
+.. code-block:: yaml
+   :linenos:
+
+    items:
+      - identifier: blog-server
+        shortName: blog1
+        group: content
+
+      - identifier: auth-gateway
+        shortName: blog1
+        layer: ingress
+        group: content
+
+      - identifier: DB1
+        software: MariaDB
+        version: 10.3.11
+        type: database
+        layer: infrastructure
+
+    groups:
+      content:
+        description: All services responsible to provide information on the web.
+        owner: Joe Armstrong
+        team: Team Content
+        contact: joe@acme.org
+        color: "#345345"
+        links:
+          wiki: http://wiki.acme.org/teamContent
+
+      infrastructure:
+        team: Admins
+        contains:
+          - DB1
+          - "identifier LIKE 'DB1'" #same
+
 
 Item Identification and Referencing
 ------------------------------------

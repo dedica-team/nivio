@@ -140,6 +140,29 @@ from environment variables. To exclude internal stacks (like those responsible f
         format: rancher1
 
 
+Reading from csv
+-----------------------------
+
+Nivio can parse csv files regarding one row as landscape item. The order of the columns in the file is important, since
+headers are ignored and not mapping automatically. Instead, each column number (starting at zero) can be assigned to an
+item property in the "mapping" configuration. Additionally, the csv separator char can be set and the number of lines to
+skip (usually 1 for the header row).
+
+.. code-block:: yaml
+   :linenos:
+
+    sources:
+     - url: "./services/test.csv"
+       format: csv
+       mapping:
+         identifier: 1
+         name: 0
+         description: 2
+         providedBy: 3
+       separator: ";"
+       skipLines: 1
+
+
 Deleting items
 -----------------
 
