@@ -70,7 +70,6 @@ class ItemDescriptionFactoryCSVTest {
     }
 
     @Test
-
     public void failsWithoutMapping() {
 
         SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/test.csv");
@@ -79,7 +78,21 @@ class ItemDescriptionFactoryCSVTest {
         assertThrows(ProcessingException.class, () -> {
             factoryCSV.getDescriptions(file, null);
         });
+    }
 
+    @Test
+    public void failsWithoutIdentifierInMapping() {
+
+        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/test.csv");
+        Map<String, String> mapping = new HashMap<>();
+        mapping.put("name", "0");
+        file.setProperty("mapping", mapping);
+
+        ItemDescriptionFactoryCSV factoryCSV = new ItemDescriptionFactoryCSV(fileFetcher);
+
+        assertThrows(ProcessingException.class, () -> {
+            factoryCSV.getDescriptions(file, null);
+        });
     }
 
     private String getRootPath() {
