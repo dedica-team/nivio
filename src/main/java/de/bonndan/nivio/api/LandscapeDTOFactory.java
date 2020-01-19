@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-import static de.bonndan.nivio.output.map.JsonRenderController.MAP_JSON_ENDPOINT;
+import static de.bonndan.nivio.output.map.MapController.MAP_JSON_ENDPOINT;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 

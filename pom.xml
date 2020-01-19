@@ -188,6 +188,15 @@
             <artifactId>mixite.core-jvm</artifactId>
             <version>2018.2.0-RELEASE</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-all -->
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-all</artifactId>
+            <version>1.12</version>
+            <type>pom</type>
+        </dependency>
+
     </dependencies>
 
     <build>

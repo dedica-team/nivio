@@ -18,23 +18,24 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.*;
 
 
 @Controller
 @RequestMapping(path = "/render")
-public class JsonRenderController {
+public class MapController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JsonRenderController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapController.class);
     public static final String MAP_JSON_ENDPOINT = "map.json";
+    private static final String MAP_SVG_ENDPOINT = "map.svg";
 
     private final LandscapeRepository landscapeRepository;
     private final IconService iconService;
     private final MapFactory<mxGraph, mxCell> mapFactory;
 
-    public JsonRenderController(LandscapeRepository landscapeRepository,
-                                IconService iconService,
-                                MapFactory<mxGraph, mxCell> mapFactory
+    public MapController(LandscapeRepository landscapeRepository,
+                         IconService iconService,
+                         MapFactory<mxGraph, mxCell> mapFactory
     ) {
         this.landscapeRepository = landscapeRepository;
         this.iconService = iconService;
@@ -67,6 +68,35 @@ public class JsonRenderController {
             );
         } catch (Exception ex) {
             LOGGER.warn("Could not render graph: ", ex);
+            throw ex;
+        }
+    }
+
+    @CrossOrigin(methods = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/" + MAP_SVG_ENDPOINT)
+    public ResponseEntity<String> svg(@PathVariable(name = "landscape") final String landscapeIdentifier) {
+        Optional<LandscapeImpl> landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier);
+        if (landscape.isEmpty()) {
+            throw new NotFoundException("Not found");
+        }
+
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
+
+        try {
+            Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape.get());
+            RenderedXYMap renderedMap = mapFactory.getRenderedMap(landscape.get(), render);
+
+            SvgFactory svgFactory = new SvgFactory(renderedMap);
+            String svg = svgFactory.getXML();
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_TYPE, "image/svg+xml");
+            return new ResponseEntity<>(
+                     svg,
+                    headers,
+                    HttpStatus.OK
+            );
+        } catch (Exception ex) {
+            LOGGER.warn("Could not render svg: ", ex);
             throw ex;
         }
     }
