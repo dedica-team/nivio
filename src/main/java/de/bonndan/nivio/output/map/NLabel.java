@@ -1,18 +1,16 @@
 package de.bonndan.nivio.output.map;
 
+import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
-
-import static j2html.TagCreator.div;
+import org.springframework.util.StringUtils;
 
 class NLabel extends Component {
 
     private final ItemMapItem item;
-    private final String className;
-    final int width, size, padding;
+    private final int width, size, padding;
 
-    NLabel(ItemMapItem item, String className, int width, int size, int padding) {
+    NLabel(ItemMapItem item, int width, int size, int padding) {
         this.item = item;
-        this.className = className;
         this.width = width;
         this.size = size;
         this.padding = padding;
@@ -20,18 +18,6 @@ class NLabel extends Component {
 
 
     public DomContent render() {
-        var style = "stroke: " + item.status;
-
-        /*
-        {item.landscapeItem.description && (<div>"{item.landscapeItem.description}"<br/></div>)}
-        {item.landscapeItem.owner && (<div>Owner: {item.landscapeItem.owner}</div>)}
-        {item.landscapeItem.team && (<div>Team: {item.landscapeItem.team}</div>)}
-        {item.landscapeItem.contact && (<div>Contact: {item.landscapeItem.contact}</div>)}
-        {item.landscapeItem.software && (<div>Software: {item.landscapeItem.software}</div>)}
-        {item.landscapeItem.version && (<div>Version: {item.landscapeItem.version}</div>)}
-        {item.landscapeItem.lifecycle && (<div>Lifecycle: {item.landscapeItem.lifecycle}</div>)}
-         */
-
         var rect = SvgTagCreator.rect()
                 .attr("x", size + padding)
                 .attr("y", -10)
@@ -40,15 +26,34 @@ class NLabel extends Component {
                 .attr("fill", "white")
                 .attr("width", width)
                 .attr("height", size / 2)
-                .attr("style", style);
+                .attr("style", "stroke: " + item.status);
         NText nText = new NText(item, size + padding + (width / 2), 5, "", width);
-        var fo = SvgTagCreator.foreignObject(div("").attr("class", "details"))
-                .attr("width", width)
-                .attr("height", 220)
-                .attr("y", padding)
-                .attr("x", size + padding);
 
-        return SvgTagCreator.g(rect, nText.render(), fo).attr("class", "label");
+        ContainerTag g = SvgTagCreator.g(rect, nText.render()).attr("class", "label");
+        if (!StringUtils.isEmpty(item.landscapeItem.getName()))
+            g.attr("data-name", item.landscapeItem.getName());
+        if (!StringUtils.isEmpty(item.landscapeItem.getDescription()))
+            g.attr("data-description", item.landscapeItem.getDescription());
+        if (!StringUtils.isEmpty(item.landscapeItem.getOwner()))
+            g.attr("data-owner", item.landscapeItem.getOwner());
+        if (!StringUtils.isEmpty(item.landscapeItem.getTeam()))
+            g.attr("data-team", item.landscapeItem.getTeam());
+        if (!StringUtils.isEmpty(item.landscapeItem.getContact()))
+            g.attr("data-contact", item.landscapeItem.getContact());
+        if (!StringUtils.isEmpty(item.landscapeItem.getCapability()))
+            g.attr("data-capability", item.landscapeItem.getCapability());
+        if (!StringUtils.isEmpty(item.landscapeItem.getSoftware()))
+            g.attr("data-software", item.landscapeItem.getSoftware());
+        if (!StringUtils.isEmpty(item.landscapeItem.getVersion()))
+            g.attr("data-version", item.landscapeItem.getVersion());
+        if (!StringUtils.isEmpty(item.landscapeItem.getScale()))
+            g.attr("data-scale", item.landscapeItem.getScale());
+        if (!StringUtils.isEmpty(item.landscapeItem.getLifecycle()))
+            g.attr("data-lifecycle", item.landscapeItem.getLifecycle());
+        if (!StringUtils.isEmpty(item.landscapeItem.getCosts()))
+            g.attr("data-costs", item.landscapeItem.getCosts());
+
+        return g;
     }
 }
 
