@@ -51,7 +51,7 @@ public class ItemDescriptionFactoryCSV implements ItemDescriptionFactory {
         reader.iterator().forEachRemaining(strings -> {
             ItemDescription itemDescription = new ItemDescription();
             mapping.forEach((key, value) -> {
-                Integer colNum = (Integer) value;
+                Integer colNum = Integer.valueOf((String)value);
 
                 if (IDENTIFIER_KEY.equals(key)) {
                     itemDescription.setIdentifier(strings[colNum]);
