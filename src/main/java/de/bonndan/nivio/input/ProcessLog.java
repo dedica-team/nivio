@@ -71,7 +71,9 @@ public class ProcessLog {
         if (landscape == null)
             return null;
 
-        return LandscapeDTOFactory.from(landscape);
+        LandscapeDTO dto = LandscapeDTOFactory.from(landscape);
+        dto.groups = landscape.getGroups();
+        return dto;
     }
 
     public List<Entry> getMessages() {
