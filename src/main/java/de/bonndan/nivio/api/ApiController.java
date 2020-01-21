@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @RestController
-@RequestMapping(path = "/")
+@RequestMapping(path = "/api")
 public class ApiController {
 
     private final LandscapeRepository landscapeRepository;
@@ -48,6 +48,7 @@ public class ApiController {
      *
      * @return dto list
      */
+    @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public Iterable<LandscapeDTO> landscapes() {
         Iterable<LandscapeImpl> all = landscapeRepository.findAll();
@@ -65,6 +66,7 @@ public class ApiController {
         };
     }
 
+    @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(path = "/landscape/{identifier}")
     public ResponseEntity<LandscapeDTO> landscape(@PathVariable String identifier) {
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
@@ -136,6 +138,8 @@ public class ApiController {
         return process(landscape);
     }
 
+
+    @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(path = "/landscape/{identifier}/items", method = RequestMethod.GET)
     public ResponseEntity<List<Item>> items(@PathVariable String identifier) {
 
@@ -146,6 +150,7 @@ public class ApiController {
         return new ResponseEntity<>(List.copyOf(landscape.getItems().all()), HttpStatus.OK);
     }
 
+    @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(path = "/landscape/{identifier}/log", method = RequestMethod.GET)
     public ResponseEntity<ProcessLog> log(@PathVariable String identifier) {
 
