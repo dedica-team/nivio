@@ -145,8 +145,8 @@ Reading from csv
 
 Nivio can parse csv files regarding one row as landscape item. The order of the columns in the file is important, since
 headers are ignored and not mapping automatically. Instead, each column number (starting at zero) can be assigned to an
-item property in the "mapping" configuration. Additionally, the csv separator char can be set and the number of lines to
-skip (usually 1 for the header row).
+item property in the "mapping" configuration. Additionally, the csv separator char and the number of lines to
+skip (usually 1 for the header row) can be set.
 
 .. code-block:: yaml
    :linenos:

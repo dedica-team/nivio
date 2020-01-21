@@ -17,9 +17,6 @@ import java.util.Set;
 
 /**
  * Inspects item description labels for keys starting with "nivio" and tries to set the corresponding values to fields.
- *
- *
- *
  */
 public class LabelToFieldProcessor {
 
@@ -71,12 +68,12 @@ public class LabelToFieldProcessor {
                 for (int i = 0; i < o.length; i++) {
                     if (ItemDescription.LINKS_FIELD.equals(name)) {
                         try {
-                            propertyValue.put(String.valueOf(i+1), new URL(o[i]));
+                            propertyValue.put(String.valueOf(i + 1), new URL(o[i]));
                         } catch (MalformedURLException e) {
                             logger.warn("Failed to parse link " + o[i]);
                         }
                     } else {
-                        propertyValue.put(String.valueOf(i+1), o[i]);
+                        propertyValue.put(String.valueOf(i + 1), o[i]);
                     }
                 }
                 return;

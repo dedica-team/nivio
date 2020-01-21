@@ -40,6 +40,7 @@ class ItemDescriptionFactoryCSVTest {
 
         ItemDescriptionFactoryCSV factoryCSV = new ItemDescriptionFactoryCSV(fileFetcher);
         List<ItemDescription> services = factoryCSV.getDescriptions(file, null);
+
         assertEquals(3, services.size());
         ItemDescription foo = services.get(0);
         assertNotNull(foo);

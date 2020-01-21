@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ class LabelToFieldProcessorTest {
     }
 
     @Test
+    @DisplayName("Ensure comma separated strings are parsed properly")
     void process() {
         ItemDescription item1 = new ItemDescription();
         item1.getLabels().put("a", "b");
@@ -45,6 +47,7 @@ class LabelToFieldProcessorTest {
 
 
     @Test
+    @DisplayName("Ensure comma separated strings are parsed properly")
     public void listFieldLabelWithoutDelimiter() {
         ItemDescription item1 = new ItemDescription();
         item1.getLabels().put("a", "b");
@@ -65,6 +68,7 @@ class LabelToFieldProcessorTest {
     }
 
     @Test
+    @DisplayName("Ensure comma separated links are parsed properly")
     public void links() {
         ItemDescription item1 = new ItemDescription();
         item1.getLabels().put("a", "b");
@@ -82,5 +86,9 @@ class LabelToFieldProcessorTest {
         URL url = links.get("1");
         assertNotNull(url);
         assertEquals("http://one.com", url.toString());
+
+        url = links.get("2");
+        assertNotNull(url);
+        assertEquals("https://two.net", url.toString());
     }
 }

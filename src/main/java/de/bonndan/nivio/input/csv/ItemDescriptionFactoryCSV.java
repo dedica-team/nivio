@@ -14,7 +14,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.StringReader;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ItemDescriptionFactoryCSV implements ItemDescriptionFactory {
@@ -28,7 +31,7 @@ public class ItemDescriptionFactoryCSV implements ItemDescriptionFactory {
 
     @Override
     public List<String> getFormats() {
-        return Collections.singletonList("csv");
+        return List.of("csv");
     }
 
     @Override
@@ -39,7 +42,7 @@ public class ItemDescriptionFactoryCSV implements ItemDescriptionFactory {
 
         Map<String, Object> mapping = (Map<String, Object>) reference.getProperty("mapping");
         if (mapping == null) {
-            throw new ProcessingException(reference.getLandscapeDescription(), "mapping must be present in configuration.");
+            throw new ProcessingException(reference.getLandscapeDescription(), "'mapping' must be present in configuration.");
         }
         if (!mapping.containsKey(IDENTIFIER_KEY)) {
             throw new ProcessingException(reference.getLandscapeDescription(), "'" + IDENTIFIER_KEY + "' must be present in configured mapping.");
