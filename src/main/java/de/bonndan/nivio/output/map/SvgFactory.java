@@ -93,7 +93,7 @@ class SvgFactory extends Component {
                                         fill = Base64.getEncoder().encodeToString(vertex.id.getBytes());
                                     }
                                     var width = 200;
-                                    NLabel nLabel = new NLabel(vertex, "service", width, size, padding);
+                                    NLabel nLabel = new NLabel(vertex, width, size, padding);
 
                                     Nexagon nexagon = new Nexagon(nLabel.render(), vertex.hex, layout, fill, "stroke: #" + vertex.color);
                                     return nexagon.render();
