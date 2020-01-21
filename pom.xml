@@ -188,6 +188,15 @@
             <artifactId>opencsv</artifactId>
             <version>5.0</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-all -->
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-all</artifactId>
+            <version>1.12</version>
+            <type>pom</type>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -290,7 +299,7 @@
                         </goals>
                         <phase>prepare-package</phase>
                         <configuration>
-                            <outputDirectory>${project.build.outputDirectory}/static/app</outputDirectory>
+                            <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${frontend-src-dir}/build</directory>

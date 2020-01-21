@@ -1,14 +1,9 @@
 import React, {Component} from 'react';
-import {HexGrid, Layout} from 'react-hexgrid';
-import Nexagon from "./Nexagon";
-import NPath from "./NPath";
-import PathFinder from "./PathFinder";
-import TilePath from "./TilePath";
-import NPattern from "./NPattern";
-import NGroup from "./NGroup";
-import NLabel from "./NLabel";
+import {ThemeProvider, createTheme, Arwes, Footer, Button, Words, Content, Loading} from 'arwes';
 import {INITIAL_VALUE, ReactSVGPanZoom, TOOL_AUTO} from 'react-svg-pan-zoom';
-import HexCoords from "./HexCoords";
+import {ReactSvgPanZoomLoader, SvgLoaderSelectElement} from 'react-svg-pan-zoom-loader'
+import {BrowserRouter as Router, Redirect, Switch, Route, Link} from "react-router-dom";
+import Terminal from 'react-console-emulator'
 
 class App extends Component {
 
@@ -17,34 +12,43 @@ class App extends Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            map: {},
+            landscapes: null,
+            landscape: null,
             tool: TOOL_AUTO,
             value: INITIAL_VALUE,
-            defaultZoom: false
+            newLocation: null
+        };
+
+        this.host = window.location.host;
+        let params = new URLSearchParams(window.location.search);
+        let host = params.get('host');
+        if (host !== null) {
+            this.host = host;
         }
     }
 
     componentDidMount() {
-        this.getMap();
+        this.getLandscapes();
     }
 
     changeValue(nextValue) {
         this.setState({value: nextValue})
     }
 
-    fitToViewer() {
-        this.Viewer.fitToViewer()
+    getLandscapes() {
+        fetch(this.host + "/api/")
+            .then((response) => {
+                return response.json()
+            })
+            .then((json) => {
+                this.setState({
+                    landscapes: json,
+                    message: 'Loaded landscapes.'
+                })
+            });
     }
 
-    fitSelection() {
-        this.Viewer.fitSelection(40, 40, 200, 200)
-    }
-
-    zoomOnViewerCenter() {
-        this.Viewer.zoomOnViewerCenter(1.1)
-    }
-
-    getMap() {
+    getMapData(landscape) {
         let params = new URLSearchParams(window.location.search);
         let data = params.get('data');
         if (data === undefined) {
@@ -58,126 +62,116 @@ class App extends Component {
             })
             .then((json) => {
                 this.setState({
-                    map: json
+                    mapData: json,
+                    message: 'Loaded data.'
                 })
             });
     }
 
-    render() {
-        const css = require('./svg.css').toString();
-        const size = 40;
-        const padding = 10;
+    onItemClick(l) {
+        this.setState({landscape: l});
+    }
 
-        let map = this.state.map;
-        if (!map.items) {
-            return <div>Hold tight while items are being fetched...</div>;
+    render() {
+
+        if (this.state.newLocation !== null) {
+            this.setState({newLocation: null});
+            return <Redirect to={this.state.newLocation} />
         }
 
-        //const hexagons = GridGenerator.orientedRectangle(map.maxQ + 10, 3 * map.maxR);
+        let message = this.state.message;
+        return <Router>
+            <ThemeProvider theme={createTheme()}>
+                <Arwes>
+                    <Switch>
+                        <Route exact path="/" render={() => this.Home()}></Route>
+                        <Route path="/landscape" render={() => this.Landscape()}></Route>
+                        <Route path="/help" render={() => this.Help()}></Route>
+                    </Switch>
+                    <Footer animate id={'footer'} style={{position: 'fixed', bottom: 0, width: '100%'}}>
+                        <Link to="/"><Button animate>{'*'}</Button></Link><Words>{message}</Words>
+                        <Terminal commands={this.commands()} promptLabel={'$'} autoFocus={true} noDefaults={true}/>
+                    </Footer>
+                </Arwes>
+            </ThemeProvider>
+        </Router>
+    }
 
-        let byId = {};
-        let occupied = [];
+    commands() {
+        let that = this;
+        return {
+            cd: {
+                description: 'Back to the start.',
+                usage: 'cd',
+                fn: () => that.setState({newLocation: "/"})
+            },
+            help: {
+                description: 'Show help.',
+                usage: 'help',
+                fn: () => that.setState({newLocation: "/help"})
+            }
+        };
+    }
 
-        map.items.forEach(vertex => {
-            let hexCoords = new HexCoords(vertex.x, vertex.y, map.sizeFactor);
-            vertex.hex = hexCoords.toHex();
-            byId[vertex.id] = vertex;
-            occupied.push(vertex.hex);
-        });
+    Help() {
+        return <Content style={{margin: 20}}><h1>Help</h1></Content>
+    }
 
-        map.groups.forEach(group => {
-            let hexCoords1 = new HexCoords(group.x1, group.y1, map.sizeFactor);
-            let hexCoords2 = new HexCoords(group.x2, group.y2, map.sizeFactor);
-            group.start = hexCoords1.toHex();
-            group.end = hexCoords2.toHex();
-        });
-        let pathFinder = new PathFinder(occupied);
-        let maxX = map.width;
-        let maxY = map.height;
-        let viewBox = '-100 -100 ' + maxX * 4 + ' ' + maxY * 4;
-        document.title = map.landscape
+    Home() {
+
+        let landscapes = this.state.landscapes;
+        let content;
+        if (!landscapes) {
+            content = <Loading animate/>;
+        } else {
+            content = landscapes.map(l => {
+                return <Link
+                    to="/landscape"><Button animate onClick={() => this.onItemClick(l)}>{l.name}</Button></Link>
+            });
+        }
+
         return (
-            <div className="App">
-                <div style={ {float: 'right'}}>
-                    <button className="btn" onClick={() => this.zoomOnViewerCenter()}>Zoom in</button>
-                    <button className="btn" onClick={() => this.fitSelection()}>Zoom area 200x200</button>
-                    <button className="btn" onClick={() => this.fitToViewer()}>Fit</button>
-                </div>
+            <Content style={{margin: 20}}>
+                <h1>Landscapes</h1>
+                {content}
+            </Content>
+        );
+    }
+
+    Landscape() {
+
+        let landscape = this.state.landscape;
+        let content;
+        if (!landscape) {
+            content = <Loading animate/>;
+        } else {
+            let data = this.host + '/render/' + landscape.identifier + '/map.svg';
+            /*let proxy = {
+            <>
+                <SvgLoaderSelectElement selector="#tree" onClick={this.onItemClick}
+                                        stroke={'#111111'}/>
+            </>
+        };
+
+             */
+            return <ReactSvgPanZoomLoader src={data} render={(content) => (
                 <ReactSVGPanZoom key={'panzoom'}
                                  width={window.innerWidth * 0.95} height={window.innerHeight * 0.95}
-                                 background={'white'}
+                                 background={'transparent'}
                                  miniatureProps={{position: 'none'}} toolbarProps={{position: 'none'}}
                                  detectAutoPan={false}
                                  ref={Viewer => this.Viewer = Viewer}
                                  tool={this.state.tool} onChangeTool={tool => this.changeTool(tool)}
-                                 value={this.state.value} onChangeValue={value => this.changeValue(value)}
-                >
-                    <HexGrid viewBox={viewBox} key={'viewbox'}>
-                        <style>
-                            {css}
-                        </style>
-                        <Layout key={'layout'} size={{x: size, y: size}} flat={true} spacing={1.1}>
-
-                            {/*
-                        {hexagons.map(hex => <Nexagon q={hex.q} r={hex.r} s={hex.s} className="other"><Text>{hex.q + "," + hex.r}</Text></Nexagon>)}
-                        {hexagons.map(hex => <Nexagon q={hex.q} r={hex.r} s={hex.s} className="other"></Nexagon>)}
-                        */}
-
-                            {
-                                map.groups.map(group => {
-                                    map.items.filter(item => item.group === group.name);
-                                    return (<NGroup key={group.name} group={group}/>);
-                                })
-                            }
-
-                            {
-                                map.items.map(vertex => {
-
-                                        return vertex.relations.map(rel => {
-                                            let paths = [];
-                                            let path0 = new TilePath(vertex.hex);
-                                            paths.push(path0);
-                                            let target = byId[rel.target].hex;
-                                            pathFinder.findPaths(paths, target);
-                                            let path = pathFinder.sortAndFilterPaths(paths);
-                                            return (<NPath tilePath={path} fill={vertex.color} relation={rel}/>);
-                                        });
-                                    }
-                                )}
-
-                            {map.items.map(vertex => {
-
-                                let fill = '';
-                                if (vertex.image)
-                                    fill = btoa(vertex.id);
-                                const width = 200;
-                                return (
-
-                                    <Nexagon key={vertex.landscapeItem.identifier} q={vertex.hex.q} r={vertex.hex.r}
-                                             s={vertex.hex.s} className={"service"} fill={fill} data={vertex}
-                                             cellStyle={{stroke: vertex.color}}>
-                                        <NLabel width={width} size={size} item={vertex} padding={padding}/>
-                                    </Nexagon>
-                                );
-                            })
-                            }
-
-                        </Layout>
-                        {map.items.map(vertex => {
-                            if (vertex.image.length > 0) {
-                                let fill = vertex.image;
-                                let id = btoa(vertex.id);
-                                return (
-                                    <NPattern key={id} id={id} link={fill} size={{x: size - padding, y: size - padding}}
-                                              padding={padding}></NPattern>);
-                            }
-                            return null;
-                        })}
-
-                    </HexGrid>
+                                 value={this.state.value} onChangeValue={value => this.changeValue(value)}>
+                    <svg>
+                        {content}
+                    </svg>
                 </ReactSVGPanZoom>
-            </div>
-        );
+            )}/>
+
+        }
+
+
     }
 }
 

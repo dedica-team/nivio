@@ -3,11 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "arwes": "^1.0.0-alpha.5",
     "react": "^16.10.1",
+    "react-console-emulator": "^3.0.4",
     "react-dom": "^16.10.1",
     "react-hexgrid": "^1.0.3",
+    "react-router-dom": "^5.1.2",
     "react-scripts": "^3.3.0",
     "react-svg-pan-zoom": "^3.7.1",
+    "react-svg-pan-zoom-loader": "^1.4.1",
     "svg-path-interpolator": "^0.2.5",
     "svg-path-properties": "^1.0.2",
     "yarn": "^1.21.1"

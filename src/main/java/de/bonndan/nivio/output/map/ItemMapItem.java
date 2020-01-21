@@ -26,6 +26,7 @@ class ItemMapItem extends MapItem {
     public final String group;
     public final LandscapeItem landscapeItem;
     public final List<Relation> relations = new ArrayList<>();
+    public Hex hex;
 
     public ItemMapItem(Item item, String image, long x, long y, long width, long height) {
         super(item.getFullyQualifiedIdentifier().toString(), StringUtils.isEmpty(item.getName()) ? item.getIdentifier() : item.getName(), image, "item", Color.getGroupColor(item));
@@ -45,7 +46,7 @@ class ItemMapItem extends MapItem {
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private static class Relation {
+    public static class Relation {
         public final String target;
         public final String type;
         public final String format;
