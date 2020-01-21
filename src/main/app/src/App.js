@@ -2,12 +2,8 @@ import React, {Component} from 'react';
 import {ThemeProvider, createTheme, Arwes, Footer, Button, Words, Content, Loading} from 'arwes';
 import {INITIAL_VALUE, ReactSVGPanZoom, TOOL_AUTO} from 'react-svg-pan-zoom';
 import {ReactSvgPanZoomLoader, SvgLoaderSelectElement} from 'react-svg-pan-zoom-loader'
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link
-} from "react-router-dom";
+import {BrowserRouter as Router, Redirect, Switch, Route, Link} from "react-router-dom";
+import Terminal from 'react-console-emulator'
 
 class App extends Component {
 
@@ -19,8 +15,9 @@ class App extends Component {
             landscapes: null,
             landscape: null,
             tool: TOOL_AUTO,
-            value: INITIAL_VALUE
-        }
+            value: INITIAL_VALUE,
+            newLocation: null
+        };
 
         this.host = window.location.host;
         let params = new URLSearchParams(window.location.search);
@@ -45,7 +42,8 @@ class App extends Component {
             })
             .then((json) => {
                 this.setState({
-                    landscapes: json
+                    landscapes: json,
+                    message: 'Loaded landscapes.'
                 })
             });
     }
@@ -64,7 +62,8 @@ class App extends Component {
             })
             .then((json) => {
                 this.setState({
-                    mapData: json
+                    mapData: json,
+                    message: 'Loaded data.'
                 })
             });
     }
@@ -74,24 +73,48 @@ class App extends Component {
     }
 
     render() {
+
+        if (this.state.newLocation !== null) {
+            this.setState({newLocation: null});
+            return <Redirect to={this.state.newLocation} />
+        }
+
+        let message = this.state.message;
         return <Router>
             <ThemeProvider theme={createTheme()}>
                 <Arwes>
                     <Switch>
-                        <Route exact path="/" render={() => this.Home()}>
-                        </Route>
-                        <Route path="/landscape" render={() => this.Landscape()}>
-                        </Route>
+                        <Route exact path="/" render={() => this.Home()}></Route>
+                        <Route path="/landscape" render={() => this.Landscape()}></Route>
+                        <Route path="/help" render={() => this.Help()}></Route>
                     </Switch>
                     <Footer animate id={'footer'} style={{position: 'fixed', bottom: 0, width: '100%'}}>
-                        <Link to="/"><Button animate>{'*'}</Button></Link>
-                        <Words>{'Terminal here'}</Words>
+                        <Link to="/"><Button animate>{'*'}</Button></Link><Words>{message}</Words>
+                        <Terminal commands={this.commands()} promptLabel={'$'} autoFocus={true} noDefaults={true}/>
                     </Footer>
                 </Arwes>
             </ThemeProvider>
         </Router>
+    }
 
+    commands() {
+        let that = this;
+        return {
+            cd: {
+                description: 'Back to the start.',
+                usage: 'cd',
+                fn: () => that.setState({newLocation: "/"})
+            },
+            help: {
+                description: 'Show help.',
+                usage: 'help',
+                fn: () => that.setState({newLocation: "/help"})
+            }
+        };
+    }
 
+    Help() {
+        return <Content style={{margin: 20}}><h1>Help</h1></Content>
     }
 
     Home() {

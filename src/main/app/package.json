@@ -5,6 +5,7 @@
   "dependencies": {
     "arwes": "^1.0.0-alpha.5",
     "react": "^16.10.1",
+    "react-console-emulator": "^3.0.4",
     "react-dom": "^16.10.1",
     "react-hexgrid": "^1.0.3",
     "react-router-dom": "^5.1.2",
