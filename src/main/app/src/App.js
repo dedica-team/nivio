@@ -21,6 +21,13 @@ class App extends Component {
             tool: TOOL_AUTO,
             value: INITIAL_VALUE
         }
+
+        this.host = 'http://localhost:8081';
+        let params = new URLSearchParams(window.location.search);
+        let host = params.get('host');
+        if (host !== null) {
+            this.host = host;
+        }
     }
 
     componentDidMount() {
@@ -44,7 +51,7 @@ class App extends Component {
     }
 
     getLandscapes() {
-        fetch("http://localhost:8081/api/")
+        fetch(this.host + "/api/")
             .then((response) => {
                 return response.json()
             })
@@ -122,14 +129,12 @@ class App extends Component {
 
     Landscape() {
 
-        let landscapes = this.state.landscapes;
         let landscape = this.state.landscape;
         let content;
-        if (!landscapes) {
+        if (!landscape) {
             content = <Loading animate/>;
         } else {
-
-            let data = 'http://localhost:8081/render/nivio:example/map.svg';
+            let data = this.host + '/render/' + landscape.identifier + '/map.svg';
             /*let proxy = {
             <>
                 <SvgLoaderSelectElement selector="#tree" onClick={this.onItemClick}
@@ -139,7 +144,7 @@ class App extends Component {
 
              */
             return <ReactSvgPanZoomLoader src={data} render={(content) => (
-                <div className="App">
+                <div>
                     <div style={{float: 'right'}}>
                         <button className="btn" onClick={() => this.zoomOnViewerCenter()}>Zoom in</button>
                         <button className="btn" onClick={() => this.fitSelection()}>Zoom area 200x200</button>
