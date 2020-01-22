@@ -174,10 +174,7 @@ class App extends Component {
     Landscape() {
 
         let landscape = this.state.landscape;
-        let content;
-        if (!landscape) {
-            content = "loading";
-        } else {
+        if (landscape) {
             let data = this.host + '/render/' + landscape.identifier + '/map.svg';
             const {modalContent} = this.state;
             return <ReactSvgPanZoomLoader src={data} proxy={
@@ -206,10 +203,7 @@ class App extends Component {
                     </ReactSVGPanZoom>
                 </div>
             )}/>
-
         }
-
-
     }
 }
 
