@@ -179,14 +179,7 @@
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-
-        <!-- hex -->
-        <dependency>
-            <groupId>com.github.Hexworks.mixite</groupId>
-            <artifactId>mixite.core-jvm</artifactId>
-            <version>2018.2.0-RELEASE</version>
+            <version>2.5.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-all -->
