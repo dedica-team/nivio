@@ -21,6 +21,95 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Nivio</title>
+
+    <!-- http://aleclownes.com/2017/02/01/crt-display.html -->
+    <style type="text/css">
+      body {
+        background-color: black;
+        font-family: monospace;
+        color: rgba(255,255,255,0.75);
+        text-shadow: 0 0 10px rgba(0,255,255,0.95);
+      }
+
+      h1 {
+        border-left: 1em;
+        text-transform: uppercase;
+        margin: 0;
+      }
+
+      hr {
+        margin-top: 1em;
+        box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
+        border-top: 1px solid rgba(127,255,255,0.25);
+        height: 1px;
+      }
+
+      .control {
+        background-color: rgba(0, 127, 127, 0.682);
+        pointer-events: auto;
+        box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
+        border: 1px solid rgba(127,255,255,0.25);
+        text-align: center;
+        line-height: normal;
+        cursor: default;
+      }
+
+      button.control {
+        color: rgba(255,255,255,0.75);
+        font-size: large;
+      }
+
+      .typewriter {
+        animation: typing 3.5s steps(40, end);
+      }
+
+      .console {
+        border-top : 1px solid rgba(127,255,255,0.25);
+        background-color: black !important;
+      }
+
+      @keyframes typing {
+        from { width: 0 }
+        to { width: 100% }
+      }
+
+      g rect.group {
+        stroke-width: 0.1em;
+        fill-opacity: 0.1;
+        stroke: rgba(127,255,255,0.25);
+        box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
+      }
+
+      g.label rect {
+        fill: black;
+        stroke: rgba(127,255,255,0.25);
+      }
+
+      g.label text {
+        fill: rgba(255,255,255,0.75);
+      }
+
+      .Modal {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        right: 40px;
+        bottom: 40px;
+        background-color: black;
+        border: none;
+      }
+
+      .Overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0,0,0.75);
+        filter: blur();
+      }
+
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
