@@ -1,13 +1,17 @@
 package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.api.dto.LandscapeDTO;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.api.dto.LandscapeStatistics;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.docs.DocsController;
 import de.bonndan.nivio.output.jgraphx.JGraphXRenderController;
 import de.bonndan.nivio.output.map.MapController;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -15,16 +19,33 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 public class LandscapeDTOFactory {
 
-    public static LandscapeDTO from(Landscape item) {
+    public static LandscapeDTO from(Landscape landscape) {
 
         LandscapeDTO l = new LandscapeDTO();
-        if (item == null)
+        if (landscape == null)
             return l;
 
-        l.identifier = item.getIdentifier();
-        l.name = item.getName();
-        l.contact = item.getContact();
-        l.source = item.getSource();
+        l.identifier = landscape.getIdentifier();
+        l.name = landscape.getName();
+        l.contact = landscape.getContact();
+        l.source = landscape.getSource();
+        l.description = landscape.getDescription();
+
+        if (landscape instanceof LandscapeImpl) {
+            l.stats = new LandscapeStatistics();
+            l.stats.items = ((LandscapeImpl) landscape).getItems().all().size();
+            l.stats.groups = landscape.getGroups().size();
+
+            List<StatusItem> collect = ((LandscapeImpl) landscape).getItems().stream()
+                    .map(item -> StatusItem.highestOf(item.getStatuses())).flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+
+            if (!collect.isEmpty()) {
+                l.stats.overallStatus = collect.get(0).getStatus();
+            }
+
+            l.teams = ((LandscapeImpl) landscape).getItems().stream().map(Item::getTeam).collect(Collectors.toSet());
+        }
 
         return l;
     }

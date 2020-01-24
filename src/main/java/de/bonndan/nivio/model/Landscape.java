@@ -10,6 +10,8 @@ public interface Landscape {
 
     String getContact();
 
+    String getDescription();
+
     /**
      * @return path or yaml content
      */

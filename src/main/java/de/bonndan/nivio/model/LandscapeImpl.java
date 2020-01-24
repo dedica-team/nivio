@@ -30,6 +30,8 @@ public class LandscapeImpl implements Landscape {
      */
     private String contact;
 
+    private String description;
+
     private String source;
 
     @JsonManagedReference
@@ -138,5 +140,14 @@ public class LandscapeImpl implements Landscape {
     @JsonIgnore
     public ProcessLog getLog() {
         return processLog;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
     }
 }

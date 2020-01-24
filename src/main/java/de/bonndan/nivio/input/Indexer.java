@@ -45,6 +45,7 @@ public class Indexer {
         landscape.setName(input.getName());
         landscape.setContact(input.getContact());
         landscape.setConfig(input.getConfig());
+        landscape.setDescription(input.getDescription());
         logger.setLandscape(landscape);
 
         try {
