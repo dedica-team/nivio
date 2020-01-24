@@ -345,7 +345,7 @@
                 <artifactId>sphinx-maven-plugin</artifactId>
                 <version>2.6.0</version>
                 <configuration>
-                    <builder>htmlhelp</builder>
+                    <builder>html</builder>
                     <sourceDirectory>${project.basedir}/docs/source</sourceDirectory>
                     <outputDirectory>${project.basedir}/docs/build</outputDirectory>
                 </configuration>
