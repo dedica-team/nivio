@@ -15,6 +15,8 @@ The Docker image is about 350MB and can be started with:
 
     docker run -e DEMO=1 bonndan/nivio
 
+Set SERVER_CONTEXT_PATH env var to the path if nivio won't be runner under "/".
+
 Demo mode
 ---------
 
