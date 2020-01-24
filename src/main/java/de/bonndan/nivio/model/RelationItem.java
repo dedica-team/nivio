@@ -7,6 +7,9 @@ package de.bonndan.nivio.model;
  */
 public interface RelationItem<T> {
 
+    /**
+     * provider (hard dependency) or dataflow (soft relation).
+     */
     RelationType getType();
 
     String getDescription();
