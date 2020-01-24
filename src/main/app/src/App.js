@@ -5,6 +5,7 @@ import {BrowserRouter as Router, Redirect, Switch, Route, Link} from "react-rout
 import Terminal from 'react-console-emulator'
 import Modal from 'react-modal';
 import ItemModalContent from "./ItemModalContent";
+import Man from "./Man";
 
 class App extends Component {
 
@@ -22,8 +23,10 @@ class App extends Component {
             modalContent: null
         };
 
-        //this.host = 'http://localhost:8081'; //window.location.host;
-        this.host = window.location.host;
+        this.host = window.location.protocol + "//" + window.location.host + "/" + window.location.pathname;
+        if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+            this.host = 'http://localhost:8081';
+        }
         let params = new URLSearchParams(window.location.search);
         let host = params.get('host');
         if (host !== null) {
@@ -115,8 +118,8 @@ class App extends Component {
             },
             man: {
                 description: 'Show the manual.',
-                usage: 'man',
-                fn: () => that.setState({message: 'RTFM', newLocation: "/man"})
+                usage: 'man install|features|model|extra|api',
+                fn: (arg) => that.setState({message: 'RTFM', newLocation: "/man", topic: arg})
             }
         };
     }
@@ -131,11 +134,7 @@ class App extends Component {
     }
 
     Manual() {
-        return <div>
-            <div className={'control'}>
-                <h1>Manual</h1>
-            </div>
-        </div>
+        return <Man host={this.host} topic={this.state.topic}/>
     }
 
     Home() {
@@ -149,8 +148,8 @@ class App extends Component {
                 return <div key={l.id}>
                     <div style={{width: '30%'}}>
                         <h2>{l.name}</h2>
-                        Identifier: {l.identifier}<br />
-                        Contact: {l.contact || '-'}<br />
+                        Identifier: {l.identifier}<br/>
+                        Contact: {l.contact || '-'}<br/>
                     </div>
                     <div style={{width: '70%'}}>
                         <Link to="/landscape">
@@ -163,9 +162,7 @@ class App extends Component {
 
         return (
             <div>
-                <div className={'control'}>
-                    <h1>Landscapes</h1>
-                </div>
+                <h1>Landscapes</h1>
                 {content}
             </div>
         );
