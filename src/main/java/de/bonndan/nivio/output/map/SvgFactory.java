@@ -95,7 +95,7 @@ class SvgFactory extends Component {
                                     var width = 200;
                                     NLabel nLabel = new NLabel(vertex, width, size, padding);
 
-                                    Nexagon nexagon = new Nexagon(nLabel.render(), vertex.hex, layout, fill, "stroke: #" + vertex.color);
+                                    Nexagon nexagon = new Nexagon(nLabel.render(), vertex, layout, fill, "stroke: #" + vertex.color);
                                     return nexagon.render();
                                 }).collect(Collectors.toList())
                         )
