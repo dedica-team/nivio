@@ -34,7 +34,7 @@ public class SourceReferencesResolver {
                 landscapeDescription.addItems(factory.getDescriptions(ref, baseUrl));
                 ref.getAssignTemplates().forEach((key, identifiers) -> templatesAndTargets.put(landscapeDescription.getTemplates().get(key), identifiers));
             } catch (ProcessingException ex) {
-                log.warn("Failed to resolve source reference " + ref, ex);
+                log.warn("Failed to resolve source reference '" + ref.getUrl() + "' (" + ref.getFormat() + ")", ex);
                 landscapeDescription.setIsPartial(true);
             }
         });

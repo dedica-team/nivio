@@ -16,8 +16,8 @@ A landscape can/must have the following attributes:
 * **contact** e.g. an email
 * **description** a short text describing the landscape
 
-Landscape Items and Groups
---------------------------
+Landscape Items
+---------------
 
 A landscape consists of several groups (think of bounded contexts) and the three layers ingress, items, and infrastructure
 for technical separation. Any item can only be part of one group and layer.
@@ -63,6 +63,8 @@ A item can have the following attributes:
 * **providedBy** array of references to other items (identifiers)
 
 
+Item Groups
+-----------
 Groups can have the following attributes:
 
 * **identifier**: a unique identifier in the landscape. Provided automatically via the dictionary key, do not set it

@@ -122,8 +122,9 @@ public class ApiController {
             @PathVariable String fqi
     ) {
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
-        if (landscape == null)
+        if (landscape == null) {
             return new ProcessLog(new ProcessingException(null, "Could not find landscape " + identifier));
+        }
 
         FullyQualifiedIdentifier from = FullyQualifiedIdentifier.from(fqi);
 
@@ -143,8 +144,9 @@ public class ApiController {
     public ResponseEntity<List<Item>> items(@PathVariable String identifier) {
 
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
-        if (landscape == null)
+        if (landscape == null) {
             return ResponseEntity.notFound().build();
+        }
 
         return new ResponseEntity<>(List.copyOf(landscape.getItems().all()), HttpStatus.OK);
     }
@@ -154,8 +156,9 @@ public class ApiController {
     public ResponseEntity<ProcessLog> log(@PathVariable String identifier) {
 
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
-        if (landscape == null)
+        if (landscape == null) {
             return ResponseEntity.notFound().build();
+        }
 
         return new ResponseEntity<>(landscape.getLog(), HttpStatus.OK);
 
@@ -167,8 +170,9 @@ public class ApiController {
     @RequestMapping(path = "/reindex/{landscape}", method = RequestMethod.POST)
     public ProcessLog reindex(@PathVariable String landscape) {
         LandscapeImpl distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape).orElse(null);
-        if (distinctByIdentifier == null)
-            return new ProcessLog(new ProcessingException(null, "Could not find lanscape " + landscape));
+        if (distinctByIdentifier == null) {
+            return new ProcessLog(new ProcessingException(null, "Could not find landscape " + landscape));
+        }
 
         return process(distinctByIdentifier);
     }

@@ -3,18 +3,23 @@ package de.bonndan.nivio.output.jgraphx;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
+import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.ItemDescriptionFormatFactory;
 import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.Indexer;
+import de.bonndan.nivio.input.csv.ItemDescriptionFactoryCSV;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.notification.NotificationService;
+import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -48,12 +53,18 @@ class JGraphXRendererTest {
     }
 
     private mxGraph debugRender(String path) throws IOException {
+        return debugRender(path, true);
+    }
+
+    private mxGraph debugRender(String path, boolean debugMode) throws IOException {
         LandscapeImpl landscape = getLandscape(path + ".yml");
-        return debugRenderLandscape(path, landscape, true);
+        return debugRenderLandscape(path, landscape, debugMode);
     }
 
     private mxGraph debugRenderLandscape(String path, LandscapeImpl landscape, boolean debugMode) throws IOException {
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(null);
+        IconService iconService = new IconService();
+        iconService.setImageProxy("");
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(debugMode ? null : iconService);
         jGraphXRenderer.setDebugMode(debugMode);
 
         mxGraph graph = jGraphXRenderer.render(landscape).getRendered();
@@ -78,8 +89,11 @@ class JGraphXRendererTest {
     }
 
     @Test
-    public void debugRenderInout() throws IOException {
-        debugRender("/src/test/resources/example/inout");
+    @Disabled("Requires network connection without debug mode")
+    public void renderInout() throws IOException {
+        String path = "/src/test/resources/example/inout";
+        LandscapeImpl landscape = getLandscape(path + ".yml");
+        debugRenderLandscape(path, landscape, false);
     }
 
     @Test
@@ -93,7 +107,7 @@ class JGraphXRendererTest {
         while (g < 30) {
 
             int i = 0;
-            int max = g % 2 > 0 ? 5 :8;
+            int max = g % 2 > 0 ? 5 : 8;
             GroupDescription gd = new GroupDescription();
             String groupIdentifier = "group" + g;
             gd.setIdentifier(groupIdentifier);
@@ -140,5 +154,15 @@ class JGraphXRendererTest {
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
 
         debugRenderLandscape("/src/test/resources/example/model", landscape, false);
+    }
+
+    @Test
+    @Disabled("Requires network connection without debug mode")
+    public void renderCSV() throws IOException {
+
+        formatFactory = ItemDescriptionFormatFactory.with(new ItemDescriptionFactoryCSV(new FileFetcher(new HttpService())));
+        indexer = new Indexer(landscapeRepository, formatFactory, new NotificationService(null));
+
+        debugRender("/src/test/resources/example/example_csv", false);
     }
 }

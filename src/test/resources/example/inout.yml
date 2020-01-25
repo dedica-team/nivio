@@ -2,77 +2,71 @@ identifier: inout
 name: Input and Output
 
 groups:
+  output:
+    color: "488adb"
   input:
     color: "24a0ed"
 
-config:
-  # https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxOrganicLayout.html
-  jgraphx:
-    triesPerCell: 8
-    edgeLengthCostFactor: 0.0001
-    nodeDistributionCostFactor: 900000.0
-
-    #
-    # for group alignment
-    #
-
-    # the higher, the longer the edges between groups
-    forceConstantFactor: 2.8
-
-    # higher value is cpu intensive, but can lead to better layouts
-    maxIterations: 1000
-
 items:
+  - identifier: png
+    name: Rendered Graph
+    icon: https://raw.githubusercontent.com/bonndan/nivio/master/src/main/resources/static/icons/nivio.png
+    group: output
+    providedBy:
+      - nivio
+
+  - identifier: svg
+    name: Interactive Graph
+    icon: https://raw.githubusercontent.com/bonndan/nivio/master/src/main/resources/static/icons/nivio.png
+    group: output
+    providedBy:
+      - nivio
+
+  - identifier: report
+    icon: https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/200px-PDF_file_icon.svg.png
+    name: HTML/PDF Report
+    group: output
+    providedBy:
+      - nivio
+
 
   - identifier: nivio-prop
     name: Nivio proprietary
     type: humanuser
+    icon: https://raw.githubusercontent.com/bonndan/nivio/master/src/main/resources/static/icons/humanuser.png
     group: input
-    relations:
-      - target: nivio
-        description: alpha
 
   - identifier: docker-compose
     name: Docker Compose files
     icon: https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Docker_%28container_engine%29_logo.svg/250px-Docker_%28container_engine%29_logo.svg.png
     group: input
-    relations:
-      - target: nivio
-        description: alpha
 
   - identifier: k8s
     name: Kubernetes Installation
     group: input
     lifecycle: planned
     icon: https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
-    relations:
-      - target: nivio
-        description: alpha
 
   - identifier: prometheus
     group: input
     lifecycle: planned
     icon: https://raw.githubusercontent.com/prometheus/docs/master/static/prometheus_logo.png
-    relations:
-      - target: nivio
-        description: maybe
+
+  - identifier: csv
+    group: input
+    icon:
+    name: CSV files
 
   - identifier: nivio
     name: Nivio
     group: nivio
-    relations:
-      - target: png
-      - target: report
-
-  - identifier: png
-    name: Rendered Graph
-    type: nivio
-    group: output
-
-  - identifier: report
-    icon: https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/200px-PDF_file_icon.svg.png
-    name: HTML/PDF Report
-    group: output
+    icon: https://raw.githubusercontent.com/bonndan/nivio/master/src/main/resources/static/icons/nivio.png
+    providedBy:
+      - csv
+      - prometheus
+      - k8s
+      - docker-compose
+      - nivio-prop
 
 
 

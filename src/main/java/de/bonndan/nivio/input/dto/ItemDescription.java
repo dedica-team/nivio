@@ -2,7 +2,6 @@ package de.bonndan.nivio.input.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.model.*;
 import org.springframework.util.StringUtils;
@@ -16,6 +15,8 @@ import java.util.stream.Collectors;
  * This is representation of a service in the textual form as described in a source file.
  */
 public class ItemDescription implements LandscapeItem {
+
+    public static final String LINKS_FIELD = "links";
 
     @NotEmpty
     private String environment;
@@ -226,8 +227,9 @@ public class ItemDescription implements LandscapeItem {
     }
 
     public void setLifecycle(String lifecycle) {
-        if (!StringUtils.isEmpty(lifecycle))
+        if (!StringUtils.isEmpty(lifecycle)) {
             setLifecycle(Lifecycle.from(lifecycle));
+        }
     }
 
     @Override
@@ -368,13 +370,13 @@ public class ItemDescription implements LandscapeItem {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null)
+        }
+        if (o == null) {
             return false;
-        LandscapeItem landscapeItem = (LandscapeItem) o;
-
-        return toString().equals(landscapeItem.toString());
+        }
+        return toString().equals(o.toString());
     }
 
     @Override

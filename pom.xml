@@ -182,6 +182,13 @@
             <version>2.5.0</version>
         </dependency>
 
+        <!-- csv parsing -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.0</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-all -->
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
