@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
-import {ThemeProvider, createTheme, Arwes, Footer, Button, Words, Content, Loading} from 'arwes';
 import {INITIAL_VALUE, ReactSVGPanZoom, TOOL_AUTO} from 'react-svg-pan-zoom';
 import {ReactSvgPanZoomLoader, SvgLoaderSelectElement} from 'react-svg-pan-zoom-loader'
 import {BrowserRouter as Router, Redirect, Switch, Route, Link} from "react-router-dom";
 import Terminal from 'react-console-emulator'
+import Modal from 'react-modal';
+import ItemModalContent from "./ItemModalContent";
+import Man from "./Man";
 
 class App extends Component {
 
@@ -16,15 +18,25 @@ class App extends Component {
             landscape: null,
             tool: TOOL_AUTO,
             value: INITIAL_VALUE,
-            newLocation: null
+            newLocation: null,
+            message: null,
+            modalContent: null
         };
 
-        this.host = window.location.host;
+        this.host = window.location.protocol + "//" + window.location.host + "/" + window.location.pathname;
+        if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+            this.host = 'http://localhost:8081';
+        }
         let params = new URLSearchParams(window.location.search);
         let host = params.get('host');
         if (host !== null) {
             this.host = host;
         }
+
+        this.onItemClick = this.onItemClick.bind(this);
+        this.onModalClose = this.onModalClose.bind(this);
+        Modal.setAppElement('#root')
+
     }
 
     componentDidMount() {
@@ -68,32 +80,31 @@ class App extends Component {
             });
     }
 
-    onItemClick(l) {
-        this.setState({landscape: l});
+    enterLandscape(l) {
+        this.setState({message: 'Entering landscape: ' + l.identifier, landscape: l});
     }
 
     render() {
 
         if (this.state.newLocation !== null) {
             this.setState({newLocation: null});
-            return <Redirect to={this.state.newLocation} />
+            return <Redirect to={this.state.newLocation}/>
         }
 
         let message = this.state.message;
         return <Router>
-            <ThemeProvider theme={createTheme()}>
-                <Arwes>
-                    <Switch>
-                        <Route exact path="/" render={() => this.Home()}></Route>
-                        <Route path="/landscape" render={() => this.Landscape()}></Route>
-                        <Route path="/help" render={() => this.Help()}></Route>
-                    </Switch>
-                    <Footer animate id={'footer'} style={{position: 'fixed', bottom: 0, width: '100%'}}>
-                        <Link to="/"><Button animate>{'*'}</Button></Link><Words>{message}</Words>
-                        <Terminal commands={this.commands()} promptLabel={'$'} autoFocus={true} noDefaults={true}/>
-                    </Footer>
-                </Arwes>
-            </ThemeProvider>
+            <Switch>
+                <Route exact path="/" render={() => this.Home()}></Route>
+                <Route path="/landscape" render={() => this.Landscape()}></Route>
+                <Route path="/man" render={() => this.Manual()}></Route>
+            </Switch>
+            <footer key={'footer'} id={'footer'} style={{position: 'fixed', bottom: 0, width: '100%'}}>
+                <div className={'typewriter'}>{message}</div>
+                <Terminal commands={this.commands()} promptLabel={'>'} autoFocus={true}
+                          style={{width: '100%', minHeight: null}} className={'console'}
+                          contentStyle={{padding: '0.5em'}}
+                          inputAreaStyle={{height: '1em'}}/>
+            </footer>
         </Router>
     }
 
@@ -105,16 +116,25 @@ class App extends Component {
                 usage: 'cd',
                 fn: () => that.setState({newLocation: "/"})
             },
-            help: {
-                description: 'Show help.',
-                usage: 'help',
-                fn: () => that.setState({newLocation: "/help"})
+            man: {
+                description: 'Show the manual.',
+                usage: 'man install|input|model|magic|extra|api',
+                fn: (arg) => that.setState({message: 'RTFM: ' + arg, newLocation: "/man", topic: arg})
             }
         };
     }
 
-    Help() {
-        return <Content style={{margin: 20}}><h1>Help</h1></Content>
+    onItemClick(e) {
+        let content = <ItemModalContent element={e.target.parentElement} closeFn={this.onModalClose}/>
+        this.setState({modalContent: content})
+    }
+
+    onModalClose() {
+        this.setState({modalContent: null})
+    }
+
+    Manual() {
+        return <Man host={this.host} topic={this.state.topic}/>
     }
 
     Home() {
@@ -122,56 +142,69 @@ class App extends Component {
         let landscapes = this.state.landscapes;
         let content;
         if (!landscapes) {
-            content = <Loading animate/>;
+            content = "loading";
         } else {
             content = landscapes.map(l => {
-                return <Link
-                    to="/landscape"><Button animate onClick={() => this.onItemClick(l)}>{l.name}</Button></Link>
+                return <div key={l.id}>
+                    <div style={{width: '30%'}}>
+                        <h2>{l.name}</h2><br />
+                        <blockquote>{l.description}</blockquote>
+                        Identifier: {l.identifier}<br/>
+                        Contact: {l.contact || '-'}<br/>
+                        Teams: {l.stats.teams.join(', ')}<br/>
+                        Overall State: {l.stats.overallState || '-'}<br/>
+                        {l.stats.items} items in {l.stats.groups} groups<br/>
+                    </div>
+                    <div style={{width: '70%'}}>
+                        <Link to="/landscape">
+                            <button className={'control'} onClick={() => this.enterLandscape(l)}>enter landscape &gt;</button>
+                        </Link>
+                    </div>
+                </div>
             });
         }
 
         return (
-            <Content style={{margin: 20}}>
+            <div>
                 <h1>Landscapes</h1>
                 {content}
-            </Content>
+            </div>
         );
     }
 
     Landscape() {
 
         let landscape = this.state.landscape;
-        let content;
-        if (!landscape) {
-            content = <Loading animate/>;
-        } else {
+        if (landscape) {
             let data = this.host + '/render/' + landscape.identifier + '/map.svg';
-            /*let proxy = {
-            <>
-                <SvgLoaderSelectElement selector="#tree" onClick={this.onItemClick}
-                                        stroke={'#111111'}/>
-            </>
-        };
+            const {modalContent} = this.state;
+            return <ReactSvgPanZoomLoader src={data} proxy={
+                <>
+                    <SvgLoaderSelectElement selector=".label" onClick={this.onItemClick}/>
+                </>
+            } render={(content) => (
+                <div>
+                    <Modal isOpen={modalContent !== null}
+                           className="Modal"
+                           overlayClassName="Overlay"
+                           shouldCloseOnEsc={true}
+                           contentLabel="Modal">{modalContent}</Modal>
 
-             */
-            return <ReactSvgPanZoomLoader src={data} render={(content) => (
-                <ReactSVGPanZoom key={'panzoom'}
-                                 width={window.innerWidth * 0.95} height={window.innerHeight * 0.95}
-                                 background={'transparent'}
-                                 miniatureProps={{position: 'none'}} toolbarProps={{position: 'none'}}
-                                 detectAutoPan={false}
-                                 ref={Viewer => this.Viewer = Viewer}
-                                 tool={this.state.tool} onChangeTool={tool => this.changeTool(tool)}
-                                 value={this.state.value} onChangeValue={value => this.changeValue(value)}>
-                    <svg>
-                        {content}
-                    </svg>
-                </ReactSVGPanZoom>
+                    <ReactSVGPanZoom key={'panzoom'}
+                                     width={window.innerWidth * 0.95} height={window.innerHeight * 0.95}
+                                     background={'transparent'}
+                                     miniatureProps={{position: 'none'}} toolbarProps={{position: 'none'}}
+                                     detectAutoPan={false}
+                                     ref={Viewer => this.Viewer = Viewer}
+                                     tool={this.state.tool} onChangeTool={tool => this.changeTool(tool)}
+                                     value={this.state.value} onChangeValue={value => this.changeValue(value)}>
+                        <svg>
+                            {content}
+                        </svg>
+                    </ReactSVGPanZoom>
+                </div>
             )}/>
-
         }
-
-
     }
 }
 

@@ -30,6 +30,8 @@ class NLabel extends Component {
         NText nText = new NText(item, size + padding + (width / 2), 5, "", width);
 
         ContainerTag g = SvgTagCreator.g(rect, nText.render()).attr("class", "label");
+        g.attr("data-identifier", item.landscapeItem.getIdentifier());
+
         if (!StringUtils.isEmpty(item.landscapeItem.getName()))
             g.attr("data-name", item.landscapeItem.getName());
         if (!StringUtils.isEmpty(item.landscapeItem.getDescription()))

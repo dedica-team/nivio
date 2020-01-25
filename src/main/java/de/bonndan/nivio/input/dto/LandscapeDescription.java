@@ -41,6 +41,7 @@ public class LandscapeDescription implements Landscape {
      * Contact of the maintainer
      */
     private String contact;
+    private String description;
 
     private Map<String, ItemDescription> templates = new HashMap<>();
 
@@ -93,6 +94,11 @@ public class LandscapeDescription implements Landscape {
         return contact;
     }
 
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
     public List<SourceReference> getSourceReferences() {
         return sources;
     }
@@ -132,6 +138,7 @@ public class LandscapeDescription implements Landscape {
         landscape.setName(name);
         landscape.setContact(contact);
         landscape.setSource(source);
+        landscape.setDescription(description);
         landscape.setConfig(config);
         return landscape;
     }
@@ -200,5 +207,9 @@ public class LandscapeDescription implements Landscape {
             ((GroupDescription) groupItem).setIdentifier(s);
         });
         this.groups = groups;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

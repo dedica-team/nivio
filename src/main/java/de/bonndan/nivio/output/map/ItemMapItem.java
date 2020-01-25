@@ -53,7 +53,7 @@ class ItemMapItem extends MapItem {
 
         public Relation(RelationItem<Item> rel) {
             this.target = rel.getTarget().getFullyQualifiedIdentifier().toString();
-            this.type = rel.getType().name();
+            this.type = rel.getType() != null ? rel.getType().name() : null;
             this.format = rel.getFormat();
         }
     }

@@ -15,6 +15,8 @@ The Docker image is about 350MB and can be started with:
 
     docker run -e DEMO=1 bonndan/nivio
 
+Set SERVER_CONTEXT_PATH env var to the path if nivio won't be runner under "/".
+
 Demo mode
 ---------
 
@@ -61,6 +63,7 @@ For jgraphx output, some force directed graph params can be set. More configurat
     identifier: nivio:example
     name: Landscape example
     contact: mail@acme.org
+    description: This is an example landscape.
     sources:
       - "./items/wordpress.yml"
       - url: "./items/dashboard.yml"
@@ -73,71 +76,10 @@ For jgraphx output, some force directed graph params can be set. More configurat
       - url: xxx
         format: kubernetes
 
-    # landscape configuration
     config:
-      groupBlacklist: [".*infra.*", "hidden"]
       groups:
         content:
           color: "24a0ed"
-
-      # https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxOrganicLayout.html
-      jgraphx:
-        triesPerCell: 8
-        edgeLengthCostFactor: 0.0001
-        nodeDistributionCostFactor: 900000.0
-        borderLineCostFactor: 7.0
-
-        #
-        # for group alignment
-        #
-
-        # the higher, the longer the edges between groups
-        forceConstantFactor: 2.8
-
-        # higher value is cpu intensive, but can lead to better layouts
-        maxIterations: 1000
-
-        # can also influence edge length and layout
-        minDistanceLimitFactor: 3.05
-
-Kubernetes cluster inspection
------------------------------
-
-Kubernetes clusters are inspected using Fabric8.io's Java client. See https://github.com/fabric8io/kubernetes-client#configuring-the-client
-for configuration. Parsing can be configured via an URL, i.e. the examined namespace can be given (otherwise all namespaces
-are scanned) and a label for building groups can be named. Both parameters and even the whole URL are optional.
-
-.. code-block:: yaml
-   :linenos:
-
-    identifier: k8s:example
-    name: Kubernetes example
-    sources:
-      - url: http://192.168.99.100?namespace=mynamespace&groupLabel=labelToUseForGrouping
-        format: kubernetes
-
-
-
-Rancher 1 Cluster Inspection
-----------------------------
-
-Rancher clusters can be indexed one project (aka environment in the GUI speak) at a time. Access credentials can be read
-from environment variables. To exclude internal stacks (like those responsible for internal networking), blacklist them.
-
-.. code-block:: yaml
-   :linenos:
-
-    identifier: rancher:example
-    name: Rancher 1.6 API example
-    config:
-      groupBlacklist: [".*infra.*"]
-
-    sources:
-      - url: "http://rancher-server/v2-beta/"
-        projectName: Default
-        apiAccessKey: ${API_ACCESS_KEY}
-        apiSecretKey: ${API_SECRET_KEY}
-        format: rancher1
 
 
 Reading from csv

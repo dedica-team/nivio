@@ -8,16 +8,18 @@ import java.awt.geom.Point2D;
 
 class Nexagon extends Component {
 
+    private final String id;
     private DomContent children;
     private final Point2D.Double pixel;
     private final String fill;
     private final String cellStyle;
 
-    Nexagon(DomContent children, Hex hex, Layout layout, String fill, String cellStyle) {
+    Nexagon(DomContent children, ItemMapItem itemMapItem, Layout layout, String fill, String cellStyle) {
         this.children = children;
         this.fill = fill;
         this.cellStyle = cellStyle;
-        this.pixel = HexUtils.hexToPixel(hex, layout);
+        this.pixel = HexUtils.hexToPixel(itemMapItem.hex, layout);
+        this.id = itemMapItem.landscapeItem.getFullyQualifiedIdentifier().toString();
     }
 
     public DomContent render() {
@@ -26,6 +28,7 @@ class Nexagon extends Component {
 
         ContainerTag inner = SvgTagCreator.g(
                 SvgTagCreator.circle()
+                        .attr("id", this.id)
                         .attr("cx", 0)
                         .attr("cy", 0)
                         .attr("r", 40)

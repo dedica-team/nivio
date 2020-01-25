@@ -9,8 +9,18 @@ or business reasons. For example, a company department might model ALL its appli
 or tagging to further separate the applications. A second landscape could be used to model a future layout with a different
 infrastructure. Both landscapes could have items in common (like a database, load balancer etc.), so their configuration can be reused.
 
+A landscape can/must have the following attributes:
+
+* **identifier**: a unique identifier. Use a name or an URN, validated against ^[a-z0-9\\.\\:_-]{3,256}$
+* **name** human readable, displayed name
+* **contact** e.g. an email
+* **description** a short text describing the landscape
+
 Landscape Items
 ---------------
+
+A landscape consists of several groups (think of bounded contexts) and the three layers ingress, items, and infrastructure
+for technical separation. Any item can only be part of one group and layer.
 
 A item can have the following attributes:
 
@@ -66,7 +76,7 @@ Groups can have the following attributes:
 * **color** a hex color code for rendering
 * **links** a map/dictionary of urls to more information
 
-**Service configuration file**
+**Item configuration **
 
 .. code-block:: yaml
    :linenos:
@@ -99,9 +109,6 @@ Groups can have the following attributes:
 
       infrastructure:
         team: Admins
-        contains:
-          - DB1
-          - "identifier LIKE 'DB1'" #same
 
 
 Item Identification and Referencing
@@ -124,90 +131,3 @@ Service references are required to describe a provider relation or data flows.
           - target: anothergroup/anotherservice
             format: json
             type: dataflow
-
-
-
-
-Using Templates to dynamically assign data
----------------
-
-To prevent repetitive configuration of items, i.e. entering the same owner again and again,
-templates can be used to prefill values. Templates a just item descriptions, except that
-the identifier is used for referencing and that names are ignored. A template value is ony applied
-if the target value is null.
-
-Multiple templates can be assigned to items, too. In this case the first assigned value "wins" and
-will not be overwritten by templates applied later.
-
-.. code-block:: yaml
-   :linenos:
-
-    identifier: nivio:example
-    name: Landscape example
-
-    sources:
-      - url: "./items/docker-compose.yml"
-        format: docker-compose-v2
-        assignTemplates:
-          endOfLife: [web]
-          myGroupTemplate: ["*"]
-
-    templates:
-
-      myGroupTemplate:
-        group: billing
-
-      endOfLife:
-        tags: [eol]
-        statuses
-
-For CQ queries, read https://github.com/npgall/cqengine#string-based-queries-sql-and-cqn-dialects.
-
-
-Using Labels to assign data
----------------------------
-
-You can set labels (string:string) to items which are evaluated as model fields if
-
-* the key contains "nivio." AND
-* the rest of the key equals a field name.
-
-For instance
-
-.. code-block:: yaml
-   :linenos:
-
-    items:
-      - identifier: theservice
-        labels:
-          nivio.name: A nice name
-          nivio.providedBy: ["foo", "bar"]
-
-
-will set the related values (here: name and relations). Remember to scape URLs with double quotes.
-
-Labels can be set using docker-compose files, too. However, docker labels not not allow arrays, so use comma separated strings:
-
-.. code-block:: yaml
-   :linenos:
-
-    services:
-      foo:
-        labels:
-          nivio.name: A nice name
-          nivio.providedBy: "bar, baz"
-
-
-Relations between landscape items
----------------------------------
-
-Usually environments such as Docker, K8s provide few to none information on the relation between landscape items (e.g.
-which database a service uses). However, in 12-factor apps there is configuration through environment variables (https://12factor.net/config)
-and these can be parsed hopefully. Nivio provides an experimental feature which regards these env vars as DSL. Env vars
-are read and assigned as item labels, then examined in the following way:
-
-* the key contains words like "url", "uri" etc.
-* the value is an URL
-
-If a criteria is matched, the value of the label is examined. In the of being an URL, the host and name path components are extracted as names or identifiers.
-Using these, the landscape is searched for possible relation targets.

@@ -1,13 +1,18 @@
 package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.api.dto.LandscapeDTO;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.api.dto.LandscapeStatistics;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.docs.DocsController;
 import de.bonndan.nivio.output.jgraphx.JGraphXRenderController;
 import de.bonndan.nivio.output.map.MapController;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -15,18 +20,45 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 public class LandscapeDTOFactory {
 
-    public static LandscapeDTO from(Landscape item) {
+    public static LandscapeDTO from(Landscape landscape) {
 
         LandscapeDTO l = new LandscapeDTO();
-        if (item == null)
+        if (landscape == null)
             return l;
 
-        l.identifier = item.getIdentifier();
-        l.name = item.getName();
-        l.contact = item.getContact();
-        l.source = item.getSource();
+        l.identifier = landscape.getIdentifier();
+        l.name = landscape.getName();
+        l.contact = landscape.getContact();
+        l.source = landscape.getSource();
+        l.description = landscape.getDescription();
+
+        if (landscape instanceof LandscapeImpl) {
+            l.stats = getLandscapeStats((LandscapeImpl) landscape);
+        }
 
         return l;
+    }
+
+    private static LandscapeStatistics  getLandscapeStats(LandscapeImpl impl) {
+
+        LandscapeStatistics stats = new LandscapeStatistics();
+        stats.items = impl.getItems().all().size();
+        stats.groups = impl.getGroups().size();
+
+        List<StatusItem> collect = impl.getItems().stream()
+                .map(item -> StatusItem.highestOf(item.getStatuses())).flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        if (!collect.isEmpty()) {
+            stats.overallStatus = collect.get(0).getStatus();
+        }
+
+        stats.teams = impl.getItems().stream()
+                .map(Item::getTeam)
+                .filter(s -> !StringUtils.isEmpty(s))
+                .toArray(String[]::new);
+
+        return stats;
     }
 
     public static void addLinks(LandscapeDTO dto) {

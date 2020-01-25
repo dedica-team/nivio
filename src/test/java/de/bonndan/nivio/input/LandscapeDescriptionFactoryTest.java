@@ -32,6 +32,7 @@ class LandscapeDescriptionFactoryTest {
         assertEquals("Landscape example", landscapeDescription.getName());
         assertEquals("nivio:example", landscapeDescription.getIdentifier());
         assertEquals("mail@acme.org", landscapeDescription.getContact());
+        assertTrue(landscapeDescription.getDescription().contains("demonstrate"));
         assertEquals(RootPath.get() + "/src/test/resources/example/example_env.yml", landscapeDescription.getSource());
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
 
@@ -50,6 +51,7 @@ class LandscapeDescriptionFactoryTest {
         assertEquals("Landscape example", landscapeDescription.getName());
         assertEquals("nivio:example", landscapeDescription.getIdentifier());
         assertEquals("mail@acme.org", landscapeDescription.getContact());
+        assertTrue(landscapeDescription.getDescription().contains("demonstrate"));
         assertTrue(landscapeDescription.getSource().contains("name: Landscape example"));
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
 

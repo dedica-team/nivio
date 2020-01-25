@@ -65,9 +65,10 @@ public class IndexerIntegrationTest {
 
         Assertions.assertNotNull(landscape);
         assertEquals("mail@acme.org", landscape.getContact());
+        assertTrue(landscape.getDescription().contains("demonstrate"));
         Assertions.assertNotNull(landscape.getItems());
         assertEquals(8, landscape.getItems().all().size());
-        Item blog = landscape.getItems().pick("blog-server", null );
+        Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
 
@@ -91,7 +92,7 @@ public class IndexerIntegrationTest {
 
         Set<InterfaceItem> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());
-        InterfaceItem i =  blog.getInterfaces().stream()
+        InterfaceItem i = blog.getInterfaces().stream()
                 .filter(d -> d.getDescription().equals("posts"))
                 .findFirst()
                 .orElseThrow();
@@ -130,7 +131,7 @@ public class IndexerIntegrationTest {
 
         Set<InterfaceItem> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());
-        InterfaceItem i =  blog.getInterfaces().stream()
+        InterfaceItem i = blog.getInterfaces().stream()
                 .filter(d -> d.getDescription().equals("posts"))
                 .findFirst()
                 .orElseThrow();
@@ -143,7 +144,7 @@ public class IndexerIntegrationTest {
     @Test
     public void testIncrementalUpdate() {
         LandscapeImpl landscape = index();
-        Item blog = landscape.getItems().pick("blog-server", null );
+        Item blog = landscape.getItems().pick("blog-server", null);
         int before = landscape.getItems().all().size();
 
         LandscapeDescription landscapeDescription = new LandscapeDescription();
@@ -164,9 +165,9 @@ public class IndexerIntegrationTest {
 
         //created
         landscape = (LandscapeImpl) indexer.reIndex(landscapeDescription).getLandscape();
-        blog = (Item) landscape.getItems().pick("blog-server", "completelyNewGroup" );
+        blog = (Item) landscape.getItems().pick("blog-server", "completelyNewGroup");
         assertEquals("completelyNewGroup", blog.getGroup());
-        assertEquals(before +1, landscape.getItems().all().size());
+        assertEquals(before + 1, landscape.getItems().all().size());
 
         //updated
         Item wordpress = (Item) landscape.getItems().pick("wordpress-web", "content");
@@ -227,7 +228,7 @@ public class IndexerIntegrationTest {
     public void environmentTemplatesApplied() {
         LandscapeImpl landscape = index("/src/test/resources/example/example_templates.yml");
 
-        LandscapeItem web = landscape.getItems().pick( "web", null );
+        LandscapeItem web = landscape.getItems().pick("web", null);
         Assert.assertNotNull(web);
         assertEquals("web", web.getIdentifier());
         assertEquals("webservice", web.getType());
