@@ -9,9 +9,6 @@ import static j2html.TagCreator.*;
 
 public abstract class HtmlGenerator {
 
-    public abstract String toDocument(LandscapeImpl landscape);
-
-
     protected ContainerTag getHead(LandscapeImpl landscape) {
         return head(
                 title(landscape.getName()),

@@ -18,7 +18,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 public class ReportGenerator extends HtmlGenerator {
 
-    private final IconService iconService;
+    protected final IconService iconService;
 
     public ReportGenerator(IconService iconService) {
         this.iconService = iconService;
@@ -62,7 +62,7 @@ public class ReportGenerator extends HtmlGenerator {
         return builder.toString();
     }
 
-    private ContainerTag writeItem(LandscapeItem item) {
+    protected ContainerTag writeItem(LandscapeItem item) {
         boolean ĥasRelations = item.getRelations() != null && item.getRelations().size() > 0;
         boolean hasInterfaces = item.getInterfaces() != null && item.getInterfaces().size() > 0;
         String groupColor = "#" + Color.nameToRGB(item.getGroup());
