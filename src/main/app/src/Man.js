@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import $ from "jquery";
-import ReactHtmlParser from 'react-html-parser';
-
 
 class Man extends Component {
 
