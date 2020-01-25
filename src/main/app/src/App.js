@@ -118,8 +118,8 @@ class App extends Component {
             },
             man: {
                 description: 'Show the manual.',
-                usage: 'man install|features|model|extra|api',
-                fn: (arg) => that.setState({message: 'RTFM', newLocation: "/man", topic: arg})
+                usage: 'man install|input|model|magic|extra|api',
+                fn: (arg) => that.setState({message: 'RTFM: ' + arg, newLocation: "/man", topic: arg})
             }
         };
     }
