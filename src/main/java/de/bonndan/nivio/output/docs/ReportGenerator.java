@@ -63,7 +63,7 @@ public class ReportGenerator extends HtmlGenerator {
     }
 
     protected ContainerTag writeItem(LandscapeItem item) {
-        boolean ĥasRelations = item.getRelations() != null && item.getRelations().size() > 0;
+        boolean hasRelations = item.getRelations() != null && item.getRelations().size() > 0;
         boolean hasInterfaces = item.getInterfaces() != null && item.getInterfaces().size() > 0;
         String groupColor = "#" + Color.nameToRGB(item.getGroup());
 
@@ -122,8 +122,8 @@ public class ReportGenerator extends HtmlGenerator {
                         ),
 
                         //data flow
-                        iff(ĥasRelations, h4("Relations")),
-                        iff(ĥasRelations, ul().with(
+                        iff(hasRelations, h4("Relations")),
+                        iff(hasRelations, ul().with(
                                 item.getRelations().stream()
                                         .map(df -> {
 
