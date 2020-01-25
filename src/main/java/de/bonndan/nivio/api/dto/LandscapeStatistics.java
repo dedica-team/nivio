@@ -8,4 +8,5 @@ public class LandscapeStatistics {
     public Integer items;
     public Integer groups;
     public Status overallStatus;
+    public String[] teams;
 }

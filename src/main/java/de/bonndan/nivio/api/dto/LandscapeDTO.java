@@ -24,7 +24,6 @@ public class LandscapeDTO extends RepresentationModel implements Landscape  {
     public String source;
     public Map<String, GroupItem> groups;
     public LandscapeStatistics stats;
-    public Set<String> teams;
 
     @Override
     public String getIdentifier() {

@@ -7,6 +7,7 @@ import de.bonndan.nivio.output.docs.DocsController;
 import de.bonndan.nivio.output.jgraphx.JGraphXRenderController;
 import de.bonndan.nivio.output.map.MapController;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -32,22 +33,32 @@ public class LandscapeDTOFactory {
         l.description = landscape.getDescription();
 
         if (landscape instanceof LandscapeImpl) {
-            l.stats = new LandscapeStatistics();
-            l.stats.items = ((LandscapeImpl) landscape).getItems().all().size();
-            l.stats.groups = landscape.getGroups().size();
-
-            List<StatusItem> collect = ((LandscapeImpl) landscape).getItems().stream()
-                    .map(item -> StatusItem.highestOf(item.getStatuses())).flatMap(Collection::stream)
-                    .collect(Collectors.toList());
-
-            if (!collect.isEmpty()) {
-                l.stats.overallStatus = collect.get(0).getStatus();
-            }
-
-            l.teams = ((LandscapeImpl) landscape).getItems().stream().map(Item::getTeam).collect(Collectors.toSet());
+            l.stats = getLandscapeStats((LandscapeImpl) landscape);
         }
 
         return l;
+    }
+
+    private static LandscapeStatistics  getLandscapeStats(LandscapeImpl impl) {
+
+        LandscapeStatistics stats = new LandscapeStatistics();
+        stats.items = impl.getItems().all().size();
+        stats.groups = impl.getGroups().size();
+
+        List<StatusItem> collect = impl.getItems().stream()
+                .map(item -> StatusItem.highestOf(item.getStatuses())).flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        if (!collect.isEmpty()) {
+            stats.overallStatus = collect.get(0).getStatus();
+        }
+
+        stats.teams = impl.getItems().stream()
+                .map(Item::getTeam)
+                .filter(s -> !StringUtils.isEmpty(s))
+                .toArray(String[]::new);
+
+        return stats;
     }
 
     public static void addLinks(LandscapeDTO dto) {
