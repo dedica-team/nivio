@@ -51,8 +51,8 @@ public class Application {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
 
         Seed seed = (Seed) context.getBean("seed");
+        ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) context.getBean("taskExecutor");
         if (seed.hasValue()) {
-            ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) context.getBean("taskExecutor");
             WatcherFactory watcher = context.getBean(WatcherFactory.class);
             watcher.getWatchers().forEach(taskExecutor::execute);
 
@@ -61,11 +61,10 @@ public class Application {
             log.info("Running in demo mode");
 
             FileChangeProcessor processor = context.getBean(FileChangeProcessor.class);
-            processor.process(Seed.getDemoFile());
+            Seed.getDemoFiles().forEach(processor::process);
 
-            ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) context.getBean("taskExecutor");
             WatcherFactory watcher = context.getBean(WatcherFactory.class);
-            taskExecutor.execute(watcher.getWatcher(Seed.getDemoFile()));
+            Seed.getDemoFiles().forEach(file -> taskExecutor.execute(watcher.getWatcher(file)));
         }
     }
 

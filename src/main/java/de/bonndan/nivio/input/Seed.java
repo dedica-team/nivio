@@ -23,11 +23,13 @@ public class Seed {
     static final String NIVIO_ENV_DIRECTORY = "file:/opt/nivio/environments";
     static boolean ESCAPE_AUTHORITY = SystemUtils.IS_OS_WINDOWS;
 
-    public static File getDemoFile() {
+    public static List<File> getDemoFiles() {
         Path currentRelativePath = Paths.get("");
-        return new File(
-                 currentRelativePath.toAbsolutePath().toString() + "/src/test/resources/example/example_env.yml"
-        );
+        String absPath = currentRelativePath.toAbsolutePath().toString();
+        List<File> demoFiles = new ArrayList<>();
+        demoFiles.add(new File(absPath + "/src/test/resources/example/example_env.yml"));
+        demoFiles.add(new File(absPath + "/src/test/resources/example/inout.yml"));
+        return demoFiles;
     }
 
     @Value("${SEED:}")
@@ -64,7 +66,7 @@ public class Seed {
     private URL toURL(String s) throws MalformedURLException {
 
         if (ESCAPE_AUTHORITY && s.matches("^[a-zA-Z]\\:.*")) {
-            s = "file://" + s.replace(":","");
+            s = "file://" + s.replace(":", "");
         }
 
         if (!s.contains(":/")) {
