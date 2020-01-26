@@ -147,19 +147,21 @@ class App extends Component {
             content = landscapes.map(l => {
                 return <div key={l.id}>
                     <div style={{width: '30%'}}>
-                        <h2>{l.name}</h2><br />
+                        <h2>{l.name}</h2>
                         <blockquote>{l.description}</blockquote>
-                        Identifier: {l.identifier}<br/>
-                        Contact: {l.contact || '-'}<br/>
-                        Teams: {l.stats.teams.join(', ')}<br/>
-                        Overall State: {l.stats.overallState || '-'}<br/>
-                        {l.stats.items} items in {l.stats.groups} groups<br/>
+                        <blockquote>
+                            Identifier: {l.identifier}<br/>
+                            Contact: {l.contact || '-'}<br/>
+                            Teams: {l.stats.teams.join(', ')}<br/>
+                            Overall State: {l.stats.overallState || '-'}<br/>
+                            {l.stats.items} items in {l.stats.groups} groups<br/>
+                            Last update: {l.stats.lastUpdate || '-'}<br/>
+                        </blockquote>
                     </div>
-                    <div style={{width: '70%'}}>
-                        <Link to="/landscape">
-                            <button className={'control'} onClick={() => this.enterLandscape(l)}>enter landscape &gt;</button>
-                        </Link>
-                    </div>
+                    <br/>
+                    <Link to="/landscape">
+                        <button className={'control'} onClick={() => this.enterLandscape(l)}>enter &gt;</button>
+                    </Link>
                 </div>
             });
         }

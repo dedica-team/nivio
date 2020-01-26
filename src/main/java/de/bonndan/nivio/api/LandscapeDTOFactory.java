@@ -2,6 +2,7 @@ package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.api.dto.LandscapeStatistics;
+import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.docs.DocsController;
 import de.bonndan.nivio.output.jgraphx.JGraphXRenderController;
@@ -58,6 +59,10 @@ public class LandscapeDTOFactory {
                 .filter(s -> !StringUtils.isEmpty(s))
                 .toArray(String[]::new);
 
+        List<ProcessLog.Entry> messages = impl.getLog().getMessages();
+        if (messages.size() > 0) {
+            stats.lastUpdate = messages.get(messages.size()-1).getDate();
+        }
         return stats;
     }
 

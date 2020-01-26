@@ -10,7 +10,9 @@ import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ProcessLog {
@@ -89,19 +91,25 @@ public class ProcessLog {
         return exception.getMessage();
     }
 
-    private class Entry {
+    public static class Entry {
         private final String level;
         private final String message;
+        private final Date date;
 
         public Entry(String level, String message) {
             this.level = level;
             this.message = message;
+            this.date = Date.from(Instant.now());
         }
 
         @Override
         @JsonValue
         public String toString() {
-            return level + ": " + message;
+            return date + " " + level + ": " + message;
+        }
+
+        public Date getDate() {
+            return date;
         }
     }
 }
