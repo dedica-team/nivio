@@ -14,11 +14,11 @@ class Nexagon extends Component {
     private final String fill;
     private final String cellStyle;
 
-    Nexagon(DomContent children, ItemMapItem itemMapItem, Layout layout, String fill, String cellStyle) {
+    Nexagon(DomContent children, ItemMapItem itemMapItem, Point2D.Double pixel, String fill, String cellStyle) {
         this.children = children;
         this.fill = fill;
         this.cellStyle = cellStyle;
-        this.pixel = HexUtils.hexToPixel(itemMapItem.hex, layout);
+        this.pixel = pixel;
         this.id = itemMapItem.landscapeItem.getFullyQualifiedIdentifier().toString();
     }
 

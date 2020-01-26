@@ -11,9 +11,4 @@ public class RenderedXYMap {
     public String landscape;
     public Integer width;
     public Integer height;
-
-    /**
-     * proportional scaling of coordinates
-     */
-    public int sizeFactor;
 }

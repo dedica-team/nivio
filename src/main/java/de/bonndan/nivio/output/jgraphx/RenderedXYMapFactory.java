@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
 
-    public static final int SIZE_DIVISOR = 40;
     private final IconService iconService;
 
     public RenderedXYMapFactory(IconService iconService) {
@@ -41,7 +40,6 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
         renderedMap.landscape = landscape.getName();
         renderedMap.width = maxX.get() - minX.get();
         renderedMap.height = maxY.get() - minY.get();
-        renderedMap.sizeFactor = Math.max(renderedMap.width, renderedMap.height) / SIZE_DIVISOR;
 
         return renderedMap;
     }

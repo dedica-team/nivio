@@ -4,12 +4,12 @@ import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.util.StringUtils;
 
-class NLabel extends Component {
+class SVGItemLabel extends Component {
 
     private final ItemMapItem item;
     private final int width, size, padding;
 
-    NLabel(ItemMapItem item, int width, int size, int padding) {
+    SVGItemLabel(ItemMapItem item, int width, int size, int padding) {
         this.item = item;
         this.width = width;
         this.size = size;

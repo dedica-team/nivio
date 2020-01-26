@@ -21,6 +21,7 @@ svg g circle {
 
 rect.group {
   stroke-width: 0.0em;
+  fill-opacity: 0.5;
 }
 
 svg g.label {
@@ -30,6 +31,10 @@ svg g.label {
 svg g.label rect {
   stroke-width: 0.1em;
   stroke: #3F51B5;
+}
+
+text.groupLabel {
+  text-shadow: 1px 1px 1px black;
 }
 
 svg path {

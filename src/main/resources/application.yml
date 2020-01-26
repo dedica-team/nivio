@@ -13,9 +13,15 @@ spring:
           auth: true
           starttls.enable: true
 
+
 logging:
   level:
     root: INFO
+    de:
+      bonndan:
+        nivio:
+          output: TRACE
+
 
 server:
   port: 8080

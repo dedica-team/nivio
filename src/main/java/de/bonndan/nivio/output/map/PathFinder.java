@@ -1,41 +1,43 @@
 package de.bonndan.nivio.output.map;
 
+import de.bonndan.nivio.output.map.hex.Hex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 class PathFinder {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PathFinder.class);
     private final List<Hex> occupied;
 
     PathFinder(List<Hex> occupied) {
         this.occupied = occupied;
     }
 
-    TilePath findPaths(List<TilePath> paths, Hex target) {
+    TilePath findPaths(List<TilePath> paths, final Hex target) {
 
         paths.forEach(path -> {
-            var source = path.tiles.get(path.tiles.size() - 1);
-            var distance = HexUtils.distance(source, target);
+            Hex pathEnd = path.tiles.get(path.tiles.size() - 1);
+            var distance = pathEnd.distance(target);
 
-            if (distance == 0) {
+            if (distance == 0.0) {
+                LOGGER.debug("distance 0 to target {} reached at {}", target, pathEnd);
                 path.close();
+                return;
             }
 
-            List<Hex> possibleSteps = HexUtils.neighbours(source).stream()
-                .filter(neigh -> this.isSame(neigh, target) || !this.isOccupied(neigh))
-                .filter(neigh -> {
-                    //return neighbours which are closer to the target
-                    var ndist = HexUtils.distance(neigh, target);
-                    return ndist < distance;
-                }).collect(Collectors.toList());
+            List<Hex> free = pathEnd.neighbours().stream()
+                    .filter(neigh -> this.isSame(neigh, target) || !this.isOccupied(neigh))
+                    .collect(Collectors.toList());
+            LOGGER.debug("{} free tiles at {}", free.size(), pathEnd);
 
-            /*console.log(possibleSteps.length + " poss. steps (" +
-                possibleSteps.map(hex => hex.q + "," + hex.r).join("; ")
-                + ") in distance " + distance + " from " + source.q + "," + source.r
-                + " to " + target.q + "," + target.r);
-             */
+            //return free neighbours which are closer to the target
+            List<Hex> possibleSteps = getPossibleSteps(free, pathEnd, target, distance);
 
             if (possibleSteps.size() == 0) { //TODO wrong, wont go back
+                LOGGER.warn("no more possible steps, closing path {} at ", pathEnd);
                 path.close();
             } else {
 
@@ -47,11 +49,10 @@ class PathFinder {
                 for (var i = 0; i < possibleSteps.size(); i++) {
                     var clone = new TilePath(null);
                     path.tiles.forEach(tile -> clone.tiles.add(tile));
-                    clone.tiles.remove(clone.tiles.size()-1);
-                    //console.log("cloned path to add " + possibleSteps[i].q + "," + possibleSteps[i].r);
-                    //console.log("new clone:");
-                    //console.log(clone);
-                    clone.tiles.add(possibleSteps.get(i));
+                    clone.tiles.remove(clone.tiles.size() - 1);
+                    var nexTile = possibleSteps.get(i);
+                    System.out.println("cloned path to add " + nexTile.q + "," + nexTile.r);
+                    clone.tiles.add(nexTile);
                     paths.add(clone);
                 }
             }
@@ -66,6 +67,31 @@ class PathFinder {
         }
 
         //TODO pick one path, mark tiles as occupied to avoid path crossings
+    }
+
+    //return free neighbours which are closer to the target
+    private List<Hex> getPossibleSteps(List<Hex> free, Hex pathEnd, Hex target, int distance) {
+        if (free.isEmpty()) {
+            return free;
+        }
+
+        free.sort((hex, t1) -> {
+            return Integer.valueOf(hex.distance(target)).compareTo(t1.distance(target));
+        });
+
+        Hex first = free.get(0);
+        int min = first.distance(target);
+        List<Hex> nearest = free.stream().filter(hex -> hex.distance(target) <= min).collect(Collectors.toList());
+
+        String tmp = nearest.stream().map(hex -> hex.q + "," + hex.r).collect(Collectors.joining(";"));
+        LOGGER.debug("'{}' tiles at {} closer (distance < {}) to {}", tmp, pathEnd, distance, target);
+        LOGGER.debug(
+                nearest.size() + " poss. steps (" + tmp + ") in distance " + distance
+                        + " from " + pathEnd.q + "," + pathEnd.r
+                        + " to " + target.q + "," + target.r
+        );
+
+        return nearest;
     }
 
     boolean isOccupied(Hex tile) {

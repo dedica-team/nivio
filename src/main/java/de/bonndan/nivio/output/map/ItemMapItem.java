@@ -26,7 +26,6 @@ class ItemMapItem extends MapItem {
     public final String group;
     public final LandscapeItem landscapeItem;
     public final List<Relation> relations = new ArrayList<>();
-    public Hex hex;
 
     public ItemMapItem(Item item, String image, long x, long y, long width, long height) {
         super(item.getFullyQualifiedIdentifier().toString(), StringUtils.isEmpty(item.getName()) ? item.getIdentifier() : item.getName(), image, "item", Color.getGroupColor(item));
