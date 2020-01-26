@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.jgraphx;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.input.FileFetcher;
@@ -17,14 +18,20 @@ import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.notification.NotificationService;
 import de.bonndan.nivio.output.IconService;
+import de.bonndan.nivio.output.Rendered;
+import de.bonndan.nivio.output.map.MapFactory;
+import de.bonndan.nivio.output.map.RenderedXYMap;
+import de.bonndan.nivio.output.map.SvgFactory;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
@@ -126,6 +133,53 @@ class JGraphXRendererTest {
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
         debugRenderLandscape("/src/test/resources/example/large", landscape, false);
+    }
+
+    @Test
+    @Disabled
+    public void debugRenderLargeGraphSVG() throws IOException {
+
+        LandscapeDescription input = new LandscapeDescription();
+        input.setIdentifier("largetest");
+        input.setName("largetest");
+
+        int g = 0;
+        while (g < 30) {
+
+            int i = 0;
+            int max = g % 2 > 0 ? 5 : 8;
+            GroupDescription gd = new GroupDescription();
+            String groupIdentifier = "group" + g;
+            gd.setIdentifier(groupIdentifier);
+            input.getGroups().put(groupIdentifier, gd);
+            while (i < max) {
+                ItemDescription itemDescription = new ItemDescription();
+                itemDescription.setIdentifier(groupIdentifier + "_item_" + i);
+                itemDescription.setGroup(groupIdentifier);
+                input.getItemDescriptions().add(itemDescription);
+                i++;
+            }
+            g++;
+        }
+
+        indexer.reIndex(input);
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
+
+        IconService iconService = new IconService();
+        iconService.setImageProxy("");
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
+
+        MapFactory<mxGraph, mxCell> mapFactory = new RenderedXYMapFactory(iconService);
+        Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
+        RenderedXYMap renderedMap = mapFactory.getRenderedMap(landscape, render);
+
+        SvgFactory svgFactory = new SvgFactory(renderedMap);
+        String svg = svgFactory.getXML();
+
+        File png = new File(RootPath.get() + "/src/test/resources/example/large" + ".svg");
+        FileWriter fileWriter = new FileWriter(png);
+        fileWriter.write(svg);
+        fileWriter.close();
     }
 
     @Test

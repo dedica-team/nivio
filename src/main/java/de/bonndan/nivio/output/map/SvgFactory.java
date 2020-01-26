@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import static j2html.TagCreator.p;
 import static j2html.TagCreator.rawHtml;
 
-class SvgFactory extends Component {
+public class SvgFactory extends Component {
 
     public static final int LABEL_WIDTH = 200;
     private static int ICON_SIZE = 40;
@@ -29,7 +29,7 @@ class SvgFactory extends Component {
 
     private final RenderedXYMap map;
 
-    SvgFactory(RenderedXYMap map) {
+    public SvgFactory(RenderedXYMap map) {
         this.map = map;
     }
 
