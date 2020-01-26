@@ -1,8 +1,8 @@
 package de.bonndan.nivio.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * One specific property/kpi/key ... carrying a status.
@@ -30,7 +30,7 @@ public interface StatusItem {
     /**
      * Returns a list of status items with highest status.
      */
-    static List<StatusItem> highestOf(Set<StatusItem> statuses) {
+    static List<StatusItem> highestOf(Collection<StatusItem> statuses) {
 
         final List<StatusItem> highest = new ArrayList<>();
         statuses.forEach(statusItem -> {

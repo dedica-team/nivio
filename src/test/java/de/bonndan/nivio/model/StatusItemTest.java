@@ -3,9 +3,8 @@ package de.bonndan.nivio.model;
 import de.bonndan.nivio.input.dto.StatusDescription;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,7 +12,7 @@ class StatusItemTest {
 
     @Test
     void highestOf() {
-        Set<StatusItem> statusItemSet = new HashSet<>();
+        List<StatusItem> statusItemSet = new ArrayList<>();
         statusItemSet.add(new StatusDescription("foo", Status.GREEN));
         statusItemSet.add(new StatusDescription("bar", Status.ORANGE));
         statusItemSet.add(new StatusDescription("baz", Status.ORANGE));
