@@ -63,7 +63,7 @@ public class SvgFactory extends Component {
                         .attr("xmlns", "http://www.w3.org/2000/svg")
                         .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
                         .attr("width", map.width * 4)
-                        .attr("height", map.height * 5)
+                        .attr("height", map.height * 5 + LABEL_WIDTH)
 
                         //groups
                         .with(
