@@ -18,7 +18,7 @@ class ItemModalContent extends Component {
     }
 
     componentDidMount() {
-        const {element, closeFn} = this.props;
+        const {element} = this.props;
         const topic = element.getAttribute("data-identifier");
         if (this.state.html == null)
             fetch(this.props.host + "/docs/item/" + topic)
@@ -27,9 +27,15 @@ class ItemModalContent extends Component {
                 })
                 .then((text) => {
                     let card = $(text).find(".card-body");
-                    this.setState({
-                        html: card[0].outerHTML
-                    });
+                    if (card.length > 0) {
+                        this.setState({
+                            html: card[0].outerHTML
+                        });
+                    } else {
+                        this.setState({
+                            html: '<h2>Not Found :(</h2>'
+                        });
+                    }
                 });
     }
 
@@ -58,7 +64,11 @@ class ItemModalContent extends Component {
 
 
         let html = this.state.html;
-        return <div dangerouslySetInnerHTML={{__html: html + "<br /><br />"}}></div>;
+        return <div>
+            <button className={'control'} onClick={closeFn} style={ {float: 'right'}}>OK</button>
+            <div dangerouslySetInnerHTML={{__html: html + "<br /><br />"}}></div>
+
+        </div>;
     }
 }
 

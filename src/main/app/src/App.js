@@ -39,6 +39,7 @@ class App extends Component {
 
         this.onItemClick = this.onItemClick.bind(this);
         this.onModalClose = this.onModalClose.bind(this);
+        this.onManClose = this.onManClose.bind(this);
         Modal.setAppElement('#root')
 
     }
@@ -137,8 +138,12 @@ class App extends Component {
         this.setState({modalContent: null})
     }
 
+    onManClose() {
+        this.setState({modalContent: null, newLocation: "/"})
+    }
+
     Manual() {
-        return <Man host={this.baseUrl} topic={this.state.topic}/>
+        return <Man host={this.baseUrl} topic={this.state.topic} closeFn={this.onManClose}/>
     }
 
     Home() {

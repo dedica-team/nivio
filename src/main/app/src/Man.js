@@ -17,7 +17,7 @@ class Man extends Component {
     }
 
     render() {
-        let topic = this.props.topic;
+        let {topic, closeFn} = this.props;
         if (topic === undefined)
             topic = 'install';
 
@@ -35,7 +35,11 @@ class Man extends Component {
 
         let html = this.state.html;
 
-        return <div dangerouslySetInnerHTML={{__html: html + "<br /><br />"}}></div>;
+        return <div>
+            <button className={'control'} onClick={closeFn} style={ {float: 'right'}}>OK</button>
+            <div dangerouslySetInnerHTML={{__html: html + "<br /><br />"}}></div>
+
+        </div>;
 
     }
 }

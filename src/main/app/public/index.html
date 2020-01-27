@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <link rel="apple-touch-icon" href="logo192.png" />
+<head>
+    <meta charset="utf-8"/>
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="theme-color" content="#000000"/>
+    <link rel="apple-touch-icon" href="logo192.png"/>
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json"/>
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -21,141 +21,145 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Nivio</title>
-    <link rel="stylesheet" href="basic.css" />
-    <link rel="stylesheet" href="pygments.css" />
+    <link rel="stylesheet" href="basic.css"/>
+    <link rel="stylesheet" href="pygments.css"/>
     <!-- http://aleclownes.com/2017/02/01/crt-display.html -->
     <style type="text/css">
-      body {
-        background-color: black;
-        font-family: monospace;
-        color: rgba(255,255,255,0.75);
-        text-shadow: 0 0 10px rgba(0,255,255,0.95);
-        margin-bottom: 5em;
-      }
+        body {
+            background-color: black;
+            font-family: monospace;
+            color: rgba(255, 255, 255, 0.75);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.95);
+            margin-bottom: 5em;
+        }
 
-      .highlight {
-        background-color: transparent;
-      }
+        .highlight {
+            background-color: transparent;
+        }
 
-      pre {
-        white-space: pre;
-        text-shadow: none;
-      }
+        pre {
+            white-space: pre;
+            text-shadow: none;
+        }
 
-      a {
-        color: white;
-        font-weight: bold;
-      }
+        a {
+            color: white;
+            font-weight: bold;
+        }
 
-      h1,h2 {
-        text-transform: uppercase;
-        background-color: rgba(0, 127, 127, 0.682);
-        pointer-events: auto;
-        box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
-        text-align: center;
-        line-height: normal;
-        cursor: default;
-      }
+        h1, h2, h3 {
+            text-transform: uppercase;
+            background-color: rgba(0, 127, 127, 0.682);
+            pointer-events: auto;
+            box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.5);
+            text-align: center;
+            line-height: normal;
+            cursor: default;
+        }
 
-      h1{
-        margin: 0;
-        margin-bottom: 1em;
-      }
+        h1 {
+            margin: 0;
+            margin-bottom: 1em;
+        }
 
-      h2 {
-        display: inline-block;
-        padding-left: 1em;
-        padding-right: 1em;
-      }
+        h2, h3 {
+            display: inline-block;
+            padding-left: 1em;
+            padding-right: 1em;
+        }
 
-      hr {
-        margin-top: 1em;
-        box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
-        border-top: 1px solid rgba(127,255,255,0.25);
-        height: 1px;
-      }
+        hr {
+            margin-top: 1em;
+            box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.5);
+            border-top: 1px solid rgba(127, 255, 255, 0.25);
+            height: 1px;
+        }
 
-      .control {
-        background-color: rgba(0, 127, 127, 0.682);
-        pointer-events: auto;
-        box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
-        border: 1px solid rgba(127,255,255,0.25);
-        text-align: center;
-        line-height: normal;
-        cursor: default;
-        text-transform: uppercase;
-      }
+        .control {
+            background-color: rgba(0, 127, 127, 0.682);
+            pointer-events: auto;
+            box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.5);
+            border: 1px solid rgba(127, 255, 255, 0.25);
+            text-align: center;
+            line-height: normal;
+            cursor: default;
+            text-transform: uppercase;
+        }
 
-      button.control {
-        color: rgba(255,255,255,0.75);
-        font-size: large;
-        text-shadow: 0 0 10px rgba(0,255,255,0.95);
-      }
+        button.control {
+            color: rgba(255, 255, 255, 0.75);
+            font-size: large;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.95);
+        }
 
-      .typewriter {
-        animation: typing 3.5s steps(40, end);
-      }
+        .typewriter {
+            animation: typing 3.5s steps(40, end);
+        }
 
-      .console {
-        border-top : 1px solid rgba(127,255,255,0.25);
-        background-color: black !important;
-      }
+        .console {
+            border-top: 1px solid rgba(127, 255, 255, 0.25);
+            background-color: black !important;
+        }
 
-      @keyframes typing {
-        from { width: 0 }
-        to { width: 100% }
-      }
+        @keyframes typing {
+            from {
+                width: 0
+            }
+            to {
+                width: 100%
+            }
+        }
 
-      g rect.group {
-        stroke-width: 0.1em;
-        fill-opacity: 0.1;
-        stroke: rgba(127,255,255,0.25);
-        box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
-      }
+        g rect.group {
+            stroke-width: 0.1em;
+            fill-opacity: 0.1;
+            stroke: rgba(127, 255, 255, 0.25);
+            box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.5);
+        }
 
-      g.label rect {
-        fill: black;
-        stroke: rgba(127,255,255,0.25);
-      }
+        g.label rect {
+            fill: black;
+            stroke: rgba(127, 255, 255, 0.25);
+        }
 
-      g.label text {
-        fill: rgba(255,255,255,0.75);
-      }
+        g.label text {
+            fill: rgba(255, 255, 255, 0.75);
+        }
 
-      .Modal {
-        position: absolute;
-        top: 40px;
-        left: 40px;
-        right: 40px;
-        bottom: 40px;
-        background-color: black;
-        border: none;
-      }
+        .Modal {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            right: 40px;
+            bottom: 40px;
+            background-color: black;
+            border: none;
+        }
 
-      .Overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0,0,0.75);
-        filter: blur();
-      }
+        .Overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            filter: blur();
+        }
 
     </style>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+</head>
+<body>
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<div id="root"></div>
+<!--
+  This HTML file is a template.
+  If you open it directly in the browser, you will see an empty page.
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+  You can add webfonts, meta tags, or analytics to this file.
+  The build step will place the bundled scripts into the <body> tag.
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-  </body>
+  To begin the development, run `npm start` or `yarn start`.
+  To create a production bundle, use `npm run build` or `yarn build`.
+-->
+</body>
 </html>
