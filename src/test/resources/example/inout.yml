@@ -1,5 +1,6 @@
 identifier: inout
 name: Input and Output
+description: Misuses the landscape graph to show the input and output possibilities of nivio.
 
 groups:
   output:
@@ -53,11 +54,13 @@ items:
     icon: https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
 
   - identifier: prometheus
+    name: Prometheus (planned)
     group: input
     lifecycle: planned
     icon: https://raw.githubusercontent.com/prometheus/docs/master/static/prometheus_logo.png
 
   - identifier: csv
+    description: Reads tabular data and provides custom field mapping to landscape item attributes.
     group: input
     icon:
     name: CSV files
