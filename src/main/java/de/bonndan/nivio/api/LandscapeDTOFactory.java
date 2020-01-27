@@ -57,6 +57,7 @@ public class LandscapeDTOFactory {
         stats.teams = impl.getItems().stream()
                 .map(Item::getTeam)
                 .filter(s -> !StringUtils.isEmpty(s))
+                .collect(Collectors.toSet())
                 .toArray(String[]::new);
 
         List<ProcessLog.Entry> messages = impl.getLog().getMessages();
