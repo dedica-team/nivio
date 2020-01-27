@@ -165,6 +165,7 @@ class App extends Component {
                             Overall State: {l.stats.overallState || '-'}<br/>
                             {l.stats.items} items in {l.stats.groups} groups<br/>
                             Last update: {l.stats.lastUpdate || '-'}<br/>
+                            Report: <a target={'_blank'} href={this.baseUrl + "/docs/" + l.identifier + "/report.html"}>Printable Report</a><br/>
                         </blockquote>
                     </div>
                     <br/>
