@@ -47,7 +47,8 @@ public class MagicLabelRelations extends Resolver {
 
                     String source = description.getIdentifier();
                     String target = possibleTargets.iterator().next().getIdentifier();
-                    processLog.info("Found a target of magic relation from " + description.getIdentifier()
+                    processLog.info("Found a target of magic relation from "
+                            + description.getIdentifier() + "(" + description.getName() + ")"
                             + " to target '" + target + "' using '" + toFind + "'");
                     boolean relationExists = description.getRelations().stream()
                             .anyMatch(r -> hasRelation(source, target, r));
