@@ -123,7 +123,7 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
             }
 
             String id = "df_" + service.getIdentifier() + "_" + rel.getTarget();
-            logger.info("Adding relation " + id);
+            logger.debug("Adding relation " + id);
             graph.insertEdge(graph.getDefaultParent(), id, rel.getFormat(),
                     itemVertexes.get(rel.getSource()),
                     itemVertexes.get(rel.getTarget()),
@@ -339,7 +339,7 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
             return mxConstants.STYLE_STROKECOLOR + "=orange;";
 
         String groupColor = getGroupColor(item);
-        logger.info("Dataflow stroke color {} for service {} group {}", groupColor, item.getIdentifier(), item.getGroup());
+        logger.debug("Dataflow stroke color {} for service {} group {}", groupColor, item.getIdentifier(), item.getGroup());
         return mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";
     }
 
