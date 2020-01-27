@@ -23,14 +23,18 @@ class App extends Component {
             modalContent: null
         };
 
-        this.host = window.location.protocol + "//" + window.location.host + "/" + window.location.pathname;
+        let pathname = window.location.pathname;
+        if (pathname.length > 1 && pathname.endsWith("/")) {
+            pathname = pathname.substr(0, pathname.length-2);
+        }
+        this.baseUrl = window.location.protocol + "//" + window.location.host  + pathname;
         if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-            this.host = 'http://localhost:8081';
+            this.baseUrl = 'http://localhost:8080';
         }
         let params = new URLSearchParams(window.location.search);
         let host = params.get('host');
         if (host !== null) {
-            this.host = host;
+            this.baseUrl = host;
         }
 
         this.onItemClick = this.onItemClick.bind(this);
@@ -48,7 +52,7 @@ class App extends Component {
     }
 
     getLandscapes() {
-        fetch(this.host + "/api/")
+        fetch(this.baseUrl + "/api/")
             .then((response) => {
                 return response.json()
             })
@@ -125,7 +129,7 @@ class App extends Component {
     }
 
     onItemClick(e) {
-        let content = <ItemModalContent element={e.target.parentElement} closeFn={this.onModalClose}/>
+        let content = <ItemModalContent host={this.baseUrl} element={e.target.parentElement} closeFn={this.onModalClose}/>
         this.setState({modalContent: content})
     }
 
@@ -134,7 +138,7 @@ class App extends Component {
     }
 
     Manual() {
-        return <Man host={this.host} topic={this.state.topic}/>
+        return <Man host={this.baseUrl} topic={this.state.topic}/>
     }
 
     Home() {
@@ -146,7 +150,7 @@ class App extends Component {
         } else {
             content = landscapes.map(l => {
                 return <div key={l.id}>
-                    <div style={{width: '30%'}}>
+                    <div>
                         <h2>{l.name}</h2>
                         <blockquote>{l.description}</blockquote>
                         <blockquote>
@@ -178,7 +182,7 @@ class App extends Component {
 
         let landscape = this.state.landscape;
         if (landscape) {
-            let data = this.host + '/render/' + landscape.identifier + '/map.svg';
+            let data = this.baseUrl + '/render/' + landscape.identifier + '/map.svg';
             const {modalContent} = this.state;
             return <ReactSvgPanZoomLoader src={data} proxy={
                 <>
