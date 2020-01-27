@@ -94,6 +94,7 @@ public class ReportGenerator extends HtmlGenerator {
                                 , li("Capability: " + FormatUtils.nice(item.getCapability()))
                                 , li("Links: ").with(links)
                                 , li("Tags: " + FormatUtils.nice(item.getTags()))
+                                , li("Lifecycle: " + FormatUtils.nice(item.getLifecycle().toString()))
                                 , li("Software: " + FormatUtils.nice(item.getSoftware()))
                                 , li("Version: " + FormatUtils.nice(item.getVersion()))
                                 , li("Machine: " + FormatUtils.nice(item.getMachine()))
