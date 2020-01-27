@@ -13,6 +13,8 @@ public class ItemReportGenerator extends ReportGenerator {
     }
 
     public String toDocument(Item item) {
-        return  html(body(writeItem(item))).renderFormatted();
+        return "<!DOCTYPE html>" + html(body(writeItem(item)))
+                .attr("xmlns", "http://www.w3.org/1999/xhtml")
+                .renderFormatted();
     }
 }
