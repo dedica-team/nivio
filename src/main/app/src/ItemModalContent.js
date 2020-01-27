@@ -13,8 +13,6 @@ class ItemModalContent extends Component {
         this.state = {
             html: null
         };
-
-
     }
 
     componentDidMount() {
@@ -41,25 +39,9 @@ class ItemModalContent extends Component {
 
     render() {
         const {element, closeFn} = this.props;
-
-        let name = element.getAttribute("data-name") || element.getAttribute('data-identifier');
-        let team = element.getAttribute("data-team") || '-';
-        let owner = element.getAttribute("data-owner") || '-';
-        let contact = element.getAttribute("data-contact") || '-';
         const topic = element.getAttribute("data-identifier");
         if (topic === undefined) {
-            return <div>
-                <div className={'control'}>
-                    <h2>{name}</h2>
-                </div>
-                <div className={'typewriter'}>
-                    Team: {team}<br/>
-                    Owner: {owner}<br/>
-                    Contact: {contact}<br/>
-                </div>
-
-                <button className={'control'} onClick={closeFn}>X</button>
-            </div>
+            return <div><button className={'control'} onClick={closeFn}>X</button></div>
         }
 
 

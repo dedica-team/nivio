@@ -5,6 +5,7 @@ import {BrowserRouter as Router, Redirect, Switch, Route, Link} from "react-rout
 import Terminal from 'react-console-emulator'
 import Modal from 'react-modal';
 import ItemModalContent from "./ItemModalContent";
+import LandscapeLog from "./LandscapeLog";
 import Man from "./Man";
 
 class App extends Component {
@@ -25,9 +26,9 @@ class App extends Component {
 
         let pathname = window.location.pathname;
         if (pathname.length > 1 && pathname.endsWith("/")) {
-            pathname = pathname.substr(0, pathname.length-2);
+            pathname = pathname.substr(0, pathname.length - 2);
         }
-        this.baseUrl = window.location.protocol + "//" + window.location.host  + pathname;
+        this.baseUrl = window.location.protocol + "//" + window.location.host + pathname;
         if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
             this.baseUrl = 'http://localhost:8080';
         }
@@ -89,6 +90,20 @@ class App extends Component {
         this.setState({message: 'Entering landscape: ' + l.identifier, landscape: l});
     }
 
+    enterLog(l) {
+        let content = <LandscapeLog baseUrl={this.baseUrl} landscape={l} closeFn={this.onManClose}/>;
+        this.setState({
+            message: 'Showing log: ' + l.identifier,
+            modalContent: content,
+            landscape: l
+        });
+    }
+
+    onItemClick(e) {
+        let content = <ItemModalContent host={this.baseUrl} element={e.target.parentElement} closeFn={this.onModalClose}/>
+        this.setState({modalContent: content})
+    }
+
     render() {
 
         if (this.state.newLocation !== null) {
@@ -129,11 +144,6 @@ class App extends Component {
         };
     }
 
-    onItemClick(e) {
-        let content = <ItemModalContent host={this.baseUrl} element={e.target.parentElement} closeFn={this.onModalClose}/>
-        this.setState({modalContent: content})
-    }
-
     onModalClose() {
         this.setState({modalContent: null})
     }
@@ -149,6 +159,7 @@ class App extends Component {
     Home() {
 
         let landscapes = this.state.landscapes;
+        const {modalContent} = this.state;
         let content;
         if (!landscapes) {
             content = "loading";
@@ -165,19 +176,28 @@ class App extends Component {
                             Overall State: {l.stats.overallState || '-'}<br/>
                             {l.stats.items} items in {l.stats.groups} groups<br/>
                             Last update: {l.stats.lastUpdate || '-'}<br/>
-                            Report: <a target={'_blank'} href={this.baseUrl + "/docs/" + l.identifier + "/report.html"}>Printable Report</a><br/>
+                            Report: <a target={'_blank'} href={this.baseUrl + "/docs/" + l.identifier + "/report.html"}>Printable
+                            Report</a><br/>
                         </blockquote>
                     </div>
                     <br/>
                     <Link to="/landscape">
                         <button className={'control'} onClick={() => this.enterLandscape(l)}>enter &gt;</button>
                     </Link>
+                    &nbsp;
+                    <button className={'control'} onClick={() => this.enterLog(l)}>view log</button>
+                    <br/>
                 </div>
             });
         }
 
         return (
             <div>
+                <Modal isOpen={modalContent !== null}
+                       className="Modal"
+                       overlayClassName="Overlay"
+                       shouldCloseOnEsc={true}
+                       contentLabel="Modal">{modalContent}</Modal>
                 <h1>Landscapes</h1>
                 {content}
             </div>
