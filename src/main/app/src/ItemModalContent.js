@@ -27,8 +27,6 @@ class ItemModalContent extends Component {
                 })
                 .then((text) => {
                     let card = $(text).find(".card-body");
-                    debugger;
-                    console.log(card[0]);
                     this.setState({
                         html: card[0].outerHTML
                     });
