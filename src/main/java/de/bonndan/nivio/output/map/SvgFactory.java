@@ -101,9 +101,9 @@ public class SvgFactory extends Component {
                                         fill = Base64.getEncoder().encodeToString(vertex.id.getBytes());
                                     }
                                     SVGItemLabel label = new SVGItemLabel(vertex, LABEL_WIDTH, ICON_SIZE, padding);
-                                    Point2D.Double pixel = vertexHexes.get(vertex).toPixel();
-                                    Nexagon nexagon = new Nexagon(label.render(), vertex, pixel, fill, "stroke: #" + vertex.color);
-                                    return nexagon.render();
+                                    Point2D.Double pos = vertexHexes.get(vertex).toPixel();
+                                    SVGItem SVGItem = new SVGItem(label.render(), vertex, pos, fill, "stroke: #" + vertex.color);
+                                    return SVGItem.render();
                                 }).collect(Collectors.toList())
                         )
 
