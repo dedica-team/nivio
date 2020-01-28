@@ -84,8 +84,8 @@ public class SvgFactory extends Component {
                                                 Hex target = vertexHexes.get(itemMapItembyFQI.get(rel.target));
                                                 pathFinder.findPaths(paths, target);
                                                 var path = pathFinder.sortAndFilterPaths(paths);
-                                                NPath nPath = new NPath(path, vertex.color, rel);
-                                                return nPath.render();
+                                                SVGRelation SVGRelation = new SVGRelation(path, vertex.color, rel);
+                                                return SVGRelation.render();
                                             });
                                         }
                                 ).collect(Collectors.toList())

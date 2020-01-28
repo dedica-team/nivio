@@ -46,11 +46,13 @@ class ItemMapItem extends MapItem {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Relation {
+        public final String source;
         public final String target;
         public final String type;
         public final String format;
 
         public Relation(RelationItem<Item> rel) {
+            this.source = rel.getSource().getFullyQualifiedIdentifier().toString();
             this.target = rel.getTarget().getFullyQualifiedIdentifier().toString();
             this.type = rel.getType() != null ? rel.getType().name() : null;
             this.format = rel.getFormat();
