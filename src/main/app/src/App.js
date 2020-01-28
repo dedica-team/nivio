@@ -7,6 +7,7 @@ import Modal from 'react-modal';
 import ItemModalContent from "./ItemModalContent";
 import LandscapeLog from "./LandscapeLog";
 import Man from "./Man";
+import $ from "jquery";
 
 class App extends Component {
 
@@ -100,7 +101,8 @@ class App extends Component {
     }
 
     onItemClick(e) {
-        let content = <ItemModalContent host={this.baseUrl} element={e.target.parentElement} closeFn={this.onModalClose}/>
+        let content = <ItemModalContent host={this.baseUrl} element={e.target.parentElement}
+                                        closeFn={this.onModalClose}/>
         this.setState({modalContent: content})
     }
 
@@ -140,8 +142,25 @@ class App extends Component {
                 description: 'Show the manual.',
                 usage: 'man install|input|model|magic|extra|api',
                 fn: (arg) => that.setState({message: 'RTFM: ' + arg, newLocation: "/man", topic: arg})
+            },
+            sim: {
+                description: 'Simulate realtime updates.',
+                usage: 'sim',
+                fn: () => that.sim()
             }
         };
+    }
+
+    sim() {
+        const landscape = this.state.landscape;
+        if (landscape == null) {
+            this.setState({message: 'Pick a landscape'});
+            return;
+        }
+        let circles = $('g.hexagon circle');
+        let pick = circles[Math.floor(circles.length * Math.random())];
+        this.setState({message: pick.id +' has a problem!'});
+        pick.style.setProperty('stroke', 'red');
     }
 
     onModalClose() {
