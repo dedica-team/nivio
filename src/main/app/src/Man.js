@@ -36,7 +36,7 @@ class Man extends Component {
         let html = this.state.html;
 
         return <div>
-            <button className={'control'} onClick={closeFn} style={ {float: 'right'}}>OK</button>
+            <button className={'control'} onClick={closeFn} style={ {float: 'right'}}>close</button>
             <div dangerouslySetInnerHTML={{__html: html + "<br /><br />"}}></div>
 
         </div>;

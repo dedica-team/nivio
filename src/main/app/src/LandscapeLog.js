@@ -42,10 +42,10 @@ class LandscapeLog extends Component {
 
         return (
             <div>
+                <button className={'control'} onClick={closeFn} style={ {float: 'right'} }>close</button>
                 <h1>Landscape {landscape.name} Process Log</h1>
                 {content}
                 <br/>
-                <button className={'control'} onClick={closeFn}>close</button>
             </div>
         );
     }
