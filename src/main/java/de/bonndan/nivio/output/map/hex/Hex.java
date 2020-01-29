@@ -80,4 +80,24 @@ public class Hex {
                 ", id='" + id + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Hex hex = (Hex) o;
+
+        if (q != hex.q) return false;
+        if (r != hex.r) return false;
+        return s == hex.s;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = q;
+        result = 31 * result + r;
+        result = 31 * result + s;
+        return result;
+    }
 }

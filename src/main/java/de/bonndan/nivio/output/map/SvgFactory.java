@@ -78,13 +78,9 @@ public class SvgFactory extends Component {
                                 map.items.stream().flatMap(vertex -> {
 
                                             return vertex.relations.stream().map(rel -> {
-                                                var paths = new CopyOnWriteArrayList<TilePath>();
-                                                var path0 = new TilePath(vertexHexes.get(vertex));
-                                                paths.add(path0);
                                                 Hex target = vertexHexes.get(itemMapItembyFQI.get(rel.target));
-                                                pathFinder.findPaths(paths, target);
-                                                var path = pathFinder.sortAndFilterPaths(paths);
-                                                SVGRelation SVGRelation = new SVGRelation(path, vertex.color, rel);
+                                                TilePath bestPath = pathFinder.findBestPath(vertexHexes.get(vertex), target);
+                                                SVGRelation SVGRelation = new SVGRelation(bestPath, vertex.color, rel);
                                                 return SVGRelation.render();
                                             });
                                         }
