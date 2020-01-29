@@ -186,7 +186,12 @@ class App extends Component {
             content = landscapes.map(l => {
                 return <div key={l.id}>
                     <div>
-                        <h2>{l.name}</h2>
+                        <h2>{l.name}</h2>&nbsp;&nbsp;
+                            <Link to="/landscape">
+                                <button className={'control'} onClick={() => this.enterLandscape(l)}>enter &gt;</button>
+                            </Link>
+                            &nbsp;
+                            <button className={'control'} onClick={() => this.enterLog(l)}>log</button>
                         <blockquote>{l.description}</blockquote>
                         <blockquote>
                             Identifier: {l.identifier}<br/>
@@ -194,17 +199,14 @@ class App extends Component {
                             Teams: {l.stats.teams.join(', ')}<br/>
                             Overall State: {l.stats.overallState || '-'}<br/>
                             {l.stats.items} items in {l.stats.groups} groups<br/>
-                            Last update: {l.stats.lastUpdate || '-'}<br/>
-                            Report: <a target={'_blank'} href={this.baseUrl + "/docs/" + l.identifier + "/report.html"}>Printable
-                            Report</a><br/>
+                            Last update: {l.stats.lastUpdate || '-'}<br/><br/>
+                            <a target={'_blank'} href={this.baseUrl + "/docs/" + l.identifier + "/report.html"}>Printable
+                            Report</a>&nbsp;
+                            <a target={'_blank'} href={this.baseUrl + "/render/" + l.identifier + "/map.svg"}>Printable
+                            Graph</a><br/>
                         </blockquote>
                     </div>
                     <br/>
-                    <Link to="/landscape">
-                        <button className={'control'} onClick={() => this.enterLandscape(l)}>enter &gt;</button>
-                    </Link>
-                    &nbsp;
-                    <button className={'control'} onClick={() => this.enterLog(l)}>view log</button>
                     <br/>
                 </div>
             });
