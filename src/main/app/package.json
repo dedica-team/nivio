@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "jquery": "^3.4.1",
+    "raw.macro": "^0.3.0",
     "react": "^16.10.1",
     "react-console-emulator": "^3.0.4",
     "react-dom": "^16.10.1",
