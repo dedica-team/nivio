@@ -128,6 +128,33 @@ class MagicLabelRelationsTest {
     }
 
     @Test
+    @DisplayName("does nothing if the label value is a known identifier")
+    public void ifValueIsIdentiferDoesNotLink() {
+        //given
+        Item apiFoo = new Item();
+        apiFoo.setIdentifier("api-foo"); //this should match
+        LandscapeImpl landscape = getLandscapeWith(apiFoo);
+
+        Item foo = new Item();
+        foo.setIdentifier("foo"); //part of the label "FOO_API_URL", should not match
+        landscape.addItem(foo);
+
+        Item api = new Item();
+        api.setIdentifier("api"); //part of the label "FOO_API_URL", should not match
+        landscape.addItem(api);
+
+
+        //when
+        resolver.process(input, landscape);
+
+        //then
+        assertEquals(2, item.getRelations().size()); // to api because of ABC_URL, to api-foo because of FOO_API_URL
+        RelationItem<String> rel = item.getRelations().iterator().next();
+        assertEquals("api-foo", rel.getTarget());
+
+    }
+
+    @Test
     @DisplayName("a part of the key matches an identifier")
     public void keyPartMatchesidentifier() {
         //given
