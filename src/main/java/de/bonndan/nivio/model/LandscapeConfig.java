@@ -10,6 +10,7 @@ public class LandscapeConfig {
     private JGraphXConfig jgraphx = new JGraphXConfig();
 
     private List<String> groupBlacklist = new ArrayList<>();
+    private List<String> labelBlacklist = new ArrayList<>();
 
     public JGraphXConfig getJgraphx() {
         return jgraphx;
@@ -34,6 +35,13 @@ public class LandscapeConfig {
      */
     public List<String> getGroupBlacklist() {
         return groupBlacklist;
+    }
+
+    /**
+     * @return a list of matchers / regex for labels should not be examined for relations
+     */
+    public List<String> getLabelBlacklist() {
+        return labelBlacklist;
     }
 
     /**

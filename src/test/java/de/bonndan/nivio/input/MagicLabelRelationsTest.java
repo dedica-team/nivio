@@ -172,6 +172,22 @@ class MagicLabelRelationsTest {
     }
 
     @Test
+    @DisplayName("label blacklist is used")
+    public void blacklistPreventsRelations() {
+        //given
+        Item hihi = new Item();
+        hihi.setIdentifier("baz");
+        LandscapeImpl landscape = getLandscapeWith(hihi);
+        landscape.getConfig().getLabelBlacklist().add(".*COMPOSITION.*");
+
+        //when
+        resolver.process(input, landscape);
+
+        //then
+        assertEquals(0, item.getRelations().size());
+    }
+
+    @Test
     @DisplayName("does not link same service to itself")
     public void doesNotLinkSame() {
         //given

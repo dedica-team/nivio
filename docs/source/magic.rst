@@ -109,10 +109,32 @@ Relations between landscape items
 Usually environments such as Docker, K8s provide few to none information on the relation between landscape items (e.g.
 which database a service uses). However, in 12-factor apps there is configuration through environment variables (https://12factor.net/config)
 and these can be parsed hopefully. Nivio provides an experimental feature which regards these env vars as DSL. Env vars
-are read and assigned as item labels, then examined in the following way:
+are read and assigned as item labels, then examined:
 
-* the key contains words like "url", "uri" etc.
-* the value is an URL
+* The key is split using the underscore character.
+* If it contains parts like **"url", "uri", "host"** etc. the label is taken into account.
 
-If a criteria is matched, the value of the label is examined. In the of being an URL, the host and name path components are extracted as names or identifiers.
-Using these, the landscape is searched for possible relation targets.
+Then the label is examined:
+
+* If the value matches a landscape item identifier, the correspondig item is used as target and detection ends
+* In the case of being an URL, the host and name path components are extracted and used as names or identifiers.
+* Otherwise, the **key** of the label is split using the underscore "_" characters and the resulting parts are used as names
+or identifier. For instance FOO_API_URL would look for landscape items like "foo" and "api".
+
+
+To prevent false positives certain label can be omitted:
+
+.. code-block:: yaml
+   :linenos:
+
+    identifier: some-landscape
+    config:
+      labelBlacklist: [".*data.*"]
+
+    items:
+      - identifier: foo
+        labels:
+          BAR_URL: http://bar.local
+
+      - identifier: bar
+        ...

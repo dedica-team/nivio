@@ -9,6 +9,8 @@ import org.springframework.util.StringUtils;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -31,7 +33,9 @@ public class MagicLabelRelations extends Resolver {
     public void process(LandscapeDescription input, LandscapeImpl landscape) {
 
         Map<ItemDescription, List<LabelMatch>> itemMatches = new HashMap<>();
-        input.getItemDescriptions().all().forEach(item -> itemMatches.put(item, getMatches(item, landscape)));
+        List<Function<String, Boolean>> blacklistSpecs = getBlacklistSpecs(landscape.getConfig().getLabelBlacklist());
+
+        input.getItemDescriptions().all().forEach(item -> itemMatches.put(item, getMatches(item, landscape, blacklistSpecs)));
 
         //search for targets in the landscape
         itemMatches.forEach((item, labelMatches) -> {
@@ -82,8 +86,14 @@ public class MagicLabelRelations extends Resolver {
                 r.getSource().equals(target) && r.getTarget().equals(source);
     }
 
-    private List<LabelMatch> getMatches(ItemDescription itemDescription, LandscapeImpl landscape) {
+    private List<LabelMatch> getMatches(
+            ItemDescription itemDescription,
+            LandscapeImpl landscape,
+            List<Function<String, Boolean>> blacklistSpecs
+    ) {
         return itemDescription.getLabels().entrySet().stream()
+                //skip the blacklisted labels
+                .filter(entry -> blacklistSpecs.stream().noneMatch(spec -> spec.apply(entry.getKey())))
                 .map(entry -> getPossibleTargetsForLabel(entry.getKey(), entry.getValue(), landscape))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -113,7 +123,10 @@ public class MagicLabelRelations extends Resolver {
             }
         }
 
-        Set<String> collect = aliasesToFind.stream().filter(s -> !StringUtils.isEmpty(s)).collect(Collectors.toSet());
+        landscape.getConfig().getLabelBlacklist();
+        Set<String> collect = aliasesToFind.stream()
+                .filter(s -> !StringUtils.isEmpty(s))
+                .collect(Collectors.toSet());
         return new LabelMatch(key, value, collect);
     }
 
@@ -127,5 +140,18 @@ public class MagicLabelRelations extends Resolver {
             this.value = value;
             this.possibleTargets = possibleTargets;
         }
+    }
+
+    private List<Function<String, Boolean>> getBlacklistSpecs(List<String> blacklist) {
+        return blacklist.stream().map(s -> {
+            try {
+                Pattern p = Pattern.compile(s);
+                return (Function<String, Boolean>) s1 -> p.matcher(s1).matches();
+            } catch (Exception e) {
+                processLog.warn("Failed to compile group matcher pattern " + s);
+                return (Function<String, Boolean>) s1 -> s1.contains(s);
+            }
+
+        }).collect(Collectors.toList());
     }
 }

@@ -10,7 +10,6 @@ import java.util.*;
 
 /**
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
- *
  */
 public class LandscapeImpl implements Landscape {
 
@@ -82,7 +81,10 @@ public class LandscapeImpl implements Landscape {
 
     @Override
     public LandscapeConfig getConfig() {
-        return config == null ? new LandscapeConfig() : config;
+        if (config == null) {
+            config = new LandscapeConfig();
+        }
+        return config;
     }
 
     @Override
