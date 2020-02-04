@@ -149,9 +149,9 @@ class MagicLabelRelationsTest {
 
         //then
         assertEquals(2, item.getRelations().size()); // to api because of ABC_URL, to api-foo because of FOO_API_URL
-        RelationItem<String> rel = item.getRelations().iterator().next();
-        assertEquals("api-foo", rel.getTarget());
 
+        boolean hasApiFoo = item.getRelations().stream().anyMatch(rel -> "api-foo".equals(rel.getTarget()));
+        assertTrue(hasApiFoo);
     }
 
     @Test
