@@ -7,12 +7,12 @@ Nivio is application landscape management for teams (developers, operators, mana
 approach, i.e. there is no interface for manual data maintenance. It is designed to gather the application landscape
  information from configurable items, preferably code repos.
  
- ![rendered graph](https://raw.githubusercontent.com/bonndan/nivio/develop/docs/graph.png)
+ ![rendered graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/graph.png)
 
 
 ## Example Graph, Input and Output
 
-![input output_graph](https://raw.githubusercontent.com/bonndan/nivio/master/docs/inout.png)
+![input output_graph](https://raw.githubusercontent.com/dedica-team/nivio/master/docs/inout.png)
 
 To **get started** read the [documentation](https://nivio.readthedocs.io/en/master).
 
@@ -27,7 +27,7 @@ To **get started** read the [documentation](https://nivio.readthedocs.io/en/mast
 
 Clone nivio, build and run a Docker image:
 
-    git clone https://github.com/bonndan/nivio.git && cd nivio
+    git clone https://github.com/dedica-team/nivio.git && cd nivio
     mvn clean package
     docker build -t nivio:latest .
     docker run -e SEED=/tmp/inout.yml --mount type=bind,source="$(pwd)"/src/test/resources/example,target=/tmp -p 8080:8080 nivio:latest
