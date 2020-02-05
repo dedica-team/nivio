@@ -140,7 +140,7 @@ class App extends Component {
             },
             man: {
                 description: 'Show the manual.',
-                usage: 'man install|input|model|magic|extra|api',
+                usage: Man.usage,
                 fn: (arg) => that.setState({message: 'RTFM: ' + arg, newLocation: "/man", topic: arg})
             },
             sim: {
