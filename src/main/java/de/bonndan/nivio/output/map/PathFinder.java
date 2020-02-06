@@ -55,11 +55,7 @@ class PathFinder {
                 return;
             }
 
-            List<Hex> free = pathEnd.neighbours().stream()
-                    .filter(neigh -> neigh.equals(target) || !this.isOccupied(neigh))
-                    .collect(Collectors.toList());
-            if (debug) LOGGER.debug("{} free tiles at {}", free.size(), pathEnd);
-
+            List<Hex> free = getFreeNeighbours(target, pathEnd);
             //return free neighbours which are closer to the target
             List<Hex> possibleSteps = getPossibleSteps(free, pathEnd, target, distance);
 
@@ -95,6 +91,21 @@ class PathFinder {
         }
 
         //TODO pick one path, mark tiles as occupied to avoid path crossings
+    }
+
+    private List<Hex> getFreeNeighbours(Hex target, Hex pathEnd) {
+        List<Hex> neighbours = pathEnd.neighbours();
+        List<Hex> free = new ArrayList<>();
+        for (Hex neigh : neighbours) {
+            if (neigh.equals(target) || !this.isOccupied(neigh)) {
+                free.add(neigh);
+            }
+        }
+
+        if (debug) {
+            LOGGER.debug("{} free tiles at {}", free.size(), pathEnd);
+        }
+        return free;
     }
 
     //return free neighbours which are closer to the target
@@ -138,8 +149,9 @@ class PathFinder {
 
     private TilePath sortAndFilterPaths(List<TilePath> paths) {
         paths.sort((first, second) -> {
-            if (first.getSpeed() == second.getSpeed())
+            if (first.getSpeed() == second.getSpeed()) {
                 return 0;
+            }
 
             return first.getSpeed() > second.getSpeed() ? -1 : 1;
         });
