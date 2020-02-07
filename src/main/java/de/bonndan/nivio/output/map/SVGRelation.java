@@ -2,14 +2,11 @@ package de.bonndan.nivio.output.map;
 
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
-import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.output.map.SvgTagCreator.g;
 

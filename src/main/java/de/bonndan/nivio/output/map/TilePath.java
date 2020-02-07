@@ -9,31 +9,18 @@ import java.util.List;
 class TilePath {
 
     List<Hex> tiles = new ArrayList<>();
-    private final List<Hex> bends = new ArrayList<>();
+    private List<Hex> bends = null;
     private boolean closed = false;
+    private boolean connected;
 
     TilePath(Hex tile) {
         if (tile != null)
             this.tiles.add(tile);
     }
 
-    void close() {
-        if (this.closed)
-            return;
-
+    void close(boolean connected) {
         this.closed = true;
-
-        var i = 0;
-        for (i = 1; i < this.tiles.size() - 1; i++) {
-            var prev = this.tiles.get(i - 1);
-            var cur = this.tiles.get(i);
-            var next = this.tiles.get(i + 1);
-            var qBend = (prev.q == cur.q && next.q != cur.q) || (prev.q != cur.q && next.q == cur.q);
-            var rBend = (prev.r == cur.r && next.r != cur.r) || (prev.r != cur.r && next.r == cur.r);
-            if (qBend || rBend)
-                this.bends.add(cur);
-        }
-
+        this.connected = connected;
     }
 
     void reducePoints() {
@@ -53,6 +40,7 @@ class TilePath {
     }
 
     String getPoints() {
+        calcBends();
         String points = "M";
         for (var i = 0; i < tiles.size(); i++) {
             var hex = tiles.get(i);
@@ -92,10 +80,33 @@ class TilePath {
     }
 
     int getSpeed() {
+        calcBends();
         return this.tiles.size() - this.bends.size();
+    }
+
+    private void calcBends() {
+        if (this.bends == null) {
+            this.bends = new ArrayList<>();
+
+            var i = 0;
+            for (i = 1; i < this.tiles.size() - 1; i++) {
+                var prev = this.tiles.get(i - 1);
+                var cur = this.tiles.get(i);
+                var next = this.tiles.get(i + 1);
+                var qBend = (prev.q == cur.q && next.q != cur.q) || (prev.q != cur.q && next.q == cur.q);
+                var rBend = (prev.r == cur.r && next.r != cur.r) || (prev.r != cur.r && next.r == cur.r);
+                if (qBend || rBend) {
+                    this.bends.add(cur);
+                }
+            }
+        }
     }
 
     boolean isClosed() {
         return closed;
+    }
+
+    boolean isConnected() {
+        return connected;
     }
 }

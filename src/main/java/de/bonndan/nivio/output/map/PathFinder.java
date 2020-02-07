@@ -51,7 +51,7 @@ class PathFinder {
 
             if (distance == 0) {
                 if (debug) LOGGER.debug("distance 0 to target {} reached at {}", target, pathEnd);
-                path.close();
+                path.close(true);
                 return;
             }
 
@@ -61,7 +61,7 @@ class PathFinder {
 
             if (possibleSteps.size() == 0) { //TODO wrong, wont go back
                 LOGGER.warn("no more possible steps, closing path {} at ", pathEnd);
-                path.close();
+                path.close(false);
             } else {
 
                 //prolong path and create clones if there are more possibilties
@@ -81,8 +81,19 @@ class PathFinder {
             }
         });
 
-        //continue search if unclosed paths remain
-        if (remainingPaths.stream().anyMatch(path -> !path.isClosed())) {
+        //continue search if no path is connected and unclosed paths remain
+        boolean remainingConnected = false;
+        boolean remainingUnclosed = false;
+        for (TilePath p : remainingPaths) {
+            if (p.isConnected()) {
+                remainingConnected = true;
+                break;
+            }
+            if (!p.isClosed()) {
+                remainingUnclosed = true;
+            }
+        }
+        if (!remainingConnected && remainingUnclosed) {
             return this.findPaths(remainingPaths, target);
         } else {
             TilePath tilePath = this.sortAndFilterPaths(remainingPaths);
