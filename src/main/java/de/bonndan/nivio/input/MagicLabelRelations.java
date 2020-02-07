@@ -109,21 +109,22 @@ public class MagicLabelRelations extends Resolver {
         }
 
         List<String> aliasesToFind = new ArrayList<>(keyParts);
-        try {
-            URL url = new URL(value);
-            aliasesToFind.add(url.getHost());
-            aliasesToFind.addAll(Arrays.asList(url.getPath().split("/"))); //add all path parts
-        } catch (MalformedURLException ignored) {
-            Optional<Item> valueMatch = landscape.getItems().find(FullyQualifiedIdentifier.from(value));
-            if (valueMatch.isPresent()) {
-                aliasesToFind.clear();
-                aliasesToFind.add(valueMatch.get().getFullyQualifiedIdentifier().toString());
-            } else {
-                aliasesToFind.addAll(Arrays.asList(value.split(":")));
+        if (!StringUtils.isEmpty(value)) {
+            try {
+                URL url = new URL(value);
+                aliasesToFind.add(url.getHost());
+                aliasesToFind.addAll(Arrays.asList(url.getPath().split("/"))); //add all path parts
+            } catch (MalformedURLException ignored) {
+                Optional<Item> valueMatch = landscape.getItems().find(FullyQualifiedIdentifier.from(value));
+                if (valueMatch.isPresent()) {
+                    aliasesToFind.clear();
+                    aliasesToFind.add(valueMatch.get().getFullyQualifiedIdentifier().toString());
+                } else {
+                    aliasesToFind.addAll(Arrays.asList(value.split(":")));
+                }
             }
         }
 
-        landscape.getConfig().getLabelBlacklist();
         Set<String> collect = aliasesToFind.stream()
                 .filter(s -> !StringUtils.isEmpty(s))
                 .collect(Collectors.toSet());

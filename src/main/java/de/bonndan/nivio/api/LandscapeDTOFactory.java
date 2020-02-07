@@ -40,7 +40,7 @@ public class LandscapeDTOFactory {
         return l;
     }
 
-    private static LandscapeStatistics  getLandscapeStats(LandscapeImpl impl) {
+    private static LandscapeStatistics getLandscapeStats(LandscapeImpl impl) {
 
         LandscapeStatistics stats = new LandscapeStatistics();
         stats.items = impl.getItems().all().size();
@@ -60,9 +60,11 @@ public class LandscapeDTOFactory {
                 .collect(Collectors.toSet())
                 .toArray(String[]::new);
 
-        List<ProcessLog.Entry> messages = impl.getLog().getMessages();
-        if (messages.size() > 0) {
-            stats.lastUpdate = messages.get(messages.size()-1).getDate();
+        if (impl.getLog() != null) {
+            List<ProcessLog.Entry> messages = impl.getLog().getMessages();
+            if (messages.size() > 0) {
+                stats.lastUpdate = messages.get(messages.size() - 1).getDate();
+            }
         }
         return stats;
     }
