@@ -2,6 +2,9 @@ package de.bonndan.nivio.api.iconcache;
 
 import de.bonndan.nivio.input.http.CachedResponse;
 import de.bonndan.nivio.input.http.HttpService;
+import de.bonndan.nivio.output.dld4e.Icon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,8 @@ import java.util.Map;
 @Controller
 @RequestMapping(path = "/vendoricons")
 public class IconsController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(IconsController.class);
 
     public static final String VENDORICONS_PATH = "/vendoricons";
 
@@ -50,8 +55,9 @@ public class IconsController {
             CachedResponse cachedResponse = httpService.getResponse(new URL(iconRequestURI));
             imageCache.put(iconRequestURI, cachedResponse);
             return sendResponse(cachedResponse);
-        } catch (IOException | URISyntaxException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | URISyntaxException | RuntimeException e) {
+            LOGGER.warn("Failed to load icon: {}", e.getMessage());
+            return ResponseEntity.notFound().build();
         }
     }
 
