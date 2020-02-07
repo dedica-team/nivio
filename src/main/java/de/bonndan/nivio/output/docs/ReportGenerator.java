@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.output.FormatUtils.ifPresent;
+import static de.bonndan.nivio.output.map.MapController.MAP_SVG_ENDPOINT;
 import static j2html.TagCreator.*;
 import static j2html.TagCreator.a;
 import static org.springframework.util.StringUtils.isEmpty;
@@ -36,7 +37,7 @@ public class ReportGenerator extends HtmlGenerator {
                 body(
                         h1(landscape.getName()),
                         p("Contact: " + landscape.getContact()),
-                        div(img().attr("src", "/render/" + landscape.getIdentifier() + "/graph.png").attr("class", "img-fluid img-thumbnail mx-auto d-block")),
+                        div(img().attr("src", "/render/" + landscape.getIdentifier() + "/" + MAP_SVG_ENDPOINT).attr("class", "img-fluid img-thumbnail mx-auto d-block")),
                         br(), br(),
                         rawHtml(writeGroups(landscape))
                 )

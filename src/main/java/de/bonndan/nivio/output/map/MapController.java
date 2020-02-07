@@ -27,7 +27,7 @@ public class MapController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapController.class);
     public static final String MAP_JSON_ENDPOINT = "map.json";
-    private static final String MAP_SVG_ENDPOINT = "map.svg";
+    public static final String MAP_SVG_ENDPOINT = "map.svg";
 
     private final LandscapeRepository landscapeRepository;
     private final IconService iconService;
