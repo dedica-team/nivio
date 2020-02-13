@@ -188,6 +188,22 @@ class MagicLabelRelationsTest {
     }
 
     @Test
+    @DisplayName("label blacklist is used case insensitive")
+    public void blacklistPreventsRelationsCaseInsensitive() {
+        //given
+        Item hihi = new Item();
+        hihi.setIdentifier("baz");
+        LandscapeImpl landscape = getLandscapeWith(hihi);
+        landscape.getConfig().getLabelBlacklist().add(".*composition.*");
+
+        //when
+        resolver.process(input, landscape);
+
+        //then
+        assertEquals(0, item.getRelations().size());
+    }
+
+    @Test
     @DisplayName("does not link same service to itself")
     public void doesNotLinkSame() {
         //given

@@ -146,7 +146,7 @@ public class MagicLabelRelations extends Resolver {
     private List<Function<String, Boolean>> getBlacklistSpecs(List<String> blacklist) {
         return blacklist.stream().map(s -> {
             try {
-                Pattern p = Pattern.compile(s);
+                Pattern p = Pattern.compile(s, Pattern.CASE_INSENSITIVE);
                 return (Function<String, Boolean>) s1 -> p.matcher(s1).matches();
             } catch (Exception e) {
                 processLog.warn("Failed to compile group matcher pattern " + s);
