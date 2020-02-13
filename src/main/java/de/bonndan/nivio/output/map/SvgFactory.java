@@ -2,8 +2,11 @@ package de.bonndan.nivio.output.map;
 
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexFactory;
+import de.bonndan.nivio.output.map.pathfinding.PathFinder;
 import j2html.tags.DomContent;
 import j2html.tags.UnescapedText;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
@@ -12,25 +15,29 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import static j2html.TagCreator.p;
-import static j2html.TagCreator.rawHtml;
+import static j2html.TagCreator.*;
 
 public class SvgFactory extends Component {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SvgFactory.class);
 
     public static final int LABEL_WIDTH = 200;
     private static int ICON_SIZE = 40;
     private int padding = 10;
     private Map<String, ItemMapItem> itemMapItembyFQI = new HashMap<>();
     private List<Hex> occupied = new ArrayList<>();
-
     private final RenderedXYMap map;
+    private boolean debug = false;
 
     public SvgFactory(RenderedXYMap map) {
         this.map = map;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 
     public DomContent render() {
@@ -55,6 +62,7 @@ public class SvgFactory extends Component {
         });
 
         var pathFinder = new PathFinder(occupied);
+        pathFinder.debug = this.debug;
         UnescapedText style = rawHtml("<style>\n" + css + "</style>");
 
         return
@@ -76,12 +84,16 @@ public class SvgFactory extends Component {
                         //relations
                         .with(
                                 map.items.stream().flatMap(vertex -> {
-
+                                            LOGGER.debug("Adding {} relations for {}", vertex.relations.size(), vertex.id);
                                             return vertex.relations.stream().map(rel -> {
+                                                Hex start = vertexHexes.get(vertex);
                                                 Hex target = vertexHexes.get(itemMapItembyFQI.get(rel.target));
-                                                TilePath bestPath = pathFinder.findBestPath(vertexHexes.get(vertex), target);
-                                                SVGRelation SVGRelation = new SVGRelation(bestPath, vertex.color, rel);
-                                                return SVGRelation.render();
+                                                HexPath bestPath = pathFinder.getPath(start, target);
+                                                if (bestPath != null) {
+                                                    SVGRelation SVGRelation = new SVGRelation(bestPath, vertex.color, rel);
+                                                    return SVGRelation.render();
+                                                }
+                                                return null;
                                             });
                                         }
                                 ).collect(Collectors.toList())

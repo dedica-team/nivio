@@ -13,12 +13,12 @@ import static de.bonndan.nivio.output.map.SvgTagCreator.g;
 class SVGRelation extends Component {
 
     public static final String MARKER = "▸";
-    private final TilePath tilePath;
+    private final HexPath hexPath;
     private final String fill;
     private final ItemMapItem.Relation relation;
 
-    SVGRelation(TilePath tilePath, String fill, ItemMapItem.Relation relation) {
-        this.tilePath = tilePath;
+    SVGRelation(HexPath hexPath, String fill, ItemMapItem.Relation relation) {
+        this.hexPath = hexPath;
         this.fill = fill;
         this.relation = relation;
     }
@@ -26,7 +26,7 @@ class SVGRelation extends Component {
     public DomContent render() {
 
         var fillId = (fill) != null ? "#" + fill : null;
-        var stringPath = tilePath.getPoints();
+        var stringPath = hexPath.getPoints();
 
         BezierPath bezierPath = new BezierPath();
         bezierPath.parsePathString(stringPath);

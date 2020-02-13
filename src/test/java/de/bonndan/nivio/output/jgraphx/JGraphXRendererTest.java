@@ -12,10 +12,12 @@ import de.bonndan.nivio.input.csv.ItemDescriptionFactoryCSV;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
+import de.bonndan.nivio.model.RelationItem;
 import de.bonndan.nivio.notification.NotificationService;
 import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.Rendered;
@@ -33,6 +35,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -143,6 +147,7 @@ class JGraphXRendererTest {
         input.setIdentifier("largetest");
         input.setName("largetest");
 
+        List<ItemDescription> descriptionList = new ArrayList<>();
         int g = 0;
         while (g < 30) {
 
@@ -157,9 +162,16 @@ class JGraphXRendererTest {
                 itemDescription.setIdentifier(groupIdentifier + "_item_" + i);
                 itemDescription.setGroup(groupIdentifier);
                 input.getItemDescriptions().add(itemDescription);
+                descriptionList.add(itemDescription);
                 i++;
             }
             g++;
+        }
+
+        for (int i = 0; i < 20; i++) {
+            var source = descriptionList.get(i);
+            var target = descriptionList.get(i+20);
+            source.addRelation(new RelationDescription(source.getIdentifier(), target.getIdentifier()));
         }
 
         indexer.reIndex(input);
@@ -174,6 +186,7 @@ class JGraphXRendererTest {
         RenderedXYMap renderedMap = mapFactory.getRenderedMap(landscape, render);
 
         SvgFactory svgFactory = new SvgFactory(renderedMap);
+        svgFactory.setDebug(true);
         String svg = svgFactory.getXML();
 
         File png = new File(RootPath.get() + "/src/test/resources/example/large" + ".svg");

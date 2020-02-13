@@ -6,16 +6,15 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-class TilePath {
+public class HexPath {
 
-    List<Hex> tiles = new ArrayList<>();
+    private List<Hex> hexes;
     private List<Hex> bends = null;
     private boolean closed = false;
     private boolean connected;
 
-    TilePath(Hex tile) {
-        if (tile != null)
-            this.tiles.add(tile);
+    public HexPath(List<Hex> hexes) {
+        this.hexes = hexes;
     }
 
     void close(boolean connected) {
@@ -42,13 +41,13 @@ class TilePath {
     String getPoints() {
         calcBends();
         String points = "M";
-        for (var i = 0; i < tiles.size(); i++) {
-            var hex = tiles.get(i);
+        for (var i = 0; i < hexes.size(); i++) {
+            var hex = hexes.get(i);
             if (this.isBend(hex)) {
                 //cubic curve
-                var prev = tiles.get(i - 1).toPixel();
+                var prev = hexes.get(i - 1).toPixel();
                 var point = hex.toPixel();
-                var next = tiles.get(i + 1).toPixel();
+                var next = hexes.get(i + 1).toPixel();
 
                 var newBefore = new Point2D.Double();
                 newBefore.x = prev.x + (point.x - prev.x) / 2;
@@ -81,7 +80,7 @@ class TilePath {
 
     int getSpeed() {
         calcBends();
-        return this.tiles.size() - this.bends.size();
+        return this.hexes.size() - this.bends.size();
     }
 
     private void calcBends() {
@@ -89,10 +88,10 @@ class TilePath {
             this.bends = new ArrayList<>();
 
             var i = 0;
-            for (i = 1; i < this.tiles.size() - 1; i++) {
-                var prev = this.tiles.get(i - 1);
-                var cur = this.tiles.get(i);
-                var next = this.tiles.get(i + 1);
+            for (i = 1; i < this.hexes.size() - 1; i++) {
+                var prev = this.hexes.get(i - 1);
+                var cur = this.hexes.get(i);
+                var next = this.hexes.get(i + 1);
                 var qBend = (prev.q == cur.q && next.q != cur.q) || (prev.q != cur.q && next.q == cur.q);
                 var rBend = (prev.r == cur.r && next.r != cur.r) || (prev.r != cur.r && next.r == cur.r);
                 if (qBend || rBend) {
