@@ -125,8 +125,10 @@ public class MagicLabelRelations extends Resolver {
             }
         }
 
+        //filter empty string and indicators ("db", "host") from possible targets
         Set<String> collect = aliasesToFind.stream()
                 .filter(s -> !StringUtils.isEmpty(s))
+                .filter(s -> !URL_PARTS.contains(s.toLowerCase()) && !PROVIDER_INDICATORS.contains(s.toLowerCase()))
                 .collect(Collectors.toSet());
         return new LabelMatch(key, value, collect);
     }
