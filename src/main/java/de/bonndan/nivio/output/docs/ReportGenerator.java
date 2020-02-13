@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.output.FormatUtils.ifPresent;
+import static de.bonndan.nivio.output.FormatUtils.nice;
 import static de.bonndan.nivio.output.map.MapController.MAP_SVG_ENDPOINT;
 import static j2html.TagCreator.*;
 import static j2html.TagCreator.a;
@@ -19,6 +20,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 public class ReportGenerator extends HtmlGenerator {
 
+    private static final String GROUP_CIRCLE = "&#10687;";
     protected final IconService iconService;
 
     public ReportGenerator(IconService iconService) {
@@ -36,7 +38,7 @@ public class ReportGenerator extends HtmlGenerator {
                 getHead(landscape),
                 body(
                         h1(landscape.getName()),
-                        p("Contact: " + landscape.getContact()),
+                        p("Contact: " + nice(landscape.getContact())),
                         div(img().attr("src", "/render/" + landscape.getIdentifier() + "/" + MAP_SVG_ENDPOINT).attr("class", "img-fluid img-thumbnail mx-auto d-block")),
                         br(), br(),
                         rawHtml(writeGroups(landscape))
@@ -50,7 +52,7 @@ public class ReportGenerator extends HtmlGenerator {
         groups.forEach((s, groupItem) -> {
             String color = "#" + Color.getGroupColor(s, landscape);
             builder.append(
-                    h2(rawHtml("Group: " + "<span style=\"color: " + color + "\">&#9899;</span> " + s))
+                    h2(rawHtml("Group: " + "<span style=\"color: " + color + "\">" + GROUP_CIRCLE + "</span> " + s))
                             .attr("class", "rounded").render()
             );
             builder.append(
@@ -87,7 +89,7 @@ public class ReportGenerator extends HtmlGenerator {
                                 , li("Full identifier: " + item.getFullyQualifiedIdentifier().toString())
                                 , li("Identifier: " + item.getIdentifier())
                                 , li("Short Name: " + FormatUtils.nice(item.getShortName()))
-                                , li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">&bull;</span> " + FormatUtils.nice(item.getGroup())))
+                                , li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">" + GROUP_CIRCLE + "</span> " + FormatUtils.nice(item.getGroup())))
                                 , li("Contact: " + FormatUtils.nice(item.getContact()))
                                 , li("Team: " + FormatUtils.nice(item.getTeam()))
                                 , li("Owner: " + FormatUtils.nice(item.getOwner()))
@@ -95,7 +97,7 @@ public class ReportGenerator extends HtmlGenerator {
                                 , li("Capability: " + FormatUtils.nice(item.getCapability()))
                                 , li("Links: ").with(links)
                                 , li("Tags: " + FormatUtils.nice(item.getTags()))
-                                , li("Lifecycle: " + FormatUtils.nice(item.getLifecycle() !=null ? item.getLifecycle().toString() : "-"))
+                                , li("Lifecycle: " + FormatUtils.nice(item.getLifecycle() != null ? item.getLifecycle().toString() : "-"))
                                 , li("Software: " + FormatUtils.nice(item.getSoftware()))
                                 , li("Version: " + FormatUtils.nice(item.getVersion()))
                                 , li("Machine: " + FormatUtils.nice(item.getMachine()))
@@ -132,9 +134,9 @@ public class ReportGenerator extends HtmlGenerator {
                                             String direction = (df.getSource().equals(item)) ?
                                                     " &#10142; " : " incoming from ";
                                             Item end = (df.getSource().equals(item)) ?
-                                                    (Item)df.getTarget() : (Item)df.getSource();
+                                                    (Item) df.getTarget() : (Item) df.getSource();
 
-                                            return li(rawHtml(df.getType() + " "
+                                            return li(rawHtml((df.getType() != null ? df.getType() : "") + " "
                                                             + ifPresent(df.getFormat()) + " "
                                                             + ifPresent(df.getDescription())
                                                             + direction),
