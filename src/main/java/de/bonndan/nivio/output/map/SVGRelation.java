@@ -75,7 +75,7 @@ class SVGRelation extends Component {
         if (degrees > 90 || degrees < -90) {
             degrees += 180; //always upright
         }
-        String transform = "translate(" + point.getX() + ' ' + (point.getY() - 10) + ") rotate(" + degrees + " 0 0)";
+        String transform = "translate(" + round(point.getX()) + ' ' + round(point.getY() - 10) + ") rotate(" + round(degrees) + " 0 0)";
 
         if (text == null) {
             text = "";
@@ -84,8 +84,6 @@ class SVGRelation extends Component {
                 .attr("x", xOffset)
                 .attr("y", 0)
                 .attr("fill", fillId)
-                .attr("width", 10)
-                .attr("height", 10)
                 .attr("transform", transform);
     }
 }

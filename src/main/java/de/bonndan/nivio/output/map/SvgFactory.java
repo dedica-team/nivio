@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -65,21 +66,28 @@ public class SvgFactory extends Component {
         pathFinder.debug = this.debug;
         UnescapedText style = rawHtml("<style>\n" + css + "</style>");
 
+        AtomicInteger width = new AtomicInteger(0);
+        AtomicInteger height = new AtomicInteger(0);
+        List<DomContent> groups = map.groups.stream().map(group -> {
+            SVGGroup SVGGroup = getGroup(hexFactory, group, itemMapItembyFQI);
+            if ((SVGGroup.x + SVGGroup.width) > width.get())
+                width.set((int) (SVGGroup.x + SVGGroup.width));
+            if ((SVGGroup.y + SVGGroup.height) > height.get())
+                height.set((int) (SVGGroup.y + SVGGroup.height));
+            return SVGGroup.render();
+        }).collect(Collectors.toList());
+
+
         return
                 SvgTagCreator.svg(style)
                         .attr("version", "1.1")
                         .attr("xmlns", "http://www.w3.org/2000/svg")
                         .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
-                        .attr("width", map.width * 4)
-                        .attr("height", map.height * 5 + LABEL_WIDTH)
+                        .attr("width", width.addAndGet(40))
+                        .attr("height", height.addAndGet(40))
 
                         //groups
-                        .with(
-                                map.groups.stream().map(group -> {
-                                    NGroup nGroup = getGroup(hexFactory, group, itemMapItembyFQI);
-                                    return nGroup.render();
-                                }).collect(Collectors.toList())
-                        )
+                        .with(groups)
 
                         //relations
                         .with(
@@ -129,7 +137,7 @@ public class SvgFactory extends Component {
 
     }
 
-    private NGroup getGroup(HexFactory hexFactory, GroupMapItem group, Map<String, ItemMapItem> byFQI) {
+    private SVGGroup getGroup(HexFactory hexFactory, GroupMapItem group, Map<String, ItemMapItem> byFQI) {
 
         Set<ItemMapItem> groupMapItems = group.group.getItems().stream()
                 .map(item -> byFQI.get(item.getFullyQualifiedIdentifier().toString()))
@@ -155,7 +163,7 @@ public class SvgFactory extends Component {
         int width = (int) (endPoint.x - startPoint.x);
         int height = (int) (endPoint.y - startPoint.y);
 
-        return new NGroup(group, startPoint.x, startPoint.y, width, height);
+        return new SVGGroup(group, startPoint.x, startPoint.y, width, height);
     }
 
     public String getXML() {

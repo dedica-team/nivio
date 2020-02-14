@@ -2,16 +2,16 @@ package de.bonndan.nivio.output.map;
 
 import j2html.tags.DomContent;
 
-class NGroup extends Component {
+class SVGGroup extends Component {
 
     private final GroupMapItem group;
     private final int size;
-    private final double x;
-    private final double y;
-    private final int width;
-    private final int height;
+    final double x;
+    final double y;
+    final int width;
+    final int height;
 
-    NGroup(GroupMapItem group, double x, double y, int width, int height) {
+    SVGGroup(GroupMapItem group, double x, double y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -38,12 +38,10 @@ class NGroup extends Component {
                         .attr("class", "group"),
 
                 SvgTagCreator.text(group.name)
-                        .attr("x", x+ size/2)
-                        .attr("y", y + height + size/2)
+                        .attr("x", x + size / 2)
+                        .attr("y", y + height + size / 2)
                         .attr("fill", fillId)
                         .attr("font-size", 24)
-                        .attr("width", width)
-                        .attr("text-anchor", "left")
                         .attr("class", "groupLabel")
         );
     }

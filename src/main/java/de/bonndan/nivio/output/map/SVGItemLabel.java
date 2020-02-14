@@ -27,10 +27,10 @@ class SVGItemLabel extends Component {
                 .attr("width", width)
                 .attr("height", size / 2)
                 .attr("style", "stroke: " + item.status);
-        NText nText = new NText(item, size + padding + (width / 2), 5, "", width);
+        SVGLabelText SVGLabelText = new SVGLabelText(item, size + padding + (width / 2), 5, "");
 
-        ContainerTag g = SvgTagCreator.g(rect, nText.render()).attr("class", "label");
-        g.attr("data-identifier", item.landscapeItem.getFullyQualifiedIdentifier().toString());
+        ContainerTag g = SvgTagCreator.g(rect, SVGLabelText.render()).attr("class", "label");
+        g.attr("id", "label_" + item.landscapeItem.getFullyQualifiedIdentifier().toString());
 
         if (!StringUtils.isEmpty(item.landscapeItem.getName()))
             g.attr("data-name", item.landscapeItem.getName());

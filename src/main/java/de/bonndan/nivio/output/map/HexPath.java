@@ -10,16 +10,9 @@ public class HexPath {
 
     private List<Hex> hexes;
     private List<Hex> bends = null;
-    private boolean closed = false;
-    private boolean connected;
 
     public HexPath(List<Hex> hexes) {
         this.hexes = hexes;
-    }
-
-    void close(boolean connected) {
-        this.closed = true;
-        this.connected = connected;
     }
 
     void reducePoints() {
@@ -99,13 +92,5 @@ public class HexPath {
                 }
             }
         }
-    }
-
-    boolean isClosed() {
-        return closed;
-    }
-
-    boolean isConnected() {
-        return connected;
     }
 }
