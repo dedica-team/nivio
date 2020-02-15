@@ -15,7 +15,7 @@
     "react-svg-pan-zoom-loader": "^1.4.1",
     "svg-path-interpolator": "^0.2.5",
     "svg-path-properties": "^1.0.2",
-    "yarn": "^1.21.1"
+    "yarn": "^1.22.0"
   },
   "scripts": {
     "start": "react-scripts start",
