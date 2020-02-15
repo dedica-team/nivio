@@ -9,6 +9,7 @@ import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.jgraphx.JGraphXRenderer;
+import de.bonndan.nivio.output.map.svg.SvgFactory;
 import org.apache.batik.transcoder.Transcoder;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
@@ -25,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.*;
 
 
 @Controller

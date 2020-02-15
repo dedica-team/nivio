@@ -1,6 +1,6 @@
-package de.bonndan.nivio.output.map.pathfinding;
+package de.bonndan.nivio.output.map.hex;
 
-import de.bonndan.nivio.output.map.hex.Hex;
+import java.util.Objects;
 
 /**
  * Based on https://github.com/helfsoft/astar (no license given).
@@ -16,6 +16,7 @@ class Tile {
     private final boolean occupied;
 
     public Tile(Hex hex, boolean occupied) {
+        Objects.requireNonNull(hex);
         this.hex = hex;
         this.occupied = occupied;
 

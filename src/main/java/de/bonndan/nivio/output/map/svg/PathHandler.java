@@ -16,7 +16,7 @@
    limitations under the License.
 
  */
-package de.bonndan.nivio.output.map;
+package de.bonndan.nivio.output.map.svg;
 
 /**
  * This interface must be implemented and then registred as the

@@ -6,7 +6,10 @@ import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.Rendered;
-import de.bonndan.nivio.output.map.*;
+import de.bonndan.nivio.output.map.GroupMapItem;
+import de.bonndan.nivio.output.map.ItemMapItem;
+import de.bonndan.nivio.output.map.MapFactory;
+import de.bonndan.nivio.output.map.RenderedXYMap;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;

@@ -1,8 +1,7 @@
-package de.bonndan.nivio.output.map;
+package de.bonndan.nivio.output.map.svg;
 
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
-import j2html.tags.Text;
 
 public class SvgTagCreator {
 

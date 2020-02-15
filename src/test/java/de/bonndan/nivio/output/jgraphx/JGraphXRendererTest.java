@@ -17,18 +17,16 @@ import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
-import de.bonndan.nivio.model.RelationItem;
 import de.bonndan.nivio.notification.NotificationService;
 import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.map.MapFactory;
 import de.bonndan.nivio.output.map.RenderedXYMap;
-import de.bonndan.nivio.output.map.SvgFactory;
+import de.bonndan.nivio.output.map.svg.SvgFactory;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -38,7 +36,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 

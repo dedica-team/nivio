@@ -1,4 +1,4 @@
-package de.bonndan.nivio.output.map;
+package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.output.map.hex.Hex;
 

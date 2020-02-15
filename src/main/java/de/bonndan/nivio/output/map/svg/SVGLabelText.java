@@ -1,5 +1,6 @@
-package de.bonndan.nivio.output.map;
+package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.output.map.ItemMapItem;
 import j2html.tags.ContainerTag;
 
 class SVGLabelText extends Component {

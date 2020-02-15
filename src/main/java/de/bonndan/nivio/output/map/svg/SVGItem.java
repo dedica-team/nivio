@@ -1,7 +1,8 @@
-package de.bonndan.nivio.output.map;
+package de.bonndan.nivio.output.map.svg;
 
 
 import de.bonndan.nivio.model.LandscapeItem;
+import de.bonndan.nivio.output.map.ItemMapItem;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.util.StringUtils;

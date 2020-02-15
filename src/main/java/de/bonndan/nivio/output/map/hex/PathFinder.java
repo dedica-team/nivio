@@ -1,7 +1,6 @@
-package de.bonndan.nivio.output.map.pathfinding;
+package de.bonndan.nivio.output.map.hex;
 
-import de.bonndan.nivio.output.map.HexPath;
-import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.output.map.svg.HexPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

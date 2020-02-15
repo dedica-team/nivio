@@ -16,7 +16,7 @@
    limitations under the License.
 
  */
-package de.bonndan.nivio.output.map;
+package de.bonndan.nivio.output.map.svg;
 
 
 import java.util.ArrayList;

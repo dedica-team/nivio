@@ -1,8 +1,11 @@
-package de.bonndan.nivio.output.map;
+package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.output.map.GroupMapItem;
+import de.bonndan.nivio.output.map.ItemMapItem;
+import de.bonndan.nivio.output.map.RenderedXYMap;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexFactory;
-import de.bonndan.nivio.output.map.pathfinding.PathFinder;
+import de.bonndan.nivio.output.map.hex.PathFinder;
 import j2html.tags.DomContent;
 import j2html.tags.UnescapedText;
 import org.slf4j.Logger;
@@ -95,7 +98,7 @@ public class SvgFactory extends Component {
                                             LOGGER.debug("Adding {} relations for {}", vertex.relations.size(), vertex.id);
                                             return vertex.relations.stream().map(rel -> {
                                                 Hex start = vertexHexes.get(vertex);
-                                                Hex target = vertexHexes.get(itemMapItembyFQI.get(rel.target));
+                                                Hex target = vertexHexes.get(itemMapItembyFQI.get(rel.target.getFullyQualifiedIdentifier().toString()));
                                                 HexPath bestPath = pathFinder.getPath(start, target);
                                                 if (bestPath != null) {
                                                     SVGRelation SVGRelation = new SVGRelation(bestPath, vertex.color, rel);

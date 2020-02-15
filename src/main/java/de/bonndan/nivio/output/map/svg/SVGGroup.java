@@ -1,5 +1,6 @@
-package de.bonndan.nivio.output.map;
+package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.output.map.GroupMapItem;
 import j2html.tags.DomContent;
 
 class SVGGroup extends Component {

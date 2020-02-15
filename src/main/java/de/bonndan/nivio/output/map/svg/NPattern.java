@@ -1,4 +1,4 @@
-package de.bonndan.nivio.output.map;
+package de.bonndan.nivio.output.map.svg;
 
 import j2html.tags.DomContent;
 

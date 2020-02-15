@@ -16,7 +16,7 @@
    limitations under the License.
 
  */
-package de.bonndan.nivio.output.map;
+package de.bonndan.nivio.output.map.svg;
 
 /**
  * This class encapsulates a general parse error or warning.
