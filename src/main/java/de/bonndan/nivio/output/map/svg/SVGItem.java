@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.map.svg;
 
 
 import de.bonndan.nivio.model.LandscapeItem;
+import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.output.map.ItemMapItem;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
@@ -30,16 +31,18 @@ class SVGItem extends Component {
     public DomContent render() {
 
         var fillId = (fill) != null ? "url(#" + fill + ")" : null;
-
-        ContainerTag inner = SvgTagCreator.g(
-                SvgTagCreator.circle()
-                        .attr("id", this.id)
-                        .attr("cx", 0)
-                        .attr("cy", 0)
-                        .attr("r", 40)
-                        .attr("fill", fillId)
-                        .attr("style", cellStyle),
-                children)
+        ContainerTag circle = SvgTagCreator.circle()
+                .attr("id", this.id)
+                .attr("cx", 0)
+                .attr("cy", 0)
+                .attr("r", 40)
+                .attr("fill", fillId)
+                .attr("style", cellStyle);
+        if (Lifecycle.PLANNED.equals(landscapeItem.getLifecycle())) {
+            circle.attr("stroke-dasharray", 5);
+            circle.attr("opacity", 0.7);
+        }
+        ContainerTag inner = SvgTagCreator.g(circle, children)
                 .attr("class", "hexagon");
 
         Integer scaleVal = 0;
