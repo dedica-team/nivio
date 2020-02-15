@@ -37,7 +37,7 @@ public class JGraphXRenderController {
         this.iconService = iconService;
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/graph.png")
+    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/oldgraph.png")
     public ResponseEntity<byte[]> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(() ->
              new NotFoundException("Not found: " + landscapeIdentifier)

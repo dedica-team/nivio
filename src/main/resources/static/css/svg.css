@@ -6,10 +6,6 @@ svg g {
   stroke-width: 0.3;
 }
 
-svg g .other {
-  fill: transparent;
-}
-
 svg g polygon {
   stroke: #3F51B5;
   stroke-width: 0.2;

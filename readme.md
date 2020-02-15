@@ -7,14 +7,15 @@ Nivio is application landscape management for teams (developers, operators, mana
 approach, i.e. there is no interface for manual data maintenance. It is designed to gather the application landscape
  information from configurable items, preferably code repos.
  
- ![rendered graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/graph.png)
-
+ To **get started** read the [documentation](https://nivio.readthedocs.io/en/latest).
+ 
 
 ## Example Graph, Input and Output
 
-![input output_graph](https://raw.githubusercontent.com/dedica-team/nivio/master/docs/inout.png)
+ ![rendered graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/graph.png)
 
-To **get started** read the [documentation](https://nivio.readthedocs.io/en/master).
+![input output_graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/inout.png)
+
 
 ## Copyright & Trademark Acknowledgement Statements
 

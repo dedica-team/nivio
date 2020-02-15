@@ -81,7 +81,7 @@ public class LandscapeDTOFactory {
                 .withTitle("Reindex the source")
         );
         try {
-            dto.add(linkTo(methodOn(JGraphXRenderController.class).pngResource(dto.getIdentifier()))
+            dto.add(linkTo(methodOn(MapController.class).pngResource(dto.getIdentifier()))
                     .withRel("png")
                     .withMedia(MediaType.IMAGE_PNG_VALUE)
                     .withTitle("Rendered Landscape")

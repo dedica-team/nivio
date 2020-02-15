@@ -83,8 +83,8 @@ public class SvgFactory extends Component {
                         .attr("version", "1.1")
                         .attr("xmlns", "http://www.w3.org/2000/svg")
                         .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
-                        .attr("width", width.addAndGet(40))
-                        .attr("height", height.addAndGet(40))
+                        .attr("width", width.addAndGet(ICON_SIZE + LABEL_WIDTH))
+                        .attr("height", height.addAndGet(ICON_SIZE))
 
                         //groups
                         .with(groups)
