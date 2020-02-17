@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.input.ItemDescriptionFactory;
+import de.bonndan.nivio.input.ItemDescriptions;
 import de.bonndan.nivio.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ public class LandscapeDescription implements Landscape {
      * Contact of the maintainer
      */
     private String contact;
+    private String description;
 
     private Map<String, ItemDescription> templates = new HashMap<>();
 
@@ -53,9 +55,9 @@ public class LandscapeDescription implements Landscape {
     /**
      * descriptions of items fetched and parsed from sources
      */
-    private List<ItemDescription> itemDescriptions = new ArrayList<>();
+    private ItemDescriptions itemDescriptions = new ItemDescriptions();
 
-    private LandscapeConfig config;
+    private LandscapeConfig config = new LandscapeConfig();
 
     private boolean isPartial = false;
 
@@ -92,6 +94,11 @@ public class LandscapeDescription implements Landscape {
         return contact;
     }
 
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
     public List<SourceReference> getSourceReferences() {
         return sources;
     }
@@ -109,10 +116,10 @@ public class LandscapeDescription implements Landscape {
     }
 
     public void setItemDescriptions(List<ItemDescription> itemDescriptions) {
-        this.itemDescriptions = itemDescriptions;
+        this.itemDescriptions.set(itemDescriptions);
     }
 
-    public List<ItemDescription> getItemDescriptions() {
+    public ItemDescriptions getItemDescriptions() {
         return itemDescriptions;
     }
 
@@ -131,19 +138,19 @@ public class LandscapeDescription implements Landscape {
         landscape.setName(name);
         landscape.setContact(contact);
         landscape.setSource(source);
+        landscape.setDescription(description);
         landscape.setConfig(config);
         return landscape;
     }
 
-    public void addItems(List<ItemDescription> incoming) {
+    public void addItems(Collection<ItemDescription> incoming) {
         if (incoming == null)
             return;
 
         incoming.forEach(desc -> {
             desc.setEnvironment(this.identifier);
 
-            ItemDescription existing = (ItemDescription)
-                    Items.find(desc.getIdentifier(), desc.getGroup(), itemDescriptions).orElse(null);
+            ItemDescription existing = itemDescriptions.find(desc.getIdentifier(), desc.getGroup()).orElse(null);
             if (existing != null) {
                 ItemDescriptionFactory.assignNotNull(existing, desc);
             } else {
@@ -167,14 +174,13 @@ public class LandscapeDescription implements Landscape {
     public boolean hasReference(String source) {
         return sources.stream().anyMatch(sourceReference -> {
 
-            if (sourceReference.getUrl().equals(source))
+            if (sourceReference.getUrl().equals(source)) {
                 return true;
+            }
 
             File file = new File(source);
-            if (sourceReference.getUrl().contains(file.getName())) //TODO
-                return true;
-
-            return false;
+            //TODO
+            return sourceReference.getUrl().contains(file.getName());
         });
     }
 
@@ -201,5 +207,9 @@ public class LandscapeDescription implements Landscape {
             ((GroupDescription) groupItem).setIdentifier(s);
         });
         this.groups = groups;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

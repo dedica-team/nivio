@@ -9,14 +9,18 @@ import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.input.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+@Service
 public class ItemDescriptionFactoryCompose2 implements ItemDescriptionFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ItemDescriptionFactory.class);
@@ -28,14 +32,22 @@ public class ItemDescriptionFactoryCompose2 implements ItemDescriptionFactory {
     }
 
     private final FileFetcher fileFetcher;
-    private final URL baseUrl;
 
-    public ItemDescriptionFactoryCompose2(FileFetcher fileFetcher, URL baseUrl) {
+    public ItemDescriptionFactoryCompose2(FileFetcher fileFetcher) {
         this.fileFetcher = fileFetcher;
-        this.baseUrl = baseUrl;
     }
 
-    public List<ItemDescription> getDescriptions(SourceReference reference) {
+    public static ItemDescriptionFactory forTesting() {
+        return new ItemDescriptionFactoryCompose2(new FileFetcher(new HttpService()));
+    }
+
+
+    @Override
+    public List<String> getFormats() {
+        return Arrays.asList("docker-compose-v2");
+    }
+
+    public List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl) {
 
         List<ItemDescription> itemDescriptions = new ArrayList<>();
         String yml = fileFetcher.get(reference, baseUrl);

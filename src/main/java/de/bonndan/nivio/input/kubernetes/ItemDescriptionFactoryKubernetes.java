@@ -2,11 +2,8 @@ package de.bonndan.nivio.input.kubernetes;
 
 import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.LandscapeItem;
-import de.bonndan.nivio.model.RelationBuilder;
-import de.bonndan.nivio.model.Items;
 import de.bonndan.nivio.util.URLHelper;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -20,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
+@org.springframework.stereotype.Service
 public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory {
 
     public static final String NAMESPACE = "namespace";
@@ -29,7 +27,22 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
     private String groupLabel = null;
     private KubernetesClient client;
 
-    public ItemDescriptionFactoryKubernetes(SourceReference reference) {
+    public ItemDescriptionFactoryKubernetes() {
+
+    }
+
+    public ItemDescriptionFactoryKubernetes(KubernetesClient client) {
+        this.client = client;
+    }
+
+    @Override
+    public List<String> getFormats() {
+        return Arrays.asList("kubernetes", "k8s");
+    }
+
+    @Override
+    public List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl) {
+
         try {
             if (!StringUtils.isEmpty(reference.getUrl())) {
                 URL url = new URL(reference.getUrl());
@@ -42,15 +55,7 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
         } catch (MalformedURLException ignored) {
 
         }
-    }
 
-    public ItemDescriptionFactoryKubernetes(SourceReference reference, KubernetesClient client) {
-        this(reference);
-        this.client = client;
-    }
-
-    @Override
-    public List<ItemDescription> getDescriptions(SourceReference reference) {
         KubernetesClient client = getClient(reference.getUrl());
 
         List<ItemDescription> descriptions = new ArrayList<>();
@@ -86,14 +91,13 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
 
         String targetId = "";
         Map<String, String> selector = kubernetesService.getSpec().getSelector();
-        if (selector != null)
-             targetId = selector.getOrDefault("app", null);
+        if (selector != null) {
+            targetId = selector.getOrDefault("app", null);
+        }
+
+        //TODO, check if this is reliable
         if (!StringUtils.isEmpty(targetId)) {
-            Items.find(targetId, group, items).ifPresent(target -> {
-                RelationDescription provides = RelationBuilder.provides(service, target);
-                ((ItemDescription) target).addRelation(provides);
-                service.addRelation(provides);
-            });
+            service.getLabels().put("nivio.relations", "[" + targetId + "]");
         }
 
         descriptions.add(service);

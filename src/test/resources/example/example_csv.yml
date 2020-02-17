@@ -1,0 +1,12 @@
+identifier: csvtest
+
+sources:
+  - url: "./services/test.csv"
+    format: csv
+    mapping:
+      identifier: 1
+      name: 0
+      description: 2
+      providedBy: 3
+    separator: ";"
+    skipLines: 1

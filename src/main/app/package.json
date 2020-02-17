@@ -1,0 +1,41 @@
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "jquery": "^3.4.1",
+    "react": "^16.10.1",
+    "react-console-emulator": "^3.0.4",
+    "react-dom": "^16.10.1",
+    "react-hexgrid": "^1.0.3",
+    "react-modal": "^3.11.1",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "^3.3.0",
+    "react-svg-pan-zoom": "^3.7.1",
+    "react-svg-pan-zoom-loader": "^1.4.1",
+    "svg-path-interpolator": "^0.2.5",
+    "svg-path-properties": "^1.0.2",
+    "yarn": "^1.22.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

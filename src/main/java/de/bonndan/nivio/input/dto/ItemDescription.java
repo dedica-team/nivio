@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.model.*;
 import org.springframework.util.StringUtils;
@@ -14,6 +15,8 @@ import java.util.stream.Collectors;
  * This is representation of a service in the textual form as described in a source file.
  */
 public class ItemDescription implements LandscapeItem {
+
+    public static final String LINKS_FIELD = "links";
 
     @NotEmpty
     private String environment;
@@ -223,6 +226,12 @@ public class ItemDescription implements LandscapeItem {
         this.lifecycle = lifecycle;
     }
 
+    public void setLifecycle(String lifecycle) {
+        if (!StringUtils.isEmpty(lifecycle)) {
+            setLifecycle(Lifecycle.from(lifecycle));
+        }
+    }
+
     @Override
     public Lifecycle getLifecycle() {
         return lifecycle;
@@ -315,6 +324,19 @@ public class ItemDescription implements LandscapeItem {
         this.relations.add(relationItem);
     }
 
+    /**
+     * Setter for relation targets (via labels).
+     *
+     * @param relations target identifiers
+     */
+    @JsonIgnore
+    public void setRelations(List<String> relations) {
+        relations.stream()
+                .filter(s -> !StringUtils.isEmpty(s))
+                .map(s -> RelationBuilder.createDataflowDescription(this, s))
+                .forEach(this::addRelation);
+    }
+
     public Set<StatusItem> getStatuses() {
         return statuses;
     }
@@ -348,13 +370,13 @@ public class ItemDescription implements LandscapeItem {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null)
+        }
+        if (o == null) {
             return false;
-        LandscapeItem landscapeItem = (LandscapeItem) o;
-
-        return toString().equals(landscapeItem.toString());
+        }
+        return toString().equals(o.toString());
     }
 
     @Override

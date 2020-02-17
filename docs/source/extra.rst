@@ -27,3 +27,40 @@ Vendor icons are work in progress.
     items:
       - identifier: bar
         icon: vendor://redis
+
+
+Graph Layout Tweaking
+=====================
+
+In rare cases the layout needs some manual improvements. Internally nivio uses mxGraph (for Java), which can be influences
+by tweaking some parameters (see https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxOrganicLayout.html).
+
+.. code-block:: yaml
+   :linenos:
+
+    identifier: nivio:example
+    name: Landscape example
+    sources:
+      - url: "./items/dashboard.yml"
+        format: nivio
+
+    # landscape configuration
+    config:
+      jgraphx:
+        triesPerCell: 8
+        edgeLengthCostFactor: 0.0001
+        nodeDistributionCostFactor: 900000.0
+        borderLineCostFactor: 7.0
+
+        #
+        # for group alignment
+        #
+
+        # the higher, the longer the edges between groups
+        forceConstantFactor: 2.8
+
+        # higher value is cpu intensive, but can lead to better layouts
+        maxIterations: 1000
+
+        # can also influence edge length and layout
+        minDistanceLimitFactor: 3.05

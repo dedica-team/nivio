@@ -1,33 +1,56 @@
 package de.bonndan.nivio.output.jgraphx;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
+import de.bonndan.nivio.input.FileFetcher;
+import de.bonndan.nivio.input.ItemDescriptionFormatFactory;
 import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.Indexer;
+import de.bonndan.nivio.input.csv.ItemDescriptionFactoryCSV;
+import de.bonndan.nivio.input.dto.GroupDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
+import de.bonndan.nivio.input.http.HttpService;
+import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.notification.NotificationService;
+import de.bonndan.nivio.output.IconService;
+import de.bonndan.nivio.output.Rendered;
+import de.bonndan.nivio.output.map.MapFactory;
+import de.bonndan.nivio.output.map.RenderedXYMap;
+import de.bonndan.nivio.output.map.svg.SvgFactory;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class JGraphXRendererTest {
 
     private LandscapeRepository landscapeRepository;
+    private ItemDescriptionFormatFactory formatFactory;
     private Indexer indexer;
 
     @BeforeEach
     public void setup() {
         landscapeRepository = new LandscapeRepository();
-        indexer = new Indexer(landscapeRepository, new NotificationService(null));
+        formatFactory = ItemDescriptionFormatFactory.with(ItemDescriptionFactoryNivio.forTesting());
+
+        indexer = new Indexer(landscapeRepository, formatFactory, new NotificationService(null));
     }
 
     private LandscapeImpl getLandscape(String path) {
@@ -38,12 +61,21 @@ class JGraphXRendererTest {
     }
 
     private mxGraph debugRender(String path) throws IOException {
+        return debugRender(path, true);
+    }
 
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(null);
-        jGraphXRenderer.setDebugMode(true);
-
+    private mxGraph debugRender(String path, boolean debugMode) throws IOException {
         LandscapeImpl landscape = getLandscape(path + ".yml");
-        mxGraph graph = jGraphXRenderer.render(landscape);
+        return debugRenderLandscape(path, landscape, debugMode);
+    }
+
+    private mxGraph debugRenderLandscape(String path, LandscapeImpl landscape, boolean debugMode) throws IOException {
+        IconService iconService = new IconService();
+        iconService.setImageProxy("");
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(debugMode ? null : iconService);
+        jGraphXRenderer.setDebugMode(debugMode);
+
+        mxGraph graph = jGraphXRenderer.render(landscape).getRendered();
 
         BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, null, true, null);
         assertNotNull(image);
@@ -65,7 +97,136 @@ class JGraphXRendererTest {
     }
 
     @Test
-    public void debugRenderInout() throws IOException {
-        debugRender("/src/test/resources/example/inout");
+    @Disabled("Requires network connection without debug mode")
+    public void renderInout() throws IOException {
+        String path = "/src/test/resources/example/inout";
+        LandscapeImpl landscape = getLandscape(path + ".yml");
+        debugRenderLandscape(path, landscape, false);
+    }
+
+    @Test
+    public void debugRenderLargeGraph() throws IOException {
+
+        LandscapeDescription input = new LandscapeDescription();
+        input.setIdentifier("largetest");
+        input.setName("largetest");
+
+        int g = 0;
+        while (g < 30) {
+
+            int i = 0;
+            int max = g % 2 > 0 ? 5 : 8;
+            GroupDescription gd = new GroupDescription();
+            String groupIdentifier = "group" + g;
+            gd.setIdentifier(groupIdentifier);
+            input.getGroups().put(groupIdentifier, gd);
+            while (i < max) {
+                ItemDescription itemDescription = new ItemDescription();
+                itemDescription.setIdentifier(groupIdentifier + "_item_" + i);
+                itemDescription.setGroup(groupIdentifier);
+                input.getItemDescriptions().add(itemDescription);
+                i++;
+            }
+            g++;
+        }
+
+        indexer.reIndex(input);
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
+
+        debugRenderLandscape("/src/test/resources/example/large", landscape, false);
+    }
+
+    @Test
+    @Disabled
+    public void debugRenderLargeGraphSVG() throws IOException {
+
+        LandscapeDescription input = new LandscapeDescription();
+        input.setIdentifier("largetest");
+        input.setName("largetest");
+
+        List<ItemDescription> descriptionList = new ArrayList<>();
+        int g = 0;
+        while (g < 30) {
+
+            int i = 0;
+            int max = g % 2 > 0 ? 5 : 8;
+            GroupDescription gd = new GroupDescription();
+            String groupIdentifier = "group" + g;
+            gd.setIdentifier(groupIdentifier);
+            input.getGroups().put(groupIdentifier, gd);
+            while (i < max) {
+                ItemDescription itemDescription = new ItemDescription();
+                itemDescription.setIdentifier(groupIdentifier + "_item_" + i);
+                itemDescription.setGroup(groupIdentifier);
+                input.getItemDescriptions().add(itemDescription);
+                descriptionList.add(itemDescription);
+                i++;
+            }
+            g++;
+        }
+
+        for (int i = 0; i < 20; i++) {
+            var source = descriptionList.get(i);
+            var target = descriptionList.get(i+20);
+            source.addRelation(new RelationDescription(source.getIdentifier(), target.getIdentifier()));
+        }
+
+        indexer.reIndex(input);
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
+
+        IconService iconService = new IconService();
+        iconService.setImageProxy("");
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
+
+        MapFactory<mxGraph, mxCell> mapFactory = new RenderedXYMapFactory(iconService);
+        Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
+        RenderedXYMap renderedMap = mapFactory.getRenderedMap(landscape, render);
+
+        SvgFactory svgFactory = new SvgFactory(renderedMap);
+        svgFactory.setDebug(true);
+        String svg = svgFactory.getXML();
+
+        File png = new File(RootPath.get() + "/src/test/resources/example/large" + ".svg");
+        FileWriter fileWriter = new FileWriter(png);
+        fileWriter.write(svg);
+        fileWriter.close();
+    }
+
+    @Test
+    public void renderLandscapeItemModelWithMagicLabels() throws IOException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        ItemDescription model = new ItemDescription();
+        model.setIdentifier("item");
+        model.setName("Item Description");
+
+        Map<String, Object> map = mapper.convertValue(model, Map.class);
+
+        LandscapeDescription landscapeDescription = new LandscapeDescription();
+        landscapeDescription.setIdentifier("landscapeItem:model");
+        landscapeDescription.setName("Landscape Item Model");
+        landscapeDescription.getItemDescriptions().add(model);
+
+        map.forEach((field, o) -> {
+            ItemDescription d = new ItemDescription();
+            d.setIdentifier(field);
+            landscapeDescription.getItemDescriptions().add(d);
+            model.getLabels().put(field + "_PROVIDER_URL", field.toLowerCase());
+        });
+
+        indexer.reIndex(landscapeDescription);
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
+
+        debugRenderLandscape("/src/test/resources/example/model", landscape, false);
+    }
+
+    @Test
+    @Disabled("Requires network connection without debug mode")
+    public void renderCSV() throws IOException {
+
+        formatFactory = ItemDescriptionFormatFactory.with(new ItemDescriptionFactoryCSV(new FileFetcher(new HttpService())));
+        indexer = new Indexer(landscapeRepository, formatFactory, new NotificationService(null));
+
+        debugRender("/src/test/resources/example/example_csv", false);
     }
 }

@@ -12,8 +12,9 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.StringUtils;
-
-import java.net.MalformedURLException;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @SpringBootApplication
 @EnableConfigurationProperties
@@ -32,16 +33,26 @@ public class Application {
     }
 
     @Bean
+    public WebMvcConfigurer configurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedOrigins("*");
+            }
+        };
+    }
+
+    @Bean
     public Seed seed() {
         return new Seed();
     }
 
-    public static void main(String[] args) throws MalformedURLException {
+    public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
 
         Seed seed = (Seed) context.getBean("seed");
-        if (!StringUtils.isEmpty(seed.getSeed())) {
-            ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) context.getBean("taskExecutor");
+        ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) context.getBean("taskExecutor");
+        if (seed.hasValue()) {
             WatcherFactory watcher = context.getBean(WatcherFactory.class);
             watcher.getWatchers().forEach(taskExecutor::execute);
 
@@ -50,11 +61,10 @@ public class Application {
             log.info("Running in demo mode");
 
             FileChangeProcessor processor = context.getBean(FileChangeProcessor.class);
-            processor.process(Seed.getDemoFile());
+            Seed.getDemoFiles().forEach(processor::process);
 
-            ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) context.getBean("taskExecutor");
             WatcherFactory watcher = context.getBean(WatcherFactory.class);
-            taskExecutor.execute(watcher.getWatcher(Seed.getDemoFile()));
+            Seed.getDemoFiles().forEach(file -> taskExecutor.execute(watcher.getWatcher(file)));
         }
     }
 

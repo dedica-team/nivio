@@ -63,6 +63,7 @@ items:
   description: Reminder
   software: PHP
   version: 2.4
+  scale: 0
   type: application
   networks:
     - content
@@ -82,6 +83,7 @@ items:
   machine: Pentium 1 512MB RAM
   type: server
   team: ops guys
+  scale: 1
   networks:
   - content
   hostType: docker
@@ -95,6 +97,7 @@ items:
   machine: Pentium 1 512MB RAM
   type: database
   team: ops guys
+  scale: 1
   networks:
   - content
   hostType: docker
@@ -107,6 +110,7 @@ items:
   identifier: wordpress-redis
   machine: Pentium 1 1GB RAM
   type: cache
+  scale: 2
   team: ops guys
   networks:
   - content

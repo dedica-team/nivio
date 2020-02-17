@@ -5,7 +5,6 @@ import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.URLHelper;
@@ -19,22 +18,25 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @RestController
-@RequestMapping(path = "/")
+@RequestMapping(path = "/api")
 public class ApiController {
 
     private final LandscapeRepository landscapeRepository;
+    private final ItemDescriptionFormatFactory formatFactory;
     private final Indexer indexer;
     private final FileFetcher fileFetcher;
 
     @Autowired
-    public ApiController(LandscapeRepository landscapeRepository, Indexer indexer, FileFetcher fileFetcher) {
+    public ApiController(LandscapeRepository landscapeRepository, ItemDescriptionFormatFactory formatFactory, Indexer indexer, FileFetcher fileFetcher) {
         this.landscapeRepository = landscapeRepository;
+        this.formatFactory = formatFactory;
         this.indexer = indexer;
         this.fileFetcher = fileFetcher;
     }
@@ -45,7 +47,8 @@ public class ApiController {
      *
      * @return dto list
      */
-    @RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @CrossOrigin(methods = RequestMethod.GET)
+    @RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public Iterable<LandscapeDTO> landscapes() {
         Iterable<LandscapeImpl> all = landscapeRepository.findAll();
 
@@ -62,6 +65,7 @@ public class ApiController {
         };
     }
 
+    @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(path = "/landscape/{identifier}")
     public ResponseEntity<LandscapeDTO> landscape(@PathVariable String identifier) {
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
@@ -90,12 +94,13 @@ public class ApiController {
         env.setIdentifier(identifier);
         env.setIsPartial(true);
 
-        SourceReference sourceReference = new SourceReference(SourceFormat.from(format));
-        sourceReference.setUrl(null);
+        SourceReference sourceReference = new SourceReference(null, format);
         sourceReference.setContent(body);
 
-        ItemDescriptionFactory factory = ItemDescriptionFormatFactory.getFactory(sourceReference, env);
-        List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference);
+        ItemDescriptionFactory factory = formatFactory.getFactory(sourceReference, env);
+        URL baseUrl = URLHelper.getParentPath(env.getSource());
+
+        List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference, baseUrl);
 
         env.setItemDescriptions(itemDescriptions);
 
@@ -117,30 +122,45 @@ public class ApiController {
             @PathVariable String fqi
     ) {
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
-        if (landscape == null)
+        if (landscape == null) {
             return new ProcessLog(new ProcessingException(null, "Could not find landscape " + identifier));
+        }
 
         FullyQualifiedIdentifier from = FullyQualifiedIdentifier.from(fqi);
-        if (from == null)
-            return new ProcessLog(new ProcessingException(landscape, "Could use fully qualified identifier " + fqi));
 
-        Optional<LandscapeItem> item = Items.find(FullyQualifiedIdentifier.build(from.getLandscape(), from.getGroup(), from.getIdentifier()), landscape.getItems());
-        if (!item.isPresent()) {
+        FullyQualifiedIdentifier tmp = FullyQualifiedIdentifier.build(from.getLandscape(), from.getGroup(), from.getIdentifier());
+        Optional<Item> item = landscape.getItems().find(tmp);
+        if (item.isEmpty()) {
             return new ProcessLog(new ProcessingException(landscape, "Could find item " + fqi));
         }
 
-        landscape.getItems().remove(item.get());
+        landscape.getItems().all().remove(item.get());
         return process(landscape);
     }
 
+
+    @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(path = "/landscape/{identifier}/items", method = RequestMethod.GET)
     public ResponseEntity<List<Item>> items(@PathVariable String identifier) {
 
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
-        if (landscape == null)
+        if (landscape == null) {
             return ResponseEntity.notFound().build();
+        }
 
-        return new ResponseEntity<>(List.copyOf(landscape.getItems()), HttpStatus.OK);
+        return new ResponseEntity<>(List.copyOf(landscape.getItems().all()), HttpStatus.OK);
+    }
+
+    @CrossOrigin(methods = RequestMethod.GET)
+    @RequestMapping(path = "/landscape/{identifier}/log", method = RequestMethod.GET)
+    public ResponseEntity<ProcessLog> log(@PathVariable String identifier) {
+
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
+        if (landscape == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return new ResponseEntity<>(landscape.getLog(), HttpStatus.OK);
 
     }
 
@@ -150,8 +170,9 @@ public class ApiController {
     @RequestMapping(path = "/reindex/{landscape}", method = RequestMethod.POST)
     public ProcessLog reindex(@PathVariable String landscape) {
         LandscapeImpl distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape).orElse(null);
-        if (distinctByIdentifier == null)
-            return new ProcessLog(new ProcessingException(null, "Could not find lanscape " + landscape));
+        if (distinctByIdentifier == null) {
+            return new ProcessLog(new ProcessingException(null, "Could not find landscape " + landscape));
+        }
 
         return process(distinctByIdentifier);
     }
@@ -164,7 +185,7 @@ public class ApiController {
         File file = new File(landscape.getSource());
         if (file.exists()) {
             LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
-            return indexer.reIndex(landscapeDescription);
+            return indexer.reIndex(Objects.requireNonNull(landscapeDescription));
         }
 
         URL url = URLHelper.getURL(landscape.getSource());

@@ -2,21 +2,6 @@ spring:
   application:
     name: nivio
 
-  jpa:
-    properties.hibernate.dialect: org.hibernate.dialect.H2Dialect
-    generate-ddl: true
-    show-sql: false
-    hibernate.ddl-auto: create-drop
-    properties.hibernate.show_sql: false
-    properties.hibernate.use_sql_comments: false
-    properties.hibernate.format_sql: false
-
-  datasource:
-    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
-    username: nivio
-    password: nivio
-    driver-class-name: org.h2.Driver
-
   mail:
     host: smtp.gmail.com
     port: 587
@@ -28,17 +13,26 @@ spring:
           auth: true
           starttls.enable: true
 
+
 logging:
   level:
     root: INFO
+    de:
+      bonndan:
+        nivio:
+          output: TRACE
 
-#server:
-#  port: 8081
+
+server:
+  port: 8080
+
 ---
 spring:
   profiles: test
 
-  datasource.url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
-  datasource.username: sa
-  datasource.password: sa
-  jpa.show-sql: true
+---
+spring:
+  profiles: local
+
+server:
+  port: 8080

@@ -1,5 +1,6 @@
 package de.bonndan.nivio.util;
 
+import de.bonndan.nivio.output.Color;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

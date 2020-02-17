@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input.nivio;
 
+import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 
 import java.util.ArrayList;
@@ -12,6 +13,5 @@ public class Source {
 
     public List<ItemDescription> items = new ArrayList<>();
 
-    @Deprecated
-    public List<ItemDescription> services = new ArrayList<>();
+    public List<GroupDescription> groups = new ArrayList<>();
 }

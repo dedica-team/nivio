@@ -44,4 +44,13 @@ public class SeedTest {
         Seed seed = new Seed(" :xxx");
         assertThrows(MalformedURLException.class,() -> seed.getLocations());
     }
+
+    @Test
+    public void windowsFileLocation() throws MalformedURLException {
+        Seed seed = new Seed("c:\\a\\b\\c.yml");
+        Seed.ESCAPE_AUTHORITY = true;
+        List<URL> locations = seed.getLocations();
+        assertEquals("file://c\\a\\b\\c.yml", locations.get(0).toString());
+        Seed.ESCAPE_AUTHORITY = false;
+    }
 }

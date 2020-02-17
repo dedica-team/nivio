@@ -3,7 +3,6 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.SourceFormat;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.RootPath;
@@ -17,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static de.bonndan.nivio.model.Items.pick;
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,12 +32,13 @@ class LandscapeDescriptionFactoryTest {
         assertEquals("Landscape example", landscapeDescription.getName());
         assertEquals("nivio:example", landscapeDescription.getIdentifier());
         assertEquals("mail@acme.org", landscapeDescription.getContact());
+        assertTrue(landscapeDescription.getDescription().contains("demonstrate"));
         assertEquals(RootPath.get() + "/src/test/resources/example/example_env.yml", landscapeDescription.getSource());
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
 
         SourceReference mapped = landscapeDescription.getSourceReferences().get(1);
         assertNotNull(mapped);
-        assertEquals(SourceFormat.NIVIO, mapped.getFormat());
+        assertEquals("nivio", mapped.getFormat());
         assertNotNull(landscapeDescription.getConfig());
     }
 
@@ -52,12 +51,13 @@ class LandscapeDescriptionFactoryTest {
         assertEquals("Landscape example", landscapeDescription.getName());
         assertEquals("nivio:example", landscapeDescription.getIdentifier());
         assertEquals("mail@acme.org", landscapeDescription.getContact());
+        assertTrue(landscapeDescription.getDescription().contains("demonstrate"));
         assertTrue(landscapeDescription.getSource().contains("name: Landscape example"));
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
 
         SourceReference mapped = landscapeDescription.getSourceReferences().get(1);
         assertNotNull(mapped);
-        assertEquals(SourceFormat.NIVIO, mapped.getFormat());
+        assertEquals("nivio", mapped.getFormat());
     }
 
     @Test
@@ -103,12 +103,13 @@ class LandscapeDescriptionFactoryTest {
     public void environmentTemplatesRead() {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
+        assertNotNull(landscapeDescription);
         assertNotNull(landscapeDescription.getTemplates());
         assertEquals(2, landscapeDescription.getTemplates().size());
 
-        LandscapeItem template = pick("myfirsttemplate", null, landscapeDescription.getTemplates().values());
+        LandscapeItem template = landscapeDescription.getTemplates().get("myfirsttemplate");
         assertNotNull(template);
-        LandscapeItem groupTemplate = pick("insamegroup", null, landscapeDescription.getTemplates().values());
+        LandscapeItem groupTemplate = landscapeDescription.getTemplates().get("insamegroup");
         assertNotNull(groupTemplate);
     }
 
@@ -117,7 +118,7 @@ class LandscapeDescriptionFactoryTest {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
-        LandscapeItem template = pick("myfirsttemplate", null, landscapeDescription.getTemplates().values());
+        LandscapeItem template = landscapeDescription.getTemplates().get("myfirsttemplate");
 
         assertEquals("webservice", template.getType());
         assertTrue(template.getName().isEmpty());

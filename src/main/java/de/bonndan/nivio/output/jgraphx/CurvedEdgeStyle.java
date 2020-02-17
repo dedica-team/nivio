@@ -9,6 +9,7 @@ import java.util.List;
 /**
  * https://stackoverflow.com/questions/22746439/jgraphx-custom-layoult-curved-edges
  */
+@Deprecated
 class CurvedEdgeStyle implements mxEdgeStyle.mxEdgeStyleFunction {
 
     public static final String KEY = "curvedEdgeStyle";

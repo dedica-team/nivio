@@ -1,0 +1,42 @@
+svg {
+  font-family: sans-serif;
+}
+
+svg g {
+  stroke-width: 0.3;
+}
+
+svg g polygon {
+  stroke: #3F51B5;
+  stroke-width: 0.2;
+}
+
+svg g circle {
+  stroke-width: 0.4em;
+}
+
+rect.group {
+  stroke-width: 0.0em;
+  fill-opacity: 0.5;
+}
+
+svg g.label {
+  cursor: pointer;
+}
+
+svg g.label rect {
+  stroke-width: 0.1em;
+  stroke: #3F51B5;
+}
+
+text.groupLabel {
+  text-shadow: 1px 1px 1px black;
+}
+
+svg path {
+  fill: none;
+  stroke-width: 0.4em;
+  stroke-opacity: 0.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

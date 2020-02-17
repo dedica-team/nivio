@@ -69,7 +69,7 @@ public class GroupsTest {
         List<LandscapeItem> b = all.get("B");
         assertEquals(1, b.size());
 
-        List<LandscapeItem> common = all.get(Groups.COMMON);
+        List<LandscapeItem> common = all.get(Group.COMMON);
         assertEquals(1, common.size());
     }
 
@@ -96,7 +96,7 @@ public class GroupsTest {
         Groups ownerGroups = Groups.by(LandscapeItem::getOwner, services);
         Map<String, List<LandscapeItem>> all = ownerGroups.getAll();
         assertEquals(2, all.size());
-        assertFalse(all.containsKey(Groups.COMMON));
+        assertFalse(all.containsKey(Group.COMMON));
         assertFalse(all.containsKey("content"));
     }
 

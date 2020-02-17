@@ -15,6 +15,7 @@ import java.util.List;
 /**
  * https://stackoverflow.com/questions/22746439/jgraphx-custom-layoult-curved-edges
  */
+@Deprecated
 class CurvedShape extends mxConnectorShape {
 
     public static final String KEY = "curvedEdge";

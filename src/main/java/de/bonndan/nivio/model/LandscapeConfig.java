@@ -1,15 +1,47 @@
 package de.bonndan.nivio.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LandscapeConfig {
 
+    private boolean greedy = true;
+
     private JGraphXConfig jgraphx = new JGraphXConfig();
+
+    private List<String> groupBlacklist = new ArrayList<>();
+    private List<String> labelBlacklist = new ArrayList<>();
 
     public JGraphXConfig getJgraphx() {
         return jgraphx;
     }
 
     public void setJgraphx(JGraphXConfig jgraphx) {
-        this.jgraphx = jgraphx;
+        if (jgraphx != null) {
+            this.jgraphx = jgraphx;
+        }
+    }
+
+    public boolean isGreedy() {
+        return greedy;
+    }
+
+    public void setGreedy(boolean greedy) {
+        this.greedy = greedy;
+    }
+
+    /**
+     * @return a list of group identifiers which are excluded from the landscape
+     */
+    public List<String> getGroupBlacklist() {
+        return groupBlacklist;
+    }
+
+    /**
+     * @return a list of matchers / regex for labels should not be examined for relations
+     */
+    public List<String> getLabelBlacklist() {
+        return labelBlacklist;
     }
 
     /**

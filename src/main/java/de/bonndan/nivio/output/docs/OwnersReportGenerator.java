@@ -1,10 +1,11 @@
 package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.model.Groups;
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.FormatUtils;
-import de.bonndan.nivio.util.Color;
+import de.bonndan.nivio.output.Color;
 import j2html.tags.ContainerTag;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class OwnersReportGenerator extends HtmlGenerator {
                 body(
                         h1("Owner Report: " + landscape.getName()),
                         br(),
-                        rawHtml(writeOwnerGroups(Groups.by(LandscapeItem::getOwner, new ArrayList<>(landscape.getItems()))))
+                        rawHtml(writeOwnerGroups(Groups.by(landscapeItem -> landscapeItem.getOwner(), new ArrayList<>(landscape.getItems().all()))))
                 )
         ).renderFormatted();
     }

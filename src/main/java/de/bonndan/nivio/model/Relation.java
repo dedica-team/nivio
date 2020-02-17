@@ -16,6 +16,7 @@ public class Relation implements RelationItem<Item>, Serializable {
     @JsonBackReference
     private Item source;
 
+    @JsonBackReference
     private Item target;
 
     private String description;

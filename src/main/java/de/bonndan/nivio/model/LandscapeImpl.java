@@ -1,6 +1,8 @@
 package de.bonndan.nivio.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import de.bonndan.nivio.input.ProcessLog;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
@@ -8,7 +10,6 @@ import java.util.*;
 
 /**
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
- *
  */
 public class LandscapeImpl implements Landscape {
 
@@ -28,14 +29,18 @@ public class LandscapeImpl implements Landscape {
      */
     private String contact;
 
+    private String description;
+
     private String source;
 
     @JsonManagedReference
-    private Set<Item> items = new HashSet<>();
+    private LandscapeItems items = new LandscapeItems();
 
     private LandscapeConfig config;
 
     private Map<String, GroupItem> groups = new HashMap<>();
+
+    private ProcessLog processLog;
 
     public String getIdentifier() {
         return identifier;
@@ -53,12 +58,12 @@ public class LandscapeImpl implements Landscape {
         this.name = name;
     }
 
-    public Set<Item> getItems() {
+    public LandscapeItems getItems() {
         return items;
     }
 
     public void setItems(Set<Item> items) {
-        this.items = items;
+        this.items.setItems(items);
     }
 
     public String getSource() {
@@ -76,7 +81,10 @@ public class LandscapeImpl implements Landscape {
 
     @Override
     public LandscapeConfig getConfig() {
-        return config == null ? new LandscapeConfig() : config;
+        if (config == null) {
+            config = new LandscapeConfig();
+        }
+        return config;
     }
 
     @Override
@@ -119,5 +127,29 @@ public class LandscapeImpl implements Landscape {
         }
 
         groups.put(g.getIdentifier(), g);
+    }
+
+    public Group getGroup(String group) {
+        if (StringUtils.isEmpty(group))
+            group = Group.COMMON;
+        return (Group) groups.get(group);
+    }
+
+    public void setProcessLog(ProcessLog processLog) {
+        this.processLog = processLog;
+    }
+
+    @JsonIgnore
+    public ProcessLog getLog() {
+        return processLog;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
     }
 }

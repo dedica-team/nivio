@@ -1,12 +1,14 @@
 identifier: nivio:example
 name: Landscape example
 contact: mail@acme.org
+description: This is a smaller example landscape to demonstrate the features of nivio.
 sources:
   - "./services/wordpress.yml"
   - url: "./services/dashboard.yml"
     format: nivio
 
 config:
+  greedy: false
   jgraphx:
     #nodeDistributionCostFactor: 9000000.0
     #edgeLengthCostFactor;
@@ -16,7 +18,7 @@ config:
     forceConstantFactor: 8
 
     # higher value is cpu intensive, but can lead to better layouts
-    #maxIterations: 1000
+    maxIterations: 1000
 
 groups:
   content:

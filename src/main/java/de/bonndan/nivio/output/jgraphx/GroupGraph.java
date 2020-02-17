@@ -17,7 +17,7 @@ public class GroupGraph {
     private final mxGraph graph;
     private Map<LandscapeItem, mxCell> serviceVertexes = new HashMap<>();
 
-    public GroupGraph(List<LandscapeItem> items) {
+    public GroupGraph(List<Item> items) {
         graph = new mxGraph();
 
         items.forEach(service -> {
@@ -27,14 +27,16 @@ public class GroupGraph {
         });
 
         //inner group relations
-        items.forEach(service -> {
-            ((Item) service).getProvidedBy().forEach(provider -> {
+        items.forEach(item -> {
+            item.getProvidedBy().forEach(provider -> {
 
-                if (service.getGroup().equals(provider.getGroup())) {
+                boolean sameGroup = (item.getGroup() == null && provider.getGroup() == null)
+                        || item.getGroup().equals(provider.getGroup());
+                if (sameGroup) {
                     graph.insertEdge(
                             graph.getDefaultParent(), null, "",
                             serviceVertexes.get(provider),
-                            serviceVertexes.get(service),
+                            serviceVertexes.get(item),
                             ""
                     );
                 }

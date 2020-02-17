@@ -1,6 +1,6 @@
 # Nivio Demo
 
-This folder contains sources to construct a demo landscape for [https://github.com/bonndan/nivio]
+This folder contains sources to construct a demo landscape for [https://github.com/dedica-team/nivio]
 
 ## Usage
 

@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.jgraphx;
 
 import de.bonndan.nivio.api.NotFoundException;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.IconService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Optional;
 
 
 @Controller
@@ -35,14 +37,14 @@ public class JGraphXRenderController {
         this.iconService = iconService;
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/graph.png")
+    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/oldgraph.png")
     public ResponseEntity<byte[]> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(() ->
              new NotFoundException("Not found: " + landscapeIdentifier)
         );
 
         JGraphXRenderer graphStreamRenderer = new JGraphXRenderer(iconService);
-        File png = File.createTempFile(landscapeIdentifier, "png");
+        File png = File.createTempFile(landscapeIdentifier.replace(":", "_"), "png");
         try {
             graphStreamRenderer.render(landscape, png);
         } catch (Exception ex) {
@@ -59,35 +61,5 @@ public class JGraphXRenderController {
                 HttpStatus.OK
         );
 
-    }
-
-    /**
-     * Prints the landscape as json based on rendering
-     *
-     *
-     */
-    //TODO todo provide officially supported 3d format like https://threejs.org/docs/#examples/loaders/OBJLoader
-    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/threejs.json")
-    public ResponseEntity<String> json(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(() ->
-                new NotFoundException("Not found: " + landscapeIdentifier)
-        );
-
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
-        JsonRenderer renderer = new JsonRenderer(jGraphXRenderer);
-
-        try {
-            String rendered = renderer.render(landscape);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
-            return new ResponseEntity<>(
-                    rendered,
-                    headers,
-                    HttpStatus.OK
-            );
-        } catch (Exception ex) {
-            logger.warn("Could not render graph: " );
-            throw ex;
-        }
     }
 }

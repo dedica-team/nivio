@@ -1,15 +1,13 @@
 package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.api.NotFoundException;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.IconService;
-import org.asciidoctor.Asciidoctor;
-
-import static org.asciidoctor.Asciidoctor.Factory.create;
-
-import org.asciidoctor.Attributes;
-import org.asciidoctor.OptionsBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,12 +17,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @Controller
 @RequestMapping(path = "/docs")
 public class DocsController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocsController.class);
 
     private final LandscapeRepository landscapeRepository;
     private final IconService iconService;
@@ -33,35 +33,6 @@ public class DocsController {
     public DocsController(LandscapeRepository landscapeRepository, IconService iconService) {
         this.landscapeRepository = landscapeRepository;
         this.iconService = iconService;
-    }
-
-    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}")
-    public ResponseEntity<String> docResource(@PathVariable(name = "landscape") final String landscapeIdentifier) {
-
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
-                () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
-        );
-
-        Map<String, Object> attributes = new HashMap<String, Object>();
-        //attributes.put(Attributes.LINK_CSS, true);
-        attributes.put(Attributes.COPY_CSS, true);
-        attributes.put(Attributes.STYLESHEET_NAME, "http://themes.asciidoctor.org/stylesheets/github.css");
-        Map<String, Object> options = OptionsBuilder.options()
-                .headerFooter(true)
-                .attributes(attributes)
-                .asMap();
-
-        AsciiDocGenerator generator = new AsciiDocGenerator();
-        Asciidoctor asciidoctor = create();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
-        return new ResponseEntity<>(
-                asciidoctor.convert(generator.toDocument(landscape), options),
-                //generator.toDocument(landscape),
-                headers,
-                HttpStatus.OK
-        );
-
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/report.html")
@@ -81,6 +52,42 @@ public class DocsController {
                 HttpStatus.OK
         );
 
+    }
+
+    /**
+     * Renders only a single item as html.
+     *
+     */
+    @RequestMapping(method = RequestMethod.GET, path = "/item/**")
+    public ResponseEntity<String> itemHtmlResource(HttpServletRequest request) {
+
+        String requestURL = request.getRequestURL().toString();
+        String fqiString = requestURL.split("/item/")[1];
+        FullyQualifiedIdentifier fqi;
+        try {
+            fqi = FullyQualifiedIdentifier.from(fqiString);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(fqi.getLandscape()).orElseThrow(
+                () -> new NotFoundException("Landscape " + fqi.getLandscape() + " not found")
+        );
+        Optional<Item> item = landscape.getItems().find(fqi);
+        if (item.isEmpty()) {
+            LOGGER.warn("Could not find item {}", fqiString);
+            return ResponseEntity.notFound().build();
+        }
+
+        ItemReportGenerator generator = new ItemReportGenerator(iconService);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
+        return new ResponseEntity<>(
+                generator.toDocument(item.get()),
+                headers,
+                HttpStatus.OK
+        );
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/owners.html")

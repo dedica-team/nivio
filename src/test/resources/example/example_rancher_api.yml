@@ -1,0 +1,8 @@
+identifier: rancher-api
+
+sources:
+  - url: "http://rancher-server/v2-beta/"
+    projectName: Default
+    apiAccessKey: ${API_ACCESS_KEY}
+    apiSecretKey: ${API_SECRET_KEY}
+    format: rancher1
