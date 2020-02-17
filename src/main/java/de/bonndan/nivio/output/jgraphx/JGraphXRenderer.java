@@ -39,7 +39,7 @@ public class JGraphXRenderer implements Renderer<Rendered<mxGraph, mxCell>> {
         });
 
         Map<String, Group> groupMap = new HashMap<>();
-        landscape.getGroups().forEach((s, groupItem) -> groupMap.put(s, (Group)groupItem)); //TODO
+        landscape.getGroups().forEach((s, groupItem) -> groupMap.put(s, (Group)groupItem));
         AllGroupsGraph allGroupsGraph = new AllGroupsGraph(landscape.getConfig(), groupMap, subgraphs);
 
         if (isDebugMode())

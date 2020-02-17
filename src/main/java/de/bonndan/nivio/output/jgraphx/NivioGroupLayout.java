@@ -64,7 +64,7 @@ public class NivioGroupLayout extends mxGraphLayout {
      * The maximum distance between vertices, beyond which their
      * repulsion no longer has an effect
      */
-    protected double maxDistanceLimit = 500;
+    protected double maxDistanceLimit = 300; //XXX was 500
 
     /**
      * Start value of temperature. Default is 200.

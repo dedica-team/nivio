@@ -9,6 +9,7 @@ import com.mxgraph.view.mxCellState;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 
+@Deprecated
 public class mxCircularImageShape extends mxEllipseShape {
 
     public static final String NAME = "circularImage";
