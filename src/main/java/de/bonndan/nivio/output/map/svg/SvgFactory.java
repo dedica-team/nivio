@@ -132,8 +132,8 @@ public class SvgFactory extends Component {
                                         .map(vertex -> {
                                             var fill = vertex.image;
                                             var id = Base64.getEncoder().encodeToString(vertex.id.getBytes());
-                                            NPattern nPattern = new NPattern(id, fill, ICON_SIZE - padding, padding);
-                                            return nPattern.render();
+                                            SVGPattern SVGPattern = new SVGPattern(id, fill, ICON_SIZE - padding, padding);
+                                            return SVGPattern.render();
                                         }).collect(Collectors.toList())
                         );
 

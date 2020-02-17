@@ -4,12 +4,12 @@ import j2html.tags.DomContent;
 
 import static j2html.TagCreator.rawHtml;
 
-class NPattern extends Component {
+class SVGPattern extends Component {
 
     private final String id, link;
     private final int size, padding;
 
-    NPattern(String id, String link, int size, int padding) {
+    SVGPattern(String id, String link, int size, int padding) {
         this.id = id;
         this.link = link;
         this.size = size;

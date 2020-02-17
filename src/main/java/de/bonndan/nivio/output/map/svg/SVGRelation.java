@@ -51,7 +51,7 @@ class SVGRelation extends Component {
         float pct = 100 / pieces;
         for (float i = 0; i < 1; i += pct / 100) {
             Point2D.Float point1 = bezierPath.eval(i);
-            Point2D.Float point2 = bezierPath.eval(i + 0.01f);
+            Point2D.Float point2 = bezierPath.eval(i + 0.001f);
             markers.add(this.marker(point1, point2, fillId));
         }
 
@@ -59,23 +59,23 @@ class SVGRelation extends Component {
     }
 
     private ContainerTag marker(Point2D.Float point, Point2D.Float point2, String fillId) {
-        return alongPath(MARKER, point, point2, fillId, -10);
+        return alongPath(MARKER, point, point2, fillId, -10, false);
     }
 
     private ContainerTag label(BezierPath bezierPath, String fillId) {
         Point2D.Float point = bezierPath.eval(0.49f);
         Point2D.Float point2 = bezierPath.eval(0.51f);
-        return alongPath(getText(relation), point, point2, fillId, 0);
+        return alongPath(getText(relation), point, point2, fillId, 0, true);
     }
 
     private String getText(ItemMapItem.Relation relation) {
         return Optional.ofNullable(relation.format).orElse("");
     }
 
-    private ContainerTag alongPath(String text, Point2D.Float point, Point2D.Float point2, String fillId, int xOffset) {
+    private ContainerTag alongPath(String text, Point2D.Float point, Point2D.Float point2, String fillId, int xOffset, boolean upright) {
 
         var degrees = Math.atan2((point2.y - point.y), (point2.x - point.x)) * 180 / Math.PI;
-        if (degrees > 90 || degrees < -90) {
+        if (upright && (degrees > 90 || degrees < -90)) {
             degrees += 180; //always upright
         }
         String transform = "translate(" + round(point.getX()) + ' ' + round(point.getY() - 10) + ") rotate(" + round(degrees) + " 0 0)";
