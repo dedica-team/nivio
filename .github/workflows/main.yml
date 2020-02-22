@@ -35,13 +35,13 @@ jobs:
     steps:
     - name: Login to Heroku Container registry
       run: heroku container:login
-      with:
+      env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
     - name: Build and push
       run: heroku container:push -a nivio-demo web
-      with:
+      env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
     - name: Release
       run: heroku container:release -a nivio-demo web
-      with:
+      env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
