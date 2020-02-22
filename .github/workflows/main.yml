@@ -29,19 +29,17 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
 
-  deploy:
+  deploy-latest:
     needs: build
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
     steps:
-    - name: Login to Heroku Container registry
-      run: heroku container:login
-      env:
-        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-    - name: Build and push
-      run: heroku container:push -a nivio-demo web
-      env:
-        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-    - name: Release
-      run: heroku container:release -a nivio-demo web
-      env:
-        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      # https://github.com/actions/heroku/issues/9
+      - name: Heroku Release
+        run: |
+          docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
+          docker tag dedica/nivio:latest registry.heroku.com/nivio-demo/web
+          docker push registry.heroku.com/nivio-demo/web
+          heroku container:release web -a nivio-demo
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
