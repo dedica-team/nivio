@@ -13,7 +13,6 @@ spring:
           auth: true
           starttls.enable: true
 
-
 logging:
   level:
     root: INFO
@@ -22,9 +21,11 @@ logging:
         nivio:
           output: TRACE
 
-
 server:
   port: ${PORT:8080}
+
+nivio:
+  baseUrl: ${NIVIO_BASE_URL:}
 
 ---
 spring:

@@ -6,6 +6,7 @@ import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.IconService;
+import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.Renderer;
 import org.slf4j.Logger;
@@ -23,10 +24,12 @@ public class JGraphXRenderer implements Renderer<Rendered<mxGraph, mxCell>> {
 
     private static final Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);
     private final IconService iconService;
+    private final LocalServer localServer;
     private boolean debugMode;
 
-    public JGraphXRenderer(IconService iconService) {
+    public JGraphXRenderer(IconService iconService, LocalServer localServer) {
         this.iconService = iconService;
+        this.localServer = localServer;
     }
 
     @Override
@@ -45,7 +48,7 @@ public class JGraphXRenderer implements Renderer<Rendered<mxGraph, mxCell>> {
         if (isDebugMode())
             return allGroupsGraph;
 
-        FinalGraph finalGraph = new FinalGraph(iconService);
+        FinalGraph finalGraph = new FinalGraph(iconService, localServer);
         finalGraph.render(allGroupsGraph, subgraphs);
         return finalGraph;
     }

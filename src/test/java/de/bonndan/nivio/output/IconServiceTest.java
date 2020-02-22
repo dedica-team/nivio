@@ -16,13 +16,15 @@ class IconServiceTest {
 
     private IconService iconService;
     private WireMockServer wireMockServer;
+    private LocalServer server;
 
     @BeforeEach
     public void setup() {
         wireMockServer = new WireMockServer(options().dynamicPort());
         wireMockServer.start();
         WireMock.configureFor("localhost", wireMockServer.port());
-        iconService = new IconService();
+        server = new LocalServer(null);
+        iconService = new IconService(server);
     }
 
     @AfterEach
@@ -83,7 +85,7 @@ class IconServiceTest {
         wireMockServer.stubFor(get("/")
                 .willReturn(ok("OK")));
         String urlprefix = String.format("http://localhost:%d", wireMockServer.port());
-        iconService = new IconService();
+        iconService = new IconService(server);
         iconService.setImageProxy(urlprefix);
 
         Item item = new Item();
@@ -96,7 +98,7 @@ class IconServiceTest {
 
         wireMockServer.stubFor(get("/")
                 .willReturn(ok("OK")));
-        iconService = new IconService();
+        iconService = new IconService(server);
         iconService.setImageProxy(String.format("http://localhost:%d", wireMockServer.port()));
 
         Item item = new Item();

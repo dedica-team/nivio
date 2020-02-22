@@ -29,7 +29,7 @@ import static de.bonndan.nivio.output.Color.getGroupColor;
 
 /**
  * This class is responsible for rendering services and groups nicely with bells and whistles.
- *
+ * <p>
  * The output is now mainly used as basis for further processing of landscape items.
  */
 public class FinalGraph implements Rendered<mxGraph, mxCell> {
@@ -37,6 +37,7 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
     public static final int GRID_SIZE = 20;
     private final int DEFAULT_ICON_SIZE = 50;
     private final IconService iconService;
+    private final LocalServer localServer;
 
     private Logger logger = LoggerFactory.getLogger(FinalGraph.class);
     private Map<Item, mxCell> itemVertexes = new HashMap<>();
@@ -44,8 +45,9 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
     private mxGraph graph;
     private Map<Group, mxCell> groups = new HashMap<>();
 
-    public FinalGraph(IconService iconService) {
+    public FinalGraph(IconService iconService, LocalServer localServer) {
         this.iconService = iconService;
+        this.localServer = localServer;
     }
 
     public mxGraph render(AllGroupsGraph allGroupsGraph, Map<String, GroupGraph> subgraphs) {
@@ -85,7 +87,7 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
             groupGraph.getServiceVertexesWithRelativeOffset().forEach((service, offset) -> {
                 itemVertexes.put(
                         (Item) service,
-                        addItemVertex(offset, groupContainer, (Item)service)
+                        addItemVertex(offset, groupContainer, (Item) service)
                 );
                 items.add((Item) service);
             });
@@ -197,7 +199,7 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
                 cell.setStyle(cell.getStyle()
                         + mxConstants.STYLE_STROKECOLOR + "=" + statusItem.getStatus().toString() + ";"
                         + mxConstants.STYLE_STROKEWIDTH + "=" + 4 + ";"
-                        + mxConstants.STYLE_IMAGE + "=" + LocalServer.url("/icons/" + statusItem.getStatus().getSymbol() + ".png") + ";"
+                        + mxConstants.STYLE_IMAGE + "=" + localServer.getUrl("/icons/" + statusItem.getStatus().getSymbol() + ".png") + ";"
                 );
             });
 
