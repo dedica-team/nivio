@@ -20,7 +20,7 @@ public class LocalServer implements EnvironmentAware {
 
     public LocalServer(@Value("${nivio.baseUrl:}") String baseUrl) {
         if (!StringUtils.isEmpty(baseUrl)) {
-            this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(1) : baseUrl;
+            this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length()-1) : baseUrl;
         } else {
             this.baseUrl = "http://" + host() + ":" + port();
         }
