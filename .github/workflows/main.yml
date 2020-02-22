@@ -24,7 +24,7 @@ jobs:
     - name: Build and Publish Docker
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: dedica-team/nivio
+        name: dedica/nivio
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
