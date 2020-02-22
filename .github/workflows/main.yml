@@ -11,7 +11,7 @@ on:
 
 jobs:
 
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -22,9 +22,20 @@ jobs:
     - name: Build with Maven
       run: mvn package --file pom.xml
 
-  package:
-    - name: Build and Publish Docker
-      id: dockerize
+    #
+    # docker
+    #
+    - name: Build and Publish Docker latest
+      if: github.ref != 'refs/heads/master'
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: dedica/nivio
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        tags: "latest"
+
+    - name: Build and Publish Docker stable
+      if: github.ref == 'refs/heads/master'
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
         name: dedica/nivio
@@ -32,19 +43,13 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
 
-  deploy-latest:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
-    steps:
-      # https://github.com/actions/heroku/issues/9
-      - name: Heroku Release
-        with:
-          tag: ${{ steps.dockerize.outputs.tag }}
-        run: |
-          docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
-          docker tag dedica/nivio:${{ tag }} registry.heroku.com/nivio-demo/web
-          docker push registry.heroku.com/nivio-demo/web
-          heroku container:release web -a nivio-demo
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+    # https://github.com/actions/heroku/issues/9
+    - name: Heroku Release develop
+      if: github.ref != 'refs/heads/master'
+      run: |
+        docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
+        docker tag dedica/nivio:latest registry.heroku.com/nivio-demo/web
+        docker push registry.heroku.com/nivio-demo/web
+        heroku container:release web -a nivio-demo
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
