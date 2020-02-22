@@ -21,7 +21,10 @@ jobs:
         java-version: 11.0.4
     - name: Build with Maven
       run: mvn package --file pom.xml
+
+  package:
     - name: Build and Publish Docker
+      id: dockerize
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
         name: dedica/nivio
@@ -36,9 +39,11 @@ jobs:
     steps:
       # https://github.com/actions/heroku/issues/9
       - name: Heroku Release
+        with:
+          tag: ${{ steps.dockerize.outputs.tag }}
         run: |
           docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
-          docker tag dedica/nivio:latest registry.heroku.com/nivio-demo/web
+          docker tag dedica/nivio:${{ tag }} registry.heroku.com/nivio-demo/web
           docker push registry.heroku.com/nivio-demo/web
           heroku container:release web -a nivio-demo
         env:
