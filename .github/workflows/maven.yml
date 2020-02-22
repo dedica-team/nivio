@@ -27,6 +27,7 @@ jobs:
         name: dedica-team/nivio
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+
     - name: Login to Heroku Container registry
       run: heroku container:login
       with:
