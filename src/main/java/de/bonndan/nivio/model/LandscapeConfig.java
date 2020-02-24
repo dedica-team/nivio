@@ -131,8 +131,13 @@ public class LandscapeConfig {
         }
     }
 
+    /**
+     * Configuration options for corporate identity branding.
+     */
     public static class Branding {
+
         private String mapStylesheet;
+        private String mapLogo;
 
         public String getMapStylesheet() {
             return mapStylesheet;
@@ -140,6 +145,14 @@ public class LandscapeConfig {
 
         public void setMapStylesheet(String mapStylesheet) {
             this.mapStylesheet = mapStylesheet;
+        }
+
+        public String getMapLogo() {
+            return mapLogo;
+        }
+
+        public void setMapLogo(String mapLogo) {
+            this.mapLogo = mapLogo;
         }
     }
 }

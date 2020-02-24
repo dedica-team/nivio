@@ -21,7 +21,6 @@ import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
@@ -110,6 +109,19 @@ public class SvgFactory extends Component {
             return SVGGroup.render();
         }).collect(Collectors.toList());
 
+        DomContent title = SvgTagCreator.text(map.landscape)
+                .attr("x", LABEL_WIDTH + 10)
+                .attr("y", -LABEL_WIDTH / 2 +20)
+                .attr("class", "title");
+        DomContent logo = null;
+        String logoUrl = landscapeConfig.getBranding().getMapLogo();
+        if (!StringUtils.isEmpty(logoUrl)) {
+            logo = SvgTagCreator.image()
+                    .attr("xlink:href", logoUrl)
+                    .attr("y", -LABEL_WIDTH)
+                    .attr("width", LABEL_WIDTH)
+                    .attr("height", LABEL_WIDTH);
+        }
 
         return
                 SvgTagCreator.svg(style)
@@ -118,7 +130,10 @@ public class SvgFactory extends Component {
                         .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
                         .attr("width", width.addAndGet(ICON_SIZE + LABEL_WIDTH / 2))
                         .attr("height", height.addAndGet(ICON_SIZE))
+                        .attr("viewBox", "0 -" + LABEL_WIDTH + " " + (width.get() + LABEL_WIDTH)+ " " + (height.get()+ LABEL_WIDTH))
 
+                        //logo
+                        .with(logo, title)
                         //groups
                         .with(groups)
 
@@ -162,7 +177,7 @@ public class SvgFactory extends Component {
                                         .map(vertex -> {
                                             var fill = vertex.image;
                                             var id = Base64.getEncoder().encodeToString(vertex.id.getBytes());
-                                            SVGPattern SVGPattern = new SVGPattern(id, fill, ICON_SIZE - padding, padding);
+                                            SVGPattern SVGPattern = new SVGPattern(id, fill, ICON_SIZE);
                                             return SVGPattern.render();
                                         }).collect(Collectors.toList())
                         );

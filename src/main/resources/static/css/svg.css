@@ -29,6 +29,10 @@ svg g.label rect {
   stroke: #3F51B5;
 }
 
+text.title {
+  font-size: 3em;
+}
+
 text.groupLabel {
   text-shadow: 1px 1px 1px black;
 }

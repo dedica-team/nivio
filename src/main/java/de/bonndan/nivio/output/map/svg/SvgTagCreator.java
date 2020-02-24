@@ -31,4 +31,8 @@ public class SvgTagCreator {
     public static ContainerTag svg(DomContent... dc) {
         return (new ContainerTag("svg")).with(dc);
     }
+
+    public static ContainerTag image() {
+        return new ContainerTag("image");
+    }
 }
