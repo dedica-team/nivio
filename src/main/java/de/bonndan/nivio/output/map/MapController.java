@@ -6,7 +6,6 @@ import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.api.NotFoundException;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
-import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.jgraphx.JGraphXRenderer;
 import de.bonndan.nivio.output.map.svg.SvgFactory;
@@ -38,15 +37,11 @@ public class MapController {
     public static final String MAP_PNG_ENDPOINT = "graph.png";
 
     private final LandscapeRepository landscapeRepository;
-    private final IconService iconService;
+
     private final MapFactory<mxGraph, mxCell> mapFactory;
 
-    public MapController(LandscapeRepository landscapeRepository,
-                         IconService iconService,
-                         MapFactory<mxGraph, mxCell> mapFactory
-    ) {
+    public MapController(LandscapeRepository landscapeRepository, MapFactory<mxGraph, mxCell> mapFactory) {
         this.landscapeRepository = landscapeRepository;
-        this.iconService = iconService;
         this.mapFactory = mapFactory;
     }
 
@@ -59,7 +54,7 @@ public class MapController {
         LandscapeImpl landscape = getLandscape(landscapeIdentifier);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer();
 
         try {
             Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
@@ -129,8 +124,7 @@ public class MapController {
     }
 
     private String getMapAsString(LandscapeImpl landscape) {
-
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer();
         Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
         RenderedXYMap renderedMap = mapFactory.getRenderedMap(landscape, render);
 

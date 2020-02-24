@@ -1,4 +1,4 @@
-package de.bonndan.nivio.api.iconcache;
+package de.bonndan.nivio.output.icons;
 
 import de.bonndan.nivio.input.http.CachedResponse;
 import org.springframework.context.annotation.Bean;

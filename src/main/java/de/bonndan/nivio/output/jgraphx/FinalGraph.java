@@ -9,17 +9,13 @@ import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStyleRegistry;
 import com.mxgraph.view.mxStylesheet;
-
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.*;
-import de.bonndan.nivio.util.RootPath;
-
+import de.bonndan.nivio.output.Color;
+import de.bonndan.nivio.output.Rendered;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -36,7 +32,6 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
 
     public static final int GRID_SIZE = 20;
     private final int DEFAULT_ICON_SIZE = 50;
-    private final IconService iconService;
 
     private Logger logger = LoggerFactory.getLogger(FinalGraph.class);
     private Map<Item, mxCell> itemVertexes = new HashMap<>();
@@ -44,8 +39,7 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
     private mxGraph graph;
     private Map<Group, mxCell> groups = new HashMap<>();
 
-    public FinalGraph(IconService iconService) {
-        this.iconService = iconService;
+    public FinalGraph() {
     }
 
     public mxGraph render(AllGroupsGraph allGroupsGraph, Map<String, GroupGraph> subgraphs) {
@@ -186,7 +180,6 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
                     });
 
             //statuses at left
-            int statusBoxSize = DEFAULT_ICON_SIZE / 2;
             if (cellBounds == null) {
                 logger.warn("Render extras: no cell bounds for {}", item);
                 return;
@@ -197,7 +190,6 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
                 cell.setStyle(cell.getStyle()
                         + mxConstants.STYLE_STROKECOLOR + "=" + statusItem.getStatus().toString() + ";"
                         + mxConstants.STYLE_STROKEWIDTH + "=" + 4 + ";"
-                        + mxConstants.STYLE_IMAGE + "=" + LocalServer.url("/icons/" + statusItem.getStatus().getSymbol() + ".png") + ";"
                 );
             });
 
@@ -252,39 +244,24 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
         return style;
     }
 
-    private Icon getIconType(Item item) {
-        if (iconService != null) {
-            return iconService.getIcon(item);
-        }
-
-        Icon type = null;
-        try {
-            type = new Icon(new File(RootPath.get() + "/src/main/resources/static/icons/service.png").toURI().toURL());
-        } catch (MalformedURLException ignored) {
-        }
-
-        return type;
-    }
-
     private String getBaseStyle(Item item) {
-        Icon type = getIconType(item);
+        String type = item.getType();
 
-        if (stylesheet.getStyles().containsKey(type.getUrl().toString())) {
-            return type.getUrl().toString();
+        if (stylesheet.getStyles().containsKey(type)) {
+            return type;
         }
 
         Hashtable<String, Object> style = new Hashtable<>();
         style.put(mxConstants.STYLE_SHAPE, mxCircularImageShape.NAME);
         style.put(mxConstants.STYLE_STROKEWIDTH, 3);
         style.put(mxConstants.STYLE_FILLCOLOR, "white");
-        style.put(mxConstants.STYLE_IMAGE, type.getUrl());
         style.put(mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_TOP); //decreases space between label and img
         style.put(mxConstants.STYLE_VERTICAL_LABEL_POSITION, mxConstants.ALIGN_BOTTOM);
         style.put(mxConstants.STYLE_FONTCOLOR, "black");
 
-        stylesheet.putCellStyle(type.getUrl().toString(), style);
+        stylesheet.putCellStyle(type, style);
 
-        return type.getUrl().toString();
+        return type;
     }
 
     private String getDataFlowStyle(Item item) {

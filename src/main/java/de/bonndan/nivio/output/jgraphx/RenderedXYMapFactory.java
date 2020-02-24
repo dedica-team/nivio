@@ -4,7 +4,7 @@ import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.output.IconService;
+import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.map.GroupMapItem;
 import de.bonndan.nivio.output.map.ItemMapItem;
@@ -16,10 +16,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
 
-    private final IconService iconService;
+    private final LocalServer localServer;
 
-    public RenderedXYMapFactory(IconService iconService) {
-        this.iconService = iconService;
+    public RenderedXYMapFactory(LocalServer localServer) {
+        this.localServer = localServer;
     }
 
     public RenderedXYMap getRenderedMap(LandscapeImpl landscape, Rendered<mxGraph, mxCell> rendered) {
@@ -52,7 +52,7 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
 
         rendered.getItemObjects().forEach((item, cell) -> {
             DimensionsFromCell dim = getDimensionsFromCell(cell);
-            renderedMap.items.add(new ItemMapItem(item, iconService.getIcon(item).getUrl().toString(), dim.getX(), dim.getY(), dim.getWidth(), dim.getHeight()));
+            renderedMap.items.add(new ItemMapItem(item, localServer.getIconUrl(item).toString(), dim.getX(), dim.getY(), dim.getWidth(), dim.getHeight()));
         });
 
         rendered.getGroupObjects().forEach((group, cell) -> {

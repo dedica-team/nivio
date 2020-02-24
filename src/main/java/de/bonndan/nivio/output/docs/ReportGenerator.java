@@ -2,7 +2,6 @@ package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.FormatUtils;
-import de.bonndan.nivio.output.IconService;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.Color;
 import j2html.tags.ContainerTag;
@@ -21,10 +20,9 @@ import static org.springframework.util.StringUtils.isEmpty;
 public class ReportGenerator extends HtmlGenerator {
 
     private static final String GROUP_CIRCLE = "&#10687;";
-    protected final IconService iconService;
 
-    public ReportGenerator(IconService iconService) {
-        this.iconService = iconService;
+    public ReportGenerator(LocalServer localServer) {
+        super(localServer);
     }
 
     public String toDocument(LandscapeImpl landscape) {
@@ -78,7 +76,7 @@ public class ReportGenerator extends HtmlGenerator {
                         iff(!isEmpty(item.getNote()), div(item.getNote()).attr("class", "alert alert-warning float float-right")),
                         a().attr("id", item.getFullyQualifiedIdentifier().toString()),
                         h3(
-                                img().attr("src", iconService.getIcon(item).getUrl()).attr("width", "30px").attr("class", "img-fluid"),
+                                img().attr("src", localServer.getIconUrl(item)).attr("width", "30px").attr("class", "img-fluid"),
                                 rawHtml(" "),
                                 rawHtml(isEmpty(item.getName()) ? item.getIdentifier() : item.getName())
                         ),
@@ -115,7 +113,7 @@ public class ReportGenerator extends HtmlGenerator {
                                         join(
                                                 dt(FormatUtils.nice(statusItem.getLabel())),
                                                 dd(
-                                                        img().attr("src", LocalServer.url("/icons/" + statusItem.getStatus().getSymbol() + ".png")).attr("width", "30px").attr("class", "img-fluid"),
+                                                        img().attr("src", localServer.getUrl("/icons/" + statusItem.getStatus().getSymbol() + ".png")).attr("width", "30px").attr("class", "img-fluid"),
                                                         span(" " + statusItem.getStatus().toString() + " ")
                                                                 .attr("class", "badge")
                                                                 .attr("style", "background-color: " + statusItem.getStatus() + " !important"),

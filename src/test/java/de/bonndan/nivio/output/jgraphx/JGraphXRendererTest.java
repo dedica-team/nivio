@@ -18,7 +18,7 @@ import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.notification.NotificationService;
-import de.bonndan.nivio.output.IconService;
+import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.map.MapFactory;
 import de.bonndan.nivio.output.map.RenderedXYMap;
@@ -70,11 +70,9 @@ class JGraphXRendererTest {
     }
 
     private mxGraph debugRenderLandscape(String path, LandscapeImpl landscape, boolean debugMode) throws IOException {
-        IconService iconService = new IconService();
-        iconService.setImageProxy("");
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(debugMode ? null : iconService);
-        jGraphXRenderer.setDebugMode(debugMode);
 
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer();
+        jGraphXRenderer.setDebugMode(debugMode);
         mxGraph graph = jGraphXRenderer.render(landscape).getRendered();
 
         BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, null, true, null);
@@ -174,11 +172,8 @@ class JGraphXRendererTest {
         indexer.reIndex(input);
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
-        IconService iconService = new IconService();
-        iconService.setImageProxy("");
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
-
-        MapFactory<mxGraph, mxCell> mapFactory = new RenderedXYMapFactory(iconService);
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer();
+        MapFactory<mxGraph, mxCell> mapFactory = new RenderedXYMapFactory(new LocalServer(""));
         Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
         RenderedXYMap renderedMap = mapFactory.getRenderedMap(landscape, render);
 

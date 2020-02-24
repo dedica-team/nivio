@@ -1,11 +1,11 @@
-package de.bonndan.nivio.output;
+package de.bonndan.nivio.output.icons;
 
 import java.net.URL;
 
 /**
  * Icon for a service.
  */
-public class Icon {
+class Icon {
 
     private URL url;
     private boolean isCustom = false;

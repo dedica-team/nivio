@@ -7,22 +7,25 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.URL;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
-import static de.bonndan.nivio.output.IconService.VENDOR_PREFIX;
+import static de.bonndan.nivio.output.LocalServer.VENDOR_PREFIX;
 import static org.junit.jupiter.api.Assertions.*;
 
-class IconServiceTest {
+class LocalServerTest {
 
-    private IconService iconService;
     private WireMockServer wireMockServer;
+    private LocalServer localServer;
+
 
     @BeforeEach
     public void setup() {
         wireMockServer = new WireMockServer(options().dynamicPort());
         wireMockServer.start();
         WireMock.configureFor("localhost", wireMockServer.port());
-        iconService = new IconService();
+        localServer = new LocalServer("");
     }
 
     @AfterEach
@@ -32,49 +35,43 @@ class IconServiceTest {
 
     @Test
     public void returnsServiceAsDefault() {
-        assertTrue(iconUrlContains("service", iconService.getIcon(new Item())));
+        assertTrue(iconUrlContains("service", localServer.getIconUrl(new Item())));
     }
 
     @Test
     public void returnsServiceWithUnknownType() {
         Item item = new Item();
         item.setType("asb");
-        assertTrue(iconUrlContains("service", iconService.getIcon(item)));
+        assertTrue(iconUrlContains("service", localServer.getIconUrl(item)));
     }
 
     @Test
     public void returnsType() {
         Item item = new Item();
         item.setType("firewall");
-        assertTrue(iconUrlContains("firewall", iconService.getIcon(item)));
+        assertTrue(iconUrlContains("firewall", localServer.getIconUrl(item)));
     }
 
     @Test
     public void returnsTypeIgnoreCase() {
         Item item = new Item();
         item.setType("FireWall");
-        assertTrue(iconUrlContains("firewall", iconService.getIcon(item)));
+        assertTrue(iconUrlContains("firewall", localServer.getIconUrl(item)));
     }
 
     @Test
     public void returnsIcon() {
         Item item = new Item();
         item.setIcon("http://my.icon");
-        assertTrue(iconService.getIcon(item).getUrl().toString().contains("http://my.icon"));
+        assertTrue(localServer.getIconUrl(item).toString().contains("http://my.icon"));
     }
 
-    @Test
-    public void isCustom() {
-        Item item = new Item();
-        item.setIcon("http://my.icon");
-        assertTrue(iconService.getIcon(item).isCustom());
-    }
 
     @Test
     public void usesVendorIcon() {
         Item item = new Item();
         item.setIcon(VENDOR_PREFIX + "redis");
-        assertTrue(iconService.getIcon(item).getUrl().toString().contains("http://download.redis.io/logocontest/82.png"));
+        assertTrue(localServer.getIconUrl(item).toString().contains("http://download.redis.io/logocontest/82.png"));
     }
 
     @Test
@@ -83,12 +80,11 @@ class IconServiceTest {
         wireMockServer.stubFor(get("/")
                 .willReturn(ok("OK")));
         String urlprefix = String.format("http://localhost:%d", wireMockServer.port());
-        iconService = new IconService();
-        iconService.setImageProxy(urlprefix);
+        localServer.setImageProxy(urlprefix);
 
         Item item = new Item();
         item.setIcon(VENDOR_PREFIX + "redis");
-        assertEquals(urlprefix + "//" + "http://download.redis.io/logocontest/82.png", iconService.getIcon(item).getUrl().toString());
+        assertEquals(urlprefix + "//" + "http://download.redis.io/logocontest/82.png", localServer.getIconUrl(item).toString());
     }
 
     @Test
@@ -96,17 +92,17 @@ class IconServiceTest {
 
         wireMockServer.stubFor(get("/")
                 .willReturn(ok("OK")));
-        iconService = new IconService();
-        iconService.setImageProxy(String.format("http://localhost:%d", wireMockServer.port()));
+
+        localServer.setImageProxy(String.format("http://localhost:%d", wireMockServer.port()));
 
         Item item = new Item();
         item.setIcon("http://my.icon");
         String urlprefix = String.format("http://localhost:%d", wireMockServer.port());
-        assertEquals(urlprefix + "//" + "http://my.icon", iconService.getIcon(item).getUrl().toString());
+        assertEquals(urlprefix + "//" + "http://my.icon", localServer.getIconUrl(item).toString());
 
     }
 
-    private boolean iconUrlContains(String part, Icon icon) {
-        return icon.getUrl().toString().contains(part);
+    private boolean iconUrlContains(String part, URL url) {
+        return url.toString().contains(part);
     }
 }

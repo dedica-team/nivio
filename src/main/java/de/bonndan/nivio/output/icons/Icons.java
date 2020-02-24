@@ -1,4 +1,4 @@
-package de.bonndan.nivio.output;
+package de.bonndan.nivio.output.icons;
 
 import java.util.Arrays;
 import java.util.Optional;

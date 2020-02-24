@@ -1,8 +1,8 @@
-package de.bonndan.nivio.api.iconcache;
+package de.bonndan.nivio.output.icons;
 
 import de.bonndan.nivio.input.http.CachedResponse;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.output.dld4e.Icon;
+import de.bonndan.nivio.output.LocalServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -20,16 +20,18 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
 
+import static de.bonndan.nivio.output.LocalServer.VENDORICONS_PATH;
+
 /**
  * http://localhost:8080/vendoricons//https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
  */
 @Controller
-@RequestMapping(path = "/vendoricons")
+@RequestMapping(path = VENDORICONS_PATH)
 public class IconsController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IconsController.class);
 
-    public static final String VENDORICONS_PATH = "/vendoricons";
+
 
     private final Map<String, CachedResponse> imageCache;
 
