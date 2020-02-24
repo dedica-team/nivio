@@ -1,11 +1,11 @@
 package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.model.Groups;
-import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.Color;
+import de.bonndan.nivio.output.LocalServer;
 import j2html.tags.ContainerTag;
 
 import java.util.ArrayList;
@@ -16,6 +16,9 @@ import static j2html.TagCreator.*;
 
 public class OwnersReportGenerator extends HtmlGenerator {
 
+    public OwnersReportGenerator(LocalServer localServer) {
+        super(localServer);
+    }
 
     public String toDocument(LandscapeImpl landscape) {
 

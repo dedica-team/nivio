@@ -27,9 +27,12 @@ public class IconService {
     public static final String VENDOR_PREFIX = "vendor://";
 
     private final Map<String, URL> vendorIcons = new HashMap<>();
+    private final LocalServer localServer;
+
     private String imageProxy;
 
-    public IconService() {
+    public IconService(LocalServer localServer) {
+        this.localServer = localServer;
 
         try {
             //http://www.apache.org/foundation/marks/
@@ -95,7 +98,7 @@ public class IconService {
 
         if (url == null) {
             try {
-                return new URL(LocalServer.url("/icons/" + icon + ".png"));
+                return new URL(localServer.getUrl("/icons/" + icon + ".png"));
             } catch (MalformedURLException e) {
                 LOGGER.warn("Malformed url for icon {}", icon, e);
                 return null;
@@ -109,7 +112,7 @@ public class IconService {
     private URL proxiedUrl(URL url) {
 
         if (imageProxy == null){
-            String imageProxy = LocalServer.url(IconsController.VENDORICONS_PATH);
+            String imageProxy = localServer.getUrl(IconsController.VENDORICONS_PATH);
             setImageProxy(imageProxy);
         }
 

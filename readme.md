@@ -6,8 +6,10 @@
 Nivio is application landscape management for teams (developers, operators, managers). It follows a bottom-up no-op 
 approach, i.e. there is no interface for manual data maintenance. It is designed to gather the application landscape
  information from configurable items, preferably code repos.
- 
- To **get started** read the [documentation](https://nivio.readthedocs.io/en/latest).
+
+## Get Started: [try nivio at Heroku](https://nivio-demo.herokuapp.com/)
+
+ and read the [documentation](https://nivio.readthedocs.io/en/latest) 
  
 
 ## Example Graph, Input and Output

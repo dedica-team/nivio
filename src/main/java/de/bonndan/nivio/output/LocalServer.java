@@ -1,8 +1,10 @@
 package de.bonndan.nivio.output;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.net.InetAddress;
 
@@ -11,11 +13,34 @@ public class LocalServer implements EnvironmentAware {
 
     private static Environment env;
 
-    public static String host() {
+    /**
+     * without slash
+     */
+    private final String baseUrl;
+
+    public LocalServer(@Value("${nivio.baseUrl:}") String baseUrl) {
+        if (!StringUtils.isEmpty(baseUrl)) {
+            this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length()-1) : baseUrl;
+        } else {
+            this.baseUrl = "http://" + host() + ":" + port();
+        }
+    }
+
+    /**
+     * Returns the current publically visible url.
+     *
+     * @param path path to add
+     * @return url with host, port
+     */
+    public String getUrl(String path) {
+        return baseUrl + (path.startsWith("/") ? path : "/" + path);
+    }
+
+    private static String host() {
         return InetAddress.getLoopbackAddress().getHostName();
     }
 
-    public static String port() {
+    private static String port() {
 
         if (env != null) {
             String port = env.getProperty("local.server.port");
@@ -24,10 +49,6 @@ public class LocalServer implements EnvironmentAware {
         }
 
         return "8080";
-    }
-
-    public static String url(String path) {
-        return "http://" + host() + ":" + port() + path;
     }
 
     @Override

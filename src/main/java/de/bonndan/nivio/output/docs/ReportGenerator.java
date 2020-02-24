@@ -23,7 +23,8 @@ public class ReportGenerator extends HtmlGenerator {
     private static final String GROUP_CIRCLE = "&#10687;";
     protected final IconService iconService;
 
-    public ReportGenerator(IconService iconService) {
+    public ReportGenerator(IconService iconService, LocalServer localServer) {
+        super(localServer);
         this.iconService = iconService;
     }
 
@@ -115,7 +116,7 @@ public class ReportGenerator extends HtmlGenerator {
                                         join(
                                                 dt(FormatUtils.nice(statusItem.getLabel())),
                                                 dd(
-                                                        img().attr("src", LocalServer.url("/icons/" + statusItem.getStatus().getSymbol() + ".png")).attr("width", "30px").attr("class", "img-fluid"),
+                                                        img().attr("src", localServer.getUrl("/icons/" + statusItem.getStatus().getSymbol() + ".png")).attr("width", "30px").attr("class", "img-fluid"),
                                                         span(" " + statusItem.getStatus().toString() + " ")
                                                                 .attr("class", "badge")
                                                                 .attr("style", "background-color: " + statusItem.getStatus() + " !important"),

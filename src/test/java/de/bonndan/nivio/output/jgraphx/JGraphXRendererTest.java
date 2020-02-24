@@ -19,6 +19,7 @@ import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.notification.NotificationService;
 import de.bonndan.nivio.output.IconService;
+import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.map.MapFactory;
 import de.bonndan.nivio.output.map.RenderedXYMap;
@@ -44,12 +45,13 @@ class JGraphXRendererTest {
     private LandscapeRepository landscapeRepository;
     private ItemDescriptionFormatFactory formatFactory;
     private Indexer indexer;
+    private LocalServer localServer;
 
     @BeforeEach
     public void setup() {
         landscapeRepository = new LandscapeRepository();
         formatFactory = ItemDescriptionFormatFactory.with(ItemDescriptionFactoryNivio.forTesting());
-
+        localServer = new LocalServer(null);
         indexer = new Indexer(landscapeRepository, formatFactory, new NotificationService(null));
     }
 
@@ -70,9 +72,9 @@ class JGraphXRendererTest {
     }
 
     private mxGraph debugRenderLandscape(String path, LandscapeImpl landscape, boolean debugMode) throws IOException {
-        IconService iconService = new IconService();
+        IconService iconService = new IconService(localServer);
         iconService.setImageProxy("");
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(debugMode ? null : iconService);
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(debugMode ? null : iconService, localServer);
         jGraphXRenderer.setDebugMode(debugMode);
 
         mxGraph graph = jGraphXRenderer.render(landscape).getRendered();
@@ -174,9 +176,9 @@ class JGraphXRendererTest {
         indexer.reIndex(input);
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
-        IconService iconService = new IconService();
+        IconService iconService = new IconService(localServer);
         iconService.setImageProxy("");
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService);
+        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer(iconService, localServer);
 
         MapFactory<mxGraph, mxCell> mapFactory = new RenderedXYMapFactory(iconService);
         Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);

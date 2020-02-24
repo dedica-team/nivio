@@ -9,10 +9,16 @@ import static j2html.TagCreator.*;
 
 public abstract class HtmlGenerator {
 
+    protected final LocalServer localServer;
+
+    protected HtmlGenerator(LocalServer localServer) {
+        this.localServer = localServer;
+    }
+
     protected ContainerTag getHead(LandscapeImpl landscape) {
         return head(
                 title(landscape.getName()),
-                link().attr("rel", "stylesheet").attr("href", LocalServer.url("/css/bootstrap.min.css")),
+                link().attr("rel", "stylesheet").attr("href", localServer.getUrl("/css/bootstrap.min.css")),
                 meta().attr("charset", "utf-8"),
                 meta().attr("name", "viewport").attr("content", "width=device-width, initial-scale=1, shrink-to-fit=no"),
                 meta().attr("name", "description").attr("content", landscape.getName()),
