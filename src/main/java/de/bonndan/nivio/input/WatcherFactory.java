@@ -41,7 +41,7 @@ public class WatcherFactory {
         List<Runnable> runnables = new ArrayList<>();
         try {
             seed.getLocations().forEach(url -> {
-                LandscapeDescription env;
+                LandscapeDescription env = null;
                 if (URLHelper.isLocal(url)) {
                     DirectoryWatcher directoryWatcher;
                     File file;
@@ -53,12 +53,22 @@ public class WatcherFactory {
                     }
                     runnables.add(directoryWatcher);
                     logger.info("Created directory watcher for url " + url);
-                    env = LandscapeDescriptionFactory.fromYaml(file);
+                    try {
+                        env = LandscapeDescriptionFactory.fromYaml(file);
+                    } catch (ReadingException ex) {
+                        logger.error("Failed to parse file");
+                    }
                 } else {
-                    env = LandscapeDescriptionFactory.fromString(fileFetcher.get(url), url);
+                    try {
+                        env = LandscapeDescriptionFactory.fromString(fileFetcher.get(url), url);
+                        Objects.requireNonNull(env);
+                    } catch (ReadingException ex) {
+                        logger.error("Failed to parse file");
+                    }
                 }
-                Objects.requireNonNull(env);
-                indexer.reIndex(env);
+                if (env != null) {
+                    indexer.reIndex(env);
+                }
             });
         } catch (MalformedURLException e) {
             throw new ProcessingException("Failed to initialize watchers from seed", e);
