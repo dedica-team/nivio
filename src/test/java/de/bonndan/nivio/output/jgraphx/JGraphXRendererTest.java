@@ -20,6 +20,7 @@ import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.notification.NotificationService;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.Rendered;
+import de.bonndan.nivio.output.icons.VendorIcons;
 import de.bonndan.nivio.output.map.MapFactory;
 import de.bonndan.nivio.output.map.RenderedXYMap;
 import de.bonndan.nivio.output.map.svg.SvgFactory;
@@ -165,7 +166,7 @@ class JGraphXRendererTest {
 
         for (int i = 0; i < 20; i++) {
             var source = descriptionList.get(i);
-            var target = descriptionList.get(i+20);
+            var target = descriptionList.get(i + 20);
             source.addRelation(new RelationDescription(source.getIdentifier(), target.getIdentifier()));
         }
 
@@ -173,7 +174,7 @@ class JGraphXRendererTest {
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
         JGraphXRenderer jGraphXRenderer = new JGraphXRenderer();
-        MapFactory<mxGraph, mxCell> mapFactory = new RenderedXYMapFactory(new LocalServer(""));
+        MapFactory<mxGraph, mxCell> mapFactory = new RenderedXYMapFactory(new LocalServer("", new VendorIcons()));
         Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
         RenderedXYMap renderedMap = mapFactory.getRenderedMap(landscape, render);
 

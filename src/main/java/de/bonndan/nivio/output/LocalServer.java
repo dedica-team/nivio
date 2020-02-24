@@ -2,6 +2,7 @@ package de.bonndan.nivio.output;
 
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.icons.Icons;
+import de.bonndan.nivio.output.icons.VendorIcons;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +23,12 @@ import static de.bonndan.nivio.output.icons.Icons.DEFAULT_ICON;
 @Component
 public class LocalServer implements EnvironmentAware {
 
-    public static final String VENDORICONS_PATH = "/vendoricons";
     private static Environment env;
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalServer.class);
+    public static final String VENDORICONS_PATH = "/vendoricons";
     public static final String VENDOR_PREFIX = "vendor://";
 
-    private final Map<String, URL> vendorIcons = new HashMap<>();
+    private final VendorIcons vendorIcons;
     private final URL defaultIcon;
 
     private String imageProxy;
@@ -37,25 +38,13 @@ public class LocalServer implements EnvironmentAware {
      */
     private final String baseUrl;
 
-    public LocalServer(@Value("${nivio.baseUrl:}") String baseUrl) {
+    public LocalServer(@Value("${nivio.baseUrl:}") String baseUrl, VendorIcons vendorIcons) {
         if (!StringUtils.isEmpty(baseUrl)) {
             this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length()-1) : baseUrl;
         } else {
             this.baseUrl = "http://" + host() + ":" + port();
         }
-
-        try {
-            //http://www.apache.org/foundation/marks/
-            vendorIcons.put("apache/httpd", new URL("http://www.apache.org/logos/res/httpd/httpd.png"));
-            vendorIcons.put("redhat/keycloak", new URL("https://raw.githubusercontent.com/keycloak/keycloak-misc/master/logo/keycloak_icon_256px.png"));
-            vendorIcons.put("k8s", new URL("https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png"));
-            //https://redis.io/topics/trademark
-            vendorIcons.put("redis", new URL("http://download.redis.io/logocontest/82.png"));
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
+        this.vendorIcons = vendorIcons;
         defaultIcon = getUrl(DEFAULT_ICON.getName());
     }
 
@@ -74,14 +63,13 @@ public class LocalServer implements EnvironmentAware {
         }
     }
 
-
     public URL getIconUrl(LandscapeItem item) {
 
         if (!StringUtils.isEmpty(item.getIcon())) {
 
             if (item.getIcon().startsWith(VENDOR_PREFIX)) {
                 String key = item.getIcon().replace(VENDOR_PREFIX, "").toLowerCase();
-                return proxiedUrl(vendorIcons.get(key));
+                return vendorIcons.getUrl(key).map(url -> proxiedUrl(url)).orElse(defaultIcon);
             }
 
             URL iconUrl = getIconUrl(item.getIcon());
@@ -93,9 +81,9 @@ public class LocalServer implements EnvironmentAware {
             return getUrl(DEFAULT_ICON.getName());
         }
 
-        //fallback to service
+        //fallback to item.type
         Icons icon = Icons.of(item.getType().toLowerCase()).orElse(DEFAULT_ICON);
-        return getUrl(icon.getName());
+        return getIconUrl(icon.getName());
     }
 
 

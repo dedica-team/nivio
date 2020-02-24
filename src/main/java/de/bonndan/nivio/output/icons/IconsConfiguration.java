@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
-public class CacheConfiguration {
+public class IconsConfiguration {
 
     @Bean
     public Map<String, CachedResponse> getCache() {

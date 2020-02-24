@@ -3,6 +3,7 @@ package de.bonndan.nivio.output;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.output.icons.VendorIcons;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,9 @@ class LocalServerTest {
         wireMockServer = new WireMockServer(options().dynamicPort());
         wireMockServer.start();
         WireMock.configureFor("localhost", wireMockServer.port());
-        localServer = new LocalServer("");
+        VendorIcons vendorIcons = new VendorIcons();
+        vendorIcons.add("redis", "http://download.redis.io/logocontest/82.png");
+        localServer = new LocalServer("", vendorIcons);
     }
 
     @AfterEach
