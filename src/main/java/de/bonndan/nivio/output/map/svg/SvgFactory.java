@@ -1,11 +1,15 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.input.FileFetcher;
+import de.bonndan.nivio.input.http.HttpService;
+import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.output.map.GroupMapItem;
 import de.bonndan.nivio.output.map.ItemMapItem;
 import de.bonndan.nivio.output.map.RenderedXYMap;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexFactory;
 import de.bonndan.nivio.output.map.hex.PathFinder;
+import de.bonndan.nivio.util.URLHelper;
 import j2html.tags.DomContent;
 import j2html.tags.UnescapedText;
 import org.slf4j.Logger;
@@ -14,30 +18,36 @@ import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import static de.bonndan.nivio.output.map.svg.SVGItemLabel.LABEL_WIDTH;
 import static j2html.TagCreator.*;
 
 public class SvgFactory extends Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SvgFactory.class);
 
-    public static final int LABEL_WIDTH = 200;
     private static int ICON_SIZE = 40;
     private int padding = 10;
     private Map<String, ItemMapItem> itemMapItembyFQI = new HashMap<>();
     private List<Hex> occupied = new ArrayList<>();
     private final RenderedXYMap map;
+    private final LandscapeConfig landscapeConfig;
     private boolean debug = false;
 
-    public SvgFactory(RenderedXYMap map) {
+    public SvgFactory(RenderedXYMap map, LandscapeConfig landscapeConfig) {
         this.map = map;
+        this.landscapeConfig = landscapeConfig;
     }
 
     public void setDebug(boolean debug) {
@@ -47,12 +57,32 @@ public class SvgFactory extends Component {
     public DomContent render() {
 
         Map<ItemMapItem, Hex> vertexHexes = new HashMap<>();
+
         String css = "";
         try {
             InputStream resourceAsStream = getClass().getResourceAsStream("/static/css/svg.css");
             css = new String(StreamUtils.copyToByteArray(resourceAsStream));
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+        if (landscapeConfig.getBranding().getMapStylesheet() != null) {
+
+            //TODO hackish
+            FileFetcher fileFetcher = new FileFetcher(new HttpService());
+
+            try {
+                URL url = new URL(landscapeConfig.getBranding().getMapStylesheet());
+                String mapCss;
+                if (URLHelper.isLocal(url)) {
+                    mapCss = Files.readString(new File(url.toString()).toPath());
+                } else {
+                    mapCss = fileFetcher.get(url);
+                }
+                css = css + "\n" + mapCss;
+            } catch (IOException e) {
+                LOGGER.warn("Failed to load customer stylesheet {}", landscapeConfig.getBranding().getMapStylesheet(), e);
+            }
         }
 
         final HexFactory hexFactory = new HexFactory();
@@ -86,7 +116,7 @@ public class SvgFactory extends Component {
                         .attr("version", "1.1")
                         .attr("xmlns", "http://www.w3.org/2000/svg")
                         .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
-                        .attr("width", width.addAndGet(ICON_SIZE + LABEL_WIDTH))
+                        .attr("width", width.addAndGet(ICON_SIZE + LABEL_WIDTH / 2))
                         .attr("height", height.addAndGet(ICON_SIZE))
 
                         //groups
@@ -119,7 +149,7 @@ public class SvgFactory extends Component {
                                     if (!StringUtils.isEmpty(vertex.image)) {
                                         fill = Base64.getEncoder().encodeToString(vertex.id.getBytes());
                                     }
-                                    SVGItemLabel label = new SVGItemLabel(vertex, LABEL_WIDTH, ICON_SIZE, padding);
+                                    SVGItemLabel label = new SVGItemLabel(vertex, ICON_SIZE, padding);
                                     Point2D.Double pos = vertexHexes.get(vertex).toPixel();
                                     SVGItem SVGItem = new SVGItem(label.render(), vertex, pos, fill, "stroke: #" + vertex.color);
                                     return SVGItem.render();
@@ -163,14 +193,14 @@ public class SvgFactory extends Component {
         var startPoint = new Point2D.Double(minX.get() - padding, minY.get() - padding);
         var endPoint = new Point2D.Double(maxX.get() + padding, maxY.get() + padding);
 
-        int width = (int) (endPoint.x - startPoint.x);
-        int height = (int) (endPoint.y - startPoint.y);
+        int width = (int) (endPoint.x - startPoint.x) + padding;
+        int height = (int) (endPoint.y - startPoint.y) + padding;
 
-        return new SVGGroup(group, startPoint.x, startPoint.y, width, height);
+        return new SVGGroup(group, startPoint.x - padding / 2, startPoint.y - padding / 2, width, height);
     }
 
     public String getXML() {
-        return "<?xml version=\"1.0\" standalone=\"yes\"?>" + render().render();
+        return render().render();
     }
 }
 

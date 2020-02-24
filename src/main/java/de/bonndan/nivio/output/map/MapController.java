@@ -128,7 +128,7 @@ public class MapController {
         Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
         RenderedXYMap renderedMap = mapFactory.getRenderedMap(landscape, render);
 
-        SvgFactory svgFactory = new SvgFactory(renderedMap);
+        SvgFactory svgFactory = new SvgFactory(renderedMap, landscape.getConfig());
         return svgFactory.getXML();
     }
 }

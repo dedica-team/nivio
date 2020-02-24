@@ -11,6 +11,7 @@ public class LandscapeConfig {
 
     private List<String> groupBlacklist = new ArrayList<>();
     private List<String> labelBlacklist = new ArrayList<>();
+    private Branding branding = new Branding();
 
     public JGraphXConfig getJgraphx() {
         return jgraphx;
@@ -42,6 +43,10 @@ public class LandscapeConfig {
      */
     public List<String> getLabelBlacklist() {
         return labelBlacklist;
+    }
+
+    public Branding getBranding() {
+        return branding;
     }
 
     /**
@@ -123,6 +128,18 @@ public class LandscapeConfig {
 
         public void setMinDistanceLimitFactor(Float minDistanceLimitFactor) {
             this.minDistanceLimitFactor = minDistanceLimitFactor;
+        }
+    }
+
+    public static class Branding {
+        private String mapStylesheet;
+
+        public String getMapStylesheet() {
+            return mapStylesheet;
+        }
+
+        public void setMapStylesheet(String mapStylesheet) {
+            this.mapStylesheet = mapStylesheet;
         }
     }
 }

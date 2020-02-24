@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.output.map.ItemMapItem;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
@@ -7,31 +8,48 @@ import org.springframework.util.StringUtils;
 
 class SVGItemLabel extends Component {
 
+    public static final int LABEL_WIDTH = 140;
     private final ItemMapItem item;
-    private final int width, size, padding;
+    private int width;
+    private final int size;
+    private final int padding;
 
-    SVGItemLabel(ItemMapItem item, int width, int size, int padding) {
+    SVGItemLabel(ItemMapItem item, int size, int padding) {
         this.item = item;
-        this.width = width;
+        this.width = LABEL_WIDTH;
         this.size = size;
         this.padding = padding;
     }
 
 
     public DomContent render() {
+        ContainerTag labelText = null;
+
+        //TODO this is naive
+        if (item.name.length() < 10) {
+            this.width = 100;
+        }
+        if (item.name.length() > 20) {
+            this.width = 200;
+        }
+        var yShift = size + padding;
+        if (!StringUtils.isEmpty(item.name)) {
+            labelText = new SVGLabelText(item, 0, yShift + padding + 2, "").render();
+        }
+
         var rect = SvgTagCreator.rect()
-                .attr("x", size + padding)
-                .attr("y", -10)
+                .attr("x", -width / 2)
+                .attr("y", yShift - 3)
                 .attr("rx", 10)
                 .attr("ry", 10)
                 .attr("fill", "white")
                 .attr("width", width)
                 .attr("height", size / 2)
                 .attr("style", "stroke: " + item.status);
-        SVGLabelText SVGLabelText = new SVGLabelText(item, size + padding + (width / 2), 5, "");
 
-        ContainerTag g = SvgTagCreator.g(rect, SVGLabelText.render()).attr("class", "label");
-        g.attr("id", "label_" + item.landscapeItem.getFullyQualifiedIdentifier().toString());
+
+        ContainerTag g = SvgTagCreator.g(rect, labelText).attr("class", "label");
+        g.attr("id", getId());
 
         if (!StringUtils.isEmpty(item.landscapeItem.getName()))
             g.attr("data-name", item.landscapeItem.getName());
@@ -57,6 +75,14 @@ class SVGItemLabel extends Component {
             g.attr("data-costs", item.landscapeItem.getCosts());
 
         return g;
+    }
+
+    private String getId() {
+        return "label_" + item.landscapeItem.getFullyQualifiedIdentifier().toString()
+                .replace(FullyQualifiedIdentifier.SEPARATOR, "_")
+                .replace(".", "_")
+                .replace(":", "_")
+                ;
     }
 }
 

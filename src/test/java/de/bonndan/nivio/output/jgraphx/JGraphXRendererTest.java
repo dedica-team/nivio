@@ -178,7 +178,7 @@ class JGraphXRendererTest {
         Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
         RenderedXYMap renderedMap = mapFactory.getRenderedMap(landscape, render);
 
-        SvgFactory svgFactory = new SvgFactory(renderedMap);
+        SvgFactory svgFactory = new SvgFactory(renderedMap, landscape.getConfig());
         svgFactory.setDebug(true);
         String svg = svgFactory.getXML();
 

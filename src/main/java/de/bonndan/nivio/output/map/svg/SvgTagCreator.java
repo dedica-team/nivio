@@ -23,6 +23,7 @@ public class SvgTagCreator {
     public static ContainerTag circle() {
         return (new ContainerTag("circle"));
     }
+
     public static ContainerTag rect() {
         return (new ContainerTag("rect"));
     }

@@ -1,0 +1,22 @@
+svg defs pattern image {
+    width: 77px;
+    height: 77px;
+    x: 0;
+    y: 0;
+}
+
+#group_dedica {
+    fill: #404040
+}
+
+#group_dedica g g circle {
+    stroke: white !important;
+}
+
+#label_dedica_team_dedica_dedica {
+    display: none;
+}
+
+rect.group {
+    fill-opacity: 1;
+}
