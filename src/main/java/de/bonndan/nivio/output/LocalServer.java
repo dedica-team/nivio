@@ -15,8 +15,6 @@ import org.springframework.util.StringUtils;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import static de.bonndan.nivio.output.icons.Icons.DEFAULT_ICON;
 
