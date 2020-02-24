@@ -36,7 +36,8 @@ class SVGGroup extends Component {
                         //.attr("style", cellStyle)
                         .attr("stroke", fillId)
                         .attr("fill", fillId)
-                        .attr("class", "group"),
+                        .attr("class", "group")
+                        .attr("id", "group_" + group.id),
 
                 SvgTagCreator.text(group.name)
                         .attr("x", x + size / 2)
