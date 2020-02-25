@@ -15,12 +15,11 @@ class SVGPattern extends Component {
         this.size = size;
     }
 
-
     public DomContent render() {
 
         return rawHtml(
                 "<defs>" +
-                        "<pattern id=\"" + id + "\" patternUnits=\"objectBoundingBox\" x =\"0\" y=\"0\" width=\"" + size + "\" height=\"" + size + "\" >" +
+                        "<pattern id=\"" + id + "\" patternUnits=\"objectBoundingBox\" x=\"0\" y=\"0\" width=\"" + size + "\" height=\"" + size + "\" >" +
                         "<rect height=\"100\" width=\"100\" fill=\"white\" />" +
                         "<image xlink:href=\"" + link + "\" width=\"" + size * 2 + "\" height=\"" + size * 2 + "\"  />" +
                         "</pattern>" +
