@@ -6,6 +6,12 @@ import java.util.function.Consumer;
 
 public class SafeAssign {
 
+    /**
+     * Assigns the value if not null
+     *
+     * @param s value
+     * @param c consumer
+     */
     public static void assignSafe(String s, Consumer<String> c) {
         if (s != null) c.accept(s);
     }

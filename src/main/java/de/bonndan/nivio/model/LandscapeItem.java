@@ -10,8 +10,6 @@ public interface LandscapeItem {
     String LAYER_APPLICATION = "applications";
     String LAYER_INGRESS = "ingress";
 
-    String TYPE_SERVICE = "service";
-
     String IDENTIFIER_VALIDATION = "^[a-z0-9\\.\\:_-]{3,256}$";
 
 

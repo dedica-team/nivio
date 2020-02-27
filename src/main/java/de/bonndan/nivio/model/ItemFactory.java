@@ -34,7 +34,7 @@ public class ItemFactory {
         }
         item.setName(description.getName());
         item.setLayer(description.getLayer() != null ? description.getLayer() : LandscapeItem.LAYER_APPLICATION);
-        item.setType(description.getType() != null ? description.getType() : LandscapeItem.TYPE_SERVICE);
+        assignSafe(description.getType(), item::setType);
 
         item.setNote(description.getNote());
         item.setShort_name(description.getShortName());

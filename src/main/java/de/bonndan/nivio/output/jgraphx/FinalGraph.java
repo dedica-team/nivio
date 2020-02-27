@@ -31,6 +31,7 @@ import static de.bonndan.nivio.output.Color.getGroupColor;
 public class FinalGraph implements Rendered<mxGraph, mxCell> {
 
     public static final int GRID_SIZE = 20;
+    private static final String CUSTOM_TYPE = "custom";
     private final int DEFAULT_ICON_SIZE = 50;
 
     private Logger logger = LoggerFactory.getLogger(FinalGraph.class);
@@ -245,7 +246,7 @@ public class FinalGraph implements Rendered<mxGraph, mxCell> {
     }
 
     private String getBaseStyle(Item item) {
-        String type = item.getType();
+        String type = StringUtils.isEmpty(item.getType()) ? CUSTOM_TYPE : item.getType() ;
 
         if (stylesheet.getStyles().containsKey(type)) {
             return type;

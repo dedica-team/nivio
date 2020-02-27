@@ -22,7 +22,7 @@ public class Item implements LandscapeItem {
 
     private String layer = LandscapeItem.LAYER_APPLICATION;
 
-    private String type = LandscapeItem.TYPE_SERVICE;
+    private String type;
 
     private String name;
 
