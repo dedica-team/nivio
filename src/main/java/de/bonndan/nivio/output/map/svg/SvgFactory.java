@@ -34,7 +34,7 @@ public class SvgFactory extends Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SvgFactory.class);
 
-    static int ICON_SIZE = 40;
+    static int ICON_SIZE = 50;
     private int padding = 10;
     private List<Hex> occupied = new ArrayList<>();
     private final LandscapeImpl landscape;
@@ -124,12 +124,12 @@ public class SvgFactory extends Component {
         List<DomContent> patterns = landscape.getItems().all().stream()
                 .filter(item -> !StringUtils.isEmpty(item.getFill()))
                 .map(item -> {
-                    SVGPattern SVGPattern = new SVGPattern(item.getFill(), ICON_SIZE);
+                    SVGPattern SVGPattern = new SVGPattern(item.getFill());
                     return SVGPattern.render();
                 }).collect(Collectors.toList());
 
         List<DomContent> items = landscape.getItems().all().stream().map(item -> {
-            SVGItemLabel label = new SVGItemLabel(item, ICON_SIZE, padding);
+            SVGItemLabel label = new SVGItemLabel(item);
             Point2D.Double pos = vertexHexes.get(item).toPixel();
             SVGItem SVGItem = new SVGItem(label.render(), item, pos);
             return SVGItem.render();

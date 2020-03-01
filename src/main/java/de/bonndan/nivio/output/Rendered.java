@@ -52,7 +52,6 @@ public interface Rendered extends Labeled {
         return getLabel(LABEL_FILL);
     }
 
-
     default void setX(Long x) {
         setLabel(LX, String.valueOf(x));
     }

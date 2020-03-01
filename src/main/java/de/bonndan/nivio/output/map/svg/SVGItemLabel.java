@@ -10,38 +10,33 @@ import org.springframework.util.StringUtils;
 class SVGItemLabel extends Component {
 
     public static final int LABEL_WIDTH = 140;
+    public static final int CORNER_RADIUS = 10;
     private final LandscapeItem item;
     private int width;
-    private final int size;
-    private final int padding;
 
-    SVGItemLabel(LandscapeItem item, int size, int padding) {
+    SVGItemLabel(LandscapeItem item) {
         this.item = item;
         this.width = LABEL_WIDTH;
-        this.size = size;
-        this.padding = padding;
     }
 
     public DomContent render() {
-        ContainerTag labelText = null;
+        String name = StringUtils.isEmpty(item.getName()) ? item.getIdentifier() : item.getName();
+        int size = 40;
+        ContainerTag labelText = new SVGLabelText(name, "0", String.valueOf(size + 15  ), "").render();
 
         //TODO this is naive
-        if (item.getName().length() < 10) {
+        if (name.length() < 10) {
             this.width = 100;
         }
-        if (item.getName().length() > 19) {
+        if (name.length() > 19) {
             this.width = 200;
-        }
-        var yShift = size + padding;
-        if (!StringUtils.isEmpty(item.getName())) {
-            labelText = new SVGLabelText(item.getName(), "0", String.valueOf(yShift + padding-2), "").render();
         }
 
         var rect = SvgTagCreator.rect()
                 .attr("x", -width / 2)
-                .attr("y", yShift - 3)
-                .attr("rx", 10)
-                .attr("ry", 10)
+                .attr("y", size +4)
+                .attr("rx", CORNER_RADIUS)
+                .attr("ry", CORNER_RADIUS)
                 .attr("fill", "white")
                 .attr("width", width)
                 .attr("height", size / 2);

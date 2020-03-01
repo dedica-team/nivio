@@ -2,8 +2,8 @@ package de.bonndan.nivio.output.map.svg;
 
 
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.model.Lifecycle;
+import de.bonndan.nivio.output.Rendered;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.util.StringUtils;
@@ -28,7 +28,8 @@ class SVGItem extends Component {
 
     public DomContent render() {
 
-        var fillId = !StringUtils.isEmpty(item.getFill()) ? "url(#" + SVGPattern.idForLink(item.getFill()) + ")" : "white";
+        boolean hasFill = !StringUtils.isEmpty(item.getFill());
+        var fillId = hasFill ? "url(#" + SVGPattern.idForLink(item.getFill()) + ")" : "white";
         DomContent content = null;
         //use the shortname as text instead
         if (StringUtils.isEmpty(item.getIcon()) && !StringUtils.isEmpty(item.getShortName())) {
@@ -39,7 +40,7 @@ class SVGItem extends Component {
                 .attr("id", this.id)
                 .attr("cx", 0)
                 .attr("cy", 0)
-                .attr("r", 40)
+                .attr("r", ICON_SIZE - 10)
                 .attr("fill", fillId)
                 .attr("stroke", "#" + item.getColor());
         if (Lifecycle.PLANNED.equals(item.getLifecycle())) {
@@ -67,12 +68,12 @@ class SVGItem extends Component {
                 ).attr("transform", "translate(" + 30 + "," + 30 + ")");
 
         DomContent icon = null;
-        if (!StringUtils.isEmpty(item.getIcon())) {
+        if (!hasFill && !StringUtils.isEmpty(item.getLabel(Rendered.LABEL_RENDERED_ICON))) {
             icon = SvgTagCreator.image()
-                    .attr("xlink:href", item.getIcon())
+                    .attr("xlink:href", item.getLabel(Rendered.LABEL_RENDERED_ICON))
                     .attr("width", ICON_SIZE)
                     .attr("height", ICON_SIZE)
-                    .attr("transform", "translate(-" + ICON_SIZE/2 + ",-" + ICON_SIZE/2 + ")")
+                    .attr("transform", "translate(-" + ICON_SIZE / 2 + ",-" + ICON_SIZE / 2 + ")")
             ;
         }
 
