@@ -1,6 +1,5 @@
 package de.bonndan.nivio.output.map.svg;
 
-
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.output.Rendered;
@@ -26,16 +25,33 @@ class SVGItem extends Component {
         this.id = item.getFullyQualifiedIdentifier().toString();
     }
 
+    /**
+     * Renders the fill as background if possible, otherwise tries explicit icon or shortName.
+     *
+     */
     public DomContent render() {
 
+        boolean hasText = false;
         boolean hasFill = !StringUtils.isEmpty(item.getFill());
         var fillId = hasFill ? "url(#" + SVGPattern.idForLink(item.getFill()) + ")" : "white";
         DomContent content = null;
         //use the shortname as text instead
-        if (StringUtils.isEmpty(item.getIcon()) && !StringUtils.isEmpty(item.getShortName())) {
+        if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(item.getShortName())) {
             content = new SVGLabelText(item.getShortName(), "0", "3", "item_shortName").render();
             fillId = "white";
+            hasText = true;
         }
+
+        DomContent icon = null;
+        if (!hasFill && !hasText && !StringUtils.isEmpty(item.getLabel(Rendered.LABEL_RENDERED_ICON))) {
+            icon = SvgTagCreator.image()
+                    .attr("xlink:href", item.getLabel(Rendered.LABEL_RENDERED_ICON))
+                    .attr("width", ICON_SIZE)
+                    .attr("height", ICON_SIZE)
+                    .attr("transform", "translate(-" + ICON_SIZE / 2 + ",-" + ICON_SIZE / 2 + ")")
+            ;
+        }
+
         ContainerTag circle = SvgTagCreator.circle()
                 .attr("id", this.id)
                 .attr("cx", 0)
@@ -50,13 +66,24 @@ class SVGItem extends Component {
         ContainerTag inner = SvgTagCreator.g(circle, content, children)
                 .attr("class", "hexagon");
 
-        Integer scaleVal = 0;
+        return SvgTagCreator.g(inner, icon, getScale())
+                .attr("class", "hexagon-group")
+                .attr("transform", "translate(" + pixel.x + "," + pixel.y + ")");
+    }
+
+    private ContainerTag getScale() {
+
+        if (StringUtils.isEmpty(item.getScale())) {
+            return null;
+        }
+
+        int scaleVal = 0;
         try {
-            scaleVal = Integer.valueOf(item.getScale());
+            scaleVal = Integer.parseInt(item.getScale());
         } catch (NumberFormatException ignored) {
         }
-        ContainerTag scale = StringUtils.isEmpty(item.getScale()) ? null :
-                SvgTagCreator.g(
+
+        return SvgTagCreator.g(
                         SvgTagCreator.circle()
                                 .attr("cx", 0)
                                 .attr("cy", 0)
@@ -66,21 +93,5 @@ class SVGItem extends Component {
                         SvgTagCreator.text(item.getScale())
                                 .attr("transform", "translate(-" + 4 + "," + 5 + ")")
                 ).attr("transform", "translate(" + 30 + "," + 30 + ")");
-
-        DomContent icon = null;
-        if (!hasFill && !StringUtils.isEmpty(item.getLabel(Rendered.LABEL_RENDERED_ICON))) {
-            icon = SvgTagCreator.image()
-                    .attr("xlink:href", item.getLabel(Rendered.LABEL_RENDERED_ICON))
-                    .attr("width", ICON_SIZE)
-                    .attr("height", ICON_SIZE)
-                    .attr("transform", "translate(-" + ICON_SIZE / 2 + ",-" + ICON_SIZE / 2 + ")")
-            ;
-        }
-
-        return SvgTagCreator.g(inner, icon, scale)
-                .attr("class", "hexagon-group")
-                .attr("transform", "translate(" + pixel.x + "," + pixel.y + ")");
     }
-
-
 }
