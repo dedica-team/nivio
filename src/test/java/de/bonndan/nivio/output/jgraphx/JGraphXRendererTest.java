@@ -19,10 +19,9 @@ import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.notification.NotificationService;
 import de.bonndan.nivio.output.LocalServer;
-import de.bonndan.nivio.output.Rendered;
+import de.bonndan.nivio.output.RenderedArtifact;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import de.bonndan.nivio.output.map.MapFactory;
-import de.bonndan.nivio.output.map.RenderedXYMap;
 import de.bonndan.nivio.output.map.svg.SvgFactory;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
@@ -175,10 +174,10 @@ class JGraphXRendererTest {
 
         JGraphXRenderer jGraphXRenderer = new JGraphXRenderer();
         MapFactory<mxGraph, mxCell> mapFactory = new RenderedXYMapFactory(new LocalServer("", new VendorIcons()));
-        Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
-        RenderedXYMap renderedMap = mapFactory.getRenderedMap(landscape, render);
+        RenderedArtifact<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
+        mapFactory.applyArtifactValues(landscape, render);
 
-        SvgFactory svgFactory = new SvgFactory(renderedMap, landscape.getConfig());
+        SvgFactory svgFactory = new SvgFactory(landscape, landscape.getConfig());
         svgFactory.setDebug(true);
         String svg = svgFactory.getXML();
 

@@ -73,5 +73,9 @@ public class ItemFactory {
         item.setNetworks(description.getNetworks());
         item.setMachine(description.getMachine());
         item.setScale(description.getScale());
+
+        description.getLabels().forEach((s, s2) -> {
+            item.getLabels().putIfAbsent(s, s2);
+        });
     }
 }

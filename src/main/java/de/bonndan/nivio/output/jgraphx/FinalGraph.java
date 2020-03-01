@@ -11,7 +11,7 @@ import com.mxgraph.view.mxStyleRegistry;
 import com.mxgraph.view.mxStylesheet;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Color;
-import de.bonndan.nivio.output.Rendered;
+import de.bonndan.nivio.output.RenderedArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -28,7 +28,7 @@ import static de.bonndan.nivio.output.Color.getGroupColor;
  *
  * The output is now mainly used as basis for further processing of landscape items.
  */
-public class FinalGraph implements Rendered<mxGraph, mxCell> {
+public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
 
     public static final int GRID_SIZE = 20;
     private static final String CUSTOM_TYPE = "custom";

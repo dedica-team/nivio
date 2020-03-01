@@ -5,7 +5,7 @@ import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.output.Rendered;
+import de.bonndan.nivio.output.RenderedArtifact;
 import de.bonndan.nivio.output.Renderer;
 
 import javax.imageio.ImageIO;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class JGraphXRenderer implements Renderer<Rendered<mxGraph, mxCell>> {
+public class JGraphXRenderer implements Renderer<RenderedArtifact<mxGraph, mxCell>> {
 
     private boolean debugMode;
 
@@ -24,7 +24,7 @@ public class JGraphXRenderer implements Renderer<Rendered<mxGraph, mxCell>> {
     }
 
     @Override
-    public Rendered<mxGraph, mxCell> render(LandscapeImpl landscape) {
+    public RenderedArtifact<mxGraph, mxCell> render(LandscapeImpl landscape) {
 
         Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
         landscape.getGroups().forEach((name, groupItem) ->  {

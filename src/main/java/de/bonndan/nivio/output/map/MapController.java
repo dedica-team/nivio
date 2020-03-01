@@ -6,7 +6,7 @@ import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.api.NotFoundException;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
-import de.bonndan.nivio.output.Rendered;
+import de.bonndan.nivio.output.RenderedArtifact;
 import de.bonndan.nivio.output.jgraphx.JGraphXRenderer;
 import de.bonndan.nivio.output.map.svg.SvgFactory;
 import org.apache.batik.transcoder.Transcoder;
@@ -43,33 +43,6 @@ public class MapController {
     public MapController(LandscapeRepository landscapeRepository, MapFactory<mxGraph, mxCell> mapFactory) {
         this.landscapeRepository = landscapeRepository;
         this.mapFactory = mapFactory;
-    }
-
-    @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/" + MAP_JSON_ENDPOINT)
-    public ResponseEntity<String> hex(
-            @PathVariable(name = "landscape") final String landscapeIdentifier,
-            @RequestParam(value = "size", required = false) Integer size
-    ) throws IOException {
-        LandscapeImpl landscape = getLandscape(landscapeIdentifier);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer();
-
-        try {
-            Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
-            RenderedXYMap renderedMap = mapFactory.getRenderedMap(landscape, render);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
-            return new ResponseEntity<>(
-                    objectMapper.writeValueAsString(renderedMap),
-                    headers,
-                    HttpStatus.OK
-            );
-        } catch (Exception ex) {
-            LOGGER.warn("Could not render graph: ", ex);
-            throw ex;
-        }
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
@@ -125,10 +98,10 @@ public class MapController {
 
     private String getMapAsString(LandscapeImpl landscape) {
         JGraphXRenderer jGraphXRenderer = new JGraphXRenderer();
-        Rendered<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
-        RenderedXYMap renderedMap = mapFactory.getRenderedMap(landscape, render);
+        RenderedArtifact<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
+        mapFactory.applyArtifactValues(landscape, render);
 
-        SvgFactory svgFactory = new SvgFactory(renderedMap, landscape.getConfig());
+        SvgFactory svgFactory = new SvgFactory(landscape, landscape.getConfig());
         return svgFactory.getXML();
     }
 }

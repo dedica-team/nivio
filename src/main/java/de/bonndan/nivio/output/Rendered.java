@@ -1,36 +1,74 @@
 package de.bonndan.nivio.output;
 
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-
-import java.util.Map;
+import de.bonndan.nivio.model.Labeled;
 
 /**
- * Finally rendered output.
+ * A landscape component that has been rendered.
  *
- * @param <M> the renderer implementation
- * @param <I> the object type in the rendering
+ *
  */
-public interface Rendered<M, I> {
+public interface Rendered extends Labeled {
 
-    /**
-     * The rendered object.
-     *
-     * @return the finally rendered implementation
-     */
-    M getRendered();
+    String LABEL_PREFIX_RENDERED = "nivio.rendered.";
+    String LABEL_RENDERED_COLOR = LABEL_PREFIX_RENDERED + "color";
+    String LY = LABEL_PREFIX_RENDERED + "y";
+    String LX = LABEL_PREFIX_RENDERED + "x";
+    String LABEL_RENDERED_ICON = LABEL_PREFIX_RENDERED + "icon";
+    String LABEL_FILL = "fill";
+    String LABEL_RENDERED_WIDTH = LABEL_PREFIX_RENDERED + "width";
+    String LABEL_RENDERED_HEIGHT = LABEL_PREFIX_RENDERED + "height";
 
-    /**
-     * A map of landscape items and their representation.
-     *
-     * @return rendered object (dependends on the rendered implementation)
-     */
-    Map<Item, I> getItemObjects();
+    default void setWidth(Long width) {
+        setLabel(LABEL_RENDERED_WIDTH, String.valueOf(width));
+    }
 
-    /**
-     * A map of landscape group and their representation.
-     *
-     * @return rendered object (dependends on the rendered implementation)
-     */
-    Map<Group, I> getGroupObjects();
+    default Long getWidth() {
+        String width = getLabel(LABEL_RENDERED_WIDTH);
+        return width == null ? null : Long.parseLong(width);
+    }
+
+    default void setHeight(Long height) {
+        setLabel(LABEL_RENDERED_HEIGHT, String.valueOf(height));
+    }
+
+    default Long getHeight() {
+        String height = getLabel(LABEL_RENDERED_HEIGHT);
+        return height == null ? null : Long.parseLong(height);
+    }
+
+    default void setColor(String color) {
+        setLabel(LABEL_RENDERED_COLOR, color);
+    }
+
+    default String getColor() {
+        return getLabel(LABEL_RENDERED_COLOR);
+    }
+
+    default void setFill(String fill) {
+        setLabel(LABEL_FILL, fill);
+    }
+
+    default String getFill() {
+        return getLabel(LABEL_FILL);
+    }
+
+
+    default void setX(Long x) {
+        setLabel(LX, String.valueOf(x));
+    }
+
+    default Long getX() {
+        String x = getLabel(LX);
+        return x == null ? null : Long.parseLong(x);
+    }
+
+    default void setY(Long y) {
+        setLabel(LY, String.valueOf(y));
+    }
+
+    default Long getY() {
+        String y = getLabel(LY);
+        return y == null ? null : Long.parseLong(y);
+    }
+
 }

@@ -5,7 +5,7 @@ import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.Rendered;
+import de.bonndan.nivio.output.RenderedArtifact;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ import java.util.*;
 /**
  * Renders a graph of group containers only, not regarding items inside the containers.
  */
-public class AllGroupsGraph implements Rendered<mxGraph, mxCell> {
+public class AllGroupsGraph implements RenderedArtifact<mxGraph, mxCell> {
 
     private static final Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);
 
@@ -51,10 +51,8 @@ public class AllGroupsGraph implements Rendered<mxGraph, mxCell> {
         Optional.ofNullable(config.getJgraphx().getMaxIterations())
                 .ifPresent(layout::setMaxIterations);
 
-
         Optional.ofNullable(config.getJgraphx().getMinDistanceLimitFactor())
                 .ifPresent(f -> layout.setMinDistanceLimit(layout.getMinDistanceLimit() * f));
-
 
         layout.execute(graph.getDefaultParent());
         logger.info("AllGroupsGraph bounds: {}", graph.getGraphBounds());

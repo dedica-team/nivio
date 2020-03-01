@@ -33,6 +33,10 @@ text.title {
   font-size: 3em;
 }
 
+text.item_shortName {
+  font-size: 2em;
+}
+
 text.groupLabel {
   text-shadow: 1px 1px 1px black;
 }

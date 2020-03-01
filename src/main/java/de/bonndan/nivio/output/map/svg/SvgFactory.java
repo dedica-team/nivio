@@ -2,10 +2,8 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.model.LandscapeConfig;
-import de.bonndan.nivio.output.map.GroupMapItem;
-import de.bonndan.nivio.output.map.ItemMapItem;
-import de.bonndan.nivio.output.map.RenderedXYMap;
+import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexFactory;
 import de.bonndan.nivio.output.map.hex.PathFinder;
@@ -36,16 +34,15 @@ public class SvgFactory extends Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SvgFactory.class);
 
-    private static int ICON_SIZE = 40;
+    static int ICON_SIZE = 40;
     private int padding = 10;
-    private Map<String, ItemMapItem> itemMapItembyFQI = new HashMap<>();
     private List<Hex> occupied = new ArrayList<>();
-    private final RenderedXYMap map;
+    private final LandscapeImpl landscape;
     private final LandscapeConfig landscapeConfig;
     private boolean debug = false;
 
-    public SvgFactory(RenderedXYMap map, LandscapeConfig landscapeConfig) {
-        this.map = map;
+    public SvgFactory(LandscapeImpl landscape, LandscapeConfig landscapeConfig) {
+        this.landscape = landscape;
         this.landscapeConfig = landscapeConfig;
     }
 
@@ -55,7 +52,7 @@ public class SvgFactory extends Component {
 
     public DomContent render() {
 
-        Map<ItemMapItem, Hex> vertexHexes = new HashMap<>();
+        Map<LandscapeItem, Hex> vertexHexes = new HashMap<>();
 
         String css = "";
         try {
@@ -86,11 +83,10 @@ public class SvgFactory extends Component {
 
         final HexFactory hexFactory = new HexFactory();
 
-        map.items.forEach(itemMapItem -> {
-            var hex = hexFactory.of(itemMapItem.x, itemMapItem.y);
-            hex.id = itemMapItem.id;
-            vertexHexes.put(itemMapItem, hex);
-            itemMapItembyFQI.put(itemMapItem.id, itemMapItem);
+        landscape.getItems().all().forEach(item -> {
+            var hex = hexFactory.of(item.getX(), item.getY());
+            hex.id = item.getFullyQualifiedIdentifier().toString();
+            vertexHexes.put(item, hex);
             occupied.add(hex);
         });
 
@@ -100,18 +96,11 @@ public class SvgFactory extends Component {
 
         AtomicInteger width = new AtomicInteger(0);
         AtomicInteger height = new AtomicInteger(0);
-        List<DomContent> groups = map.groups.stream().map(group -> {
-            SVGGroup SVGGroup = getGroup(hexFactory, group, itemMapItembyFQI);
-            if ((SVGGroup.x + SVGGroup.width) > width.get())
-                width.set((int) (SVGGroup.x + SVGGroup.width));
-            if ((SVGGroup.y + SVGGroup.height) > height.get())
-                height.set((int) (SVGGroup.y + SVGGroup.height));
-            return SVGGroup.render();
-        }).collect(Collectors.toList());
 
-        DomContent title = SvgTagCreator.text(map.landscape)
+
+        DomContent title = SvgTagCreator.text(landscape.getName())
                 .attr("x", LABEL_WIDTH + 10)
-                .attr("y", -LABEL_WIDTH / 2 +20)
+                .attr("y", -LABEL_WIDTH / 2 + 20)
                 .attr("class", "title");
         DomContent logo = null;
         String logoUrl = landscapeConfig.getBranding().getMapLogo();
@@ -123,6 +112,44 @@ public class SvgFactory extends Component {
                     .attr("height", LABEL_WIDTH);
         }
 
+        List<DomContent> groups = landscape.getGroups().values().stream().map(group -> {
+            SVGGroup SVGGroup = getGroup(hexFactory, (Group) group);
+            if ((SVGGroup.x + SVGGroup.width) > width.get())
+                width.set((int) (SVGGroup.x + SVGGroup.width));
+            if ((SVGGroup.y + SVGGroup.height) > height.get())
+                height.set((int) (SVGGroup.y + SVGGroup.height));
+            return SVGGroup.render();
+        }).collect(Collectors.toList());
+
+        List<DomContent> patterns = landscape.getItems().all().stream()
+                .filter(item -> !StringUtils.isEmpty(item.getFill()))
+                .map(item -> {
+                    SVGPattern SVGPattern = new SVGPattern(item.getFill(), ICON_SIZE);
+                    return SVGPattern.render();
+                }).collect(Collectors.toList());
+
+        List<DomContent> items = landscape.getItems().all().stream().map(item -> {
+            SVGItemLabel label = new SVGItemLabel(item, ICON_SIZE, padding);
+            Point2D.Double pos = vertexHexes.get(item).toPixel();
+            SVGItem SVGItem = new SVGItem(label.render(), item, pos);
+            return SVGItem.render();
+        }).collect(Collectors.toList());
+
+        List<DomContent> relations = landscape.getItems().all().stream().flatMap(item -> {
+                    LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
+                    return item.getRelations().stream().map(rel -> {
+                        Hex start = vertexHexes.get(item);
+                        Hex target = vertexHexes.get((Item) rel.getTarget());
+                        HexPath bestPath = pathFinder.getPath(start, target);
+                        if (bestPath != null) {
+                            SVGRelation SVGRelation = new SVGRelation(bestPath, item.getColor(), rel);
+                            return SVGRelation.render();
+                        }
+                        return null;
+                    });
+                }
+        ).collect(Collectors.toList());
+
         return
                 SvgTagCreator.svg(style)
                         .attr("version", "1.1")
@@ -130,74 +157,25 @@ public class SvgFactory extends Component {
                         .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
                         .attr("width", width.addAndGet(ICON_SIZE + LABEL_WIDTH / 2))
                         .attr("height", height.addAndGet(ICON_SIZE))
-                        .attr("viewBox", "0 -" + LABEL_WIDTH + " " + (width.get() + LABEL_WIDTH)+ " " + (height.get()+ LABEL_WIDTH))
+                        .attr("viewBox", "0 -" + LABEL_WIDTH + " " + (width.get() + LABEL_WIDTH) + " " + (height.get() + LABEL_WIDTH))
 
-                        //logo
                         .with(logo, title)
-                        //groups
                         .with(groups)
-
-                        //relations
-                        .with(
-                                map.items.stream().flatMap(vertex -> {
-                                            LOGGER.debug("Adding {} relations for {}", vertex.relations.size(), vertex.id);
-                                            return vertex.relations.stream().map(rel -> {
-                                                Hex start = vertexHexes.get(vertex);
-                                                Hex target = vertexHexes.get(itemMapItembyFQI.get(rel.target.getFullyQualifiedIdentifier().toString()));
-                                                HexPath bestPath = pathFinder.getPath(start, target);
-                                                if (bestPath != null) {
-                                                    SVGRelation SVGRelation = new SVGRelation(bestPath, vertex.color, rel);
-                                                    return SVGRelation.render();
-                                                }
-                                                return null;
-                                            });
-                                        }
-                                ).collect(Collectors.toList())
-                        )
-
-
-                        //items
-                        .with(
-                                map.items.stream().map(vertex -> {
-
-                                    var fill = "";
-                                    if (!StringUtils.isEmpty(vertex.image)) {
-                                        fill = Base64.getEncoder().encodeToString(vertex.id.getBytes());
-                                    }
-                                    SVGItemLabel label = new SVGItemLabel(vertex, ICON_SIZE, padding);
-                                    Point2D.Double pos = vertexHexes.get(vertex).toPixel();
-                                    SVGItem SVGItem = new SVGItem(label.render(), vertex, pos, fill, "stroke: #" + vertex.color);
-                                    return SVGItem.render();
-                                }).collect(Collectors.toList())
-                        )
-
-                        .with(
-                                map.items.stream()
-                                        .filter(vertex -> !StringUtils.isEmpty(vertex.image))
-                                        .map(vertex -> {
-                                            var fill = vertex.image;
-                                            var id = Base64.getEncoder().encodeToString(vertex.id.getBytes());
-                                            SVGPattern SVGPattern = new SVGPattern(id, fill, ICON_SIZE);
-                                            return SVGPattern.render();
-                                        }).collect(Collectors.toList())
-                        );
-
-
+                        .with(relations)
+                        .with(items)
+                        .with(SvgTagCreator.defs().with(patterns));
     }
 
-    private SVGGroup getGroup(HexFactory hexFactory, GroupMapItem group, Map<String, ItemMapItem> byFQI) {
+    private SVGGroup getGroup(HexFactory hexFactory, Group group) {
 
-        Set<ItemMapItem> groupMapItems = group.group.getItems().stream()
-                .map(item -> byFQI.get(item.getFullyQualifiedIdentifier().toString()))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+        List<Item> items = group.getItems();
         AtomicLong minX = new AtomicLong(Long.MAX_VALUE);
         AtomicLong maxX = new AtomicLong(Long.MIN_VALUE);
         AtomicLong minY = new AtomicLong(Long.MAX_VALUE);
         AtomicLong maxY = new AtomicLong(Long.MIN_VALUE);
 
-        groupMapItems.forEach(itemMapItem -> {
-            Point2D.Double p = hexFactory.of(itemMapItem.x, itemMapItem.y).toPixel();
+        items.forEach(item -> {
+            Point2D.Double p = hexFactory.of(Integer.parseInt(item.getLabel(Rendered.LX)), Integer.parseInt(item.getLabel(Rendered.LY))).toPixel();
             if (p.x < minX.get()) minX.set((long) p.x);
             if (p.x > maxX.get()) maxX.set((long) p.x);
             if (p.y < minY.get()) minY.set((long) p.y);

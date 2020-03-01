@@ -14,7 +14,7 @@ approach, i.e. there is no interface for manual data maintenance. It is designed
 
 ## Example Graph, Input and Output
 
- ![rendered graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/graph.png)
+ ![renderedArtifact graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/graph.png)
 
 ![input output_graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/inout.png)
 

@@ -1,7 +1,7 @@
 package de.bonndan.nivio.output.map;
 
 import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.output.Rendered;
+import de.bonndan.nivio.output.RenderedArtifact;
 
 /**
  * A class that can transform a rendered landscape into a map.
@@ -11,5 +11,9 @@ import de.bonndan.nivio.output.Rendered;
  */
 public interface MapFactory<T,R> {
 
-    RenderedXYMap getRenderedMap(LandscapeImpl landscape, Rendered<T, R> rendered);
+    /**
+     * Applies values from a rendering to landscape components.
+     *
+     */
+    void applyArtifactValues(LandscapeImpl landscape, RenderedArtifact<T, R> renderedArtifact);
 }

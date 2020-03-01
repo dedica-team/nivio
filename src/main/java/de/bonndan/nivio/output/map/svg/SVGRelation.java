@@ -1,7 +1,9 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Lifecycle;
-import de.bonndan.nivio.output.map.ItemMapItem;
+import de.bonndan.nivio.model.RelationItem;
+import de.bonndan.nivio.model.RelationType;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 
@@ -17,9 +19,9 @@ class SVGRelation extends Component {
     public static final String MARKER = "▸";
     private final HexPath hexPath;
     private final String fill;
-    private final ItemMapItem.Relation relation;
+    private final RelationItem<Item> relation;
 
-    SVGRelation(HexPath hexPath, String fill, ItemMapItem.Relation relation) {
+    SVGRelation(HexPath hexPath, String fill, RelationItem<Item> relation) {
         this.hexPath = hexPath;
         this.fill = fill;
         this.relation = relation;
@@ -27,23 +29,23 @@ class SVGRelation extends Component {
 
     public DomContent render() {
 
-        var fillId = (fill) != null ? "#" + fill : null;
+        var fillId = (fill) != null ? "#" + fill : "";
         var stringPath = hexPath.getPoints();
 
         BezierPath bezierPath = new BezierPath();
         bezierPath.parsePathString(stringPath);
 
-        if ("PROVIDER".equals(relation.type)) {
+        if (RelationType.PROVIDER.equals(relation.getType())) {
             ContainerTag path = SvgTagCreator.path()
                     .attr("d", stringPath)
                     .attr("stroke", fillId);
-            if (Lifecycle.PLANNED.equals(relation.source.getLifecycle()) || Lifecycle.PLANNED.equals(relation.target.getLifecycle())) {
+            if (Lifecycle.PLANNED.equals(relation.getSource().getLifecycle()) || Lifecycle.PLANNED.equals(relation.getTarget().getLifecycle())) {
                 path.attr("stroke-dasharray", 10);
                 path.attr("opacity", 0.7);
             }
             return g(path, label(bezierPath, fillId))
-                    .attr("data-source", relation.source)
-                    .attr("data-target", relation.target);
+                    .attr("data-source", relation.getSource().getFullyQualifiedIdentifier())
+                    .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier());
         }
 
         List<ContainerTag> markers = new ArrayList<>();
@@ -65,11 +67,11 @@ class SVGRelation extends Component {
     private ContainerTag label(BezierPath bezierPath, String fillId) {
         Point2D.Float point = bezierPath.eval(0.49f);
         Point2D.Float point2 = bezierPath.eval(0.51f);
-        return alongPath(getText(relation), point, point2, fillId, 0, true);
+        return alongPath(getText(), point, point2, fillId, 0, true);
     }
 
-    private String getText(ItemMapItem.Relation relation) {
-        return Optional.ofNullable(relation.format).orElse("");
+    private String getText() {
+        return Optional.ofNullable(relation.getFormat()).orElse("");
     }
 
     private ContainerTag alongPath(String text, Point2D.Float point, Point2D.Float point2, String fillId, int xOffset, boolean upright) {

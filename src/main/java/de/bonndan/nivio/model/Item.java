@@ -2,6 +2,7 @@ package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import de.bonndan.nivio.output.Rendered;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
@@ -10,7 +11,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Item implements LandscapeItem {
+public class Item implements LandscapeItem, Rendered {
 
     @NotNull
     @Pattern(regexp = LandscapeItem.IDENTIFIER_VALIDATION)
@@ -356,6 +357,16 @@ public class Item implements LandscapeItem {
 
     public void setCapability(String capability) {
         this.capability = capability;
+    }
+
+    @Override
+    public String getLabel(String key) {
+        return labels.get(key);
+    }
+
+    @Override
+    public void setLabel(String key, String value) {
+        labels.put(key, value);
     }
 
     @Override
