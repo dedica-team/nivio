@@ -8,12 +8,10 @@ import static j2html.TagCreator.rawHtml;
 class SVGPattern extends Component {
 
     private final String id, link;
-    private final int size;
 
-    SVGPattern(String link, int size) {
+    SVGPattern(String link) {
         this.id = idForLink(link);
         this.link = link;
-        this.size = size;
     }
 
     static String idForLink(String link) {
@@ -23,11 +21,10 @@ class SVGPattern extends Component {
     public DomContent render() {
 
         return rawHtml(
-                    "<pattern id=\"" + id + "\" patternUnits=\"objectBoundingBox\" x=\"0\" y=\"0\" width=\"" + size + "\" height=\"" + size + "\" >" +
+                    "<pattern id=\"" + id + "\" patternUnits=\"objectBoundingBox\" x=\"0\" y=\"0\" width=\"100%\" height=\"100%\" >" +
                     "<rect height=\"100\" width=\"100\" fill=\"white\" />" +
-                    "<image xlink:href=\"" + link + "\" width=\"" + size * 2 + "\" height=\"" + size * 2 + "\"  />" +
+                    "<image xlink:href=\"" + link + "\" width=\"100\" height=\"100\" />" + //abs values are important for batik
                     "</pattern>"
-
         );
     }
 }
