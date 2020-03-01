@@ -3,6 +3,8 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.model.Group;
 import j2html.tags.DomContent;
 
+import static de.bonndan.nivio.output.map.svg.SvgFactory.ICON_SIZE;
+
 class SVGGroup extends Component {
 
     private final Group group;
@@ -29,8 +31,8 @@ class SVGGroup extends Component {
                 SvgTagCreator.rect()
                         .attr("x", x)
                         .attr("y", y)
-                        .attr("rx", 50)
-                        .attr("ry", 50)
+                        .attr("rx", ICON_SIZE)
+                        .attr("ry", ICON_SIZE)
                         .attr("width", width)
                         .attr("height", height)
                         //.attr("style", cellStyle)

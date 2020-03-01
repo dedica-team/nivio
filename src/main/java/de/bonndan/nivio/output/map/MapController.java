@@ -1,6 +1,5 @@
 package de.bonndan.nivio.output.map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.api.NotFoundException;
@@ -8,6 +7,7 @@ import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.RenderedArtifact;
 import de.bonndan.nivio.output.jgraphx.JGraphXRenderer;
+import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
 import de.bonndan.nivio.output.map.svg.SvgFactory;
 import org.apache.batik.transcoder.Transcoder;
 import org.apache.batik.transcoder.TranscoderException;
@@ -37,12 +37,16 @@ public class MapController {
     public static final String MAP_PNG_ENDPOINT = "graph.png";
 
     private final LandscapeRepository landscapeRepository;
-
     private final MapFactory<mxGraph, mxCell> mapFactory;
+    private final MapStyleSheetFactory mapStyleSheetFactory;
 
-    public MapController(LandscapeRepository landscapeRepository, MapFactory<mxGraph, mxCell> mapFactory) {
+    public MapController(LandscapeRepository landscapeRepository,
+                         MapFactory<mxGraph, mxCell> mapFactory,
+                         MapStyleSheetFactory mapStyleSheetFactory
+    ) {
         this.landscapeRepository = landscapeRepository;
         this.mapFactory = mapFactory;
+        this.mapStyleSheetFactory = mapStyleSheetFactory;
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
@@ -101,7 +105,7 @@ public class MapController {
         RenderedArtifact<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
         mapFactory.applyArtifactValues(landscape, render);
 
-        SvgFactory svgFactory = new SvgFactory(landscape, landscape.getConfig());
+        SvgFactory svgFactory = new SvgFactory(landscape, mapStyleSheetFactory);
         return svgFactory.getXML();
     }
 }

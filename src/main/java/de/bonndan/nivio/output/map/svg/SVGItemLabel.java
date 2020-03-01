@@ -22,7 +22,7 @@ class SVGItemLabel extends Component {
     public DomContent render() {
         String name = StringUtils.isEmpty(item.getName()) ? item.getIdentifier() : item.getName();
         int size = 40;
-        ContainerTag labelText = new SVGLabelText(name, "0", String.valueOf(size + 15  ), "").render();
+        ContainerTag labelText = new SVGLabelText(name, "0", String.valueOf(size + 15), "").render();
 
         //TODO this is naive
         if (name.length() < 10) {
@@ -34,7 +34,7 @@ class SVGItemLabel extends Component {
 
         var rect = SvgTagCreator.rect()
                 .attr("x", -width / 2)
-                .attr("y", size +4)
+                .attr("y", size + 4)
                 .attr("rx", CORNER_RADIUS)
                 .attr("ry", CORNER_RADIUS)
                 .attr("fill", "white")

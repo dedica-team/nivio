@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
-import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.ItemDescriptionFormatFactory;
-import de.bonndan.nivio.input.LandscapeDescriptionFactory;
-import de.bonndan.nivio.input.Indexer;
+import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.csv.ItemDescriptionFactoryCSV;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
@@ -15,6 +12,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
+import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.notification.NotificationService;
@@ -22,11 +20,13 @@ import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.RenderedArtifact;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import de.bonndan.nivio.output.map.MapFactory;
+import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
 import de.bonndan.nivio.output.map.svg.SvgFactory;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -37,7 +37,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.any;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class JGraphXRendererTest {
 
@@ -177,7 +180,9 @@ class JGraphXRendererTest {
         RenderedArtifact<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
         mapFactory.applyArtifactValues(landscape, render);
 
-        SvgFactory svgFactory = new SvgFactory(landscape, landscape.getConfig());
+        MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
+        when(mapStyleSheetFactory.getMapStylesheet(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn("");
+        SvgFactory svgFactory = new SvgFactory(landscape, mapStyleSheetFactory);
         svgFactory.setDebug(true);
         String svg = svgFactory.getXML();
 

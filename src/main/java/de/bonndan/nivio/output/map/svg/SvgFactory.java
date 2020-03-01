@@ -1,13 +1,13 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexFactory;
 import de.bonndan.nivio.output.map.hex.PathFinder;
-import de.bonndan.nivio.util.URLHelper;
 import j2html.tags.DomContent;
 import j2html.tags.UnescapedText;
 import org.slf4j.Logger;
@@ -16,34 +16,32 @@ import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.output.map.svg.SVGItemLabel.LABEL_WIDTH;
-import static j2html.TagCreator.*;
+import static j2html.TagCreator.rawHtml;
 
 public class SvgFactory extends Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SvgFactory.class);
 
     static int ICON_SIZE = 50;
-    private int padding = 10;
     private List<Hex> occupied = new ArrayList<>();
     private final LandscapeImpl landscape;
-    private final LandscapeConfig landscapeConfig;
+    private final MapStyleSheetFactory mapStyleSheetFactory;
     private boolean debug = false;
 
-    public SvgFactory(LandscapeImpl landscape, LandscapeConfig landscapeConfig) {
+    public SvgFactory(LandscapeImpl landscape, MapStyleSheetFactory mapStyleSheetFactory) {
         this.landscape = landscape;
-        this.landscapeConfig = landscapeConfig;
+        this.mapStyleSheetFactory = mapStyleSheetFactory;
     }
 
     public void setDebug(boolean debug) {
@@ -53,34 +51,6 @@ public class SvgFactory extends Component {
     public DomContent render() {
 
         Map<LandscapeItem, Hex> vertexHexes = new HashMap<>();
-
-        String css = "";
-        try {
-            InputStream resourceAsStream = getClass().getResourceAsStream("/static/css/svg.css");
-            css = new String(StreamUtils.copyToByteArray(resourceAsStream));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (landscapeConfig.getBranding().getMapStylesheet() != null) {
-
-            //TODO hackish
-            FileFetcher fileFetcher = new FileFetcher(new HttpService());
-
-            try {
-                URL url = new URL(landscapeConfig.getBranding().getMapStylesheet());
-                String mapCss;
-                if (URLHelper.isLocal(url)) {
-                    mapCss = Files.readString(new File(url.toString()).toPath());
-                } else {
-                    mapCss = fileFetcher.get(url);
-                }
-                css = css + "\n" + mapCss;
-            } catch (IOException e) {
-                LOGGER.warn("Failed to load customer stylesheet {}", landscapeConfig.getBranding().getMapStylesheet(), e);
-            }
-        }
-
         final HexFactory hexFactory = new HexFactory();
 
         landscape.getItems().all().forEach(item -> {
@@ -92,18 +62,16 @@ public class SvgFactory extends Component {
 
         var pathFinder = new PathFinder(occupied);
         pathFinder.debug = this.debug;
-        UnescapedText style = rawHtml("<style>\n" + css + "</style>");
 
         AtomicInteger width = new AtomicInteger(0);
         AtomicInteger height = new AtomicInteger(0);
-
 
         DomContent title = SvgTagCreator.text(landscape.getName())
                 .attr("x", LABEL_WIDTH + 10)
                 .attr("y", -LABEL_WIDTH / 2 + 20)
                 .attr("class", "title");
         DomContent logo = null;
-        String logoUrl = landscapeConfig.getBranding().getMapLogo();
+        String logoUrl = landscape.getConfig().getBranding().getMapLogo();
         if (!StringUtils.isEmpty(logoUrl)) {
             logo = SvgTagCreator.image()
                     .attr("xlink:href", logoUrl)
@@ -150,6 +118,8 @@ public class SvgFactory extends Component {
                 }
         ).collect(Collectors.toList());
 
+        UnescapedText style = rawHtml("<style>\n" + getStyles() + "</style>");
+
         return
                 SvgTagCreator.svg(style)
                         .attr("version", "1.1")
@@ -164,6 +134,18 @@ public class SvgFactory extends Component {
                         .with(relations)
                         .with(items)
                         .with(SvgTagCreator.defs().with(patterns));
+    }
+
+    private String getStyles() {
+        String css = "";
+        try {
+            InputStream resourceAsStream = getClass().getResourceAsStream("/static/css/svg.css");
+            css = new String(StreamUtils.copyToByteArray(resourceAsStream));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return  css + "\n" + mapStyleSheetFactory.getMapStylesheet(landscape.getConfig(), landscape.getLog());
     }
 
     private SVGGroup getGroup(HexFactory hexFactory, Group group) {
