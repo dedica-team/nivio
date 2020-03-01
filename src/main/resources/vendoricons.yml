@@ -1,9 +1,0 @@
-#
-# vendor icons
-#
-vendoricons:
-  apache/httpd: http://www.apache.org/logos/res/httpd/httpd.png
-  redhat/keycloak: https://raw.githubusercontent.com/keycloak/keycloak-misc/master/logo/keycloak_icon_256px.png
-  k8s: https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
-  #https://redis.io/topics/trademark
-  redis: http://download.redis.io/logocontest/82.png

@@ -56,13 +56,13 @@ items:
     description: Scan a k8s cluster for pods/services (alpha).
     group: input
     lifecycle: planned
-    icon: https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
+    icon: vendor://k8s
 
   - identifier: prometheus
     name: Prometheus (planned)
     group: input
     lifecycle: planned
-    icon: https://raw.githubusercontent.com/prometheus/docs/master/static/prometheus_logo.png
+    icon: vendor://prometheus
 
   - identifier: csv
     shortName: CSV

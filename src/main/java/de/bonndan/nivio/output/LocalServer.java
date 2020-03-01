@@ -76,14 +76,13 @@ public class LocalServer implements EnvironmentAware {
 
 
         if (StringUtils.isEmpty(item.getType())) {
-            return getUrl(DEFAULT_ICON.getName());
+            return getIconUrl(DEFAULT_ICON.getName());
         }
 
         //fallback to item.type
         Icons icon = Icons.of(item.getType().toLowerCase()).orElse(DEFAULT_ICON);
         return getIconUrl(icon.getName());
     }
-
 
     /**
      * Provides an URL for a locally served icon.
