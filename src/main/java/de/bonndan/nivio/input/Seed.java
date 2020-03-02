@@ -29,7 +29,7 @@ public class Seed {
         List<File> demoFiles = new ArrayList<>();
         demoFiles.add(new File(absPath + "/src/test/resources/example/example_env.yml"));
         demoFiles.add(new File(absPath + "/src/test/resources/example/inout.yml"));
-        demoFiles.add(new File(absPath + "/src/test/resources/example/dedica.yml"));
+        //demoFiles.add(new File(absPath + "/src/test/resources/example/dedica.yml"));
         return demoFiles;
     }
 
