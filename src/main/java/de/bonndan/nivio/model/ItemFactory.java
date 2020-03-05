@@ -34,7 +34,7 @@ public class ItemFactory {
         }
         item.setName(description.getName());
         item.setLayer(description.getLayer() != null ? description.getLayer() : LandscapeItem.LAYER_APPLICATION);
-        item.setType(description.getType() != null ? description.getType() : LandscapeItem.TYPE_SERVICE);
+        assignSafe(description.getType(), item::setType);
 
         item.setNote(description.getNote());
         item.setShort_name(description.getShortName());
@@ -73,5 +73,9 @@ public class ItemFactory {
         item.setNetworks(description.getNetworks());
         item.setMachine(description.getMachine());
         item.setScale(description.getScale());
+
+        description.getLabels().forEach((s, s2) -> {
+            item.getLabels().putIfAbsent(s, s2);
+        });
     }
 }

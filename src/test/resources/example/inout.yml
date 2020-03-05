@@ -2,6 +2,11 @@ identifier: inout
 name: Input and Output
 description: Misuses the landscape graph to show the input and output possibilities of nivio.
 
+config:
+  branding:
+    mapStylesheet: http://localhost:8080/css/inout.css
+    mapLogo: https://dedica.team/images/logo_orange_weiss.png
+
 groups:
   output:
     color: "488adb"
@@ -51,18 +56,18 @@ items:
     description: Scan a k8s cluster for pods/services (alpha).
     group: input
     lifecycle: planned
-    icon: https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
+    icon: vendor://k8s
 
   - identifier: prometheus
     name: Prometheus (planned)
     group: input
     lifecycle: planned
-    icon: https://raw.githubusercontent.com/prometheus/docs/master/static/prometheus_logo.png
+    icon: vendor://prometheus
 
   - identifier: csv
+    shortName: CSV
     description: Reads tabular data and provides custom field mapping to landscape item attributes.
     group: input
-    icon:
     name: CSV files
 
   - identifier: nivio

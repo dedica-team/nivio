@@ -1,6 +1,8 @@
 package de.bonndan.nivio.input.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.model.*;
@@ -14,7 +16,7 @@ import java.util.stream.Collectors;
 /**
  * This is representation of a service in the textual form as described in a source file.
  */
-public class ItemDescription implements LandscapeItem {
+public class ItemDescription implements LandscapeItem, Labeled {
 
     public static final String LINKS_FIELD = "links";
 
@@ -393,5 +395,17 @@ public class ItemDescription implements LandscapeItem {
             return identifier;
 
         return FullyQualifiedIdentifier.build(environment, group, identifier).toString();
+    }
+
+    @Override
+    @JsonAnyGetter
+    public String getLabel(String key) {
+        return labels.get(key);
+    }
+
+    @Override
+    @JsonAnySetter
+    public void setLabel(String key, String value) {
+        labels.putIfAbsent(key, value);
     }
 }

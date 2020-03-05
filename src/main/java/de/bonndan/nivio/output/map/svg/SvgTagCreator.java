@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.input.ItemDescriptionFormatFactory;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 
@@ -23,11 +24,20 @@ public class SvgTagCreator {
     public static ContainerTag circle() {
         return (new ContainerTag("circle"));
     }
+
     public static ContainerTag rect() {
         return (new ContainerTag("rect"));
     }
 
     public static ContainerTag svg(DomContent... dc) {
         return (new ContainerTag("svg")).with(dc);
+    }
+
+    public static ContainerTag image() {
+        return new ContainerTag("image");
+    }
+
+    public static ContainerTag defs() {
+        return new ContainerTag("defs");
     }
 }

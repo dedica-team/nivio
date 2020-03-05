@@ -1,6 +1,7 @@
 package de.bonndan.nivio;
 
 import de.bonndan.nivio.input.*;
+import de.bonndan.nivio.output.icons.VendorIcons;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -17,7 +18,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @SpringBootApplication
-@EnableConfigurationProperties
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 public class Application {
 
