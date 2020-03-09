@@ -106,7 +106,8 @@ class LandscapeDescriptionFactoryTest {
 
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromString(read, file.toString());
         assertNotNull(landscapeDescription);
-        assertEquals("${PRIVATE_TOKEN}", landscapeDescription.getSourceReferences().get(0).getHeaderTokenValue());
+        /* TODO: x.put doesn't override PRIVATE_TOKEN to veryPrivateToken but it pulls the correct value from our example file (${PRIVATE_TOKEN})*/
+        assertEquals("veryPrivateToken", landscapeDescription.getSourceReferences().get(0).getHeaderTokenValue());
     }
 
     @Test
