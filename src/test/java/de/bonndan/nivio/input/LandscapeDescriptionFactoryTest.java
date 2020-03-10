@@ -17,23 +17,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class LandscapeDescriptionFactoryTest {
-    final String SEPARATOR = FileSystems.getDefault().getSeparator();
-    final String FILE_PATH = RootPath.get() + SEPARATOR + "src" + SEPARATOR + "test" + SEPARATOR + "resources" + SEPARATOR + "example" + SEPARATOR;
-    final String FILE_PATH_ENV = FILE_PATH + "example_env.yml";
-    final String FILE_PATH_INCREMENTAL_ENV = FILE_PATH + "example_incremental_env.yml";
-    final String FILE_PATH_ENVIRONMENT_VARS = FILE_PATH + "example_environment_vars.yml";
-    final String FILE_PATH_TEMPLATES = FILE_PATH + "example_templates.yml";
-    final String FILE_PATH_TEMPLATES_2 = FILE_PATH + "example_templates2.yml";
-    final String FILE_PATH_CONFIG = FILE_PATH + "example_config.yml";
-    final String FILE_PATH_UNKNOWN = FILE_PATH + "example_xxx.yml";
-    final String FILE_PATH_GROUPS = FILE_PATH + "example_groups.yml";
+    final private String SEPARATOR = FileSystems.getDefault().getSeparator();
+    final private String FILE_PATH = RootPath.get() + SEPARATOR + "src" + SEPARATOR + "test" + SEPARATOR + "resources" + SEPARATOR + "example" + SEPARATOR;
+    final private String FILE_PATH_ENV = FILE_PATH + "example_env.yml";
+    final private String FILE_PATH_TEMPLATES = FILE_PATH + "example_templates.yml";
 
     @Test
     public void read() {
@@ -54,7 +47,6 @@ class LandscapeDescriptionFactoryTest {
 
     @Test
     public void readYamlStr() throws IOException {
-
         File file = new File(FILE_PATH_ENV);
         String yaml = new String(Files.readAllBytes(file.toPath()));
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromString(yaml, file.toString());
@@ -81,7 +73,7 @@ class LandscapeDescriptionFactoryTest {
 
     @Test
     public void readIncremental() {
-
+        final String FILE_PATH_INCREMENTAL_ENV = FILE_PATH + "example_incremental_env.yml";
         File file = new File(FILE_PATH_INCREMENTAL_ENV);
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
         assertEquals("Incremental update example", landscapeDescription.getName());
@@ -91,7 +83,7 @@ class LandscapeDescriptionFactoryTest {
 
     @Test
     public void readEnvVars() throws IOException, NoSuchFieldException, IllegalAccessException {
-
+        final String FILE_PATH_ENVIRONMENT_VARS = FILE_PATH + "example_environment_vars.yml";
         File file = new File(FILE_PATH_ENVIRONMENT_VARS);
         String read = new String(Files.readAllBytes(file.toPath()));
 
@@ -152,6 +144,7 @@ class LandscapeDescriptionFactoryTest {
 
     @Test
     public void templatesAssignedWithDataflow() {
+        final String FILE_PATH_TEMPLATES_2 = FILE_PATH + "example_templates2.yml";
         File file = new File(FILE_PATH_TEMPLATES_2);
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
@@ -162,6 +155,7 @@ class LandscapeDescriptionFactoryTest {
 
     @Test
     public void configRead() {
+        final String FILE_PATH_CONFIG = FILE_PATH + "example_config.yml";
         File file = new File(FILE_PATH_CONFIG);
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
@@ -174,6 +168,7 @@ class LandscapeDescriptionFactoryTest {
 
     @Test
     public void testReadUnknownFile() {
+        final String FILE_PATH_UNKNOWN = FILE_PATH + "example_xxx.yml";
         File file = new File(FILE_PATH_UNKNOWN);
 
 
@@ -189,6 +184,7 @@ class LandscapeDescriptionFactoryTest {
 
     @Test
     public void testReadGroups() {
+        final String FILE_PATH_GROUPS = FILE_PATH + "example_groups.yml";
         File file = new File(FILE_PATH_GROUPS);
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
