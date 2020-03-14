@@ -157,6 +157,11 @@ public class LandscapeImpl implements Landscape, Rendered {
     }
 
     @Override
+    public Map<String, String> getLabels() {
+        return labels;
+    }
+
+    @Override
     public String getLabel(String key) {
         return labels.get(key);
     }

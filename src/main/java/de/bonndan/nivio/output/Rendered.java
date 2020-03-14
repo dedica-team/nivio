@@ -15,6 +15,7 @@ public interface Rendered extends Labeled {
     String LX = LABEL_PREFIX_RENDERED + "x";
     String LABEL_RENDERED_ICON = LABEL_PREFIX_RENDERED + "icon";
     String LABEL_FILL = "fill";
+    String LABEL_ICON = "icon";
     String LABEL_RENDERED_WIDTH = LABEL_PREFIX_RENDERED + "width";
     String LABEL_RENDERED_HEIGHT = LABEL_PREFIX_RENDERED + "height";
 
@@ -50,6 +51,10 @@ public interface Rendered extends Labeled {
 
     default String getFill() {
         return getLabel(LABEL_FILL);
+    }
+
+    default String getIcon() {
+        return getLabel(LABEL_ICON);
     }
 
     default void setX(Long x) {

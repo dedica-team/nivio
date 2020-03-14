@@ -1,5 +1,10 @@
 package de.bonndan.nivio.model;
 
+/**
+ * All names are used in lowercase variant.
+ *
+ *
+ */
 public enum Label {
 
     /**
@@ -13,6 +18,8 @@ public enum Label {
      *
      */
     COSTS,
+
+    HOSTTYPE,
 
     /**
      * icon to render
@@ -41,7 +48,9 @@ public enum Label {
 
     VERSION,
 
-    PREFIX_NETWORK,
+    MACHINE,
 
-    ;
+    VISIBILITY  ;
+
+    public static final String PREFIX_NETWORK = "network";
 }

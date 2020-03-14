@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.LabelProcessor;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.model.Label;
 import io.rancher.Rancher;
 import io.rancher.service.ProjectService;
 import io.rancher.service.ServiceService;
@@ -110,7 +111,7 @@ class APIWalker {
             ItemDescription item = new ItemDescription();
             item.setIdentifier(service.getId());
             item.setName(service.getName());
-            item.setScale(String.valueOf(service.getScale()));
+            item.setLabel(Label.SCALE, String.valueOf(service.getScale()));
             Stack stack = stacks.get(service.getStackId());
             if (stack != null) {
                 item.setGroup(stack.getName());
@@ -130,7 +131,7 @@ class APIWalker {
             }
 
             if (service.getLaunchConfig() != null) {
-                item.setVersion(service.getLaunchConfig().getImageUuid());
+                item.setLabel(Label.VERSION, service.getLaunchConfig().getImageUuid());
             }
 
             //copy all labels

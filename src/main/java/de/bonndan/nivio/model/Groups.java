@@ -33,12 +33,12 @@ public class Groups {
             return;
 
         assignSafeIfAbsent(groupItem.getColor(), group.getColor(), group::setColor);
-        assignSafeIfAbsent(groupItem.getTeam(), group.getTeam(), group::setTeam);
         assignSafeIfAbsent(groupItem.getContact(), group.getContact(), group::setContact);
         assignSafeIfAbsent(groupItem.getDescription(), group.getDescription(), group::setDescription);
         assignSafeIfAbsent(groupItem.getOwner(), group.getOwner(), group::setOwner);
         assignSafeIfAbsent(groupItem.getOwner(), group.getOwner(), group::setOwner);
         groupItem.getLinks().forEach((s, url) -> group.getLinks().putIfAbsent(s, url));
+        Labeled.merge(groupItem, group);
     }
 
     /**

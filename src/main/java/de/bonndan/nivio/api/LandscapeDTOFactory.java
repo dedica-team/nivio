@@ -55,7 +55,7 @@ public class LandscapeDTOFactory {
         }
 
         stats.teams = impl.getItems().stream()
-                .map(Item::getTeam)
+                .map(item -> item.getLabel(Label.TEAM))
                 .filter(s -> !StringUtils.isEmpty(s))
                 .collect(Collectors.toSet())
                 .toArray(String[]::new);

@@ -2,15 +2,7 @@ package de.bonndan.nivio.model;
 
 import java.util.Map;
 
-public interface Landscape {
-
-    String getIdentifier();
-
-    String getName();
-
-    String getContact();
-
-    String getDescription();
+public interface Landscape extends Component {
 
     /**
      * @return path or yaml content

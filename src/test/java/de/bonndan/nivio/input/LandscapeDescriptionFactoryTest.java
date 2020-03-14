@@ -7,6 +7,7 @@ import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.Test;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -118,11 +119,10 @@ class LandscapeDescriptionFactoryTest {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
-        LandscapeItem template = landscapeDescription.getTemplates().get("myfirsttemplate");
+        ItemDescription template = landscapeDescription.getTemplates().get("myfirsttemplate");
 
-        assertEquals("webservice", template.getType());
+        assertEquals("webservice", template.getLabel(Label.TYPE));
         assertTrue(template.getName().isEmpty());
-        assertTrue(template.getShortName().isEmpty());
     }
 
     @Test

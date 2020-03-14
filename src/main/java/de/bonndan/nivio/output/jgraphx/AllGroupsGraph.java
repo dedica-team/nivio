@@ -86,11 +86,10 @@ public class AllGroupsGraph implements RenderedArtifact<mxGraph, mxCell> {
             });
 
             //dataflow
-            Set<? extends RelationItem> relations = item.getRelations(RelationType.DATAFLOW);
+            List<RelationItem> relations = RelationType.DATAFLOW.filter(item.getRelations());
             relations.forEach(dataFlowItem -> {
                 Item targetItem = (Item) dataFlowItem.getTarget();
                 if (targetItem == null) return;
-
 
                 String targetGroup = targetItem.getGroup() == null ? Group.COMMON : targetItem.getGroup();
                 mxCell targetGroupNode = findGroupCell(targetGroup);

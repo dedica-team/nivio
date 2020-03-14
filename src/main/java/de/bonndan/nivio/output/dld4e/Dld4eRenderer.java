@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.dld4e;
 
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.output.Renderer;
@@ -121,11 +122,13 @@ public class Dld4eRenderer implements Renderer<String> {
         private List<String> networks = new ArrayList<>();
 
         public void add(Item item) {
-            if (item.getNetworks() == null)
+            if (item.getLabels(Label.PREFIX_NETWORK).isEmpty()) {
                 return;
-            item.getNetworks().forEach(s -> {
-                if (!networks.contains(s)) {
-                    networks.add(s);
+            }
+
+            item.getLabels(Label.PREFIX_NETWORK).forEach((k,v) -> {
+                if (!networks.contains(v)) {
+                    networks.add(v);
                 }
             });
         }

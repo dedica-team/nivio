@@ -1,5 +1,7 @@
 package de.bonndan.nivio.model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import de.bonndan.nivio.output.Rendered;
@@ -11,7 +13,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Item implements LandscapeItem, Rendered {
+public class Item implements LandscapeItem, Labeled, Linked, Tagged, Rendered {
 
     @NotNull
     @Pattern(regexp = LandscapeItem.IDENTIFIER_VALIDATION)
@@ -21,19 +23,9 @@ public class Item implements LandscapeItem, Rendered {
     @JsonBackReference
     private LandscapeImpl landscape;
 
-    private String layer = LandscapeItem.LAYER_APPLICATION;
-
-    private String type;
-
     private String name;
 
-    private String short_name;
-
-    private String icon;
-
     private String owner;
-
-    private String team;
 
     private String contact;
 
@@ -41,27 +33,7 @@ public class Item implements LandscapeItem, Rendered {
 
     private String description;
 
-    private String version;
-
-    private String software;
-
     private String group;
-
-    private String visibility;
-
-    private String[] tags;
-
-    private String[] networks;
-
-    private String machine;
-
-    private String scale;
-
-    private String hostType;
-
-    private String costs;
-
-    private String capability;
 
     @JsonManagedReference
     private Set<StatusItem> statuses = new HashSet<>();
@@ -69,12 +41,11 @@ public class Item implements LandscapeItem, Rendered {
     @JsonManagedReference
     private Set<RelationItem<Item>> relations = new HashSet<>();
 
-    private String note;
-
     @JsonManagedReference
     private Set<InterfaceItem> interfaces = new HashSet<>();
 
     private Lifecycle lifecycle;
+
     private Map<String, String> labels = new HashMap<>();
 
     public String getIdentifier() {
@@ -109,37 +80,14 @@ public class Item implements LandscapeItem, Rendered {
         this.name = name;
     }
 
-    public String getShortName() {
-        return short_name;
-    }
-
-    public void setShort_name(String short_name) {
-        this.short_name = short_name;
-    }
-
     @Override
     public String getIcon() {
-        return icon;
+        return getLabel(Label.ICON);
     }
 
     public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public String getSoftware() {
-        return software;
-    }
-
-    public void setSoftware(String software) {
-        this.software = software;
+        this.setLabel(Label.ICON, icon);
+        ;
     }
 
     public String getOwner() {
@@ -148,22 +96,6 @@ public class Item implements LandscapeItem, Rendered {
 
     public void setOwner(String owner) {
         this.owner = owner;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getTeam() {
-        return team;
-    }
-
-    public void setTeam(String team) {
-        this.team = team;
     }
 
     public String getContact() {
@@ -186,8 +118,13 @@ public class Item implements LandscapeItem, Rendered {
         this.group = group;
     }
 
-    public String getVisibility() {
-        return visibility;
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
@@ -197,10 +134,6 @@ public class Item implements LandscapeItem, Rendered {
 
     public void setLifecycle(Lifecycle lifecycle) {
         this.lifecycle = lifecycle;
-    }
-
-    public void setVisibility(String visibility) {
-        this.visibility = visibility;
     }
 
     @Override
@@ -234,14 +167,6 @@ public class Item implements LandscapeItem, Rendered {
                 });
     }
 
-    public String[] getTags() {
-        return tags;
-    }
-
-    public void setTags(String[] tags) {
-        this.tags = tags;
-    }
-
     @Override
     public Map<String, String> getLabels() {
         return labels;
@@ -251,43 +176,11 @@ public class Item implements LandscapeItem, Rendered {
         this.labels = labels;
     }
 
-    public Set<String> getNetworks() {
-        return networks == null? new HashSet<>() : Set.of(networks);
-    }
-
-    public void setNetworks(Set<String> networks) {
-        this.networks = networks.toArray(new String[0]);
-    }
-
-    public String getMachine() {
-        return machine;
-    }
-
-    public void setMachine(String machine) {
-        this.machine = machine;
-    }
-
-    public String getScale() {
-        return scale;
-    }
-
-    public void setScale(String scale) {
-        this.scale = scale;
-    }
-
-    public String getHostType() {
-        return hostType;
-    }
-
-    public void setHostType(String hostType) {
-        this.hostType = hostType;
-    }
-
+    @Override
     public Set<RelationItem<Item>> getRelations() {
         return relations;
     }
 
-    @Override
     public Set<RelationItem<Item>> getRelations(RelationType type) {
         return relations.stream()
                 .filter(relationItem -> type.equals(relationItem.getType()))
@@ -298,33 +191,17 @@ public class Item implements LandscapeItem, Rendered {
         relations.addAll(outgoing);
     }
 
-    public String getLayer() {
-        return layer;
-    }
-
-    public void setLayer(String layer) {
-        this.layer = layer;
-    }
-
     public void setType(String type) {
-        this.type = type;
+        this.setLabel(Label.TYPE, type);
     }
 
+    @Override
     public String getType() {
-        return type;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public String getNote() {
-        return note;
+        return getLabel(Label.TYPE);
     }
 
     /**
      * Returns all providers.
-     *
      */
     public Set<Item> getProvidedBy() {
         return getRelations(RelationType.PROVIDER).stream()
@@ -342,29 +219,18 @@ public class Item implements LandscapeItem, Rendered {
     }
 
     @Override
-    public String getCosts() {
-        return costs;
-    }
-
-    public void setCosts(String costs) {
-        this.costs = costs;
-    }
-
-    @Override
-    public String getCapability() {
-        return capability;
-    }
-
-    public void setCapability(String capability) {
-        this.capability = capability;
-    }
-
-    @Override
+    @JsonAnyGetter
     public String getLabel(String key) {
         return labels.get(key);
     }
 
     @Override
+    public Map<String, String> getLabels(String prefix) {
+        return Labeled.withPrefix(prefix, labels);
+    }
+
+    @Override
+    @JsonAnySetter
     public void setLabel(String key, String value) {
         labels.put(key, value);
     }

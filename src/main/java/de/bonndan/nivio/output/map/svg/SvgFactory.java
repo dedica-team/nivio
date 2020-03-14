@@ -33,7 +33,7 @@ public class SvgFactory extends Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SvgFactory.class);
 
-    static int ICON_SIZE = 50;
+    public static int ICON_SIZE = 50;
     private List<Hex> occupied = new ArrayList<>();
     private final LandscapeImpl landscape;
     private final MapStyleSheetFactory mapStyleSheetFactory;

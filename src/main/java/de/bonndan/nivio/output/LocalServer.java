@@ -1,5 +1,7 @@
 package de.bonndan.nivio.output;
 
+import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.icons.Icons;
 import de.bonndan.nivio.output.icons.VendorIcons;
@@ -61,27 +63,28 @@ public class LocalServer implements EnvironmentAware {
         }
     }
 
-    public URL getIconUrl(LandscapeItem item) {
+    public URL getIconUrl(Labeled item) {
 
-        if (!StringUtils.isEmpty(item.getIcon())) {
+        String icon = item.getLabel(Label.ICON);
+        if (!StringUtils.isEmpty(icon)) {
 
-            if (item.getIcon().startsWith(VENDOR_PREFIX)) {
-                String key = item.getIcon().replace(VENDOR_PREFIX, "").toLowerCase();
+            if (icon.startsWith(VENDOR_PREFIX)) {
+                String key = icon.replace(VENDOR_PREFIX, "").toLowerCase();
                 return vendorIcons.getUrl(key).map(url -> proxiedUrl(url)).orElse(defaultIcon);
             }
 
-            URL iconUrl = getIconUrl(item.getIcon());
-            return iconUrl != null ? iconUrl : getUrl(item.getIcon());
+            URL iconUrl = getIconUrl(icon);
+            return iconUrl != null ? iconUrl : getUrl(icon);
         }
 
-
-        if (StringUtils.isEmpty(item.getType())) {
+        String type = item.getLabel(Label.TYPE);
+        if (StringUtils.isEmpty(type)) {
             return getIconUrl(DEFAULT_ICON.getName());
         }
 
         //fallback to item.type
-        Icons icon = Icons.of(item.getType().toLowerCase()).orElse(DEFAULT_ICON);
-        return getIconUrl(icon.getName());
+        Icons ic = Icons.of(type.toLowerCase()).orElse(DEFAULT_ICON);
+        return getIconUrl(ic.getName());
     }
 
     /**

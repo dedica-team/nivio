@@ -9,12 +9,12 @@ public class GroupDescription implements GroupItem {
 
     private String identifier;
     private String owner;
-    private String team;
     private String description;
     private String contact;
     private String color;
     private List<String> contains = new ArrayList<>();
     private Map<String, URL> links = new HashMap<>();
+    private Map<String, String> labels = new HashMap<>();
 
     @Override
     public String getIdentifier() {
@@ -22,13 +22,13 @@ public class GroupDescription implements GroupItem {
     }
 
     @Override
-    public String getOwner() {
-        return owner;
+    public String getName() {
+        return identifier;
     }
 
     @Override
-    public String getTeam() {
-        return team;
+    public String getOwner() {
+        return owner;
     }
 
     @Override
@@ -57,10 +57,6 @@ public class GroupDescription implements GroupItem {
 
     public void setOwner(String owner) {
         this.owner = owner;
-    }
-
-    public void setTeam(String team) {
-        this.team = team;
     }
 
     public void setDescription(String description) {
@@ -95,5 +91,20 @@ public class GroupDescription implements GroupItem {
 
     public void setContains(List<String> contains) {
         this.contains = contains;
+    }
+
+    @Override
+    public Map<String, String> getLabels() {
+        return labels;
+    }
+
+    @Override
+    public String getLabel(String key) {
+        return labels.get(key);
+    }
+
+    @Override
+    public void setLabel(String key, String value) {
+        labels.put(key, value);
     }
 }

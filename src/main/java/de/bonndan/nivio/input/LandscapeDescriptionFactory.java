@@ -83,7 +83,6 @@ public class LandscapeDescriptionFactory {
         if (landscapeDescription.getTemplates() != null) {
             landscapeDescription.getTemplates().forEach((s, tpl) -> {
                 tpl.setName("");
-                tpl.setShortName("");
             });
         }
     }

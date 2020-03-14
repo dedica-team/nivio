@@ -34,15 +34,15 @@ public class ItemDescriptionFactoryTest {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
-        sd1.getNetworks().add("net1");
+        sd1.setPrefixed(Label.PREFIX_NETWORK, "net1");
 
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
-        increment.getNetworks().add("net2");
+        increment.setPrefixed(Label.PREFIX_NETWORK, "net2");
 
         ItemDescriptionFactory.assignNotNull(sd1, increment);
 
-        assertEquals(2, sd1.getNetworks().size());
+        assertEquals(2, sd1.getLabels(Label.PREFIX_NETWORK).size());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ItemDescriptionFactoryTest {
 
         ItemDescriptionFactory.assignNotNull(sd1, increment);
 
-        assertEquals(2, sd1.getRelations(RelationType.PROVIDER).size());
+        assertEquals(2, RelationType.PROVIDER.filter(sd1.getRelations()).size());
     }
 
     @Test
@@ -132,7 +132,9 @@ public class ItemDescriptionFactoryTest {
 
         ItemDescriptionFactory.assignNotNull(sd1, increment);
 
-        assertEquals("1", sd1.getLabels().get("a"));
+        //a is overwritten
+        assertEquals("2", sd1.getLabels().get("a"));
+        //b is new
         assertEquals("3", sd1.getLabels().get("b"));
     }
 }

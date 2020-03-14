@@ -24,7 +24,6 @@ public class Group implements GroupItem, Rendered {
     private String owner;
     private String description;
     private String contact;
-    private String team;
     private String color;
     private Map<String, URL> links = new HashMap<>();
 
@@ -49,13 +48,13 @@ public class Group implements GroupItem, Rendered {
     }
 
     @Override
-    public String getOwner() {
-        return owner;
+    public String getName() {
+        return identifier;
     }
 
     @Override
-    public String getTeam() {
-        return team;
+    public String getOwner() {
+        return owner;
     }
 
     @Override
@@ -93,10 +92,6 @@ public class Group implements GroupItem, Rendered {
         this.description = description;
     }
 
-    public void setTeam(String team) {
-        this.team = team;
-    }
-
     public void setColor(String color) {
         this.color = color;
     }
@@ -108,6 +103,11 @@ public class Group implements GroupItem, Rendered {
     @JsonBackReference
     public List<Item> getItems() {
         return items;
+    }
+
+    @Override
+    public Map<String, String> getLabels() {
+        return labels;
     }
 
     @Override

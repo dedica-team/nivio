@@ -1,0 +1,54 @@
+identifier: dedica.team
+name: dedica
+contact: info@dedica.team
+description: Das IT Consulting Team
+
+config:
+  branding:
+    mapStylesheet: http://localhost:8080/css/dedica_map.css
+    mapLogo: https://dedica.team/images/logo_orange_weiss.png
+
+groups:
+  dedica:
+    color: "f17200"
+
+items:
+  - identifier: dedica
+    name: ""
+    group: dedica
+    icon: https://dedica.team/images/logo_orange_weiss.png
+
+  - identifier: matthias
+    name: Matthias Molitor
+    group: dedica
+    fill: https://dedica.team/images/matthiasmolitor.jpg
+    providedBy:
+      - dedica
+
+  - identifier: daniel
+    name: Daniel Pozzi
+    group: dedica
+    fill: https://dedica.team/images/danielpozzi.jpg
+    providedBy:
+      - dedica
+
+  - identifier: jan
+    name: Jan Gölz
+    group: dedica
+    fill: https://dedica.team/images/jangoelz.jpg
+    providedBy:
+      - dedica
+
+  - identifier: michelle
+    name: Michelle Fernandez-Bieber
+    group: dedica
+    fill: https://dedica.team/images/michellefernandezbieber.jpg
+    providedBy:
+      - dedica
+
+  - identifier: marvin
+    name: Marvin Schöning
+    group: dedica
+    fill: http://localhost:8080/icons/pp.jpeg
+    providedBy:
+      - dedica

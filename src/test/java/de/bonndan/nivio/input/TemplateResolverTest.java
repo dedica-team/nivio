@@ -4,7 +4,10 @@ import de.bonndan.nivio.input.compose2.ItemDescriptionFactoryCompose2;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
+import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.Tagged;
 import de.bonndan.nivio.util.RootPath;
+import org.bouncycastle.jcajce.provider.symmetric.TEA;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -89,11 +92,10 @@ class TemplateResolverTest {
 
         //other values from template
         assertNull(web.getName());
-        assertNull(web.getShortName());
-        assertEquals("Wordpress", web.getSoftware());
-        assertEquals("alphateam", web.getTeam());
+        assertEquals("Wordpress", web.getLabel(Label.SOFTWARE));
+        assertEquals("alphateam", web.getLabel(Label.TEAM));
         assertEquals("alphateam@acme.io", web.getContact());
-        assertEquals(1, web.getTags().length);
+        assertEquals(1, web.getLabels(Tagged.LABEL_PREFIX_TAG).size());
     }
 
     @Test
@@ -105,7 +107,7 @@ class TemplateResolverTest {
 
         ItemDescription redis = landscapeDescription.getItemDescriptions().pick("redis", null);
         assertNotNull(redis);
-        assertNull(redis.getSoftware());
+        assertNull(redis.getLabel(Label.SOFTWARE));
     }
 
     private Map<ItemDescription, List<String>> getTemplates(LandscapeDescription landscapeDescription) {
