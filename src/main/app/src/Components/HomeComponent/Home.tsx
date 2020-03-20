@@ -7,15 +7,13 @@ import LandscapeLog from "../LandscapeComponent/LandscapeLog/LandscapeLog";
 import Command from '../CommandComponent/Command';
 
 import CommandContext from '../../Context/Command.context';
-import ModalContext from '../../Context/Modal.context';
 
 const Home: React.FC = () => {
     const [landscapes, setLandscapes] = useState<ILandscape[] | null>(null);
+    const [modalContent, setModalContent] = useState<string | ReactElement | ReactElement[] | null>(null);
 
     // Needed for re-render, looking for another solution
-    const [, setModalIsOpen] = useState<boolean>(false);
     const commandContext = useContext(CommandContext);
-    const modalContext = useContext(ModalContext);
 
     const getLandscapes = async () => {
         await fetch(process.env.REACT_APP_BACKEND_URL + "/api/")
@@ -36,14 +34,12 @@ const Home: React.FC = () => {
 
 
     const onModalClose = () => {
-        modalContext.modalContent = null;
-        setModalIsOpen(false);
+        setModalContent(null);
     };
 
     const enterLog = (l: ILandscape) => {
-        modalContext.modalContent = <LandscapeLog landscape={l} closeFn={onModalClose}/>;
+        setModalContent(<LandscapeLog landscape={l} closeFn={onModalClose}/>);
         commandContext.message = "Showing log: " + l.identifier;
-        setModalIsOpen(true);
     };
 
     const enterLandscape = (l: ILandscape) => {
@@ -81,7 +77,7 @@ const Home: React.FC = () => {
 
     return (
         <div>
-            <GenericModal />
+            <GenericModal modalContent={modalContent}/>
             <h1>Landscapes</h1>
             {content}
             <Command/>

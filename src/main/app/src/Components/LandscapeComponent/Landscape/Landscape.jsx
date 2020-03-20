@@ -2,33 +2,31 @@
     TODO: REFACTORING
 */
 
-import React, {useState, useEffect, useContext} from "react";
+import React, {useState, useEffect, useContext, ReactElement} from "react";
 
 import {ReactSvgPanZoomLoader, SvgLoaderSelectElement} from "react-svg-pan-zoom-loader";
 import {ReactSVGPanZoom, TOOL_AUTO} from "react-svg-pan-zoom";
 
 import ItemModalContent from "../../ItemModalContentComponent/ItemModalContent";
-import ModalContext from '../../../Context/Modal.context';
 import Command from '../../CommandComponent/Command';
 
 
 const Landscape = ({landscape}) => {
     const [tool, setTool] = useState(TOOL_AUTO);
-    const [modalContent, setModalContent] = useState(null);
     const [value, setValue] = useState();
-    const modalContext = useContext(ModalContext);
+    const [modalContent, setModalContent] = useState(null);
 
     let Viewer = null;
 
 
     const onItemClick = (e) => {
-        modalContext.content = <ItemModalContent host={process.env.REACT_APP_BACKEND_URL || "localhost:8080"}
+        setModalContent(<ItemModalContent host={process.env.REACT_APP_BACKEND_URL || "localhost:8080"}
                                         element={e.target.parentElement}
-                                        closeFn={onModalClose}/>;
+                                        closeFn={onModalClose}/>);
     };
 
     const onModalClose = () => {
-        modalContext.content = null;
+        setModalContent(null);
     };
 
     /*if (landscape) {
