@@ -1,7 +1,3 @@
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import {HexUtils} from 'react-hexgrid';
-
 /**
  * Calculated hexagon map coordinates from x-y coordinates.
  *
@@ -11,8 +7,8 @@ import {HexUtils} from 'react-hexgrid';
 class HexCoords {
 
     constructor(x, y, size) {
-        var q = (2. / 3 * x) / size;
-        var r = (-1. / 3 * x + Math.sqrt(3) / 3 * y) / size;
+        let q = (2. / 3 * x) / size;
+        let r = (-1. / 3 * x + Math.sqrt(3) / 3 * y) / size;
 
         this.fractionalHex(q, r, -q - r);
     }

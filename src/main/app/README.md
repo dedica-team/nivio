@@ -14,17 +14,17 @@ Run
 Run
 
     cd src/main/app
-    yarn run start
+    npm run start
     
 then go to the app and provide the correct host
 
-    http://localhost:3000/?host=http://localhost:8081
+    http://localhost:3000/
     
 
     
 ## Production
 
-    yarn build
+    npm run build
 
 or
 
