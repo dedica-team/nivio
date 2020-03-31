@@ -1,11 +1,11 @@
 import React from 'react';
 
-interface ICommandContext{
-    message: string,
+interface ICommandContext {
+  message: string;
 }
 
 const CommandContextDefaultValues = {
-    message: "",
+  message: '',
 };
 
 const CommandContext = React.createContext<ICommandContext>(CommandContextDefaultValues);

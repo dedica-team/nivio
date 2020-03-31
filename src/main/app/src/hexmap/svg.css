@@ -17,9 +17,9 @@ svg g:hover text {
 }
 
 svg g polygon {
-  stroke: #3F51B5;
+  stroke: #3f51b5;
   stroke-width: 0.2;
-  transition: fill-opacity .2s;
+  transition: fill-opacity 0.2s;
 }
 
 svg g circle {
@@ -28,13 +28,13 @@ svg g circle {
 
 svg g text {
   fill-opacity: 0.4;
-  transition: fill-opacity .2s;
+  transition: fill-opacity 0.2s;
 }
 
 svg g rect.group {
   fill-opacity: 0.4;
-  transition: fill-opacity .2s;
-  stroke-width: 0.0em;
+  transition: fill-opacity 0.2s;
+  stroke-width: 0em;
 }
 
 svg g.label {
@@ -44,7 +44,7 @@ svg g.label {
 svg g.label rect {
   fill-opacity: 1;
   stroke-width: 0.1em;
-  stroke: #3F51B5;
+  stroke: #3f51b5;
 }
 
 svg path {
@@ -56,7 +56,7 @@ svg path {
 }
 
 svg div.details {
-  border: 1px solid #3F51B5;
+  border: 1px solid #3f51b5;
   border-radius: 10px;
   background-color: white;
 }

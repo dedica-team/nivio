@@ -1,70 +1,70 @@
 $contentMargin: 254px;
 
 .manualContent {
-    margin-left: $contentMargin;
+  margin-left: $contentMargin;
 }
 
 pre {
-    display:block;
-    white-space: pre;
+  display: block;
+  white-space: pre;
 }
 
 /* -- sidebar --------------------------------------------------------------- */
 
 div.sphinxsidebarwrapper {
-    padding: 10px 5px 0 10px;
+  padding: 10px 5px 0 10px;
 }
 
 div.sphinxsidebar {
-    width: 230px;
-    margin-left: -$contentMargin;
-    font-size: 90%;
-    word-wrap: break-word;
-    overflow-wrap : break-word;
-    position: absolute;
-    top: 0px;
+  width: 230px;
+  margin-left: -$contentMargin;
+  font-size: 90%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  position: absolute;
+  top: 0px;
 }
 
 div.sphinxsidebar ul {
-    list-style: none;
+  list-style: none;
 }
 
 div.sphinxsidebar ul ul,
 div.sphinxsidebar ul.want-points {
-    margin-left: 20px;
-    list-style: square;
+  margin-left: 20px;
+  list-style: square;
 }
 
 div.sphinxsidebar ul ul {
-    margin-top: 0;
-    margin-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 div.sphinxsidebar form {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 div.sphinxsidebar input {
-    border: 1px solid #98dbcc;
-    font-family: sans-serif;
-    font-size: 1em;
+  border: 1px solid #98dbcc;
+  font-family: sans-serif;
+  font-size: 1em;
 }
 
 div.sphinxsidebar #searchbox form.search {
-    overflow: hidden;
+  overflow: hidden;
 }
 
-div.sphinxsidebar #searchbox input[type="text"] {
-    float: left;
-    width: 80%;
-    padding: 0.25em;
-    box-sizing: border-box;
+div.sphinxsidebar #searchbox input[type='text'] {
+  float: left;
+  width: 80%;
+  padding: 0.25em;
+  box-sizing: border-box;
 }
 
-div.sphinxsidebar #searchbox input[type="submit"] {
-    float: left;
-    width: 20%;
-    border-left: none;
-    padding: 0.25em;
-    box-sizing: border-box;
+div.sphinxsidebar #searchbox input[type='submit'] {
+  float: left;
+  width: 20%;
+  border-left: none;
+  padding: 0.25em;
+  box-sizing: border-box;
 }
