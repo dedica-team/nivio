@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, ReactElement } from 'react';
 import { useHistory } from 'react-router-dom';
 import Terminal from 'react-console-emulator'
 import CommandContext from '../../Context/Command.context';
@@ -22,8 +22,11 @@ const Command: React.FC = () => {
                 description: 'Show the manual.',
                 usage: 'man install|input|model|magic|extra|api',
                 fn: (arg: string) => {
+                    if(!arg){
+                        arg = "install";
+                    }
                     commandContext.message = 'RTFM: ' + arg;
-                    history.push("/man");
+                    history.push("/man/" + arg);
                 }
             },
             sim: {

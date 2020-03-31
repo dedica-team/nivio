@@ -107,6 +107,11 @@ body {
     bottom: 40px;
     background-color: black;
     border: none;
+    overflow: auto;
+  }
+
+  .Modal::-webkit-scrollbar {
+    display: none;
   }
   
   .Modal:focus {

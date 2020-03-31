@@ -297,7 +297,7 @@
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
-                        <phase>prepare-package</phase>
+                        <phase>generate-sources</phase>
                         <configuration>
                             <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
                             <resources>
@@ -358,7 +358,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>generate-resources</phase>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
