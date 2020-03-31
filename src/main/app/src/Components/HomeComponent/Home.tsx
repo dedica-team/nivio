@@ -3,7 +3,7 @@ import {Link} from "react-router-dom";
 
 import {ILandscape} from "../../interfaces";
 import GenericModal from "../ModalComponent/GenericModal";
-import LandscapeLog from "../LandscapeComponent/LandscapeLog/LandscapeLog";
+import LandscapeLog from "../LandscapeComponent/Log/LandscapeLog";
 import Command from '../CommandComponent/Command';
 
 import CommandContext from '../../Context/Command.context';
