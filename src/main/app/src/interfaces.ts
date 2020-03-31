@@ -1,5 +1,4 @@
 export interface ILandscape {
-    id: number,
     name?: string,
     description?: string,
     identifier?: string,

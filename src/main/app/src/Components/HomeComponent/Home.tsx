@@ -7,14 +7,20 @@ import LandscapeLog from "../LandscapeComponent/LandscapeLog/LandscapeLog";
 import Command from '../CommandComponent/Command';
 
 import CommandContext from '../../Context/Command.context';
+import LandscapeContext from '../../Context/Landscape.context';
 
 const Home: React.FC = () => {
-    const [landscapes, setLandscapes] = useState<ILandscape[] | null>(null);
     const [modalContent, setModalContent] = useState<string | ReactElement | ReactElement[] | null>(null);
-
+    const [landscapes, setLandscapes] = useState<ILandscape[]>();
+ 
     // Needed for re-render, looking for another solution
     const commandContext = useContext(CommandContext);
+    const landscapeContext = useContext(LandscapeContext);
 
+    /*
+    TODO: Find a way to load all landscapes into context without having to access our home path
+          if we reload e.g. http://localhost:3000/landscape/inout it wont load anymore
+    */
     const getLandscapes = async () => {
         await fetch(process.env.REACT_APP_BACKEND_URL + "/api/")
             .then((response) => {
@@ -22,6 +28,7 @@ const Home: React.FC = () => {
             })
             .then((json) => {
                 setLandscapes(json);
+                landscapeContext.landscapes = json;
                 commandContext.message = "Loaded landscapes.";
             });
     };
@@ -31,7 +38,6 @@ const Home: React.FC = () => {
     useEffect(() => {
         getLandscapes();
     }, []);
-
 
     const onModalClose = () => {
         setModalContent(null);
@@ -45,14 +51,13 @@ const Home: React.FC = () => {
     const enterLandscape = (l: ILandscape) => {
         commandContext.message = 'Entering landscape: ' + l.identifier;
     }
-
     // Render
     let content: string | ReactElement[] = "Loading landscapes...";
     if(landscapes){
         content = landscapes.map(l => {
             return <div key={l.identifier} className={"landscapeContainer"}>
                     <h2>{l.name}</h2>&nbsp;&nbsp;
-                    <Link to="/landscape">
+                    <Link to={`/landscape/${l.identifier}`}>
                         <button className={'control'} onClick={() => enterLandscape(l)}>enter &gt;</button>
                     </Link>
                     &nbsp;
@@ -73,7 +78,7 @@ const Home: React.FC = () => {
                 <br/>
                 <br/>
             </div>
-        })}
+        })};
 
     return (
         <div>
