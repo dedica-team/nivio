@@ -5,6 +5,7 @@ import raw from "raw.macro";
 
 import Command from "../CommandComponent/Command";
 
+import "./Man.scss";
 
 const topics:any = {
     "install.html": raw('../../../../../../docs/build/install.html'),
@@ -41,11 +42,13 @@ const Man: React.FC = () => {
         }
     }, [topic]);
 
-    return <div className="manualContent">
+    return <div>
+        <div className="manualContent">
         <h1>Manual</h1>
         <div>{ReactHtmlParser(html)}<br /><br /></div>
-        <Command />
-    </div>;
+        
+    </div>
+    <Command /></div>;
 }
 
 export default Man;

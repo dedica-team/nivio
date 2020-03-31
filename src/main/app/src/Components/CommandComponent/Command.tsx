@@ -1,4 +1,4 @@
-import React, { useContext, useState, ReactElement } from 'react';
+import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import Terminal from 'react-console-emulator'
 import CommandContext from '../../Context/Command.context';
