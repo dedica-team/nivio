@@ -1,0 +1,74 @@
+@import '../../../Ressources/styling/font.scss';
+@import '../../../Ressources/styling/colors.scss';
+
+.landscapeContainer {
+  svg {
+    font-family: sans-serif;
+    text-shadow: none;
+
+    g {
+      stroke-width: 0.3;
+
+      rect {
+        .group {
+          stroke-width: 0.1em;
+          fill-opacity: 0.4;
+          transition: fill-opacity 0.2s;
+          stroke: $svg-border-color;
+          stroke-width: 0em;
+          box-shadow: 0px 0px 12px $box-shadow-color;
+        }
+      }
+      polygon {
+        stroke: $svg-border-color;
+        stroke-width: 0.2;
+        transition: fill-opacity 0.2s;
+      }
+
+      .label {
+        rect {
+          fill: $background-grey;
+          stroke: $svg-border-color;
+          fill-opacity: 1;
+          stroke-width: 0.1em;
+        }
+      }
+
+      text {
+        fill: $font-color;
+      }
+
+      text:hover {
+        fill-opacity: 1;
+      }
+
+      .item_shortName {
+        fill: $svg-shortname-color;
+      }
+    }
+
+    g:hover {
+      fill-opacity: 1;
+    }
+
+    path {
+      fill: none;
+      stroke-width: 0.4em;
+      stroke-opacity: 0.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    svg {
+      .details {
+        border: 1px solid $svg-border-color;
+        border-radius: 10px;
+        background-color: white;
+      }
+      g {
+        circle {
+          stroke-width: 0.4em;
+        }
+      }
+    }
+  }
+}

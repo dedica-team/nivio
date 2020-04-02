@@ -1,0 +1,64 @@
+@import '../../Ressources/styling/colors.scss';
+@import '../../Ressources/styling/font.scss';
+.homeContainer {
+  .content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+
+    .landscapeContainer {
+      width: 46%;
+      padding: 11px;
+
+      border: 1px solid $border-color;
+      box-shadow: 0px 0px 12px $box-shadow-color;
+
+      .navigation {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+
+        .control {
+          margin-left: 10px;
+          background-color: $header-color;
+
+          color: $font-color;
+          font-size: $large-font-size;
+          text-transform: uppercase;
+          text-shadow: 0 0 10px $text-shadow-color;
+
+          box-shadow: 0px 0px 12px $box-shadow-color;
+          border: 1px solid $border-color;
+
+          cursor: pointer;
+        }
+
+        .title {
+          padding: 2px 15px;
+          margin-bottom: 10px;
+          background-color: $header-color;
+
+          font-size: $large-font-size;
+          font-weight: bold;
+          text-transform: uppercase;
+          text-align: center;
+
+          box-shadow: 0px 0px 12px $box-shadow-color;
+        }
+      }
+    }
+  }
+
+  .header {
+    display: block;
+    width: 99%;
+    font-size: $header-font-size;
+    font-weight: bold;
+    text-transform: uppercase;
+    background-color: $header-color;
+    box-shadow: 0px 0px 12px $box-shadow-color;
+    text-align: center;
+    padding: 2px;
+    margin-bottom: 35px;
+  }
+}

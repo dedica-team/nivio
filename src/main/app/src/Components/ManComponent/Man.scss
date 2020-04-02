@@ -1,70 +1,73 @@
+@import '../../Ressources/styling/colors.scss';
+@import '../../Ressources/styling/font.scss';
+
 $contentMargin: 254px;
 
-.manualContent {
-  margin-left: $contentMargin;
-}
+.manualContainer {
+  text-shadow: none;
+  padding-bottom: 50px;
+  .manualContent {
+    margin-left: $contentMargin;
+  }
 
-pre {
-  display: block;
-  white-space: pre;
-}
+  img {
+    max-width: 1500px;
+    max-height: 750px;
+  }
 
-/* -- sidebar --------------------------------------------------------------- */
+  .sphinxsidebar {
+    width: 230px;
+    margin-left: -$contentMargin;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    position: fixed;
+    top: 0px;
+    padding: 8px 5px 0 10px;
 
-div.sphinxsidebarwrapper {
-  padding: 10px 5px 0 10px;
-}
+    ul {
+      list-style: none;
+      ul {
+        margin-top: 0;
+        margin-bottom: 0;
+        list-style: square;
+      }
+    }
+  }
 
-div.sphinxsidebar {
-  width: 230px;
-  margin-left: -$contentMargin;
-  font-size: 90%;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  position: absolute;
-  top: 0px;
-}
+  h1,
+  h2,
+  h3 {
+    text-transform: uppercase;
+    background-color: $header-color;
+    box-shadow: 0px 0px 12px $box-shadow-color;
+    text-align: center;
+  }
 
-div.sphinxsidebar ul {
-  list-style: none;
-}
+  h1 {
+    margin: 0;
+    margin-bottom: 1em;
+  }
 
-div.sphinxsidebar ul ul,
-div.sphinxsidebar ul.want-points {
-  margin-left: 20px;
-  list-style: square;
-}
+  h2,
+  h3 {
+    margin: 10px 0px;
+    display: inline-block;
+    padding-left: 1em;
+    padding-right: 1em;
+  }
 
-div.sphinxsidebar ul ul {
-  margin-top: 0;
-  margin-bottom: 0;
-}
+  pre {
+    display: block;
+    white-space: pre;
+    padding: 7px 20px;
+    margin: 15px 0px;
+    line-height: 1.3em;
+    overflow: auto;
+    overflow-y: hidden;
+    background-color: $highlight-grey;
+  }
 
-div.sphinxsidebar form {
-  margin-top: 10px;
-}
-
-div.sphinxsidebar input {
-  border: 1px solid #98dbcc;
-  font-family: sans-serif;
-  font-size: 1em;
-}
-
-div.sphinxsidebar #searchbox form.search {
-  overflow: hidden;
-}
-
-div.sphinxsidebar #searchbox input[type='text'] {
-  float: left;
-  width: 80%;
-  padding: 0.25em;
-  box-sizing: border-box;
-}
-
-div.sphinxsidebar #searchbox input[type='submit'] {
-  float: left;
-  width: 20%;
-  border-left: none;
-  padding: 0.25em;
-  box-sizing: border-box;
+  .headerlink {
+    display: none;
+  }
 }

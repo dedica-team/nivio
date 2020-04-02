@@ -1,6 +1,8 @@
 import React, { ReactElement, useState, useEffect } from 'react';
 import Modal from 'react-modal';
 
+import './GenericModal.scss';
+
 interface IGenericModalProps {
   modalContent: string | ReactElement | ReactElement[] | null;
 }
@@ -31,9 +33,8 @@ const GenericModal: React.FC<IGenericModalProps> = ({ modalContent }) => {
     }
   }, [modalContentState]);
 
-  // Will only be used if we close it with ESC or clicking on overlay
-  // If we want to close it with a button, we need to set modalContent in our parent component to null
   const closeModal = () => {
+    setShowModal(false);
     setModalContentState(null);
   };
 
@@ -47,6 +48,9 @@ const GenericModal: React.FC<IGenericModalProps> = ({ modalContent }) => {
       onRequestClose={closeModal}
       contentLabel='Modal'
     >
+      <button className={'close'} onClick={closeModal}>
+        close
+      </button>
       {modalContentState}
     </Modal>
   );

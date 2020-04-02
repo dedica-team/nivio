@@ -9,6 +9,8 @@ import Command from '../CommandComponent/Command';
 import CommandContext from '../../Context/Command.context';
 import LandscapeContext from '../../Context/Landscape.context';
 
+import './Home.scss';
+
 const Home: React.FC = () => {
   const [modalContent, setModalContent] = useState<string | ReactElement | ReactElement[] | null>(
     null
@@ -41,12 +43,8 @@ const Home: React.FC = () => {
     getLandscapes();
   }, []);
 
-  const onModalClose = () => {
-    setModalContent(null);
-  };
-
   const enterLog = (l: ILandscape) => {
-    setModalContent(<LandscapeLog landscape={l} closeFn={onModalClose} />);
+    setModalContent(<LandscapeLog landscape={l} />);
     commandContext.message = 'Showing log: ' + l.identifier;
   };
 
@@ -59,16 +57,17 @@ const Home: React.FC = () => {
     content = landscapes.map(l => {
       return (
         <div key={l.identifier} className={'landscapeContainer'}>
-          <h2>{l.name}</h2>&nbsp;&nbsp;
-          <Link to={`/landscape/${l.identifier}`}>
-            <button className={'control'} onClick={() => enterLandscape(l)}>
-              enter &gt;
+          <div className='navigation'>
+            <span className='title'>{l.name}</span>
+            <Link to={`/landscape/${l.identifier}`}>
+              <button className={'control'} onClick={() => enterLandscape(l)}>
+                enter &gt;
+              </button>
+            </Link>
+            <button className={'control'} onClick={() => enterLog(l)}>
+              log
             </button>
-          </Link>
-          &nbsp;
-          <button className={'control'} onClick={() => enterLog(l)}>
-            log
-          </button>
+          </div>
           <blockquote>{l.description}</blockquote>
           <blockquote>
             Identifier: {l.identifier}
@@ -99,20 +98,17 @@ const Home: React.FC = () => {
             >
               Printable Graph
             </a>
-            <br />
           </blockquote>
-          <br />
-          <br />
         </div>
       );
     });
   }
 
   return (
-    <div>
+    <div className='homeContainer'>
       <GenericModal modalContent={modalContent} />
-      <h1>Landscapes</h1>
-      {content}
+      <span className='header'>Landscapes</span>
+      <div className='content'>{content}</div>
       <Command />
     </div>
   );

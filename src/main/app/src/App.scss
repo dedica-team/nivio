@@ -1,133 +1,20 @@
+@import 'Ressources/styling/colors';
+@import 'Ressources/styling/font';
+
 body {
-  background-color: black;
-  font-family: monospace;
-  color: rgba(255, 255, 255, 0.75);
-  text-shadow: 0 0 10px rgba(0, 255, 255, 0.95);
-  margin-bottom: 5em;
+  background-color: $background-grey;
+
+  font-family: $nivio-font;
+  color: $font-color;
+  text-shadow: 0 0 10px $text-shadow-color;
 }
 
-.highlight {
-  background-color: transparent;
-}
-
-pre {
-  white-space: pre;
-  text-shadow: none;
+button {
+  font-family: $nivio-font;
+  font-weight: bold;
 }
 
 a {
   color: white;
   font-weight: bold;
-}
-
-h1,
-h2,
-h3 {
-  text-transform: uppercase;
-  background-color: rgba(0, 127, 127, 0.682);
-  pointer-events: auto;
-  box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.5);
-  text-align: center;
-  line-height: normal;
-  cursor: default;
-}
-
-h1 {
-  margin: 0;
-  margin-bottom: 1em;
-}
-
-h2,
-h3 {
-  display: inline-block;
-  padding-left: 1em;
-  padding-right: 1em;
-}
-
-hr {
-  margin-top: 1em;
-  box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.5);
-  border-top: 1px solid rgba(127, 255, 255, 0.25);
-  height: 1px;
-}
-
-.control {
-  background-color: rgba(0, 127, 127, 0.682);
-  pointer-events: auto;
-  box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.5);
-  border: 1px solid rgba(127, 255, 255, 0.25);
-  text-align: center;
-  line-height: normal;
-  cursor: default;
-  text-transform: uppercase;
-}
-
-button.control {
-  color: rgba(255, 255, 255, 0.75);
-  font-size: large;
-  text-shadow: 0 0 10px rgba(0, 255, 255, 0.95);
-  cursor: pointer;
-}
-
-.typewriter {
-  animation: typing 3.5s steps(40, end);
-}
-
-.console {
-  border-top: 1px solid rgba(127, 255, 255, 0.25);
-  background-color: black !important;
-}
-
-@keyframes typing {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
-}
-
-g rect.group {
-  stroke-width: 0.1em;
-  fill-opacity: 0.1;
-  stroke: rgba(127, 255, 255, 0.25);
-  box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.5);
-}
-
-g.label rect {
-  fill: black;
-  stroke: rgba(127, 255, 255, 0.25);
-}
-
-g.label text {
-  fill: rgba(255, 255, 255, 0.75);
-}
-
-.Modal {
-  position: absolute;
-  top: 40px;
-  left: 40px;
-  right: 40px;
-  bottom: 40px;
-  background-color: black;
-  border: none;
-  overflow: auto;
-}
-
-.Modal::-webkit-scrollbar {
-  display: none;
-}
-
-.Modal:focus {
-  outline: none;
-}
-
-.Overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.75);
-  filter: blur();
 }

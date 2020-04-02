@@ -3,6 +3,8 @@ import { useHistory } from 'react-router-dom';
 import Terminal from 'react-console-emulator';
 import CommandContext from '../../Context/Command.context';
 
+import './Command.scss';
+
 const Command: React.FC = () => {
   const history = useHistory();
   const commandContext = useContext(CommandContext);
@@ -48,16 +50,15 @@ const Command: React.FC = () => {
     };*/
 
   return (
-    <footer key={'footer'} id={'footer'} style={{ position: 'fixed', bottom: 0, width: '100%' }}>
+    <footer key={'footer'} id={'footer'}>
       <div className={'typewriter'}>{commandContext.message}</div>
       <Terminal
         commands={commands()}
         promptLabel={'>'}
         autoFocus={true}
-        style={{ width: '100%', minHeight: null }}
+        errorText={'invalid command, type "help" for commands'}
         className={'console'}
-        contentStyle={{ padding: '0.5em' }}
-        inputAreaStyle={{ height: '1em' }}
+        contentClassName={'consoleContent'}
       />
     </footer>
   );

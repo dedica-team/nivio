@@ -9,6 +9,8 @@ import Command from '../../CommandComponent/Command';
 import GenericModal from '../../ModalComponent/GenericModal';
 import LandscapeContext from '../../../Context/Landscape.context';
 
+import './Landscape.scss';
+
 const Landscape = () => {
   const [tool, setTool] = useState(TOOL_AUTO);
   const [value, setValue] = useState({});
@@ -28,13 +30,8 @@ const Landscape = () => {
       <LandscapeItem
         host={process.env.REACT_APP_BACKEND_URL || 'localhost:8080'}
         element={e.target.parentElement}
-        closeFn={onModalClose}
       />
     );
-  };
-
-  const onModalClose = () => {
-    setModalContent(null);
   };
 
   if (landscape) {
@@ -48,7 +45,7 @@ const Landscape = () => {
           </>
         }
         render={content => (
-          <div>
+          <div className='landscapeContainer'>
             <GenericModal modalContent={modalContent} />
             <ReactSVGPanZoom
               key={'panzoom'}

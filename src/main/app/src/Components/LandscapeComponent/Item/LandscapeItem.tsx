@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ReactHtmlParser from 'react-html-parser';
+import ReactHtmlParser from 'html-react-parser';
 
 interface Props {
   host: string;
@@ -32,19 +32,7 @@ const LandscapeItem: React.FC<Props> = ({ element, host, closeFn }) => {
     }
   }, [element, host, topic, html]);
 
-  return (
-    <div>
-      <button className={'control'} onClick={closeFn} style={{ float: 'right' }}>
-        OK
-      </button>
-      <div>
-        {' '}
-        {ReactHtmlParser(html)}
-        <br />
-        <br />
-      </div>
-    </div>
-  );
+  return <div className='landscapeItemContent'>{ReactHtmlParser(html)}</div>;
 };
 
 export default LandscapeItem;

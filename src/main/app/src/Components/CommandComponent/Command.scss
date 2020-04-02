@@ -1,0 +1,43 @@
+@import '../../Ressources/styling/colors.scss';
+@import '../../Ressources/styling/font.scss';
+
+footer {
+  position: fixed;
+  display: block;
+
+  width: 100%;
+  bottom: 0;
+  left: 0;
+
+  .console {
+    width: 100%;
+    min-height: 0px !important;
+    padding: 10px !important;
+
+    border-top: 1px solid $border-color;
+    border-radius: 0px !important;
+
+    background-color: black !important;
+  }
+
+  .consoleContent {
+    padding: 0px !important;
+
+    color: $font-color !important;
+    font-family: $nivio-font;
+    font-size: $normal-font-size;
+  }
+
+  .typewriter {
+    animation: typing 3.5s steps(40, end);
+  }
+
+  @keyframes typing {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+}
