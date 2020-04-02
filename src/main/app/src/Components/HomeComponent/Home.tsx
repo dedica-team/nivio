@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, ReactElement } from 'react';
+import React, { useState, useEffect, useContext, useCallback, ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 
 import { ILandscape } from '../../interfaces';
@@ -16,32 +16,31 @@ const Home: React.FC = () => {
     null
   );
   const [landscapes, setLandscapes] = useState<ILandscape[]>();
+  const [loadLandscapes, setLoadLandscapes] = useState<boolean>(true);
 
-  // Needed for re-render, looking for another solution
   const commandContext = useContext(CommandContext);
   const landscapeContext = useContext(LandscapeContext);
 
-  /*
-    TODO: Find a way to load all landscapes into context without having to access our home path
-          if we reload e.g. http://localhost:3000/landscape/inout it wont load anymore
-    */
-  const getLandscapes = async () => {
-    await fetch(process.env.REACT_APP_BACKEND_URL + '/api/')
-      .then(response => {
-        return response.json();
-      })
-      .then(json => {
-        setLandscapes(json);
-        landscapeContext.landscapes = json;
-        commandContext.message = 'Loaded landscapes.';
-      });
-  };
+  //Could be moved into useEffect but can be used for a reload button later on
+  const getLandscapes = useCallback(async () => {
+    if (loadLandscapes) {
+      await fetch(process.env.REACT_APP_BACKEND_URL + '/api/')
+        .then(response => {
+          return response.json();
+        })
+        .then(json => {
+          setLandscapes(json);
+          setLoadLandscapes(false);
+          landscapeContext.landscapes = json;
+          commandContext.message = 'Loaded landscapes.';
+        });
+    }
+  }, [commandContext.message, landscapeContext.landscapes, loadLandscapes]);
 
-  //ComponentDidMount, only runs once because we provide []
-  //remove warning with [getLandscapes] will trigger some unintended sideffects so we need to live with it for now
+  //ComponentDidMount
   useEffect(() => {
     getLandscapes();
-  }, []);
+  }, [getLandscapes]);
 
   const enterLog = (l: ILandscape) => {
     setModalContent(<LandscapeLog landscape={l} />);
