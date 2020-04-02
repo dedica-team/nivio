@@ -8,6 +8,7 @@ import LandscapeItem from '../Item/LandscapeItem';
 import Command from '../../CommandComponent/Command';
 import GenericModal from '../../ModalComponent/GenericModal';
 import LandscapeContext from '../../../Context/Landscape.context';
+import CommandContext from '../../../Context/Command.context';
 
 import './Landscape.scss';
 import { ILandscape } from '../../../interfaces';
@@ -21,14 +22,28 @@ const Landscape: React.FC = () => {
   const [value, setValue] = useState<Value>({});
   const [modalContent, setModalContent] = useState<string | ReactElement | null>(null);
   const [landscape, setLandscape] = useState<ILandscape | null>(null);
+  const [reloadLandscape, setReloadLandscape] = useState<boolean>(false);
 
   const landscapeContext = useContext(LandscapeContext);
+  const commandContext = useContext(CommandContext);
   const { identifier } = useParams();
 
   useEffect(() => {
     const index = landscapeContext.landscapes.findIndex(i => i.identifier === identifier);
     setLandscape(landscapeContext.landscapes[index]);
-  }, [identifier, landscapeContext.landscapes]);
+  }, [identifier, landscapeContext.landscapes, reloadLandscape]);
+
+  const reloadLandscapes = async () => {
+    await fetch(process.env.REACT_APP_BACKEND_URL + '/api/')
+      .then(response => {
+        return response.json();
+      })
+      .then(json => {
+        landscapeContext.landscapes = json;
+        commandContext.message = 'Loaded landscapes.';
+        setReloadLandscape(!reloadLandscape);
+      });
+  };
 
   const onItemClick = (e: any) => {
     setModalContent(
@@ -70,7 +85,7 @@ const Landscape: React.FC = () => {
               value={value}
               onChangeValue={newValue => setValue(newValue)}
             >
-              <svg width={0} height={0}>
+              <svg width={1000} height={1000}>
                 {content}
               </svg>
             </ReactSVGPanZoom>
@@ -83,7 +98,11 @@ const Landscape: React.FC = () => {
 
   return (
     <div className='landscapeError'>
-      No Landscapes loaded :( <Command />
+      <span className='error'>No Landscapes loaded :(</span> <br />
+      <button className='reload' onClick={reloadLandscapes}>
+        Reload Landscapes
+      </button>
+      <Command />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import Terminal from 'react-console-emulator';
 import CommandContext from '../../Context/Command.context';
@@ -9,6 +9,12 @@ const Command: React.FC = () => {
   const history = useHistory();
   const commandContext = useContext(CommandContext);
 
+  const [output, setOutput] = useState(commandContext.message);
+
+  useEffect(() => {
+    setOutput(commandContext.message);
+  }, [commandContext.message]);
+
   const commands = () => {
     return {
       cd: {
@@ -16,6 +22,7 @@ const Command: React.FC = () => {
         usage: 'cd',
         fn: () => {
           commandContext.message = '';
+          setOutput('');
           history.push('/');
         },
       },
@@ -33,25 +40,33 @@ const Command: React.FC = () => {
       sim: {
         description: 'Simulate realtime updates.',
         usage: 'sim',
-        fn: () => {},
+        fn: () => sim(),
       },
     };
   };
 
-  /*const sim = () => {
-        if (landscape === null) {
-            setMessage("Pick a landscape");
-            return;
-        }
-        let circles = $('g.hexagon circle');
-        let pick = circles[Math.floor(circles.length * Math.random())];
-        setMessage(pick.id +' has a problem!');
-        pick.style.setProperty('stroke', 'red');
-    };*/
+  const sim = () => {
+    if (window.location.pathname.includes('/landscape/')) {
+      const circles = document.getElementsByClassName('hexagon');
+      console.log('in');
+      if (circles.length > 0) {
+        const randomCircle = circles[Math.floor(circles.length * Math.random())];
+        const pick = randomCircle.children[0];
+        setOutput(pick.id + ' has a problem!');
+        (pick as HTMLElement).style.setProperty('stroke', 'red');
+      } else {
+        commandContext.message = 'Reload a landscape first';
+        setOutput(commandContext.message);
+      }
+    } else {
+      commandContext.message = 'Choose a landscape first';
+      setOutput(commandContext.message);
+    }
+  };
 
   return (
     <footer key={'footer'} id={'footer'}>
-      <div className={'typewriter'}>{commandContext.message}</div>
+      <div className={'typewriter'}>{output}</div>
       <Terminal
         commands={commands()}
         promptLabel={'>'}
