@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, ReactElement } from 'react';
 
 import { ReactSvgPanZoomLoader, SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
-import { ReactSVGPanZoom, TOOL_AUTO } from 'react-svg-pan-zoom';
+import { ReactSVGPanZoom, TOOL_AUTO, Tool, Value } from 'react-svg-pan-zoom';
 import { useParams } from 'react-router-dom';
 
 import LandscapeItem from '../Item/LandscapeItem';
@@ -10,12 +10,17 @@ import GenericModal from '../../ModalComponent/GenericModal';
 import LandscapeContext from '../../../Context/Landscape.context';
 
 import './Landscape.scss';
+import { ILandscape } from '../../../interfaces';
 
-const Landscape = () => {
-  const [tool, setTool] = useState(TOOL_AUTO);
-  const [value, setValue] = useState({});
-  const [modalContent, setModalContent] = useState(null);
-  const [landscape, setLandscape] = useState(null);
+const Landscape: React.FC = () => {
+  const [tool, setTool] = useState<Tool>(TOOL_AUTO);
+
+  // It wants a value or null but if we defined it as null it throws an error that shouldn't use null
+  // In their own documentation, they initialize it with {}, but that will invoke a typescript error
+  // @ts-ignore
+  const [value, setValue] = useState<Value>({});
+  const [modalContent, setModalContent] = useState<string | ReactElement | null>(null);
+  const [landscape, setLandscape] = useState<ILandscape | null>(null);
 
   const landscapeContext = useContext(LandscapeContext);
   const { identifier } = useParams();
@@ -25,7 +30,7 @@ const Landscape = () => {
     setLandscape(landscapeContext.landscapes[index]);
   }, [identifier, landscapeContext.landscapes]);
 
-  const onItemClick = e => {
+  const onItemClick = (e: any) => {
     setModalContent(
       <LandscapeItem
         host={process.env.REACT_APP_BACKEND_URL || 'localhost:8080'}
@@ -44,7 +49,7 @@ const Landscape = () => {
             <SvgLoaderSelectElement selector='.label' onClick={onItemClick} />
           </>
         }
-        render={content => (
+        render={(content: ReactElement[]) => (
           <div className='landscapeContainer'>
             <GenericModal modalContent={modalContent} />
             <ReactSVGPanZoom
@@ -61,11 +66,13 @@ const Landscape = () => {
               toolbarProps={{ position: 'none' }}
               detectAutoPan={false}
               tool={tool}
-              onChangeTool={tool => setTool(tool)}
+              onChangeTool={newTool => setTool(newTool)}
               value={value}
-              onChangeValue={value => setValue(value)}
+              onChangeValue={newValue => setValue(newValue)}
             >
-              <svg>{content}</svg>
+              <svg width={0} height={0}>
+                {content}
+              </svg>
             </ReactSVGPanZoom>
             <Command />
           </div>
@@ -75,7 +82,7 @@ const Landscape = () => {
   }
 
   return (
-    <div>
+    <div className='landscapeError'>
       No Landscapes loaded :( <Command />
     </div>
   );
