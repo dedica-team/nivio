@@ -1,16 +1,16 @@
 package de.bonndan.nivio.notification;
 
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.StatusItem;
+import de.bonndan.nivio.assessment.StatusValue;
 import org.springframework.context.ApplicationEvent;
 
 //TODO use
 public class ServiceStateChangeEvent extends ApplicationEvent  {
     private final FullyQualifiedIdentifier fqi;
-    private final StatusItem old;
-    private final StatusItem current;
+    private final StatusValue old;
+    private final StatusValue current;
 
-    public ServiceStateChangeEvent(Object source, FullyQualifiedIdentifier fqi, StatusItem old, StatusItem state) {
+    public ServiceStateChangeEvent(Object source, FullyQualifiedIdentifier fqi, StatusValue old, StatusValue state) {
         super(source);
         this.fqi = fqi;
         this.old = old;
@@ -21,11 +21,11 @@ public class ServiceStateChangeEvent extends ApplicationEvent  {
         return fqi;
     }
 
-    public StatusItem getOld() {
+    public StatusValue getOld() {
         return old;
     }
 
-    public StatusItem getCurrent() {
+    public StatusValue getCurrent() {
         return current;
     }
 }

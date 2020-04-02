@@ -1,5 +1,7 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.LandscapeConfig;
+
 import java.util.Map;
 
 public interface Landscape extends Component {

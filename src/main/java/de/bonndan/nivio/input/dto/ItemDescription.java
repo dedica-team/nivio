@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
 import java.net.URL;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * This is representation of a service in the textual form as described in a source file.
@@ -36,7 +36,7 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
     private String group;
 
     @JsonDeserialize(contentAs = StatusDescription.class)
-    private Set<StatusItem> statuses = new HashSet<>();
+    private Set<StatusValue> statuses = new HashSet<>();
 
     @JsonDeserialize(contentAs = InterfaceDescription.class)
     private Set<InterfaceItem> interfaces = new HashSet<>();
@@ -207,13 +207,13 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
                 .forEach(this::addRelation);
     }
 
-    public Set<StatusItem> getStatuses() {
+    public Set<StatusValue> getStatuses() {
         return statuses;
     }
 
     @Override
-    public void setStatus(StatusItem statusItem) {
-        statuses.add(statusItem);
+    public void setStatus(StatusValue statusValue) {
+        statuses.add(statusValue);
     }
 
     @Override

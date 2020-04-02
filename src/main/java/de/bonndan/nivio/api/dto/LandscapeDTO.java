@@ -2,13 +2,11 @@ package de.bonndan.nivio.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.bonndan.nivio.model.GroupItem;
-import de.bonndan.nivio.model.LandscapeConfig;
+import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.model.Landscape;
 import org.springframework.hateoas.RepresentationModel;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * API representation of a landscape.

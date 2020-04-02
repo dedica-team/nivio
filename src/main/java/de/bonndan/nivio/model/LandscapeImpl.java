@@ -2,6 +2,7 @@ package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.output.Rendered;
 import org.springframework.util.StringUtils;

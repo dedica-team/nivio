@@ -1,12 +1,12 @@
 package de.bonndan.nivio.input.dto;
 
-import de.bonndan.nivio.model.Status;
-import de.bonndan.nivio.model.StatusItem;
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-public class StatusDescription implements StatusItem {
+public class StatusDescription implements StatusValue {
 
     @NotEmpty
     private String label;

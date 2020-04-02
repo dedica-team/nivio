@@ -4,6 +4,7 @@ import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
+import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.RenderedArtifact;
 import org.apache.commons.lang3.tuple.ImmutablePair;

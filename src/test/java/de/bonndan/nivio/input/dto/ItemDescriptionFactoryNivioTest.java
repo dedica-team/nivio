@@ -1,6 +1,8 @@
 package de.bonndan.nivio.input.dto;
 
 
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
@@ -64,10 +66,10 @@ class ItemDescriptionFactoryNivioTest {
         service.getStatuses().forEach(statusItem -> {
             Assert.assertNotNull(statusItem);
             Assert.assertNotNull(statusItem.getLabel());
-            if (statusItem.getLabel().equals(StatusItem.SECURITY)) {
+            if (statusItem.getLabel().equals(StatusValue.SECURITY)) {
                 Assert.assertEquals(Status.RED, statusItem.getStatus());
             }
-            if (statusItem.getLabel().equals(StatusItem.CAPABILITY)) {
+            if (statusItem.getLabel().equals(StatusValue.CAPABILITY)) {
                 Assert.assertEquals(Status.YELLOW, statusItem.getStatus());
             }
         });

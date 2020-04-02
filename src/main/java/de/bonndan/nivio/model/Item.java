@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.output.Rendered;
 import org.springframework.util.StringUtils;
 
@@ -36,7 +37,7 @@ public class Item implements LandscapeItem, Labeled, Linked, Tagged, Rendered {
     private String group;
 
     @JsonManagedReference
-    private Set<StatusItem> statuses = new HashSet<>();
+    private Set<StatusValue> statuses = new HashSet<>();
 
     @JsonManagedReference
     private Set<RelationItem<Item>> relations = new HashSet<>();
@@ -137,32 +138,32 @@ public class Item implements LandscapeItem, Labeled, Linked, Tagged, Rendered {
     }
 
     @Override
-    public Set<StatusItem> getStatuses() {
+    public Set<StatusValue> getStatuses() {
         return statuses;
     }
 
-    public void setStatus(StatusItem statusItem) {
+    public void setStatus(StatusValue statusValue) {
 
-        if (statusItem == null)
+        if (statusValue == null)
             throw new IllegalArgumentException("Status item is null");
-        if (StringUtils.isEmpty(statusItem.getLabel()))
+        if (StringUtils.isEmpty(statusValue.getLabel()))
             throw new IllegalArgumentException("Status item has no label");
 
-        Optional<StatusItem> existing = this.statuses.stream()
-                .filter(status -> statusItem.getLabel().equals(status.getLabel()))
+        Optional<StatusValue> existing = this.statuses.stream()
+                .filter(status -> statusValue.getLabel().equals(status.getLabel()))
                 .findFirst();
 
         existing.ifPresentOrElse(
                 serviceStatus -> {
-                    ((ItemStatus) serviceStatus).setStatus(statusItem.getStatus());
-                    ((ItemStatus) serviceStatus).setMessage(statusItem.getMessage());
+                    ((ItemStatus) serviceStatus).setStatus(statusValue.getStatus());
+                    ((ItemStatus) serviceStatus).setMessage(statusValue.getMessage());
                 },
                 () -> {
                     var added = new ItemStatus();
                     added.setItem(this);
-                    added.setLabel(statusItem.getLabel());
-                    added.setStatus(statusItem.getStatus());
-                    added.setMessage(statusItem.getMessage());
+                    added.setLabel(statusValue.getLabel());
+                    added.setStatus(statusValue.getStatus());
+                    added.setMessage(statusValue.getMessage());
                     this.statuses.add(added);
                 });
     }

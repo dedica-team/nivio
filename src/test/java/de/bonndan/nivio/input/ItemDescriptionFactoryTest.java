@@ -1,5 +1,7 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
@@ -49,11 +51,11 @@ public class ItemDescriptionFactoryTest {
     public void incrementAddsStatuses() {
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
-        sd1.setStatus(new StatusDescription(StatusItem.CAPABILITY, Status.GREEN));
+        sd1.setStatus(new StatusDescription(StatusValue.CAPABILITY, Status.GREEN));
 
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
-        increment.setStatus(new StatusDescription(StatusItem.STABILITY, Status.GREEN));
+        increment.setStatus(new StatusDescription(StatusValue.STABILITY, Status.GREEN));
 
         ItemDescriptionFactory.assignNotNull(sd1, increment);
 

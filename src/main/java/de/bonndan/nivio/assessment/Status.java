@@ -1,4 +1,4 @@
-package de.bonndan.nivio.model;
+package de.bonndan.nivio.assessment;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -58,7 +58,7 @@ public enum Status {
         return symbol;
     }
 
-    public static Status highestOf(Set<StatusItem> statuses) {
+    public static Status highestOf(Set<StatusValue> statuses) {
 
         var ref = new Object() {
             Status current = Status.UNKNOWN;

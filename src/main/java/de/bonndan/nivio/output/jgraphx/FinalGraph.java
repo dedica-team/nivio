@@ -9,6 +9,8 @@ import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStyleRegistry;
 import com.mxgraph.view.mxStylesheet;
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.RenderedArtifact;
@@ -20,7 +22,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-import static de.bonndan.nivio.model.Status.UNKNOWN;
+import static de.bonndan.nivio.assessment.Status.UNKNOWN;
 import static de.bonndan.nivio.output.Color.getGroupColor;
 
 /**
@@ -171,7 +173,7 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
 
             //sort statuses, pick worst
             Item item = entry.getKey();
-            Optional<StatusItem> displayed = item.getStatuses().stream()
+            Optional<StatusValue> displayed = item.getStatuses().stream()
                     .filter(item1 -> !UNKNOWN.equals(item1.getStatus()) && !Status.GREEN.equals(item1.getStatus()))
                     .min((statusItem, t1) -> {
                         if (statusItem.getStatus().equals(t1.getStatus())) {

@@ -1,5 +1,7 @@
 package de.bonndan.nivio.input.rancher1;
 
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.StatusDescription;
@@ -88,11 +90,11 @@ public class PrometheusExporter {
 
             StatusDescription health_state = null;
             if (metric.getLabels().getOrDefault("health_state", "").equals("healthy") && metric.getValue() > 0) {
-                health_state = new StatusDescription(StatusItem.HEALTH, Status.GREEN, metric.getLabels().getOrDefault("health_state", ""));
+                health_state = new StatusDescription(StatusValue.HEALTH, Status.GREEN, metric.getLabels().getOrDefault("health_state", ""));
             }
 
             if (metric.getLabels().getOrDefault("health_state", "").equals("unhealthy") && metric.getValue() > 0) {
-                health_state = new StatusDescription(StatusItem.HEALTH, Status.ORANGE, metric.getLabels().getOrDefault("health_state", ""));
+                health_state = new StatusDescription(StatusValue.HEALTH, Status.ORANGE, metric.getLabels().getOrDefault("health_state", ""));
             }
 
             if (health_state != null)

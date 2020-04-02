@@ -2,10 +2,10 @@ package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.api.dto.LandscapeStatistics;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.docs.DocsController;
-import de.bonndan.nivio.output.jgraphx.JGraphXRenderController;
 import de.bonndan.nivio.output.map.MapController;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
@@ -46,8 +46,8 @@ public class LandscapeDTOFactory {
         stats.items = impl.getItems().all().size();
         stats.groups = impl.getGroups().size();
 
-        List<StatusItem> collect = impl.getItems().stream()
-                .map(item -> StatusItem.highestOf(item.getStatuses())).flatMap(Collection::stream)
+        List<StatusValue> collect = impl.getItems().stream()
+                .map(item -> StatusValue.highestOf(item.getStatuses())).flatMap(Collection::stream)
                 .collect(Collectors.toList());
 
         if (!collect.isEmpty()) {

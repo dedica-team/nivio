@@ -1,5 +1,7 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.assessment.StatusValue;
+
 import java.util.Set;
 
 /**
@@ -26,9 +28,9 @@ public interface LandscapeItem extends Component, Labeled, Linked {
 
     Lifecycle getLifecycle();
 
-    void setStatus(StatusItem statusItem);
+    void setStatus(StatusValue statusValue);
 
-    Set<StatusItem> getStatuses();
+    Set<StatusValue> getStatuses();
 
     Set<InterfaceItem> getInterfaces();
 

@@ -1,9 +1,12 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
+
 import javax.validation.constraints.NotEmpty;
 
-public class ItemStatus implements StatusItem {
+public class ItemStatus implements StatusValue {
 
     @JsonBackReference
     private Item item;

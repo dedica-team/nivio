@@ -1,7 +1,10 @@
-package de.bonndan.nivio.model;
+package de.bonndan.nivio;
+
+import de.bonndan.nivio.assessment.KPI;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class LandscapeConfig {
 
@@ -12,6 +15,7 @@ public class LandscapeConfig {
     private List<String> groupBlacklist = new ArrayList<>();
     private List<String> labelBlacklist = new ArrayList<>();
     private Branding branding = new Branding();
+    private List<KPI> kpis = new ArrayList<>();
 
     public JGraphXConfig getJgraphx() {
         return jgraphx;
@@ -129,6 +133,10 @@ public class LandscapeConfig {
         public void setMinDistanceLimitFactor(Float minDistanceLimitFactor) {
             this.minDistanceLimitFactor = minDistanceLimitFactor;
         }
+    }
+
+    public List<KPI> getKPIs() {
+        return kpis;
     }
 
     /**

@@ -1,13 +1,13 @@
 package de.bonndan.nivio.input;
 
 
+import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.Test;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;

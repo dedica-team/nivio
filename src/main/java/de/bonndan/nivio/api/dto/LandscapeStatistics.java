@@ -2,7 +2,7 @@ package de.bonndan.nivio.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.bonndan.nivio.model.Status;
+import de.bonndan.nivio.assessment.Status;
 
 import java.util.Date;
 
