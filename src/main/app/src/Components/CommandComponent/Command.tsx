@@ -48,7 +48,6 @@ const Command: React.FC = () => {
   const sim = () => {
     if (window.location.pathname.includes('/landscape/')) {
       const circles = document.getElementsByClassName('hexagon');
-      console.log('in');
       if (circles.length > 0) {
         const randomCircle = circles[Math.floor(circles.length * Math.random())];
         const pick = randomCircle.children[0];
