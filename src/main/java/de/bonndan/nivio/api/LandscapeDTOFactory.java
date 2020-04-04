@@ -61,10 +61,7 @@ public class LandscapeDTOFactory {
                 .toArray(String[]::new);
 
         if (impl.getLog() != null) {
-            List<ProcessLog.Entry> messages = impl.getLog().getMessages();
-            if (messages.size() > 0) {
-                stats.lastUpdate = messages.get(messages.size() - 1).getDate();
-            }
+            stats.lastUpdate = impl.getLog().getLastUpdate();
         }
         return stats;
     }

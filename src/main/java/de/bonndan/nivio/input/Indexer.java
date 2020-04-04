@@ -1,13 +1,16 @@
 
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.notification.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -19,16 +22,15 @@ public class Indexer {
 
     private final LandscapeRepository landscapeRepo;
     private final ItemDescriptionFormatFactory formatFactory;
-    private final NotificationService notificationService;
-
+    private final ApplicationEventPublisher eventPublisher;
 
     public Indexer(LandscapeRepository landscapeRepository,
                    ItemDescriptionFormatFactory formatFactory,
-                   NotificationService notificationService
+                   ApplicationEventPublisher eventPublisher
     ) {
         this.landscapeRepo = landscapeRepository;
         this.formatFactory = formatFactory;
-        this.notificationService = notificationService;
+        this.eventPublisher = eventPublisher;
     }
 
     public ProcessLog reIndex(final LandscapeDescription input) {
@@ -54,9 +56,10 @@ public class Indexer {
         } catch (ProcessingException e) {
             final String msg = "Error while reindexing landscape " + input.getIdentifier();
             logger.warn(msg, e);
-            notificationService.sendError(e, msg);
+            eventPublisher.publishEvent(new ProcessingErrorEvent(this, e));
         }
 
+        eventPublisher.publishEvent(new ProcessingFinishedEvent(this, landscape));
         logger.info("Reindexed landscape " + input.getIdentifier());
         landscape.setProcessLog(logger);
         return logger;

@@ -91,6 +91,15 @@ public class ProcessLog {
         return exception.getMessage();
     }
 
+    @JsonIgnore
+    public Date getLastUpdate() {
+
+        if (messages.size() > 0) {
+            return messages.get(messages.size() - 1).getDate();
+        }
+        return null;
+    }
+
     public static class Entry {
         private final String level;
         private final String message;
