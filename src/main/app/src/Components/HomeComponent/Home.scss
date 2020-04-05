@@ -1,5 +1,6 @@
 @import '../../Ressources/styling/colors.scss';
 @import '../../Ressources/styling/font.scss';
+
 .homeContainer {
   .content {
     display: flex;
@@ -10,9 +11,6 @@
     .landscapeContainer {
       width: 46%;
       padding: 11px;
-
-      border: 1px solid $border-color;
-      box-shadow: 0px 0px 12px $box-shadow-color;
 
       .navigation {
         display: flex;
@@ -46,6 +44,12 @@
 
           box-shadow: 0px 0px 12px $box-shadow-color;
         }
+      }
+
+      img.preview {
+        border: 1px solid $border-color;
+        box-shadow: 0px 0px 2px $box-shadow-color;
+        margin-right: 1rem;
       }
     }
   }

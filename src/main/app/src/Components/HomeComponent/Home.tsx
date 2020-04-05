@@ -68,6 +68,7 @@ const Home: React.FC = () => {
               log
             </button>
           </div>
+          <img className={'preview'} src={process.env.REACT_APP_BACKEND_URL + '/render/' + l.identifier + '/graph.png'} style={ {maxWidth: 100, float: 'left'}} />
           <blockquote>{l.description}</blockquote>
           <blockquote>
             Identifier: {l.identifier}
@@ -99,6 +100,7 @@ const Home: React.FC = () => {
               Printable Graph
             </a>
           </blockquote>
+
         </div>
       );
     });
