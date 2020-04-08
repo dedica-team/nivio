@@ -1,12 +1,12 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.assessment.Status;
-import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.StatusDescription;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.input.dto.RelationDescription;
+import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.Lifecycle;
+import de.bonndan.nivio.model.RelationBuilder;
+import de.bonndan.nivio.model.RelationType;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,21 +45,6 @@ public class ItemDescriptionFactoryTest {
         ItemDescriptionFactory.assignNotNull(sd1, increment);
 
         assertEquals(2, sd1.getLabels(Label.PREFIX_NETWORK).size());
-    }
-
-    @Test
-    public void incrementAddsStatuses() {
-        ItemDescription sd1 = new ItemDescription();
-        sd1.setIdentifier("sd1");
-        sd1.setStatus(new StatusDescription(StatusValue.CAPABILITY, Status.GREEN));
-
-        ItemDescription increment = new ItemDescription();
-        increment.setIdentifier("sd1");
-        increment.setStatus(new StatusDescription(StatusValue.STABILITY, Status.GREEN));
-
-        ItemDescriptionFactory.assignNotNull(sd1, increment);
-
-        assertEquals(2, sd1.getStatuses().size());
     }
 
     @Test

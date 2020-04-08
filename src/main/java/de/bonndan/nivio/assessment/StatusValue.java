@@ -11,24 +11,26 @@ import java.util.List;
  */
 public class StatusValue {
 
-    private final String label;
+    public static final String SUMMARY_LABEL = "summary";
+
+    private final String field;
     private final Status status;
     private final String message;
 
-    public StatusValue(String label, Status status, String message) {
-        this.label = label;
+    public StatusValue(String field, Status status, String message) {
+        this.field = field;
         this.status = status;
         this.message = message;
     }
 
-    public StatusValue(String label, Status status) {
-        this.label = label;
+    public StatusValue(String field, Status status) {
+        this.field = field;
         this.status = status;
         message = null;
     }
 
-    public String getLabel() {
-        return label;
+    public String getField() {
+        return field;
     }
 
     public Status getStatus() {
@@ -38,7 +40,6 @@ public class StatusValue {
     public String getMessage() {
         return message;
     }
-
 
     /**
      * Returns a list of status items with highest status.
@@ -63,5 +64,13 @@ public class StatusValue {
         });
 
         return highest;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof StatusValue) {
+            return field.equals(((StatusValue) obj).field);
+        }
+        return false;
     }
 }

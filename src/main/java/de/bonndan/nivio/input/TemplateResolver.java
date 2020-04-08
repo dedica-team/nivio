@@ -68,13 +68,6 @@ public class TemplateResolver {
 
         Labeled.merge(template, item);
 
-        if (template.getStatuses() != null) {
-            template.getStatuses().forEach(statusItem -> {
-                if (!item.getStatuses().contains(statusItem))
-                    item.getStatuses().add(statusItem);
-            });
-        }
-
         if (template.getInterfaces() != null) {
             template.getInterfaces().forEach(interfaceItem -> {
                 if (!item.getInterfaces().contains(interfaceItem))

@@ -52,13 +52,6 @@ public interface ItemDescriptionFactory {
         if (increment.getLifecycle() != null)
             existing.setLifecycle(increment.getLifecycle());
 
-        /*
-         * the rest is merged
-         */
-        if (increment.getStatuses() != null) {
-            increment.getStatuses().forEach(existing::setStatus);
-        }
-
         existing.getLinks().putAll(increment.getLinks());
 
         assignSafe(increment.getRelations(), (rel) -> rel.forEach(existing::addRelation));

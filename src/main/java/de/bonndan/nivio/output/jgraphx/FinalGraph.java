@@ -173,11 +173,11 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
 
             //sort statuses, pick worst
             Item item = entry.getKey();
-            Optional<StatusValue> displayed = item.getStatuses().stream()
+            Optional<StatusValue> displayed = item.getStatusValues().stream()
                     .filter(item1 -> !UNKNOWN.equals(item1.getStatus()) && !Status.GREEN.equals(item1.getStatus()))
                     .min((statusItem, t1) -> {
                         if (statusItem.getStatus().equals(t1.getStatus())) {
-                            return statusItem.getLabel().compareToIgnoreCase(t1.getLabel());
+                            return statusItem.getField().compareToIgnoreCase(t1.getField());
                         }
                         return statusItem.getStatus().isHigherThan(t1.getStatus()) ? -1 : 1;
                     });
@@ -189,7 +189,7 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
             }
 
             displayed.ifPresent(statusItem -> {
-                cell.setValue(cell.getValue() + "\n(" + statusItem.getLabel() + "!)");
+                cell.setValue(cell.getValue() + "\n(" + statusItem.getField() + "!)");
                 cell.setStyle(cell.getStyle()
                         + mxConstants.STYLE_STROKECOLOR + "=" + statusItem.getStatus().toString() + ";"
                         + mxConstants.STYLE_STROKEWIDTH + "=" + 4 + ";"
@@ -312,7 +312,7 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
     }
 
     private String getStrokeColor(Item item) {
-        Status providerStatus = Status.highestOf(item.getStatuses());
+        Status providerStatus = Status.highestOf(item.getStatusValues());
         if (Status.RED.equals(providerStatus))
             return mxConstants.STYLE_STROKECOLOR + "=red;";
         if (Status.ORANGE.equals(providerStatus))

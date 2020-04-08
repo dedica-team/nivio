@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.output.Rendered;
 import org.springframework.util.StringUtils;
@@ -14,7 +15,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Item implements LandscapeItem, Labeled, Linked, Tagged, Rendered {
+public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
 
     @NotNull
     @Pattern(regexp = LandscapeItem.IDENTIFIER_VALIDATION)
@@ -37,7 +38,7 @@ public class Item implements LandscapeItem, Labeled, Linked, Tagged, Rendered {
     private String group;
 
     @JsonManagedReference
-    private Set<StatusValue> statuses = new HashSet<>();
+    private Set<StatusValue> statusValues = new HashSet<>();
 
     @JsonManagedReference
     private Set<RelationItem<Item>> relations = new HashSet<>();
@@ -135,37 +136,6 @@ public class Item implements LandscapeItem, Labeled, Linked, Tagged, Rendered {
 
     public void setLifecycle(Lifecycle lifecycle) {
         this.lifecycle = lifecycle;
-    }
-
-    @Override
-    public Set<StatusValue> getStatuses() {
-        return statuses;
-    }
-
-    public void setStatus(StatusValue statusValue) {
-
-        if (statusValue == null)
-            throw new IllegalArgumentException("Status item is null");
-        if (StringUtils.isEmpty(statusValue.getLabel()))
-            throw new IllegalArgumentException("Status item has no label");
-
-        Optional<StatusValue> existing = this.statuses.stream()
-                .filter(status -> statusValue.getLabel().equals(status.getLabel()))
-                .findFirst();
-
-        existing.ifPresentOrElse(
-                serviceStatus -> {
-                    ((ItemStatus) serviceStatus).setStatus(statusValue.getStatus());
-                    ((ItemStatus) serviceStatus).setMessage(statusValue.getMessage());
-                },
-                () -> {
-                    var added = new ItemStatus();
-                    added.setItem(this);
-                    added.setLabel(statusValue.getLabel());
-                    added.setStatus(statusValue.getStatus());
-                    added.setMessage(statusValue.getMessage());
-                    this.statuses.add(added);
-                });
     }
 
     @Override
@@ -269,4 +239,13 @@ public class Item implements LandscapeItem, Labeled, Linked, Tagged, Rendered {
         return getFullyQualifiedIdentifier().toString();
     }
 
+    @Override
+    public Set<StatusValue> getStatusValues() {
+        return statusValues;
+    }
+
+    @Override
+    public void setStatusValue(StatusValue statusValue) {
+        statusValues.add(statusValue);
+    }
 }

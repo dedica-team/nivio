@@ -1,10 +1,9 @@
 package de.bonndan.nivio;
 
-import de.bonndan.nivio.assessment.KPI;
+import de.bonndan.nivio.assessment.kpi.KPI;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class LandscapeConfig {
 

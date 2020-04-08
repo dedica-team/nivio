@@ -17,6 +17,8 @@ public enum Status {
 
     private final String status;
     private final int order;
+
+    @Deprecated
     private final String symbol;
 
     Status(String status, int order, String symbol) {
@@ -54,6 +56,7 @@ public enum Status {
         return order > current.order;
     }
 
+    @Deprecated
     public String getSymbol() {
         return symbol;
     }

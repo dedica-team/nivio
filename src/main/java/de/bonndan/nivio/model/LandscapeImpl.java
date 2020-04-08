@@ -3,17 +3,20 @@ package de.bonndan.nivio.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import de.bonndan.nivio.LandscapeConfig;
+import de.bonndan.nivio.assessment.Assessable;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.output.Rendered;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
-public class LandscapeImpl implements Landscape, Rendered {
+public class LandscapeImpl implements Landscape, Rendered, Assessable {
 
     /**
      * Immutable unique identifier. Maybe use an URN.
@@ -45,6 +48,8 @@ public class LandscapeImpl implements Landscape, Rendered {
     private ProcessLog processLog;
 
     private Map<String, String> labels = new HashMap<>();
+
+    private Set<StatusValue> statusValues = new HashSet<>();
 
     public String getIdentifier() {
         return identifier;
@@ -170,5 +175,20 @@ public class LandscapeImpl implements Landscape, Rendered {
     @Override
     public void setLabel(String key, String value) {
         labels.put(key, value);
+    }
+
+    @Override
+    public Set<StatusValue> getStatusValues() {
+        return statusValues;
+    }
+
+    @Override
+    public void setStatusValue(StatusValue statusValue) {
+        getStatusValues().add(statusValue);
+    }
+
+    @Override
+    public List<? extends Assessable> getChildren() {
+        return getGroups().values().stream().map(groupItem -> (Assessable)groupItem).collect(Collectors.toList());
     }
 }

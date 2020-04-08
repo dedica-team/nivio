@@ -1,16 +1,15 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import de.bonndan.nivio.assessment.Assessable;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.output.Rendered;
 import org.springframework.util.StringUtils;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class Group implements GroupItem, Rendered {
+public class Group implements GroupItem, Rendered, Assessable {
 
     public static final Group DEFAULT_GROUP;
     public static final String COMMON = "Common";
@@ -33,6 +32,8 @@ public class Group implements GroupItem, Rendered {
      * Items belonging to this group.
      */
     private List<Item> items = new ArrayList<>();
+
+    private Set<StatusValue> statusValues = new HashSet<>();
 
     public Group() {
 
@@ -118,5 +119,15 @@ public class Group implements GroupItem, Rendered {
     @Override
     public void setLabel(String key, String value) {
         labels.put(key, value);
+    }
+
+    @Override
+    public Set<StatusValue> getStatusValues() {
+        return statusValues;
+    }
+
+    @Override
+    public List<? extends Assessable> getChildren() {
+        return getItems();
     }
 }

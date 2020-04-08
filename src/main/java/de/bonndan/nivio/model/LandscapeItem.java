@@ -28,10 +28,6 @@ public interface LandscapeItem extends Component, Labeled, Linked {
 
     Lifecycle getLifecycle();
 
-    void setStatus(StatusValue statusValue);
-
-    Set<StatusValue> getStatuses();
-
     Set<InterfaceItem> getInterfaces();
 
     String getOwner();

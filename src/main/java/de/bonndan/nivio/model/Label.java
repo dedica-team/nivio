@@ -32,9 +32,13 @@ public enum Label {
 
     SCALE,
 
+    SECURITY,
+
     SHORTNAME,
 
     SOFTWARE,
+
+    STABILITY,
 
     /**
      * Name of the responsible team

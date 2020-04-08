@@ -63,7 +63,7 @@ public class ReportGenerator extends HtmlGenerator {
         return builder.toString();
     }
 
-    protected ContainerTag writeItem(LandscapeItem item) {
+    protected ContainerTag writeItem(Item item) {
         boolean hasRelations = item.getRelations() != null && item.getRelations().size() > 0;
         boolean hasInterfaces = item.getInterfaces() != null && item.getInterfaces().size() > 0;
         String groupColor = "#" + Color.nameToRGB(item.getGroup());
@@ -107,11 +107,11 @@ public class ReportGenerator extends HtmlGenerator {
 
 
                         //statuses
-                        iff(!item.getStatuses().isEmpty(), h4("Status information")),
+                        iff(!item.getStatusValues().isEmpty(), h4("Status information")),
                         dl().with(
-                                item.getStatuses().stream().map(statusItem ->
+                                item.getStatusValues().stream().map(statusItem ->
                                         join(
-                                                dt(FormatUtils.nice(statusItem.getLabel())),
+                                                dt(FormatUtils.nice(statusItem.getField())),
                                                 dd(
                                                         img().attr("src", localServer.getUrl("/icons/" + statusItem.getStatus().getSymbol() + ".png")).attr("width", "30px").attr("class", "img-fluid"),
                                                         span(" " + statusItem.getStatus().toString() + " ")

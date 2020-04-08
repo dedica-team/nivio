@@ -42,7 +42,7 @@ class SVGItemLabel extends Component {
                 .attr("width", width)
                 .attr("height", size / 2);
 
-        Status highest = Status.highestOf(item.getStatuses());
+        Status highest = Status.highestOf(item.getStatusValues());
         if (!Status.UNKNOWN.equals(highest)) {
             rect.attr("style", "stroke: " + highest.name());
         }

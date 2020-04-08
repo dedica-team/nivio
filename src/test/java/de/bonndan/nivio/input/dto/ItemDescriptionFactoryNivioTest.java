@@ -61,18 +61,9 @@ class ItemDescriptionFactoryNivioTest {
         assertTrue(Arrays.asList(service.getTags()).contains("CMS"));
         assertEquals(Lifecycle.END_OF_LIFE, service.getLifecycle());
 
-        assertNotNull(service.getStatuses());
-        assertEquals(3, service.getStatuses().size());
-        service.getStatuses().forEach(statusItem -> {
-            Assert.assertNotNull(statusItem);
-            Assert.assertNotNull(statusItem.getLabel());
-            if (statusItem.getLabel().equals(StatusValue.SECURITY)) {
-                Assert.assertEquals(Status.RED, statusItem.getStatus());
-            }
-            if (statusItem.getLabel().equals(StatusValue.CAPABILITY)) {
-                Assert.assertEquals(Status.YELLOW, statusItem.getStatus());
-            }
-        });
+        assertEquals(Status.RED.name(), service.getLabel(Label.SECURITY));
+        assertEquals(Status.YELLOW.name(), service.getLabel(Label.CAPABILITY));
+
 
         assertNotNull(service.getInterfaces());
         assertEquals(3, service.getInterfaces().size());

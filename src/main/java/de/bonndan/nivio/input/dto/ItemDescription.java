@@ -35,9 +35,6 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
     private Map<String, URL> links = new HashMap<>();
     private String group;
 
-    @JsonDeserialize(contentAs = StatusDescription.class)
-    private Set<StatusValue> statuses = new HashSet<>();
-
     @JsonDeserialize(contentAs = InterfaceDescription.class)
     private Set<InterfaceItem> interfaces = new HashSet<>();
 
@@ -205,15 +202,6 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
                 .filter(s -> !StringUtils.isEmpty(s))
                 .map(s -> RelationBuilder.createDataflowDescription(this, s))
                 .forEach(this::addRelation);
-    }
-
-    public Set<StatusValue> getStatuses() {
-        return statuses;
-    }
-
-    @Override
-    public void setStatus(StatusValue statusValue) {
-        statuses.add(statusValue);
     }
 
     @Override

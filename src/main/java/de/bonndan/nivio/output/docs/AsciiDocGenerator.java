@@ -45,13 +45,13 @@ public class AsciiDocGenerator {
         final StringBuilder builder = new StringBuilder();
         groups.getAll().forEach((s, landscapeItems) -> {
             builder.append(NL + "== Group: " + s + NL);
-            landscapeItems.forEach(item -> builder.append(writeItem(item)));
+            landscapeItems.forEach(item -> builder.append(writeItem((Item) item)));
         });
 
         return builder.toString();
     }
 
-    private String writeItem(LandscapeItem item) {
+    private String writeItem(Item item) {
         final StringBuilder builder = new StringBuilder();
 
         builder.append(NL + "=== " + (isEmpty(item.getName()) ? item.getIdentifier() : item.getName()) + NL);
@@ -79,8 +79,8 @@ public class AsciiDocGenerator {
         builder.append("Visibility:: " + nice(item.getLabel(Label.VISIBILITY)) + NL);
         builder.append("Networks:: " + FormatUtils.nice(item.getLabels(Label.PREFIX_NETWORK)) + NL);
 
-        item.getStatuses().forEach(statusItem -> {
-            builder.append(nice(statusItem.getLabel()) + ":: [" + statusItem.getStatus() + "]*" + statusItem.getStatus() + "* " + nice(statusItem.getMessage()) + NL);
+        item.getStatusValues().forEach(statusItem -> {
+            builder.append(nice(statusItem.getField()) + ":: [" + statusItem.getStatus() + "]*" + statusItem.getStatus() + "* " + nice(statusItem.getMessage()) + NL);
         });
 
         builder.append(NL);

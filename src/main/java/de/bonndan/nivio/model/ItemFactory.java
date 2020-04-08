@@ -46,15 +46,6 @@ public class ItemFactory {
         item.setLifecycle(description.getLifecycle());
         assignSafe(description.getGroup(), item::setGroup);
 
-        if (description.getStatuses() != null)
-            description.getStatuses().forEach(statusItem -> {
-                try {
-                    item.setStatus(statusItem);
-                } catch (IllegalArgumentException ex) {
-                    logger.warn("Failed to set status", ex);
-                }
-            });
-
         description.getLabels().forEach((key, value) -> {
             if (item.getLabel(key) == null || !StringUtils.isEmpty(value)) {
                 item.setLabel(key, value);

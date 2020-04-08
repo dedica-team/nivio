@@ -45,15 +45,6 @@ public class LandscapeDTOFactory {
         LandscapeStatistics stats = new LandscapeStatistics();
         stats.items = impl.getItems().all().size();
         stats.groups = impl.getGroups().size();
-
-        List<StatusValue> collect = impl.getItems().stream()
-                .map(item -> StatusValue.highestOf(item.getStatuses())).flatMap(Collection::stream)
-                .collect(Collectors.toList());
-
-        if (!collect.isEmpty()) {
-            stats.overallStatus = collect.get(0).getStatus();
-        }
-
         stats.teams = impl.getItems().stream()
                 .map(item -> item.getLabel(Label.TEAM))
                 .filter(s -> !StringUtils.isEmpty(s))
