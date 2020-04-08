@@ -3,67 +3,40 @@
 
 .homeContainer {
   .content {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    margin-bottom: 55px;
+
 
     .landscapeContainer {
-      width: 46%;
-      padding: 11px;
 
-      .navigation {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: baseline;
-
-        .control {
-          margin-left: 10px;
-          background-color: $header-color;
-
-          color: $font-color;
-          font-size: $large-font-size;
-          text-transform: uppercase;
-          text-shadow: 0 0 10px $text-shadow-color;
-
-          box-shadow: 0px 0px 12px $box-shadow-color;
-          border: 1px solid $border-color;
-
-          cursor: pointer;
-        }
-
-        .title {
-          padding: 2px 15px;
-          margin-bottom: 10px;
-          background-color: $header-color;
-
-          font-size: $large-font-size;
-          font-weight: bold;
-          text-transform: uppercase;
-          text-align: center;
-
-          box-shadow: 0px 0px 12px $box-shadow-color;
-        }
+      .MuiTypography-overline {
+        border-bottom: 1px solid $border-color;
       }
 
-      img.preview {
+      .floatButton {
+        float: right;
+      }
+
+      .control {
+        background-color: $header-color;
+        color: $font-color;
+        text-transform: uppercase;
+        text-shadow: 0 0 10px $text-shadow-color;
+        box-shadow: 0px 0px 12px $box-shadow-color;
         border: 1px solid $border-color;
-        box-shadow: 0px 0px 2px $box-shadow-color;
-        margin-right: 1rem;
+        border-radius: 50px;
+        cursor: pointer;
       }
+
     }
   }
 
   .header {
     display: block;
-    width: 99%;
     font-size: $header-font-size;
     font-weight: bold;
     text-transform: uppercase;
     background-color: $header-color;
     box-shadow: 0px 0px 12px $box-shadow-color;
     text-align: center;
-    padding: 2px;
     margin-bottom: 35px;
   }
 }
