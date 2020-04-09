@@ -1,7 +1,6 @@
 package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
-import org.bouncycastle.jcajce.provider.symmetric.TEA;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +33,7 @@ public class ItemFactoryTest {
         landscapeItem.setLabel(Label.VISIBILITY, "public");
         landscapeItem.setPrefixed(Tagged.LABEL_PREFIX_TAG, new String[]{"a", "b"});
         landscapeItem.setLabel(Label.COSTS, "10000");
-        landscapeItem.setLabel(Label.CAPABILITY, "billing");
+        landscapeItem.setLabel(Label.BUSINESS_CAPABILITY, "billing");
     }
 
     @Test
@@ -62,7 +61,7 @@ public class ItemFactoryTest {
         assertEquals(landscapeItem.getRelations().size(), created.getRelations().size());
         assertEquals(landscapeItem.getLabels(Label.PREFIX_NETWORK), created.getLabels(Label.PREFIX_NETWORK));
         assertEquals(landscapeItem.getLabel(Label.COSTS), created.getLabel(Label.COSTS));
-        assertEquals(landscapeItem.getLabel(Label.CAPABILITY), created.getLabel(Label.CAPABILITY));
+        assertEquals(landscapeItem.getLabel(Label.BUSINESS_CAPABILITY), created.getLabel(Label.BUSINESS_CAPABILITY));
         assertEquals(landscapeItem.getLifecycle(), created.getLifecycle());
 
     }

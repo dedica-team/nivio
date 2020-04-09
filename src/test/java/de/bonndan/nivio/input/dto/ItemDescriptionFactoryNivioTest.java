@@ -2,7 +2,6 @@ package de.bonndan.nivio.input.dto;
 
 
 import de.bonndan.nivio.assessment.Status;
-import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
@@ -61,9 +60,8 @@ class ItemDescriptionFactoryNivioTest {
         assertTrue(Arrays.asList(service.getTags()).contains("CMS"));
         assertEquals(Lifecycle.END_OF_LIFE, service.getLifecycle());
 
-        assertEquals(Status.RED.name(), service.getLabel(Label.SECURITY));
-        assertEquals(Status.YELLOW.name(), service.getLabel(Label.CAPABILITY));
-
+        assertEquals(Status.RED.toString(), service.getLabel(Label.key(Label.PREFIX_STATUS, Label.SECURITY, "status")));
+        assertEquals(Status.YELLOW.toString(), service.getLabel(Label.key(Label.PREFIX_STATUS, Label.BUSINESS_CAPABILITY, "status")));
 
         assertNotNull(service.getInterfaces());
         assertEquals(3, service.getInterfaces().size());
@@ -80,7 +78,7 @@ class ItemDescriptionFactoryNivioTest {
         assertNotNull(dataflows);
         assertEquals(3, dataflows.size());
         dataflows.forEach(dataFlow -> {
-             if (dataFlow.getDescription().equals("kpis")) {
+            if (dataFlow.getDescription().equals("kpis")) {
                 Assert.assertEquals("content-kpi-dashboard", dataFlow.getTarget());
             }
         });

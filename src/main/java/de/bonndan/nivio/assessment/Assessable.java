@@ -12,6 +12,8 @@ import static de.bonndan.nivio.assessment.StatusValue.SUMMARY_LABEL;
 
 /**
  * Interface for components that can be assessed and can have assigned {@link StatusValue}s.
+ *
+ *
  */
 public interface Assessable extends Component {
 
@@ -50,6 +52,10 @@ public interface Assessable extends Component {
         getStatusValues().add(statusValue);
     }
 
+    /**
+     * Returns the components to be assessed before this (e.g. group items).
+     *
+     */
     default List<? extends Assessable> getChildren() {
         return new ArrayList<>();
     }

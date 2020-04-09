@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Linked;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -63,10 +64,11 @@ public class LabelToFieldProcessor {
             }
 
             if (propertyType != null && propertyType.isAssignableFrom(Map.class)) {
-                String[] o = getParts(value);
+                String[] o = getParts(value); // value is only a list of strings
                 Map propertyValue = (Map) myAccessor.getPropertyValue(name);
                 for (int i = 0; i < o.length; i++) {
-                    if (ItemDescription.LINKS_FIELD.equals(name)) {
+                    if ("links".equals(name)) {
+                        logger.warn("Found deprecated label named links.");
                         try {
                             propertyValue.put(String.valueOf(i + 1), new URL(o[i]));
                         } catch (MalformedURLException e) {
@@ -79,9 +81,15 @@ public class LabelToFieldProcessor {
                 return;
             }
 
-            myAccessor.setPropertyValue(name, value.trim());
+            if (name.startsWith(Linked.LINK_LABEL_PREFIX)) {
+                item.setLink(name.replace(Linked.LINK_LABEL_PREFIX, ""), new URL(value));
+            } else {
+                myAccessor.setPropertyValue(name, value.trim());
+            }
         } catch (NotWritablePropertyException e) {
             logger.warn("Failed to write field '" + name + "' via label");
+        } catch (MalformedURLException e) {
+            logger.warn("Failed to add link '" + name + "' via label because of malformed URL " + value);
         }
     }
 

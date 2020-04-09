@@ -61,6 +61,6 @@ class PrometheusExporterTest {
         assertNotNull(op.get());
         LandscapeItem rocketchat = op.get();
         assertEquals("rocket-chat", rocketchat.getFullyQualifiedIdentifier().getGroup());
-        assertEquals("healthy", rocketchat.getLabel("health_state"));
+        assertEquals("unhealthy", rocketchat.getLabel("health_state"));
     }
 }

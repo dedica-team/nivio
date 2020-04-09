@@ -15,6 +15,6 @@ public class Capability extends CustomKPI {
     }
 
     public Capability() {
-        super(Label.CAPABILITY.name().toLowerCase(), null, null, matches);
+        super(Label.BUSINESS_CAPABILITY.name().toLowerCase(), null, null, matches);
     }
 }

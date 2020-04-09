@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
  */
 public interface Labeled {
 
-    String PREFIX_DELIMITER = ".";
     String PREFIX_VALUE_DELIMITER = ";";
 
     default String getLabel(Label key) {
@@ -69,6 +68,7 @@ public interface Labeled {
 
     static Map<String, String> withPrefix(String prefix, Map<String, String> all) {
         return all.entrySet().stream()
+                .filter(stringStringEntry -> stringStringEntry.getValue() != null)
                 .filter(stringStringEntry -> stringStringEntry.getKey().startsWith(prefix))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
@@ -97,8 +97,8 @@ public interface Labeled {
     static Map<String, String> groupedByPrefixes(Map<String, String> all, String delimiter) {
         Map<String, String> grouped = new HashMap<>();
         all.forEach((key, value1) -> {
-            if (key.contains(PREFIX_DELIMITER)) {
-                key = key.split("\\" + PREFIX_DELIMITER)[0];
+            if (key.contains(Label.DELIMITER)) {
+                key = key.split("\\" + Label.DELIMITER)[0];
             }
 
             String value = grouped.getOrDefault(key, "");
@@ -132,8 +132,8 @@ public interface Labeled {
         if (StringUtils.isEmpty(prefix)) {
             throw new IllegalArgumentException("Prefix is empty.");
         }
-        if (!prefix.endsWith(PREFIX_DELIMITER)) {
-            prefix = prefix + PREFIX_DELIMITER;
+        if (!prefix.endsWith(Label.DELIMITER)) {
+            prefix = prefix + Label.DELIMITER;
         }
         setLabel(prefix.toLowerCase() + suffixAndValue, suffixAndValue);
     }

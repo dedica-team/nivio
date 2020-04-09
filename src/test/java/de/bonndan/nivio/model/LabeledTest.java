@@ -15,9 +15,9 @@ class LabeledTest {
         Map<String, String> all = new HashMap<>();
         all.put(Label.COSTS.name(), "0");
         all.put(Label.NOTE.name(), "foo");
-        all.put(Label.PREFIX_NETWORK + Labeled.PREFIX_DELIMITER + "x", "x");
-        all.put(Label.PREFIX_NETWORK + Labeled.PREFIX_DELIMITER + "y", "y");
-        all.put(Label.PREFIX_NETWORK + Labeled.PREFIX_DELIMITER + "z", "z");
+        all.put(Label.PREFIX_NETWORK + Label.DELIMITER + "x", "x");
+        all.put(Label.PREFIX_NETWORK + Label.DELIMITER + "y", "y");
+        all.put(Label.PREFIX_NETWORK + Label.DELIMITER + "z", "z");
 
         Map<String, String> groupedByPrefixes = Labeled.groupedByPrefixes(all);
         assertNotNull(groupedByPrefixes);

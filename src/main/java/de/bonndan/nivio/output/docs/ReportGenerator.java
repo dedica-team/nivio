@@ -92,7 +92,7 @@ public class ReportGenerator extends HtmlGenerator {
                                 , li("Team: " + FormatUtils.nice(item.getLabel(Label.TEAM)))
                                 , li("Owner: " + FormatUtils.nice(item.getOwner()))
                                 , li("Type: " + item.getType())
-                                , li("Capability: " + FormatUtils.nice(item.getLabel(Label.CAPABILITY)))
+                                , li("Capability: " + FormatUtils.nice(item.getLabel(Label.BUSINESS_CAPABILITY)))
                                 , li("Links: ").with(links)
                                 , li("Tags: " + FormatUtils.nice(item.getLabels(Tagged.LABEL_PREFIX_TAG)))
                                 , li("Lifecycle: " + FormatUtils.nice(item.getLifecycle() != null ? item.getLifecycle().toString() : "-"))
