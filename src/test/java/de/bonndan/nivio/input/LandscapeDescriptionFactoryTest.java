@@ -2,6 +2,10 @@ package de.bonndan.nivio.input;
 
 
 import de.bonndan.nivio.LandscapeConfig;
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.assessment.kpi.CustomKPI;
+import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
@@ -191,5 +195,24 @@ class LandscapeDescriptionFactoryTest {
         GroupItem b = groups.get("B");
         assertNotNull(b);
         assertEquals("B", b.getIdentifier());
+    }
+
+    @Test
+    public void readCustomKPIs() {
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_kpis.yml");
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
+        LandscapeConfig config = landscapeDescription.getConfig();
+
+        Map<String, CustomKPI> kpIs = config.getKPIs();
+        assertNotNull(kpIs);
+        KPI monthlyCosts = kpIs.get("monthlyCosts");
+        assertNotNull(monthlyCosts);
+        assertEquals("Evaluates the monthly maintenance costs", monthlyCosts.getDescription());
+
+        Item item = new Item();
+        item.setLabel(Label.COSTS, "200");
+        StatusValue statusValue = monthlyCosts.getStatusValue(item);
+        assertNotNull(statusValue);
+        assertEquals(Status.RED, statusValue.getStatus());
     }
 }

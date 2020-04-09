@@ -1,9 +1,12 @@
 package de.bonndan.nivio;
 
+import de.bonndan.nivio.assessment.kpi.CustomKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LandscapeConfig {
 
@@ -14,7 +17,7 @@ public class LandscapeConfig {
     private List<String> groupBlacklist = new ArrayList<>();
     private List<String> labelBlacklist = new ArrayList<>();
     private Branding branding = new Branding();
-    private List<KPI> kpis = new ArrayList<>();
+    private Map<String, CustomKPI> kpis = new HashMap<>();
 
     public JGraphXConfig getJgraphx() {
         return jgraphx;
@@ -134,7 +137,11 @@ public class LandscapeConfig {
         }
     }
 
-    public List<KPI> getKPIs() {
+    /**
+     *
+     * @return
+     */
+    public Map<String, CustomKPI> getKPIs() {
         return kpis;
     }
 

@@ -18,6 +18,7 @@ public abstract class KPI {
 
     private final Function<Component, String> valueFunction;
     private final Function<Component, String> msgFunction;
+    private String description;
 
     /**
      * @param valueFunction the label which is evaluated for status
@@ -54,4 +55,11 @@ public abstract class KPI {
      */
     protected abstract Optional<StatusValue> getStatusValue(@Nullable String value, @Nullable String message);
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

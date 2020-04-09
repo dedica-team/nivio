@@ -1,5 +1,7 @@
 package de.bonndan.nivio.assessment.kpi;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
@@ -23,15 +25,15 @@ public class CustomKPI extends KPI {
     private final Map<Status, List<Function<String, Boolean>>> matches = new HashMap<>();
     private final String label;
 
-
     /**
      * @param label        the label which is evaluated for status
      * @param messageLabel the label which is used as optional message
      */
-    public CustomKPI(@NonNull String label,
-                     @Nullable String messageLabel,
-                     @Nullable Map<Status, String> ranges,
-                     @Nullable Map<Status, String> matches
+    @JsonCreator
+    public CustomKPI(@NonNull @JsonProperty(value = "label", required = true) String label,
+                     @Nullable @JsonProperty("messageLabel") String messageLabel,
+                     @Nullable @JsonProperty("ranges") Map<Status, String> ranges,
+                     @Nullable @JsonProperty("matches") Map<Status, String> matches
     ) {
         super(component -> {
                     if (component instanceof Labeled) {
