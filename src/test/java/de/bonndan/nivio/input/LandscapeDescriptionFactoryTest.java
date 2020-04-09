@@ -5,6 +5,7 @@ import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.CustomKPI;
+import de.bonndan.nivio.assessment.kpi.HealthKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
@@ -203,15 +204,20 @@ class LandscapeDescriptionFactoryTest {
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
         LandscapeConfig config = landscapeDescription.getConfig();
 
-        Map<String, CustomKPI> kpIs = config.getKPIs();
+        Map<String, KPI> kpIs = config.getKPIs();
         assertNotNull(kpIs);
+
+        KPI health = kpIs.get(HealthKPI.IDENTIFIER);
+        assertNotNull(health);
+        assertEquals("can be overridden", health.getDescription());
+
         KPI monthlyCosts = kpIs.get("monthlyCosts");
         assertNotNull(monthlyCosts);
         assertEquals("Evaluates the monthly maintenance costs", monthlyCosts.getDescription());
 
         Item item = new Item();
         item.setLabel(Label.COSTS, "200");
-        StatusValue statusValue = monthlyCosts.getStatusValue(item);
+        StatusValue statusValue =  monthlyCosts.getStatusValues(item).get(0);
         assertNotNull(statusValue);
         assertEquals(Status.RED, statusValue.getStatus());
     }

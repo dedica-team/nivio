@@ -6,7 +6,7 @@ import de.bonndan.nivio.model.Component;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -38,22 +38,24 @@ public abstract class KPI {
      * @return current status value, unknown if not present
      */
     @NonNull
-    public StatusValue getStatusValue(Component component) {
+    public List<StatusValue> getStatusValues(Component component) {
 
         String value = valueFunction.apply(component);
         String message = msgFunction != null ? msgFunction.apply(component) : null;
-        Optional<StatusValue> evaluated = getStatusValue(value, message);
-
-        return evaluated.orElse(new StatusValue(value, Status.UNKNOWN, message));
+        List<StatusValue> evaluated = getStatusValues(value, message);
+        if (evaluated.isEmpty()) {
+            evaluated.add(new StatusValue(value, Status.UNKNOWN, message));
+        }
+        return evaluated;
     }
 
     /**
-     *
+     * Returns the status values
      * @param value the value to assess. Can be null if no value is present or the KPI is not applicable.
      * @param message the optional message
      * @return a status value if assessed
      */
-    protected abstract Optional<StatusValue> getStatusValue(@Nullable String value, @Nullable String message);
+    protected abstract List<StatusValue> getStatusValues(@Nullable String value, @Nullable String message);
 
     public String getDescription() {
         return description;

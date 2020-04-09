@@ -3,6 +3,7 @@ package de.bonndan.nivio.input.rancher1;
 import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.Label;
 import org.hawkular.agent.prometheus.PrometheusDataFormat;
 import org.hawkular.agent.prometheus.PrometheusScraper;
 import org.hawkular.agent.prometheus.types.Gauge;
@@ -19,6 +20,8 @@ import java.util.*;
 public class PrometheusExporter {
 
     private static final Logger logger = LoggerFactory.getLogger(PrometheusExporter.class);
+    public static final String HEALTHY = "healthy";
+    public static final String UNHEALTHY = "unhealthy";
 
     private final String landscape;
     private File file;
@@ -87,15 +90,16 @@ public class PrometheusExporter {
 
             String health_state = null;
             if (metric.getLabels().getOrDefault("health_state", "").equals("healthy") && metric.getValue() > 0) {
-                health_state = "healthy";
+                health_state = HEALTHY;
             }
 
             if (metric.getLabels().getOrDefault("health_state", "").equals("unhealthy") && metric.getValue() > 0) {
-                health_state = "unhealthy";
+                health_state = UNHEALTHY;
             }
 
-            if (health_state != null)
-                itemDescription.setLabel("health_state", health_state);
+            if (health_state != null) {
+                itemDescription.setLabel(Label.HEALTH, health_state);
+            }
         }
 
         //TODO add scale gauge

@@ -19,6 +19,8 @@ public enum Label {
      */
     COSTS,
 
+    HEALTH,
+
     HOSTTYPE,
 
     /**

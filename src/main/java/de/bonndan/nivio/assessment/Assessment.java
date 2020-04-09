@@ -19,6 +19,6 @@ public class Assessment {
      */
     public void assess(Assessable assessable) {
         assessable.getChildren().forEach(this::assess);
-        kpis.forEach(kpi -> assessable.setStatusValue(kpi.getStatusValue(assessable)));
+        kpis.forEach(kpi -> kpi.getStatusValues(assessable).forEach(assessable::setStatusValue));
     }
 }

@@ -12,3 +12,6 @@ config:
         YELLOW: 100;199.999999
         RED: 200;499.999999
         BROWN: 500;1000000
+    health:
+      description: can be overridden
+    other:

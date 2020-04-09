@@ -54,12 +54,14 @@ public class CustomKPI extends KPI {
     }
 
     @Override
-    protected Optional<StatusValue> getStatusValue(String value, String message) {
+    protected List<StatusValue> getStatusValues(String value, String message) {
 
+        List<StatusValue> values = new ArrayList<>();
         for (Status status : Status.values()) {
             Optional<Status> statusByRange = getStatusByRange(value);
             if (statusByRange.isPresent()) {
-                return Optional.of(new StatusValue(label, statusByRange.get(), message));
+                values.add(new StatusValue(label, statusByRange.get(), message));
+                break;
             }
 
             if (!matches.containsKey(status)) {
@@ -67,11 +69,12 @@ public class CustomKPI extends KPI {
             }
             boolean anyMatch = matches.get(status).stream().anyMatch(stringBooleanFunction -> stringBooleanFunction.apply(value));
             if (anyMatch) {
-                return Optional.of(new StatusValue(label, status, message));
+                values.add(new StatusValue(label, status, message));
+                break;
             }
         }
 
-        return Optional.empty();
+        return values;
     }
 
     private Map<Status, Range<Double>> asRanges(Map<Status, String> ranges) {
