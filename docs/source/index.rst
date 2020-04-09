@@ -31,6 +31,7 @@ sources like files or web apis (e.g. monitoring items) or allows pushing informa
    install
    input
    model
+   assessment
    magic
    api
    extra
