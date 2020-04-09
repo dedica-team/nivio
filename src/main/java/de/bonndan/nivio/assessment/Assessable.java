@@ -18,24 +18,28 @@ import static de.bonndan.nivio.assessment.StatusValue.SUMMARY_LABEL;
 public interface Assessable extends Component {
 
     /**
-     * Returns the highest status as summary of all statusValues.
+     * Returns the highest status as summary of all {@link StatusValue} and children summaries.
+     *
+     * @return status value, field contains the component identifier, message is the identifier of the highest status value
      */
     default StatusValue getSummary() {
 
         final AtomicReference<StatusValue> summary = new AtomicReference<>();
         summary.set(new StatusValue(SUMMARY_LABEL, Status.UNKNOWN));
 
-        getStatusValues().forEach(statusItem -> {
-            if (statusItem == null) {
+        List<StatusValue> statusValues = new ArrayList<>(getStatusValues());
+        getChildren().forEach(o -> statusValues.add(o.getSummary()));
+        statusValues.forEach(value -> {
+            if (value == null) {
                 return;
             }
 
-            if (statusItem.getStatus().isHigherThan(summary.get().getStatus())) {
-                summary.set(statusItem);
+            if (value.getStatus().isHigherThan(summary.get().getStatus())) {
+                summary.set(value);
             }
         });
 
-        return new StatusValue(SUMMARY_LABEL, summary.get().getStatus());
+        return new StatusValue(SUMMARY_LABEL + "." + getIdentifier(), summary.get().getStatus(), summary.get().getField());
     }
 
     Set<StatusValue> getStatusValues();
