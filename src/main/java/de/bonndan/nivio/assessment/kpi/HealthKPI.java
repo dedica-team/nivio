@@ -19,7 +19,7 @@ public class HealthKPI extends CustomKPI {
     );
 
     public HealthKPI() {
-        super(Label.HEALTH.toString(), null, null, matches);
+        super(Label.HEALTH.toString().toLowerCase(), null, null, matches);
     }
 
 }

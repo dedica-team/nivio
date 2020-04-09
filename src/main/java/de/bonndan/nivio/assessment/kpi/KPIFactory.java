@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.context.annotation.Scope;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -34,6 +35,11 @@ public class KPIFactory extends JsonDeserializer<Map<String, KPI>> implements Se
         result.forEach((s, params) -> {
             if (s.equals(HealthKPI.IDENTIFIER)) {
                 kpis.put(HealthKPI.IDENTIFIER, mapper.convertValue(params, HealthKPI.class));
+                return;
+            }
+
+            if (s.equals(ScalingKPI.IDENTIFIER)) {
+                kpis.put(ScalingKPI.IDENTIFIER, mapper.convertValue(params, ScalingKPI.class));
                 return;
             }
 

@@ -39,7 +39,7 @@ public class CustomKPI extends KPI {
                     if (component instanceof Labeled) {
                         return ((Labeled) component).getLabel(label);
                     }
-                    return null;
+                    throw new RuntimeException("Custom KPIs can only evaluate labels (custom fields).");
                 },
                 component -> {
                     if (component instanceof Labeled) {
@@ -79,8 +79,9 @@ public class CustomKPI extends KPI {
 
     private Map<Status, Range<Double>> asRanges(Map<Status, String> ranges) {
         Map<Status, Range<Double>> rangeMap = new HashMap<>();
-        if (ranges == null)
+        if (ranges == null) {
             return rangeMap;
+        }
 
         ranges.forEach((status, s) -> {
             String[] split;
@@ -101,6 +102,10 @@ public class CustomKPI extends KPI {
     }
 
     private Optional<Status> getStatusByRange(String value) {
+        if (value == null) {
+            return Optional.empty();
+        }
+
         double d;
         try {
             d = Double.parseDouble(value);

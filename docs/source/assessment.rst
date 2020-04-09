@@ -1,7 +1,11 @@
 Data Assessment using KPIs
 ==========================
 
+Built in KPIs
+-------------
 
+* scaling
+* health
 
 .. code-block:: yaml
    :linenos:
