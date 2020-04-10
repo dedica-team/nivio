@@ -21,7 +21,7 @@ class AssessableTest {
         var parent = new TestAssessable(List.of(child1, child2));
         parent.setStatusValue(new StatusValue("test3", Status.RED));
 
-        StatusValue summary = parent.getSummary();
+        StatusValue summary = parent.getOverallStatus();
         assertNotNull(summary);
         assertEquals(Status.RED, summary.getStatus());
         assertEquals("test3", summary.getMessage());
@@ -35,7 +35,7 @@ class AssessableTest {
         child2.setStatusValue(new StatusValue("test", Status.RED));
         var parent = new TestAssessable(List.of(child1, child2));
 
-        StatusValue summary = parent.getSummary();
+        StatusValue summary = parent.getOverallStatus();
         assertNotNull(summary);
         assertEquals(Status.RED, summary.getStatus());
     }
@@ -49,7 +49,7 @@ class AssessableTest {
         child2.setStatusValue(new StatusValue("test", Status.GREEN));
         var parent = new TestAssessable(List.of(child1, child2));
 
-        StatusValue summary = parent.getSummary();
+        StatusValue summary = parent.getOverallStatus();
         assertNotNull(summary);
         assertEquals("summary.test", summary.getMessage());
         assertEquals(Status.YELLOW, summary.getStatus());

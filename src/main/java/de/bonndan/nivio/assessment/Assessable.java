@@ -22,13 +22,13 @@ public interface Assessable extends Component {
      *
      * @return status value, field contains the component identifier, message is the identifier of the highest status value
      */
-    default StatusValue getSummary() {
+    default StatusValue getOverallStatus() {
 
         final AtomicReference<StatusValue> summary = new AtomicReference<>();
         summary.set(new StatusValue(SUMMARY_LABEL, Status.UNKNOWN));
 
         List<StatusValue> statusValues = new ArrayList<>(getStatusValues());
-        getChildren().forEach(o -> statusValues.add(o.getSummary()));
+        getChildren().forEach(o -> statusValues.add(o.getOverallStatus()));
         statusValues.forEach(value -> {
             if (value == null) {
                 return;

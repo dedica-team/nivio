@@ -41,13 +41,19 @@ public enum Status {
                 return ORANGE;
             case "red":
                 return RED;
+            case "brown":
+                return BROWN;
         }
 
         return UNKNOWN;
     }
 
-    @Override
     @JsonValue
+    public String getName() {
+        return name();
+    }
+
+    @Override
     public String toString() {
         return status;
     }
