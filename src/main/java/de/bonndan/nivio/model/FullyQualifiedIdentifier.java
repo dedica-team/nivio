@@ -1,7 +1,12 @@
 package de.bonndan.nivio.model;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.Objects;
 
 public class FullyQualifiedIdentifier {
@@ -56,6 +61,7 @@ public class FullyQualifiedIdentifier {
         throw new IllegalArgumentException("Given string '" + string + "' contains too many parts to build a fqi.");
     }
 
+    @JsonValue
     @Override
     public String toString() {
         if (landscape == null || StringUtils.isEmpty(identifier))

@@ -2,6 +2,7 @@ package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.api.dto.LandscapeDTO;
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
@@ -60,19 +61,22 @@ public class ApiController {
     private Function<LandscapeImpl, LandscapeDTO> createDTO() {
         return landscape -> {
             LandscapeDTO dto = LandscapeDTOFactory.from(landscape);
+
             LandscapeDTOFactory.addLinks(dto);
             return dto;
         };
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/landscape/{identifier}")
+    @RequestMapping(path = "/landscape/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LandscapeDTO> landscape(@PathVariable String identifier) {
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null)
             return ResponseEntity.notFound().build();
-
-        return new ResponseEntity<>(createDTO().apply(landscape), HttpStatus.OK);
+        Assessment assessment = new Assessment(landscape.getConfig().getKPIs());
+        assessment.assess(landscape);
+        LandscapeDTO dto = createDTO().apply(landscape);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     /**

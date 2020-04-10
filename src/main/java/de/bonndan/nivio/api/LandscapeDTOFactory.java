@@ -1,18 +1,21 @@
 package de.bonndan.nivio.api;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.api.dto.LandscapeDTO;
-import de.bonndan.nivio.api.dto.LandscapeStatistics;
-import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ProcessLog;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.docs.DocsController;
 import de.bonndan.nivio.output.map.MapController;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -21,48 +24,52 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 public class LandscapeDTOFactory {
 
-    public static LandscapeDTO from(Landscape landscape) {
+    static final ObjectMapper mapper;
 
-        LandscapeDTO l = new LandscapeDTO();
-        if (landscape == null)
-            return l;
-
-        l.identifier = landscape.getIdentifier();
-        l.name = landscape.getName();
-        l.contact = landscape.getContact();
-        l.source = landscape.getSource();
-        l.description = landscape.getDescription();
-
-        if (landscape instanceof LandscapeImpl) {
-            l.stats = getLandscapeStats((LandscapeImpl) landscape);
-        }
-
-        return l;
+    static {
+        mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    private static LandscapeStatistics getLandscapeStats(LandscapeImpl impl) {
+    public static LandscapeDTO from(LandscapeImpl landscape) {
 
-        LandscapeStatistics stats = new LandscapeStatistics();
-        stats.items = impl.getItems().all().size();
-        stats.groups = impl.getGroups().size();
-        stats.teams = impl.getItems().stream()
+        LandscapeDTO landscapeDTO = new LandscapeDTO();
+        if (landscape == null)
+            return landscapeDTO;
+
+        landscapeDTO.identifier = landscape.getIdentifier();
+        landscapeDTO.name = landscape.getName();
+        landscapeDTO.contact = landscape.getContact();
+        landscapeDTO.source = landscape.getSource();
+        landscapeDTO.description = landscape.getDescription();
+
+        landscapeDTO.teams = landscape.getItems().stream()
                 .map(item -> item.getLabel(Label.TEAM))
                 .filter(s -> !StringUtils.isEmpty(s))
                 .collect(Collectors.toSet())
                 .toArray(String[]::new);
 
-        if (impl.getLog() != null) {
-            List<ProcessLog.Entry> messages = impl.getLog().getMessages();
+        landscapeDTO.groups = getGroups(landscape);
+        landscapeDTO.items = landscape.getItems().all();
+        if (landscape.getLog() != null) {
+            List<ProcessLog.Entry> messages = landscape.getLog().getMessages();
             if (messages.size() > 0) {
-                stats.lastUpdate = messages.get(messages.size() - 1).getDate();
+                landscapeDTO.lastUpdate = messages.get(messages.size() - 1).getDate();
             }
         }
-        return stats;
+        return landscapeDTO;
+    }
+
+    private static Map<String, Group> getGroups(LandscapeImpl landscape) {
+        Map<String, Group> groups = new HashMap<>();
+        landscape.getGroups().forEach((s, groupItem) -> groups.put(s, (Group)groupItem));
+        return groups;
     }
 
     public static void addLinks(LandscapeDTO dto) {
         dto.add(linkTo(methodOn(ApiController.class).landscape(dto.getIdentifier()))
                 .withSelfRel()
+                .withTitle("JSON representation")
                 .withMedia(MediaType.APPLICATION_JSON_VALUE)
         );
         dto.add(linkTo(methodOn(ApiController.class).items(dto.getIdentifier())).withRel("items"));

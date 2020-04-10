@@ -1,6 +1,9 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.output.Rendered;
@@ -101,7 +104,7 @@ public class Group implements GroupItem, Rendered, Assessable {
         this.contact = contact;
     }
 
-    @JsonBackReference
+    @JsonIdentityReference(alwaysAsId = true)
     public List<Item> getItems() {
         return items;
     }
@@ -126,6 +129,7 @@ public class Group implements GroupItem, Rendered, Assessable {
         return statusValues;
     }
 
+    @JsonIgnore
     @Override
     public List<? extends Assessable> getChildren() {
         return getItems();

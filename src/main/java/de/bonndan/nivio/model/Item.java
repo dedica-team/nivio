@@ -1,9 +1,6 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.output.Rendered;
@@ -15,6 +12,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier")
 public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
 
     @NotNull
@@ -174,6 +172,7 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
     /**
      * Returns all providers.
      */
+    @JsonIdentityReference(alwaysAsId = true)
     public Set<Item> getProvidedBy() {
         return getRelations(RelationType.PROVIDER).stream()
                 .filter(relationItem -> relationItem.getTarget().equals(this))

@@ -3,22 +3,23 @@ package de.bonndan.nivio.assessment;
 import de.bonndan.nivio.assessment.kpi.KPI;
 
 import java.util.List;
+import java.util.Map;
 
 public class Assessment {
 
-    private final List<KPI> kpis;
+    private final Map<String, KPI> kpis;
 
-    public Assessment(List<KPI> kpis) {
+    public Assessment(Map<String, KPI> kpis) {
         this.kpis = kpis;
     }
 
     /**
-     * Breadth first assessment.
+     * Depth first assessment.
      *
      * @param assessable a landscape component be be assessed.
      */
     public void assess(Assessable assessable) {
         assessable.getChildren().forEach(this::assess);
-        kpis.forEach(kpi -> kpi.getStatusValues(assessable).forEach(assessable::setStatusValue));
+        kpis.forEach((id, kpi) -> kpi.getStatusValues(assessable).forEach(assessable::setStatusValue));
     }
 }

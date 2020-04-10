@@ -67,17 +67,6 @@ public class ProcessLog {
         return landscape;
     }
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonProperty("landscape")
-    public Landscape getLandscapeDTO() {
-        if (landscape == null)
-            return null;
-
-        LandscapeDTO dto = LandscapeDTOFactory.from(landscape);
-        dto.groups = landscape.getGroups();
-        return dto;
-    }
-
     public List<Entry> getMessages() {
         return messages;
     }
