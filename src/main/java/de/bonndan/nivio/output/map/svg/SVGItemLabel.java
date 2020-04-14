@@ -49,7 +49,7 @@ class SVGItemLabel extends Component {
 
         ContainerTag g = SvgTagCreator.g(rect, labelText).attr("class", "label");
         g.attr("id", getId());
-
+        g.attr("data-identifier", item.getFullyQualifiedIdentifier().toString());
         if (!StringUtils.isEmpty(item.getName()))
             g.attr("data-name", item.getName());
         if (!StringUtils.isEmpty(item.getDescription()))

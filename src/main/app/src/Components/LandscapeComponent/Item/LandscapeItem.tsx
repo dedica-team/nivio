@@ -11,8 +11,9 @@ const LandscapeItem: React.FC<Props> = ({ element, host }) => {
   const [topic, setTopic] = useState<string | null>(null);
 
   useEffect(() => {
-    setTopic(element.getAttribute('data-identifier'));
-    if (html === undefined && topic !== null) {
+    let topic = element.getAttribute('data-identifier');
+    setTopic(topic);
+    if (topic !== null) {
       fetch(host + '/docs/item/' + topic)
         .then(response => {
           return response.text();

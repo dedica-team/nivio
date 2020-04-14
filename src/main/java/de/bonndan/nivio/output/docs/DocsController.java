@@ -55,7 +55,9 @@ public class DocsController {
     /**
      * Renders only a single item as html.
      *
+     *
      */
+    @Deprecated //item renderings should be generated within the GUI
     @RequestMapping(method = RequestMethod.GET, path = "/item/**")
     public ResponseEntity<String> itemHtmlResource(HttpServletRequest request) {
 
