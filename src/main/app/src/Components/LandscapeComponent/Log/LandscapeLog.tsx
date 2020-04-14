@@ -8,7 +8,13 @@ interface Props {
 }
 
 interface Data {
-  messages: string[];
+  messages: Entry[];
+}
+
+interface Entry {
+  level: string;
+  message: string;
+  date: string;
 }
 
 const LandscapeLog: React.FC<Props> = ({ landscape }) => {
@@ -28,10 +34,10 @@ const LandscapeLog: React.FC<Props> = ({ landscape }) => {
   if (!data) {
     content = 'loading...';
   } else {
-    content = data.messages.map(m => {
+    content = data.messages.map((m,i) => {
       return (
-        <div className={'item'} key={m}>
-          {m}
+        <div className={'item'} key={i}>
+          {m.date} [{m.level}] {m.message}
         </div>
       );
     });

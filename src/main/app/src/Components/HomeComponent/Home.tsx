@@ -9,9 +9,8 @@ import {createStyles, Theme, makeStyles} from '@material-ui/core/styles';
 import CommandContext from '../../Context/Command.context';
 import LandscapeContext from '../../Context/Landscape.context';
 import Typography from '@material-ui/core/Typography';
-import MenuIcon from '@material-ui/icons/Menu';
 import Grid from '@material-ui/core/Grid';
-import {Button, Fab} from '@material-ui/core';
+import {Button} from '@material-ui/core';
 import './Home.scss';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -34,7 +33,6 @@ const Home: React.FC = () => {
 
     const commandContext = useContext(CommandContext);
     const landscapeContext = useContext(LandscapeContext);
-    const classes = useStyles();
     //Could be moved into useEffect but can be used for a reload button later on
     const getLandscapes = useCallback(async () => {
         if (loadLandscapes) {
