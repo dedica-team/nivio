@@ -21,7 +21,7 @@
         <junit-jupiter.version>5.4.0</junit-jupiter.version>
         <mockito.version>2.24.0</mockito.version>
         <frontend-src-dir>${project.basedir}/src/main/app</frontend-src-dir>
-        <node.version>v10.16.3</node.version>
+        <node.version>v12.16.2</node.version>
         <!--<node.version>v12.3.1</node.version>-->
         <yarn.version>v1.16.0</yarn.version>
         <frontend-maven-plugin.version>1.7.6</frontend-maven-plugin.version>
