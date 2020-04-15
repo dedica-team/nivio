@@ -15,10 +15,10 @@ const LandscapeItem: React.FC<Props> = ({ element, host }) => {
     setTopic(topic);
     if (topic !== null) {
       fetch(host + '/docs/item/' + topic)
-        .then(response => {
+        .then((response) => {
           return response.text();
         })
-        .then(text => {
+        .then((text) => {
           const parser = new DOMParser();
           const html = parser.parseFromString(text, 'text/html');
           let card = html.querySelector('.card-body');

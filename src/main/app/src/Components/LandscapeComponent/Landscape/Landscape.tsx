@@ -29,16 +29,16 @@ const Landscape: React.FC = () => {
   const { identifier } = useParams();
 
   useEffect(() => {
-    const index = landscapeContext.landscapes.findIndex(i => i.identifier === identifier);
+    const index = landscapeContext.landscapes.findIndex((i) => i.identifier === identifier);
     setLandscape(landscapeContext.landscapes[index]);
   }, [identifier, landscapeContext.landscapes, reloadLandscape]);
 
   const reloadLandscapes = async () => {
     await fetch(process.env.REACT_APP_BACKEND_URL + '/api/')
-      .then(response => {
+      .then((response) => {
         return response.json();
       })
-      .then(json => {
+      .then((json) => {
         landscapeContext.landscapes = json;
         commandContext.message = 'Loaded landscapes.';
         setReloadLandscape(!reloadLandscape);
@@ -81,9 +81,9 @@ const Landscape: React.FC = () => {
               toolbarProps={{ position: 'none' }}
               detectAutoPan={false}
               tool={tool}
-              onChangeTool={newTool => setTool(newTool)}
+              onChangeTool={(newTool) => setTool(newTool)}
               value={value}
-              onChangeValue={newValue => setValue(newValue)}
+              onChangeValue={(newValue) => setValue(newValue)}
             >
               <svg width={1000} height={1000}>
                 {content}

@@ -22,10 +22,10 @@ const LandscapeLog: React.FC<Props> = ({ landscape }) => {
 
   useEffect(() => {
     fetch(process.env.REACT_APP_BACKEND_URL + '/api/landscape/' + landscape.identifier + '/log')
-      .then(response => {
+      .then((response) => {
         return response.json();
       })
-      .then(json => {
+      .then((json) => {
         setData(json);
       });
   }, [landscape]);
@@ -34,7 +34,7 @@ const LandscapeLog: React.FC<Props> = ({ landscape }) => {
   if (!data) {
     content = 'loading...';
   } else {
-    content = data.messages.map((m,i) => {
+    content = data.messages.map((m, i) => {
       return (
         <div className={'item'} key={i}>
           {m.date} [{m.level}] {m.message}

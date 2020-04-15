@@ -44,7 +44,7 @@ class Nexagon extends Component {
       <g
         className={classNames('hexagon-group', className)}
         transform={`translate(${pixel.x}, ${pixel.y})`}
-        onClick={e => this.onClick(e)}
+        onClick={(e) => this.onClick(e)}
       >
         <g className='hexagon'>
           <circle cx='0' cy='0' r='40' fill={fillId} style={cellStyle} />

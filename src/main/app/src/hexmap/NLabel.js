@@ -50,7 +50,7 @@ class NLabel extends Component {
           y={5}
           width={width}
           item={item}
-          onClick={e => this.itemPopup(e, this)}
+          onClick={(e) => this.itemPopup(e, this)}
         />
 
         <foreignObject
