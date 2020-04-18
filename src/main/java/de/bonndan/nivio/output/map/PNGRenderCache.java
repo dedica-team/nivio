@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.map;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.ProcessingFinishedEvent;
+import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.RenderedArtifact;
@@ -74,7 +75,11 @@ public class PNGRenderCache implements ApplicationListener<ProcessingFinishedEve
         JGraphXRenderer jGraphXRenderer = new JGraphXRenderer();
         RenderedArtifact<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
         mapFactory.applyArtifactValues(landscape, render);
-
+        if (landscape.getLog() == null) {
+            ProcessLog processLog = new ProcessLog(LOGGER);
+            processLog.setLandscape(landscape);
+            landscape.setProcessLog(processLog);
+        }
         SvgFactory svgFactory = new SvgFactory(landscape, mapStyleSheetFactory);
         return svgFactory.getXML();
     }
