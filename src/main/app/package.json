@@ -28,8 +28,7 @@
     "react-svg-pan-zoom": "^3.7.1",
     "react-svg-pan-zoom-loader": "^1.4.1",
     "svg-path-properties": "^1.0.4",
-    "typescript": "~3.7.2",
-    "yarn": "^1.22.4"
+    "typescript": "~3.7.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",
