@@ -67,7 +67,7 @@ public class Seed {
     private URL toURL(String s) throws MalformedURLException {
 
         if (ESCAPE_AUTHORITY && s.matches("^[a-zA-Z]\\:.*")) {
-            s = "file://" + s.replace(":", "");
+            s = "file:/" + s;
         }
 
         if (!s.contains(":/")) {

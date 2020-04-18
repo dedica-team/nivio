@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.util.URLHelper;
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -46,7 +48,7 @@ public class WatcherFactory {
                     DirectoryWatcher directoryWatcher;
                     File file;
                     try {
-                        file = new File(url.toURI());
+                        file = Paths.get(url.toURI()).toFile();
                         directoryWatcher = new DirectoryWatcher(publisher, file);
                     } catch (URISyntaxException e) {
                         throw new ProcessingException("Failed to initialize watchers from seed", e);
