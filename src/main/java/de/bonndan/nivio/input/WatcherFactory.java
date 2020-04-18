@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.util.URLHelper;
@@ -30,7 +31,6 @@ public class WatcherFactory {
     private final FileFetcher fileFetcher;
     private final Indexer indexer;
 
-    @Autowired
     public WatcherFactory(Seed seed, ApplicationEventPublisher publisher, FileFetcher fileFetcher, Indexer indexer) {
         this.seed = seed;
         this.publisher = publisher;
@@ -58,14 +58,16 @@ public class WatcherFactory {
                     try {
                         env = LandscapeDescriptionFactory.fromYaml(file);
                     } catch (ReadingException ex) {
-                        logger.error("Failed to parse file");
+                        publisher.publishEvent(new ProcessingErrorEvent(this, ex));
+                        logger.error("Failed to parse file {}", file);
                     }
                 } else {
                     try {
                         env = LandscapeDescriptionFactory.fromString(fileFetcher.get(url), url);
                         Objects.requireNonNull(env);
                     } catch (ReadingException ex) {
-                        logger.error("Failed to parse file");
+                        publisher.publishEvent(new ProcessingErrorEvent(this, ex));
+                        logger.error("Failed to parse file {}", url);
                     }
                 }
                 if (env != null) {
@@ -73,7 +75,8 @@ public class WatcherFactory {
                 }
             });
         } catch (MalformedURLException e) {
-            throw new ProcessingException("Failed to initialize watchers from seed", e);
+            ProcessingException processingException = new ProcessingException("Failed to initialize watchers from seed", e);
+            publisher.publishEvent(new ProcessingErrorEvent(this, processingException));
         }
 
         return runnables;
