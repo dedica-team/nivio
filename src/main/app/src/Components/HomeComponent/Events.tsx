@@ -25,7 +25,7 @@ const Events: React.FC<{}> = () => {
         return response.json();
       })
       .then((json) => {
-        setData({messages: json});
+        setData({ messages: json });
       });
   }, []);
 
@@ -33,14 +33,12 @@ const Events: React.FC<{}> = () => {
   if (!data) {
     content = 'loading...';
   } else {
-    debugger;
     content = data.messages.map((m, i) => {
       return (
         <div className={'item'} key={i}>
           <Chip label={m.landscape} /> {m.event}
           <Divider />
         </div>
-
       );
     });
   }

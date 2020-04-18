@@ -12,7 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '@material-ui/core';
 import './Home.scss';
-import Events from "./Events";
+import Events from './Events';
 
 /*const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -65,7 +65,7 @@ const Home: React.FC = () => {
   };
 
   const showEvents = () => {
-    setModalContent(<Events  />);
+    setModalContent(<Events />);
     commandContext.message = 'Showing events.';
   };
 
@@ -240,10 +240,10 @@ const Home: React.FC = () => {
           </Button>
 
           <Button
-              data-testid='EventsButton'
-              onClick={() => showEvents()}
-              fullWidth
-              className={'item button'}
+            data-testid='EventsButton'
+            onClick={() => showEvents()}
+            fullWidth
+            className={'item button'}
           >
             Events
           </Button>
