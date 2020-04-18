@@ -8,7 +8,7 @@ interface IGenericModalProps {
 }
 
 const GenericModal: React.FC<IGenericModalProps> = ({ modalContent }) => {
-  Modal.setAppElement('#root');
+  Modal.setAppElement(document.body);
 
   const [showModal, setShowModal] = useState(false);
 
