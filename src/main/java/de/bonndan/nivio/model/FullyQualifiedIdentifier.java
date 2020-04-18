@@ -67,6 +67,9 @@ public class FullyQualifiedIdentifier {
 
         if (!StringUtils.isEmpty(group))
             b.append(group).append(SEPARATOR);
+        else if (!StringUtils.isEmpty(landscape)) {
+            b.append("").append(SEPARATOR);
+        }
 
         b.append(identifier);
 

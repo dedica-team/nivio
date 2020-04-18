@@ -50,10 +50,8 @@ public class SeedTest {
     public void windowsFileLocation() throws MalformedURLException {
         final String separator = FileSystems.getDefault().getSeparator();
         final String seedLocation = "c:" + separator + "a" + separator + "b" + separator+ "c.yml";
-        /*
-        TODO: Should it really be file://c/a/b/c.yml? We remove the : from C: in our Seed class but if i want to open the URL without : it wont work in my browser, but dont know whats happening internally with the URL
-         */
-        final String expectedLocation = "file://c/a/b/c.yml";
+
+        final String expectedLocation = "file:/c:/a/b/c.yml";
 
         Seed seed = new Seed(seedLocation);
         Seed.ESCAPE_AUTHORITY = true;

@@ -1,9 +1,13 @@
 package de.bonndan.nivio;
 
-import org.springframework.context.ApplicationEvent;
+import java.util.Map;
 
-public class ProcessingErrorEvent extends ApplicationEvent {
-
+/**
+ * A processing event that occurred because of an error ({@link ProcessingException} present).
+ *
+ *
+ */
+public class ProcessingErrorEvent extends ProcessingEvent {
 
     private final ProcessingException exception;
 
@@ -14,5 +18,14 @@ public class ProcessingErrorEvent extends ApplicationEvent {
 
     public ProcessingException getException() {
         return exception;
+    }
+
+    @Override
+    public Object getJsonValue() {
+        return Map.of(
+                "landscape", exception.getLandscape().getIdentifier(),
+                "event", getClass().getSimpleName(),
+                "error", exception.getMessage()
+        );
     }
 }

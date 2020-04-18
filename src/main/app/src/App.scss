@@ -1,0 +1,21 @@
+@import 'Ressources/styling/colors';
+@import 'Ressources/styling/font';
+
+body {
+  background-color: $background-grey;
+  margin: 12px;
+  font-family: $nivio-font;
+  color: $font-color;
+  text-shadow: 0 0 10px $text-shadow-color;
+}
+
+button {
+  font-family: $nivio-font;
+  font-weight: bold;
+}
+
+a {
+  color: $link-color;
+  font-weight: bold;
+  text-decoration: none;
+}

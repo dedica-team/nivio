@@ -1,0 +1,22 @@
+@import '../../../Ressources/styling/colors.scss';
+@import '../../../Ressources/styling/font.scss';
+
+.logContent {
+  .title {
+    display: block;
+    background-color: $header-color;
+
+    padding: 3px 0px;
+    box-shadow: 0px 0px 12px $box-shadow-color;
+
+    font-size: $header-font-size;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .itemContainer {
+    margin-left: 10px;
+    margin-top: 10px;
+  }
+}
