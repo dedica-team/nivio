@@ -12,6 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '@material-ui/core';
 import './Home.scss';
+import Events from "./Events";
 
 /*const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -61,6 +62,11 @@ const Home: React.FC = () => {
   const enterLog = (landscape: ILandscape) => {
     setModalContent(<LandscapeLog landscape={landscape} />);
     commandContext.message = 'Showing log: ' + landscape.identifier;
+  };
+
+  const showEvents = () => {
+    setModalContent(<Events  />);
+    commandContext.message = 'Showing events.';
   };
 
   const enterLandscape = (landscape: ILandscape) => {
@@ -231,6 +237,15 @@ const Home: React.FC = () => {
             className={'item button'}
           >
             Manual
+          </Button>
+
+          <Button
+              data-testid='EventsButton'
+              onClick={() => showEvents()}
+              fullWidth
+              className={'item button'}
+          >
+            Events
           </Button>
 
           <div className={'item'}></div>
