@@ -17,6 +17,10 @@ interface Entry {
   date: string;
 }
 
+/**
+ * Gets all logs from the backend for a landscape
+ * @param landscape Landscape of which the log is to be shown
+ */
 const LandscapeLog: React.FC<Props> = ({ landscape }) => {
   const [data, setData] = useState<Data | null>(null);
 

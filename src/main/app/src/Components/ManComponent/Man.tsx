@@ -20,6 +20,9 @@ const topics: any = {
   'index.html': raw('../../../../../../docs/build/index.html'),
 };
 
+/**
+ * Renders nivio manual, depending on which url param is given
+ */
 const Man: React.FC = () => {
   const [html, setHtml] = useState<string>('<p>OOPS SOMETHING WENT WRONG :(</p>');
   const { usage } = useParams();

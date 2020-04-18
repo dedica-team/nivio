@@ -24,6 +24,10 @@ import './Home.scss';
   })
 );*/
 
+/**
+ * Displays all available landscapes and provides all needed navigation
+ */
+
 const Home: React.FC = () => {
   const [modalContent, setModalContent] = useState<string | ReactElement | ReactElement[] | null>(
     null

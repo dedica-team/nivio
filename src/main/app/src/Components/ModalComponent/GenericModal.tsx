@@ -7,6 +7,10 @@ interface IGenericModalProps {
   modalContent: string | ReactElement | ReactElement[] | null;
 }
 
+/**
+ * Creates a React Modal with given modalContent, that can be closed via button, esc or by clicking outside of the overlay
+ * @param modalContent Content that should be displayed
+ */
 const GenericModal: React.FC<IGenericModalProps> = ({ modalContent }) => {
   Modal.setAppElement(document.body);
 

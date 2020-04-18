@@ -13,6 +13,9 @@ import CommandContext from '../../../Context/Command.context';
 import './Landscape.scss';
 import { ILandscape } from '../../../interfaces';
 
+/**
+ * Displays a choosen landscape as interactive SVG
+ */
 const Landscape: React.FC = () => {
   const [tool, setTool] = useState<Tool>(TOOL_AUTO);
 
@@ -46,12 +49,7 @@ const Landscape: React.FC = () => {
   };
 
   const onItemClick = (e: any) => {
-    setModalContent(
-      <LandscapeItem
-        host={process.env.REACT_APP_BACKEND_URL || 'localhost:8080'}
-        element={e.target.parentElement}
-      />
-    );
+    setModalContent(<LandscapeItem element={e.target.parentElement} />);
   };
 
   if (landscape) {

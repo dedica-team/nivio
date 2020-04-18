@@ -5,6 +5,9 @@ import CommandContext from '../../Context/Command.context';
 
 import './Command.scss';
 
+/**
+ * Provides a Unix Console that is able to go back to the start, open the manual with params and simulate realmtime updates
+ */
 const Command: React.FC = () => {
   const history = useHistory();
   const commandContext = useContext(CommandContext);

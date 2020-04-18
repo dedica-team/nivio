@@ -4,11 +4,14 @@ import ReactHtmlParser from 'html-react-parser';
 import './LandscapeItem.scss';
 
 interface Props {
-  host: string;
   element: Element;
 }
 
-const LandscapeItem: React.FC<Props> = ({ element, host }) => {
+/**
+ * Returns a choosen Landscape Item if informations are available
+ * @param element Choosen SVG Element from our Landscape Component
+ */
+const LandscapeItem: React.FC<Props> = ({ element }) => {
   const [html, setHtml] = useState<string>(`<h2>Not Found :(</h2>`);
   const [topic, setTopic] = useState<string | null>(null);
 
@@ -16,7 +19,7 @@ const LandscapeItem: React.FC<Props> = ({ element, host }) => {
     let topic = element.getAttribute('data-identifier');
     setTopic(topic);
     if (topic !== null) {
-      fetch(host + '/docs/item/' + topic)
+      fetch(process.env.REACT_APP_BACKEND_URL + '/docs/item/' + topic)
         .then((response) => {
           return response.text();
         })
@@ -29,7 +32,7 @@ const LandscapeItem: React.FC<Props> = ({ element, host }) => {
           }
         });
     }
-  }, [element, host, topic, html]);
+  }, [element, topic, html]);
 
   return <div className='landscapeItemContent'>{ReactHtmlParser(html)}</div>;
 };
