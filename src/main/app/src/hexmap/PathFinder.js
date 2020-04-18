@@ -22,11 +22,6 @@ class PathFinder {
           let ndist = HexUtils.distance(neigh, target);
           return ndist < distance;
         });
-      /*console.log(possibleSteps.length + " poss. steps (" +
-                possibleSteps.map(hex => hex.q + "," + hex.r).join("; ")
-                + ") in distance " + distance + " from " + source.q + "," + source.r
-                + " to " + target.q + "," + target.r);
-             */
 
       if (possibleSteps.length === 0) {
         //TODO wrong, wont go back
@@ -41,9 +36,6 @@ class PathFinder {
           let clone = new TilePath();
           path.tiles.forEach((tile) => clone.tiles.push(tile));
           clone.tiles.pop();
-          //console.log("cloned path to add " + possibleSteps[i].q + "," + possibleSteps[i].r);
-          //console.log("new clone:");
-          //console.log(clone);
           clone.tiles.push(possibleSteps[i]);
           paths.push(clone);
         }
@@ -64,8 +56,8 @@ class PathFinder {
     return this.occupied.find((o) => this.isSame(o, tile)) !== undefined;
   }
 
-  isSame(t1, t2) {
-    return t1.r === t2.r && t1.q === t2.q;
+  isSame(neighbour, target) {
+    return neighbour.r === target.r && neighbour.q === target.q;
   }
 
   sortAndFilterPaths(paths) {

@@ -5,7 +5,7 @@ import GenericModal from '../ModalComponent/GenericModal';
 import LandscapeLog from '../LandscapeComponent/Log/LandscapeLog';
 import Command from '../CommandComponent/Command';
 import { Link } from 'react-router-dom';
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+// import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import CommandContext from '../../Context/Command.context';
 import LandscapeContext from '../../Context/Landscape.context';
 import Typography from '@material-ui/core/Typography';
@@ -13,7 +13,7 @@ import Grid from '@material-ui/core/Grid';
 import { Button } from '@material-ui/core';
 import './Home.scss';
 
-const useStyles = makeStyles((theme: Theme) =>
+/*const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     marginBottom: {
       marginBottom: theme.spacing(1),
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(1),
     },
   })
-);
+);*/
 
 const Home: React.FC = () => {
   const [modalContent, setModalContent] = useState<string | ReactElement | ReactElement[] | null>(
@@ -54,40 +54,40 @@ const Home: React.FC = () => {
     getLandscapes();
   }, [getLandscapes]);
 
-  const enterLog = (l: ILandscape) => {
-    setModalContent(<LandscapeLog landscape={l} />);
-    commandContext.message = 'Showing log: ' + l.identifier;
+  const enterLog = (landscape: ILandscape) => {
+    setModalContent(<LandscapeLog landscape={landscape} />);
+    commandContext.message = 'Showing log: ' + landscape.identifier;
   };
 
-  const enterLandscape = (l: ILandscape) => {
-    commandContext.message = 'Entering landscape: ' + l.identifier;
+  const enterLandscape = (landscape: ILandscape) => {
+    commandContext.message = 'Entering landscape: ' + landscape.identifier;
   };
   // Render
   let content: string | ReactElement[] = 'Loading landscapes...';
   if (landscapes) {
-    content = landscapes.map((l) => {
+    content = landscapes.map((landscape) => {
       return (
-        <Grid key={l.identifier} className={'landscapeContainer'} container spacing={3}>
+        <Grid key={landscape.identifier} className={'landscapeContainer'} container spacing={3}>
           <Grid item xs={12} sm={12}>
             <Grid container className={'bar'} spacing={2}>
               <Grid item xs={1} sm={1} className={'first item'}></Grid>
               <Grid item xs={4} sm={3} className={'title'}>
-                {l.name}
+                {landscape.name}
               </Grid>
               <Grid item xs={4} sm={5} className={'item'}></Grid>
               <Grid item xs={1} sm={1} className={'no-item'}>
                 <Button
-                  onClick={() => enterLandscape(l)}
+                  onClick={() => enterLandscape(landscape)}
                   fullWidth
                   component={Link}
                   className={'button'}
-                  to={`/landscape/${l.identifier}`}
+                  to={`/landscape/${landscape.identifier}`}
                 >
                   enter
                 </Button>
               </Grid>
               <Grid item xs={1} sm={1} className={'no-item'}>
-                <Button onClick={() => enterLog(l)} fullWidth className={'button'}>
+                <Button onClick={() => enterLog(landscape)} fullWidth className={'button'}>
                   log
                 </Button>
               </Grid>
@@ -98,13 +98,18 @@ const Home: React.FC = () => {
           <Grid item xs={1} className={'previewItem'}>
             <Button
               component={Link}
-              to={`/landscape/${l.identifier}`}
-              onClick={() => enterLandscape(l)}
+              to={`/landscape/${landscape.identifier}`}
+              onClick={() => enterLandscape(landscape)}
             >
               <img
                 className={'preview'}
                 alt={'preview'}
-                src={process.env.REACT_APP_BACKEND_URL + '/render/' + l.identifier + '/graph.png'}
+                src={
+                  process.env.REACT_APP_BACKEND_URL +
+                  '/render/' +
+                  landscape.identifier +
+                  '/graph.png'
+                }
                 style={{ maxWidth: 100, float: 'left' }}
               />
             </Button>
@@ -113,14 +118,14 @@ const Home: React.FC = () => {
             <Typography variant='overline' display='block' gutterBottom>
               Info
             </Typography>
-            {l.description}
+            {landscape.description}
             <br />
             <br />
-            Identifier: {l.identifier}
+            Identifier: {landscape.identifier}
             <br />
-            Contact: {l.contact || '-'}
+            Contact: {landscape.contact || '-'}
             <br />
-            Teams: {l.stats.teams.join(', ')}
+            Teams: {landscape.stats.teams.join(', ')}
             <br />
           </Grid>
 
@@ -128,7 +133,7 @@ const Home: React.FC = () => {
             <Typography variant='overline' display='block' gutterBottom>
               State
             </Typography>
-            {l.stats.overallState || '-'}
+            {landscape.stats.overallState || '-'}
           </Grid>
 
           <Grid item xs={2}>
@@ -136,9 +141,9 @@ const Home: React.FC = () => {
               Items
             </Typography>
             <Typography variant='h2' display='block' gutterBottom>
-              {l.stats.items}
+              {landscape.stats.items}
             </Typography>
-            in {l.stats.groups} groups
+            in {landscape.stats.groups} groups
           </Grid>
 
           <Grid item xs={2}>
@@ -146,10 +151,10 @@ const Home: React.FC = () => {
               Last update
             </Typography>
             <Typography variant='h3' display='block'>
-              {l.stats.lastUpdate?.split(' ')[0] || '-'}
+              {landscape.stats.lastUpdate?.split(' ')[0] || '-'}
             </Typography>
 
-            <div>{l.stats.lastUpdate?.split(' ')[1] || '-'}</div>
+            <div>{landscape.stats.lastUpdate?.split(' ')[1] || '-'}</div>
           </Grid>
 
           <Grid item xs={2}>
@@ -159,7 +164,9 @@ const Home: React.FC = () => {
             <a
               target={'_blank'}
               rel='noopener noreferrer'
-              href={process.env.REACT_APP_BACKEND_URL + '/render/' + l.identifier + '/map.svg'}
+              href={
+                process.env.REACT_APP_BACKEND_URL + '/render/' + landscape.identifier + '/map.svg'
+              }
             >
               Printable Graph
             </a>
@@ -167,7 +174,9 @@ const Home: React.FC = () => {
             <a
               target={'_blank'}
               rel='noopener noreferrer'
-              href={process.env.REACT_APP_BACKEND_URL + '/docs/' + l.identifier + '/report.html'}
+              href={
+                process.env.REACT_APP_BACKEND_URL + '/docs/' + landscape.identifier + '/report.html'
+              }
             >
               Printable Report
             </a>
@@ -210,7 +219,13 @@ const Home: React.FC = () => {
             Guide
           </Button>
 
-          <Button component={Link} to={`/man/install`} fullWidth className={'item button'}>
+          <Button
+            data-testid='ManualButton'
+            component={Link}
+            to={`/man/install`}
+            fullWidth
+            className={'item button'}
+          >
             Manual
           </Button>
 

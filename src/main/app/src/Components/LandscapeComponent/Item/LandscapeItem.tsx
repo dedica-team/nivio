@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import ReactHtmlParser from 'html-react-parser';
 
+import './LandscapeItem.scss';
+
 interface Props {
   host: string;
   element: Element;

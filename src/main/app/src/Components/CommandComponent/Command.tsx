@@ -40,12 +40,12 @@ const Command: React.FC = () => {
       sim: {
         description: 'Simulate realtime updates.',
         usage: 'sim',
-        fn: () => sim(),
+        fn: () => simulate(),
       },
     };
   };
 
-  const sim = () => {
+  const simulate = () => {
     if (window.location.pathname.includes('/landscape/')) {
       const circles = document.getElementsByClassName('hexagon');
       if (circles.length > 0) {
@@ -65,7 +65,9 @@ const Command: React.FC = () => {
 
   return (
     <footer key={'footer'} id={'footer'}>
-      <div className={'typewriter'}>{output}</div>
+      <div className={'typewriter'} data-testid='console'>
+        {output}
+      </div>
       <Terminal
         commands={commands()}
         promptLabel={'>'}

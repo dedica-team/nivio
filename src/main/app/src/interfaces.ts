@@ -1,7 +1,7 @@
 export interface ILandscape {
-  name?: string;
+  name: string;
+  identifier: string;
   description?: string;
-  identifier?: string;
   contact?: string;
   stats: {
     teams: string[];
