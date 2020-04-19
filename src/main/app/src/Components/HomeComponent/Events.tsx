@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Divider, Chip } from '@material-ui/core';
-
+import './Events.scss';
 interface Data {
   messages: Entry[];
 }

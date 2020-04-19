@@ -18,5 +18,13 @@
   .itemContainer {
     margin-left: 10px;
     margin-top: 10px;
+
+    .MuiChip-root {
+      margin-right: 0.3rem;
+      background-color: rgba(0, 127, 127, 0.682); //TODO
+    }
+    .item {
+      margin-bottom: 0.3rem;
+    }
   }
 }

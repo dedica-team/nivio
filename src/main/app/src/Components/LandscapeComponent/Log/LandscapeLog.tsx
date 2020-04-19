@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ILandscape } from '../../../interfaces';
 
 import './LandscapeLog.scss';
+import { Chip, Avatar } from '@material-ui/core';
 
 interface Props {
   landscape: ILandscape;
@@ -41,7 +42,8 @@ const LandscapeLog: React.FC<Props> = ({ landscape }) => {
     content = data.messages.map((m, i) => {
       return (
         <div className={'item'} key={i}>
-          {m.date} [{m.level}] {m.message}
+          <Chip avatar={<Avatar>{m.level}</Avatar>} label={m.date}></Chip>
+           {m.message}
         </div>
       );
     });

@@ -52,7 +52,7 @@ const GenericModal: React.FC<IGenericModalProps> = ({ modalContent }) => {
       onRequestClose={closeModal}
       contentLabel='Modal'
     >
-      <button className={'close'} onClick={closeModal}>
+      <button className={'close button'} onClick={closeModal}>
         close
       </button>
       {modalContentState}

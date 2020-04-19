@@ -34,12 +34,12 @@
   float: right;
   margin-right: 4px;
   margin-top: 4px;
-  background-color: $header-color;
-  box-shadow: 0px 0px 12px $box-shadow-color;
-  border: 1px solid $border-color;
-  text-transform: uppercase;
-  color: $font-color;
+  background-color: rgba(0, 0, 0, 0.75);
   font-size: $large-font-size;
-  text-shadow: 0 0 10px $text-shadow-color;
+  text-transform: uppercase;
   cursor: pointer;
+  border-bottom: 0;
+  border-right:0;
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
 }
