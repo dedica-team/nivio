@@ -49,7 +49,24 @@ const Man: React.FC = () => {
     <div className='manualContainer'>
       <div className='manualContent'>
         <h1>Manual</h1>
-        <div>{ReactHtmlParser(html)}</div>
+        <div>{ReactHtmlParser(html, {
+            replace: (domNode) => {
+
+            if (domNode.name === 'a') {
+              // @ts-ignore
+              const href = domNode.attribs['href'];
+              if (href.indexOf('http') !== -1) {
+                return;
+              }
+
+              if (href.indexOf('#') !== -1) {
+                return;
+              }
+
+              return <a href={'#'} onClick={ e=>{setTopic(href)}}>{domNode?.children?.pop()?.data}</a>;
+            }
+          }
+        })}</div>
       </div>
       <Command />
     </div>
