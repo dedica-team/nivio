@@ -83,8 +83,6 @@ const Navigation: React.FC = () => {
           >
             Events
           </Button>
-
-          <div className={'spacer'}></div>
         </Grid>
       </Grid>
     </div>
