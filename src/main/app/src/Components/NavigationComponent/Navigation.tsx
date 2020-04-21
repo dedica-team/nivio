@@ -86,8 +86,6 @@ const Navigation: React.FC = () => {
 
           <div className={'spacer'}></div>
         </Grid>
-        <Grid item xs={'auto'} sm={1} lg={1} className={'spacer'}></Grid>
-        <Grid item xs={12} sm={10} lg={10}></Grid>
       </Grid>
     </div>
   );
