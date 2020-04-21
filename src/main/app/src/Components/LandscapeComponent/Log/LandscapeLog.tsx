@@ -43,7 +43,7 @@ const LandscapeLog: React.FC<Props> = ({ landscape }) => {
       return (
         <div className={'item'} key={i}>
           <Chip avatar={<Avatar>{m.level}</Avatar>} label={m.date}></Chip>
-           {m.message}
+          {m.message}
         </div>
       );
     });
