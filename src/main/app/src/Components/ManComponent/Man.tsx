@@ -1,4 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react';
+import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import ReactHtmlParser from 'html-react-parser';
 import raw from 'raw.macro';
@@ -51,31 +52,49 @@ const Man: React.FC = () => {
         <div>
           {ReactHtmlParser(html, {
             replace: (domNode) => {
-              if (domNode.name === 'a' && domNode.attribs) {
-                const href = domNode.attribs['href'];
+              if (domNode.name === 'a' && domNode.attribs && domNode.children) {
+                let href = domNode.attribs['href'];
+                const linkText = domNode.children[0].data;
                 if (href.indexOf('http') !== -1) {
                   return;
                 }
 
+                // Remove anchors
                 if (href.indexOf('#') !== -1) {
-                  return;
+                  if (
+                    (href.includes('#custom') || href.includes('#graph')) &&
+                    usage !== 'extra.html' // Have to handle extra.html abit different for our sidebar
+                  ) {
+                    href = 'extra.html';
+                  } else {
+                    return <span>{linkText}</span>; // Convert to span if page is opened
+                  }
                 }
 
                 /* eslint-disable jsx-a11y/anchor-is-valid */
                 return (
-                  <a
-                    href={'#'}
+                  <Link
+                    to={`/man/${href}`}
                     onClick={(e) => {
                       setTopic(href);
                     }}
                   >
-                    {domNode?.children?.pop()?.data}
-                  </a>
+                    {linkText}
+                  </Link>
                 );
               }
 
               if (domNode.attribs && domNode.attribs.class === 'logo') {
                 return <Fragment />; // Remove Nivio Text because its already in our header
+              }
+
+              if (
+                domNode.name &&
+                domNode.name.includes('h') &&
+                domNode.children &&
+                domNode.children[1]
+              ) {
+                domNode.children[1] = <Fragment />; // Remove Anchors in titles, wont work with HashRouter
               }
             },
           })}
