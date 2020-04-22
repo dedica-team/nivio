@@ -52,7 +52,12 @@ const Man: React.FC = () => {
         <div>
           {ReactHtmlParser(html, {
             replace: (domNode) => {
-              if (domNode.name === 'a' && domNode.attribs && domNode.children) {
+              if (
+                domNode.name === 'a' &&
+                domNode.attribs &&
+                domNode.children &&
+                domNode.children[0]
+              ) {
                 let href = domNode.attribs['href'];
                 const linkText = domNode.children[0].data;
                 if (href.indexOf('http') !== -1) {
