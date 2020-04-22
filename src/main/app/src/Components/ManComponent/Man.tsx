@@ -76,7 +76,6 @@ const Man: React.FC = () => {
                   }
                 }
 
-                /* eslint-disable jsx-a11y/anchor-is-valid */
                 return (
                   <Link
                     to={`/man/${href}`}
