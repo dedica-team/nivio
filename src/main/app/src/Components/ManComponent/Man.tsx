@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { useParams } from 'react-router-dom';
 import ReactHtmlParser from 'html-react-parser';
 import raw from 'raw.macro';
@@ -48,25 +48,38 @@ const Man: React.FC = () => {
   return (
     <div className='manualContainer'>
       <div className='manualContent'>
-        <h1>Manual</h1>
-        <div>{ReactHtmlParser(html, {
+        <div>
+          {ReactHtmlParser(html, {
             replace: (domNode) => {
+              if (domNode.name === 'a' && domNode.attribs) {
+                const href = domNode.attribs['href'];
+                if (href.indexOf('http') !== -1) {
+                  return;
+                }
 
-            if (domNode.name === 'a') {
-              // @ts-ignore
-              const href = domNode.attribs['href'];
-              if (href.indexOf('http') !== -1) {
-                return;
+                if (href.indexOf('#') !== -1) {
+                  return;
+                }
+
+                /* eslint-disable jsx-a11y/anchor-is-valid */
+                return (
+                  <a
+                    href={'#'}
+                    onClick={(e) => {
+                      setTopic(href);
+                    }}
+                  >
+                    {domNode?.children?.pop()?.data}
+                  </a>
+                );
               }
 
-              if (href.indexOf('#') !== -1) {
-                return;
+              if (domNode.attribs && domNode.attribs.class === 'logo') {
+                return <Fragment />; // Remove Nivio Text because its already in our header
               }
-
-              return <a href={'#'} onClick={ e=>{setTopic(href)}}>{domNode?.children?.pop()?.data}</a>;
-            }
-          }
-        })}</div>
+            },
+          })}
+        </div>
       </div>
       <Command />
     </div>
