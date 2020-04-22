@@ -1,26 +1,25 @@
 @import '../../Ressources/styling/colors.scss';
 @import '../../Ressources/styling/font.scss';
 
-$contentMargin: 254px;
-
 .manualContainer {
   text-shadow: none;
   padding-bottom: 50px;
-  .manualContent {
-    margin-left: $contentMargin;
-  }
 
   img {
     max-width: 1500px;
     max-height: 750px;
   }
 
+  .documentwrapper {
+    margin-left: 265px;
+  }
+
   .sphinxsidebar {
     width: 230px;
-    margin-left: -$contentMargin;
+    margin-top: 81px;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    position: fixed;
+    position: absolute;
     top: 0px;
     padding: 8px 5px 0 10px;
 

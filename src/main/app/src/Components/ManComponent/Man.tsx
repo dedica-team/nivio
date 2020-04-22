@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { useParams } from 'react-router-dom';
 import ReactHtmlParser from 'html-react-parser';
 import raw from 'raw.macro';
@@ -48,8 +48,9 @@ const Man: React.FC = () => {
   return (
     <div className='manualContainer'>
       <div className='manualContent'>
-        <h1>Manual</h1>
-        <div>{ReactHtmlParser(html)}</div>
+        {ReactHtmlParser(html, {
+          replace: ({ attribs }) => attribs && attribs.class === 'logo' && <Fragment />, // Remove Nivio Text because its already in our header
+        })}
       </div>
       <Command />
     </div>
