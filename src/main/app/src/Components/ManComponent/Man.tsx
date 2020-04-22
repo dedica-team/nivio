@@ -98,7 +98,9 @@ const Man: React.FC = () => {
                 domNode.children &&
                 domNode.children[1]
               ) {
-                domNode.children[1] = <Fragment />; // Remove Anchors in titles, wont work with HashRouter
+                if (domNode.children[1].children && domNode.children[1].children[0].data === '¶') {
+                  domNode.children[1] = <Fragment />; // Remove Anchors in titles, wont work with HashRouter
+                }
               }
             },
           })}
