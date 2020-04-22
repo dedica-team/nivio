@@ -1,23 +1,23 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import Home from './Home';
+import Navigation from './Navigation';
 import { MemoryRouter } from 'react-router-dom';
 
 jest.mock('react-console-emulator');
 
-it('should render command component', () => {
+it('should render Navigation component', () => {
   const { getByText } = render(
     <MemoryRouter>
-      <Home />
+      <Navigation />
     </MemoryRouter>
   );
-  expect(getByText('Loading landscapes...')).toBeInTheDocument();
+  expect(getByText('Nivio')).toBeInTheDocument();
 });
 
 it('should link to manual on button click', () => {
   const { getByTestId } = render(
     <MemoryRouter>
-      <Home />
+      <Navigation />
     </MemoryRouter>
   );
 
