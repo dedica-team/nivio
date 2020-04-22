@@ -52,6 +52,7 @@ const Man: React.FC = () => {
         <div>
           {ReactHtmlParser(html, {
             replace: (domNode) => {
+              // Handle Links
               if (
                 domNode.name === 'a' &&
                 domNode.attribs &&
@@ -88,18 +89,24 @@ const Man: React.FC = () => {
                 );
               }
 
+              // Remove Nivio Text because its already in our header
               if (domNode.attribs && domNode.attribs.class === 'logo') {
-                return <Fragment />; // Remove Nivio Text because its already in our header
+                return <Fragment />;
               }
 
+              // Remove Anchors in titles, wont work with HashRouter
               if (
                 domNode.name &&
                 domNode.name.includes('h') &&
                 domNode.children &&
                 domNode.children[1]
               ) {
-                if (domNode.children[1].children && domNode.children[1].children[0].data === '¶') {
-                  domNode.children[1] = <Fragment />; // Remove Anchors in titles, wont work with HashRouter
+                if (
+                  domNode.children[1].children &&
+                  domNode.children[1].children[0].data &&
+                  domNode.children[1].children[0].data === '¶'
+                ) {
+                  domNode.children[1] = <Fragment />;
                 }
               }
             },
