@@ -1,6 +1,6 @@
 package de.bonndan.nivio;
 
-import java.util.Map;
+import de.bonndan.nivio.model.Landscape;
 
 /**
  * A processing event that occurred because of an error ({@link ProcessingException} present).
@@ -21,11 +21,22 @@ public class ProcessingErrorEvent extends ProcessingEvent {
     }
 
     @Override
-    public Object getJsonValue() {
-        return Map.of(
-                "landscape", exception.getLandscape().getIdentifier(),
-                "event", getClass().getSimpleName(),
-                "error", exception.getMessage()
-        );
+    public Landscape getLandscape() {
+        return exception.getLandscape();
+    }
+
+    @Override
+    public String getLevel() {
+        return "error";
+    }
+
+    @Override
+    public String getType() {
+        return getClass().getSimpleName();
+    }
+
+    @Override
+    public String getMessage() {
+        return exception.getMessage();
     }
 }
