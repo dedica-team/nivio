@@ -1,0 +1,12 @@
+@import '../../Ressources/styling/colors.scss';
+@import '../../Ressources/styling/font.scss';
+
+div.levelChip {
+  background-color: $header-color;
+  text-shadow: none;
+
+  .MuiAvatar-root.info {
+    background-color: lightgray
+  }
+}
+

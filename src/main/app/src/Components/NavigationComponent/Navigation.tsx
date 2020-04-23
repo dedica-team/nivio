@@ -2,7 +2,6 @@ import React, { useState, ReactElement } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Button, Box } from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import Events from '../EventComponent/Events';
 import GenericModal from '../ModalComponent/GenericModal';
 
 import './Navigation.scss';
@@ -14,10 +13,6 @@ const Navigation: React.FC = () => {
   const [modalContent, setModalContent] = useState<string | ReactElement | ReactElement[] | null>(
     null
   );
-
-  const showEvents = () => {
-    setModalContent(<Events />);
-  };
 
   return (
     <div className='navigationContainer'>
@@ -77,7 +72,8 @@ const Navigation: React.FC = () => {
 
           <Button
             data-testid='EventsButton'
-            onClick={() => showEvents()}
+            component={Link}
+            to={`/events`}
             fullWidth
             className={'button'}
           >
