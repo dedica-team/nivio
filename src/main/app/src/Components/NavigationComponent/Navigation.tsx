@@ -61,10 +61,6 @@ const Navigation: React.FC = () => {
             Home
           </Button>
 
-          <Button component={Link} to={``} fullWidth className={'button stackedButton'}>
-            Guide
-          </Button>
-
           <Button
             data-testid='ManualButton'
             component={Link}
