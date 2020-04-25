@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 
 import LandscapeOverview from './Components/LandscapeComponent/LandscapeOverview/LandscapeOverview';
 import Landscape from './Components/LandscapeComponent/Landscape/Landscape';
@@ -10,7 +10,7 @@ import './App.scss';
 
 const App: React.FC = () => {
   return (
-    <Router>
+    <Router hashType='slash'>
       <Switch>
         <Layout>
           <Route exact path='/' component={LandscapeOverview} />

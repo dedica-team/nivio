@@ -1,4 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react';
+import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import ReactHtmlParser from 'html-react-parser';
 import raw from 'raw.macro';
@@ -48,9 +49,69 @@ const Man: React.FC = () => {
   return (
     <div className='manualContainer'>
       <div className='manualContent'>
-        {ReactHtmlParser(html, {
-          replace: ({ attribs }) => attribs && attribs.class === 'logo' && <Fragment />, // Remove Nivio Text because its already in our header
-        })}
+        <div>
+          {ReactHtmlParser(html, {
+            replace: (domNode) => {
+              // Handle Links
+              if (
+                domNode.name === 'a' &&
+                domNode.attribs &&
+                domNode.children &&
+                domNode.children[0]
+              ) {
+                let href = domNode.attribs['href'];
+                const linkText = domNode.children[0].data;
+                if (href.indexOf('http') !== -1) {
+                  return;
+                }
+
+                // Remove anchors
+                if (href.indexOf('#') !== -1) {
+                  if (
+                    (href.includes('#custom') || href.includes('#graph')) &&
+                    usage !== 'extra.html' // Have to handle extra.html abit different for our sidebar
+                  ) {
+                    href = 'extra.html';
+                  } else {
+                    return <span>{linkText}</span>; // Convert to span if page is opened
+                  }
+                }
+
+                return (
+                  <Link
+                    to={`/man/${href}`}
+                    onClick={(e) => {
+                      setTopic(href);
+                    }}
+                  >
+                    {linkText}
+                  </Link>
+                );
+              }
+
+              // Remove Nivio Text because its already in our header
+              if (domNode.attribs && domNode.attribs.class === 'logo') {
+                return <Fragment />;
+              }
+
+              // Remove Anchors in titles, wont work with HashRouter
+              if (
+                domNode.name &&
+                domNode.name.includes('h') &&
+                domNode.children &&
+                domNode.children[1]
+              ) {
+                if (
+                  domNode.children[1].children &&
+                  domNode.children[1].children[0].data &&
+                  domNode.children[1].children[0].data === '¶'
+                ) {
+                  domNode.children[1] = <Fragment />;
+                }
+              }
+            },
+          })}
+        </div>
       </div>
       <Command />
     </div>
