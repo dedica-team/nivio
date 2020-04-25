@@ -3,6 +3,7 @@ import { ILandscape } from '../../../interfaces';
 
 import './LandscapeLog.scss';
 import { Chip, Avatar } from '@material-ui/core';
+import LevelChip from "../../LevelChipComponent/LevelChip";
 
 interface Props {
   landscape: ILandscape;
@@ -42,7 +43,7 @@ const LandscapeLog: React.FC<Props> = ({ landscape }) => {
     content = data.messages.map((m, i) => {
       return (
         <div className={'item'} key={i}>
-          <Chip avatar={<Avatar>{m.level}</Avatar>} label={m.date}></Chip>
+          <LevelChip level={m.level} title={m.date}></LevelChip>
           {m.message}
         </div>
       );
