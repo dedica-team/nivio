@@ -21,7 +21,6 @@
     "react": "^16.13.0",
     "react-console-emulator": "^3.0.5",
     "react-dom": "^16.13.0",
-    "react-hexgrid": "^1.0.3",
     "react-modal": "^3.11.2",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.4.1",
