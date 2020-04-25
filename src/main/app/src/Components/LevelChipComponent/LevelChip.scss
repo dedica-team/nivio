@@ -8,5 +8,13 @@ div.levelChip {
   .MuiAvatar-root.info {
     background-color: lightgray
   }
+
+  .MuiAvatar-root.warn {
+    background-color: #ffcf03;
+  }
+
+  .MuiAvatar-root.error {
+    background-color: red;
+  }
 }
 
