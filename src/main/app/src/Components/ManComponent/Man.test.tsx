@@ -11,5 +11,5 @@ it('should render manual component', () => {
       <Man />
     </MemoryRouter>
   );
-  expect(getByText('Manual')).toBeInTheDocument();
+  expect(getByText('Welcome to Nivio’s documentation!')).toBeInTheDocument();
 });

@@ -26,7 +26,9 @@ const topics: any = {
  */
 const Man: React.FC = () => {
   const [html, setHtml] = useState<string>('<p>OOPS SOMETHING WENT WRONG :(</p>');
-  const { usage } = useParams();
+  let { usage } = useParams();
+  if (usage == null || typeof usage == 'undefined')
+    usage = 'index';
   const [topic, setTopic] = useState<string>(usage + '');
 
   useEffect(() => {
