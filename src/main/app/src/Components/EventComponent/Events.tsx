@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Divider, Chip, Grid } from '@material-ui/core';
+import { Divider } from '@material-ui/core';
 import './Events.scss';
 import TitleBar from "../TitleBarComponent/TitleBar";
 import LevelChip from "../LevelChipComponent/LevelChip";
