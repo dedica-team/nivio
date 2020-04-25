@@ -10,7 +10,7 @@ import './Navigation.scss';
  * Header Component
  */
 const Navigation: React.FC = () => {
-  const [modalContent, setModalContent] = useState<string | ReactElement | ReactElement[] | null>(
+  const [modalContent] = useState<string | ReactElement | ReactElement[] | null>(
     null
   );
 
