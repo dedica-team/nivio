@@ -40,7 +40,7 @@ const Events: React.FC<{}> = () => {
     content = data.messages.map((m, i) => {
       return (
         <div className={'item'} key={i}>
-          {m.date} <LevelChip level={m.level} title={m.landscape}/> {m.type} {m.message}
+          <span className={'date'}>{m.date}</span> <LevelChip level={m.level} title={m.landscape}/> <span className={'tyoe'}>{m.type}</span> {m.message}
           <Divider />
         </div>
       );
