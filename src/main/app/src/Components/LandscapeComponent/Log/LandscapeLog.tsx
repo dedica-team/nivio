@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { ILandscape } from '../../../interfaces';
 
 import './LandscapeLog.scss';
-import { Chip, Avatar } from '@material-ui/core';
 import LevelChip from "../../LevelChipComponent/LevelChip";
 
 interface Props {
