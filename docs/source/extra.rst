@@ -1,9 +1,12 @@
-Service Icons
-=============
+Item Icons and Background
+=========================
 
 The default icon of a item is determined by its item type (e.g. server, messagequeue, database...). To change the
-appearance of a item to a vendor logo, for instance, the *icon* property can be set. This property takes a valid
-URL.
+appearance of a item to a vendor logo, for instance, the *icon* or *fill* property can be set. Both properties take
+a valid URL.
+
+While icon is rendered as centered image on the node, fill is used to paint the entire background and is more suitable
+to be used with images, photos and so on.
 
 .. code-block:: yaml
    :linenos:
@@ -12,6 +15,9 @@ URL.
       - identifier: foo
         shortName: blog1
         icon: http://my.custom/icon.png
+      - identifier: bar
+        shortName: db2
+        fill: http://my.custom/background.png
 
 
 Vendor Icons
@@ -27,6 +33,27 @@ Vendor icons are work in progress.
     items:
       - identifier: bar
         icon: vendor://redis
+
+Custom(er) Branding
+===================
+
+The appearance of rendered maps can be altered to match corporate identities. When a svg map is created, nivio tries to
+load and include custom css from an URL that can be configured in the landscape configuration. Furthermore, a logo can be
+included. A logo is configured in the landscape config, too, and must be a URL pointing to an includable file.
+
+.. code-block:: yaml
+   :linenos:
+
+   identifier: branded_landscape
+   name: branded
+
+   config:
+     branding:
+       mapStylesheet: https://acme.com/css/acme.css
+       mapLogo: https://acme.com/images/logo.png
+
+   items:
+     ...
 
 
 Graph Layout Tweaking

@@ -1,14 +1,14 @@
 package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.output.IconService;
+import de.bonndan.nivio.output.LocalServer;
 
 import static j2html.TagCreator.*;
 
 public class ItemReportGenerator extends ReportGenerator {
 
-    public ItemReportGenerator(IconService iconService) {
-        super(iconService);
+    public ItemReportGenerator(LocalServer localServer) {
+        super(localServer);
     }
 
     public String toDocument(Item item) {

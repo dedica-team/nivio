@@ -5,10 +5,9 @@ import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
-import de.bonndan.nivio.output.IconService;
+import de.bonndan.nivio.output.LocalServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +26,11 @@ public class DocsController {
     private static final Logger LOGGER = LoggerFactory.getLogger(DocsController.class);
 
     private final LandscapeRepository landscapeRepository;
-    private final IconService iconService;
+    private final LocalServer localServer;
 
-    @Autowired
-    public DocsController(LandscapeRepository landscapeRepository, IconService iconService) {
+    public DocsController(LandscapeRepository landscapeRepository, LocalServer localServer) {
         this.landscapeRepository = landscapeRepository;
-        this.iconService = iconService;
+        this.localServer = localServer;
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/report.html")
@@ -42,7 +40,7 @@ public class DocsController {
                 () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
         );
 
-        ReportGenerator generator = new ReportGenerator(iconService);
+        ReportGenerator generator = new ReportGenerator(localServer);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
@@ -57,7 +55,9 @@ public class DocsController {
     /**
      * Renders only a single item as html.
      *
+     *
      */
+    @Deprecated //item renderings should be generated within the GUI
     @RequestMapping(method = RequestMethod.GET, path = "/item/**")
     public ResponseEntity<String> itemHtmlResource(HttpServletRequest request) {
 
@@ -79,7 +79,7 @@ public class DocsController {
             return ResponseEntity.notFound().build();
         }
 
-        ItemReportGenerator generator = new ItemReportGenerator(iconService);
+        ItemReportGenerator generator = new ItemReportGenerator(localServer);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
@@ -97,7 +97,7 @@ public class DocsController {
                 () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
         );
 
-        OwnersReportGenerator generator = new OwnersReportGenerator();
+        OwnersReportGenerator generator = new OwnersReportGenerator(localServer);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html");

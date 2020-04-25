@@ -1,71 +1,97 @@
 package de.bonndan.nivio.output.map.svg;
 
-
-import de.bonndan.nivio.model.LandscapeItem;
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Lifecycle;
-import de.bonndan.nivio.output.map.ItemMapItem;
+import de.bonndan.nivio.output.Rendered;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 
+import static de.bonndan.nivio.output.map.svg.SvgFactory.ICON_SIZE;
+
 class SVGItem extends Component {
 
     private final String id;
-    private final LandscapeItem landscapeItem;
+    private final Item item;
     private DomContent children;
     private final Point2D.Double pixel;
-    private final String fill;
-    private final String cellStyle;
 
-    SVGItem(DomContent children, ItemMapItem itemMapItem, Point2D.Double position, String fill, String cellStyle) {
+    SVGItem(DomContent children, Item item, Point2D.Double position) {
         this.children = children;
-        this.fill = fill;
-        this.cellStyle = cellStyle;
         this.pixel = position;
-        this.landscapeItem = itemMapItem.landscapeItem;
-        this.id = itemMapItem.landscapeItem.getFullyQualifiedIdentifier().toString();
+        this.item = item;
+        this.id = item.getFullyQualifiedIdentifier().toString();
     }
 
+    /**
+     * Renders the fill as background if possible, otherwise tries explicit icon or shortName.
+     *
+     */
     public DomContent render() {
 
-        var fillId = (fill) != null ? "url(#" + fill + ")" : null;
+        boolean hasText = false;
+        boolean hasFill = !StringUtils.isEmpty(item.getFill());
+        var fillId = hasFill ? "url(#" + SVGPattern.idForLink(item.getFill()) + ")" : "white";
+        DomContent content = null;
+        //use the shortname as text instead
+        if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(item.getShortName())) {
+            content = new SVGLabelText(item.getShortName(), "0", "3", "item_shortName").render();
+            fillId = "white";
+            hasText = true;
+        }
+
+        DomContent icon = null;
+        if (!hasFill && !hasText && !StringUtils.isEmpty(item.getLabel(Rendered.LABEL_RENDERED_ICON))) {
+            icon = SvgTagCreator.image()
+                    .attr("xlink:href", item.getLabel(Rendered.LABEL_RENDERED_ICON))
+                    .attr("width", ICON_SIZE)
+                    .attr("height", ICON_SIZE)
+                    .attr("transform", "translate(-" + ICON_SIZE / 2 + ",-" + ICON_SIZE / 2 + ")")
+            ;
+        }
+
         ContainerTag circle = SvgTagCreator.circle()
                 .attr("id", this.id)
                 .attr("cx", 0)
                 .attr("cy", 0)
-                .attr("r", 40)
+                .attr("r", ICON_SIZE - 10)
                 .attr("fill", fillId)
-                .attr("style", cellStyle);
-        if (Lifecycle.PLANNED.equals(landscapeItem.getLifecycle())) {
+                .attr("stroke", "#" + item.getColor());
+        if (Lifecycle.PLANNED.equals(item.getLifecycle())) {
             circle.attr("stroke-dasharray", 5);
             circle.attr("opacity", 0.7);
         }
-        ContainerTag inner = SvgTagCreator.g(circle, children)
+        ContainerTag inner = SvgTagCreator.g(circle, content, children)
                 .attr("class", "hexagon");
 
-        Integer scaleVal = 0;
+        return SvgTagCreator.g(inner, icon, getScale())
+                .attr("class", "hexagon-group")
+                .attr("transform", "translate(" + pixel.x + "," + pixel.y + ")");
+    }
+
+    private ContainerTag getScale() {
+
+        if (StringUtils.isEmpty(item.getScale())) {
+            return null;
+        }
+
+        int scaleVal = 0;
         try {
-            scaleVal = Integer.valueOf(landscapeItem.getScale());
-        } catch (NumberFormatException ignored) { }
-        ContainerTag scale = StringUtils.isEmpty(landscapeItem.getScale()) ? null :
-                SvgTagCreator.g(
+            scaleVal = Integer.parseInt(item.getScale());
+        } catch (NumberFormatException ignored) {
+        }
+
+        return SvgTagCreator.g(
                         SvgTagCreator.circle()
                                 .attr("cx", 0)
                                 .attr("cy", 0)
                                 .attr("r", 12)
                                 .attr("fill", scaleVal > 0 ? "green" : "red")
                         ,
-                        SvgTagCreator.text(landscapeItem.getScale())
+                        SvgTagCreator.text(item.getScale())
                                 .attr("transform", "translate(-" + 4 + "," + 5 + ")")
                 ).attr("transform", "translate(" + 30 + "," + 30 + ")");
-
-
-        return SvgTagCreator.g(inner, scale)
-                .attr("class", "hexagon-group")
-                .attr("transform", "translate(" + pixel.x + "," + pixel.y + ")");
     }
-
-
 }

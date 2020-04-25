@@ -2,30 +2,29 @@ package de.bonndan.nivio.output.map.svg;
 
 import j2html.tags.DomContent;
 
+import java.util.Base64;
 import static j2html.TagCreator.rawHtml;
 
 class SVGPattern extends Component {
 
     private final String id, link;
-    private final int size, padding;
 
-    SVGPattern(String id, String link, int size, int padding) {
-        this.id = id;
+    SVGPattern(String link) {
+        this.id = idForLink(link);
         this.link = link;
-        this.size = size;
-        this.padding = padding;
     }
 
+    static String idForLink(String link) {
+        return Base64.getEncoder().encodeToString(link.getBytes());
+    }
 
     public DomContent render() {
 
         return rawHtml(
-                "<defs>" +
-                        "<pattern id=\"" + id + "\" patternUnits=\"objectBoundingBox\" x =\"0\" y=\"0\" width=\"" + size + "\" height=\"" + size + "\" >" +
-                        "<rect height=\"100\" width=\"100\" fill=\"white\" />" +
-                        "<image xlink:href=\"" + link + "\" x=\"" + padding + "\" y=\"" + padding + "\" width=\"" + size * 2 + "\" height=\"" + size * 2 + "\"  />" +
-                        "</pattern>" +
-                        "</defs >"
+                    "<pattern id=\"" + id + "\" patternUnits=\"objectBoundingBox\" x=\"0\" y=\"0\" width=\"100%\" height=\"100%\" >" +
+                    "<rect height=\"100\" width=\"100\" fill=\"white\" />" +
+                    "<image xlink:href=\"" + link + "\" width=\"100\" height=\"100\" />" + //abs values are important for batik
+                    "</pattern>"
         );
     }
 }

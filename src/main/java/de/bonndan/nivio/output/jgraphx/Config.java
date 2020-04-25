@@ -2,7 +2,7 @@ package de.bonndan.nivio.output.jgraphx;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.view.mxGraph;
-import de.bonndan.nivio.output.IconService;
+import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.map.MapFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class Config {
 
     @Bean
-    public MapFactory<mxGraph, mxCell> getMapFactory(IconService iconService) {
-        return new RenderedXYMapFactory(iconService);
+    public MapFactory<mxGraph, mxCell> getMapFactory(LocalServer localServer) {
+        return new RenderedXYMapFactory(localServer);
     }
 }

@@ -3,67 +3,68 @@ package de.bonndan.nivio.output.jgraphx;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.view.mxGraph;
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.output.IconService;
+import de.bonndan.nivio.output.Color;
+import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.Rendered;
-import de.bonndan.nivio.output.map.GroupMapItem;
-import de.bonndan.nivio.output.map.ItemMapItem;
+import de.bonndan.nivio.output.RenderedArtifact;
 import de.bonndan.nivio.output.map.MapFactory;
-import de.bonndan.nivio.output.map.RenderedXYMap;
+import org.springframework.util.StringUtils;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
 
-    private final IconService iconService;
+    private final LocalServer localServer;
 
-    public RenderedXYMapFactory(IconService iconService) {
-        this.iconService = iconService;
+    public RenderedXYMapFactory(LocalServer localServer) {
+        this.localServer = localServer;
     }
 
-    public RenderedXYMap getRenderedMap(LandscapeImpl landscape, Rendered<mxGraph, mxCell> rendered) {
-        RenderedXYMap renderedMap = from(rendered);
+    public void applyArtifactValues(LandscapeImpl landscape, RenderedArtifact<mxGraph, mxCell> renderedArtifact) {
 
-        AtomicInteger minX = new AtomicInteger(0);
-        AtomicInteger maxX = new AtomicInteger(0);
-        AtomicInteger minY = new AtomicInteger(0);
-        AtomicInteger maxY = new AtomicInteger(0);
-        renderedMap.items.forEach(item -> {
-            if (item.x < minX.get())
-                minX.set((int) item.x);
-            if (item.x > maxX.get())
-                maxX.set((int) item.x);
-            if (item.y < minY.get())
-                minY.set((int) item.y);
-            if (item.y > maxY.get())
-                maxY.set((int) item.y);
+        applyValues(renderedArtifact);
+
+        AtomicLong minX = new AtomicLong(0);
+        AtomicLong maxX = new AtomicLong(0);
+        AtomicLong minY = new AtomicLong(0);
+        AtomicLong maxY = new AtomicLong(0);
+        renderedArtifact.getItemObjects().forEach((item, v) -> {
+            if (item.getX() < minX.get())
+                minX.set(item.getX());
+            if (item.getX() > maxX.get())
+                maxX.set(item.getX());
+            if (item.getY() < minY.get())
+                minY.set(item.getY());
+            if (item.getY() > maxY.get())
+                maxY.set(item.getY());
         });
 
-        renderedMap.landscape = landscape.getName();
-        renderedMap.width = maxX.get() - minX.get();
-        renderedMap.height = maxY.get() - minY.get();
-
-        return renderedMap;
+        landscape.setWidth(maxX.get() - minX.get());
+        landscape.setHeight(maxY.get() - minY.get());
     }
 
-    RenderedXYMap from(Rendered<mxGraph, mxCell> rendered) {
-        RenderedXYMap renderedMap = new RenderedXYMap();
+    void applyValues(RenderedArtifact<mxGraph, mxCell> renderedArtifact) {
 
-        rendered.getItemObjects().forEach((item, cell) -> {
-            DimensionsFromCell dim = getDimensionsFromCell(cell);
-            renderedMap.items.add(new ItemMapItem(item, iconService.getIcon(item).getUrl().toString(), dim.getX(), dim.getY(), dim.getWidth(), dim.getHeight()));
+
+        renderedArtifact.getItemObjects().forEach((item, cell) -> {
+            setRenderedLabels(item, getDimensionsFromCell(cell));
         });
 
-        rendered.getGroupObjects().forEach((group, cell) -> {
+        renderedArtifact.getGroupObjects().forEach((group, cell) -> {
 
             AtomicLong minX = new AtomicLong(Long.MAX_VALUE);
             AtomicLong maxX = new AtomicLong(Long.MIN_VALUE);
             AtomicLong minY = new AtomicLong(Long.MAX_VALUE);
             AtomicLong maxY = new AtomicLong(Long.MIN_VALUE);
 
+            if (StringUtils.isEmpty(group.getColor())) {
+                group.setColor(Color.getGroupColor(group));
+            }
             group.getItems().forEach(landscapeItem -> {
-                mxCell mxCell = rendered.getItemObjects().get(landscapeItem);
+                landscapeItem.setLabel(Rendered.LABEL_RENDERED_COLOR, group.getColor());
+                mxCell mxCell = renderedArtifact.getItemObjects().get(landscapeItem);
                 mxGeometry geometry = mxCell.getGeometry();
                 long x = Math.round(geometry.getX());
                 long y = Math.round(geometry.getY());
@@ -76,18 +77,20 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
 
             DimensionsFromCell dim = getDimensionsFromCell(cell);
 
-            renderedMap.groups.add(
-                    new GroupMapItem(
-                            group,
-                            dim.getX() + minX.get(),
-                            dim.getY() + minY.get(),
-                            dim.getX() + maxX.get(),
-                            dim.getY() + maxY.get()
-                    )
-            );
+            group.setX(dim.getX() + minX.get());
+            group.setY(dim.getY() + minY.get());
+            group.setWidth(maxX.get() - minX.get());
+            group.setHeight(maxY.get() - minY.get());
         });
 
-        return renderedMap;
+    }
+
+    private void setRenderedLabels(Item item, DimensionsFromCell dim) {
+        item.setLabel(Rendered.LABEL_RENDERED_ICON, localServer.getIconUrl(item).toString());
+        item.setLabel(Rendered.LX, String.valueOf(dim.getX()));
+        item.setLabel(Rendered.LY, String.valueOf(dim.getY()));
+        item.setLabel(Rendered.LABEL_RENDERED_WIDTH, String.valueOf(dim.getWidth()));
+        item.setLabel(Rendered.LABEL_RENDERED_HEIGHT, String.valueOf(dim.getHeight()));
     }
 
     private DimensionsFromCell getDimensionsFromCell(mxCell cell) {

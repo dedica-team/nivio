@@ -3,6 +3,7 @@ package de.bonndan.nivio.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import de.bonndan.nivio.input.ProcessLog;
+import de.bonndan.nivio.output.Rendered;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
@@ -11,7 +12,7 @@ import java.util.*;
 /**
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
-public class LandscapeImpl implements Landscape {
+public class LandscapeImpl implements Landscape, Rendered {
 
     /**
      * Immutable unique identifier. Maybe use an URN.
@@ -41,6 +42,8 @@ public class LandscapeImpl implements Landscape {
     private Map<String, GroupItem> groups = new HashMap<>();
 
     private ProcessLog processLog;
+
+    private Map<String, String> labels = new HashMap<>();
 
     public String getIdentifier() {
         return identifier;
@@ -151,5 +154,15 @@ public class LandscapeImpl implements Landscape {
     @Override
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public String getLabel(String key) {
+        return labels.get(key);
+    }
+
+    @Override
+    public void setLabel(String key, String value) {
+        labels.put(key, value);
     }
 }

@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -40,7 +41,7 @@ public class IndexerIntegrationTest {
     ItemDescriptionFormatFactory formatFactory;
 
     @Mock
-    NotificationService notificationService;
+    ApplicationEventPublisher applicationEventPublisher;
 
     @MockBean
     JavaMailSender mailSender;
@@ -53,7 +54,7 @@ public class IndexerIntegrationTest {
         File file = new File(getRootPath() + path);
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, notificationService);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher);
 
         ProcessLog processLog = indexer.reIndex(landscapeDescription);
         return (LandscapeImpl) processLog.getLandscape();
@@ -161,7 +162,7 @@ public class IndexerIntegrationTest {
         exsistingWordPress.setName("Other name");
         landscapeDescription.getItemDescriptions().add(exsistingWordPress);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, notificationService);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher);
 
         //created
         landscape = (LandscapeImpl) indexer.reIndex(landscapeDescription).getLandscape();

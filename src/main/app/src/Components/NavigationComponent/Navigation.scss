@@ -1,0 +1,71 @@
+@import '../../Ressources/styling/colors.scss';
+@import '../../Ressources/styling/font.scss';
+
+.navigationContainer {
+  .header {
+    margin-bottom: 0px;
+
+    .first {
+      background-color: $header-color;
+      border-top-left-radius: 25px;
+    }
+
+    .title {
+      font-size: $header-font-size;
+      font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+      font-weight: bold;
+      flex-grow: 1;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 0;
+    }
+
+    .last {
+      background-color: $header-color;
+    }
+  }
+
+  .main {
+    margin-bottom: 0;
+    margin-top: 0;
+
+    //TODO move to upper level
+    .sidebar {
+      padding: 0px;
+
+      .spacer {
+        background-color: $header-color;
+      }
+
+      .spacer:first-child {
+        margin-bottom: 0.3rem;
+      }
+
+      .spacer:last-child {
+        margin-top: 0.3rem;
+        height: 4rem;
+      }
+    }
+
+    .elbow1 {
+      background-color: $header-color;
+    }
+
+    .elbow2 {
+      padding: 0px;
+
+      .elbow-outer {
+        background-color: $header-color;
+        width: 100%;
+        height: inherit;
+
+        .elbow-inner {
+          background-color: $background-grey;
+          width: 100%;
+          height: 2rem;
+          border-top-left-radius: 50px;
+        }
+      }
+    }
+  }
+}

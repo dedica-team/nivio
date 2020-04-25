@@ -29,6 +29,7 @@ public class Seed {
         List<File> demoFiles = new ArrayList<>();
         demoFiles.add(new File(absPath + "/src/test/resources/example/example_env.yml"));
         demoFiles.add(new File(absPath + "/src/test/resources/example/inout.yml"));
+        //demoFiles.add(new File(absPath + "/src/test/resources/example/dedica.yml"));
         return demoFiles;
     }
 
@@ -66,7 +67,7 @@ public class Seed {
     private URL toURL(String s) throws MalformedURLException {
 
         if (ESCAPE_AUTHORITY && s.matches("^[a-zA-Z]\\:.*")) {
-            s = "file://" + s.replace(":", "");
+            s = "file:/" + s;
         }
 
         if (!s.contains(":/")) {

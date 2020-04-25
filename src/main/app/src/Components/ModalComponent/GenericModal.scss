@@ -1,0 +1,45 @@
+@import '../../Ressources/styling/colors.scss';
+@import '../../Ressources/styling/font.scss';
+
+.Modal {
+  position: absolute;
+  top: 60px;
+  left: 60px;
+  right: 60px;
+  bottom: 60px;
+  background-color: $background-grey;
+  border: 1px solid $border-color;
+  overflow: auto;
+}
+
+.Modal::-webkit-scrollbar {
+  display: none;
+}
+
+.Modal:focus {
+  outline: none;
+}
+
+.Overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  filter: blur();
+}
+
+.close {
+  float: right;
+  margin-right: 4px;
+  margin-top: 4px;
+  background-color: rgba(0, 0, 0, 0.75);
+  font-size: $large-font-size;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-bottom: 0;
+  border-right:0;
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
+}

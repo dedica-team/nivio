@@ -5,11 +5,8 @@ import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.output.IconService;
-import de.bonndan.nivio.output.Rendered;
+import de.bonndan.nivio.output.RenderedArtifact;
 import de.bonndan.nivio.output.Renderer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -19,18 +16,15 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class JGraphXRenderer implements Renderer<Rendered<mxGraph, mxCell>> {
+public class JGraphXRenderer implements Renderer<RenderedArtifact<mxGraph, mxCell>> {
 
-    private static final Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);
-    private final IconService iconService;
     private boolean debugMode;
 
-    public JGraphXRenderer(IconService iconService) {
-        this.iconService = iconService;
+    public JGraphXRenderer() {
     }
 
     @Override
-    public Rendered<mxGraph, mxCell> render(LandscapeImpl landscape) {
+    public RenderedArtifact<mxGraph, mxCell> render(LandscapeImpl landscape) {
 
         Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
         landscape.getGroups().forEach((name, groupItem) ->  {
@@ -45,7 +39,7 @@ public class JGraphXRenderer implements Renderer<Rendered<mxGraph, mxCell>> {
         if (isDebugMode())
             return allGroupsGraph;
 
-        FinalGraph finalGraph = new FinalGraph(iconService);
+        FinalGraph finalGraph = new FinalGraph();
         finalGraph.render(allGroupsGraph, subgraphs);
         return finalGraph;
     }
