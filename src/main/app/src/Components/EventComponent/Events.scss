@@ -2,16 +2,9 @@
 @import '../../Ressources/styling/font.scss';
 
 .events {
-  .title {
-    display: block;
-    background-color: $header-color;
 
-    padding: 3px 0px;
-    box-shadow: 0px 0px 12px $box-shadow-color;
-
-    font-size: $header-font-size;
-    font-weight: bold;
-    text-transform: uppercase;
-    text-align: center;
+  .itemContainer {
+    padding: 1rem;
   }
+
 }

@@ -1,9 +1,6 @@
 package de.bonndan.nivio;
 
 import de.bonndan.nivio.model.Landscape;
-import org.springframework.context.ApplicationEvent;
-
-import java.util.Map;
 
 /**
  * Event is fired after successful indexing of a landscape.
@@ -20,15 +17,23 @@ public class ProcessingFinishedEvent extends ProcessingEvent {
         this.landscape = landscape;
     }
 
+    @Override
     public Landscape getLandscape() {
         return landscape;
     }
 
     @Override
-    public Object getJsonValue() {
-        return Map.of(
-                "landscape", landscape.getIdentifier(),
-                "event", getClass().getSimpleName()
-        );
+    public String getLevel() {
+        return "info";
+    }
+
+    @Override
+    public String getType() {
+        return getClass().getSimpleName();
+    }
+
+    @Override
+    public String getMessage() {
+        return null;
     }
 }
