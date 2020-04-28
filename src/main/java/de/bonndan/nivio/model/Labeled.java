@@ -35,20 +35,6 @@ public interface Labeled {
         return getLabels(prefix.name().toLowerCase());
     }
 
-    default void setLabels(String prefix, String[] keys, String[] values) {
-        if (StringUtils.isEmpty(prefix)) {
-            throw new IllegalArgumentException("prefix is empty");
-        }
-
-        if (keys.length != values.length) {
-            throw new IllegalArgumentException("keys length is not values length");
-        }
-
-        for (int i = 0; i < keys.length; i++) {
-            setLabel(prefix + keys[0], values[0]);
-        }
-    }
-
     /**
      * Returns all label with values.
      */

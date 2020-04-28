@@ -22,6 +22,8 @@ public interface Tagged extends Labeled {
      * @param tags tags to add
      */
     default void setTags(String[] tags) {
-        setLabels(LABEL_PREFIX_TAG, tags, tags);
+        for (String tag : tags) {
+            setLabel(LABEL_PREFIX_TAG + tag, tag);
+        }
     }
 }
