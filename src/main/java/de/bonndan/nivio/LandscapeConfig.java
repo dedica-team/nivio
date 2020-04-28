@@ -20,6 +20,9 @@ public class LandscapeConfig {
     private List<String> labelBlacklist = new ArrayList<>();
     private Branding branding = new Branding();
 
+    /**
+     * KPIs by their unique identifier.
+     */
     @JsonDeserialize(using = KPIFactory.class)
     private Map<String, KPI> kpis = new HashMap<>();
 
@@ -141,6 +144,11 @@ public class LandscapeConfig {
         }
     }
 
+    /**
+     * The active KPIs.
+     *
+     * @return all active {@link KPI}s with their unique identifier
+     */
     public Map<String, KPI> getKPIs() {
         return kpis;
     }
