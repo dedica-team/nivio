@@ -1,7 +1,7 @@
 package de.bonndan.nivio.assessment;
 
 import de.bonndan.nivio.model.Component;
-import org.springframework.util.StringUtils;
+import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,15 +42,22 @@ public interface Assessable extends Component {
         return new StatusValue(SUMMARY_LABEL + "." + getIdentifier(), summary.get().getStatus(), summary.get().getField());
     }
 
+    /**
+     * Returns all status value
+     *
+     * @return a distinct (by field) set
+     */
     Set<StatusValue> getStatusValues();
 
-    default void setStatusValue(StatusValue statusValue) {
+    /**
+     * Set/overwrite the status for the assessed field.
+     *
+     * @param statusValue the new status value
+     */
+    default void setStatusValue(@NonNull StatusValue statusValue) {
 
         if (statusValue == null) {
             throw new IllegalArgumentException("Status value is null");
-        }
-        if (StringUtils.isEmpty(statusValue.getField())) {
-            throw new IllegalArgumentException("Status value has no field");
         }
 
         getStatusValues().add(statusValue);

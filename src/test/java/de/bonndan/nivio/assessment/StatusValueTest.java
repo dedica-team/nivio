@@ -10,6 +10,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class StatusValueTest {
 
     @Test
+    void mustHaveField() {
+        assertThrows(IllegalArgumentException.class, () -> {new StatusValue(null, Status.GREEN);});
+    }
+
+    @Test
     void highestOf() {
         List<StatusValue> statusValueSet = new ArrayList<>();
         statusValueSet.add(new StatusValue("foo", Status.GREEN));

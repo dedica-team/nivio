@@ -1,5 +1,9 @@
 package de.bonndan.nivio.assessment;
 
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,16 +21,21 @@ public class StatusValue {
     private final Status status;
     private final String message;
 
-    public StatusValue(String field, Status status, String message) {
+    public StatusValue(@NonNull String field, @Nullable Status status, @Nullable String message) {
+        if (StringUtils.isEmpty(field)) {
+            throw new IllegalArgumentException("Status value has no field");
+        }
         this.field = field;
+
+        if (status == null) {
+            status = Status.UNKNOWN;
+        }
         this.status = status;
         this.message = message;
     }
 
-    public StatusValue(String field, Status status) {
-        this.field = field;
-        this.status = status;
-        message = null;
+    public StatusValue(@NonNull String field, Status status) {
+        this(field, status, null);
     }
 
     public String getField() {
