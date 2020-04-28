@@ -14,7 +14,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Examines the labels of an item for parts that point to being an url and could point to targets in the landscape.
+ * Examines the labels of an item for parts that might be an url or parts of it and could point to targets in the landscape.
+ *
+ * Every label is split into parts and these parts are matched against landscape item names or identifiers.
+ *
  */
 public class MagicLabelRelations extends Resolver {
 
@@ -37,7 +40,7 @@ public class MagicLabelRelations extends Resolver {
 
         input.getItemDescriptions().all().forEach(item -> itemMatches.put(item, getMatches(item, landscape, blacklistSpecs)));
 
-        //search for targets in the landscape
+        //search for targets in the landscape, i.e. where name or identifier of an item matches the "possible targets"
         itemMatches.forEach((item, labelMatches) -> {
             labelMatches.forEach(labelMatch -> {
                 labelMatch.possibleTargets.forEach(toFind -> {

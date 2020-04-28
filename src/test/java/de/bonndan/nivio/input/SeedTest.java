@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.FileSystems;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,10 +48,16 @@ public class SeedTest {
 
     @Test
     public void windowsFileLocation() throws MalformedURLException {
-        Seed seed = new Seed("c:\\a\\b\\c.yml");
+        final String separator = FileSystems.getDefault().getSeparator();
+        final String seedLocation = "c:" + separator + "a" + separator + "b" + separator+ "c.yml";
+
+        final String expectedLocation = "file:/c:/a/b/c.yml";
+
+        Seed seed = new Seed(seedLocation);
         Seed.ESCAPE_AUTHORITY = true;
         List<URL> locations = seed.getLocations();
-        assertEquals("file://c\\a\\b\\c.yml", locations.get(0).toString());
+
+        assertEquals(expectedLocation, locations.get(0).toString());
         Seed.ESCAPE_AUTHORITY = false;
     }
 }

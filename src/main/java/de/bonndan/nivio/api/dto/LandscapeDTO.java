@@ -5,8 +5,7 @@ import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import org.springframework.hateoas.RepresentationModel;
 
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,9 +21,13 @@ public class LandscapeDTO extends RepresentationModel {
     public String description;
 
     public String source;
+
+    /**
+     * Group by group identifier
+     */
     public Map<String, Group> groups;
     public Set<Item> items;
-    public Date lastUpdate;
+    public LocalDateTime lastUpdate;
     public String[] teams;
 
     public String getIdentifier() {

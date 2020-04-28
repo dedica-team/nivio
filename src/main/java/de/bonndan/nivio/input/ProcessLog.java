@@ -1,20 +1,23 @@
 package de.bonndan.nivio.input;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.api.LandscapeDTOFactory;
 import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+/**
+ * This is a decorator for {@link Logger} used during landscape processing in order to grab all landscape relevant
+ * processing events.
+ */
 public class ProcessLog {
 
     private final Logger logger;
@@ -80,25 +83,28 @@ public class ProcessLog {
         return exception.getMessage();
     }
 
+    @JsonIgnore
+    public LocalDateTime getLastUpdate() {
+
+        if (messages.size() > 0) {
+            return messages.get(messages.size() - 1).date;
+        }
+        return null;
+    }
+
     public static class Entry {
-        private final String level;
-        private final String message;
-        private final Date date;
+
+        public final String level;
+
+        public final String message;
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+        public final LocalDateTime date;
 
         public Entry(String level, String message) {
             this.level = level;
             this.message = message;
-            this.date = Date.from(Instant.now());
-        }
-
-        @Override
-        @JsonValue
-        public String toString() {
-            return date + " " + level + ": " + message;
-        }
-
-        public Date getDate() {
-            return date;
+            this.date = LocalDateTime.now();
         }
     }
 }

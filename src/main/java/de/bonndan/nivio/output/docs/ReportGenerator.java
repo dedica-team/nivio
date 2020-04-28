@@ -37,7 +37,7 @@ public class ReportGenerator extends HtmlGenerator {
                 body(
                         h1(landscape.getName()),
                         p("Contact: " + nice(landscape.getContact())),
-                        div(img().attr("src", "/render/" + landscape.getIdentifier() + "/" + MAP_SVG_ENDPOINT).attr("class", "img-fluid img-thumbnail mx-auto d-block")),
+                        div(embed().attr("src", "/render/" + landscape.getIdentifier() + "/" + MAP_SVG_ENDPOINT).attr("class", "img-fluid img-thumbnail mx-auto d-block")),
                         br(), br(),
                         rawHtml(writeGroups(landscape))
                 )

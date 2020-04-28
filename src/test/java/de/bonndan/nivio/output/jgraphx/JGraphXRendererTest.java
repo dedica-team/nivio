@@ -26,6 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
+import org.springframework.context.ApplicationEventPublisher;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -51,7 +52,7 @@ class JGraphXRendererTest {
         landscapeRepository = new LandscapeRepository();
         formatFactory = ItemDescriptionFormatFactory.with(ItemDescriptionFactoryNivio.forTesting());
 
-        indexer = new Indexer(landscapeRepository, formatFactory, new NotificationService(null));
+        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class));
     }
 
     private LandscapeImpl getLandscape(String path) {
@@ -223,7 +224,7 @@ class JGraphXRendererTest {
     public void renderCSV() throws IOException {
 
         formatFactory = ItemDescriptionFormatFactory.with(new ItemDescriptionFactoryCSV(new FileFetcher(new HttpService())));
-        indexer = new Indexer(landscapeRepository, formatFactory, new NotificationService(null));
+        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class));
 
         debugRender("/src/test/resources/example/example_csv", false);
     }

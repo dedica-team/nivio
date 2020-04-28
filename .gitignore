@@ -5,3 +5,4 @@ _static
 _templates
 /.env
 *.iml
+src/test/resources/example/*_debug.png

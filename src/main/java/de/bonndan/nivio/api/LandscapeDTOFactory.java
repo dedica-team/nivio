@@ -1,9 +1,6 @@
 package de.bonndan.nivio.api;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.api.dto.LandscapeDTO;
-import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.LandscapeImpl;
@@ -14,22 +11,16 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-
+/**
+ * Factory that creates DTOs for the api.
+ */
 public class LandscapeDTOFactory {
-
-    static final ObjectMapper mapper;
-
-    static {
-        mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
 
     public static LandscapeDTO from(LandscapeImpl landscape) {
 
@@ -51,15 +42,17 @@ public class LandscapeDTOFactory {
 
         landscapeDTO.groups = getGroups(landscape);
         landscapeDTO.items = landscape.getItems().all();
+
         if (landscape.getLog() != null) {
-            List<ProcessLog.Entry> messages = landscape.getLog().getMessages();
-            if (messages.size() > 0) {
-                landscapeDTO.lastUpdate = messages.get(messages.size() - 1).getDate();
-            }
+            landscapeDTO.lastUpdate = landscape.getLog().getLastUpdate();
         }
         return landscapeDTO;
     }
 
+    /**
+     * This is mainly a type conversion.
+     * @return groups by group identifier
+     */
     private static Map<String, Group> getGroups(LandscapeImpl landscape) {
         Map<String, Group> groups = new HashMap<>();
         landscape.getGroups().forEach((s, groupItem) -> groups.put(s, (Group)groupItem));

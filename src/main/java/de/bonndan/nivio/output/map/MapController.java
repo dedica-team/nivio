@@ -1,29 +1,19 @@
 package de.bonndan.nivio.output.map;
 
-import com.mxgraph.model.mxCell;
-import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.api.NotFoundException;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
-import de.bonndan.nivio.output.RenderedArtifact;
-import de.bonndan.nivio.output.jgraphx.JGraphXRenderer;
-import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
-import de.bonndan.nivio.output.map.svg.SvgFactory;
-import org.apache.batik.transcoder.Transcoder;
-import org.apache.batik.transcoder.TranscoderException;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 
@@ -32,21 +22,15 @@ import java.io.IOException;
 public class MapController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapController.class);
-    public static final String MAP_JSON_ENDPOINT = "map.json";
     public static final String MAP_SVG_ENDPOINT = "map.svg";
     public static final String MAP_PNG_ENDPOINT = "graph.png";
 
     private final LandscapeRepository landscapeRepository;
-    private final MapFactory<mxGraph, mxCell> mapFactory;
-    private final MapStyleSheetFactory mapStyleSheetFactory;
+    private final PNGRenderCache pngRenderCache;
 
-    public MapController(LandscapeRepository landscapeRepository,
-                         MapFactory<mxGraph, mxCell> mapFactory,
-                         MapStyleSheetFactory mapStyleSheetFactory
-    ) {
+    public MapController(LandscapeRepository landscapeRepository, PNGRenderCache pngRenderCache) {
         this.landscapeRepository = landscapeRepository;
-        this.mapFactory = mapFactory;
-        this.mapStyleSheetFactory = mapStyleSheetFactory;
+        this.pngRenderCache = pngRenderCache;
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
@@ -58,7 +42,7 @@ public class MapController {
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_TYPE, "image/svg+xml");
             return new ResponseEntity<>(
-                    getMapAsString(landscape),
+                    pngRenderCache.getSVG(landscape),
                     headers,
                     HttpStatus.OK
             );
@@ -72,40 +56,15 @@ public class MapController {
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/" + MAP_PNG_ENDPOINT)
     public ResponseEntity<byte[]> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
         LandscapeImpl landscape = getLandscape(landscapeIdentifier);
-
-        TranscoderInput input_svg_image = new TranscoderInput(new ByteArrayInputStream(getMapAsString(landscape).getBytes()));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        TranscoderOutput transcoderOutput = new TranscoderOutput(outputStream);
-        Transcoder transcoder = new PNGTranscoder();
-        try {
-            transcoder.transcode(input_svg_image, transcoderOutput);
-        } catch (TranscoderException e) {
-            throw new RuntimeException("Failed to create PNG", e);
-        }
-        outputStream.flush();
-        outputStream.close();
+        byte[] png = pngRenderCache.getPNG(landscape);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "image/png");
-        return new ResponseEntity<>(
-                outputStream.toByteArray(),
-                headers,
-                HttpStatus.OK
-        );
-
+        return new ResponseEntity<>(png, headers, HttpStatus.OK);
     }
 
     private LandscapeImpl getLandscape(@PathVariable(name = "landscape") String landscapeIdentifier) {
         return landscapeRepository.findDistinctByIdentifier(landscapeIdentifier)
                 .orElseThrow(() -> new NotFoundException("Landscape " + landscapeIdentifier + " not found"));
-    }
-
-    private String getMapAsString(LandscapeImpl landscape) {
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer();
-        RenderedArtifact<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
-        mapFactory.applyArtifactValues(landscape, render);
-
-        SvgFactory svgFactory = new SvgFactory(landscape, mapStyleSheetFactory);
-        return svgFactory.getXML();
     }
 }

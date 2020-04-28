@@ -5,6 +5,8 @@ import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.ReadingException;
 import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.util.URLHelper;
+import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -29,7 +31,7 @@ public class MapStyleSheetFactory {
      * @param processLog current process log
      * @return css or empty string
      */
-    public String getMapStylesheet(LandscapeConfig landscapeConfig, ProcessLog processLog) {
+    public String getMapStylesheet(LandscapeConfig landscapeConfig, @NonNull ProcessLog processLog) {
 
         String mapStylesheet = landscapeConfig.getBranding().getMapStylesheet();
         if (StringUtils.isEmpty(mapStylesheet)) {
@@ -37,6 +39,7 @@ public class MapStyleSheetFactory {
         }
 
         String mapCss = "";
+        processLog.debug("Loading customer stylesheet: " + mapStylesheet);
         try {
             URL url = new URL(mapStylesheet);
             if (URLHelper.isLocal(url)) {
