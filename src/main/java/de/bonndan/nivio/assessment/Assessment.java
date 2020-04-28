@@ -5,6 +5,10 @@ import de.bonndan.nivio.assessment.kpi.KPI;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Assesses a landscape component (which implements {@link Assessable}) by applying all known KPIs to its fields and setting
+ * the derived {@link StatusValue}s to the component.
+ */
 public class Assessment {
 
     private final Map<String, KPI> kpis;
