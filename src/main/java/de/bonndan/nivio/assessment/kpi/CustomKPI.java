@@ -21,8 +21,17 @@ import java.util.stream.Collectors;
 public class CustomKPI extends KPI {
 
     public static final String SEPARATOR = ";";
+
+    /**
+     * For each {@link Status} a numeric range can be defined (includes lower/upper limit).
+     */
     private final Map<Status, Range<Double>> ranges;
+
+    /**
+     * For each {@link Status} a set of regular expressions can be defined which indicate the status.
+     */
     private final Map<Status, List<Function<String, Boolean>>> matches = new HashMap<>();
+
     private final String label;
 
     /**
