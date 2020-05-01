@@ -79,9 +79,7 @@ public class AsciiDocGenerator {
         builder.append("Visibility:: " + nice(item.getLabel(Label.VISIBILITY)) + NL);
         builder.append("Networks:: " + FormatUtils.nice(item.getLabels(Label.PREFIX_NETWORK)) + NL);
 
-        item.getStatusValues().forEach(statusItem -> {
-            builder.append(nice(statusItem.getField()) + ":: [" + statusItem.getStatus() + "]*" + statusItem.getStatus() + "* " + nice(statusItem.getMessage()) + NL);
-        });
+        //TODO include assessment
 
         builder.append(NL);
 

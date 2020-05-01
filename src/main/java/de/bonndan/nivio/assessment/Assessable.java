@@ -3,7 +3,6 @@ package de.bonndan.nivio.assessment;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import org.springframework.lang.NonNull;
 
 import java.util.*;
 
@@ -23,7 +22,7 @@ public interface Assessable extends Component {
      */
     default StatusValue getOverallStatus() {
 
-        List<StatusValue> statusValues = new ArrayList<>(getStatusValues());
+        List<StatusValue> statusValues = new ArrayList<>(getAdditionalStatusValues());
         getChildren().forEach(o -> statusValues.add(o.getOverallStatus()));
 
         StatusValue summary = statusValues.stream()
@@ -35,25 +34,13 @@ public interface Assessable extends Component {
     }
 
     /**
-     * Returns all status value
+     * Returns pre-set status values not computed by {@link KPI}s.
+     *
+     * This is only for {@link Assessment} and not for public use, since it only contains static data.
      *
      * @return a distinct (by field) set
      */
-    Set<StatusValue> getStatusValues();
-
-    /**
-     * Set/overwrite the status for the assessed field.
-     *
-     * @param statusValue the new status value
-     */
-    default void setStatusValue(@NonNull StatusValue statusValue) {
-
-        if (statusValue == null) {
-            throw new IllegalArgumentException("Status value is null");
-        }
-
-        getStatusValues().add(statusValue);
-    }
+    Set<StatusValue> getAdditionalStatusValues();
 
     /**
      * Returns the components to be assessed before this (e.g. group items).
@@ -63,10 +50,25 @@ public interface Assessable extends Component {
         return new ArrayList<>();
     }
 
+    /**
+     * Recursively applies the {@link KPI}s to children and self.
+     *
+     * @param kpis kpis used for assessment
+     * @return a map with statusValues indexed by {@link FullyQualifiedIdentifier}
+     */
     default Map<FullyQualifiedIdentifier, List<StatusValue>> applyKPIs(Map<String, KPI> kpis) {
         Map<FullyQualifiedIdentifier, List<StatusValue>> map = new HashMap<>();
+        FullyQualifiedIdentifier fqi = this.getFullyQualifiedIdentifier();
         getChildren().stream().map(assessable -> assessable.applyKPIs(kpis)).forEach(map::putAll);
-        kpis.forEach((s, kpi) -> map.put(this.getFullyQualifiedIdentifier(), kpi.getStatusValues(this)));
+        kpis.forEach((s, kpi) -> map.put(fqi, kpi.getStatusValues(this)));
+
+        Set<StatusValue> additionalStatusValues = getAdditionalStatusValues();
+        if (additionalStatusValues.size() > 0) {
+            if (!map.containsKey(fqi)) {
+                map.put(fqi, new ArrayList<>());
+            }
+            map.get(fqi).addAll(additionalStatusValues);
+        }
         return map;
     }
 }

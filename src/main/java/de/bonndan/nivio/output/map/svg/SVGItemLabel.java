@@ -1,7 +1,8 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.assessment.Status;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Labeled;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.util.StringUtils;
@@ -41,12 +42,6 @@ class SVGItemLabel extends Component {
                 .attr("fill", "white")
                 .attr("width", width)
                 .attr("height", size / 2);
-
-        Status highest = Status.highestOf(item.getStatusValues());
-        if (!Status.UNKNOWN.equals(highest)) {
-            rect.attr("style", "stroke: " + highest.name());
-        }
-
 
         ContainerTag g = SvgTagCreator.g(rect, labelText).attr("class", "label");
         g.attr("id", getId());

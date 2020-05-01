@@ -36,9 +36,6 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
     private String group;
 
     @JsonManagedReference
-    private Set<StatusValue> statusValues = new HashSet<>();
-
-    @JsonManagedReference
     private Set<RelationItem<Item>> relations = new HashSet<>();
 
     @JsonManagedReference
@@ -239,12 +236,7 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
     }
 
     @Override
-    public Set<StatusValue> getStatusValues() {
-        return statusValues;
-    }
-
-    @Override
-    public void setStatusValue(StatusValue statusValue) {
-        statusValues.add(statusValue);
+    public Set<StatusValue> getAdditionalStatusValues() {
+        return StatusValue.fromMapping(indexedByPrefix(Label.PREFIX_STATUS));
     }
 }

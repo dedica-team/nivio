@@ -4,10 +4,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * One specific property/kpi/key ... carrying a status.
@@ -21,6 +18,26 @@ public class StatusValue {
     private final String field;
     private final Status status;
     private final String message;
+
+    /**
+     * Turns a map of strings indexed by (KPI-)field into StatusValue objects.
+     *
+     * @param valuesByKey grouped label values
+     * @return derived StatusValues
+     */
+    public static Set<StatusValue> fromMapping(Map<String, Map<String, String>> valuesByKey) {
+
+        Set<StatusValue> statusValues = new HashSet<>();
+        valuesByKey.forEach((key, stringStringMap) -> {
+            StatusValue value = new StatusValue(
+                    key,
+                    Status.from(stringStringMap.get("status")),
+                    stringStringMap.get("message")
+            );
+            statusValues.add(value);
+        });
+        return statusValues;
+    }
 
     public StatusValue(@NonNull String field, @Nullable Status status, @Nullable String message) {
         if (StringUtils.isEmpty(field)) {

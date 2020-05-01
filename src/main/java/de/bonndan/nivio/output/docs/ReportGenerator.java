@@ -107,9 +107,11 @@ public class ReportGenerator extends HtmlGenerator {
 
 
                         //statuses
-                        iff(!item.getStatusValues().isEmpty(), h4("Status information")),
+                        //TODO use assessment
+                        /*
+                        iff(!item.getAdditionalStatusValues().isEmpty(), h4("Status information")),
                         dl().with(
-                                item.getStatusValues().stream().map(statusItem ->
+                                item.getAdditionalStatusValues().stream().map(statusItem ->
                                         join(
                                                 dt(FormatUtils.nice(statusItem.getField())),
                                                 dd(
@@ -122,6 +124,7 @@ public class ReportGenerator extends HtmlGenerator {
                                 )
 
                         ),
+                         */
 
                         //data flow
                         iff(hasRelations, h4("Relations")),

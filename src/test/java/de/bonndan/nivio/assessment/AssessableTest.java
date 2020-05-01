@@ -2,6 +2,7 @@ package de.bonndan.nivio.assessment;
 
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.junit.jupiter.api.Test;
+import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -66,8 +67,12 @@ class AssessableTest {
         }
 
         @Override
-        public Set<StatusValue> getStatusValues() {
+        public Set<StatusValue> getAdditionalStatusValues() {
             return statusValues;
+        }
+
+        void setStatusValue(@NonNull StatusValue statusValue) {
+            getAdditionalStatusValues().add(statusValue);
         }
 
         @Override

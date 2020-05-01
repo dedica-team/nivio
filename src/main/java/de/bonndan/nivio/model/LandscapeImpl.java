@@ -183,13 +183,8 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
     }
 
     @Override
-    public Set<StatusValue> getStatusValues() {
-        return statusValues;
-    }
-
-    @Override
-    public void setStatusValue(StatusValue statusValue) {
-        getStatusValues().add(statusValue);
+    public Set<StatusValue> getAdditionalStatusValues() {
+        return StatusValue.fromMapping(indexedByPrefix(Label.PREFIX_STATUS));
     }
 
     @Override

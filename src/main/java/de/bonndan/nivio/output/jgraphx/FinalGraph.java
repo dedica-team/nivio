@@ -9,8 +9,6 @@ import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStyleRegistry;
 import com.mxgraph.view.mxStylesheet;
-import de.bonndan.nivio.assessment.Status;
-import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.RenderedArtifact;
@@ -22,7 +20,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-import static de.bonndan.nivio.assessment.Status.UNKNOWN;
 import static de.bonndan.nivio.output.Color.getGroupColor;
 
 /**
@@ -173,28 +170,12 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
 
             //sort statuses, pick worst
             Item item = entry.getKey();
-            Optional<StatusValue> displayed = item.getStatusValues().stream()
-                    .filter(item1 -> !UNKNOWN.equals(item1.getStatus()) && !Status.GREEN.equals(item1.getStatus()))
-                    .min((statusItem, t1) -> {
-                        if (statusItem.getStatus().equals(t1.getStatus())) {
-                            return statusItem.getField().compareToIgnoreCase(t1.getField());
-                        }
-                        return statusItem.getStatus().isHigherThan(t1.getStatus()) ? -1 : 1;
-                    });
 
             //statuses at left
             if (cellBounds == null) {
                 logger.warn("Render extras: no cell bounds for {}", item);
                 return;
             }
-
-            displayed.ifPresent(statusItem -> {
-                cell.setValue(cell.getValue() + "\n(" + statusItem.getField() + "!)");
-                cell.setStyle(cell.getStyle()
-                        + mxConstants.STYLE_STROKECOLOR + "=" + statusItem.getStatus().toString() + ";"
-                        + mxConstants.STYLE_STROKEWIDTH + "=" + 4 + ";"
-                );
-            });
 
             //interfaces
             int intfBoxSize = 10;
@@ -312,12 +293,6 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
     }
 
     private String getStrokeColor(Item item) {
-        Status providerStatus = Status.highestOf(item.getStatusValues());
-        if (Status.RED.equals(providerStatus))
-            return mxConstants.STYLE_STROKECOLOR + "=red;";
-        if (Status.ORANGE.equals(providerStatus))
-            return mxConstants.STYLE_STROKECOLOR + "=orange;";
-
         String groupColor = getGroupColor(item);
         logger.debug("Dataflow stroke color {} for service {} group {}", groupColor, item.getIdentifier(), item.getGroup());
         return mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";

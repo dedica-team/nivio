@@ -55,27 +55,5 @@ public class ItemFactory {
                 item.setLabel(key, value);
             }
         });
-
-        assignStatusValues(description.getLabels(Label.PREFIX_STATUS), item);
-    }
-
-    private static void assignStatusValues(Map<String, String> labels, Item item) {
-        Map<String, Map<String, String>> byValue = new HashMap<>();
-        labels.forEach((s, labelValue) -> {
-            String[] parts= s.replace(Label.PREFIX_STATUS + Label.DELIMITER, "").split(Label.DELIMITER);
-            if (parts.length != 2)
-                return;
-            String key = parts[0];
-            String other = parts[1];
-            byValue.put(key, Map.of(other, labelValue));
-        });
-        byValue.forEach((key, stringStringMap) -> {
-            StatusValue value = new StatusValue(
-                    key,
-                    Status.valueOf(stringStringMap.get("status")),
-                    stringStringMap.get("message")
-            );
-            item.setStatusValue(value);
-        });
     }
 }

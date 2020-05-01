@@ -95,6 +95,27 @@ public interface Labeled {
         return grouped;
     }
 
+    default Map<String, Map<String, String>> indexedByPrefix(String prefix) {
+        Map<String, Map<String, String>> byValue = new HashMap<>();
+        getLabels().forEach((s, labelValue) -> {
+            if (!s.startsWith(prefix))
+                return;
+            //label status.foo.status
+            //label status.foo.message
+            String[] parts = s.replace(prefix + Label.DELIMITER, "").split("\\" + Label.DELIMITER);
+            if (parts.length != 2)
+                return;
+            String key = parts[0];
+            String statusOrMessage = parts[1];
+            if(statusOrMessage == null)
+                return;
+            if(labelValue == null)
+                labelValue = "";
+            byValue.put(key, Map.of(statusOrMessage, labelValue));
+        });
+        return byValue;
+    }
+
     /**
      * Copies all non-null labels from source to target.
      *

@@ -37,8 +37,6 @@ public class Group implements GroupItem, Rendered, Assessable {
      */
     private List<Item> items = new ArrayList<>();
 
-    private final Set<StatusValue> statusValues = new HashSet<>();
-
     private String landscapeIdentifier;
 
     public Group(String identifier) {
@@ -129,8 +127,8 @@ public class Group implements GroupItem, Rendered, Assessable {
     }
 
     @Override
-    public Set<StatusValue> getStatusValues() {
-        return statusValues;
+    public Set<StatusValue> getAdditionalStatusValues() {
+        return StatusValue.fromMapping(indexedByPrefix(Label.PREFIX_STATUS));
     }
 
     @JsonIgnore
