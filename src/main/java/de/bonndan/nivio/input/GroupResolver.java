@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 /**
  * Resolves the groups in the landscape by examining item.group names and adds missing (not pre-configured) groups.
- *
+ * <p>
  * Blacklists groups and removes items from the input which are part of a blacklisted group.
  */
 public class GroupResolver extends Resolver {
@@ -32,7 +32,7 @@ public class GroupResolver extends Resolver {
         input.getGroups().forEach((identifier, groupItem) -> {
             Group g = getGroup(identifier, groupItem);
 
-            if (!isBlacklisted(g.getIdentifier(), specs)){
+            if (!isBlacklisted(g.getIdentifier(), specs)) {
                 processLog.info("Adding or updating group " + g.getIdentifier());
                 landscape.addGroup(g);
             } else {
@@ -49,8 +49,11 @@ public class GroupResolver extends Resolver {
             }
 
             if (!isBlacklisted(group, specs)) {
-                landscape.getGroups().computeIfAbsent(group, s -> getGroup(s, null));
+                if (!landscape.getGroups().containsKey(group)) {
+                    landscape.addGroup(getGroup(group, null));
+                }
             } else {
+                processLog.info("Removing item " + item.getIdentifier() + " because in blacklisted group " + group);
                 input.getItemDescriptions().remove(item);
             }
         });

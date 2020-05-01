@@ -1,9 +1,7 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.output.Rendered;
@@ -15,11 +13,14 @@ import java.util.*;
 public class Group implements GroupItem, Rendered, Assessable {
 
     public static final Group DEFAULT_GROUP;
-    public static final String COMMON = "Common";
+
+    /**
+     * Default group identifier (items are assigned to this group if no group is given
+     */
+    public static final String COMMON = "common";
 
     static {
-        DEFAULT_GROUP = new Group();
-        DEFAULT_GROUP.setIdentifier(COMMON);
+        DEFAULT_GROUP = new Group(COMMON);
     }
 
     private String identifier;
@@ -36,11 +37,9 @@ public class Group implements GroupItem, Rendered, Assessable {
      */
     private List<Item> items = new ArrayList<>();
 
-    private Set<StatusValue> statusValues = new HashSet<>();
+    private final Set<StatusValue> statusValues = new HashSet<>();
 
-    public Group() {
-
-    }
+    private String landscapeIdentifier;
 
     public Group(String identifier) {
         setIdentifier(identifier);
@@ -49,6 +48,11 @@ public class Group implements GroupItem, Rendered, Assessable {
     @Override
     public String getIdentifier() {
         return identifier;
+    }
+
+    @Override
+    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
+        return FullyQualifiedIdentifier.build(landscapeIdentifier, identifier, null);
     }
 
     @Override
@@ -133,5 +137,9 @@ public class Group implements GroupItem, Rendered, Assessable {
     @Override
     public List<? extends Assessable> getChildren() {
         return getItems();
+    }
+
+    public void setLandscape(String landscapeIdentifier) {
+        this.landscapeIdentifier = landscapeIdentifier;
     }
 }

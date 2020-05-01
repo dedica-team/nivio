@@ -30,4 +30,13 @@ class StatusValueTest {
         assertEquals(Status.ORANGE, first.getStatus());
         assertEquals("bar", first.getField());
     }
+
+    @Test
+    void comparator() {
+        StatusValue green = new StatusValue("foo", Status.GREEN);
+        StatusValue red = new StatusValue("foo", Status.RED);
+        assertEquals(-1, new StatusValue.Comparator().compare(green, red));
+        assertEquals(0, new StatusValue.Comparator().compare(green, green));
+        assertEquals(1, new StatusValue.Comparator().compare(red, green));
+    }
 }

@@ -80,4 +80,7 @@ public enum Status {
 
         return ref.current;
     }
+
+    public class Comparator {
+    }
 }

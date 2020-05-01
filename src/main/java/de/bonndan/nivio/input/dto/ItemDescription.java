@@ -54,7 +54,7 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
     }
 
     public ItemDescription(FullyQualifiedIdentifier fqi) {
-        this.identifier = fqi.getIdentifier();
+        this.identifier = fqi.getItem();
         this.group = fqi.getGroup();
     }
 

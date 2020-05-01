@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FullyQualifiedIdentifierTest {
+public class ItemMatcherTest {
 
     @Test
     public void testToString() {
@@ -24,27 +24,8 @@ public class FullyQualifiedIdentifierTest {
     }
 
     @Test
-    public void testJsonValue() {
-        var fqi1 = FullyQualifiedIdentifier.build(null, "g1", "d1");
-        assertEquals("", fqi1.jsonValue());
-
-        var fqi2 = FullyQualifiedIdentifier.build("l1", "g1", "d1");
-        assertEquals("l1/g1/d1", fqi2.jsonValue());
-
-        var fqi3 = FullyQualifiedIdentifier.build("l1", "g1", null);
-        assertEquals("l1/g1", fqi3.jsonValue());
-
-        var fqi4 = FullyQualifiedIdentifier.build("l1", null, null);
-        assertEquals("l1", fqi4.jsonValue());
-
-        var fqi5 = FullyQualifiedIdentifier.build("l1", null, "d1");
-        assertEquals("l1/" + Group.COMMON + "/d1", fqi5.jsonValue());
-
-    }
-
-    @Test
     public void testEqualsWithGroup() {
-        var fqi1 = FullyQualifiedIdentifier.build(null, "g1", "d1");
+        var fqi1 = ItemMatcher.build(null, "g1", "d1");
 
         ItemDescription desc1 = new ItemDescription();
         desc1.setIdentifier("d1");
@@ -65,7 +46,7 @@ public class FullyQualifiedIdentifierTest {
 
     @Test
     public void testEqualsWithoutGroup() {
-        var fqi1 = FullyQualifiedIdentifier.build(null, "g1", "d1");
+        var fqi1 = ItemMatcher.build(null, "g1", "d1");
 
         ItemDescription desc1 = new ItemDescription();
         desc1.setIdentifier("d1");
@@ -76,35 +57,35 @@ public class FullyQualifiedIdentifierTest {
         otherGroup.setIdentifier("d1");
         otherGroup.setGroup("g2");
 
-        var fqiNoGroup = FullyQualifiedIdentifier.build(null, null, "d1");
+        var fqiNoGroup = ItemMatcher.build(null, null, "d1");
         assertTrue(fqiNoGroup.isSimilarTo(desc1));
         assertTrue(fqiNoGroup.isSimilarTo(otherGroup));
     }
 
     @Test
-    public void fromComplete() {
+    public void forTargetComplete() {
 
         String three = "a/b/c";
-        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(three);
+        ItemMatcher fqi = ItemMatcher.forTarget(three);
         assertEquals("a", fqi.getLandscape());
         assertEquals("b", fqi.getGroup());
         assertEquals("c", fqi.getItem());
     }
 
     @Test
-    public void fromLandscapeAndGroup() {
+    public void forTargetGroupAndItem() {
         String two = "b/c";
-        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(two);
-        assertEquals("b", fqi.getLandscape());
-        assertEquals("c", fqi.getGroup());
-        assertNull(fqi.getItem());
+        ItemMatcher fqi = ItemMatcher.forTarget(two);
+        assertEquals("", fqi.getLandscape());
+        assertEquals("b", fqi.getGroup());
+        assertEquals("c", fqi.getItem());
     }
     @Test
-    public void fromLandscape() {
+    public void forItem() {
         String one = "c";
-        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(one);
-        assertEquals("c", fqi.getLandscape());
-        assertNull(fqi.getGroup());
-        assertNull(fqi.getItem());
+        ItemMatcher fqi = ItemMatcher.forTarget(one);
+        assertEquals("", fqi.getLandscape());
+        assertEquals(null, fqi.getGroup());
+        assertEquals("c", fqi.getItem());
     }
 }

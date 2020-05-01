@@ -75,7 +75,7 @@ public class PrometheusExporter {
             itemDescription = processGauge((Gauge) metric);
             FullyQualifiedIdentifier fqi = toFQI(metric);
             if (fqi != null) {
-                itemDescription.setIdentifier(fqi.getIdentifier());
+                itemDescription.setIdentifier(fqi.getItem());
                 itemDescription.setGroup(fqi.getGroup());
             }
         }

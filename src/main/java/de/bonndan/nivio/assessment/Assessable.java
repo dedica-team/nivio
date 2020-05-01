@@ -1,12 +1,11 @@
 package de.bonndan.nivio.assessment;
 
+import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.Component;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.springframework.lang.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
 
 import static de.bonndan.nivio.assessment.StatusValue.SUMMARY_LABEL;
 
@@ -24,22 +23,15 @@ public interface Assessable extends Component {
      */
     default StatusValue getOverallStatus() {
 
-        final AtomicReference<StatusValue> summary = new AtomicReference<>();
-        summary.set(new StatusValue(SUMMARY_LABEL, Status.UNKNOWN));
-
         List<StatusValue> statusValues = new ArrayList<>(getStatusValues());
         getChildren().forEach(o -> statusValues.add(o.getOverallStatus()));
-        statusValues.forEach(value -> {
-            if (value == null) {
-                return;
-            }
 
-            if (value.getStatus().isHigherThan(summary.get().getStatus())) {
-                summary.set(value);
-            }
-        });
+        StatusValue summary = statusValues.stream()
+                .filter(Objects::nonNull)
+                .max(new StatusValue.Comparator())
+                .orElse(new StatusValue(SUMMARY_LABEL, Status.UNKNOWN));
 
-        return new StatusValue(SUMMARY_LABEL + "." + getIdentifier(), summary.get().getStatus(), summary.get().getField());
+        return new StatusValue(SUMMARY_LABEL + "." + getIdentifier(), summary.getStatus(), summary.getField());
     }
 
     /**
@@ -69,5 +61,12 @@ public interface Assessable extends Component {
      */
     default List<? extends Assessable> getChildren() {
         return new ArrayList<>();
+    }
+
+    default Map<FullyQualifiedIdentifier, List<StatusValue>> applyKPIs(Map<String, KPI> kpis) {
+        Map<FullyQualifiedIdentifier, List<StatusValue>> map = new HashMap<>();
+        getChildren().stream().map(assessable -> assessable.applyKPIs(kpis)).forEach(map::putAll);
+        kpis.forEach((s, kpi) -> map.put(this.getFullyQualifiedIdentifier(), kpi.getStatusValues(this)));
+        return map;
     }
 }

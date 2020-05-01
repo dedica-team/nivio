@@ -17,11 +17,6 @@ public interface LandscapeItem extends Component, Labeled, Linked {
 
     String IDENTIFIER_VALIDATION = "^[a-z0-9\\.\\:_-]{3,256}$";
 
-    /**
-     * @return the fqi to identify the landscape item
-     */
-    FullyQualifiedIdentifier getFullyQualifiedIdentifier();
-
     String getGroup();
 
     String getType();

@@ -1,57 +1,65 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+/**
+ * Identifies a landscape {@link Component}.
+ * <p>
+ * Resembles a slash-separated path beginning with landscape name, then group, then item.
+ */
 public class FullyQualifiedIdentifier {
 
     private String landscape;
     private String group;
-    private String identifier;
+    private String item;
 
     public static final String SEPARATOR = "/";
 
-    public FullyQualifiedIdentifier() {
+    FullyQualifiedIdentifier() {
     }
 
-    public static FullyQualifiedIdentifier build(final String landscape, final String group, final String serviceIdentifier) {
-
-        if (StringUtils.isEmpty(serviceIdentifier))
-            throw new IllegalArgumentException("serviceIdentifier must not be empty");
+    public static FullyQualifiedIdentifier build(
+            @Nullable final String landscapeIdentifier,
+            @Nullable final String groupIdentifier,
+            @Nullable final String itemIdentifier
+    ) {
 
         FullyQualifiedIdentifier fqi = new FullyQualifiedIdentifier();
-        fqi.landscape = StringUtils.trimAllWhitespace(landscape == null ? "" : landscape.toLowerCase());
-        if (!StringUtils.isEmpty(group))
-            fqi.group = StringUtils.trimAllWhitespace(group.toLowerCase());
-        fqi.identifier = StringUtils.trimAllWhitespace(serviceIdentifier.toLowerCase());
+        fqi.landscape = StringUtils.trimAllWhitespace(landscapeIdentifier == null ? "" : landscapeIdentifier.toLowerCase());
+        if (!StringUtils.isEmpty(groupIdentifier))
+            fqi.group = StringUtils.trimAllWhitespace(groupIdentifier.toLowerCase());
+        if (!StringUtils.isEmpty(itemIdentifier))
+            fqi.item = StringUtils.trimAllWhitespace(itemIdentifier.toLowerCase());
 
         return fqi;
     }
 
     /**
-     * Factory method to create a fqi from a string like a dataflow target.
+     * Builds an fqi based on a string (path).
+     * <p>
+     * It is assumed the path begins with the landscape identifier. This is for external use in the REST API.
      *
-     * @param string group/identifier
-     * @return fqi
+     * @param string raw path
      */
-    public static FullyQualifiedIdentifier from(String string) {
+    public static FullyQualifiedIdentifier from(@NonNull String string) {
         if (StringUtils.isEmpty(string)) {
             throw new IllegalArgumentException("identifier must not be empty");
         }
 
         String[] split = string.split(SEPARATOR);
         if (split.length == 1) {
-            return FullyQualifiedIdentifier.build(null, null, split[0]);
+            return FullyQualifiedIdentifier.build(split[0], null, null);
         }
 
         if (split.length == 2) {
-            return FullyQualifiedIdentifier.build(null, split[0], split[1]);
+            return FullyQualifiedIdentifier.build(split[0], split[1], null);
         }
 
         if (split.length == 3) {
@@ -61,25 +69,46 @@ public class FullyQualifiedIdentifier {
         throw new IllegalArgumentException("Given string '" + string + "' contains too many parts to build a fqi.");
     }
 
-    @JsonValue
     @Override
     public String toString() {
-        if (landscape == null || StringUtils.isEmpty(identifier))
-            return "Detached service " + super.toString();
 
-        StringBuilder b = new StringBuilder().append(landscape);
-        if (!StringUtils.isEmpty(landscape))
-            b.append(SEPARATOR);
+        List<String> parts = new ArrayList<>();
+        parts.add(landscape);
+        if (!StringUtils.isEmpty(group) || !StringUtils.isEmpty(item)) {
+            parts.add(StringUtils.isEmpty(group) ? "" : group);
+        }
+        if (!StringUtils.isEmpty(item))
+            parts.add(StringUtils.isEmpty(item) ? "" : item);
 
-        if (!StringUtils.isEmpty(group))
-            b.append(group).append(SEPARATOR);
-        else if (!StringUtils.isEmpty(landscape)) {
-            b.append("").append(SEPARATOR);
+        return StringUtils.collectionToDelimitedString(parts, SEPARATOR);
+    }
+
+    /**
+     * Like toString, but alway returns a complete path.
+     *
+     * Inserts "common" group if necessary.
+     *
+     * @return complete path or empty if landscape is not set
+     */
+    @JsonValue
+    public String jsonValue() {
+
+        if (StringUtils.isEmpty(landscape)) {
+            return "";
         }
 
-        b.append(identifier);
+        List<String> parts = new ArrayList<>();
+        parts.add(landscape);
 
-        return b.toString();
+        //need to insert "common" here if an item is referenced by the fqi
+        if (!StringUtils.isEmpty(group) || !StringUtils.isEmpty(item)) {
+            parts.add(StringUtils.isEmpty(group) ? Group.COMMON : group);
+        }
+        if (!StringUtils.isEmpty(item)) {
+            parts.add(item);
+        }
+
+        return StringUtils.collectionToDelimitedString(parts, SEPARATOR);
     }
 
     @Override
@@ -93,21 +122,37 @@ public class FullyQualifiedIdentifier {
     }
 
     /**
-     * Compares landscape items by group and identifier.
+     * Compares landscape items by landscape, group and identifier (ignoring case).
      *
      * @param item other item
      * @return true if group and identifier match (if group is null, it is not taken into account)
      */
     public boolean isSimilarTo(LandscapeItem item) {
-        FullyQualifiedIdentifier fqi = item.getFullyQualifiedIdentifier();
-        if (StringUtils.isEmpty(group) || StringUtils.isEmpty(item.getGroup()))
-            return identifier.equals(fqi.identifier);
+        FullyQualifiedIdentifier otherItemFQI = item.getFullyQualifiedIdentifier();
 
-        return group.equals(fqi.group) && identifier.equals(fqi.identifier);
+        boolean equalsLandscape;
+        if (StringUtils.isEmpty(landscape) || StringUtils.isEmpty(otherItemFQI.landscape))
+            equalsLandscape = true; //ignoring landscape because not set
+        else
+            equalsLandscape = landscape.equalsIgnoreCase(otherItemFQI.landscape);
+
+        boolean equalsGroup;
+        if (StringUtils.isEmpty(group) || StringUtils.isEmpty(otherItemFQI.group))
+            equalsGroup = true;
+        else
+            equalsGroup = this.group.equalsIgnoreCase(otherItemFQI.group);
+
+        boolean equalsItem;
+        if (StringUtils.isEmpty(this.item) || StringUtils.isEmpty(otherItemFQI.item))
+            equalsItem = true;
+        else
+            equalsItem = this.item.equalsIgnoreCase(otherItemFQI.item);
+
+        return equalsLandscape && equalsGroup && equalsItem;
     }
 
-    public String getIdentifier() {
-        return identifier;
+    public String getItem() {
+        return item;
     }
 
     public String getGroup() {

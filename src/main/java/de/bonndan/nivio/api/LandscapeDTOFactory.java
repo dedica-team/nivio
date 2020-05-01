@@ -1,11 +1,13 @@
 package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.api.dto.LandscapeDTO;
+import de.bonndan.nivio.assessment.AssessmentController;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.docs.DocsController;
 import de.bonndan.nivio.output.map.MapController;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 
@@ -60,12 +62,11 @@ public class LandscapeDTOFactory {
     }
 
     public static void addLinks(LandscapeDTO dto) {
-        dto.add(linkTo(methodOn(ApiController.class).landscape(dto.getIdentifier()))
+        dto.add(WebMvcLinkBuilder.linkTo(methodOn(ApiController.class).landscape(dto.getIdentifier()))
                 .withSelfRel()
                 .withTitle("JSON representation")
                 .withMedia(MediaType.APPLICATION_JSON_VALUE)
         );
-        dto.add(linkTo(methodOn(ApiController.class).items(dto.getIdentifier())).withRel("items"));
         dto.add(linkTo(methodOn(ApiController.class).reindex(dto.getIdentifier()))
                 .withRel("reindex")
                 .withMedia(MediaType.APPLICATION_JSON_VALUE)
@@ -98,6 +99,11 @@ public class LandscapeDTOFactory {
                         .withMedia("image/svg+xml")
                         .withTitle("SVG map")
         );
-
+        dto.add(
+                linkTo(methodOn(AssessmentController.class).landscape(dto.getIdentifier()))
+                        .withRel("assessment")
+                        .withMedia(MediaType.APPLICATION_JSON_VALUE)
+                        .withTitle("Assessment")
+        );
     }
 }

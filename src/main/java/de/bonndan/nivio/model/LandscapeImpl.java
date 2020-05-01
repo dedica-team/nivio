@@ -55,6 +55,11 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
         return identifier;
     }
 
+    @Override
+    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
+        return FullyQualifiedIdentifier.build(identifier, null, null);
+    }
+
     public void setIdentifier(String identifier) {
         this.identifier = StringUtils.trimAllWhitespace(identifier);
     }
@@ -130,12 +135,12 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
     }
 
     public void addGroup(Group g) {
+        g.setLandscape(this.identifier);
         if (groups.containsKey(g.getIdentifier())) {
             Groups.merge((Group) groups.get(g.getIdentifier()), g);
-            return;
+        } else {
+            groups.put(g.getIdentifier(), g);
         }
-
-        groups.put(g.getIdentifier(), g);
     }
 
     public Group getGroup(String group) {

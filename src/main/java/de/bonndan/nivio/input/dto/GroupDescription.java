@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input.dto;
 
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.GroupItem;
 
 import java.net.URL;
@@ -15,10 +16,16 @@ public class GroupDescription implements GroupItem {
     private List<String> contains = new ArrayList<>();
     private Map<String, URL> links = new HashMap<>();
     private Map<String, String> labels = new HashMap<>();
+    private String environment;
 
     @Override
     public String getIdentifier() {
         return identifier;
+    }
+
+    @Override
+    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
+        return FullyQualifiedIdentifier.build(environment, identifier, null);
     }
 
     @Override
@@ -106,5 +113,9 @@ public class GroupDescription implements GroupItem {
     @Override
     public void setLabel(String key, String value) {
         labels.put(key, value);
+    }
+
+    public void setEnvironment(String environment) {
+        this.environment = environment;
     }
 }

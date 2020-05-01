@@ -6,6 +6,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -82,4 +83,13 @@ public class StatusValue {
         }
         return false;
     }
+
+    public static class Comparator implements java.util.Comparator<StatusValue> {
+        public int compare(StatusValue s1, StatusValue s2) {
+            if (s1.status.isHigherThan(s2.status)) return 1;
+            if (s1.status.equals(s2.status)) return 0;
+            return -1;
+        }
+    }
+
 }

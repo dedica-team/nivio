@@ -1,5 +1,6 @@
 package de.bonndan.nivio.assessment;
 
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -72,6 +73,11 @@ class AssessableTest {
         @Override
         public String getIdentifier() {
             return "test";
+        }
+
+        @Override
+        public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
+            return FullyQualifiedIdentifier.build("test", null, null);
         }
 
         @Override

@@ -206,6 +206,24 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
+    public void testGroupsHaveEnv() {
+        final String FILE_PATH_GROUPS = FILE_PATH + "example_groups.yml";
+        File file = new File(FILE_PATH_GROUPS);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
+
+        Map<String, GroupItem> groups = landscapeDescription.getGroups();
+        assertNotNull(groups);
+        assertEquals(2, groups.size());
+        GroupItem groupItem = groups.get("groupA");
+        assertNotNull(groupItem);
+        assertEquals(landscapeDescription.getIdentifier(), groupItem.getFullyQualifiedIdentifier().getLandscape());
+
+        GroupItem b = groups.get("B");
+        assertNotNull(b);
+        assertEquals(landscapeDescription.getIdentifier(), b.getFullyQualifiedIdentifier().getLandscape());
+    }
+
+    @Test
     public void readCustomKPIs() {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_kpis.yml");
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);

@@ -13,6 +13,11 @@ public interface Component {
     String getIdentifier();
 
     /**
+     * @return the fqi to identify the landscape item
+     */
+    FullyQualifiedIdentifier getFullyQualifiedIdentifier();
+
+    /**
      * A human readable and/or well known name.
      */
     String getName();

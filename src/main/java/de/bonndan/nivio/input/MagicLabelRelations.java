@@ -44,7 +44,8 @@ public class MagicLabelRelations extends Resolver {
         itemMatches.forEach((item, labelMatches) -> {
             labelMatches.forEach(labelMatch -> {
                 labelMatch.possibleTargets.forEach(toFind -> {
-                    Collection<? extends LandscapeItem> possibleTargets = landscape.getItems().cqnQueryOnIndex(landscape.getItems().selectByIdentifierOrName(toFind));
+                    String s = landscape.getItems().selectByIdentifierOrName(toFind);
+                    Collection<? extends LandscapeItem> possibleTargets = landscape.getItems().cqnQueryOnIndex(s);
 
                     if (possibleTargets.size() != 1) {
                         processLog.debug("Found no target of magic relation from item " + item.getIdentifier() + " using '" + toFind + "'");
@@ -118,10 +119,10 @@ public class MagicLabelRelations extends Resolver {
                 aliasesToFind.add(url.getHost());
                 aliasesToFind.addAll(Arrays.asList(url.getPath().split("/"))); //add all path parts
             } catch (MalformedURLException ignored) {
-                Optional<Item> valueMatch = landscape.getItems().find(FullyQualifiedIdentifier.from(value));
+                Optional<Item> valueMatch = landscape.getItems().find(ItemMatcher.forTarget(value));
                 if (valueMatch.isPresent()) {
                     aliasesToFind.clear();
-                    aliasesToFind.add(valueMatch.get().getFullyQualifiedIdentifier().toString());
+                    aliasesToFind.add(ItemMatcher.forTarget(valueMatch.get()).toString());
                 } else {
                     aliasesToFind.addAll(Arrays.asList(value.split(":")));
                 }
