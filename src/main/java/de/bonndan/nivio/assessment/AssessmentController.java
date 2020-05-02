@@ -16,9 +16,9 @@ public class AssessmentController {
     private final LandscapeRepository landscapeRepository;
     private final AssessmentFactory factory;
 
-    public AssessmentController(LandscapeRepository landscapeRepository) {
+    public AssessmentController(LandscapeRepository landscapeRepository, AssessmentFactory factory) {
         this.landscapeRepository = landscapeRepository;
-        factory = new AssessmentFactory();
+        this.factory = factory;
     }
 
     @CrossOrigin(methods = RequestMethod.GET)

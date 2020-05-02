@@ -240,6 +240,7 @@ class LandscapeDescriptionFactoryTest {
         assertNotNull(monthlyCosts);
         assertEquals("Evaluates the monthly maintenance costs", monthlyCosts.getDescription());
 
+        monthlyCosts.init();
         Item item = new Item();
         item.setLabel(Label.COSTS, "200");
         StatusValue statusValue =  monthlyCosts.getStatusValues(item).get(0);

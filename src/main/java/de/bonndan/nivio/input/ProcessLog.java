@@ -65,6 +65,12 @@ public class ProcessLog {
         messages.add(new Entry("WARN", msg));
     }
 
+    public void error(String msg, ProcessingException e) {
+        messages.add(new Entry("ERROR", msg));
+        logger.error(msg, e);
+        this.exception = e;
+    }
+
     @JsonIgnore
     public Landscape getLandscape() {
         return landscape;

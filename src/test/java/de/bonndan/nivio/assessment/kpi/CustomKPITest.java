@@ -19,6 +19,7 @@ class CustomKPITest {
     @Test
     public void testWithRanges1() {
         CustomKPI test = new CustomKPI(LABEL, null, getRangeMap(), null);
+        test.init();
         StatusValue statusValue = test.getStatusValues(getComponent("2.58")).get(0);
         assertNotNull(statusValue);
         Assertions.assertEquals(Status.GREEN, statusValue.getStatus());
@@ -27,6 +28,7 @@ class CustomKPITest {
     @Test
     public void testWithRanges2() {
         CustomKPI test = new CustomKPI(LABEL, null, getRangeMap(), null);
+        test.init();
         StatusValue statusValue = test.getStatusValues(getComponent("0")).get(0);
         assertNotNull(statusValue);
         Assertions.assertEquals(Status.GREEN, statusValue.getStatus());
@@ -35,6 +37,7 @@ class CustomKPITest {
     @Test
     public void testWithRanges3() {
         CustomKPI test = new CustomKPI(LABEL, null, getRangeMap(), null);
+        test.init();
         StatusValue statusValue = test.getStatusValues(getComponent("10.1")).get(0);
         assertNotNull(statusValue);
         Assertions.assertEquals(Status.YELLOW, statusValue.getStatus());
@@ -43,6 +46,7 @@ class CustomKPITest {
     @Test
     public void testoutOfRange() {
         CustomKPI test = new CustomKPI(LABEL, null, getRangeMap(), null);
+        test.init();
         StatusValue statusValue = test.getStatusValues(getComponent("100.1")).get(0);
         assertNotNull(statusValue);
         Assertions.assertEquals(Status.UNKNOWN, statusValue.getStatus());
@@ -52,7 +56,18 @@ class CustomKPITest {
     public void brokenRangeConfig() {
         Map<Status, String> rangeMap = getRangeMap();
         rangeMap.put(Status.GREEN, "0-12");
-        assertThrows(ProcessingException.class, () -> {new CustomKPI(LABEL, null, rangeMap, null);});
+        CustomKPI customKPI = new CustomKPI(LABEL, null, rangeMap, null);
+
+        assertThrows(ProcessingException.class, () -> customKPI.init());
+    }
+
+    @Test
+    public void brokenMatchesConfig() {
+        Map<Status, String> matches = getMatches();
+        matches.put(Status.GREEN, "0-12[");
+        CustomKPI customKPI = new CustomKPI(LABEL, null, null, matches);
+
+        assertThrows(ProcessingException.class, () -> customKPI.init());
     }
 
     @Test
@@ -61,6 +76,7 @@ class CustomKPITest {
         r2.put(Status.GREEN, "0");
 
         CustomKPI customKPI = new CustomKPI(LABEL, null, r2, null);
+        customKPI.init();
         StatusValue statusValue = customKPI.getStatusValues(getComponent("0")).get(0);
         assertEquals(Status.GREEN, statusValue.getStatus());
     }
@@ -69,6 +85,7 @@ class CustomKPITest {
     @Test
     public void testWithMatches1() {
         CustomKPI customKPI = new CustomKPI(LABEL, null, null, getMatches());
+        customKPI.init();
         StatusValue statusValue = customKPI.getStatusValues(getComponent("OK")).get(0);
         assertEquals(Status.GREEN, statusValue.getStatus());
     }
@@ -76,6 +93,7 @@ class CustomKPITest {
     @Test
     public void testWithMatches2() {
         CustomKPI customKPI = new CustomKPI(LABEL, null, null, getMatches());
+        customKPI.init();
         StatusValue statusValue = customKPI.getStatusValues(getComponent("good")).get(0);
         assertEquals(Status.GREEN, statusValue.getStatus());
     }
@@ -83,6 +101,7 @@ class CustomKPITest {
     @Test
     public void testWithMatches3() {
         CustomKPI customKPI = new CustomKPI(LABEL, null, null, getMatches());
+        customKPI.init();
         StatusValue statusValue = customKPI.getStatusValues(getComponent("good")).get(0);
         assertEquals(Status.GREEN, statusValue.getStatus());
     }
@@ -90,6 +109,7 @@ class CustomKPITest {
     @Test
     public void testWithMatches4() {
         CustomKPI customKPI = new CustomKPI(LABEL, null, null, getMatches());
+        customKPI.init();
         StatusValue statusValue = customKPI.getStatusValues(getComponent("bad")).get(0);
         assertEquals(Status.RED, statusValue.getStatus());
     }
@@ -97,6 +117,7 @@ class CustomKPITest {
     @Test
     public void testWithMatches5() {
         CustomKPI customKPI = new CustomKPI(LABEL, null, null, getMatches());
+        customKPI.init();
         StatusValue statusValue = customKPI.getStatusValues(getComponent("error")).get(0);
         assertEquals(Status.RED, statusValue.getStatus());
     }
@@ -104,6 +125,7 @@ class CustomKPITest {
     @Test
     public void noMatch() {
         CustomKPI customKPI = new CustomKPI(LABEL, null, null, getMatches());
+        customKPI.init();
         StatusValue statusValue = customKPI.getStatusValues(getComponent("foo")).get(0);
         assertEquals(Status.UNKNOWN, statusValue.getStatus());
     }
@@ -111,6 +133,7 @@ class CustomKPITest {
     @Test
     public void testWithRangesAndMatches1() {
         CustomKPI customKPI = new CustomKPI(LABEL, null, getRangeMap(), getMatches());
+        customKPI.init();
         StatusValue statusValue = customKPI.getStatusValues(getComponent("error")).get(0);
         assertEquals(Status.RED, statusValue.getStatus());
     }
@@ -118,6 +141,7 @@ class CustomKPITest {
     @Test
     public void testWithRangesAndMatches2() {
         CustomKPI customKPI = new CustomKPI(LABEL, null, getRangeMap(), getMatches());
+        customKPI.init();
         StatusValue statusValue = customKPI.getStatusValues(getComponent("20.53")).get(0);
         assertEquals(Status.RED, statusValue.getStatus());
     }

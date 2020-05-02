@@ -25,7 +25,7 @@ public class CustomKPI extends KPI {
     /**
      * For each {@link Status} a numeric range can be defined (includes lower/upper limit).
      */
-    private final Map<Status, Range<Double>> ranges;
+    private Map<Status, Range<Double>> ranges;
 
     /**
      * For each {@link Status} a set of regular expressions can be defined which indicate the status.
@@ -33,6 +33,10 @@ public class CustomKPI extends KPI {
     private final Map<Status, List<Function<String, Boolean>>> matches = new HashMap<>();
 
     private final String label;
+
+    //temporary storage of constructor params until initialisation
+    private final Map<Status, String> _ranges;
+    private final Map<Status, String> _matches;
 
     /**
      * @param label        the label which is evaluated for status
@@ -58,8 +62,14 @@ public class CustomKPI extends KPI {
                 });
 
         this.label = label;
-        this.ranges = asRanges(ranges);
-        addSpecs(matches);
+        this._ranges = ranges;
+        this._matches = matches;
+    }
+
+    @Override
+    public void init() {
+        this.ranges = asRanges(_ranges);
+        addSpecs(_matches);
     }
 
     @Override
@@ -137,7 +147,7 @@ public class CustomKPI extends KPI {
                     Pattern p = Pattern.compile(s, Pattern.CASE_INSENSITIVE);
                     return (Function<String, Boolean>) s1 -> p.matcher(s1).matches();
                 } catch (Exception e) {
-                    return (Function<String, Boolean>) s1 -> s1.contains(s);
+                    throw new ProcessingException("Failed to initialise KPI " + this.label + " matcher pattern ", e);
                 }
 
             }).collect(Collectors.toList());

@@ -33,6 +33,13 @@ public abstract class KPI {
     }
 
     /**
+     * Controlled initialisation.
+     *
+     * @throws ProcessingException if initialisation fails (eg regex compiling)
+     */
+    public void init() {}
+
+    /**
      * Returns the status evaluation of the component on the configured field.
      *
      * @param component to assess

@@ -15,6 +15,7 @@ class ScalingKPITest {
     @Test
     public void testScale1() {
         ScalingKPI scalingKPI = new ScalingKPI();
+        scalingKPI.init();
         Item item = new Item();
         item.setLabel(Label.SCALE, "1");
 
@@ -29,6 +30,7 @@ class ScalingKPITest {
     @Test
     public void testScale2() {
         ScalingKPI scalingKPI = new ScalingKPI();
+        scalingKPI.init();
         Item item = new Item();
         item.setLabel(Label.SCALE, "2");
 
