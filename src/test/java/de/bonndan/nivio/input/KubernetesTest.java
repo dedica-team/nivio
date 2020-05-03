@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.kubernetes.ItemDescriptionFactoryKubernetes;
+import de.bonndan.nivio.model.Label;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.PodBuilder;
 import io.fabric8.kubernetes.api.model.PodSpecBuilder;
@@ -76,8 +77,8 @@ public class KubernetesTest {
         assertEquals("testgroup", itemDescription.getGroup());
         assertEquals("mydb", itemDescription.getName());
         assertEquals("mydb", itemDescription.getIdentifier());
-        assertEquals("postgres:9.5", itemDescription.getSoftware());
-        assertEquals("node1", itemDescription.getMachine());
+        assertEquals("postgres:9.5", itemDescription.getLabel(Label.SOFTWARE));
+        assertEquals("node1", itemDescription.getLabel(Label.MACHINE));
         assertEquals("testgroup", itemDescription.getLabels().get("release"));
 
         tearDown();

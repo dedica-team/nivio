@@ -73,7 +73,7 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enter
             <br />
             Contact: {landscape.contact || '-'}
             <br />
-            Teams: {landscape.stats.teams.join(', ')}
+            Teams: {landscape.teams.join(', ')}
             <br />
           </Grid>
 
@@ -81,7 +81,7 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enter
             <Typography variant='overline' display='block' gutterBottom>
               State
             </Typography>
-            {landscape.stats.overallState || '-'}
+             -
           </Grid>
 
           <Grid item xs={12} md={3} lg={2}>
@@ -89,9 +89,9 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enter
               Items
             </Typography>
             <Typography variant='h2' display='block' gutterBottom>
-              {landscape.stats.items}
+              {landscape.items?.length}
             </Typography>
-            in {landscape.stats.groups} groups
+            in {landscape.groups?.length} groups
           </Grid>
 
           <Grid item xs={12} lg={2}>
@@ -99,10 +99,10 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enter
               Last update
             </Typography>
             <Typography variant='h3' display='block'>
-              {landscape.stats.lastUpdate?.split(' ')[0] || '-'}
+              {landscape.lastUpdate?.split('T')[0] || '-'}
             </Typography>
 
-            <div>{landscape.stats.lastUpdate?.split(' ')[1] || '-'}</div>
+            <div>{landscape.lastUpdate?.split('T')[1] || '-'}</div>
           </Grid>
 
           <Grid item xs={12} lg={2}>

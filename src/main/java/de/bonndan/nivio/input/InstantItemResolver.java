@@ -10,7 +10,6 @@ import java.util.*;
 /**
  * If the landscape is configured as "greedy", new items are created on the fly by a reference name.
  *
- * @todo add hosts as soon as relation resolver supports hosts
  */
 public class InstantItemResolver {
 
@@ -40,14 +39,18 @@ public class InstantItemResolver {
             Optional<? extends LandscapeItem> provider = allItems.query(term.toLowerCase()).stream().findFirst();
 
             if (provider.isEmpty()) {
+                log.info("Creating a new provider landscape item for term '" + term + "' instantly.");
                 newItems.add(createItem(term));
             }
         });
 
         //other relations
         description.getRelations().forEach(rel -> {
-            //skip sources, since only the targets are in the list, find targets
-            if (!StringUtils.isEmpty(rel.getTarget()) && !hasTarget(rel.getTarget().toLowerCase(), allItems)) {
+            //inverse links, e.g. from docker compose
+            String target = rel.getTarget().equalsIgnoreCase(description.getIdentifier()) ?
+                    rel.getSource() : rel.getTarget();
+            if (!StringUtils.isEmpty(target) && !hasTarget(target.toLowerCase(), allItems)) {
+                log.info(description + ": creating a new target item '" + target.toLowerCase() + "' instantly.");
                 newItems.add(createItem(rel.getTarget()));
             }
         });
@@ -60,18 +63,14 @@ public class InstantItemResolver {
      */
     private ItemDescription createItem(String term) {
         ItemDescription itemDescription = new ItemDescription();
-        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(term);
+        ItemMatcher fqi = ItemMatcher.forTarget(term);
         itemDescription.setGroup(fqi.getGroup());
-        itemDescription.setIdentifier(fqi.getIdentifier());
-        log.info("Creating a new landscape item instantly: "+  fqi);
+        itemDescription.setIdentifier(fqi.getItem());
+
         return itemDescription;
     }
 
     private boolean hasTarget(String term, ItemDescriptions allItems) {
-
-        if (StringUtils.isEmpty(term)) {
-            return true;
-        }
 
         Collection<? extends LandscapeItem> result = allItems.query(term);
         if (result.size() > 1) {

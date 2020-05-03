@@ -20,7 +20,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-import static de.bonndan.nivio.model.Status.UNKNOWN;
 import static de.bonndan.nivio.output.Color.getGroupColor;
 
 /**
@@ -171,28 +170,12 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
 
             //sort statuses, pick worst
             Item item = entry.getKey();
-            Optional<StatusItem> displayed = item.getStatuses().stream()
-                    .filter(item1 -> !UNKNOWN.equals(item1.getStatus()) && !Status.GREEN.equals(item1.getStatus()))
-                    .min((statusItem, t1) -> {
-                        if (statusItem.getStatus().equals(t1.getStatus())) {
-                            return statusItem.getLabel().compareToIgnoreCase(t1.getLabel());
-                        }
-                        return statusItem.getStatus().isHigherThan(t1.getStatus()) ? -1 : 1;
-                    });
 
             //statuses at left
             if (cellBounds == null) {
                 logger.warn("Render extras: no cell bounds for {}", item);
                 return;
             }
-
-            displayed.ifPresent(statusItem -> {
-                cell.setValue(cell.getValue() + "\n(" + statusItem.getLabel() + "!)");
-                cell.setStyle(cell.getStyle()
-                        + mxConstants.STYLE_STROKECOLOR + "=" + statusItem.getStatus().toString() + ";"
-                        + mxConstants.STYLE_STROKEWIDTH + "=" + 4 + ";"
-                );
-            });
 
             //interfaces
             int intfBoxSize = 10;
@@ -310,12 +293,6 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
     }
 
     private String getStrokeColor(Item item) {
-        Status providerStatus = Status.highestOf(item.getStatuses());
-        if (Status.RED.equals(providerStatus))
-            return mxConstants.STYLE_STROKECOLOR + "=red;";
-        if (Status.ORANGE.equals(providerStatus))
-            return mxConstants.STYLE_STROKECOLOR + "=orange;";
-
         String groupColor = getGroupColor(item);
         logger.debug("Dataflow stroke color {} for service {} group {}", groupColor, item.getIdentifier(), item.getGroup());
         return mxConstants.STYLE_STROKECOLOR + "=#" + groupColor + ";";

@@ -4,6 +4,7 @@ import de.bonndan.nivio.input.compose2.ItemDescriptionFactoryCompose2;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +50,7 @@ public class SourceReferencesResolverTest {
 
         ItemDescription mapped = landscapeDescription.getItemDescriptions().pick("blog-server", null);
         assertNotNull(mapped);
-        assertEquals("blog1", mapped.getShortName());
+        assertEquals("blog1", mapped.getLabel(Label.SHORTNAME));
         assertEquals("name2", mapped.getName());
     }
 

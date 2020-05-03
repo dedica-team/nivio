@@ -52,44 +52,6 @@ public class DocsController {
 
     }
 
-    /**
-     * Renders only a single item as html.
-     *
-     *
-     */
-    @Deprecated //item renderings should be generated within the GUI
-    @RequestMapping(method = RequestMethod.GET, path = "/item/**")
-    public ResponseEntity<String> itemHtmlResource(HttpServletRequest request) {
-
-        String requestURL = request.getRequestURL().toString();
-        String fqiString = requestURL.split("/item/")[1];
-        FullyQualifiedIdentifier fqi;
-        try {
-            fqi = FullyQualifiedIdentifier.from(fqiString);
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        }
-
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(fqi.getLandscape()).orElseThrow(
-                () -> new NotFoundException("Landscape " + fqi.getLandscape() + " not found")
-        );
-        Optional<Item> item = landscape.getItems().find(fqi);
-        if (item.isEmpty()) {
-            LOGGER.warn("Could not find item {}", fqiString);
-            return ResponseEntity.notFound().build();
-        }
-
-        ItemReportGenerator generator = new ItemReportGenerator(localServer);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
-        return new ResponseEntity<>(
-                generator.toDocument(item.get()),
-                headers,
-                HttpStatus.OK
-        );
-    }
-
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/owners.html")
     public ResponseEntity<String> owners(@PathVariable(name = "landscape") final String landscapeIdentifier) {
 

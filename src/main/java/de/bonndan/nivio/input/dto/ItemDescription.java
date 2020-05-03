@@ -5,28 +5,22 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
 import java.net.URL;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * This is representation of a service in the textual form as described in a source file.
  */
-public class ItemDescription implements LandscapeItem, Labeled {
-
-    public static final String LINKS_FIELD = "links";
+public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
 
     @NotEmpty
     private String environment;
-
-    @NotEmpty
-    private String layer = LandscapeItem.LAYER_APPLICATION;
-
-    private String type;
 
     @NotEmpty
     private String identifier;
@@ -34,31 +28,11 @@ public class ItemDescription implements LandscapeItem, Labeled {
     @NotEmpty
     private String name;
 
-    private String note;
-
-    private String shortName;
-    private String icon;
-
-    private String version;
-    private String software;
     private String owner;
     private String description;
-    private String team;
     private String contact;
     private Map<String, URL> links = new HashMap<>();
     private String group;
-    private String visibility;
-    private String[] tags;
-    private Set<String> networks = new HashSet<>();
-    private String machine;
-    private String scale;
-    private String hostType;
-
-    private String costs;
-    private String capability;
-
-    @JsonDeserialize(contentAs = StatusDescription.class)
-    private Set<StatusItem> statuses = new HashSet<>();
 
     @JsonDeserialize(contentAs = InterfaceDescription.class)
     private Set<InterfaceItem> interfaces = new HashSet<>();
@@ -80,7 +54,7 @@ public class ItemDescription implements LandscapeItem, Labeled {
     }
 
     public ItemDescription(FullyQualifiedIdentifier fqi) {
-        this.identifier = fqi.getIdentifier();
+        this.identifier = fqi.getItem();
         this.group = fqi.getGroup();
     }
 
@@ -105,21 +79,13 @@ public class ItemDescription implements LandscapeItem, Labeled {
         this.environment = environment;
     }
 
-    public String getLayer() {
-        return layer;
-    }
-
-    public void setLayer(String layer) {
-        this.layer = layer;
-    }
-
     @Override
     public String getType() {
-        return type;
+        return getLabel(Label.TYPE);
     }
 
     public void setType(String type) {
-        this.type = type;
+        this.setLabel(Label.TYPE, type);
     }
 
     public String getName() {
@@ -130,47 +96,7 @@ public class ItemDescription implements LandscapeItem, Labeled {
         this.name = name;
     }
 
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public String getShortName() {
-        return shortName;
-    }
-
-    public void setShortName(String shortName) {
-        this.shortName = shortName;
-    }
-
     @Override
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public String getSoftware() {
-        return software;
-    }
-
-    public void setSoftware(String software) {
-        this.software = software;
-    }
-
     public String getOwner() {
         return owner;
     }
@@ -185,14 +111,6 @@ public class ItemDescription implements LandscapeItem, Labeled {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getTeam() {
-        return team;
-    }
-
-    public void setTeam(String team) {
-        this.team = team;
     }
 
     public String getContact() {
@@ -220,10 +138,6 @@ public class ItemDescription implements LandscapeItem, Labeled {
         this.group = group;
     }
 
-    public String getVisibility() {
-        return visibility;
-    }
-
     public void setLifecycle(Lifecycle lifecycle) {
         this.lifecycle = lifecycle;
     }
@@ -239,53 +153,9 @@ public class ItemDescription implements LandscapeItem, Labeled {
         return lifecycle;
     }
 
-    public void setVisibility(String visibility) {
-        this.visibility = visibility;
-    }
-
-    public String[] getTags() {
-        return tags;
-    }
-
-    public void setTags(String[] tags) {
-        this.tags = tags;
-    }
-
     @Override
     public Map<String, String> getLabels() {
         return labels;
-    }
-
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
-    }
-
-    public String getMachine() {
-        return machine;
-    }
-
-    public void setMachine(String machine) {
-        this.machine = machine;
-    }
-
-    public String getScale() {
-        return scale;
-    }
-
-    public void setScale(String scale) {
-        this.scale = scale;
-    }
-
-    public String getHostType() {
-        return hostType;
-    }
-
-    public Set<String> getNetworks() {
-        return networks;
-    }
-
-    public void setHostType(String hostType) {
-        this.hostType = hostType;
     }
 
     public Set<InterfaceItem> getInterfaces() {
@@ -310,15 +180,9 @@ public class ItemDescription implements LandscapeItem, Labeled {
         return providedBy;
     }
 
+    @Override
     public Set<RelationItem<String>> getRelations() {
         return relations;
-    }
-
-    @Override
-    public Set<RelationItem<String>> getRelations(RelationType type) {
-        return relations.stream()
-                .filter(relationItem -> type.equals(relationItem.getType()))
-                .collect(Collectors.toSet());
     }
 
     public void addRelation(RelationItem<String> relationItem) {
@@ -337,37 +201,6 @@ public class ItemDescription implements LandscapeItem, Labeled {
                 .filter(s -> !StringUtils.isEmpty(s))
                 .map(s -> RelationBuilder.createDataflowDescription(this, s))
                 .forEach(this::addRelation);
-    }
-
-    public Set<StatusItem> getStatuses() {
-        return statuses;
-    }
-
-    @Override
-    public void setStatus(StatusItem statusItem) {
-        statuses.add(statusItem);
-    }
-
-    public void setNetworks(Set<String> networks) {
-        this.networks = networks;
-    }
-
-    @Override
-    public String getCapability() {
-        return capability;
-    }
-
-    public void setCapability(String capability) {
-        this.capability = capability;
-    }
-
-    @Override
-    public String getCosts() {
-        return costs;
-    }
-
-    public void setCosts(String costs) {
-        this.costs = costs;
     }
 
     @Override
@@ -397,6 +230,24 @@ public class ItemDescription implements LandscapeItem, Labeled {
         return FullyQualifiedIdentifier.build(environment, group, identifier).toString();
     }
 
+    /**
+     * Legacy setter for {@link StatusValue}.
+     *
+     * @param statuses
+     */
+    @Deprecated
+    public void setStatuses(List<LinkedHashMap<String, String>> statuses) {
+        statuses.forEach(map -> {
+            String key = map.get("label");
+            if (key != null) {
+                String value = map.get("status");
+                String message = map.get("message");
+                setLabel(Label.PREFIX_STATUS + Label.DELIMITER + key + Label.DELIMITER + "status", value);
+                setLabel(Label.PREFIX_STATUS + Label.DELIMITER + key + Label.DELIMITER + "message", message);
+            }
+        });
+    }
+
     @Override
     @JsonAnyGetter
     public String getLabel(String key) {
@@ -404,8 +255,34 @@ public class ItemDescription implements LandscapeItem, Labeled {
     }
 
     @Override
-    @JsonAnySetter
     public void setLabel(String key, String value) {
-        labels.putIfAbsent(key, value);
+        labels.put(key, value);
+    }
+
+    @JsonAnySetter
+    public void setLabel(String key, Object value) {
+        if (value instanceof String) {
+            labels.put(key.toLowerCase(), (String) value);
+            return;
+        }
+        if (value instanceof String[]) {
+            Arrays.stream(((String[]) value)).forEach(s -> setPrefixed(key, s));
+            return;
+        }
+
+        if (value instanceof List) {
+            try {
+                ((List) value).forEach(s -> setPrefixed(key, (String) s));
+            } catch (ClassCastException e) {
+                throw new ProcessingException("Cannot set " + key + " to " + value, e);
+            }
+            return;
+        }
+
+        if (value instanceof Map) {
+            throw new IllegalArgumentException("Cannot set " + key + " to " + value);
+        }
+
+        labels.put(key, String.valueOf(value));
     }
 }

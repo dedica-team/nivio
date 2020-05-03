@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input.dto;
 
 
+import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
@@ -13,7 +14,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -39,40 +39,29 @@ class ItemDescriptionFactoryNivioTest {
 
         List<ItemDescription> services = descriptionFactory.getDescriptions(file, null);
         ItemDescription service = services.get(0);
-        assertEquals(LandscapeItem.LAYER_APPLICATION, service.getLayer());
         assertEquals("Demo Blog", service.getName());
-        assertEquals("to be replaced", service.getNote());
+        assertEquals("to be replaced", service.getLabel(Label.NOTE));
         assertEquals("blog-server", service.getIdentifier());
-        assertEquals("blog", service.getShortName());
-        assertEquals("1.0", service.getVersion());
-        assertEquals("public", service.getVisibility());
-        assertEquals("Wordpress", service.getSoftware());
-        assertEquals("5", service.getScale());
+        assertEquals("blog", service.getLabel(Label.SHORTNAME));
+        assertEquals("1.0", service.getLabel(Label.VERSION));
+        assertEquals("public", service.getLabel(Label.VISIBILITY));
+        assertEquals("Wordpress", service.getLabel(Label.SOFTWARE));
+        assertEquals("5", service.getLabel(Label.SCALE));
         assertEquals("https://acme.io", service.getLinks().get("homepage").toString());
         assertEquals("https://git.acme.io/blog-server", service.getLinks().get("repository").toString());
-        assertEquals("s", service.getMachine());
-        assertNotNull(service.getNetworks());
-        assertEquals("content", service.getNetworks().toArray()[0]);
-        assertEquals("alphateam", service.getTeam());
+        assertEquals("s", service.getLabel(Label.MACHINE));
+        assertNotNull(service.getLabels(Label.PREFIX_NETWORK));
+        assertEquals("content", service.getLabels(Label.PREFIX_NETWORK).values().toArray()[0]);
+        assertEquals("alphateam", service.getLabel(Label.TEAM));
         assertEquals("alphateam@acme.io", service.getContact());
         assertEquals("content", service.getGroup());
-        assertEquals("docker", service.getHostType());
+        assertEquals("docker", service.getLabel(Label.HOSTTYPE));
         assertEquals(1, service.getTags().length);
         assertTrue(Arrays.asList(service.getTags()).contains("CMS"));
         assertEquals(Lifecycle.END_OF_LIFE, service.getLifecycle());
 
-        assertNotNull(service.getStatuses());
-        assertEquals(3, service.getStatuses().size());
-        service.getStatuses().forEach(statusItem -> {
-            Assert.assertNotNull(statusItem);
-            Assert.assertNotNull(statusItem.getLabel());
-            if (statusItem.getLabel().equals(StatusItem.SECURITY)) {
-                Assert.assertEquals(Status.RED, statusItem.getStatus());
-            }
-            if (statusItem.getLabel().equals(StatusItem.CAPABILITY)) {
-                Assert.assertEquals(Status.YELLOW, statusItem.getStatus());
-            }
-        });
+        assertEquals(Status.RED.toString(), service.getLabel(Label.key(Label.PREFIX_STATUS, Label.SECURITY, "status")));
+        assertEquals(Status.YELLOW.toString(), service.getLabel(Label.key(Label.PREFIX_STATUS, Label.BUSINESS_CAPABILITY, "status")));
 
         assertNotNull(service.getInterfaces());
         assertEquals(3, service.getInterfaces().size());
@@ -82,28 +71,28 @@ class ItemDescriptionFactoryNivioTest {
             }
         });
 
-        assertNotNull(service.getRelations(RelationType.PROVIDER));
+        assertNotNull(RelationType.PROVIDER.filter(service.getRelations()));
         assertEquals(3, service.getProvidedBy().size());
 
-        Set<RelationItem<String>> dataflows = service.getRelations(RelationType.DATAFLOW);
+        List<RelationItem> dataflows = RelationType.DATAFLOW.filter(service.getRelations());
         assertNotNull(dataflows);
         assertEquals(3, dataflows.size());
         dataflows.forEach(dataFlow -> {
-             if (dataFlow.getDescription().equals("kpis")) {
+            if (dataFlow.getDescription().equals("kpis")) {
                 Assert.assertEquals("content-kpi-dashboard", dataFlow.getTarget());
             }
         });
 
         ItemDescription web = services.get(2);
-        assertEquals(LandscapeItem.LAYER_INGRESS, web.getLayer());
+        assertEquals(LandscapeItem.LAYER_INGRESS, web.getLabel(Label.LAYER));
         assertEquals("wordpress-web", web.getIdentifier());
         assertEquals("Webserver", web.getDescription());
-        assertEquals("Apache", web.getSoftware());
-        assertEquals("2.4", web.getVersion());
-        assertEquals("Pentium 1 512MB RAM", web.getMachine());
-        assertEquals("ops guys", web.getTeam());
-        assertEquals("content", web.getNetworks().toArray()[0]);
-        assertEquals("docker", web.getHostType());
+        assertEquals("Apache", web.getLabel(Label.SOFTWARE));
+        assertEquals("2.4", web.getLabel(Label.VERSION));
+        assertEquals("Pentium 1 512MB RAM", web.getLabel(Label.MACHINE));
+        assertEquals("ops guys", web.getLabel(Label.TEAM));
+        assertEquals("content", web.getLabels(Label.PREFIX_NETWORK).values().toArray()[0]);
+        assertEquals("docker", web.getLabel(Label.HOSTTYPE));
     }
 
     @Test

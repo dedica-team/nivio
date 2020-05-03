@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.output.Rendered;
 import j2html.tags.ContainerTag;
@@ -36,8 +37,8 @@ class SVGItem extends Component {
         var fillId = hasFill ? "url(#" + SVGPattern.idForLink(item.getFill()) + ")" : "white";
         DomContent content = null;
         //use the shortname as text instead
-        if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(item.getShortName())) {
-            content = new SVGLabelText(item.getShortName(), "0", "3", "item_shortName").render();
+        if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(item.getLabel(Label.SHORTNAME))) {
+            content = new SVGLabelText(item.getLabel(Label.SHORTNAME), "0", "3", "item_shortName").render();
             fillId = "white";
             hasText = true;
         }
@@ -66,20 +67,21 @@ class SVGItem extends Component {
         ContainerTag inner = SvgTagCreator.g(circle, content, children)
                 .attr("class", "hexagon");
 
-        return SvgTagCreator.g(inner, icon, getScale())
+        return SvgTagCreator.g(inner, icon)
                 .attr("class", "hexagon-group")
                 .attr("transform", "translate(" + pixel.x + "," + pixel.y + ")");
     }
 
+    /* TODO make scale reappear, but without evaluation (this is part of assessment)
     private ContainerTag getScale() {
 
-        if (StringUtils.isEmpty(item.getScale())) {
+        if (StringUtils.isEmpty(item.getLabel(Label.SCALE))) {
             return null;
         }
 
         int scaleVal = 0;
         try {
-            scaleVal = Integer.parseInt(item.getScale());
+            scaleVal = Integer.parseInt(item.getLabel(Label.SCALE));
         } catch (NumberFormatException ignored) {
         }
 
@@ -90,8 +92,10 @@ class SVGItem extends Component {
                                 .attr("r", 12)
                                 .attr("fill", scaleVal > 0 ? "green" : "red")
                         ,
-                        SvgTagCreator.text(item.getScale())
+                        SvgTagCreator.text(String.valueOf(scaleVal))
                                 .attr("transform", "translate(-" + 4 + "," + 5 + ")")
                 ).attr("transform", "translate(" + 30 + "," + 30 + ")");
     }
+
+     */
 }

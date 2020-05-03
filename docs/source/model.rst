@@ -1,10 +1,11 @@
 Model and Syntax
 ================
 
+
 Landscape
 ---------
 
-A landscape is defined as a collection of items and applications which somehow belong together, be it for technical
+A landscape is defined as a collection of items which somehow belong together, be it for technical
 or business reasons. For example, a company department might model ALL its applications in production as one landscape and use grouping
 or tagging to further separate the applications. A second landscape could be used to model a future layout with a different
 infrastructure. Both landscapes could have items in common (like a database, load balancer etc.), so their configuration can be reused.
@@ -19,24 +20,26 @@ A landscape can/must have the following attributes:
 Landscape Items
 ---------------
 
-A landscape consists of several groups (think of bounded contexts) and the three layers ingress, items, and infrastructure
-for technical separation. Any item can only be part of one group and layer.
+An item represents anything that has a meaning in the landscape. It can be a server, a service, some hardware or a person.
 
-A item can have the following attributes:
+A item should have the following attributes:
 
 * **identifier**: a unique identifier in the landscape. Use a name or an URN, validated against ^[a-z0-9\\.\\:_-]{3,256}$
-* **group** name of the group (optional). If a group is given it becomes part of the global identifier
+* **group** name of the group (optional). If a group is given it becomes part of the global identifier.Any item can only be part of one group.
 * **name** human readable, displayed name
-* **type** e.g. item, database, proxy, loadbalancer, ...
+* **contact** support/notification contact (email) may be addressed in case of errors
+* **description** a short description
+
+Plus, there are "known" attributes having a special meaning:
+
+* **type** e.g. microservice, database, proxy, loadbalancer, product owner ... (nivio tries to use icons based on the type)
 * **layer** ingress, applications, or infrastructure
 * **shortName** abbreviation
 * **capability** the capability the item provides for the business, or in case of infrastructure the technical purpose like enabling item discovery, configuration, secrets or persistence.
 * **version** any string describing a item version (e.g. 1.2.5)
 * **software** optional name of the used software/product
 * **owner** owning party (e.g. Marketing)
-* **description** a short description
 * **team** technical owner
-* **contact** support/notification contact (email) may be addressed in case of errors
 * **links** a map/dictionary of urls to more information
 * **visibility** whether the item is publicly exposed
 * **tags** list of strings used as tag

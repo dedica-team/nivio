@@ -7,6 +7,7 @@ import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.ItemMatcher;
 import de.bonndan.nivio.model.LandscapeItem;
 import org.springframework.util.StringUtils;
 
@@ -51,7 +52,7 @@ public class ItemDescriptions {
     }
 
     /**
-     * Returns a the item from the list or null. Uses the matching criteria of {@link FullyQualifiedIdentifier}
+     * Returns a the item from the list or null. Uses the matching criteria of {@link ItemMatcher}
      *
      * @param identifier the identifier
      * @return the item or null
@@ -63,8 +64,9 @@ public class ItemDescriptions {
 
         List<ItemDescription> found = findAll(identifier, group);
 
-        if (found.size() > 1)
+        if (found.size() > 1) {
             throw new RuntimeException("Ambiguous result for " + group + "/" + identifier + ": " + found + " in collection ");
+        }
 
         return Optional.ofNullable((found.size() == 1) ? found.get(0) : null);
     }
@@ -73,41 +75,41 @@ public class ItemDescriptions {
             final String identifier,
             final String group
     ) {
-        FullyQualifiedIdentifier fqi;
-        if (group == null)
-            fqi = FullyQualifiedIdentifier.from(identifier);
-        else
-            fqi = FullyQualifiedIdentifier.build(null, group, identifier);
-        return findAll(fqi);
+        return findAll(ItemMatcher.build(null, group, identifier));
     }
 
-    private List<ItemDescription> findAll(FullyQualifiedIdentifier fqi) {
-        return index.stream().filter(fqi::isSimilarTo).collect(Collectors.toList());
+    private List<ItemDescription> findAll(ItemMatcher itemMatcher) {
+        return index.stream().filter(itemMatcher::isSimilarTo).collect(Collectors.toList());
     }
 
     /**
      * Returns a the item from the list or null. Uses the matching criteria of {@link FullyQualifiedIdentifier}
      *
-     * @param fqi   the identifier
+     * @param itemMatcher  the identifier
      * @return the or null
      */
-    public Optional<LandscapeItem> find(FullyQualifiedIdentifier fqi) {
-        List<ItemDescription> found = findAll(fqi);
+    public Optional<LandscapeItem> find(ItemMatcher itemMatcher) {
+        List<ItemDescription> found = findAll(itemMatcher);
 
         if (found.size() > 1)
-            throw new RuntimeException("Ambiguous result for " + fqi + ": " + found + " in collection ");
+            throw new RuntimeException("Ambiguous result for " + itemMatcher + ": " + found + " in collection ");
 
         return Optional.ofNullable((found.size() == 1) ? found.get(0) : null);
     }
 
+    /**
+     * Executes a search query.
+     *
+     * @param term wildcard, ItemMatcher as string, or sql-like query where-condition
+     * @return matched items
+     */
     public Collection<? extends LandscapeItem> query(String term) {
 
         if ("*".equals(term))
             return index;
 
-        if (term.contains("/")) {
-            FullyQualifiedIdentifier from = FullyQualifiedIdentifier.from(term);
-            return findAll(from);
+        if (term.contains(ItemMatcher.SEPARATOR)) {
+            return findAll(ItemMatcher.forTarget(term));
         }
 
         //single word compared against identifier

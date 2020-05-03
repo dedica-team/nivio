@@ -47,7 +47,7 @@ public class DiffResolver extends Resolver {
         kept.forEach(
                 item -> {
 
-                    ItemDescription description = (ItemDescription) input.getItemDescriptions().find(item.getFullyQualifiedIdentifier()).orElse(null);
+                    ItemDescription description = (ItemDescription) input.getItemDescriptions().find(ItemMatcher.forTarget(item)).orElse(null);
                     if (description == null) {
                         if (input.isPartial()) {
                             inLandscape.add((Item) item);
@@ -110,7 +110,7 @@ public class DiffResolver extends Resolver {
 
     private static boolean exists(LandscapeItem item, Collection<? extends LandscapeItem> items) {
         return items.stream().anyMatch(
-                inList -> item.getFullyQualifiedIdentifier().isSimilarTo(inList)
+                inList -> ItemMatcher.forTarget(item).isSimilarTo(inList)
         );
     }
 }

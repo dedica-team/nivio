@@ -1,10 +1,15 @@
 package de.bonndan.nivio.model;
 
-import java.net.URL;
-import java.util.Map;
+import de.bonndan.nivio.assessment.StatusValue;
+
 import java.util.Set;
 
-public interface LandscapeItem {
+/**
+ * An item in the landscape (service, machine, owner) having relations to other items (aka graph node).
+ *
+ *
+ */
+public interface LandscapeItem extends Component, Labeled, Linked {
 
     String LAYER_INFRASTRUCTURE = "infrastructure";
     String LAYER_APPLICATION = "applications";
@@ -12,99 +17,15 @@ public interface LandscapeItem {
 
     String IDENTIFIER_VALIDATION = "^[a-z0-9\\.\\:_-]{3,256}$";
 
-
-    /**
-     * Returns the landscape-wide unique identifier of a server or application.
-     */
-    String getIdentifier();
-
-    /**
-     * @return the fqi to identify the landscape item
-     */
-    FullyQualifiedIdentifier getFullyQualifiedIdentifier();
-
-    /**
-     * @return the type (ingress, service, infrastructure)
-     */
-    String getLayer();
-
-    /**
-     * @return the type (service, database, queue, loadbalancer...)
-     */
-    String getType();
-
-    String getName();
-
-    String getShortName();
-
-    String getIcon();
-
     String getGroup();
 
-    String getSoftware();
-
-    String getVersion();
-
-    Map<String, URL> getLinks();
-
-    String getContact();
-
-    String getTeam();
-
-    String getVisibility();
+    String getType();
 
     Lifecycle getLifecycle();
 
-    void setStatus(StatusItem statusItem);
-
-    Set<StatusItem> getStatuses();
-
-    String getMachine();
-
-    String getScale();
-
-    String getHostType();
-
-    Set<String> getNetworks();
-
-    String getDescription();
-
-    String[] getTags();
-
-    Map<String, String> getLabels();
-
-    String getNote();
+    Set<InterfaceItem> getInterfaces();
 
     String getOwner();
 
-    Set<InterfaceItem> getInterfaces();
-
     Set<? extends RelationItem> getRelations();
-
-    /**
-     * Returns a filtered subset of relations.
-     * <p>
-     * Do not use to add new relations to the set.
-     *
-     * @param type relation type
-     * @return filtered set
-     */
-    Set<? extends RelationItem> getRelations(RelationType type);
-
-    /**
-     * Describes the capability the service provides for the business, or in case of infrastructure the technical
-     * capability like enabling service discovery, configuration, secrets or persistence.
-     *
-     * @return name
-     */
-    String getCapability();
-
-    /**
-     * Running costs of the service.
-     *
-     * @return the raw string
-     */
-    String getCosts();
-
-
 }

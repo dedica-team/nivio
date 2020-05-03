@@ -69,7 +69,7 @@ class LabelToFieldProcessorTest {
 
     @Test
     @DisplayName("Ensure comma separated links are parsed properly")
-    public void links() {
+    public void deprecatedLinks() {
         ItemDescription item1 = new ItemDescription();
         item1.getLabels().put("a", "b");
         item1.getLabels().put("nivio.links", "http://one.com, https://two.net");
@@ -88,6 +88,32 @@ class LabelToFieldProcessorTest {
         assertEquals("http://one.com", url.toString());
 
         url = links.get("2");
+        assertNotNull(url);
+        assertEquals("https://two.net", url.toString());
+    }
+
+    @Test
+    @DisplayName("Ensure links with keys are parsed")
+    public void links() {
+        ItemDescription item1 = new ItemDescription();
+        item1.getLabels().put("a", "b");
+        item1.getLabels().put("nivio.link.wiki", "http://one.com");
+        item1.getLabels().put("nivio.link.repo", "https://two.net");
+
+        LandscapeDescription input = new LandscapeDescription();
+        input.getItemDescriptions().add(item1);
+
+        //when
+        processor.process(input, null);
+
+        //then
+        Map<String, URL> links = item1.getLinks();
+        assertFalse(links.isEmpty());
+        URL url = links.get("wiki");
+        assertNotNull(url);
+        assertEquals("http://one.com", url.toString());
+
+        url = links.get("repo");
         assertNotNull(url);
         assertEquals("https://two.net", url.toString());
     }

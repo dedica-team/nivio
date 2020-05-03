@@ -87,6 +87,7 @@ For instance
         labels:
           nivio.name: A nice name
           nivio.providedBy: ["foo", "bar"]
+          nivio.link.wiki: http://mywiki.acme.com
 
 
 will set the related values (here: name and relations). Remember to scape URLs with double quotes.
@@ -101,6 +102,7 @@ Labels can be set using docker-compose files, too. However, docker labels not no
         labels:
           nivio.name: A nice name
           nivio.providedBy: "bar, baz"
+          nivio.link.repo: https://github.com/foo/bar
 
 
 Relations between landscape items

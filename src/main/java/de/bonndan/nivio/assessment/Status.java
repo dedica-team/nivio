@@ -1,4 +1,4 @@
-package de.bonndan.nivio.model;
+package de.bonndan.nivio.assessment;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -17,6 +17,8 @@ public enum Status {
 
     private final String status;
     private final int order;
+
+    @Deprecated
     private final String symbol;
 
     Status(String status, int order, String symbol) {
@@ -39,13 +41,19 @@ public enum Status {
                 return ORANGE;
             case "red":
                 return RED;
+            case "brown":
+                return BROWN;
         }
 
         return UNKNOWN;
     }
 
-    @Override
     @JsonValue
+    public String getName() {
+        return name();
+    }
+
+    @Override
     public String toString() {
         return status;
     }
@@ -54,11 +62,12 @@ public enum Status {
         return order > current.order;
     }
 
+    @Deprecated
     public String getSymbol() {
         return symbol;
     }
 
-    public static Status highestOf(Set<StatusItem> statuses) {
+    public static Status highestOf(Set<StatusValue> statuses) {
 
         var ref = new Object() {
             Status current = Status.UNKNOWN;
@@ -70,5 +79,8 @@ public enum Status {
         });
 
         return ref.current;
+    }
+
+    public class Comparator {
     }
 }

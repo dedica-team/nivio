@@ -2,8 +2,8 @@ package de.bonndan.nivio.input.rancher1;
 
 import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.StatusDescription;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.Label;
 import org.hawkular.agent.prometheus.PrometheusDataFormat;
 import org.hawkular.agent.prometheus.PrometheusScraper;
 import org.hawkular.agent.prometheus.types.Gauge;
@@ -20,6 +20,8 @@ import java.util.*;
 public class PrometheusExporter {
 
     private static final Logger logger = LoggerFactory.getLogger(PrometheusExporter.class);
+    public static final String HEALTHY = "healthy";
+    public static final String UNHEALTHY = "unhealthy";
 
     private final String landscape;
     private File file;
@@ -73,7 +75,7 @@ public class PrometheusExporter {
             itemDescription = processGauge((Gauge) metric);
             FullyQualifiedIdentifier fqi = toFQI(metric);
             if (fqi != null) {
-                itemDescription.setIdentifier(fqi.getIdentifier());
+                itemDescription.setIdentifier(fqi.getItem());
                 itemDescription.setGroup(fqi.getGroup());
             }
         }
@@ -86,17 +88,18 @@ public class PrometheusExporter {
         ItemDescription itemDescription = new ItemDescription();
         if (metric.getName().equals("rancher_service_health_status")) {
 
-            StatusDescription health_state = null;
+            String health_state = null;
             if (metric.getLabels().getOrDefault("health_state", "").equals("healthy") && metric.getValue() > 0) {
-                health_state = new StatusDescription(StatusItem.HEALTH, Status.GREEN, metric.getLabels().getOrDefault("health_state", ""));
+                health_state = HEALTHY;
             }
 
             if (metric.getLabels().getOrDefault("health_state", "").equals("unhealthy") && metric.getValue() > 0) {
-                health_state = new StatusDescription(StatusItem.HEALTH, Status.ORANGE, metric.getLabels().getOrDefault("health_state", ""));
+                health_state = UNHEALTHY;
             }
 
-            if (health_state != null)
-                itemDescription.setStatus(health_state);
+            if (health_state != null) {
+                itemDescription.setLabel(Label.HEALTH, health_state);
+            }
         }
 
         //TODO add scale gauge

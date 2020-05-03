@@ -1,6 +1,12 @@
 package de.bonndan.nivio.input;
 
 
+import de.bonndan.nivio.LandscapeConfig;
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.assessment.kpi.CustomKPI;
+import de.bonndan.nivio.assessment.kpi.HealthKPI;
+import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
@@ -121,11 +127,10 @@ class LandscapeDescriptionFactoryTest {
         File file = new File(FILE_PATH_TEMPLATES);
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
 
-        LandscapeItem template = landscapeDescription.getTemplates().get("myfirsttemplate");
+        ItemDescription template = landscapeDescription.getTemplates().get("myfirsttemplate");
 
-        assertEquals("webservice", template.getType());
+        assertEquals("webservice", template.getLabel(Label.TYPE));
         assertTrue(template.getName().isEmpty());
-        assertTrue(template.getShortName().isEmpty());
     }
 
     @Test
@@ -198,5 +203,48 @@ class LandscapeDescriptionFactoryTest {
         GroupItem b = groups.get("B");
         assertNotNull(b);
         assertEquals("B", b.getIdentifier());
+    }
+
+    @Test
+    public void testGroupsHaveEnv() {
+        final String FILE_PATH_GROUPS = FILE_PATH + "example_groups.yml";
+        File file = new File(FILE_PATH_GROUPS);
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
+
+        Map<String, GroupItem> groups = landscapeDescription.getGroups();
+        assertNotNull(groups);
+        assertEquals(2, groups.size());
+        GroupItem groupItem = groups.get("groupA");
+        assertNotNull(groupItem);
+        assertEquals(landscapeDescription.getIdentifier(), groupItem.getFullyQualifiedIdentifier().getLandscape());
+
+        GroupItem b = groups.get("B");
+        assertNotNull(b);
+        assertEquals(landscapeDescription.getIdentifier(), b.getFullyQualifiedIdentifier().getLandscape());
+    }
+
+    @Test
+    public void readCustomKPIs() {
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_kpis.yml");
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
+        LandscapeConfig config = landscapeDescription.getConfig();
+
+        Map<String, KPI> kpIs = config.getKPIs();
+        assertNotNull(kpIs);
+
+        KPI health = kpIs.get(HealthKPI.IDENTIFIER);
+        assertNotNull(health);
+        assertEquals("can be overridden", health.getDescription());
+
+        KPI monthlyCosts = kpIs.get("monthlyCosts");
+        assertNotNull(monthlyCosts);
+        assertEquals("Evaluates the monthly maintenance costs", monthlyCosts.getDescription());
+
+        monthlyCosts.init();
+        Item item = new Item();
+        item.setLabel(Label.COSTS, "200");
+        StatusValue statusValue =  monthlyCosts.getStatusValues(item).get(0);
+        assertNotNull(statusValue);
+        assertEquals(Status.RED, statusValue.getStatus());
     }
 }
