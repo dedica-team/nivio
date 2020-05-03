@@ -1,5 +1,6 @@
 package de.bonndan.nivio.assessment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
@@ -20,6 +21,7 @@ public interface Assessable extends Component {
      *
      * @return status value, field contains the component identifier, message is the identifier of the highest status value
      */
+    @JsonIgnore
     default StatusValue getOverallStatus() {
 
         List<StatusValue> statusValues = new ArrayList<>(getAdditionalStatusValues());
@@ -40,12 +42,14 @@ public interface Assessable extends Component {
      *
      * @return a distinct (by field) set
      */
+    @JsonIgnore
     Set<StatusValue> getAdditionalStatusValues();
 
     /**
      * Returns the components to be assessed before this (e.g. group items).
      *
      */
+    @JsonIgnore
     default List<? extends Assessable> getChildren() {
         return new ArrayList<>();
     }
