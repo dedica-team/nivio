@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import ReactHtmlParser from 'html-react-parser';
-
 import './LandscapeItem.scss';
 
 interface Props {
@@ -10,6 +8,8 @@ interface Props {
 /**
  * Returns a choosen Landscape Item if informations are available
  * @param element Choosen SVG Element from our Landscape Component
+ * TODO load assessment data
+ * TODO maybe use data from landscape context
  */
 const LandscapeItem: React.FC<Props> = ({ element }) => {
   const [html, setHtml] = useState<string>(`<h2>Not Found :(</h2>`);
@@ -19,22 +19,18 @@ const LandscapeItem: React.FC<Props> = ({ element }) => {
     let topic = element.getAttribute('data-identifier');
     setTopic(topic);
     if (topic !== null) {
-      fetch(process.env.REACT_APP_BACKEND_URL + '/docs/item/' + topic)
+      console.log(topic);
+      fetch(process.env.REACT_APP_BACKEND_URL + '/api/' + topic)
         .then((response) => {
-          return response.text();
+          return response.json();
         })
-        .then((text) => {
-          const parser = new DOMParser();
-          const html = parser.parseFromString(text, 'text/html');
-          let card = html.querySelector('.card-body');
-          if (card) {
-            setHtml(card.innerHTML);
-          }
+        .then((data) => {
+          setHtml(JSON.stringify(data));
         });
     }
   }, [element, topic, html]);
 
-  return <div className='landscapeItemContent'>{ReactHtmlParser(html)}</div>;
+  return <div className='landscapeItemContent'>{html}</div>;
 };
 
 export default LandscapeItem;
