@@ -10,7 +10,6 @@ import java.util.*;
 /**
  * If the landscape is configured as "greedy", new items are created on the fly by a reference name.
  *
- * @todo add hosts as soon as relation resolver supports hosts
  */
 public class InstantItemResolver {
 
