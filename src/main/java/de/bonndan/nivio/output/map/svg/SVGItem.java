@@ -67,11 +67,12 @@ class SVGItem extends Component {
         ContainerTag inner = SvgTagCreator.g(circle, content, children)
                 .attr("class", "hexagon");
 
-        return SvgTagCreator.g(inner, icon, getScale())
+        return SvgTagCreator.g(inner, icon)
                 .attr("class", "hexagon-group")
                 .attr("transform", "translate(" + pixel.x + "," + pixel.y + ")");
     }
 
+    /* TODO make scale reappear, but without evaluation (this is part of assessment)
     private ContainerTag getScale() {
 
         if (StringUtils.isEmpty(item.getLabel(Label.SCALE))) {
@@ -95,4 +96,6 @@ class SVGItem extends Component {
                                 .attr("transform", "translate(-" + 4 + "," + 5 + ")")
                 ).attr("transform", "translate(" + 30 + "," + 30 + ")");
     }
+
+     */
 }
