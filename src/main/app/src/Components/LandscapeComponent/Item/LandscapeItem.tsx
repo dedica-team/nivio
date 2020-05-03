@@ -12,7 +12,7 @@ interface Props {
  * TODO maybe use data from landscape context
  */
 const LandscapeItem: React.FC<Props> = ({ element }) => {
-  const [html, setHtml] = useState<string>(`<h2>Not Found :(</h2>`);
+  const [html, setHtml] = useState<string>(`Not Found :(`);
   const [topic, setTopic] = useState<string | null>(null);
 
   useEffect(() => {
