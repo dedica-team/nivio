@@ -70,6 +70,7 @@ Nivio can be reached at http://localhost:3000
 | [classNames](https://www.npmjs.com/package/classnames)                                | Conditionally joining classNames                                             |
 | [HTML React Parser](https://www.npmjs.com/package/html-react-parser)                  | Convert HTML String into React elements                                      |
 | [raw.macro](https://www.npmjs.com/package/raw.macro)                                  | Load file contents at compile time                                           |
+| [dateformat](https://www.npmjs.com/package/dateformat)                                | Library to format a date easily                                              |
 | [React Modal](https://www.npmjs.com/package/react-modal)                              | Accessible modal dialog component for React                                  |
 | [React Hexgrid](https://github.com/Hellenic/react-hexgrid)                            | Build interactive hexagon grids with React                                   |
 | [React Router](https://reacttraining.com/react-router/web/guides/quick-start)         | Navigation                                                                   |

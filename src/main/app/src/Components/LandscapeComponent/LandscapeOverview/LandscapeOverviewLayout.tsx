@@ -7,6 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import { Button } from '@material-ui/core';
 import './LandscapeOverview.scss';
 import { ILandscape } from '../../../interfaces';
+import dateFormat from 'dateformat';
 
 interface Props {
   modalContent: string | ReactElement | ReactElement[] | null;
@@ -65,8 +66,7 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog }) => 
             <br />
             Identifier: {landscape.identifier}
             <br />
-            <br />
-            {landscape.teams ? 'Teams: ' + landscape.teams.join(', ') : ''}
+            {landscape.teams ? `Teams: ${landscape.teams.join(', ')}` : ''}
             <br />
           </Grid>
 
@@ -82,20 +82,18 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog }) => 
               Items
             </Typography>
             <Typography variant='h2' display='block' gutterBottom>
-              {landscape.items?.length || 0}
+              {landscape.items ? Object.keys(landscape.items).length : 0}
             </Typography>
-            in {landscape.groups?.length || 0} groups
+            in {landscape.groups ? Object.keys(landscape.groups).length : 0} groups
           </Grid>
 
           <Grid item xs={12} lg={2}>
             <Typography variant='overline' display='block' gutterBottom>
               Last update
             </Typography>
-            <Typography variant='h3' display='block'>
-              {landscape.lastUpdate?.split(' ')[0] || '-'}
+            <Typography variant='h5' display='block'>
+              {landscape.lastUpdate ? dateFormat(landscape.lastUpdate, 'dd-mm-yyyy hh:MM:ss') : '-'}
             </Typography>
-
-            <div>{landscape.lastUpdate?.split(' ')[1] || '-'}</div>
           </Grid>
 
           <Grid item xs={12} lg={2}>

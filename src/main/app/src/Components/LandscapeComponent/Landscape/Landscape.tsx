@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, ReactElement } from 'react';
+import React, { useState, useEffect, useCallback, ReactElement } from 'react';
 
 import { ReactSvgPanZoomLoader, SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
 import { ReactSVGPanZoom, TOOL_AUTO, Tool, Value } from 'react-svg-pan-zoom';
@@ -6,7 +6,6 @@ import { useParams } from 'react-router-dom';
 
 import LandscapeItem from '../Item/LandscapeItem';
 import GenericModal from '../../ModalComponent/GenericModal';
-import LandscapeContext from '../../../Context/Landscape.context';
 
 import './Landscape.scss';
 import { ILandscape } from '../../../interfaces';
@@ -23,25 +22,29 @@ const Landscape: React.FC = () => {
   const [value, setValue] = useState<Value>({});
   const [modalContent, setModalContent] = useState<string | ReactElement | null>(null);
   const [landscape, setLandscape] = useState<ILandscape | null>(null);
-  const [reloadLandscape, setReloadLandscape] = useState<boolean>(false);
+  const [reloadLandscape, setReloadLandscape] = useState<boolean>(true);
 
-  const landscapeContext = useContext(LandscapeContext);
   const { identifier } = useParams();
 
+  const loadLandscape = useCallback(async () => {
+    if (reloadLandscape) {
+      await fetch(process.env.REACT_APP_BACKEND_URL + '/api/' + identifier)
+        .then((response) => {
+          return response.json();
+        })
+        .then((json) => {
+          setLandscape(json);
+          setReloadLandscape(false);
+        });
+    }
+  }, [reloadLandscape, identifier]);
+
   useEffect(() => {
-    const index = landscapeContext.landscapes.findIndex((i) => i.identifier === identifier);
-    setLandscape(landscapeContext.landscapes[index]);
-  }, [identifier, landscapeContext.landscapes, reloadLandscape]);
+    loadLandscape();
+  }, [loadLandscape]);
 
   const reloadLandscapes = async () => {
-    await fetch(process.env.REACT_APP_BACKEND_URL + '/api/')
-      .then((response) => {
-        return response.json();
-      })
-      .then((json) => {
-        landscapeContext.landscapes = json;
-        setReloadLandscape(!reloadLandscape);
-      });
+    setReloadLandscape(!reloadLandscape);
   };
 
   const onItemClick = (e: any) => {

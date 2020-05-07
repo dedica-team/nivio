@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useContext, useCallback, ReactElement } from 'react';
+import React, { useState, useEffect, useCallback, ReactElement } from 'react';
 
 import { ILandscape } from '../../../interfaces';
 import LandscapeLog from '../Log/LandscapeLog';
-import LandscapeContext from '../../../Context/Landscape.context';
 import LandscapeOverviewLayout from './LandscapeOverviewLayout';
 
 /**
@@ -16,8 +15,6 @@ const LandscapeOverview: React.FC = () => {
   const [landscapes, setLandscapes] = useState<ILandscape[]>();
   const [loadLandscapes, setLoadLandscapes] = useState<boolean>(true);
 
-  const landscapeContext = useContext(LandscapeContext);
-
   //Could be moved into useEffect but can be used for a reload button later on
   const getLandscapes = useCallback(async () => {
     if (loadLandscapes) {
@@ -29,10 +26,9 @@ const LandscapeOverview: React.FC = () => {
           console.log(json);
           setLandscapes(json);
           setLoadLandscapes(false);
-          landscapeContext.landscapes = json;
         });
     }
-  }, [landscapeContext.landscapes, loadLandscapes]);
+  }, [loadLandscapes]);
 
   useEffect(() => {
     getLandscapes();
