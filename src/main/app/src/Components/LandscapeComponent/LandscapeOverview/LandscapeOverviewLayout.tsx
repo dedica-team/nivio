@@ -67,13 +67,6 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog }) => 
 
           <Grid item xs={12} md={3} lg={2}>
             <Typography variant='overline' display='block' gutterBottom>
-              State
-            </Typography>
-            {landscape.overallState || '-'}
-          </Grid>
-
-          <Grid item xs={12} md={3} lg={2}>
-            <Typography variant='overline' display='block' gutterBottom>
               Items
             </Typography>
             <Typography variant='h2' display='block' gutterBottom>
