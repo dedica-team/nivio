@@ -6,7 +6,6 @@ export interface ILandscape {
   items?: IItem[];
   groups?: object[]; // TODO: Create interface
   lastUpdate?: string;
-  overallState?: string;
 }
 
 export interface IItem {
@@ -14,7 +13,7 @@ export interface IItem {
   contact?: string;
   description?: string;
   fill?: string;
-  fullyQualifiedIdentifier?: string;
+  fullyQualifiedIdentifier: string;
   group?: string;
   height?: number;
   icon?: string;
@@ -23,7 +22,7 @@ export interface IItem {
   labels?: Object;
   lifecycle?: String;
   links?: Object;
-  name?: String;
+  name: String;
   owner?: String;
   providedBy?: Array<Object>;
   relations?: Array<Object>;
