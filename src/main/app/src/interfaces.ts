@@ -18,7 +18,7 @@ export interface IItem {
   group?: string;
   height?: number;
   icon?: string;
-  identifier?: string;
+  identifier: string;
   interfaces?: Array<Object>;
   labels?: Object;
   lifecycle?: String;

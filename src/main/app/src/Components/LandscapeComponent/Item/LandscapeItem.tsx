@@ -34,6 +34,7 @@ const LandscapeItem: React.FC<Props> = ({ element }) => {
 
   return (
     <div className='landscapeItemContent'>
+      <p> Identifier: {item?.identifier}</p>
       <p> {item?.name ? `name: ${item?.name}` : ''}</p>
       <p> {item?.description ? `description: ${item?.description}` : ''}</p>
       <p> {item?.contact ? `contact: ${item?.contact} <br />` : ''}</p>

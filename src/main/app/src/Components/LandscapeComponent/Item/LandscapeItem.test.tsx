@@ -5,5 +5,5 @@ import LandscapeItem from './LandscapeItem';
 it('should render log component', () => {
   const element = document.createElement('div');
   const { getByText } = render(<LandscapeItem element={element} />);
-  expect(getByText('Not Found :(')).toBeInTheDocument();
+  expect(getByText('Identifier:')).toBeInTheDocument();
 });

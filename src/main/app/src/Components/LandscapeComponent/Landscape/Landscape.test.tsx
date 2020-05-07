@@ -9,5 +9,5 @@ it('should render landscape component', () => {
       <Landscape />
     </MemoryRouter>
   );
-  expect(getByText('No Landscapes loaded :(')).toBeInTheDocument();
+  expect(getByText('Loading...')).toBeInTheDocument();
 });
