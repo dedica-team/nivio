@@ -10,8 +10,6 @@ interface Props {
 /**
  * Returns a choosen Landscape Item if informations are available
  * @param element Choosen SVG Element from our Landscape Component
- * TODO load assessment data
- * TODO maybe use data from landscape context
  */
 const LandscapeItem: React.FC<Props> = ({ element }) => {
   const [item, setItem] = useState<IItem>();
@@ -31,7 +29,14 @@ const LandscapeItem: React.FC<Props> = ({ element }) => {
     }
   }, [element, topic]);
 
-  return <div className='landscapeItemContent'>{JSON.stringify(item)}</div>; // TODO: Extract variables and put it into form
+  return (
+    <div className='landscapeItemContent'>
+      <p> {item?.name ? `name: ${item?.name}` : ''}</p>
+      <p> {item?.description ? `description: ${item?.description}` : ''}</p>
+      <p> {item?.contact ? `contact: ${item?.contact} <br />` : ''}</p>
+      <p> {item?.group ? `group: ${item?.group}` : ''}</p>
+    </div>
+  ); // TODO: styling
 };
 
 export default LandscapeItem;
