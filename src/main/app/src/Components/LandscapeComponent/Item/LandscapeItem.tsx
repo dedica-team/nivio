@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { getItemByTopic } from '../../../utils/APIClient';
+import { get } from '../../../utils/API/APIClient';
 import './LandscapeItem.scss';
 
 import { IItem } from '../../../interfaces';
@@ -13,13 +13,13 @@ interface Props {
  * @param element Choosen SVG Element from our Landscape Component
  */
 const LandscapeItem: React.FC<Props> = ({ element }) => {
-  const [item, setItem] = useState<IItem>();
+  const [item, setItem] = useState<IItem | null>();
   const [loadItem, setLoadItem] = useState<boolean>(true);
   const [topic, setTopic] = useState<string | null>(null);
 
   const getItem = useCallback(async () => {
     if (loadItem && topic) {
-      setItem(await getItemByTopic(topic));
+      setItem(await get(`/api/${topic}`));
       setLoadItem(false);
     }
   }, [loadItem, topic]);

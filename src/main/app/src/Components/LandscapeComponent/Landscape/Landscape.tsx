@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 
 import LandscapeItem from '../Item/LandscapeItem';
 import GenericModal from '../../ModalComponent/GenericModal';
-import { getLandscapeByIdentifier } from '../../../utils/APIClient';
+import { get } from '../../../utils/API/APIClient';
 
 import './Landscape.scss';
 import { ILandscape } from '../../../interfaces';
@@ -29,7 +29,7 @@ const Landscape: React.FC = () => {
 
   const getLandscape = useCallback(async () => {
     if (loadLandscape && identifier) {
-      setLandscape(await getLandscapeByIdentifier(identifier));
+      setLandscape(await get(`/api/${identifier}`));
       setLoadLandscape(false);
     }
   }, [loadLandscape, identifier]);

@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ILandscape } from '../../../interfaces';
-import { getLandscapeLog } from '../../../utils/APIClient';
+import { get } from '../../../utils/API/APIClient';
 
 import './LandscapeLog.scss';
 import LevelChip from '../../LevelChipComponent/LevelChip';
 
 interface Props {
   landscape: ILandscape;
+}
+
+interface Log {
+  messages: Entry[];
 }
 
 interface Entry {
@@ -25,8 +29,11 @@ const LandscapeLog: React.FC<Props> = ({ landscape }) => {
 
   const getLog = useCallback(async () => {
     if (loadData) {
-      setData(await getLandscapeLog(landscape.identifier));
-      setLoadData(false);
+      const log: any = await get(`/api/landscape/${landscape.identifier}/log`);
+      if (log) {
+        setData(log.messages);
+        setLoadData(false);
+      }
     }
   }, [loadData, landscape]);
 

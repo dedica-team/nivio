@@ -12,7 +12,7 @@ import dateFormat from 'dateformat';
 
 interface Props {
   modalContent: string | ReactElement | ReactElement[] | null;
-  landscapes: ILandscape[] | undefined;
+  landscapes: ILandscape[] | null | undefined;
   enterLog: (landscape: ILandscape) => void;
 }
 

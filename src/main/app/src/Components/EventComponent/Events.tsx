@@ -3,7 +3,7 @@ import { Divider } from '@material-ui/core';
 import './Events.scss';
 import TitleBar from '../TitleBarComponent/TitleBar';
 import LevelChip from '../LevelChipComponent/LevelChip';
-import { getEvents } from '../../utils/APIClient';
+import { get } from '../../utils/API/APIClient';
 
 interface Entry {
   type: string;
@@ -24,7 +24,7 @@ const Events: React.FC<{}> = () => {
 
   const loadEvents = useCallback(async () => {
     if (loadData) {
-      setData(await getEvents());
+      setData(await get('/events'));
       setLoadData(false);
     }
   }, [loadData]);
