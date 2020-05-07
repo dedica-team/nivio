@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { getItemByTopic } from '../../../utils/APIClient';
 import './LandscapeItem.scss';
 
 import { IItem } from '../../../interfaces';
@@ -13,21 +14,23 @@ interface Props {
  */
 const LandscapeItem: React.FC<Props> = ({ element }) => {
   const [item, setItem] = useState<IItem>();
+  const [loadItem, setLoadItem] = useState<boolean>(true);
   const [topic, setTopic] = useState<string | null>(null);
+
+  const getItem = useCallback(async () => {
+    if (loadItem && topic) {
+      setItem(await getItemByTopic(topic));
+      setLoadItem(false);
+    }
+  }, [loadItem, topic]);
 
   useEffect(() => {
     let topic = element.getAttribute('data-identifier');
     setTopic(topic);
     if (topic !== null) {
-      fetch(process.env.REACT_APP_BACKEND_URL + '/api/' + topic)
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          setItem(data);
-        });
+      getItem();
     }
-  }, [element, topic]);
+  }, [element, topic, getItem]);
 
   return (
     <div className='landscapeItemContent'>

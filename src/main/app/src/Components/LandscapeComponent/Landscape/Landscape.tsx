@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 
 import LandscapeItem from '../Item/LandscapeItem';
 import GenericModal from '../../ModalComponent/GenericModal';
+import { getLandscapeByIdentifier } from '../../../utils/APIClient';
 
 import './Landscape.scss';
 import { ILandscape } from '../../../interfaces';
@@ -22,30 +23,20 @@ const Landscape: React.FC = () => {
   const [value, setValue] = useState<Value>({});
   const [modalContent, setModalContent] = useState<string | ReactElement | null>(null);
   const [landscape, setLandscape] = useState<ILandscape | null>(null);
-  const [reloadLandscape, setReloadLandscape] = useState<boolean>(true);
+  const [loadLandscape, setLoadLandscape] = useState<boolean>(true);
 
   const { identifier } = useParams();
 
-  const loadLandscape = useCallback(async () => {
-    if (reloadLandscape) {
-      await fetch(process.env.REACT_APP_BACKEND_URL + '/api/' + identifier)
-        .then((response) => {
-          return response.json();
-        })
-        .then((json) => {
-          setLandscape(json);
-          setReloadLandscape(false);
-        });
+  const getLandscape = useCallback(async () => {
+    if (loadLandscape && identifier) {
+      setLandscape(await getLandscapeByIdentifier(identifier));
+      setLoadLandscape(false);
     }
-  }, [reloadLandscape, identifier]);
+  }, [loadLandscape, identifier]);
 
   useEffect(() => {
-    loadLandscape();
-  }, [loadLandscape]);
-
-  const reloadLandscapes = async () => {
-    setReloadLandscape(!reloadLandscape);
-  };
+    getLandscape();
+  }, [getLandscape]);
 
   const onItemClick = (e: any) => {
     setModalContent(<LandscapeItem element={e.target.parentElement} />);
@@ -94,10 +85,7 @@ const Landscape: React.FC = () => {
 
   return (
     <div className='landscapeError'>
-      <span className='error'>No Landscapes loaded :(</span> <br />
-      <button className='reload' onClick={reloadLandscapes}>
-        Reload Landscapes
-      </button>
+      <span className='error'>Loading...</span>
     </div>
   );
 };

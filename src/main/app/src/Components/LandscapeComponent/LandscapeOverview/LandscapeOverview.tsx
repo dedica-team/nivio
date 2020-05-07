@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback, ReactElement } from 'react';
 import { ILandscape } from '../../../interfaces';
 import LandscapeLog from '../Log/LandscapeLog';
 import LandscapeOverviewLayout from './LandscapeOverviewLayout';
+import { getAllLandscapes } from '../../../utils/APIClient';
 
 /**
  * Logic Component to display all available landscapes
@@ -18,15 +19,8 @@ const LandscapeOverview: React.FC = () => {
   //Could be moved into useEffect but can be used for a reload button later on
   const getLandscapes = useCallback(async () => {
     if (loadLandscapes) {
-      await fetch(process.env.REACT_APP_BACKEND_URL + '/api/')
-        .then((response) => {
-          return response.json();
-        })
-        .then((json) => {
-          console.log(json);
-          setLandscapes(json);
-          setLoadLandscapes(false);
-        });
+      setLandscapes(await getAllLandscapes());
+      setLoadLandscapes(false);
     }
   }, [loadLandscapes]);
 
