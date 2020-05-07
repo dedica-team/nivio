@@ -3,8 +3,6 @@ import { render } from '@testing-library/react';
 import Navigation from './Navigation';
 import { MemoryRouter } from 'react-router-dom';
 
-jest.mock('react-console-emulator');
-
 it('should render Navigation component', () => {
   const { getByText } = render(
     <MemoryRouter>
