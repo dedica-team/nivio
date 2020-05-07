@@ -8,7 +8,7 @@ interface Props {
 }
 
 /**
- * Containts our site layout, Navigation on top, content below
+ * Contains our site layout, Navigation on top, content below
  * @param param0
  */
 const Layout: React.FC<Props> = ({ children }) => {

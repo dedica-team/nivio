@@ -1,10 +1,12 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.StatusDescription;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.input.dto.RelationDescription;
+import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.Lifecycle;
+import de.bonndan.nivio.model.RelationBuilder;
+import de.bonndan.nivio.model.RelationType;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,30 +36,15 @@ public class ItemDescriptionFactoryTest {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
-        sd1.getNetworks().add("net1");
+        sd1.setPrefixed(Label.PREFIX_NETWORK, "net1");
 
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
-        increment.getNetworks().add("net2");
+        increment.setPrefixed(Label.PREFIX_NETWORK, "net2");
 
         ItemDescriptionFactory.assignNotNull(sd1, increment);
 
-        assertEquals(2, sd1.getNetworks().size());
-    }
-
-    @Test
-    public void incrementAddsStatuses() {
-        ItemDescription sd1 = new ItemDescription();
-        sd1.setIdentifier("sd1");
-        sd1.setStatus(new StatusDescription(StatusItem.CAPABILITY, Status.GREEN));
-
-        ItemDescription increment = new ItemDescription();
-        increment.setIdentifier("sd1");
-        increment.setStatus(new StatusDescription(StatusItem.STABILITY, Status.GREEN));
-
-        ItemDescriptionFactory.assignNotNull(sd1, increment);
-
-        assertEquals(2, sd1.getStatuses().size());
+        assertEquals(2, sd1.getLabels(Label.PREFIX_NETWORK).size());
     }
 
     @Test
@@ -76,7 +63,7 @@ public class ItemDescriptionFactoryTest {
 
         ItemDescriptionFactory.assignNotNull(sd1, increment);
 
-        assertEquals(2, sd1.getRelations(RelationType.PROVIDER).size());
+        assertEquals(2, RelationType.PROVIDER.filter(sd1.getRelations()).size());
     }
 
     @Test
@@ -132,7 +119,9 @@ public class ItemDescriptionFactoryTest {
 
         ItemDescriptionFactory.assignNotNull(sd1, increment);
 
-        assertEquals("1", sd1.getLabels().get("a"));
+        //a is overwritten
+        assertEquals("2", sd1.getLabels().get("a"));
+        //b is new
         assertEquals("3", sd1.getLabels().get("b"));
     }
 }

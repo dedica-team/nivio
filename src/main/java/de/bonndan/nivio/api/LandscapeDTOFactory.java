@@ -1,77 +1,72 @@
 package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.api.dto.LandscapeDTO;
-import de.bonndan.nivio.api.dto.LandscapeStatistics;
-import de.bonndan.nivio.input.ProcessLog;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.assessment.AssessmentController;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.docs.DocsController;
-import de.bonndan.nivio.output.jgraphx.JGraphXRenderController;
 import de.bonndan.nivio.output.map.MapController;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-
+/**
+ * Factory that creates DTOs for the api.
+ */
 public class LandscapeDTOFactory {
 
-    public static LandscapeDTO from(Landscape landscape) {
+    public static LandscapeDTO from(LandscapeImpl landscape) {
 
-        LandscapeDTO l = new LandscapeDTO();
+        LandscapeDTO landscapeDTO = new LandscapeDTO();
         if (landscape == null)
-            return l;
+            return landscapeDTO;
 
-        l.identifier = landscape.getIdentifier();
-        l.name = landscape.getName();
-        l.contact = landscape.getContact();
-        l.source = landscape.getSource();
-        l.description = landscape.getDescription();
+        landscapeDTO.identifier = landscape.getIdentifier();
+        landscapeDTO.name = landscape.getName();
+        landscapeDTO.contact = landscape.getContact();
+        landscapeDTO.source = landscape.getSource();
+        landscapeDTO.description = landscape.getDescription();
 
-        if (landscape instanceof LandscapeImpl) {
-            l.stats = getLandscapeStats((LandscapeImpl) landscape);
-        }
-
-        return l;
-    }
-
-    private static LandscapeStatistics getLandscapeStats(LandscapeImpl impl) {
-
-        LandscapeStatistics stats = new LandscapeStatistics();
-        stats.items = impl.getItems().all().size();
-        stats.groups = impl.getGroups().size();
-
-        List<StatusItem> collect = impl.getItems().stream()
-                .map(item -> StatusItem.highestOf(item.getStatuses())).flatMap(Collection::stream)
-                .collect(Collectors.toList());
-
-        if (!collect.isEmpty()) {
-            stats.overallStatus = collect.get(0).getStatus();
-        }
-
-        stats.teams = impl.getItems().stream()
-                .map(Item::getTeam)
+        landscapeDTO.teams = landscape.getItems().stream()
+                .map(item -> item.getLabel(Label.TEAM))
                 .filter(s -> !StringUtils.isEmpty(s))
                 .collect(Collectors.toSet())
                 .toArray(String[]::new);
 
-        if (impl.getLog() != null) {
-            stats.lastUpdate = impl.getLog().getLastUpdate();
+        landscapeDTO.groups = getGroups(landscape);
+        landscapeDTO.items = landscape.getItems().all();
+
+        if (landscape.getLog() != null) {
+            landscapeDTO.lastUpdate = landscape.getLog().getLastUpdate();
         }
-        return stats;
+        return landscapeDTO;
+    }
+
+    /**
+     * This is mainly a type conversion.
+     * @return groups by group identifier
+     */
+    private static Map<String, Group> getGroups(LandscapeImpl landscape) {
+        Map<String, Group> groups = new HashMap<>();
+        landscape.getGroups().forEach((s, groupItem) -> groups.put(s, (Group)groupItem));
+        return groups;
     }
 
     public static void addLinks(LandscapeDTO dto) {
-        dto.add(linkTo(methodOn(ApiController.class).landscape(dto.getIdentifier()))
+        dto.add(WebMvcLinkBuilder.linkTo(methodOn(ApiController.class).landscape(dto.getIdentifier()))
                 .withSelfRel()
+                .withTitle("JSON representation")
                 .withMedia(MediaType.APPLICATION_JSON_VALUE)
         );
-        dto.add(linkTo(methodOn(ApiController.class).items(dto.getIdentifier())).withRel("items"));
         dto.add(linkTo(methodOn(ApiController.class).reindex(dto.getIdentifier()))
                 .withRel("reindex")
                 .withMedia(MediaType.APPLICATION_JSON_VALUE)
@@ -104,6 +99,11 @@ public class LandscapeDTOFactory {
                         .withMedia("image/svg+xml")
                         .withTitle("SVG map")
         );
-
+        dto.add(
+                linkTo(methodOn(AssessmentController.class).landscape(dto.getIdentifier()))
+                        .withRel("assessment")
+                        .withMedia(MediaType.APPLICATION_JSON_VALUE)
+                        .withTitle("Assessment")
+        );
     }
 }

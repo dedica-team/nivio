@@ -65,7 +65,7 @@ class RelationEndpointResolverTest {
         //the provider has been resolved using a query instead of naming a service
         ItemDescription providedbyBar = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
         assertNotNull(providedbyBar);
-        Set<RelationItem<String>> relations = providedbyBar.getRelations(RelationType.PROVIDER);
+        List<RelationItem> relations = RelationType.PROVIDER.filter(providedbyBar.getRelations());
         assertNotNull(relations);
         assertEquals(1, relations.size());
         RelationItem s = relations.iterator().next();
@@ -81,7 +81,7 @@ class RelationEndpointResolverTest {
         ItemDescription hasdataFlow = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
         assertNotNull(hasdataFlow);
         assertNotNull(hasdataFlow.getRelations());
-        Set<RelationItem<String>> relations = hasdataFlow.getRelations(RelationType.DATAFLOW);
+        List<RelationItem> relations = RelationType.DATAFLOW.filter(hasdataFlow.getRelations());
         assertFalse(relations.isEmpty());
         RelationItem next = relations.iterator().next();
         assertEquals("nivio:templates2/beta/other_crappy_name-2343a", next.getTarget());

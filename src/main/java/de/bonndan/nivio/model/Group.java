@@ -1,30 +1,32 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.bonndan.nivio.assessment.Assessable;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.output.Rendered;
 import org.springframework.util.StringUtils;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class Group implements GroupItem, Rendered {
+public class Group implements GroupItem, Rendered, Assessable {
 
     public static final Group DEFAULT_GROUP;
-    public static final String COMMON = "Common";
+
+    /**
+     * Default group identifier (items are assigned to this group if no group is given
+     */
+    public static final String COMMON = "common";
 
     static {
-        DEFAULT_GROUP = new Group();
-        DEFAULT_GROUP.setIdentifier(COMMON);
+        DEFAULT_GROUP = new Group(COMMON);
     }
 
     private String identifier;
     private String owner;
     private String description;
     private String contact;
-    private String team;
     private String color;
     private Map<String, URL> links = new HashMap<>();
 
@@ -35,9 +37,7 @@ public class Group implements GroupItem, Rendered {
      */
     private List<Item> items = new ArrayList<>();
 
-    public Group() {
-
-    }
+    private String landscapeIdentifier;
 
     public Group(String identifier) {
         setIdentifier(identifier);
@@ -49,13 +49,18 @@ public class Group implements GroupItem, Rendered {
     }
 
     @Override
-    public String getOwner() {
-        return owner;
+    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
+        return FullyQualifiedIdentifier.build(landscapeIdentifier, identifier, null);
     }
 
     @Override
-    public String getTeam() {
-        return team;
+    public String getName() {
+        return identifier;
+    }
+
+    @Override
+    public String getOwner() {
+        return owner;
     }
 
     @Override
@@ -93,10 +98,6 @@ public class Group implements GroupItem, Rendered {
         this.description = description;
     }
 
-    public void setTeam(String team) {
-        this.team = team;
-    }
-
     public void setColor(String color) {
         this.color = color;
     }
@@ -105,9 +106,14 @@ public class Group implements GroupItem, Rendered {
         this.contact = contact;
     }
 
-    @JsonBackReference
+    @JsonIdentityReference(alwaysAsId = true)
     public List<Item> getItems() {
         return items;
+    }
+
+    @Override
+    public Map<String, String> getLabels() {
+        return labels;
     }
 
     @Override
@@ -118,5 +124,20 @@ public class Group implements GroupItem, Rendered {
     @Override
     public void setLabel(String key, String value) {
         labels.put(key, value);
+    }
+
+    @Override
+    public Set<StatusValue> getAdditionalStatusValues() {
+        return StatusValue.fromMapping(indexedByPrefix(Label.PREFIX_STATUS));
+    }
+
+    @JsonIgnore
+    @Override
+    public List<? extends Assessable> getChildren() {
+        return getItems();
+    }
+
+    public void setLandscape(String landscapeIdentifier) {
+        this.landscapeIdentifier = landscapeIdentifier;
     }
 }

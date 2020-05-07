@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.input.ItemDescriptions;
 import de.bonndan.nivio.model.*;
@@ -76,6 +77,11 @@ public class LandscapeDescription implements Landscape {
 
     public String getIdentifier() {
         return identifier;
+    }
+
+    @Override
+    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
+        return FullyQualifiedIdentifier.build(identifier, null, null);
     }
 
     public void setIdentifier(String identifier) {
@@ -201,10 +207,13 @@ public class LandscapeDescription implements Landscape {
      */
     @JsonDeserialize(contentAs = GroupDescription.class)
     public void setGroups(Map<String, GroupItem> groups) {
+
         groups.forEach((s, groupItem) -> {
-            if (!s.equals(groupItem.getIdentifier()) && !StringUtils.isEmpty(groupItem.getIdentifier()))
+            if (!s.equals(groupItem.getIdentifier()) && !StringUtils.isEmpty(groupItem.getIdentifier())) {
                 LOGGER.warn("Group map key {} and identifier {} are both set and differ. Overriding with map key.", s, groupItem.getIdentifier());
+            }
             ((GroupDescription) groupItem).setIdentifier(s);
+            ((GroupDescription) groupItem).setEnvironment(identifier);
         });
         this.groups = groups;
     }

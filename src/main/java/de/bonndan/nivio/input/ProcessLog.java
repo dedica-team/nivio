@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.api.LandscapeDTOFactory;
-import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 
@@ -65,20 +63,15 @@ public class ProcessLog {
         messages.add(new Entry("WARN", msg));
     }
 
+    public void error(String msg, ProcessingException e) {
+        messages.add(new Entry("ERROR", msg));
+        logger.error(msg, e);
+        this.exception = e;
+    }
+
     @JsonIgnore
     public Landscape getLandscape() {
         return landscape;
-    }
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonProperty("landscape")
-    public Landscape getLandscapeDTO() {
-        if (landscape == null)
-            return null;
-
-        LandscapeDTO dto = LandscapeDTOFactory.from(landscape);
-        dto.groups = landscape.getGroups();
-        return dto;
     }
 
     public List<Entry> getMessages() {

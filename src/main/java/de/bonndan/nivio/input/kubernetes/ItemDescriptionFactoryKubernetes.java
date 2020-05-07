@@ -3,6 +3,7 @@ package de.bonndan.nivio.input.kubernetes;
 import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.util.URLHelper;
 import io.fabric8.kubernetes.api.model.HasMetadata;
@@ -83,7 +84,7 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
 
         ItemDescription service = new ItemDescription();
         service.setIdentifier(kubernetesService.getMetadata().getName());
-        service.setLayer(LandscapeItem.LAYER_INGRESS);
+        service.setLabel(Label.LAYER, LandscapeItem.LAYER_INGRESS);
         service.setType(kubernetesService.getSpec().getType());
 
         String group = getGroup(kubernetesService);
@@ -119,9 +120,9 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
             description.setGroup(group);
             description.setName(container.getName());
             description.setIdentifier(container.getName());
-            description.setSoftware(container.getImage());
-            description.setMachine(pod.getSpec().getNodeName()); //ip?
-            description.setLabels(pod.getMetadata().getLabels());
+            description.setLabel(Label.SOFTWARE, container.getImage());
+            description.setLabel(Label.MACHINE, pod.getSpec().getNodeName()); //ip?
+            pod.getMetadata().getLabels().forEach((s, s2) -> description.setLabel(s, s2));
 
             // TODO
             //set Labels, introduce new labels property (docker/k8s)

@@ -13,16 +13,7 @@ const LandscapeContextDefaultValues = {
   landscapes: [
     {
       name: 'name',
-      description: 'description',
       identifier: 'identifier',
-      contact: 'contact',
-      stats: {
-        teams: ['team1', 'team2'],
-        overallState: 'overallState',
-        groups: ['group1', 'group2'],
-        items: ['item1', 'item2'],
-        lastUpdate: 'lastUpdate',
-      },
     },
   ],
 };

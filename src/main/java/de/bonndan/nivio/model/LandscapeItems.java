@@ -14,6 +14,12 @@ import java.util.stream.Stream;
 import static com.googlecode.cqengine.query.QueryFactory.attribute;
 import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
 
+/**
+ * A queryable index on all landscape items.
+ *
+ *
+ *
+ */
 public class LandscapeItems {
 
     private static final Attribute<Item, String> IDENTIFIER = attribute("identifier", Item::getIdentifier);
@@ -43,12 +49,18 @@ public class LandscapeItems {
         index.add(item);
     }
 
+    /**
+     * Returns all items matching the given term.
+     *
+     * @param term "*" as wildcard for all | {@link FullyQualifiedIdentifier} string pathes | identifier
+     * @return all matching items.
+     */
     public Collection<Item> query(String term) {
         if ("*".equals(term))
             return all();
 
         if (term.contains("/")) {
-            return findAll(FullyQualifiedIdentifier.from(term));
+            return findAll(ItemMatcher.forTarget(term));
         }
 
         //single word compared against identifier
@@ -56,6 +68,12 @@ public class LandscapeItems {
         return cqnQueryOnIndex(query);
     }
 
+    /**
+     * Returns a select query.
+     *
+     * @param term equals identifier or name
+     * @return query string
+     */
     public String selectByIdentifierOrName(String term) {
         return "SELECT * FROM items WHERE (identifier = '" + term + "' OR name = '" + term + "')";
     }
@@ -111,16 +129,16 @@ public class LandscapeItems {
     }
 
     /**
-     * Returns a the item from the list or null. Uses the matching criteria of {@link FullyQualifiedIdentifier}
+     * Returns a the item from the list or null. Uses the matching criteria of {@link ItemMatcher}
      *
-     * @param fqi the identifier
+     * @param itemMatcher the identifier
      * @return the or null
      */
-    public Optional<Item> find(FullyQualifiedIdentifier fqi) {
-        List<Item> found = findAll(fqi);
+    public Optional<Item> find(ItemMatcher itemMatcher) {
+        List<Item> found = findAll(itemMatcher);
 
         if (found.size() > 1) {
-            throw new RuntimeException("Ambiguous result for " + fqi + ": " + found + " in collection.");
+            throw new RuntimeException("Ambiguous result for " + itemMatcher + ": " + found + " in collection.");
         }
 
         return Optional.ofNullable((found.size() == 1) ? found.get(0) : null);
@@ -136,17 +154,12 @@ public class LandscapeItems {
     }
 
     private List<Item> findAll(final String identifier, final String group) {
-        FullyQualifiedIdentifier fqi;
-        if (group == null)
-            fqi = FullyQualifiedIdentifier.from(identifier);
-        else
-            fqi = FullyQualifiedIdentifier.build(null, group, identifier);
-        return findAll(fqi);
+        return findAll(ItemMatcher.build(null, group, identifier));
     }
 
-    private List<Item> findAll(FullyQualifiedIdentifier fqi) {
+    private List<Item> findAll(ItemMatcher itemMatcher) {
         return stream()
-                .filter(fqi::isSimilarTo)
+                .filter(itemMatcher::isSimilarTo)
                 .collect(Collectors.toList());
     }
 }

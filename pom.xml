@@ -5,7 +5,7 @@
 
     <groupId>de.bonndan</groupId>
     <artifactId>nivio</artifactId>
-    <version>0.2.2</version>
+    <version>0.3.0</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -282,12 +282,27 @@
                         </goals>
                     </execution>
                     <execution>
+                        <id>Run test</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>test</arguments>
+                            <environmentVariables>
+                                <CI>true</CI>
+                            </environmentVariables>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>Build frontend</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <configuration>
                             <arguments>run build</arguments>
+                            <environmentVariables>
+                                <CI>true</CI>
+                            </environmentVariables>
                         </configuration>
                     </execution>
                 </executions>

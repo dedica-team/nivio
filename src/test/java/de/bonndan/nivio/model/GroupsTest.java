@@ -102,12 +102,12 @@ public class GroupsTest {
 
     @Test
     public void testMerge() {
-        Group one = new Group();
+        Group one = new Group("a");
         one.setColor("#123123");
         one.setDescription("a");
         one.setOwner("Joe");
 
-        Group two = new Group();
+        Group two = new Group("a");
         two.setOwner("Matt");
         two.setContact("mail");
 

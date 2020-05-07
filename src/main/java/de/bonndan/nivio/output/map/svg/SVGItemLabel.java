@@ -1,20 +1,22 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.LandscapeItem;
-import de.bonndan.nivio.model.Status;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Labeled;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.util.StringUtils;
+
+import java.util.Map;
 
 class SVGItemLabel extends Component {
 
     public static final int LABEL_WIDTH = 140;
     public static final int CORNER_RADIUS = 10;
-    private final LandscapeItem item;
+    private final Item item;
     private int width;
 
-    SVGItemLabel(LandscapeItem item) {
+    SVGItemLabel(Item item) {
         this.item = item;
         this.width = LABEL_WIDTH;
     }
@@ -41,12 +43,6 @@ class SVGItemLabel extends Component {
                 .attr("width", width)
                 .attr("height", size / 2);
 
-        Status highest = Status.highestOf(item.getStatuses());
-        if (!Status.UNKNOWN.equals(highest)) {
-            rect.attr("style", "stroke: " + highest.name());
-        }
-
-
         ContainerTag g = SvgTagCreator.g(rect, labelText).attr("class", "label");
         g.attr("id", getId());
         g.attr("data-identifier", item.getFullyQualifiedIdentifier().toString());
@@ -56,22 +52,13 @@ class SVGItemLabel extends Component {
             g.attr("data-description", item.getDescription());
         if (!StringUtils.isEmpty(item.getOwner()))
             g.attr("data-owner", item.getOwner());
-        if (!StringUtils.isEmpty(item.getTeam()))
-            g.attr("data-team", item.getTeam());
-        if (!StringUtils.isEmpty(item.getContact()))
-            g.attr("data-contact", item.getContact());
-        if (!StringUtils.isEmpty(item.getCapability()))
-            g.attr("data-capability", item.getCapability());
-        if (!StringUtils.isEmpty(item.getSoftware()))
-            g.attr("data-software", item.getSoftware());
-        if (!StringUtils.isEmpty(item.getVersion()))
-            g.attr("data-version", item.getVersion());
-        if (!StringUtils.isEmpty(item.getScale()))
-            g.attr("data-scale", item.getScale());
-        if (!StringUtils.isEmpty(item.getLifecycle()))
-            g.attr("data-lifecycle", item.getLifecycle());
-        if (!StringUtils.isEmpty(item.getCosts()))
-            g.attr("data-costs", item.getCosts());
+
+        Map<String, String> groupedLabels = Labeled.groupedByPrefixes(item.getLabels());
+        groupedLabels.forEach((key, value) -> {
+            if (!StringUtils.isEmpty(value)) {
+                g.attr("data-" + key, value);
+            }
+        });
 
         return g;
     }

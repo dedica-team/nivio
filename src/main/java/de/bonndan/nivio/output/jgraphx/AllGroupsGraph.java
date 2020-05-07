@@ -4,6 +4,7 @@ import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
+import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.RenderedArtifact;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -86,11 +87,10 @@ public class AllGroupsGraph implements RenderedArtifact<mxGraph, mxCell> {
             });
 
             //dataflow
-            Set<? extends RelationItem> relations = item.getRelations(RelationType.DATAFLOW);
+            List<RelationItem> relations = RelationType.DATAFLOW.filter(item.getRelations());
             relations.forEach(dataFlowItem -> {
                 Item targetItem = (Item) dataFlowItem.getTarget();
                 if (targetItem == null) return;
-
 
                 String targetGroup = targetItem.getGroup() == null ? Group.COMMON : targetItem.getGroup();
                 mxCell targetGroupNode = findGroupCell(targetGroup);

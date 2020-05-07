@@ -1,7 +1,14 @@
-package de.bonndan.nivio.model;
+package de.bonndan.nivio;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.bonndan.nivio.assessment.kpi.CustomKPI;
+import de.bonndan.nivio.assessment.kpi.KPI;
+import de.bonndan.nivio.assessment.kpi.KPIFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LandscapeConfig {
 
@@ -12,6 +19,12 @@ public class LandscapeConfig {
     private List<String> groupBlacklist = new ArrayList<>();
     private List<String> labelBlacklist = new ArrayList<>();
     private Branding branding = new Branding();
+
+    /**
+     * KPIs by their unique identifier.
+     */
+    @JsonDeserialize(using = KPIFactory.class)
+    private Map<String, KPI> kpis = new HashMap<>();
 
     public JGraphXConfig getJgraphx() {
         return jgraphx;
@@ -129,6 +142,15 @@ public class LandscapeConfig {
         public void setMinDistanceLimitFactor(Float minDistanceLimitFactor) {
             this.minDistanceLimitFactor = minDistanceLimitFactor;
         }
+    }
+
+    /**
+     * The active KPIs.
+     *
+     * @return all active {@link KPI}s with their unique identifier
+     */
+    public Map<String, KPI> getKPIs() {
+        return kpis;
     }
 
     /**

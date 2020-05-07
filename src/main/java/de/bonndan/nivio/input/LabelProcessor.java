@@ -26,7 +26,7 @@ public class LabelProcessor {
             return;
         }
 
-        item.getLabels().put(key, (String) value);
+        item.setLabel(key, (String) value);
     }
 
     private static boolean inBlacklist(String key) {

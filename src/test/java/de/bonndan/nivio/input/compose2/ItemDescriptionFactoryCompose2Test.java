@@ -4,6 +4,7 @@ import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.model.Label;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,8 +35,8 @@ class ItemDescriptionFactoryCompose2Test {
         assertNotNull(service);
 
         assertEquals("web", service.getIdentifier());
-        assertNotNull(service.getNetworks());
-        assertEquals(2, service.getNetworks().size());
+        assertNotNull(service.getLabels(Label.PREFIX_NETWORK));
+        assertEquals(2, service.getLabels(Label.PREFIX_NETWORK).size());
     }
 
     private String getRootPath() {
