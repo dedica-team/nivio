@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 
+import TitleBar from '../../TitleBarComponent/TitleBar';
 import GenericModal from '../../ModalComponent/GenericModal';
 import { Link } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
@@ -33,13 +34,7 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog }) => 
       return (
         <Grid key={landscape.identifier} className={'landscapeContainer'} container spacing={3}>
           <Grid item xs={12} sm={12}>
-            <Grid container className={'bar'} spacing={2}>
-              <Grid item xs={1} sm={1} className={'first item'}></Grid>
-              <Grid item xs={11} sm={'auto'} className={'title'}>
-                {landscape.name}
-              </Grid>
-              <Grid item xs={12} sm={8} className={'item'}></Grid>
-            </Grid>
+            <TitleBar title={landscape.name} />
           </Grid>
 
           <Grid item xs={12} md={3} lg={2} className={'previewItem'}>
