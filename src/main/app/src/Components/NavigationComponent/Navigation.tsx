@@ -10,9 +10,7 @@ import './Navigation.scss';
  * Header Component
  */
 const Navigation: React.FC = () => {
-  const [modalContent] = useState<string | ReactElement | ReactElement[] | null>(
-    null
-  );
+  const [modalContent] = useState<string | ReactElement | ReactElement[] | null>(null);
 
   return (
     <div className='navigationContainer'>
