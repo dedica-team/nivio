@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 jest.mock('react-console-emulator');
 
-it('should render command component', () => {
+it('should render landscape component', () => {
   const { getByText } = render(
     <MemoryRouter>
       <Landscape />

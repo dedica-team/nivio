@@ -5,10 +5,8 @@ import { ReactSVGPanZoom, TOOL_AUTO, Tool, Value } from 'react-svg-pan-zoom';
 import { useParams } from 'react-router-dom';
 
 import LandscapeItem from '../Item/LandscapeItem';
-import Command from '../../CommandComponent/Command';
 import GenericModal from '../../ModalComponent/GenericModal';
 import LandscapeContext from '../../../Context/Landscape.context';
-import CommandContext from '../../../Context/Command.context';
 
 import './Landscape.scss';
 import { ILandscape } from '../../../interfaces';
@@ -28,7 +26,6 @@ const Landscape: React.FC = () => {
   const [reloadLandscape, setReloadLandscape] = useState<boolean>(false);
 
   const landscapeContext = useContext(LandscapeContext);
-  const commandContext = useContext(CommandContext);
   const { identifier } = useParams();
 
   useEffect(() => {
@@ -43,7 +40,6 @@ const Landscape: React.FC = () => {
       })
       .then((json) => {
         landscapeContext.landscapes = json;
-        commandContext.message = 'Loaded landscapes.';
         setReloadLandscape(!reloadLandscape);
       });
   };
@@ -87,7 +83,6 @@ const Landscape: React.FC = () => {
                 {content}
               </svg>
             </ReactSVGPanZoom>
-            <Command />
           </div>
         )}
       />
@@ -100,7 +95,6 @@ const Landscape: React.FC = () => {
       <button className='reload' onClick={reloadLandscapes}>
         Reload Landscapes
       </button>
-      <Command />
     </div>
   );
 };

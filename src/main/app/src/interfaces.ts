@@ -3,11 +3,9 @@ export interface ILandscape {
   identifier: string;
   description?: string;
   contact?: string;
-  stats: {
-    teams: string[];
-    overallState?: string;
-    groups?: string[];
-    items?: string[];
-    lastUpdate?: string;
-  };
+  teams?: object[];
+  groups?: object[];
+  items?: string[];
+  lastUpdate?: string;
+  overallState?: string;
 }

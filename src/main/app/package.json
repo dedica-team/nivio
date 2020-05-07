@@ -19,7 +19,6 @@
     "prop-types": "^15.7.2",
     "raw.macro": "^0.3.0",
     "react": "^16.13.0",
-    "react-console-emulator": "^3.0.5",
     "react-dom": "^16.13.0",
     "react-hexgrid": "^1.0.3",
     "react-modal": "^3.11.2",

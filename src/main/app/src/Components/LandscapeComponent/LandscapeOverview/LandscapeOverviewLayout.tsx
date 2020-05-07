@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 
 import GenericModal from '../../ModalComponent/GenericModal';
-import Command from '../../CommandComponent/Command';
 import { Link } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -13,14 +12,13 @@ interface Props {
   modalContent: string | ReactElement | ReactElement[] | null;
   landscapes: ILandscape[] | undefined;
   enterLog: (landscape: ILandscape) => void;
-  enterLandscape: (landscape: ILandscape) => void;
 }
 
 /**
  * Displays all available landscapes and provides all needed navigation
  */
 
-const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enterLandscape }) => {
+const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog }) => {
   // Render
   /*
     value         |0px     600px    960px    1280px   1920px
@@ -44,11 +42,7 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enter
           </Grid>
 
           <Grid item xs={12} md={3} lg={2} className={'previewItem'}>
-            <Button
-              component={Link}
-              to={`/landscape/${landscape.identifier}`}
-              onClick={() => enterLandscape(landscape)}
-            >
+            <Button component={Link} to={`/landscape/${landscape.identifier}`}>
               <img
                 className={'preview'}
                 alt={'preview'}
@@ -71,9 +65,8 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enter
             <br />
             Identifier: {landscape.identifier}
             <br />
-            Contact: {landscape.contact || '-'}
             <br />
-            Teams: {landscape.stats.teams.join(', ')}
+            {landscape.teams ? 'Teams: ' + landscape.teams.join(', ') : ''}
             <br />
           </Grid>
 
@@ -81,7 +74,7 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enter
             <Typography variant='overline' display='block' gutterBottom>
               State
             </Typography>
-            {landscape.stats.overallState || '-'}
+            {landscape.overallState || '-'}
           </Grid>
 
           <Grid item xs={12} md={3} lg={2}>
@@ -89,9 +82,9 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enter
               Items
             </Typography>
             <Typography variant='h2' display='block' gutterBottom>
-              {landscape.stats.items}
+              {landscape.items?.length || 0}
             </Typography>
-            in {landscape.stats.groups} groups
+            in {landscape.groups?.length || 0} groups
           </Grid>
 
           <Grid item xs={12} lg={2}>
@@ -99,15 +92,14 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enter
               Last update
             </Typography>
             <Typography variant='h3' display='block'>
-              {landscape.stats.lastUpdate?.split(' ')[0] || '-'}
+              {landscape.lastUpdate?.split(' ')[0] || '-'}
             </Typography>
 
-            <div>{landscape.stats.lastUpdate?.split(' ')[1] || '-'}</div>
+            <div>{landscape.lastUpdate?.split(' ')[1] || '-'}</div>
           </Grid>
 
           <Grid item xs={12} lg={2}>
             <Button
-              onClick={() => enterLandscape(landscape)}
               fullWidth
               component={Link}
               className={'button stackedButton'}
@@ -157,7 +149,6 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enter
     <div className='homeContainer'>
       <GenericModal modalContent={modalContent} />
       {content}
-      <Command />
     </div>
   );
 };

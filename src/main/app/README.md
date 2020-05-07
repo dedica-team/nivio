@@ -67,7 +67,6 @@ Nivio can be reached at http://localhost:3000
 | [React Testing Library](https://testing-library.com/docs/react-testing-library/intro) | React Testing Utility                                                        |
 | [Jest](https://jestjs.io/)                                                            | JavaScript Testing Framework                                                 |
 | [node-sass](https://github.com/sass/node-sass)                                        | CSS preprocessor for Node                                                    |
-| [React Console Emulator](https://www.npmjs.com/package/react-console-emulator)        | Unix terminal for React                                                      |
 | [classNames](https://www.npmjs.com/package/classnames)                                | Conditionally joining classNames                                             |
 | [HTML React Parser](https://www.npmjs.com/package/html-react-parser)                  | Convert HTML String into React elements                                      |
 | [raw.macro](https://www.npmjs.com/package/raw.macro)                                  | Load file contents at compile time                                           |

@@ -4,8 +4,6 @@ import { useParams } from 'react-router-dom';
 import ReactHtmlParser from 'html-react-parser';
 import raw from 'raw.macro';
 
-import Command from '../CommandComponent/Command';
-
 import './Man.scss';
 import './pygments.scss';
 
@@ -113,7 +111,6 @@ const Man: React.FC = () => {
           })}
         </div>
       </div>
-      <Command />
     </div>
   );
 };

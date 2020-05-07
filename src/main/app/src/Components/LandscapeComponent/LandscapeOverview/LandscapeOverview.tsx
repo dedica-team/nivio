@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext, useCallback, ReactElement } fro
 
 import { ILandscape } from '../../../interfaces';
 import LandscapeLog from '../Log/LandscapeLog';
-import CommandContext from '../../../Context/Command.context';
 import LandscapeContext from '../../../Context/Landscape.context';
 import LandscapeOverviewLayout from './LandscapeOverviewLayout';
 
@@ -17,7 +16,6 @@ const LandscapeOverview: React.FC = () => {
   const [landscapes, setLandscapes] = useState<ILandscape[]>();
   const [loadLandscapes, setLoadLandscapes] = useState<boolean>(true);
 
-  const commandContext = useContext(CommandContext);
   const landscapeContext = useContext(LandscapeContext);
 
   //Could be moved into useEffect but can be used for a reload button later on
@@ -28,13 +26,13 @@ const LandscapeOverview: React.FC = () => {
           return response.json();
         })
         .then((json) => {
+          console.log(json);
           setLandscapes(json);
           setLoadLandscapes(false);
           landscapeContext.landscapes = json;
-          commandContext.message = 'Loaded landscapes.';
         });
     }
-  }, [commandContext.message, landscapeContext.landscapes, loadLandscapes]);
+  }, [landscapeContext.landscapes, loadLandscapes]);
 
   useEffect(() => {
     getLandscapes();
@@ -42,11 +40,6 @@ const LandscapeOverview: React.FC = () => {
 
   const enterLog = (landscape: ILandscape) => {
     setModalContent(<LandscapeLog landscape={landscape} />);
-    commandContext.message = 'Showing log: ' + landscape.identifier;
-  };
-
-  const enterLandscape = (landscape: ILandscape) => {
-    commandContext.message = 'Entering landscape: ' + landscape.identifier;
   };
 
   return (
@@ -54,7 +47,6 @@ const LandscapeOverview: React.FC = () => {
       modalContent={modalContent}
       landscapes={landscapes}
       enterLog={enterLog}
-      enterLandscape={enterLandscape}
     />
   );
 };
