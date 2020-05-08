@@ -5,7 +5,7 @@ import LandscapeOverview from './Components/LandscapeComponent/LandscapeOverview
 import Landscape from './Components/LandscapeComponent/Landscape/Landscape';
 import Man from './Components/ManComponent/Man';
 import Layout from './Components/LayoutComponent/Layout';
-import Events from "./Components/EventComponent/Events";
+import Events from './Components/EventComponent/Events';
 import './App.scss';
 
 const App: React.FC = () => {

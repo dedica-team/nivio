@@ -4,8 +4,6 @@ import { useParams } from 'react-router-dom';
 import ReactHtmlParser from 'html-react-parser';
 import raw from 'raw.macro';
 
-import Command from '../CommandComponent/Command';
-
 import './Man.scss';
 import './pygments.scss';
 
@@ -27,8 +25,7 @@ const topics: any = {
 const Man: React.FC = () => {
   const [html, setHtml] = useState<string>('<p>OOPS SOMETHING WENT WRONG :(</p>');
   let { usage } = useParams();
-  if (usage == null || typeof usage == 'undefined')
-    usage = 'index';
+  if (usage == null || typeof usage == 'undefined') usage = 'index';
   const [topic, setTopic] = useState<string>(usage + '');
 
   useEffect(() => {
@@ -115,7 +112,6 @@ const Man: React.FC = () => {
           })}
         </div>
       </div>
-      <Command />
     </div>
   );
 };

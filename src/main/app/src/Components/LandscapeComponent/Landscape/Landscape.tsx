@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useContext, ReactElement } from 'react';
+import React, { useState, useEffect, useCallback, ReactElement } from 'react';
 
 import { ReactSvgPanZoomLoader, SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
 import { ReactSVGPanZoom, TOOL_AUTO, Tool, Value } from 'react-svg-pan-zoom';
 import { useParams } from 'react-router-dom';
 
 import LandscapeItem from '../Item/LandscapeItem';
-import Command from '../../CommandComponent/Command';
 import GenericModal from '../../ModalComponent/GenericModal';
-import LandscapeContext from '../../../Context/Landscape.context';
-import CommandContext from '../../../Context/Command.context';
+import { get } from '../../../utils/API/APIClient';
 
 import './Landscape.scss';
 import { ILandscape } from '../../../interfaces';
@@ -25,28 +23,20 @@ const Landscape: React.FC = () => {
   const [value, setValue] = useState<Value>({});
   const [modalContent, setModalContent] = useState<string | ReactElement | null>(null);
   const [landscape, setLandscape] = useState<ILandscape | null>(null);
-  const [reloadLandscape, setReloadLandscape] = useState<boolean>(false);
+  const [loadLandscape, setLoadLandscape] = useState<boolean>(true);
 
-  const landscapeContext = useContext(LandscapeContext);
-  const commandContext = useContext(CommandContext);
   const { identifier } = useParams();
 
-  useEffect(() => {
-    const index = landscapeContext.landscapes.findIndex((i) => i.identifier === identifier);
-    setLandscape(landscapeContext.landscapes[index]);
-  }, [identifier, landscapeContext.landscapes, reloadLandscape]);
+  const getLandscape = useCallback(async () => {
+    if (loadLandscape && identifier) {
+      setLandscape(await get(`/api/${identifier}`));
+      setLoadLandscape(false);
+    }
+  }, [loadLandscape, identifier]);
 
-  const reloadLandscapes = async () => {
-    await fetch(process.env.REACT_APP_BACKEND_URL + '/api/')
-      .then((response) => {
-        return response.json();
-      })
-      .then((json) => {
-        landscapeContext.landscapes = json;
-        commandContext.message = 'Loaded landscapes.';
-        setReloadLandscape(!reloadLandscape);
-      });
-  };
+  useEffect(() => {
+    getLandscape();
+  }, [getLandscape]);
 
   const onItemClick = (e: any) => {
     setModalContent(<LandscapeItem element={e.target.parentElement} />);
@@ -87,7 +77,6 @@ const Landscape: React.FC = () => {
                 {content}
               </svg>
             </ReactSVGPanZoom>
-            <Command />
           </div>
         )}
       />
@@ -96,11 +85,7 @@ const Landscape: React.FC = () => {
 
   return (
     <div className='landscapeError'>
-      <span className='error'>No Landscapes loaded :(</span> <br />
-      <button className='reload' onClick={reloadLandscapes}>
-        Reload Landscapes
-      </button>
-      <Command />
+      <span className='error'>Loading...</span>
     </div>
   );
 };

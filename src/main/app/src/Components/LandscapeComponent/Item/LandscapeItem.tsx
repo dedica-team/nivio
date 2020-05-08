@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { get } from '../../../utils/API/APIClient';
 import './LandscapeItem.scss';
+
+import { IItem } from '../../../interfaces';
 
 interface Props {
   element: Element;
@@ -8,29 +11,36 @@ interface Props {
 /**
  * Returns a choosen Landscape Item if informations are available
  * @param element Choosen SVG Element from our Landscape Component
- * TODO load assessment data
- * TODO maybe use data from landscape context
  */
 const LandscapeItem: React.FC<Props> = ({ element }) => {
-  const [html, setHtml] = useState<string>(`Not Found :(`);
+  const [item, setItem] = useState<IItem | null>();
+  const [loadItem, setLoadItem] = useState<boolean>(true);
   const [topic, setTopic] = useState<string | null>(null);
+
+  const getItem = useCallback(async () => {
+    if (loadItem && topic) {
+      setItem(await get(`/api/${topic}`));
+      setLoadItem(false);
+    }
+  }, [loadItem, topic]);
 
   useEffect(() => {
     let topic = element.getAttribute('data-identifier');
     setTopic(topic);
     if (topic !== null) {
-      console.log(topic);
-      fetch(process.env.REACT_APP_BACKEND_URL + '/api/' + topic)
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          setHtml(JSON.stringify(data));
-        });
+      getItem();
     }
-  }, [element, topic, html]);
+  }, [element, topic, getItem]);
 
-  return <div className='landscapeItemContent'>{html}</div>;
+  return (
+    <div className='landscapeItemContent'>
+      <p> Identifier: {item?.identifier}</p>
+      <p> {item?.name ? `name: ${item?.name}` : ''}</p>
+      <p> {item?.description ? `description: ${item?.description}` : ''}</p>
+      <p> {item?.contact ? `contact: ${item?.contact} <br />` : ''}</p>
+      <p> {item?.group ? `group: ${item?.group}` : ''}</p>
+    </div>
+  ); // TODO: styling
 };
 
 export default LandscapeItem;

@@ -1,26 +1,26 @@
 import React, { ReactElement } from 'react';
 
+import TitleBar from '../../TitleBarComponent/TitleBar';
 import GenericModal from '../../ModalComponent/GenericModal';
-import Command from '../../CommandComponent/Command';
 import { Link } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '@material-ui/core';
 import './LandscapeOverview.scss';
 import { ILandscape } from '../../../interfaces';
+import dateFormat from 'dateformat';
 
 interface Props {
   modalContent: string | ReactElement | ReactElement[] | null;
-  landscapes: ILandscape[] | undefined;
+  landscapes: ILandscape[] | null | undefined;
   enterLog: (landscape: ILandscape) => void;
-  enterLandscape: (landscape: ILandscape) => void;
 }
 
 /**
  * Displays all available landscapes and provides all needed navigation
  */
 
-const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enterLandscape }) => {
+const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog }) => {
   // Render
   /*
     value         |0px     600px    960px    1280px   1920px
@@ -34,21 +34,11 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enter
       return (
         <Grid key={landscape.identifier} className={'landscapeContainer'} container spacing={3}>
           <Grid item xs={12} sm={12}>
-            <Grid container className={'bar'} spacing={2}>
-              <Grid item xs={1} sm={1} className={'first item'}></Grid>
-              <Grid item xs={11} sm={'auto'} className={'title'}>
-                {landscape.name}
-              </Grid>
-              <Grid item xs={12} sm={8} className={'item'}></Grid>
-            </Grid>
+            <TitleBar title={landscape.name} />
           </Grid>
 
           <Grid item xs={12} md={3} lg={2} className={'previewItem'}>
-            <Button
-              component={Link}
-              to={`/landscape/${landscape.identifier}`}
-              onClick={() => enterLandscape(landscape)}
-            >
+            <Button component={Link} to={`/landscape/${landscape.identifier}`}>
               <img
                 className={'preview'}
                 alt={'preview'}
@@ -71,17 +61,8 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enter
             <br />
             Identifier: {landscape.identifier}
             <br />
-            Contact: {landscape.contact || '-'}
+            {landscape.teams ? `Teams: ${landscape.teams.join(', ')}` : ''}
             <br />
-            Teams: {landscape.teams.join(', ')}
-            <br />
-          </Grid>
-
-          <Grid item xs={12} md={3} lg={2}>
-            <Typography variant='overline' display='block' gutterBottom>
-              State
-            </Typography>
-             -
           </Grid>
 
           <Grid item xs={12} md={3} lg={2}>
@@ -89,25 +70,22 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enter
               Items
             </Typography>
             <Typography variant='h2' display='block' gutterBottom>
-              {landscape.items?.length}
+              {landscape.items ? Object.keys(landscape.items).length : 0}
             </Typography>
-            in {landscape.groups?.length} groups
+            in {landscape.groups ? Object.keys(landscape.groups).length : 0} groups
           </Grid>
 
           <Grid item xs={12} lg={2}>
             <Typography variant='overline' display='block' gutterBottom>
               Last update
             </Typography>
-            <Typography variant='h3' display='block'>
-              {landscape.lastUpdate?.split('T')[0] || '-'}
+            <Typography variant='h5' display='block'>
+              {landscape.lastUpdate ? dateFormat(landscape.lastUpdate, 'dd-mm-yyyy hh:MM:ss') : '-'}
             </Typography>
-
-            <div>{landscape.lastUpdate?.split('T')[1] || '-'}</div>
           </Grid>
 
           <Grid item xs={12} lg={2}>
             <Button
-              onClick={() => enterLandscape(landscape)}
               fullWidth
               component={Link}
               className={'button stackedButton'}
@@ -157,7 +135,6 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog, enter
     <div className='homeContainer'>
       <GenericModal modalContent={modalContent} />
       {content}
-      <Command />
     </div>
   );
 };
