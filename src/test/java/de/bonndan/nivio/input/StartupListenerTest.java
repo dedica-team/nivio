@@ -5,8 +5,8 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ class StartupListenerTest {
         when(factory.getDescriptions(any(Seed.class))).thenReturn(descriptionList);
 
         //when
-        startupListener.onApplicationEvent(mock(ContextRefreshedEvent.class));
+        startupListener.onApplicationEvent(mock(ApplicationReadyEvent.class));
 
         //then
         ArgumentCaptor<IndexEvent> captor = ArgumentCaptor.forClass(IndexEvent.class);

@@ -3,9 +3,9 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.IndexEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -15,7 +15,7 @@ import org.springframework.util.StringUtils;
  *
  */
 @Component
-public class StartupListener implements ApplicationListener<ContextRefreshedEvent> {
+public class StartupListener implements ApplicationListener<ApplicationReadyEvent> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StartupListener.class);
 
@@ -33,7 +33,7 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
     }
 
     @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
+    public void onApplicationEvent(final ApplicationReadyEvent event) {
 
         if (seed.hasValue()) {
             LOGGER.debug("Found seed");
