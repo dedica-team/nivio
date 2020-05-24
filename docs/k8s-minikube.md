@@ -17,12 +17,13 @@ chmod 700 get_helm.sh
 
 If you run into problems starting minikube: https://www.linuxuprising.com/2019/12/how-to-upgrade-ubuntu-repositories.html
 
-### Example Helm Charts 
-* helm repo add bitnami https://charts.bitnami.com/bitnami
-* helm install redis bitnami/redis --set serviceType=NodePort
-* helm install nivio-wordpress bitnami/wordpress
+## Run
 
-### K8s dashboard
+```
+minikube start --driver=virtualbox
+```
+
+## Optionally install K8s dashboard
 
 https://www.replex.io/blog/how-to-install-access-and-add-heapster-metrics-to-the-kubernetes-dashboard
 
@@ -41,10 +42,12 @@ kubectl describe secret dashboard-admin-sa-token-*****
 * enter the k8s dashboard: go to http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/.
 
 
+## Install example Helm Charts 
+* helm repo add bitnami https://charts.bitnami.com/bitnami
+* helm install redis bitnami/redis --set serviceType=NodePort
+* helm install nivio-wordpress bitnami/wordpress
 
-## Run
-
+## Start nivio
 ```
-minikube start --driver=virtualbox
-```
-
+SEED=$(pwd)./src/test/resources/example/example_k8s.yml java -jar target/nivio.jar
+``` 

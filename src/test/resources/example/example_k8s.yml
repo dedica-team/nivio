@@ -2,11 +2,5 @@ identifier: k8s:example
 name: Kubernetes example
 sources:
   - format: kubernetes
-    url: http://192.168.99.100:8080?namespace=default
-    assignTemplates:
-      providedByMariaDB: ["identifier LIKE 'vehement_gerbil_wordpress%'"]
+    url: http://192.168.99.100:8080?namespace=default&groupLabel=release
 
-templates:
-  providedByMariaDB:
-    providedBy:
-      - "identifier LIKE 'vehement_gerbil_mariabdb*'"
