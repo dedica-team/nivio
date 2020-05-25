@@ -8,7 +8,9 @@ interface Props {
 }
 
 /**
- * Displays a choosen landscape as interactive SVG
+ * Slider to display our LandscapeItem in a cool way
+ * @param sliderContent Display Content
+ * @param closeSlider Enable/Disable CSS Transition in Parent Component
  */
 const Landscape: React.FC<Props> = ({ sliderContent, closeSlider }) => {
   return (

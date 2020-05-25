@@ -7,14 +7,15 @@ import './LandscapeMap.scss';
 
 interface Props {
   identifier: string;
-  closeSlider(): void;
   onItemClick(e: any): void;
 }
 
 /**
  * Displays a choosen landscape as interactive SVG
+ * @param identifier Landscape Identifier
+ * @param onItemClick Handler for our label click
  */
-const Landscape: React.FC<Props> = ({ identifier, onItemClick, closeSlider }) => {
+const Landscape: React.FC<Props> = ({ identifier, onItemClick }) => {
   const [tool, setTool] = useState<Tool>(TOOL_AUTO);
 
   // It wants a value or null but if we defined it as null it throws an error that shouldn't use null
@@ -34,8 +35,8 @@ const Landscape: React.FC<Props> = ({ identifier, onItemClick, closeSlider }) =>
       render={(content: ReactElement[]) => (
         <ReactSVGPanZoom
           key={'panzoom'}
-          width={window.innerWidth * 0.95}
-          height={window.innerHeight * 0.95}
+          width={window.innerWidth * 0.88}
+          height={window.innerHeight}
           background={'transparent'}
           miniatureProps={{
             position: 'none',

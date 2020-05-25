@@ -8,7 +8,7 @@ import LandscapeMap from './Map/LandscapeMap';
 import LandscapeSlider from './Slider/LandscapeSlider';
 
 /**
- * Displays a choosen landscape as interactive SVG
+ * Logic component for your landscape map
  */
 const Landscape: React.FC = () => {
   const [sliderContent, setSliderContent] = useState<string | ReactElement | null>(null);
@@ -40,7 +40,7 @@ const Landscape: React.FC = () => {
         >
           <LandscapeSlider sliderContent={sliderContent} closeSlider={closeSlider} />
         </CSSTransition>
-        <LandscapeMap identifier={identifier} onItemClick={onItemClick} closeSlider={closeSlider} />
+        <LandscapeMap identifier={identifier} onItemClick={onItemClick} />
       </div>
     );
   }
