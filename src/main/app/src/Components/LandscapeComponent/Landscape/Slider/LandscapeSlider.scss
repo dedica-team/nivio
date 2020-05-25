@@ -1,0 +1,43 @@
+@import '../../../../Ressources/styling/font.scss';
+@import '../../../../Ressources/styling/colors.scss';
+
+.landscapeContainer {
+  .slider {
+    position: absolute;
+    overflow: hidden;
+    border: solid $border-color;
+    width: 800px;
+    z-index: 1;
+    background-color: $background-grey;
+    .close {
+      float: right;
+      margin-right: 4px;
+      margin-top: 4px;
+      font-size: $large-font-size;
+      background-color: white;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-bottom: 0;
+      border-right: 0;
+      padding-left: 0.3rem;
+      padding-right: 0.3rem;
+    }
+  }
+  .slider-enter-active {
+    right: -810px;
+  }
+  .slider-enter-done {
+    right: 10px;
+    transition: right 1000ms;
+  }
+  .slider-exit {
+    right: 10px;
+  }
+  .slider-exit-active {
+    right: -810px;
+    transition: right 1000ms;
+  }
+  .slider-appear-active {
+    right: 10px;
+  }
+}
