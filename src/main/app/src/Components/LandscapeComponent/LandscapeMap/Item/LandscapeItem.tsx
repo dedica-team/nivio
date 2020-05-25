@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { get } from '../../../utils/API/APIClient';
+import { get } from '../../../../utils/API/APIClient';
 import './LandscapeItem.scss';
 
-import { IItem } from '../../../interfaces';
+import { IItem } from '../../../../interfaces';
 
 interface Props {
   element: Element;
