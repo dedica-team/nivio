@@ -18,10 +18,7 @@ import org.springframework.util.StringUtils;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -29,12 +26,15 @@ import java.util.stream.Collectors;
 import static de.bonndan.nivio.output.map.svg.SVGItemLabel.LABEL_WIDTH;
 import static j2html.TagCreator.rawHtml;
 
+/**
+ * Creates an SVG document based on pre-rendered map items.
+ */
 public class SvgFactory extends Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SvgFactory.class);
 
     public static int ICON_SIZE = 50;
-    private List<Hex> occupied = new ArrayList<>();
+    private final Set<Hex> occupied = new HashSet<>();
     private final LandscapeImpl landscape;
     private final MapStyleSheetFactory mapStyleSheetFactory;
     private boolean debug = false;
@@ -54,7 +54,13 @@ public class SvgFactory extends Component {
         final HexFactory hexFactory = new HexFactory();
 
         landscape.getItems().all().forEach(item -> {
-            var hex = hexFactory.of(item.getX(), item.getY());
+            Hex hex = null;
+            int i = 0;
+            while (hex == null || occupied.contains(hex)) {
+                hex = hexFactory.of(item.getX() - i, item.getY() - i);
+                i++;
+            }
+
             hex.id = item.getFullyQualifiedIdentifier().toString();
             vertexHexes.put(item, hex);
             occupied.add(hex);
@@ -62,9 +68,6 @@ public class SvgFactory extends Component {
 
         var pathFinder = new PathFinder(occupied);
         pathFinder.debug = this.debug;
-
-        AtomicInteger width = new AtomicInteger(0);
-        AtomicInteger height = new AtomicInteger(0);
 
         DomContent title = SvgTagCreator.text(landscape.getName())
                 .attr("x", LABEL_WIDTH + 10)
@@ -79,6 +82,9 @@ public class SvgFactory extends Component {
                     .attr("width", LABEL_WIDTH)
                     .attr("height", LABEL_WIDTH);
         }
+
+        AtomicInteger width = new AtomicInteger(0);
+        AtomicInteger height = new AtomicInteger(0);
 
         List<DomContent> groups = landscape.getGroups().values().stream().map(group -> {
             SVGGroup SVGGroup = getGroup(hexFactory, (Group) group);
@@ -107,7 +113,7 @@ public class SvgFactory extends Component {
                     LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
                     return item.getRelations().stream().map(rel -> {
                         Hex start = vertexHexes.get(item);
-                        Hex target = vertexHexes.get((Item) rel.getTarget());
+                        Hex target = vertexHexes.get(rel.getTarget());
                         HexPath bestPath = pathFinder.getPath(start, target);
                         if (bestPath != null) {
                             SVGRelation SVGRelation = new SVGRelation(bestPath, item.getColor(), rel);
@@ -145,7 +151,7 @@ public class SvgFactory extends Component {
             e.printStackTrace();
         }
 
-        return  css + "\n" + mapStyleSheetFactory.getMapStylesheet(landscape.getConfig(), landscape.getLog());
+        return css + "\n" + mapStyleSheetFactory.getMapStylesheet(landscape.getConfig(), landscape.getLog());
     }
 
     private SVGGroup getGroup(HexFactory hexFactory, Group group) {

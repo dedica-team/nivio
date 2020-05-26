@@ -20,11 +20,14 @@ public class PathFinder {
 
     public boolean debug = false;
 
-    private ArrayList<Tile> closed;
-    private ArrayList<Tile> open;
+    private final ArrayList<Tile> closed;
+    private final ArrayList<Tile> open;
 
-    public PathFinder(List<Hex> occupied) {
-        this.occupied = new HashSet<>(occupied);
+    /**
+     * @param occupied the occupied tiles
+     */
+    public PathFinder(Set<Hex> occupied) {
+        this.occupied = occupied;
         this.closed = new ArrayList<>();
         this.open = new ArrayList<>();
     }
