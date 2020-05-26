@@ -23,17 +23,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import static de.bonndan.nivio.output.map.MapFactory.DEFAULT_ICON_SIZE;
 import static de.bonndan.nivio.output.map.svg.SVGItemLabel.LABEL_WIDTH;
 import static j2html.TagCreator.rawHtml;
 
 /**
  * Creates an SVG document based on pre-rendered map items.
+ *
+ *
  */
 public class SvgFactory extends Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SvgFactory.class);
 
-    public static int ICON_SIZE = 50;
     private final Set<Hex> occupied = new HashSet<>();
     private final LandscapeImpl landscape;
     private final MapStyleSheetFactory mapStyleSheetFactory;
@@ -131,8 +133,8 @@ public class SvgFactory extends Component {
                         .attr("version", "1.1")
                         .attr("xmlns", "http://www.w3.org/2000/svg")
                         .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
-                        .attr("width", width.addAndGet(ICON_SIZE + LABEL_WIDTH / 2))
-                        .attr("height", height.addAndGet(ICON_SIZE))
+                        .attr("width", width.addAndGet(DEFAULT_ICON_SIZE + LABEL_WIDTH / 2))
+                        .attr("height", height.addAndGet(DEFAULT_ICON_SIZE))
                         .attr("viewBox", "0 -" + LABEL_WIDTH + " " + (width.get() + LABEL_WIDTH) + " " + (height.get() + LABEL_WIDTH))
 
                         .with(logo, title)
@@ -170,7 +172,7 @@ public class SvgFactory extends Component {
             if (p.y > maxY.get()) maxY.set((long) p.y);
         });
 
-        var padding = 50;
+        var padding = DEFAULT_ICON_SIZE;
         var startPoint = new Point2D.Double(minX.get() - padding, minY.get() - padding);
         var endPoint = new Point2D.Double(maxX.get() + padding, maxY.get() + padding);
 

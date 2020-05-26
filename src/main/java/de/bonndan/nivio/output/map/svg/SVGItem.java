@@ -10,7 +10,7 @@ import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 
-import static de.bonndan.nivio.output.map.svg.SvgFactory.ICON_SIZE;
+import static de.bonndan.nivio.output.map.MapFactory.DEFAULT_ICON_SIZE;
 
 class SVGItem extends Component {
 
@@ -47,9 +47,9 @@ class SVGItem extends Component {
         if (!hasFill && !hasText && !StringUtils.isEmpty(item.getLabel(Rendered.LABEL_RENDERED_ICON))) {
             icon = SvgTagCreator.image()
                     .attr("xlink:href", item.getLabel(Rendered.LABEL_RENDERED_ICON))
-                    .attr("width", ICON_SIZE)
-                    .attr("height", ICON_SIZE)
-                    .attr("transform", "translate(-" + ICON_SIZE / 2 + ",-" + ICON_SIZE / 2 + ")")
+                    .attr("width", DEFAULT_ICON_SIZE)
+                    .attr("height", DEFAULT_ICON_SIZE)
+                    .attr("transform", "translate(-" + DEFAULT_ICON_SIZE / 2 + ",-" + DEFAULT_ICON_SIZE / 2 + ")")
             ;
         }
 
@@ -57,7 +57,7 @@ class SVGItem extends Component {
                 .attr("id", this.id)
                 .attr("cx", 0)
                 .attr("cy", 0)
-                .attr("r", ICON_SIZE - 10)
+                .attr("r", DEFAULT_ICON_SIZE - 10)
                 .attr("fill", fillId)
                 .attr("stroke", "#" + item.getColor());
         if (Lifecycle.PLANNED.equals(item.getLifecycle())) {
