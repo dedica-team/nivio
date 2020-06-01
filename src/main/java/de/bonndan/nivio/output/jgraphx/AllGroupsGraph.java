@@ -68,38 +68,30 @@ public class AllGroupsGraph implements RenderedArtifact<mxGraph, mxCell> {
         GroupConnections groupConnections = new GroupConnections();
 
         items.forEach(item -> {
-            final String group = item.getGroup();
+            final String group;
+            if (StringUtils.isEmpty(item.getGroup())) {
+                logger.warn("Item {} has no group, using " + Group.COMMON, item);
+                group = Group.COMMON;
+            } else {
+                group = item.getGroup();
+            }
             mxCell groupNode = findGroupCell(group);
 
-
-            //provider
-            ((Item) item).getProvidedBy().forEach(provider -> {
-                String pGroup = provider.getGroup() == null ? Group.COMMON : provider.getGroup();
-                mxCell providerGroupNode = findGroupCell(pGroup);
-                String providerGroup = providerGroupNode.getId();
-
-                if (groupConnections.canConnect(group, providerGroup)) {
-                    graph.insertEdge(graph.getDefaultParent(), "", "provider", groupNode, providerGroupNode,
-                            mxConstants.STYLE_STROKEWIDTH + "=2;" + mxConstants.STYLE_STROKECOLOR + "=yellow;"
-                    );
-                    groupConnections.connect(group, providerGroup, "Virtual provider connection between ");
+            item.getRelations().forEach(relationItem -> {
+                Item targetItem = (Item) relationItem.getTarget();
+                if (targetItem == null) {
+                    logger.warn("Virtual connections: No target in relation item {}", relationItem);
+                    return;
                 }
-            });
-
-            //dataflow
-            List<RelationItem> relations = RelationType.DATAFLOW.filter(item.getRelations());
-            relations.forEach(dataFlowItem -> {
-                Item targetItem = (Item) dataFlowItem.getTarget();
-                if (targetItem == null) return;
 
                 String targetGroup = targetItem.getGroup() == null ? Group.COMMON : targetItem.getGroup();
                 mxCell targetGroupNode = findGroupCell(targetGroup);
 
                 if (groupConnections.canConnect(group, targetGroup)) {
-                    graph.insertEdge(graph.getDefaultParent(), "", "dataflow", groupNode, targetGroupNode,
+                    graph.insertEdge(graph.getDefaultParent(), "", "relation", groupNode, targetGroupNode,
                             mxConstants.STYLE_STROKEWIDTH + "=none;" + mxConstants.STYLE_STROKECOLOR + "=red;"
                     );
-                    groupConnections.connect(group, targetGroup, "Virtual Dataflow connection between ");
+                    groupConnections.connect(group, targetGroup, "Virtual connection between ");
                 }
             });
         });
@@ -143,13 +135,16 @@ public class AllGroupsGraph implements RenderedArtifact<mxGraph, mxCell> {
         }
 
         void connect(String a, String b, String message) {
-            logger.info(message + a + " and " + b);
+            logger.debug(message + a + " and " + b);
             groupConnections.add(new ImmutablePair(a, b));
         }
 
         boolean canConnect(String a, String b) {
-            if (StringUtils.isEmpty(a) || StringUtils.isEmpty(b))
+            if (StringUtils.isEmpty(a) || StringUtils.isEmpty(b)) {
+                logger.warn("Empty group names in virtual connection check between {} and {}", a, b);
                 return false;
+            }
+
 
             if (a.equals(b))
                 return false;
