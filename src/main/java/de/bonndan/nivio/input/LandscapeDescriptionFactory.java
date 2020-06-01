@@ -45,10 +45,11 @@ public class LandscapeDescriptionFactory {
 
         List<URL> locations = new ArrayList<>();
         try {
-            if (seed.hasValue())
+            if (seed.hasValue()) {
                 locations = seed.getLocations();
-            else if (!StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
-                locations = seed.getDemoFiles();
+            }
+            if (!StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
+                locations.addAll(seed.getDemoFiles());
             }
         } catch (MalformedURLException e) {
             ProcessingException processingException = new ProcessingException("Failed to initialize watchers from seed", e);

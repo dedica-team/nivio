@@ -37,7 +37,9 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
 
         if (seed.hasValue()) {
             LOGGER.debug("Found seed");
-        } else if (!StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
+        }
+
+        if (!StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
             LOGGER.info("Running in demo mode");
         }
 
