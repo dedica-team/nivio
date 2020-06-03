@@ -45,7 +45,7 @@ https://medium.com/@itzgeoff/including-react-in-your-spring-boot-maven-build-ae3
  
 https://www.hostingadvice.com/how-to/update-node-js-latest-version/
 
-   nvm install v10.16.3
-   cd src/main/app
-   npm install -g yarn
+    nvm install v10.16.3
+    cd src/main/app
+    npm install -g yarn
  

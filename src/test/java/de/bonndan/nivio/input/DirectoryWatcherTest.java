@@ -39,7 +39,7 @@ class DirectoryWatcherTest {
 
         Thread.sleep(1000);
         Files.write(tempFile.toPath(), "Hallo".getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND, StandardOpenOption.WRITE);
-        Thread.sleep(1000);
+        Thread.sleep(50000);
 
         ArgumentCaptor<FSChangeEvent> captor = ArgumentCaptor.forClass(FSChangeEvent.class);
         verify(publisher).publishEvent(captor.capture());
