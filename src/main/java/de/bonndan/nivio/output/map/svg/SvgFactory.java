@@ -176,8 +176,8 @@ public class SvgFactory extends Component {
         var startPoint = new Point2D.Double(minX.get() - padding, minY.get() - padding);
         var endPoint = new Point2D.Double(maxX.get() + padding, maxY.get() + padding);
 
-        int width = (int) (endPoint.x - startPoint.x) + padding;
-        int height = (int) (endPoint.y - startPoint.y) + padding;
+        int width = (int) (endPoint.x - startPoint.x) + 2*padding;
+        int height = (int) (endPoint.y - startPoint.y) + 2*padding;
 
         return new SVGGroup(group, startPoint.x - padding / 2, startPoint.y - padding / 2, width, height);
     }
