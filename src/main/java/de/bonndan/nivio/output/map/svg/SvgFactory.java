@@ -29,8 +29,6 @@ import static j2html.TagCreator.rawHtml;
 
 /**
  * Creates an SVG document based on pre-rendered map items.
- *
- *
  */
 public class SvgFactory extends Component {
 
@@ -113,16 +111,20 @@ public class SvgFactory extends Component {
 
         List<DomContent> relations = landscape.getItems().all().stream().flatMap(item -> {
                     LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
-                    return item.getRelations().stream().map(rel -> {
-                        Hex start = vertexHexes.get(item);
-                        Hex target = vertexHexes.get(rel.getTarget());
-                        HexPath bestPath = pathFinder.getPath(start, target);
-                        if (bestPath != null) {
-                            SVGRelation SVGRelation = new SVGRelation(bestPath, item.getColor(), rel);
-                            return SVGRelation.render();
-                        }
-                        return null;
-                    });
+                    return item.getRelations().stream()
+                            .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
+                            .map(rel -> {
+                                Hex start = vertexHexes.get(item);
+                                Hex target = vertexHexes.get(rel.getTarget());
+                                HexPath bestPath = pathFinder.getPath(start, target);
+                                if (bestPath != null) {
+                                    SVGRelation SVGRelation = new SVGRelation(bestPath, item.getColor(), rel);
+                                    LOGGER.debug("Added path for item {} relation {} -> {}", item, rel.getSource(), rel.getTarget());
+                                    return SVGRelation.render();
+                                }
+                                LOGGER.warn("No path found for item {} relation {}", item, rel);
+                                return null;
+                            });
                 }
         ).collect(Collectors.toList());
 
@@ -176,8 +178,8 @@ public class SvgFactory extends Component {
         var startPoint = new Point2D.Double(minX.get() - padding, minY.get() - padding);
         var endPoint = new Point2D.Double(maxX.get() + padding, maxY.get() + padding);
 
-        int width = (int) (endPoint.x - startPoint.x) + 2*padding;
-        int height = (int) (endPoint.y - startPoint.y) + 2*padding;
+        int width = (int) (endPoint.x - startPoint.x) + 2 * padding;
+        int height = (int) (endPoint.y - startPoint.y) + 2 * padding;
 
         return new SVGGroup(group, startPoint.x - padding / 2, startPoint.y - padding / 2, width, height);
     }

@@ -6,6 +6,7 @@ import de.bonndan.nivio.model.RelationItem;
 import de.bonndan.nivio.model.RelationType;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
+import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -14,6 +15,11 @@ import java.util.Optional;
 
 import static de.bonndan.nivio.output.map.svg.SvgTagCreator.g;
 
+/**
+ * SVG representation of a relation between items.
+ *
+ *
+ */
 class SVGRelation extends Component {
 
     public static final String MARKER = "▸";
@@ -35,6 +41,7 @@ class SVGRelation extends Component {
         BezierPath bezierPath = new BezierPath();
         bezierPath.parsePathString(stringPath);
 
+        String type = !StringUtils.isEmpty(relation.getType()) ? relation.getType().name() : "-";
         if (RelationType.PROVIDER.equals(relation.getType())) {
             ContainerTag path = SvgTagCreator.path()
                     .attr("d", stringPath)
@@ -44,6 +51,7 @@ class SVGRelation extends Component {
                 path.attr("opacity", 0.7);
             }
             return g(path, label(bezierPath, fillId))
+                    .attr("data-type", type)
                     .attr("data-source", relation.getSource().getFullyQualifiedIdentifier())
                     .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier());
         }
@@ -57,7 +65,10 @@ class SVGRelation extends Component {
             markers.add(this.marker(point1, point2, fillId));
         }
 
-        return g(markers.toArray(DomContent[]::new));
+        return g(markers.toArray(DomContent[]::new))
+                .attr("data-type", type)
+                .attr("data-source", relation.getSource().getFullyQualifiedIdentifier())
+                .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier());
     }
 
     private ContainerTag marker(Point2D.Float point, Point2D.Float point2, String fillId) {
