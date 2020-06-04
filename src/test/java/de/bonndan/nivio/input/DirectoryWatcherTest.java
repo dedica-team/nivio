@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -39,7 +40,7 @@ class DirectoryWatcherTest {
 
         Thread.sleep(1000);
         Files.write(tempFile.toPath(), "Hallo".getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND, StandardOpenOption.WRITE);
-        Thread.sleep(1000);
+        Thread.sleep(SystemUtils.IS_OS_LINUX ? 1000 : 50000); //#147
 
         ArgumentCaptor<FSChangeEvent> captor = ArgumentCaptor.forClass(FSChangeEvent.class);
         verify(publisher).publishEvent(captor.capture());
