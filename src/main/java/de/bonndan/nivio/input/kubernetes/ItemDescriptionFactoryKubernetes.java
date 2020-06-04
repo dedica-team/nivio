@@ -23,13 +23,18 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Scans the k8s api for services, pods, volumes etc.
+ *
+ *
+ */
 @org.springframework.stereotype.Service
 public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ItemDescriptionFactoryKubernetes.class);
 
     public static final String NAMESPACE = "namespace";
-    public static final String GROUP_LABEL = "groupLabel";
+    public static final String GROUP_LABEL_PARAM = "groupLabel";
 
     /**
      * label name to determine the group name (fallback from GROUP_LABEL)
@@ -67,8 +72,8 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
                 if (params.containsKey(NAMESPACE)) {
                     namespace = params.get(NAMESPACE);
                 }
-                if (params.containsKey(GROUP_LABEL)) {
-                    this.groupLabel = params.get(GROUP_LABEL);
+                if (params.containsKey(GROUP_LABEL_PARAM)) {
+                    this.groupLabel = params.get(GROUP_LABEL_PARAM);
                 }
             }
         } catch (MalformedURLException ignored) {
@@ -107,6 +112,7 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
         itemDescription.setName(pod.getMetadata().getName());
         itemDescription.setIdentifier(pod.getMetadata().getName());
         itemDescription.setType(ItemType.POD);
+        itemDescription.setGroup(getGroup(pod));
         pod.getMetadata().getLabels().forEach(itemDescription::setLabel);
         return itemDescription;
     }
@@ -241,10 +247,12 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
     }
 
     private void setConditionsAndHealth(PodStatus status, ItemDescription podItem) {
-        status.getConditions().forEach(podCondition -> {
-            String label = Label.PREFIX_CONDITION + Label.DELIMITER + podCondition.getType();
-            podItem.setLabel(label, podCondition.getStatus());
-        });
+        if (status != null && status.getConditions() != null) {
+            status.getConditions().forEach(podCondition -> {
+                String label = Label.PREFIX_CONDITION + Label.DELIMITER + podCondition.getType();
+                podItem.setLabel(label, podCondition.getStatus());
+            });
+        }
     }
 
     private String getGroup(HasMetadata hasMetadata) {
