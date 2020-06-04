@@ -118,11 +118,11 @@ public class SvgFactory extends Component {
                                 Hex target = vertexHexes.get(rel.getTarget());
                                 HexPath bestPath = pathFinder.getPath(start, target);
                                 if (bestPath != null) {
-                                    SVGRelation SVGRelation = new SVGRelation(bestPath, item.getColor(), rel);
+                                    SVGRelation svgRelation = new SVGRelation(bestPath, item.getColor(), rel);
                                     LOGGER.debug("Added path for item {} relation {} -> {}", item, rel.getSource(), rel.getTarget());
-                                    return SVGRelation.render();
+                                    return svgRelation.render();
                                 }
-                                LOGGER.warn("No path found for item {} relation {}", item, rel);
+                                LOGGER.error("No path found for item {} relation {}", item, rel);
                                 return null;
                             });
                 }

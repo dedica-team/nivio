@@ -52,15 +52,15 @@ public class FileChangeProcessor implements ApplicationListener<FSChangeEvent> {
     private boolean handleServiceDescriptionFileChange(LandscapeDescription landscapeDescription,
                                                                     File changedFile
     ) {
-        AtomicBoolean process = new AtomicBoolean(false);
+        AtomicBoolean isHandled = new AtomicBoolean(false);
         landscapeRepository.findAll().forEach(landscape -> {
             LandscapeDescription env1 = LandscapeDescriptionFactory.fromYaml(new File(landscape.getSource()));
             if (env1 != null && env1.hasReference(landscapeDescription.getSource())) {
                 process(env1, changedFile);
-                process.set(true);
+                isHandled.set(true);
             }
         });
-        return process.get();
+        return isHandled.get();
     }
 
     private void process(LandscapeDescription landscapeDescription, File changedFile) {

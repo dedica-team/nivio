@@ -1,9 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Lifecycle;
-import de.bonndan.nivio.model.RelationItem;
-import de.bonndan.nivio.model.RelationType;
+import de.bonndan.nivio.model.*;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.util.StringUtils;
@@ -17,8 +14,6 @@ import static de.bonndan.nivio.output.map.svg.SvgTagCreator.g;
 
 /**
  * SVG representation of a relation between items.
- *
- *
  */
 class SVGRelation extends Component {
 
@@ -37,23 +32,21 @@ class SVGRelation extends Component {
 
         var fillId = (fill) != null ? "#" + fill : "";
         var stringPath = hexPath.getPoints();
+        boolean isPlanned = Lifecycle.PLANNED.equals(relation.getSource().getLifecycle())
+                || Lifecycle.PLANNED.equals(relation.getTarget().getLifecycle());
 
         BezierPath bezierPath = new BezierPath();
         bezierPath.parsePathString(stringPath);
 
-        String type = !StringUtils.isEmpty(relation.getType()) ? relation.getType().name() : "-";
         if (RelationType.PROVIDER.equals(relation.getType())) {
             ContainerTag path = SvgTagCreator.path()
                     .attr("d", stringPath)
                     .attr("stroke", fillId);
-            if (Lifecycle.PLANNED.equals(relation.getSource().getLifecycle()) || Lifecycle.PLANNED.equals(relation.getTarget().getLifecycle())) {
+            if (isPlanned) {
                 path.attr("stroke-dasharray", 10);
                 path.attr("opacity", 0.7);
             }
-            return g(path, label(bezierPath, fillId))
-                    .attr("data-type", type)
-                    .attr("data-source", relation.getSource().getFullyQualifiedIdentifier())
-                    .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier());
+            return addAttributes(g(path, label(bezierPath, fillId)), relation);
         }
 
         List<ContainerTag> markers = new ArrayList<>();
@@ -65,10 +58,19 @@ class SVGRelation extends Component {
             markers.add(this.marker(point1, point2, fillId));
         }
 
-        return g(markers.toArray(DomContent[]::new))
-                .attr("data-type", type)
+        return addAttributes(
+                g(markers.toArray(DomContent[]::new)),
+                relation
+        );
+    }
+
+    private ContainerTag addAttributes(ContainerTag g, RelationItem<Item> relation) {
+        String type = !StringUtils.isEmpty(relation.getType()) ? relation.getType().name() : "-";
+        g.attr("data-type", type)
                 .attr("data-source", relation.getSource().getFullyQualifiedIdentifier())
                 .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier());
+
+        return g;
     }
 
     private ContainerTag marker(Point2D.Float point, Point2D.Float point2, String fillId) {

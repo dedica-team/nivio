@@ -4,7 +4,6 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.assessment.kpi.CustomKPI;
 import de.bonndan.nivio.assessment.kpi.HealthKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
@@ -24,8 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 class LandscapeDescriptionFactoryTest {
@@ -49,6 +47,13 @@ class LandscapeDescriptionFactoryTest {
         assertNotNull(mapped);
         assertEquals("nivio", mapped.getFormat());
         assertNotNull(landscapeDescription.getConfig());
+    }
+
+    @Test
+    public void readFails() throws IOException {
+        File file = new File(FILE_PATH_ENV);
+        String yaml = new String(Files.readAllBytes(file.toPath()));
+        assertThrows(ReadingException.class, () -> LandscapeDescriptionFactory.fromString("yaml", ""));
     }
 
     @Test

@@ -14,22 +14,30 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Evaluation of the SEED environment variable.
+ *
+ *
+ */
 public class Seed {
 
     private static final Logger logger = LoggerFactory.getLogger(Seed.class);
 
     public static final String DEMO = "DEMO";
 
-    static final String NIVIO_ENV_DIRECTORY = "file:/opt/nivio/environments";
     static boolean ESCAPE_AUTHORITY = SystemUtils.IS_OS_WINDOWS;
 
-    public List<URL> getDemoFiles() throws MalformedURLException {
+    public List<URL> getDemoFiles() {
         Path currentRelativePath = Paths.get("");
         String absPath = currentRelativePath.toAbsolutePath().toString();
         List<URL> demoFiles = new ArrayList<>();
-        demoFiles.add(new File(absPath + "/src/test/resources/example/example_env.yml").toURI().toURL());
-        demoFiles.add(new File(absPath + "/src/test/resources/example/inout.yml").toURI().toURL());
-        //demoFiles.add(new File(absPath + "/src/test/resources/example/dedica.yml"));
+        try {
+            demoFiles.add(new File(absPath + "/src/test/resources/example/example_env.yml").toURI().toURL());
+            demoFiles.add(new File(absPath + "/src/test/resources/example/inout.yml").toURI().toURL());
+            //demoFiles.add(new File(absPath + "/src/test/resources/example/dedica.yml"));
+        } catch (MalformedURLException e) {
+            logger.error("Error in demo files: " + e.getMessage(), e);
+        }
         return demoFiles;
     }
 
@@ -49,12 +57,6 @@ public class Seed {
     }
 
     public List<URL> getLocations() throws MalformedURLException {
-
-        if (StringUtils.isEmpty(seed)) {
-            URL url = new URL(NIVIO_ENV_DIRECTORY);
-            logger.info("Using default directory " + NIVIO_ENV_DIRECTORY + " as seed.");
-            return List.of(url);
-        }
 
         String[] strings = StringUtils.commaDelimitedListToStringArray(seed);
         List<URL> list = new ArrayList<>();

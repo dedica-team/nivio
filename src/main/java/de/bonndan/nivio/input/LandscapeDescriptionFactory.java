@@ -12,6 +12,7 @@ import org.apache.commons.text.lookup.StringLookupFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -41,6 +42,12 @@ public class LandscapeDescriptionFactory {
         this.fileFetcher = fileFetcher;
     }
 
+    /**
+     * Returns all {@link LandscapeDescription}s from config files named in the seed.
+     *
+     * @param seed seed object
+     * @return list of fetched descriptions
+     */
     public List<LandscapeDescription> getDescriptions(Seed seed) {
 
         List<URL> locations = new ArrayList<>();
@@ -61,23 +68,20 @@ public class LandscapeDescriptionFactory {
         locations.forEach(url -> {
             LandscapeDescription env = null;
             if (URLHelper.isLocal(url)) {
-                File file;
                 try {
-                    file = Paths.get(url.toURI()).toFile();
-                } catch (URISyntaxException e) {
-                    throw new ProcessingException("Failed to initialize watchers from seed", e);
-                }
-                LOGGER.info("Created directory watcher for url " + url);
-                try {
+                    File file = Paths.get(url.toURI()).toFile();
                     env = LandscapeDescriptionFactory.fromYaml(file);
-                } catch (ReadingException ex) {
-                    publisher.publishEvent(new ProcessingErrorEvent(this, ex));
-                    LOGGER.error("Failed to parse file {}", file);
+                } catch (URISyntaxException | ProcessingException ex) {
+                    if (ex instanceof URISyntaxException) {
+                        publisher.publishEvent(new ProcessingErrorEvent(this, new ReadingException("Failed to handle file", ex)));
+                    } else {
+                        publisher.publishEvent(new ProcessingErrorEvent(this, (ProcessingException) ex));
+                    }
+                    LOGGER.error("Failed to parse file {}", url);
                 }
             } else {
                 try {
                     env = LandscapeDescriptionFactory.fromString(fileFetcher.get(url), url);
-                    Objects.requireNonNull(env);
                 } catch (ReadingException ex) {
                     publisher.publishEvent(new ProcessingErrorEvent(this, ex));
                     LOGGER.error("Failed to parse file {}", url);
@@ -91,14 +95,15 @@ public class LandscapeDescriptionFactory {
         return descriptions;
     }
 
+    /**
+     * @param file yaml file object
+     * @return the descriptions or throws
+     * @throws ReadingException on error
+     */
+    @NonNull
     public static LandscapeDescription fromYaml(File file) {
-
         try {
             String content = new String(Files.readAllBytes(file.toPath()));
-            if (StringUtils.isEmpty(content)) {
-                LOGGER.warn("Got a seemingly empty file " + file + ". Skipping"); //TODO watcher issue
-                return null;
-            }
             LandscapeDescription landscapeDescription = fromString(content, file.toString());
             landscapeDescription.setSource(file.toString());
             landscapeDescription.getSourceReferences().forEach(ref -> ref.setLandscapeDescription(landscapeDescription));
@@ -116,7 +121,9 @@ public class LandscapeDescriptionFactory {
      * @param yaml   source
      * @param origin origin of the yaml for debugging
      * @return environment description
+     * @throws ReadingException on error
      */
+    @NonNull
     public static LandscapeDescription fromString(String yaml, String origin) {
 
         yaml = (new StringSubstitutor(StringLookupFactory.INSTANCE.environmentVariableStringLookup())).replace(yaml);

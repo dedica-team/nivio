@@ -14,6 +14,11 @@ public class IndexEvent extends ProcessingEvent {
     private final Landscape landscape;
     private final String message;
 
+    /**
+     * @param source triggering class
+     * @param landscape landscape description
+     * @param message message for the UI
+     */
     public IndexEvent(Object source, Landscape landscape, String message) {
         super(source);
         if (!(landscape instanceof LandscapeDescription)) {
@@ -33,7 +38,7 @@ public class IndexEvent extends ProcessingEvent {
 
     @Override
     public String getLevel() {
-        return "info";
+        return LOG_LEVEL_INFO;
     }
 
     @Override
