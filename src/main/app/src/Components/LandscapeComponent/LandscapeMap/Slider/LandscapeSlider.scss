@@ -31,11 +31,13 @@
     transition: right 1000ms;
   }
   .slider-exit {
+    opacity: 1;
     right: 10px;
   }
   .slider-exit-active {
-    right: -810px;
-    transition: right 1000ms;
+    right: 10px;
+    opacity: 0;
+    transition: opacity 1000ms;
   }
   .slider-appear-active {
     right: 10px;
