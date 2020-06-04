@@ -40,7 +40,7 @@ class DirectoryWatcherTest {
 
         Thread.sleep(1000);
         Files.write(tempFile.toPath(), "Hallo".getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND, StandardOpenOption.WRITE);
-        Thread.sleep(SystemUtils.IS_OS_MAC_OSX ? 50000 : 1000); //#147
+        Thread.sleep(SystemUtils.IS_OS_LINUX ? 1000 : 50000); //#147
 
         ArgumentCaptor<FSChangeEvent> captor = ArgumentCaptor.forClass(FSChangeEvent.class);
         verify(publisher).publishEvent(captor.capture());
