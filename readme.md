@@ -40,10 +40,13 @@ Clone nivio, build and run a Docker image:
     
   then open http://localhost:8080
   
-https://medium.com/@itzgeoff/including-react-in-your-spring-boot-maven-build-ae3b8f8826e
-   * install nvm oder node > 5
- 
-https://www.hostingadvice.com/how-to/update-node-js-latest-version/
+
+
+### Frontend Troubleshooting
+
+Maven builds the frontend following https://medium.com/@itzgeoff/including-react-in-your-spring-boot-maven-build-ae3b8f8826e
+   
+Fix node version problems using **nvm** or node > 5, see https://www.hostingadvice.com/how-to/update-node-js-latest-version/
 
     nvm install v10.16.3
     cd src/main/app
