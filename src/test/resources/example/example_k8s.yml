@@ -4,3 +4,9 @@ sources:
   - format: kubernetes
     url: http://192.168.99.100:8080?namespace=default&groupLabel=release
 
+config:
+  kpis:
+    condition:
+      description: Evaluates the conditions
+    health:
+      description: health

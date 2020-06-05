@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,9 +48,8 @@ class CustomKPITest {
     public void testoutOfRange() {
         CustomKPI test = new CustomKPI(LABEL, null, getRangeMap(), null);
         test.init();
-        StatusValue statusValue = test.getStatusValues(getComponent("100.1")).get(0);
-        assertNotNull(statusValue);
-        Assertions.assertEquals(Status.UNKNOWN, statusValue.getStatus());
+        List<StatusValue> statusValues = test.getStatusValues(getComponent("100.1"));
+        Assertions.assertTrue(statusValues.isEmpty());
     }
 
     @Test
@@ -123,11 +123,11 @@ class CustomKPITest {
     }
 
     @Test
-    public void noMatch() {
+    public void noMatchIsEmpty() {
         CustomKPI customKPI = new CustomKPI(LABEL, null, null, getMatches());
         customKPI.init();
-        StatusValue statusValue = customKPI.getStatusValues(getComponent("foo")).get(0);
-        assertEquals(Status.UNKNOWN, statusValue.getStatus());
+        List<StatusValue> foo = customKPI.getStatusValues(getComponent("foo"));
+        assertTrue( foo.isEmpty());
     }
 
     @Test
