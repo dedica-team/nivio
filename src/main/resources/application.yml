@@ -26,6 +26,7 @@ server:
 
 nivio:
   baseUrl: ${NIVIO_BASE_URL:}
+  version: #project.version#
 
 ---
 spring:
