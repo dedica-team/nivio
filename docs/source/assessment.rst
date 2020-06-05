@@ -23,7 +23,7 @@ Built in KPIs
 Custom KPIs
 -----------
 
-Custom KPIs can be configured in the landscape config using ranges and/or matches and applied to everything having labels.
+Custom KPIs can be configured in the landscape config using ranges and/or matchers (regular expressions) and applied to everything having labels.
 In the example below a KPI "monthlyCosts" is defined using ranges on the label "costs" and the KPI "myEval" evaluates a
 label "foo". Both ranges (inclusive lower and upper limits) and matchers are separated by semicolon.
 
