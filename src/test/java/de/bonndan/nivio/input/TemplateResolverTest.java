@@ -7,7 +7,6 @@ import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Tagged;
 import de.bonndan.nivio.util.RootPath;
-import org.bouncycastle.jcajce.provider.symmetric.TEA;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

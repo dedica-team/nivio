@@ -22,6 +22,9 @@ import java.time.ZoneId;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class ProcessingEvent extends ApplicationEvent {
 
+    public static final String LOG_LEVEL_INFO = "info";
+    public static final String LOG_LEVEL_ERROR = "error";
+
     public ProcessingEvent(Object source) {
         super(source);
     }

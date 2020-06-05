@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * based on {@link com.mxgraph.layout.mxFastOrganicLayout}
  * Copyright (c) 2007, Gaudenz Alder
- *
+ * <p>
  * relevant changes marked with XXX
  */
 public class NivioGroupLayout extends mxGraphLayout {
@@ -324,7 +324,8 @@ public class NivioGroupLayout extends mxGraphLayout {
             cellLocation[i][0] = x + width / 2.0;
             cellLocation[i][1] = y + height / 2.0;
 
-            radius[i] = Math.min(width, height);
+            //XXX was: Math.min(width, height);
+            radius[i] = Math.max(width, height);
             radiusSquared[i] = radius[i] * radius[i];
         }
 

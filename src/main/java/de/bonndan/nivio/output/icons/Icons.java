@@ -8,6 +8,7 @@ public enum Icons {
     DEFAULT_ICON("service"),
     API("api"),
     CACHE("cache"),
+    CONTAINER("container"),
     DATABASE("database"),
     DATAFLOW("dataflow"),
     FIREWALL("firewall"),
@@ -18,14 +19,14 @@ public enum Icons {
     LOCK("lock"),
     MESSAGEQUEUE("messagequeue"),
     MOBILECLIENT("mobileclient"),
+    POD("pod"),
     SERVER("server"),
+    VOLUME("volume"),
     WEBSERVICE("webservice"),
     NIVIO("nivio")
     ;
 
-
     private final String name;
-
 
     Icons(String name) {
         this.name = name;

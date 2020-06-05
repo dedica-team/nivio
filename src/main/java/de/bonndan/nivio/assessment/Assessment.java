@@ -1,5 +1,6 @@
 package de.bonndan.nivio.assessment;
 
+import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 
 import java.time.LocalDateTime;
@@ -7,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Result of a landscape (or group, or item) assessment using {@link de.bonndan.nivio.assessment.kpi.KPI}s.
+ * Result of a landscape (or group, or item) assessment using {@link AbstractKPI}s.
  *
  * 
  */

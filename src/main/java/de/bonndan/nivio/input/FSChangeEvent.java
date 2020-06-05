@@ -6,6 +6,9 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 
+/**
+ * Fired whenever a file changes. The file is not necessarily related to a landscape description.
+ */
 public class FSChangeEvent extends ApplicationEvent {
 
     private final WatchEvent<?> event;

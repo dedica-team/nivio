@@ -84,7 +84,6 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
 
     public void setIcon(String icon) {
         this.setLabel(Label.ICON, icon);
-        ;
     }
 
     public String getOwner() {

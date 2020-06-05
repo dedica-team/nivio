@@ -24,7 +24,7 @@ public class ProcessingFinishedEvent extends ProcessingEvent {
 
     @Override
     public String getLevel() {
-        return "info";
+        return LOG_LEVEL_INFO;
     }
 
     @Override
