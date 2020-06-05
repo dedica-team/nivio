@@ -48,6 +48,6 @@ label "foo". Both ranges (inclusive lower and upper limits) and matchers are sep
           label: foo
           matches:
             GREEN: "OK;good;nice"
-            RED, "BAD;err.*"
+            RED: "BAD;err.*"
         health:
           description: can be overridden
