@@ -27,7 +27,7 @@ public class ProcessingErrorEvent extends ProcessingEvent {
 
     @Override
     public String getLevel() {
-        return "error";
+        return LOG_LEVEL_ERROR;
     }
 
     @Override

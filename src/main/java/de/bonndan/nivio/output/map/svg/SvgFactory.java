@@ -18,23 +18,23 @@ import org.springframework.util.StringUtils;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import static de.bonndan.nivio.output.map.MapFactory.DEFAULT_ICON_SIZE;
 import static de.bonndan.nivio.output.map.svg.SVGItemLabel.LABEL_WIDTH;
 import static j2html.TagCreator.rawHtml;
 
+/**
+ * Creates an SVG document based on pre-rendered map items.
+ */
 public class SvgFactory extends Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SvgFactory.class);
 
-    public static int ICON_SIZE = 50;
-    private List<Hex> occupied = new ArrayList<>();
+    private final Set<Hex> occupied = new HashSet<>();
     private final LandscapeImpl landscape;
     private final MapStyleSheetFactory mapStyleSheetFactory;
     private boolean debug = false;
@@ -54,7 +54,13 @@ public class SvgFactory extends Component {
         final HexFactory hexFactory = new HexFactory();
 
         landscape.getItems().all().forEach(item -> {
-            var hex = hexFactory.of(item.getX(), item.getY());
+            Hex hex = null;
+            int i = 0;
+            while (hex == null || occupied.contains(hex)) {
+                hex = hexFactory.of(item.getX() - i, item.getY() - i);
+                i++;
+            }
+
             hex.id = item.getFullyQualifiedIdentifier().toString();
             vertexHexes.put(item, hex);
             occupied.add(hex);
@@ -62,9 +68,6 @@ public class SvgFactory extends Component {
 
         var pathFinder = new PathFinder(occupied);
         pathFinder.debug = this.debug;
-
-        AtomicInteger width = new AtomicInteger(0);
-        AtomicInteger height = new AtomicInteger(0);
 
         DomContent title = SvgTagCreator.text(landscape.getName())
                 .attr("x", LABEL_WIDTH + 10)
@@ -79,6 +82,9 @@ public class SvgFactory extends Component {
                     .attr("width", LABEL_WIDTH)
                     .attr("height", LABEL_WIDTH);
         }
+
+        AtomicInteger width = new AtomicInteger(0);
+        AtomicInteger height = new AtomicInteger(0);
 
         List<DomContent> groups = landscape.getGroups().values().stream().map(group -> {
             SVGGroup SVGGroup = getGroup(hexFactory, (Group) group);
@@ -105,16 +111,20 @@ public class SvgFactory extends Component {
 
         List<DomContent> relations = landscape.getItems().all().stream().flatMap(item -> {
                     LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
-                    return item.getRelations().stream().map(rel -> {
-                        Hex start = vertexHexes.get(item);
-                        Hex target = vertexHexes.get((Item) rel.getTarget());
-                        HexPath bestPath = pathFinder.getPath(start, target);
-                        if (bestPath != null) {
-                            SVGRelation SVGRelation = new SVGRelation(bestPath, item.getColor(), rel);
-                            return SVGRelation.render();
-                        }
-                        return null;
-                    });
+                    return item.getRelations().stream()
+                            .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
+                            .map(rel -> {
+                                Hex start = vertexHexes.get(item);
+                                Hex target = vertexHexes.get(rel.getTarget());
+                                HexPath bestPath = pathFinder.getPath(start, target);
+                                if (bestPath != null) {
+                                    SVGRelation svgRelation = new SVGRelation(bestPath, item.getColor(), rel);
+                                    LOGGER.debug("Added path for item {} relation {} -> {}", item, rel.getSource(), rel.getTarget());
+                                    return svgRelation.render();
+                                }
+                                LOGGER.error("No path found for item {} relation {}", item, rel);
+                                return null;
+                            });
                 }
         ).collect(Collectors.toList());
 
@@ -125,8 +135,8 @@ public class SvgFactory extends Component {
                         .attr("version", "1.1")
                         .attr("xmlns", "http://www.w3.org/2000/svg")
                         .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
-                        .attr("width", width.addAndGet(ICON_SIZE + LABEL_WIDTH / 2))
-                        .attr("height", height.addAndGet(ICON_SIZE))
+                        .attr("width", width.addAndGet(DEFAULT_ICON_SIZE + LABEL_WIDTH / 2))
+                        .attr("height", height.addAndGet(DEFAULT_ICON_SIZE))
                         .attr("viewBox", "0 -" + LABEL_WIDTH + " " + (width.get() + LABEL_WIDTH) + " " + (height.get() + LABEL_WIDTH))
 
                         .with(logo, title)
@@ -145,7 +155,7 @@ public class SvgFactory extends Component {
             e.printStackTrace();
         }
 
-        return  css + "\n" + mapStyleSheetFactory.getMapStylesheet(landscape.getConfig(), landscape.getLog());
+        return css + "\n" + mapStyleSheetFactory.getMapStylesheet(landscape.getConfig(), landscape.getLog());
     }
 
     private SVGGroup getGroup(HexFactory hexFactory, Group group) {
@@ -164,12 +174,12 @@ public class SvgFactory extends Component {
             if (p.y > maxY.get()) maxY.set((long) p.y);
         });
 
-        var padding = 50;
+        var padding = DEFAULT_ICON_SIZE;
         var startPoint = new Point2D.Double(minX.get() - padding, minY.get() - padding);
         var endPoint = new Point2D.Double(maxX.get() + padding, maxY.get() + padding);
 
-        int width = (int) (endPoint.x - startPoint.x) + padding;
-        int height = (int) (endPoint.y - startPoint.y) + padding;
+        int width = (int) (endPoint.x - startPoint.x) + 2 * padding;
+        int height = (int) (endPoint.y - startPoint.y) + 2 * padding;
 
         return new SVGGroup(group, startPoint.x - padding / 2, startPoint.y - padding / 2, width, height);
     }

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * A configured key performance indicator related to a landscape item label.
  */
-public class CustomKPI extends KPI {
+public class CustomKPI extends AbstractKPI {
 
     public static final String SEPARATOR = ";";
 
@@ -73,7 +73,7 @@ public class CustomKPI extends KPI {
     }
 
     @Override
-    protected List<StatusValue> getStatusValues(String value, String message) {
+    protected List<StatusValue> getStatusValues(@Nullable String value, @Nullable String message) {
 
         List<StatusValue> values = new ArrayList<>();
         for (Status status : Status.values()) {
@@ -86,7 +86,10 @@ public class CustomKPI extends KPI {
             if (!matches.containsKey(status)) {
                 continue;
             }
-            boolean anyMatch = matches.get(status).stream().anyMatch(stringBooleanFunction -> stringBooleanFunction.apply(value));
+            boolean anyMatch = false;
+            if (value != null) {
+                anyMatch = matches.get(status).stream().anyMatch(stringBooleanFunction -> stringBooleanFunction.apply(value));
+            }
             if (anyMatch) {
                 values.add(new StatusValue(label, status, message));
                 break;

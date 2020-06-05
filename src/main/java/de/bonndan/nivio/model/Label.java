@@ -60,6 +60,7 @@ public enum Label {
 
     public static final String PREFIX_NETWORK = "network";
     public static final String PREFIX_STATUS = "status";
+    public static final String PREFIX_CONDITION = "condition";
 
     /**
      * Separator for label key parts.

@@ -1,5 +1,6 @@
 package de.bonndan.nivio.assessment;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -11,6 +12,7 @@ import java.util.*;
  * <p>
  * Status (see {@link Status}) is an ordered set of statuses represented as colors
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class StatusValue {
 
     public static final String SUMMARY_LABEL = "summary";

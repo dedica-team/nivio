@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static de.bonndan.nivio.output.Color.getGroupColor;
+import static de.bonndan.nivio.output.map.MapFactory.DEFAULT_ICON_SIZE;
 
 /**
  * This class is responsible for rendering services and groups nicely with bells and whistles.
@@ -31,13 +32,12 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
 
     public static final int GRID_SIZE = 20;
     private static final String CUSTOM_TYPE = "custom";
-    private final int DEFAULT_ICON_SIZE = 50;
 
-    private Logger logger = LoggerFactory.getLogger(FinalGraph.class);
-    private Map<Item, mxCell> itemVertexes = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(FinalGraph.class);
+    private final Map<Item, mxCell> itemVertexes = new HashMap<>();
     private mxStylesheet stylesheet;
     private mxGraph graph;
-    private Map<Group, mxCell> groups = new HashMap<>();
+    private final Map<Group, mxCell> groups = new HashMap<>();
 
     public FinalGraph() {
     }
@@ -89,7 +89,7 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
 
         addDataFlow(items);
 
-        renderExtras(itemVertexes);
+        //renderExtras(itemVertexes);
 
         return graph;
     }

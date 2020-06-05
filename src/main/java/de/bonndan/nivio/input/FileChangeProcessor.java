@@ -1,65 +1,69 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.IndexEvent;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.LandscapeRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * This class handles local file changes to tries to find the landscape belonging to the file, then trigger an indexing.
+ *
+ *
+ */
 @Component
 public class FileChangeProcessor implements ApplicationListener<FSChangeEvent> {
 
-    private final Indexer indexer;
     private final LandscapeRepository landscapeRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
-    public FileChangeProcessor(Indexer indexer, LandscapeRepository landscapeRepository) {
-        this.indexer = indexer;
+    public FileChangeProcessor(LandscapeRepository landscapeRepository,
+                               ApplicationEventPublisher applicationEventPublisher
+    ) {
         this.landscapeRepository = landscapeRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
     public void onApplicationEvent(FSChangeEvent fsChangeEvent) {
-        process(fsChangeEvent.getChangedFile());
-    }
 
-    public ProcessLog process(File envFile) {
-        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(envFile);
+        File changedFile = fsChangeEvent.getChangedFile();
+        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(changedFile);
         if (landscapeDescription == null) {
-            return new ProcessLog(new ProcessingException("Could not read environment from " + envFile, new RuntimeException()));
+            new ProcessLog(new ProcessingException("Could not read environment from " + changedFile, new RuntimeException()));
+            return;
         }
 
         //this is not an environment file, but likely a service description file
         if (landscapeDescription.getIdentifier() == null && !StringUtils.isEmpty(landscapeDescription.getSource())) {
-            return handleServiceDescriptionFileChange(landscapeDescription).orElse(
-                    new ProcessLog(new ProcessingException("Could not read environment from " + envFile, new RuntimeException()))
-            );
+            if (handleServiceDescriptionFileChange(landscapeDescription, changedFile)) {
+                return;
+            }
         }
-        return process(landscapeDescription);
+        process(landscapeDescription, changedFile);
     }
 
-    private Optional<ProcessLog> handleServiceDescriptionFileChange(LandscapeDescription landscapeDescription) {
-
-        AtomicReference<ProcessLog> process = new AtomicReference<>();
+    private boolean handleServiceDescriptionFileChange(LandscapeDescription landscapeDescription,
+                                                                    File changedFile
+    ) {
+        AtomicBoolean isHandled = new AtomicBoolean(false);
         landscapeRepository.findAll().forEach(landscape -> {
             LandscapeDescription env1 = LandscapeDescriptionFactory.fromYaml(new File(landscape.getSource()));
             if (env1 != null && env1.hasReference(landscapeDescription.getSource())) {
-
-                Optional.ofNullable(process(env1)).ifPresent(processLog -> {
-                    process.set(processLog);
-                    process.get().info("Reindexing triggered based on file change: " + landscapeDescription.getSource());
-                });
-
+                process(env1, changedFile);
+                isHandled.set(true);
             }
         });
-        return Optional.of(process.get());
+        return isHandled.get();
     }
 
-    public ProcessLog process(LandscapeDescription landscapeDescription) {
-        return indexer.reIndex(landscapeDescription);
+    private void process(LandscapeDescription landscapeDescription, File changedFile) {
+        applicationEventPublisher.publishEvent(new IndexEvent(this, landscapeDescription, "File change: " + changedFile));
     }
 }

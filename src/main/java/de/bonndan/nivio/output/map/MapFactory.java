@@ -11,6 +11,8 @@ import de.bonndan.nivio.output.RenderedArtifact;
  */
 public interface MapFactory<T,R> {
 
+    int DEFAULT_ICON_SIZE = 50;
+
     /**
      * Applies values from a rendering to landscape components.
      *
