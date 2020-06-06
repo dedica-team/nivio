@@ -86,7 +86,7 @@ public class ReportGenerator extends HtmlGenerator {
                                 li("Name: " + FormatUtils.nice(item.getName()))
                                 , li("Full identifier: " + item.getFullyQualifiedIdentifier().toString())
                                 , li("Identifier: " + item.getIdentifier())
-                                , li("Short Name: " + FormatUtils.nice(item.getLabel(Label.SHORTNAME)))
+                                , li("Short Name: " + FormatUtils.nice(item.getLabel(Label.shortname)))
                                 , li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">" + GROUP_CIRCLE + "</span> " + FormatUtils.nice(item.getGroup())))
                                 , li("Contact: " + FormatUtils.nice(item.getContact()))
                                 , li("Team: " + FormatUtils.nice(item.getLabel(Label.team)))

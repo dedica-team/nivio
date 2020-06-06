@@ -63,7 +63,7 @@ public class AsciiDocGenerator {
         builder.append("[horizontal]" + NL);
         builder.append("FQI:: " + item.getFullyQualifiedIdentifier() + NL);
         builder.append("Name:: " + nice(item.getName()) + NL);
-        builder.append("Short Name:: " + nice(item.getLabel(Label.SHORTNAME)) + NL);
+        builder.append("Short Name:: " + nice(item.getLabel(Label.shortname)) + NL);
         builder.append("Type:: " + item.getType() + NL);
         builder.append("Links:: " + item.getLinks().entrySet().stream()
                 .map(stringURLEntry -> stringURLEntry.getValue().toString() + "[" + stringURLEntry.getKey() + "]")

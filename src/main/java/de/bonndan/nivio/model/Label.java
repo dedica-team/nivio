@@ -25,13 +25,13 @@ public enum Label {
 
     security("description of the item's security status"),
 
-    SHORTNAME("abbreviated name"),
+    shortname("abbreviated name"),
 
     software("Software/OS name"),
 
     stability("description of the item's stability"),
 
-    team("Name of the responsible team"),
+    team("Name of the responsible team (e.g. technical owner)"),
 
     type("the type (service, database, queue, loadbalancer...)"),
 

@@ -18,7 +18,7 @@ public class ItemFactoryTest {
     public void setUp() throws MalformedURLException {
         landscapeItem = new ItemDescription();
         landscapeItem.setName("test");
-        landscapeItem.setLabel(Label.SHORTNAME, "t");
+        landscapeItem.setLabel(Label.shortname, "t");
         landscapeItem.setType("loadbalancer");
         landscapeItem.setLabel(Label.layer, LandscapeItem.LAYER_INFRASTRUCTURE);
         landscapeItem.setIdentifier("id");
@@ -46,7 +46,7 @@ public class ItemFactoryTest {
         assertEquals(l, created.getLandscape());
 
         assertEquals(landscapeItem.getName(), created.getName());
-        assertEquals(landscapeItem.getLabel(Label.SHORTNAME), created.getLabel(Label.SHORTNAME));
+        assertEquals(landscapeItem.getLabel(Label.shortname), created.getLabel(Label.shortname));
         assertEquals(landscapeItem.getType(), created.getType());
         assertEquals(landscapeItem.getOwner(), created.getOwner());
         assertEquals(landscapeItem.getLinks(), created.getLinks());

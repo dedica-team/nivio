@@ -43,7 +43,7 @@ class ItemDescriptionFactoryNivioTest {
         assertEquals("Demo Blog", service.getName());
         assertEquals("to be replaced", service.getLabel(Label.note));
         assertEquals("blog-server", service.getIdentifier());
-        assertEquals("blog", service.getLabel(Label.SHORTNAME));
+        assertEquals("blog", service.getLabel(Label.shortname));
         assertEquals("1.0", service.getLabel(Label.version));
         assertEquals("public", service.getLabel(Label.visibility));
         assertEquals("Wordpress", service.getLabel(Label.software));

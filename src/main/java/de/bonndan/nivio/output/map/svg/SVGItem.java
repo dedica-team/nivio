@@ -38,8 +38,8 @@ class SVGItem extends Component {
         var fillId = hasFill ? "url(#" + SVGPattern.idForLink(item.getFill()) + ")" : "white";
         DomContent content = null;
         //use the shortname as text instead
-        if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(item.getLabel(Label.SHORTNAME))) {
-            content = new SVGLabelText(item.getLabel(Label.SHORTNAME), "0", "3", "item_shortName").render();
+        if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(item.getLabel(Label.shortname))) {
+            content = new SVGLabelText(item.getLabel(Label.shortname), "0", "3", "item_shortName").render();
             fillId = "white";
             hasText = true;
         }
