@@ -24,7 +24,7 @@ class ConditionKPITest {
     public void testGreen() {
         Item item = new Item();
         item.setIdentifier("foo");
-        item.setLabel(Label.PREFIX_CONDITION + Label.DELIMITER + "bar", "True");
+        item.setLabel(Label.key(Label.condition, "bar"), "True");
 
         List<StatusValue> statusValues = kpi.getStatusValues(item);
         assertEquals(1, statusValues.size());
@@ -35,8 +35,8 @@ class ConditionKPITest {
     public void testRed() {
         Item item = new Item();
         item.setIdentifier("foo");
-        item.setLabel(Label.PREFIX_CONDITION + Label.DELIMITER + "bar", "True");
-        item.setLabel(Label.PREFIX_CONDITION + Label.DELIMITER + "baz", "False");
+        item.setLabel(Label.key(Label.condition, "bar"), "True");
+        item.setLabel(Label.key(Label.condition, "baz"), "False");
 
         List<StatusValue> statusValues = kpi.getStatusValues(item);
         assertEquals(1, statusValues.size());

@@ -28,7 +28,7 @@ public class ConditionKPI implements KPI {
 
         var status = Status.UNKNOWN;
         var message = "";
-        for (Map.Entry<String, String> entry : ((Labeled) component).getLabels(Label.PREFIX_CONDITION).entrySet()) {
+        for (Map.Entry<String, String> entry : ((Labeled) component).getLabels(Label.condition).entrySet()) {
             String key = entry.getKey();
             String flag = entry.getValue();
             if (StringUtils.isEmpty(flag))

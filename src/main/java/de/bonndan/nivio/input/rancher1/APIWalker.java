@@ -111,7 +111,7 @@ class APIWalker {
             ItemDescription item = new ItemDescription();
             item.setIdentifier(service.getId());
             item.setName(service.getName());
-            item.setLabel(Label.SCALE, String.valueOf(service.getScale()));
+            item.setLabel(Label.scale, String.valueOf(service.getScale()));
             Stack stack = stacks.get(service.getStackId());
             if (stack != null) {
                 item.setGroup(stack.getName());
@@ -131,7 +131,7 @@ class APIWalker {
             }
 
             if (service.getLaunchConfig() != null) {
-                item.setLabel(Label.VERSION, service.getLaunchConfig().getImageUuid());
+                item.setLabel(Label.version, service.getLaunchConfig().getImageUuid());
             }
 
             //copy all labels

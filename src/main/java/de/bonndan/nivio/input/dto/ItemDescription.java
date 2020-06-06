@@ -81,11 +81,11 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
 
     @Override
     public String getType() {
-        return getLabel(Label.TYPE);
+        return getLabel(Label.type);
     }
 
     public void setType(String type) {
-        this.setLabel(Label.TYPE, type);
+        this.setLabel(Label.type, type);
     }
 
     public String getName() {
@@ -233,17 +233,16 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
     /**
      * Legacy setter for {@link StatusValue}.
      *
-     * @param statuses
+     * @param statuses a list of key-value pairs, keys are "label", "status", "message"
      */
-    @Deprecated
     public void setStatuses(List<LinkedHashMap<String, String>> statuses) {
         statuses.forEach(map -> {
             String key = map.get("label");
             if (key != null) {
-                String value = map.get("status");
-                String message = map.get("message");
-                setLabel(Label.PREFIX_STATUS + Label.DELIMITER + key + Label.DELIMITER + "status", value);
-                setLabel(Label.PREFIX_STATUS + Label.DELIMITER + key + Label.DELIMITER + "message", message);
+                String value = map.get(StatusValue.LABEL_SUFFIX_STATUS);
+                String message = map.get(StatusValue.LABEL_SUFFIX_MESSAGE);
+                setLabel(Label.key(Label.status, key , StatusValue.LABEL_SUFFIX_STATUS), value);
+                setLabel(Label.key(Label.status, key , StatusValue.LABEL_SUFFIX_MESSAGE), message);
             }
         });
     }

@@ -35,7 +35,7 @@ public interface Assessable extends Component {
     }
 
     /**
-     * Returns pre-set status values not computed by {@link AbstractKPI}s.
+     * Returns pre-set status values not computed by {@link KPI}s.
      * <p>
      * This is only for {@link Assessment} and not for public use, since it only contains static data.
      *

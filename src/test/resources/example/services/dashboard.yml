@@ -30,7 +30,7 @@ items:
     statuses:
       - label: stability
         status: green
-      - label: business_capability
+      - label: capability
         status: green
     interfaces:
       - description: kpis

@@ -2,7 +2,6 @@ package de.bonndan.nivio.output;
 
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Labeled;
-import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.icons.Icons;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import de.bonndan.nivio.util.URLHelper;
@@ -65,7 +64,7 @@ public class LocalServer implements EnvironmentAware {
 
     public URL getIconUrl(Labeled item) {
 
-        String icon = item.getLabel(Label.ICON);
+        String icon = item.getLabel(Label.icon);
         if (!StringUtils.isEmpty(icon)) {
 
             if (icon.startsWith(VENDOR_PREFIX)) {
@@ -77,7 +76,7 @@ public class LocalServer implements EnvironmentAware {
             return iconUrl != null ? iconUrl : getUrl(icon);
         }
 
-        String type = item.getLabel(Label.TYPE);
+        String type = item.getLabel(Label.type);
         if (StringUtils.isEmpty(type)) {
             return getIconUrl(DEFAULT_ICON.getName());
         }

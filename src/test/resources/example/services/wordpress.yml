@@ -30,7 +30,7 @@ items:
       message: uses outdated version
     - label: stability
       status: green
-    - label: business_capability
+    - label: capability
       status: yellow
       message: needs finer control of content publishing like ACLs
   interfaces:
