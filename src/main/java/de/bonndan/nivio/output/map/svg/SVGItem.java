@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
+import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.Rendered;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
@@ -59,7 +60,7 @@ class SVGItem extends Component {
                 .attr("cy", 0)
                 .attr("r", DEFAULT_ICON_SIZE - 10)
                 .attr("fill", fillId)
-                .attr("stroke", "#" + item.getColor());
+                .attr("stroke", "#" + (item.getColor() != null ? item.getColor() : Color.GRAY));
         if (Lifecycle.PLANNED.equals(item.getLifecycle())) {
             circle.attr("stroke-dasharray", 5);
             circle.attr("opacity", 0.7);
