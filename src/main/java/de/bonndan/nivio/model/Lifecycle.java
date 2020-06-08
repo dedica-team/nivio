@@ -31,7 +31,7 @@ public enum Lifecycle {
         if (lifecycle.contains("end") || lifecycle.contains("eol"))
             return END_OF_LIFE;
 
-        return PRODUCTION;
+        return null;
     }
 
     /**
