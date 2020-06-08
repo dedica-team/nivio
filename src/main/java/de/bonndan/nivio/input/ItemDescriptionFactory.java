@@ -49,9 +49,6 @@ public interface ItemDescriptionFactory {
             });
         }
 
-        if (increment.getLifecycle() != null)
-            existing.setLifecycle(increment.getLifecycle());
-
         existing.getLinks().putAll(increment.getLinks());
 
         assignSafe(increment.getRelations(), (rel) -> rel.forEach(existing::addRelation));

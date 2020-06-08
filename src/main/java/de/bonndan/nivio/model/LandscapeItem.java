@@ -29,11 +29,6 @@ public interface LandscapeItem extends Component, Labeled, Linked {
     @Nullable String getType();
 
     /**
-     * @return the lifecycle phase
-     */
-    @Nullable Lifecycle getLifecycle();
-
-    /**
      * @return a set of {@link InterfaceItem}
      */
     @NonNull Set<InterfaceItem> getInterfaces();

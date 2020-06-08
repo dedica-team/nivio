@@ -3,6 +3,7 @@
 * **health** description of the item's health status
 * **icon** Name of the icon to render.
 * **layer** a technical layer
+* **lifecycle** A lifecycle phase (PLANNED|plan, INTEGRATION|int, PRODUCTION|prod, END_OF_LIFE|eol|end)
 * **note** a custom note
 * **scale** number of instances
 * **security** description of the item's security status
@@ -13,6 +14,3 @@
 * **type** the type (service, database, queue, loadbalancer...)
 * **version** The version (e.g. software version, protocol version)
 * **visibility** visibility to other items
-* **network (prefix)** prefix for network labels
-* **status (prefix)** prefix for status labels, can be used as prefix all other labels to mark a status for the label
-* **condition (prefix)** prefix for condition labels

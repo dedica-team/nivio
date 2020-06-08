@@ -59,7 +59,7 @@ class ItemDescriptionFactoryNivioTest {
         assertEquals("docker", service.getLabel("hosttype"));
         assertEquals(1, service.getTags().length);
         assertTrue(Arrays.asList(service.getTags()).contains("CMS"));
-        assertEquals(Lifecycle.END_OF_LIFE, service.getLifecycle());
+        assertTrue(Lifecycle.isEndOfLife(service));
 
 
         assertEquals(Status.RED.toString(), service.indexedByPrefix(Label.status).get(Label.security.name()).get(StatusValue.LABEL_SUFFIX_STATUS));

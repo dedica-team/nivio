@@ -61,7 +61,7 @@ class SVGItem extends Component {
                 .attr("r", DEFAULT_ICON_SIZE - 10)
                 .attr("fill", fillId)
                 .attr("stroke", "#" + (item.getColor() != null ? item.getColor() : Color.GRAY));
-        if (Lifecycle.PLANNED.equals(item.getLifecycle())) {
+        if (Lifecycle.isPlanned(item)) {
             circle.attr("stroke-dasharray", 5);
             circle.attr("opacity", 0.7);
         }

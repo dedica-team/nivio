@@ -96,12 +96,12 @@ public class ItemDescriptionFactoryTest {
 
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
-        increment.setLifecycle(Lifecycle.END_OF_LIFE);
+        increment.setLifecycle(Lifecycle.END_OF_LIFE.name());
 
 
         ItemDescriptionFactory.assignNotNull(sd1, increment);
 
-        assertEquals(Lifecycle.END_OF_LIFE, sd1.getLifecycle());
+        assertEquals(Lifecycle.END_OF_LIFE.name(), sd1.getLabel(Label.lifecycle));
     }
 
     @Test
