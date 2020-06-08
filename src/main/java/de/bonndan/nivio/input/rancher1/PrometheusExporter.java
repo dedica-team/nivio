@@ -98,7 +98,7 @@ public class PrometheusExporter {
             }
 
             if (health_state != null) {
-                itemDescription.setLabel(Label.HEALTH, health_state);
+                itemDescription.setLabel(Label.health, health_state);
             }
         }
 

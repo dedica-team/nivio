@@ -18,22 +18,22 @@ public class ItemFactoryTest {
     public void setUp() throws MalformedURLException {
         landscapeItem = new ItemDescription();
         landscapeItem.setName("test");
-        landscapeItem.setLabel(Label.SHORTNAME, "t");
+        landscapeItem.setLabel(Label.shortname, "t");
         landscapeItem.setType("loadbalancer");
-        landscapeItem.setLabel(Label.LAYER, LandscapeItem.LAYER_INFRASTRUCTURE);
+        landscapeItem.setLabel(Label.layer, LandscapeItem.LAYER_INFRASTRUCTURE);
         landscapeItem.setIdentifier("id");
         landscapeItem.getLinks().put("homepage", new URL("http://home.page"));
         landscapeItem.getLinks().put("repo", new URL("https://acme.git/repo1"));
         landscapeItem.setContact("contact");
-        landscapeItem.setLabel(Label.NOTE, "a note");
+        landscapeItem.setLabel(Label.note, "a note");
         landscapeItem.setOwner("Mr. T");
-        landscapeItem.setLabel(Label.SOFTWARE, "ABC");
-        landscapeItem.setLabel(Label.VERSION, "1");
-        landscapeItem.setLabel(Label.TEAM, "A-Team");
-        landscapeItem.setLabel(Label.VISIBILITY, "public");
+        landscapeItem.setLabel(Label.software, "ABC");
+        landscapeItem.setLabel(Label.version, "1");
+        landscapeItem.setLabel(Label.team, "A-Team");
+        landscapeItem.setLabel(Label.visibility, "public");
         landscapeItem.setPrefixed(Tagged.LABEL_PREFIX_TAG, new String[]{"a", "b"});
-        landscapeItem.setLabel(Label.COSTS, "10000");
-        landscapeItem.setLabel(Label.BUSINESS_CAPABILITY, "billing");
+        landscapeItem.setLabel(Label.costs, "10000");
+        landscapeItem.setLabel(Label.capability, "billing");
     }
 
     @Test
@@ -46,22 +46,22 @@ public class ItemFactoryTest {
         assertEquals(l, created.getLandscape());
 
         assertEquals(landscapeItem.getName(), created.getName());
-        assertEquals(landscapeItem.getLabel(Label.SHORTNAME), created.getLabel(Label.SHORTNAME));
+        assertEquals(landscapeItem.getLabel(Label.shortname), created.getLabel(Label.shortname));
         assertEquals(landscapeItem.getType(), created.getType());
         assertEquals(landscapeItem.getOwner(), created.getOwner());
         assertEquals(landscapeItem.getLinks(), created.getLinks());
         assertEquals(landscapeItem.getLabels(Tagged.LABEL_PREFIX_TAG).size(), created.getTags().length);
         assertEquals(landscapeItem.getContact(), created.getContact());
-        assertEquals(landscapeItem.getLabel(Label.NOTE), created.getLabel(Label.NOTE));
-        assertEquals(landscapeItem.getLabel(Label.TEAM), created.getLabel(Label.TEAM));
-        assertEquals(landscapeItem.getLabel(Label.SOFTWARE), created.getLabel(Label.SOFTWARE));
-        assertEquals(landscapeItem.getLabel(Label.VERSION), created.getLabel(Label.VERSION));
-        assertEquals(landscapeItem.getLabel(Label.VISIBILITY), created.getLabel(Label.VISIBILITY));
+        assertEquals(landscapeItem.getLabel(Label.note), created.getLabel(Label.note));
+        assertEquals(landscapeItem.getLabel(Label.team), created.getLabel(Label.team));
+        assertEquals(landscapeItem.getLabel(Label.software), created.getLabel(Label.software));
+        assertEquals(landscapeItem.getLabel(Label.version), created.getLabel(Label.version));
+        assertEquals(landscapeItem.getLabel(Label.visibility), created.getLabel(Label.visibility));
         assertEquals(landscapeItem.getInterfaces(), created.getInterfaces());
         assertEquals(landscapeItem.getRelations().size(), created.getRelations().size());
-        assertEquals(landscapeItem.getLabels(Label.PREFIX_NETWORK), created.getLabels(Label.PREFIX_NETWORK));
-        assertEquals(landscapeItem.getLabel(Label.COSTS), created.getLabel(Label.COSTS));
-        assertEquals(landscapeItem.getLabel(Label.BUSINESS_CAPABILITY), created.getLabel(Label.BUSINESS_CAPABILITY));
+        assertEquals(landscapeItem.getLabels(Label.network), created.getLabels(Label.network));
+        assertEquals(landscapeItem.getLabel(Label.costs), created.getLabel(Label.costs));
+        assertEquals(landscapeItem.getLabel(Label.capability), created.getLabel(Label.capability));
         assertEquals(landscapeItem.getLifecycle(), created.getLifecycle());
 
     }

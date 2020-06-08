@@ -91,8 +91,8 @@ class TemplateResolverTest {
 
         //other values from template
         assertNull(web.getName());
-        assertEquals("Wordpress", web.getLabel(Label.SOFTWARE));
-        assertEquals("alphateam", web.getLabel(Label.TEAM));
+        assertEquals("Wordpress", web.getLabel(Label.software));
+        assertEquals("alphateam", web.getLabel(Label.team));
         assertEquals("alphateam@acme.io", web.getContact());
         assertEquals(1, web.getLabels(Tagged.LABEL_PREFIX_TAG).size());
     }
@@ -106,7 +106,7 @@ class TemplateResolverTest {
 
         ItemDescription redis = landscapeDescription.getItemDescriptions().pick("redis", null);
         assertNotNull(redis);
-        assertNull(redis.getLabel(Label.SOFTWARE));
+        assertNull(redis.getLabel(Label.software));
     }
 
     private Map<ItemDescription, List<String>> getTemplates(LandscapeDescription landscapeDescription) {

@@ -16,6 +16,8 @@ import java.util.*;
 public class StatusValue {
 
     public static final String SUMMARY_LABEL = "summary";
+    public static final String LABEL_SUFFIX_STATUS = "status";
+    public static final String LABEL_SUFFIX_MESSAGE = "message";
 
     private final String field;
     private final Status status;
@@ -23,6 +25,12 @@ public class StatusValue {
 
     /**
      * Turns a map of strings indexed by (KPI-)field into StatusValue objects.
+     *
+     * Example:
+     * status.foo.status
+     * status.foo.message
+     * status.bar.status
+     * status.bar.message
      *
      * @param valuesByKey grouped label values
      * @return derived StatusValues
@@ -33,8 +41,8 @@ public class StatusValue {
         valuesByKey.forEach((key, stringStringMap) -> {
             StatusValue value = new StatusValue(
                     key,
-                    Status.from(stringStringMap.get("status")),
-                    stringStringMap.get("message")
+                    Status.from(stringStringMap.get(LABEL_SUFFIX_STATUS)),
+                    stringStringMap.get(LABEL_SUFFIX_MESSAGE)
             );
             statusValues.add(value);
         });

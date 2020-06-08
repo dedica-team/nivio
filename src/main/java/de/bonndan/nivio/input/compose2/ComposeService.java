@@ -25,12 +25,13 @@ public class ComposeService {
     /**
      * Transforms into a dto.
      */
-    public ItemDescription toDto() {
+    public ItemDescription getDescription() {
         ItemDescription description = new ItemDescription(identifier);
         if (networks != null) {
             networks.forEach(network -> description.setLabel(
-                    Label.PREFIX_NETWORK + Label.DELIMITER + network,
-                    network.getName())
+                    Label.key(Label.network, network.toString()),
+                    network.getName()
+                    )
             );
         }
 
@@ -40,7 +41,7 @@ public class ComposeService {
         if (ports != null) {
             description.setInterfaces(
                     new HashSet<>(
-                        ports.stream().map(InterfaceDescription::new).collect(Collectors.toList())
+                            ports.stream().map(InterfaceDescription::new).collect(Collectors.toList())
                     )
             );
         }

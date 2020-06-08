@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.ItemDescriptions;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.util.RootPath;
@@ -62,6 +61,6 @@ class PrometheusExporterTest {
         assertNotNull(op.get());
         LandscapeItem rocketchat = op.get();
         assertEquals("rocket-chat", rocketchat.getFullyQualifiedIdentifier().getGroup());
-        assertEquals("unhealthy", rocketchat.getLabel(Label.HEALTH));
+        assertEquals("unhealthy", rocketchat.getLabel(Label.health));
     }
 }

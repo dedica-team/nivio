@@ -53,10 +53,6 @@ public interface Rendered extends Labeled {
         return getLabel(LABEL_FILL);
     }
 
-    default String getIcon() {
-        return getLabel(LABEL_ICON);
-    }
-
     default void setX(Long x) {
         setLabel(LX, String.valueOf(x));
     }

@@ -7,7 +7,6 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.util.URLHelper;
 import io.fabric8.kubernetes.api.model.*;
@@ -25,8 +24,6 @@ import java.util.stream.Collectors;
 
 /**
  * Scans the k8s api for services, pods, volumes etc.
- *
- *
  */
 @org.springframework.stereotype.Service
 public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory {
@@ -136,7 +133,6 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
 
         ItemDescription service = new ItemDescription();
         service.setIdentifier(kubernetesService.getMetadata().getName());
-        service.setLabel(Label.LAYER, LandscapeItem.LAYER_INGRESS);
         service.setType(kubernetesService.getSpec().getType());
 
         String group = getGroup(kubernetesService);
@@ -187,8 +183,7 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
             containerDesc.setGroup(group);
             containerDesc.setName(container.getName());
             containerDesc.setIdentifier(podItem.getName() + "-" + container.getName());
-            containerDesc.setLabel(Label.SOFTWARE, container.getImage());
-            containerDesc.setLabel(Label.MACHINE, pod.getSpec().getNodeName()); //ip?
+            containerDesc.setLabel(Label.software, container.getImage());
             containerDesc.setType(ItemType.CONTAINER);
             pod.getMetadata().getLabels().forEach((s, s2) -> containerDesc.setLabel(s, s2));
 
@@ -214,7 +209,7 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
 
             //storing configmap volumes in labels
             if (volume.getConfigMap() != null) {
-                podItem.setLabel("configMap" + Label.DELIMITER + volume.getConfigMap().getName(), volume.getConfigMap().getName());
+                podItem.setLabel(Label.key("configMap", volume.getConfigMap().getName()), volume.getConfigMap().getName());
                 return;
             }
 
@@ -230,7 +225,6 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
         volumeDesc.setGroup(group);
         volumeDesc.setName(volume.getName());
         volumeDesc.setIdentifier(podItem.getName() + "-" + volume.getName());
-        volumeDesc.setLabel(Label.MACHINE, pod.getSpec().getNodeName()); //ip?
         volumeDesc.setType(ItemType.VOLUME);
         if (volume.getSecret() != null && volume.getSecret().getSecretName().equals(volume.getName())) {
             volumeDesc.setLabel("secret", 1);
@@ -249,8 +243,8 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
     private void setConditionsAndHealth(PodStatus status, ItemDescription podItem) {
         if (status != null && status.getConditions() != null) {
             status.getConditions().forEach(podCondition -> {
-                String label = Label.PREFIX_CONDITION + Label.DELIMITER + podCondition.getType();
-                podItem.setLabel(label, podCondition.getStatus());
+                String key = Label.key(Label.condition, podCondition.getType());
+                podItem.setLabel(key, podCondition.getStatus());
             });
         }
     }

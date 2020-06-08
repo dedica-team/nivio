@@ -5,7 +5,6 @@ import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.HealthKPI;
-import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
@@ -135,7 +134,7 @@ class LandscapeDescriptionFactoryTest {
 
         ItemDescription template = landscapeDescription.getTemplates().get("myfirsttemplate");
 
-        assertEquals("webservice", template.getLabel(Label.TYPE));
+        assertEquals("webservice", template.getLabel(Label.type));
         assertTrue(template.getName().isEmpty());
     }
 
@@ -248,7 +247,7 @@ class LandscapeDescriptionFactoryTest {
 
         monthlyCosts.init();
         Item item = new Item();
-        item.setLabel(Label.COSTS, "200");
+        item.setLabel(Label.costs, "200");
         StatusValue statusValue =  monthlyCosts.getStatusValues(item).get(0);
         assertNotNull(statusValue);
         assertEquals(Status.RED, statusValue.getStatus());

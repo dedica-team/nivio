@@ -77,15 +77,6 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
         this.name = name;
     }
 
-    @Override
-    public String getIcon() {
-        return getLabel(Label.ICON);
-    }
-
-    public void setIcon(String icon) {
-        this.setLabel(Label.ICON, icon);
-    }
-
     public String getOwner() {
         return owner;
     }
@@ -157,12 +148,12 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
     }
 
     public void setType(String type) {
-        this.setLabel(Label.TYPE, type);
+        this.setLabel(Label.type, type);
     }
 
     @Override
     public String getType() {
-        return getLabel(Label.TYPE);
+        return getLabel(Label.type);
     }
 
     /**
@@ -228,14 +219,15 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
      */
     @Override
     public String toString() {
-        if (landscape == null)
+        if (landscape == null) {
             return identifier;
+        }
 
         return getFullyQualifiedIdentifier().toString();
     }
 
     @Override
     public Set<StatusValue> getAdditionalStatusValues() {
-        return StatusValue.fromMapping(indexedByPrefix(Label.PREFIX_STATUS));
+        return StatusValue.fromMapping(indexedByPrefix(Label.status));
     }
 }

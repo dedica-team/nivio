@@ -35,8 +35,8 @@ class ItemDescriptionFactoryCompose2Test {
         assertNotNull(service);
 
         assertEquals("web", service.getIdentifier());
-        assertNotNull(service.getLabels(Label.PREFIX_NETWORK));
-        assertEquals(2, service.getLabels(Label.PREFIX_NETWORK).size());
+        assertNotNull(service.getLabels(Label.network));
+        assertEquals(2, service.getLabels(Label.network).size());
     }
 
     private String getRootPath() {

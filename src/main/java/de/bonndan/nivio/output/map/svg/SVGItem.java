@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
+import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.Rendered;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
@@ -37,8 +38,8 @@ class SVGItem extends Component {
         var fillId = hasFill ? "url(#" + SVGPattern.idForLink(item.getFill()) + ")" : "white";
         DomContent content = null;
         //use the shortname as text instead
-        if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(item.getLabel(Label.SHORTNAME))) {
-            content = new SVGLabelText(item.getLabel(Label.SHORTNAME), "0", "3", "item_shortName").render();
+        if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(item.getLabel(Label.shortname))) {
+            content = new SVGLabelText(item.getLabel(Label.shortname), "0", "3", "item_shortName").render();
             fillId = "white";
             hasText = true;
         }
@@ -59,7 +60,7 @@ class SVGItem extends Component {
                 .attr("cy", 0)
                 .attr("r", DEFAULT_ICON_SIZE - 10)
                 .attr("fill", fillId)
-                .attr("stroke", "#" + item.getColor());
+                .attr("stroke", "#" + (item.getColor() != null ? item.getColor() : Color.GRAY));
         if (Lifecycle.PLANNED.equals(item.getLifecycle())) {
             circle.attr("stroke-dasharray", 5);
             circle.attr("opacity", 0.7);

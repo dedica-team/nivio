@@ -37,7 +37,7 @@ public class LandscapeDTOFactory {
         landscapeDTO.description = landscape.getDescription();
 
         landscapeDTO.teams = landscape.getItems().stream()
-                .map(item -> item.getLabel(Label.TEAM))
+                .map(item -> item.getLabel(Label.team))
                 .filter(s -> !StringUtils.isEmpty(s))
                 .collect(Collectors.toSet())
                 .toArray(String[]::new);

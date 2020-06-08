@@ -1,75 +1,88 @@
 package de.bonndan.nivio.model;
 
 /**
- * All names are used in lowercase variant.
+ * Landscape component labels (to be used like fields).
  *
+ * All names are used in lowercase variant.
  *
  */
 public enum Label {
 
-    /**
-     * Describes the capability the service provides for the business, or in case of infrastructure the technical
-     * capability like enabling service discovery, configuration, secrets or persistence.
-     */
-    BUSINESS_CAPABILITY,
+    capability("The capability the service provides for the business, or in case of infrastructure" +
+            " the technical capability like enabling service discovery, configuration, secrets or persistence."),
 
-    /**
-     * Running costs of the item.
-     *
-     */
-    COSTS,
+    costs("Running costs of the item."),
 
-    HEALTH,
+    health("description of the item's health status"),
 
-    HOSTTYPE,
+    icon("Name of the icon to render."),
 
-    /**
-     * icon to render
-     */
-    ICON,
+    layer("a technical layer"),
 
-    LAYER,
+    note("a custom note"),
 
-    NOTE,
+    scale("number of instances"),
 
-    SCALE,
+    security("description of the item's security status"),
 
-    SECURITY,
+    shortname("abbreviated name"),
 
-    SHORTNAME,
+    software("Software/OS name"),
 
-    SOFTWARE,
+    stability("description of the item's stability"),
 
-    STABILITY,
+    team("Name of the responsible team (e.g. technical owner)"),
 
-    /**
-     * Name of the responsible team
-     */
-    TEAM,
+    type("the type (service, database, queue, loadbalancer...)"),
 
-    /**
-     * the type (service, database, queue, loadbalancer...)
-     */
-    TYPE,
+    version("The version (e.g. software version, protocol version)"),
 
-    VERSION,
+    visibility("visibility to other items"),
 
-    MACHINE,
+    network("prefix for network labels",true),
 
-    VISIBILITY  ;
+    status("prefix for status labels, can be used as prefix all other labels to mark a status for the label", true),
 
-    public static final String PREFIX_NETWORK = "network";
-    public static final String PREFIX_STATUS = "status";
-    public static final String PREFIX_CONDITION = "condition";
+    condition("prefix for condition labels", true);
 
     /**
      * Separator for label key parts.
+     * Should not be used outside this package. Use key() methods instead.
      */
-    public static final String DELIMITER = ".";
+    static final String DELIMITER = ".";
+
+    public final String meaning;
+    public final boolean isPrefix;
+
+    Label(String meaning) {
+        this.meaning = meaning;
+        this.isPrefix = false;
+    }
+
+    Label(String meaning, boolean isPrefix) {
+        this.meaning = meaning;
+        this.isPrefix = isPrefix;
+    }
 
     /**
      * Builds a properly delimited label key.
      */
+    public static String key(Label prefix, String key) {
+        return prefix + DELIMITER + key.toLowerCase();
+    }
+
+    public static String key(String prefix, String key) {
+        return prefix + DELIMITER + key.toLowerCase();
+    }
+
+    public static String key(Label prefix, Label key, String suffix) {
+        return prefix + DELIMITER + key.toString().toLowerCase() + DELIMITER + suffix;
+    }
+
+    public static String key(Label prefix, String key, String suffix) {
+        return prefix + DELIMITER + key.toLowerCase() + DELIMITER + suffix;
+    }
+
     public static String key(String prefix, Label key, String suffix) {
         return prefix + DELIMITER + key.toString().toLowerCase() + DELIMITER + suffix;
     }
