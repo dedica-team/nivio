@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.util.Mappers;
 import de.bonndan.nivio.util.URLHelper;
 import org.apache.commons.text.StringSubstitutor;
@@ -13,8 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,10 +25,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
+/**
+ * A static factory to create LandscapeDescription instances from files or strings.
+ */
 @Component
 public class LandscapeDescriptionFactory {
 
@@ -43,56 +44,41 @@ public class LandscapeDescriptionFactory {
     }
 
     /**
-     * Returns all {@link LandscapeDescription}s from config files named in the seed.
+     * Returns a {@link LandscapeDescription}s from config file url.
      *
-     * @param seed seed object
-     * @return list of fetched descriptions
+     * @param old an outdated landscape / description
+     * @return the description or null if the source is no URL
      */
-    public List<LandscapeDescription> getDescriptions(Seed seed) {
-
-        List<URL> locations = new ArrayList<>();
+    @Nullable
+    public LandscapeDescription from(Landscape old) {
         try {
-            if (seed.hasValue()) {
-                locations = seed.getLocations();
-            }
-            if (!StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
-                locations.addAll(seed.getDemoFiles());
-            }
+            URL url = new URL(old.getSource());
+            return from(url);
         } catch (MalformedURLException e) {
-            ProcessingException processingException = new ProcessingException("Failed to initialize watchers from seed", e);
-            publisher.publishEvent(new ProcessingErrorEvent(this, processingException));
+            String msg = "Source in landscape " + old.getIdentifier() + " might be no url: " + old.getSource();
+            LOGGER.info(msg);
+            return null;
         }
+    }
 
-        List<LandscapeDescription> descriptions = new ArrayList<>();
-
-        locations.forEach(url -> {
-            LandscapeDescription env = null;
+    @Nullable
+    public LandscapeDescription from(URL url) {
+        LandscapeDescription env = null;
+        try {
             if (URLHelper.isLocal(url)) {
-                try {
-                    File file = Paths.get(url.toURI()).toFile();
-                    env = LandscapeDescriptionFactory.fromYaml(file);
-                } catch (URISyntaxException | ProcessingException ex) {
-                    if (ex instanceof URISyntaxException) {
-                        publisher.publishEvent(new ProcessingErrorEvent(this, new ReadingException("Failed to handle file", ex)));
-                    } else {
-                        publisher.publishEvent(new ProcessingErrorEvent(this, (ProcessingException) ex));
-                    }
-                    LOGGER.error("Failed to parse file {}", url);
-                }
+                File file = Paths.get(url.toURI()).toFile();
+                env = LandscapeDescriptionFactory.fromYaml(file);
+                env.setSource(url.toString());
             } else {
-                try {
-                    env = LandscapeDescriptionFactory.fromString(fileFetcher.get(url), url);
-                } catch (ReadingException ex) {
-                    publisher.publishEvent(new ProcessingErrorEvent(this, ex));
-                    LOGGER.error("Failed to parse file {}", url);
-                }
+                env = LandscapeDescriptionFactory.fromString(fileFetcher.get(url), url);
             }
-            if (env != null) {
-                descriptions.add(env);
-            }
-        });
 
-        return descriptions;
+            LOGGER.info("Created file map for landscape {}", env.getIdentifier());
+        } catch (URISyntaxException e) {
+            ProcessingException ex = new ProcessingException("Failed to initialize url  " + url, e);
+            publisher.publishEvent(new ProcessingErrorEvent(this, ex));
+        }
+        return env;
     }
 
     /**
@@ -149,6 +135,7 @@ public class LandscapeDescriptionFactory {
      * @param url  for updates
      * @return env description
      */
+    @NonNull
     public static LandscapeDescription fromString(String yaml, URL url) {
         LandscapeDescription env = fromString(yaml, url.toString());
         env.setSource(url.toString());

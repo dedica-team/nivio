@@ -34,6 +34,9 @@ public class FileFetcher {
 
     public String get(URL url) {
         try {
+            if (URLHelper.isLocal(url)) {
+                return readFile(new File(url.toURI()));
+            }
             return http.get(url);
         } catch (IOException | URISyntaxException | RuntimeException e) {
             logger.error("Failed to fetch file " + url, e);
@@ -46,6 +49,9 @@ public class FileFetcher {
         try {
             URL url = new URL(ref.getUrl());
             url.toURI(); //to force exception early
+            if (URLHelper.isLocal(url)) {
+                return readFile(new File(url.toURI()));
+            }
             return fetchUrl(ref);
         } catch (MalformedURLException | URISyntaxException e) {
             String path = ref.getUrl();
@@ -75,6 +81,7 @@ public class FileFetcher {
     }
 
     private String fetchUrl(SourceReference ref) {
+
 
         try {
             if (ref.hasBasicAuth()) {

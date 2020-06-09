@@ -6,12 +6,13 @@ import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.HealthKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 
 class LandscapeDescriptionFactoryTest {
@@ -79,6 +81,39 @@ class LandscapeDescriptionFactoryTest {
         File file = new File(FILE_PATH_ENV);
         String yaml = new String(Files.readAllBytes(file.toPath()));
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromString(yaml, file.toURI().toURL());
+        assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource());
+    }
+
+    @Test
+    public void readUrlFromDescription() throws IOException {
+
+        File file = new File(FILE_PATH_ENV);
+        LandscapeDescription description = new LandscapeDescription();
+        description.setIdentifier("test");
+        description.setSource(file.toURI().toURL().toString());
+        ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
+        FileFetcher fileFetcher = mock(FileFetcher.class);
+
+        LandscapeDescriptionFactory landscapeDescriptionFactory = new LandscapeDescriptionFactory(publisher, fileFetcher);
+
+        //when
+        LandscapeDescription landscapeDescription = landscapeDescriptionFactory.from(description);
+        assertNotNull(landscapeDescription);
+        assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource());
+    }
+
+    @Test
+    public void readUrl() throws IOException {
+
+        File file = new File(FILE_PATH_ENV);
+        ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
+        FileFetcher fileFetcher = mock(FileFetcher.class);
+
+        LandscapeDescriptionFactory landscapeDescriptionFactory = new LandscapeDescriptionFactory(publisher, fileFetcher);
+
+        //when
+        LandscapeDescription landscapeDescription = landscapeDescriptionFactory.from(file.toURI().toURL());
+        assertNotNull(landscapeDescription);
         assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource());
     }
 

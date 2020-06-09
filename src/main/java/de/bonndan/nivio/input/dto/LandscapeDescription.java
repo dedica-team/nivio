@@ -1,10 +1,14 @@
 package de.bonndan.nivio.input.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.input.ItemDescriptionFactory;
 import de.bonndan.nivio.input.ItemDescriptions;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.GroupItem;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -17,6 +21,7 @@ import java.util.*;
  * <p>
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
+@JsonIgnoreType
 public class LandscapeDescription implements Landscape {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeDescription.class);
