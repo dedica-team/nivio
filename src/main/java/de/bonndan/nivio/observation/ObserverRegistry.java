@@ -77,6 +77,7 @@ public class ObserverRegistry implements ApplicationListener<ProcessingFinishedE
      */
     @Scheduled(fixedDelay = 60000, initialDelay = 10000)
     public void poll() {
+        LOGGER.info("Polling {} landscapes for changes.", observerMap.size());
         observerMap.entrySet().parallelStream().forEach(e -> check(e.getKey(), e.getValue()));
     }
 
