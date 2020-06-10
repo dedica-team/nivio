@@ -1,5 +1,6 @@
 package de.bonndan.nivio.observation;
 
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -18,14 +19,16 @@ class LandscapeObserverPoolTest {
         URLObserver urlObserver2 = mock(URLObserver.class);
         when(urlObserver1.hasChange()).thenReturn(CompletableFuture.completedFuture("hello"));
         when(urlObserver2.hasChange()).thenReturn(CompletableFuture.completedFuture("world"));
-        LandscapeObserverPool landscapeObserverPool = new LandscapeObserverPool(List.of(urlObserver1, urlObserver2));
+        LandscapeDescription description = new LandscapeDescription();
+        description.setIdentifier("test");
+        LandscapeObserverPool landscapeObserverPool = new LandscapeObserverPool(description, List.of(urlObserver1, urlObserver2));
 
         //when
         Optional<String> s = landscapeObserverPool.hasChange();
 
         //then
         assertTrue(s.isPresent());
-        assertEquals("hello", s.get());
+        assertEquals("hello;world", s.get());
     }
 
 }

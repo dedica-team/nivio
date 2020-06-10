@@ -16,19 +16,18 @@ import org.springframework.stereotype.Service;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
  * Service to register landscapes to observe description source changes.
- *
- *
  */
 @Service
 public class ObserverRegistry implements ApplicationListener<ProcessingFinishedEvent> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObserverRegistry.class);
 
-    private final Map<Landscape, LandscapeObserverPool> observerMap = new HashMap<>();
+    private final Map<String, LandscapeObserverPool> observerMap = new ConcurrentHashMap<>();
     private final URLObserverFactory urlObserverFactory;
     private final LandscapeDescriptionFactory landscapeDescriptionFactory;
     private final LandscapeUrlsFactory landscapeUrlsFactory;
@@ -47,7 +46,7 @@ public class ObserverRegistry implements ApplicationListener<ProcessingFinishedE
 
     /**
      * Landscape are registered for observation here.
-     *
+     * <p>
      * On processing success, {@link ProcessingFinishedEvent} is fired and read here to register the landscape.
      */
     @Override
@@ -72,33 +71,36 @@ public class ObserverRegistry implements ApplicationListener<ProcessingFinishedE
 
     /**
      * Polls for changes in landscapes.
-     *
-     *
      */
-    @Scheduled(fixedDelay = 60000, initialDelay = 10000)
+    @Scheduled(fixedDelay = 30000, initialDelay = 10000)
     public void poll() {
         LOGGER.info("Polling {} landscapes for changes.", observerMap.size());
-        observerMap.entrySet().parallelStream().forEach(e -> check(e.getKey(), e.getValue()));
+        observerMap.entrySet().parallelStream().forEach(e -> check(e.getValue()));
     }
 
     /**
      * @return the currently observed landscapes.
      */
-    public Set<Landscape> getObservedLandscapes() {
+    public Set<String> getObservedLandscapes() {
         return observerMap.keySet();
     }
 
     private void setLandscapeUrls(Landscape landscape, List<URL> urls) {
         observerMap.put(
-                landscape,
-                new LandscapeObserverPool(urls.stream().map(urlObserverFactory::getObserver).collect(Collectors.toList()))
+                landscape.getIdentifier(),
+                new LandscapeObserverPool(
+                        landscape,
+                        urls.stream().map(urlObserverFactory::getObserver).collect(Collectors.toList())
+                )
         );
     }
 
-    private void check(Landscape description, LandscapeObserverPool observerPool) {
-        Optional<String> changedUrl = observerPool.hasChange();
-        changedUrl.ifPresent(s -> {
-            LandscapeDescription updated = landscapeDescriptionFactory.from(description);
+    private void check(LandscapeObserverPool observerPool) {
+        Optional<String> change = observerPool.hasChange();
+        change.ifPresent(s -> {
+            Landscape stored = observerPool.getLandscape();
+            LandscapeDescription updated = landscapeDescriptionFactory.from(stored);
+            LOGGER.info("Detected change '{}' in landscape {}", s, stored.getIdentifier());
             if (updated != null) {
                 publisher.publishEvent(new IndexEvent(this, updated, "Source change: " + s));
             }

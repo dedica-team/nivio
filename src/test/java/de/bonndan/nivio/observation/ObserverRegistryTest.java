@@ -59,10 +59,10 @@ class ObserverRegistryTest {
         observerRegistry.onApplicationEvent(event);
 
         //then
-        Set<Landscape> observedLandscapes = observerRegistry.getObservedLandscapes();
+        Set<String> observedLandscapes = observerRegistry.getObservedLandscapes();
         assertNotNull(observedLandscapes);
         assertEquals(1, observedLandscapes.size());
-        assertEquals(landscape.getIdentifier(), observedLandscapes.iterator().next().getIdentifier());
+        assertEquals(landscape.getIdentifier(), observedLandscapes.iterator().next());
 
         verify(urlObserverFactory).getObserver(any(URL.class));
     }
@@ -86,10 +86,10 @@ class ObserverRegistryTest {
         observerRegistry.onApplicationEvent(event);
 
         //then
-        Set<Landscape> observedLandscapes = observerRegistry.getObservedLandscapes();
+        Set<String> observedLandscapes = observerRegistry.getObservedLandscapes();
         assertNotNull(observedLandscapes);
         assertEquals(1, observedLandscapes.size());
-        assertEquals(landscape.getIdentifier(), observedLandscapes.iterator().next().getIdentifier());
+        assertEquals(landscape.getIdentifier(), observedLandscapes.iterator().next());
 
         verify(urlObserverFactory).getObserver(any(URL.class));
     }
