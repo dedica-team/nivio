@@ -36,6 +36,9 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
 
     private String group;
 
+    /**
+     * Can be both read and modified by {@link de.bonndan.nivio.input.ItemRelationResolver}
+     */
     @JsonManagedReference
     private final Set<RelationItem<Item>> relations = ConcurrentHashMap.newKeySet();
 
