@@ -31,6 +31,17 @@ approach, i.e. there is no interface for manual data maintenance. It is designed
 
 ## Development Setup
 
+**Requirements**
+
+To run nivio you need the following software installed:
+- [nodejs v12.6.2 or higher](https://nodejs.org/en/), [How to update node?](https://www.hostingadvice.com/how-to/update-node-js-latest-version/)
+- [Maven](https://maven.apache.org/install.html)
+- Java 11
+
+---
+
+**Docker Setup (Linux)**
+
 Clone nivio, build and run a Docker image:
 
     git clone https://github.com/dedica-team/nivio.git && cd nivio
@@ -40,15 +51,30 @@ Clone nivio, build and run a Docker image:
     
   then open http://localhost:8080
   
-
-
-### Frontend Troubleshooting
-
-Maven builds the frontend following https://medium.com/@itzgeoff/including-react-in-your-spring-boot-maven-build-ae3b8f8826e
-   
-Fix node version problems using **nvm** or node > 5, see https://www.hostingadvice.com/how-to/update-node-js-latest-version/
-
-    nvm install v10.16.3
-    cd src/main/app
-    npm install -g yarn
+**Docker Setup (Windows)**
  
+  Clone nivio, build and run a Docker image:
+  
+      git clone https://github.com/dedica-team/nivio.git && cd nivio
+      mvn clean package
+      docker build -t nivio:latest .
+      docker run -e SEED=/tmp/inout.yml --mount type=bind,source=C:\<your>\<path>\<to>\nivio\src\test\resources\example,target=/tmp -p 8080:8080 nivio:latest
+      
+   then open http://localhost:8080
+   
+   ---
+ 
+**Development Setup (IntelliJ)**
+ 
+ Create a Spring Boot Configuration in IntelliJ that looks like this:
+ 
+  ![Spring Boot Config](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/SpringConfig.png)
+  
+  If you need a clean build you can run 
+  
+    mvn clean package
+  
+  You can use your own configuration files, if you add SEED=/path/to/config as an environment variable.
+  
+  
+  To start our React frontend, read further into our [Frontend Readme](https://github.com/dedica-team/nivio/tree/develop/src/main/app)
