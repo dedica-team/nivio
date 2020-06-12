@@ -11,6 +11,7 @@ const topics: any = {
   'install.html': raw('../../../../../../docs/build/install.html'),
   // features: raw('../../../../../../docs/build/features.html'),
   'input.html': raw('../../../../../../docs/build/input.html'),
+  'output.html': raw('../../../../../../docs/build/output.html'),
   'extra.html': raw('../../../../../../docs/build/extra.html'),
   'api.html': raw('../../../../../../docs/build/api.html'),
   'magic.html': raw('../../../../../../docs/build/magic.html'),
