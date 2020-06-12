@@ -1,5 +1,9 @@
 package de.bonndan.nivio.model;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Landscape component labels (to be used like fields).
  *
@@ -18,6 +22,8 @@ public enum Label {
     icon("Name of the icon to render."),
 
     layer("a technical layer"),
+
+    lifecycle("A lifecycle phase (PLANNED|plan, INTEGRATION|int, PRODUCTION|prod, END_OF_LIFE|eol|end)"),
 
     note("a custom note"),
 
@@ -85,5 +91,19 @@ public enum Label {
 
     public static String key(String prefix, Label key, String suffix) {
         return prefix + DELIMITER + key.toString().toLowerCase() + DELIMITER + suffix;
+    }
+
+    /**
+     * Exports labels with their meanings as map.
+     *
+     * @param includePrefixes include labels which are prefixes
+     * @return key is label, value is meaning
+     */
+    public static Map<String, String> export(boolean includePrefixes) {
+        Map<String, String> labelExport = new LinkedHashMap<>();
+        Arrays.stream(Label.values())
+                .filter(label -> includePrefixes || !label.isPrefix)
+                .forEach(label -> labelExport.put(label.name(), label.meaning));
+        return labelExport;
     }
 }

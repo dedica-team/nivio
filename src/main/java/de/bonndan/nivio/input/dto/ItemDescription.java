@@ -38,11 +38,9 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
     private Set<InterfaceItem> interfaces = new HashSet<>();
 
     @JsonDeserialize(contentAs = RelationDescription.class)
-    private Set<RelationItem<String>> relations = new HashSet<>();
+    private final Set<RelationItem<String>> relations = new HashSet<>();
 
-    private Lifecycle lifecycle;
-
-    private Map<String, String> labels = new HashMap<>();
+    private final Map<String, String> labels = new HashMap<>();
 
     private List<String> providedBy = new ArrayList<>();
 
@@ -138,19 +136,18 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         this.group = group;
     }
 
-    public void setLifecycle(Lifecycle lifecycle) {
-        this.lifecycle = lifecycle;
-    }
-
     public void setLifecycle(String lifecycle) {
-        if (!StringUtils.isEmpty(lifecycle)) {
-            setLifecycle(Lifecycle.from(lifecycle));
-        }
-    }
 
-    @Override
-    public Lifecycle getLifecycle() {
-        return lifecycle;
+        //try to standardize using enum values
+        if (!StringUtils.isEmpty(lifecycle)) {
+            Lifecycle from = Lifecycle.from(lifecycle);
+            if (from != null)
+                lifecycle = from.name();
+        }
+
+        if (lifecycle != null) {
+            this.setLabel(Label.lifecycle, lifecycle);
+        }
     }
 
     @Override

@@ -47,7 +47,6 @@ public class ItemFactory {
 
         item.getLinks().putAll(description.getLinks());
         item.setContact(description.getContact());
-        item.setLifecycle(description.getLifecycle());
         assignSafe(description.getGroup(), item::setGroup);
 
         description.getLabels().forEach((key, value) -> {

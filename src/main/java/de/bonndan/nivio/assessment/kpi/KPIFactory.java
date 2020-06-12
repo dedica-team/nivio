@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.bonndan.nivio.model.Lifecycle;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -42,6 +43,10 @@ public class KPIFactory extends JsonDeserializer<Map<String, KPI>> implements Se
 
             if (s.equals(ConditionKPI.IDENTIFIER)) {
                 kpi = new ConditionKPI();
+            }
+
+            if (s.equals(LifecycleKPI.IDENTIFIER)) {
+                kpi = new LifecycleKPI();
             }
 
             if (kpi == null) {
