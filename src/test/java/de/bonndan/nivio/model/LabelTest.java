@@ -26,8 +26,7 @@ class LabelTest {
      */
     @Test
     public void export() throws IOException {
-        Map<String, String> labelExport = new LinkedHashMap<>();
-        Arrays.stream(Label.values()).forEach(label -> labelExport.put(label.name(), label.meaning));
+        Map<String, String> labelExport = Label.export(false);
 
         File labelsJson = new File(RootPath.get() + "/src/main/app/src/labels.json");
         ObjectMapper objectMapper = new ObjectMapper();

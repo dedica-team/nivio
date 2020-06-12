@@ -147,7 +147,7 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
         String style = getItemStyle(landscapeItem);
 
         String name = StringUtils.isEmpty(landscapeItem.getName()) ? landscapeItem.getIdentifier() : landscapeItem.getName();
-        if (Lifecycle.PLANNED.equals(landscapeItem.getLifecycle())) {
+        if (Lifecycle.isPlanned(landscapeItem)) {
             name = name + "\n(planned)";
         }
 
@@ -222,7 +222,7 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
         String style = getBaseStyle((Item) landscapeItem) + ";" + "type=" + landscapeItem.getType()
                 + ";group=" + landscapeItem.getGroup() + ";"
                 + "strokeColor=" + getGroupColor((Item) landscapeItem) + ";";
-        if (Lifecycle.PLANNED.equals(landscapeItem.getLifecycle())) {
+        if (Lifecycle.isPlanned(landscapeItem)) {
             style = style + mxConstants.STYLE_DASHED + "=1";
         }
         return style;
@@ -258,7 +258,7 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
                 + mxConstants.STYLE_FONTCOLOR + "=black;"
                 + getStrokeColor(item);
 
-        if (Lifecycle.PLANNED.equals(item.getLifecycle()) || Lifecycle.END_OF_LIFE.equals(item.getLifecycle())) {
+        if (Lifecycle.isPlanned(item) || Lifecycle.isEndOfLife(item)) {
             style = style + mxConstants.STYLE_DASHED + "=1";
         }
 
@@ -285,7 +285,7 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
                 + mxConstants.STYLE_STARTARROW + "=false;"
                 + getStrokeColor(provider);
 
-        if (Lifecycle.PLANNED.equals(provider.getLifecycle()) || Lifecycle.END_OF_LIFE.equals(provider.getLifecycle())) {
+        if (Lifecycle.isPlanned(provider) || Lifecycle.isEndOfLife(provider)) {
             style = style + mxConstants.STYLE_DASHED + "=1";
         }
 

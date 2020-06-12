@@ -45,8 +45,6 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
     @JsonManagedReference
     private Set<InterfaceItem> interfaces = new HashSet<>();
 
-    private Lifecycle lifecycle;
-
     private Map<String, String> labels = new HashMap<>();
 
     public String getIdentifier() {
@@ -116,15 +114,6 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @Override
-    public Lifecycle getLifecycle() {
-        return lifecycle;
-    }
-
-    public void setLifecycle(Lifecycle lifecycle) {
-        this.lifecycle = lifecycle;
     }
 
     @Override

@@ -56,7 +56,6 @@ public class TemplateResolver {
         assignSafeIfAbsent(template.getContact(), item.getContact(), item::setContact);
         assignSafeIfAbsent(template.getOwner(), item.getOwner(), item::setOwner);
         assignSafeIfAbsent(template.getGroup(), item.getGroup(), item::setGroup);
-        assignLifecycleIfAbsent(template.getLifecycle(), item.getLifecycle(), item::setLifecycle);
 
         if (template.getProvidedBy() != null) {
             template.getProvidedBy().stream()
@@ -75,10 +74,4 @@ public class TemplateResolver {
             });
         }
     }
-
-
-    private static void assignLifecycleIfAbsent(Lifecycle s, Lifecycle absent, Consumer<Lifecycle> c) {
-        if (s != null && absent == null) c.accept(s);
-    }
-
 }

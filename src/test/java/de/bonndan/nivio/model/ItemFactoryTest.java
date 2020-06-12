@@ -62,7 +62,6 @@ public class ItemFactoryTest {
         assertEquals(landscapeItem.getLabels(Label.network), created.getLabels(Label.network));
         assertEquals(landscapeItem.getLabel(Label.costs), created.getLabel(Label.costs));
         assertEquals(landscapeItem.getLabel(Label.capability), created.getLabel(Label.capability));
-        assertEquals(landscapeItem.getLifecycle(), created.getLifecycle());
-
+        assertEquals(landscapeItem.getLabel(Label.lifecycle), created.getLabel(Label.lifecycle));
     }
 }
