@@ -74,6 +74,7 @@ Clone nivio, build and run a Docker image:
   
     mvn clean package
   
-  If you dont want to use our demo and use your own .yml file instead, replace DEMO=1 with SEED=/path/to/config
+  You can use your own configuration files, if you add SEED=/path/to/config as an environment variable.
+  
   
   To start our React frontend, read further into our [Frontend Readme](https://github.com/dedica-team/nivio/tree/develop/src/main/app)
