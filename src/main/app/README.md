@@ -17,7 +17,7 @@
 
 **Required:**
 
-- [nodejs v12.6.2](https://nodejs.org/en/)
+- [nodejs v12.6.2 or higher](https://nodejs.org/en/)
 
 **Clone project and install dependencies**
 
