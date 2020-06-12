@@ -17,6 +17,7 @@ const topics: any = {
   'model.html': raw('../../../../../../docs/build/model.html'),
   'references.html': raw('../../../../../../docs/build/references.html'),
   'index.html': raw('../../../../../../docs/build/index.html'),
+  'assessment.html': raw('../../../../../../docs/build/assessment.html'),
 };
 
 /**
