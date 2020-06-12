@@ -1,5 +1,20 @@
+Output
+======
+
+HTTP API
+--------
+
+The API offers three types of output:
+
+* JSON under /api
+* rendered maps under /render
+* generated landscape documentation under /docs
+
+Please see the swagger documentation under /v2/api-docs (JSON) or /swagger-ui.html (html gui) for details.
+
+
 Item Icons and Background
-=========================
+-------------------------
 
 The default icon of a item is determined by its item type (e.g. server, messagequeue, database...). To change the
 appearance of a item to a vendor logo, for instance, the *icon* or *fill* property can be set. Both properties take

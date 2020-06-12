@@ -1,6 +1,7 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 
@@ -12,9 +13,10 @@ public enum Lifecycle {
     END_OF_LIFE;
 
     @JsonCreator
+    @Nullable
     public static Lifecycle from(String lifecycle) {
         if (StringUtils.isEmpty(lifecycle))
-            return PRODUCTION;
+            return null;
 
         lifecycle = lifecycle.toLowerCase().trim();
         if (lifecycle.contains("plan"))
@@ -29,6 +31,17 @@ public enum Lifecycle {
         if (lifecycle.contains("end") || lifecycle.contains("eol"))
             return END_OF_LIFE;
 
-        return PRODUCTION;
+        return null;
+    }
+
+    /**
+     * @return true if the label "lifecycle" is "PLANNED"
+     */
+    public static boolean isPlanned(Labeled labeled) {
+        return PLANNED.name().equals(labeled.getLabel(Label.lifecycle));
+    }
+
+    public static boolean isEndOfLife(Labeled labeled) {
+        return END_OF_LIFE.name().equals(labeled.getLabel(Label.lifecycle));
     }
 }

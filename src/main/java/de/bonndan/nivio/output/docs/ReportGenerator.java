@@ -95,13 +95,14 @@ public class ReportGenerator extends HtmlGenerator {
                                 , li("Capability: " + FormatUtils.nice(item.getLabel(Label.capability)))
                                 , li("Links: ").with(links)
                                 , li("Tags: " + FormatUtils.nice(item.getLabels(Tagged.LABEL_PREFIX_TAG)))
-                                , li("Lifecycle: " + FormatUtils.nice(item.getLifecycle() != null ? item.getLifecycle().toString() : "-"))
+                                , li("Lifecycle: " + FormatUtils.nice(item.getLabel(Label.lifecycle)))
                                 , li("Software: " + FormatUtils.nice(item.getLabel(Label.software)))
                                 , li("Version: " + FormatUtils.nice(item.getLabel(Label.version)))
                                 , li("Scale: " + FormatUtils.nice(item.getLabel(Label.scale)))
                                 , li("Visibility: " + FormatUtils.nice(item.getLabel(Label.visibility)))
                                 , li("Networks: " + FormatUtils.nice(item.getLabels(Label.network)))
                                 , li("Costs: " + FormatUtils.nice(item.getLabel(Label.costs)))
+                                // TODO use Label.export()
                         ),
 
 

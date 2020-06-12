@@ -51,8 +51,6 @@ Clone nivio, build and run a Docker image:
     
   then open http://localhost:8080
   
-  ---
-  
 **Docker Setup (Windows)**
  
   Clone nivio, build and run a Docker image:
@@ -79,4 +77,3 @@ Clone nivio, build and run a Docker image:
   If you dont want to use our demo and use your own .yml file instead, replace DEMO=1 with SEED=/path/to/config
   
   To start our React frontend, read further into our [Frontend Readme](https://github.com/dedica-team/nivio/tree/develop/src/main/app)
- 

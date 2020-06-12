@@ -32,8 +32,7 @@ class SVGRelation extends Component {
 
         var fillId = (fill) != null ? "#" + fill : "";
         var stringPath = hexPath.getPoints();
-        boolean isPlanned = Lifecycle.PLANNED.equals(relation.getSource().getLifecycle())
-                || Lifecycle.PLANNED.equals(relation.getTarget().getLifecycle());
+        boolean isPlanned = Lifecycle.isPlanned(relation.getSource()) || Lifecycle.isPlanned(relation.getTarget());
 
         BezierPath bezierPath = new BezierPath();
         bezierPath.parsePathString(stringPath);

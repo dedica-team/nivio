@@ -9,14 +9,13 @@ import './pygments.scss';
 
 const topics: any = {
   'install.html': raw('../../../../../../docs/build/install.html'),
-  // features: raw('../../../../../../docs/build/features.html'),
   'input.html': raw('../../../../../../docs/build/input.html'),
-  'extra.html': raw('../../../../../../docs/build/extra.html'),
-  'api.html': raw('../../../../../../docs/build/api.html'),
+  'output.html': raw('../../../../../../docs/build/output.html'),
   'magic.html': raw('../../../../../../docs/build/magic.html'),
   'model.html': raw('../../../../../../docs/build/model.html'),
   'references.html': raw('../../../../../../docs/build/references.html'),
   'index.html': raw('../../../../../../docs/build/index.html'),
+  'assessment.html': raw('../../../../../../docs/build/assessment.html'),
 };
 
 /**
@@ -60,17 +59,19 @@ const Man: React.FC = () => {
               ) {
                 let href = domNode.attribs['href'];
                 const linkText = domNode.children[0].data;
-                if (href.indexOf('http') !== -1) {
+                if (href.indexOf('http') !== -1 && href.indexOf('http-api') === -1) {
                   return;
                 }
 
                 // Remove anchors
                 if (href.indexOf('#') !== -1) {
                   if (
-                    (href.includes('#custom') || href.includes('#graph')) &&
-                    usage !== 'extra.html' // Have to handle extra.html abit different for our sidebar
+                    (href.includes('#custom-er-branding') ||
+                      href.includes('#graph') ||
+                      href.includes('#http-api')) &&
+                    usage !== 'output.html' // Have to handle output.html abit different for our sidebar
                   ) {
-                    href = 'extra.html';
+                    href = 'output.html';
                   } else {
                     return <span>{linkText}</span>; // Convert to span if page is opened
                   }
