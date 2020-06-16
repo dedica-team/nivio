@@ -16,6 +16,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,22 +64,7 @@ public class LandscapeDescriptionFactory {
 
     @Nullable
     public LandscapeDescription from(URL url) {
-        LandscapeDescription env = null;
-        try {
-            if (URLHelper.isLocal(url)) {
-                File file = Paths.get(url.toURI()).toFile();
-                env = LandscapeDescriptionFactory.fromYaml(file);
-                env.setSource(url.toString());
-            } else {
-                env = LandscapeDescriptionFactory.fromString(fileFetcher.get(url), url);
-            }
-
-            LOGGER.info("Created file map for landscape {}", env.getIdentifier());
-        } catch (URISyntaxException e) {
-            ProcessingException ex = new ProcessingException("Failed to initialize url  " + url, e);
-            publisher.publishEvent(new ProcessingErrorEvent(this, ex));
-        }
-        return env;
+        return fromString(fileFetcher.get(url), url);
     }
 
     /**
@@ -87,18 +73,13 @@ public class LandscapeDescriptionFactory {
      * @throws ReadingException on error
      */
     @NonNull
-    public static LandscapeDescription fromYaml(File file) {
-        try {
-            String content = new String(Files.readAllBytes(file.toPath()));
-            LandscapeDescription landscapeDescription = fromString(content, file.toString());
-            landscapeDescription.setSource(file.toString());
-            landscapeDescription.getSourceReferences().forEach(ref -> ref.setLandscapeDescription(landscapeDescription));
-            return landscapeDescription;
-        } catch (NoSuchFileException e) {
-            throw new ReadingException("Could not find file " + file.getAbsolutePath(), e);
-        } catch (IOException e) {
-            throw new ReadingException("Failed to create an environment from file " + file.getAbsolutePath(), e);
-        }
+    public LandscapeDescription fromYaml(File file) {
+
+        String content = fileFetcher.get(file);
+        LandscapeDescription landscapeDescription = fromString(content, file.toString());
+        landscapeDescription.setSource(file.toString());
+        landscapeDescription.getSourceReferences().forEach(ref -> ref.setLandscapeDescription(landscapeDescription));
+        return landscapeDescription;
     }
 
     /**
@@ -111,6 +92,10 @@ public class LandscapeDescriptionFactory {
      */
     @NonNull
     public static LandscapeDescription fromString(String yaml, String origin) {
+
+        if (StringUtils.isEmpty(yaml)) {
+            throw new ReadingException("Failed to create an environment from empty yaml input string.", new IllegalArgumentException("Got an empty string."));
+        }
 
         yaml = (new StringSubstitutor(StringLookupFactory.INSTANCE.environmentVariableStringLookup())).replace(yaml);
 
@@ -134,6 +119,7 @@ public class LandscapeDescriptionFactory {
      * @param yaml source
      * @param url  for updates
      * @return env description
+     * @throws ReadingException on error
      */
     @NonNull
     public static LandscapeDescription fromString(String yaml, URL url) {

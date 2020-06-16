@@ -35,43 +35,6 @@ public class LandscapeUrlsFactory {
         this.fileFetcher = fileFetcher;
     }
 
-    /**
-     * Returns a list of URLs for a landscape description to watch for.
-     *
-     * @param seed the seed bean
-     * @return a list of {@link URL}s per landscape.
-     */
-    public Map<Landscape, List<URL>> getLandscapeSourceLocations(Seed seed) {
-
-        List<URL> landscapeDescriptionLocations = getUrls(seed);
-
-        Map<Landscape, List<URL>> landscapeWatchLocations = new HashMap<>();
-
-        landscapeDescriptionLocations.forEach(url -> {
-
-            LandscapeDescription env = null;
-
-            try {
-                if (URLHelper.isLocal(url)) {
-                    File file = Paths.get(url.toURI()).toFile();
-                    env = LandscapeDescriptionFactory.fromYaml(file);
-                } else {
-                    env = LandscapeDescriptionFactory.fromString(fileFetcher.get(url), url);
-                    Objects.requireNonNull(env);
-                }
-
-                landscapeWatchLocations.put(env, new ArrayList<>());
-                landscapeWatchLocations.get(env).addAll(getLandscapeSourceLocations(env, new URL(env.getSource())));
-                LOGGER.info("Created file map for landscape {}", env.getIdentifier());
-            } catch (URISyntaxException | MalformedURLException e) {
-                ProcessingException ex = new ProcessingException("Failed to initialize url from seed in landscape " + env, e);
-                publisher.publishEvent(new ProcessingErrorEvent(this, ex));
-            }
-        });
-
-        return landscapeWatchLocations;
-    }
-
     public List<URL> getUrls(Seed seed) {
         List<URL> landscapeDescriptionLocations = new ArrayList<>();
         try {
