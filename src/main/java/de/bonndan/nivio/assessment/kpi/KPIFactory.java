@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.bonndan.nivio.model.Lifecycle;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -25,19 +24,18 @@ public class KPIFactory extends JsonDeserializer<Map<String, KPI>> implements Se
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, Map<String, String>> result = mapper.convertValue(node, new TypeReference<Map<String, Map<String, ?>>>() {
-        });
+        Map<String, KPIConfig> result = mapper.convertValue(node, new TypeReference<>() {});
 
         Map<String, KPI> kpis = new HashMap<>();
-        result.forEach((s, params) -> {
+        result.forEach((s, kpiConfig) -> {
             KPI kpi = null;
             if (s.equals(HealthKPI.IDENTIFIER)) {
-                kpi = mapper.convertValue(params, HealthKPI.class);
+                kpi = mapper.convertValue(kpiConfig, HealthKPI.class);
                 Objects.requireNonNull(kpi);
             }
 
             if (s.equals(ScalingKPI.IDENTIFIER)) {
-                kpi = mapper.convertValue(params, ScalingKPI.class);
+                kpi = mapper.convertValue(kpiConfig, ScalingKPI.class);
                 Objects.requireNonNull(kpi);
             }
 
@@ -50,7 +48,7 @@ public class KPIFactory extends JsonDeserializer<Map<String, KPI>> implements Se
             }
 
             if (kpi == null) {
-                kpi = mapper.convertValue(params, CustomKPI.class);
+                kpi = mapper.convertValue(kpiConfig, CustomKPI.class);
             }
             kpis.put(s, kpi);
         });
