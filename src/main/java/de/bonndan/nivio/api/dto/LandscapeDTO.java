@@ -3,6 +3,8 @@ package de.bonndan.nivio.api.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeImpl;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
@@ -30,23 +32,4 @@ public class LandscapeDTO extends RepresentationModel {
     public LocalDateTime lastUpdate;
     public String[] teams;
 
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getContact() {
-        return contact;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getSource() {
-        return source;
-    }
 }

@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.bonndan.nivio.model.Labeled;
 
 /**
@@ -23,6 +24,7 @@ public interface Rendered extends Labeled {
         setLabel(LABEL_RENDERED_WIDTH, String.valueOf(width));
     }
 
+    @JsonIgnore
     default Long getWidth() {
         String width = getLabel(LABEL_RENDERED_WIDTH);
         return width == null ? null : Long.parseLong(width);
@@ -32,6 +34,7 @@ public interface Rendered extends Labeled {
         setLabel(LABEL_RENDERED_HEIGHT, String.valueOf(height));
     }
 
+    @JsonIgnore
     default Long getHeight() {
         String height = getLabel(LABEL_RENDERED_HEIGHT);
         return height == null ? null : Long.parseLong(height);
@@ -41,6 +44,7 @@ public interface Rendered extends Labeled {
         setLabel(LABEL_RENDERED_COLOR, color);
     }
 
+    @JsonIgnore
     default String getColor() {
         return getLabel(LABEL_RENDERED_COLOR);
     }
@@ -49,6 +53,7 @@ public interface Rendered extends Labeled {
         setLabel(LABEL_FILL, fill);
     }
 
+    @JsonIgnore
     default String getFill() {
         return getLabel(LABEL_FILL);
     }
@@ -57,6 +62,7 @@ public interface Rendered extends Labeled {
         setLabel(LX, String.valueOf(x));
     }
 
+    @JsonIgnore
     default Long getX() {
         String x = getLabel(LX);
         return x == null ? null : Long.parseLong(x);
@@ -66,6 +72,7 @@ public interface Rendered extends Labeled {
         setLabel(LY, String.valueOf(y));
     }
 
+    @JsonIgnore
     default Long getY() {
         String y = getLabel(LY);
         return y == null ? null : Long.parseLong(y);
