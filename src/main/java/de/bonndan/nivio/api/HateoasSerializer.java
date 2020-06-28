@@ -8,6 +8,11 @@ import org.springframework.boot.jackson.JsonComponent;
 
 import java.io.IOException;
 
+/**
+ * A special serializer to turn {@link de.bonndan.nivio.model.Linked} into a collection of hateoas links.
+ *
+ *
+ */
 @JsonComponent
 public class HateoasSerializer extends JsonSerializer<LinkedWrapper> {
 
@@ -17,9 +22,12 @@ public class HateoasSerializer extends JsonSerializer<LinkedWrapper> {
         this.linkFactory = linkFactory;
     }
 
+    /**
+     * @param links a wrapper around {@link de.bonndan.nivio.model.Linked}
+     */
     @Override
     public void serialize(LinkedWrapper links, JsonGenerator generator, SerializerProvider provider) throws IOException {
-        generator.writeObject( linkFactory.getLinks(links.getComponent()));
+        generator.writeObject(linkFactory.getLinks(links.getComponent()));
     }
 
 }
