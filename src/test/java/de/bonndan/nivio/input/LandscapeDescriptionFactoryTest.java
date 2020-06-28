@@ -140,17 +140,10 @@ class LandscapeDescriptionFactoryTest {
         File file = new File(FILE_PATH_ENVIRONMENT_VARS);
         String read = new String(Files.readAllBytes(file.toPath()));
 
-        for (Class c : Collections.class.getDeclaredClasses()) {
-            if ("java.util.Collections$UnmodifiableMap".equals(c.getName())) {
-                Field m = c.getDeclaredField("m");
-                m.setAccessible(true);
-                Map<String, String> x = (Map<String, String>) m.get(System.getenv());
-            }
-        }
-
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromString(read, file.toString());
         assertNotNull(landscapeDescription);
-        Assertions.assertThat(landscapeDescription.getSourceReferences().get(0).getHeaderTokenValue()).containsIgnoringCase("java");
+        String user = System.getenv("USER");
+        assertEquals(user, landscapeDescription.getSourceReferences().get(0).getHeaderTokenValue());
     }
 
     @Test
@@ -165,7 +158,7 @@ class LandscapeDescriptionFactoryTest {
         assertEquals("bar", one.getLabel("foo"));
         assertEquals("baz", one.getLabel("bar"));
     }
-    
+
     @Test
     public void environmentTemplatesRead() {
         File file = new File(FILE_PATH_TEMPLATES);
@@ -301,7 +294,7 @@ class LandscapeDescriptionFactoryTest {
         monthlyCosts.init();
         Item item = new Item();
         item.setLabel(Label.costs, "200");
-        StatusValue statusValue =  monthlyCosts.getStatusValues(item).get(0);
+        StatusValue statusValue = monthlyCosts.getStatusValues(item).get(0);
         assertNotNull(statusValue);
         assertEquals(Status.RED, statusValue.getStatus());
     }
