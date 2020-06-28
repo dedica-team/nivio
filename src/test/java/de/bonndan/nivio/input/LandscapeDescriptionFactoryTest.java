@@ -12,6 +12,7 @@ import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.RootPath;
+import org.apache.commons.lang3.SystemUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -136,13 +137,20 @@ class LandscapeDescriptionFactoryTest {
 
     @Test
     public void readEnvVars() throws IOException, NoSuchFieldException, IllegalAccessException {
-        final String FILE_PATH_ENVIRONMENT_VARS = FILE_PATH + "example_environment_vars.yml";
+        final String FILE_PATH_ENVIRONMENT_VARS;
+        final String user;
+        if (SystemUtils.IS_OS_WINDOWS) {
+            FILE_PATH_ENVIRONMENT_VARS = FILE_PATH + "example_environment_vars_windows.yml";
+            user = System.getenv("USERNAME");
+        } else {
+            FILE_PATH_ENVIRONMENT_VARS = FILE_PATH + "example_environment_vars_unix.yml";
+            user = System.getenv("USER");
+        }
+
         File file = new File(FILE_PATH_ENVIRONMENT_VARS);
         String read = new String(Files.readAllBytes(file.toPath()));
-
         LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromString(read, file.toString());
         assertNotNull(landscapeDescription);
-        String user = System.getenv("USER");
         assertEquals(user, landscapeDescription.getSourceReferences().get(0).getHeaderTokenValue());
     }
 
