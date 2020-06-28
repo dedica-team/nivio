@@ -167,12 +167,6 @@
             </exclusions>
         </dependency>
 
-        <!-- hateoas -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-hateoas</artifactId>
-        </dependency>
-
         <!-- rancher api -->
         <!-- https://mvnrepository.com/artifact/br.com.basis/rancher-java-sdk -->
         <dependency>

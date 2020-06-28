@@ -2,23 +2,22 @@ package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.output.Rendered;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
-public class LandscapeImpl extends RepresentationModel<LandscapeImpl> implements Landscape, Rendered, Assessable {
+public class LandscapeImpl implements Landscape, Rendered, Assessable {
 
     /**
      * Immutable unique identifier. Maybe use an URN.
@@ -50,6 +49,8 @@ public class LandscapeImpl extends RepresentationModel<LandscapeImpl> implements
     private ProcessLog processLog;
 
     private Map<String, String> labels = new HashMap<>();
+    private Map<String, URL> links = new HashMap<>();
+    private String owner;
 
     public String getIdentifier() {
         return identifier;
@@ -175,6 +176,15 @@ public class LandscapeImpl extends RepresentationModel<LandscapeImpl> implements
     }
 
     @Override
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    @Override
     public Map<String, String> getLabels() {
         return labels;
     }
@@ -197,5 +207,10 @@ public class LandscapeImpl extends RepresentationModel<LandscapeImpl> implements
     @Override
     public List<? extends Assessable> getChildren() {
         return getGroups().values().stream().map(groupItem -> (Assessable)groupItem).collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<String, URL> getLinks() {
+        return links;
     }
 }

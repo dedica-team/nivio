@@ -1,5 +1,7 @@
 package de.bonndan.nivio.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.util.StringUtils;
 
 import java.net.URL;
@@ -27,7 +29,18 @@ public interface Linked {
      *
      * @return map of links
      */
+    @JsonIgnore
     Map<String, URL> getLinks();
+
+    /**
+     * The Hateoas representation.
+     *
+     * @return links in hateoas format.
+     */
+    @JsonProperty("_links")
+    default LinkedWrapper getHateoasLinks() {
+        return new LinkedWrapper(this);
+    }
 
     default void setLink(String identifier, URL url) {
         if (StringUtils.isEmpty(identifier)){

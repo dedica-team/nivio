@@ -7,8 +7,6 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.URLHelper;
-import org.springframework.hateoas.IanaLinkRelations;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.net.URL;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.StreamSupport;
+import java.util.*;
 
 @RestController
 @RequestMapping(path = ApiController.PATH)
@@ -32,12 +27,19 @@ public class ApiController {
     private final ItemDescriptionFormatFactory formatFactory;
     private final Indexer indexer;
     private final FileFetcher fileFetcher;
+    private final LinkFactory linkFactory;
 
-    public ApiController(LandscapeRepository landscapeRepository, ItemDescriptionFormatFactory formatFactory, Indexer indexer, FileFetcher fileFetcher) {
+    public ApiController(LandscapeRepository landscapeRepository,
+                         ItemDescriptionFormatFactory formatFactory,
+                         Indexer indexer,
+                         FileFetcher fileFetcher,
+                         LinkFactory linkFactory
+    ) {
         this.landscapeRepository = landscapeRepository;
         this.formatFactory = formatFactory;
         this.indexer = indexer;
         this.fileFetcher = fileFetcher;
+        this.linkFactory = linkFactory;
     }
 
     /**
@@ -47,15 +49,7 @@ public class ApiController {
     @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public Index index() {
-
-        Index index = new Index();
-        Iterable<LandscapeImpl> landscapes = landscapeRepository.findAll();
-
-        StreamSupport.stream(landscapes.spliterator(), false)
-                .map((LandscapeImpl landscape) -> LandscapeDTOFactory.getLandscapeLink(landscape, IanaLinkRelations.ITEM))
-                .forEach(index::add);
-
-        return index;
+        return linkFactory.getIndex(landscapeRepository.findAll());
     }
 
 
@@ -71,7 +65,6 @@ public class ApiController {
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }
-        LandscapeDTOFactory.addLinks(landscape);
         return new ResponseEntity<>(landscape, HttpStatus.OK);
     }
 
@@ -189,7 +182,4 @@ public class ApiController {
         return process(LandscapeDescriptionFactory.fromString(landscape.getSource(), landscape.getIdentifier() + " source"));
     }
 
-    public class Index extends RepresentationModel<Index> {
-
-    }
 }

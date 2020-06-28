@@ -4,6 +4,7 @@ package de.bonndan.nivio.input.dto;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
@@ -11,6 +12,7 @@ import de.bonndan.nivio.model.*;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
@@ -124,8 +126,15 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         return links;
     }
 
-    public void setLinks(Map<String, URL> links) {
-        this.links = links;
+    @JsonSetter
+    public void setLinks(Map<String, String> links) {
+        links.forEach((s, s2) -> {
+            try {
+                this.links.put(s, new URL(s2));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public String getGroup() {
@@ -276,7 +285,7 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         }
 
         if (value instanceof Map) {
-            throw new IllegalArgumentException("Cannot set " + key + " to " + value);
+            throw new IllegalArgumentException("Cannot set " + key + " to map " + value);
         }
 
         labels.put(key, String.valueOf(value));

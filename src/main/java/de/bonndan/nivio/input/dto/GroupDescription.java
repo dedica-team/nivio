@@ -1,8 +1,10 @@
 package de.bonndan.nivio.input.dto;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.GroupItem;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
@@ -78,8 +80,15 @@ public class GroupDescription implements GroupItem {
         this.color = color;
     }
 
-    public void setLinks(Map<String, URL> links) {
-        this.links = links;
+    @JsonSetter
+    public void setLinks(Map<String, String> links) {
+        links.forEach((s, s2) -> {
+            try {
+                this.links.put(s, new URL(s2));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override

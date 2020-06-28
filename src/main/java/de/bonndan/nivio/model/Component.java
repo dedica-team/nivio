@@ -1,5 +1,7 @@
 package de.bonndan.nivio.model;
 
+import org.springframework.lang.Nullable;
+
 /**
  * Base for landscapes, groups and items.
  *
@@ -27,5 +29,15 @@ public interface Component {
      */
     String getContact();
 
+    /**
+     * @return a string describing the component
+     */
+    @Nullable
     String getDescription();
+
+    /**
+     * @return a string describing the owner
+     */
+    @Nullable
+    String getOwner();
 }

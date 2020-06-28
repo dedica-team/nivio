@@ -1,6 +1,5 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
@@ -35,7 +34,7 @@ public class Group implements GroupItem, Rendered, Assessable {
     /**
      * Items belonging to this group.
      */
-    private List<Item> items = new ArrayList<>();
+    private final List<Item> items = new ArrayList<>();
 
     private String landscapeIdentifier;
 

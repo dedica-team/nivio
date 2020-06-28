@@ -48,7 +48,7 @@ public class LocalServer implements EnvironmentAware {
     }
 
     /**
-     * Returns the current publically visible url.
+     * Returns the visible url.
      *
      * @param path path to add
      * @return url with host, port
@@ -60,6 +60,16 @@ public class LocalServer implements EnvironmentAware {
             LOGGER.warn("Failed to build url for {}", path);
             return defaultIcon;
         }
+    }
+
+    /**
+     * Returns the visible url.
+     *
+     * @param parts path to add, concatenated by "/"
+     * @return url with host, port
+     */
+    public URL getUrl(String ...parts) {
+        return getUrl(StringUtils.arrayToDelimitedString(parts, "/"));
     }
 
     public URL getIconUrl(Labeled item) {

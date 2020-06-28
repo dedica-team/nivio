@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input.dto;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.input.ItemDescriptionFactory;
@@ -10,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -43,6 +46,7 @@ public class LandscapeDescription implements Landscape {
      */
     private String contact;
     private String description;
+    private String owner;
 
     private Map<String, ItemDescription> templates = new HashMap<>();
 
@@ -63,6 +67,8 @@ public class LandscapeDescription implements Landscape {
     private boolean isPartial = false;
 
     private Map<String, GroupItem> groups = new HashMap<>();
+    private Map<String, URL> links = new HashMap<>();
+    private Map<String, String> labels = new HashMap<>();
 
     public void setIsPartial(boolean isPartial) {
         this.isPartial = isPartial;
@@ -100,9 +106,22 @@ public class LandscapeDescription implements Landscape {
         return contact;
     }
 
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+
     @Override
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     public List<SourceReference> getSourceReferences() {
@@ -136,17 +155,6 @@ public class LandscapeDescription implements Landscape {
     public void setTemplates(Map<String, ItemDescription> templates) {
         templates.forEach((s, itemDescription) -> itemDescription.setIdentifier(s));
         this.templates = templates;
-    }
-
-    public LandscapeImpl toLandscape() {
-        LandscapeImpl landscape = new LandscapeImpl();
-        landscape.setIdentifier(identifier);
-        landscape.setName(name);
-        landscape.setContact(contact);
-        landscape.setSource(source);
-        landscape.setDescription(description);
-        landscape.setConfig(config);
-        return landscape;
     }
 
     public void addItems(Collection<ItemDescription> incoming) {
@@ -220,5 +228,29 @@ public class LandscapeDescription implements Landscape {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public Map<String, URL> getLinks() {
+        return links;
+    }
+
+    @JsonSetter
+    public void setLinks(Map<String, String> links) {
+        links.forEach((s, s2) -> {
+            try {
+                this.links.put(s, new URL(s2));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public Map<String, String> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Map<String, String> labels) {
+        this.labels = labels;
     }
 }
