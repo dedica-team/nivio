@@ -1,6 +1,7 @@
 package de.bonndan.nivio.assessment.kpi;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.assessment.Status;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 /**
  * A configured key performance indicator related to a landscape item label.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomKPI extends AbstractKPI {
 
     public static final String SEPARATOR = ";";

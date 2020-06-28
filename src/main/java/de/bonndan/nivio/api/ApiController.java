@@ -1,13 +1,14 @@
 package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.URLHelper;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @RestController
@@ -48,26 +47,21 @@ public class ApiController {
     /**
      * Overview on all landscapes.
      *
-     * @return dto list
      */
     @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Iterable<LandscapeDTO> landscapes() {
-        Iterable<LandscapeImpl> all = landscapeRepository.findAll();
+    public Index index() {
 
-        return StreamSupport.stream(all.spliterator(), false)
-                .map(createDTO())
-                .collect(Collectors.toList());
+        Index index = new Index();
+        Iterable<LandscapeImpl> landscapes = landscapeRepository.findAll();
+
+        StreamSupport.stream(landscapes.spliterator(), false)
+                .map((LandscapeImpl landscape) -> LandscapeDTOFactory.getLandscapeLink(landscape, IanaLinkRelations.ITEM))
+                .forEach(index::add);
+
+        return index;
     }
 
-    private Function<LandscapeImpl, LandscapeDTO> createDTO() {
-        return landscape -> {
-            LandscapeDTO dto = LandscapeDTOFactory.from(landscape);
-
-            LandscapeDTOFactory.addLinks(dto);
-            return dto;
-        };
-    }
 
     /**
      * This resource serves a landscape DTO and can be addressed by using a {@link FullyQualifiedIdentifier}
@@ -76,13 +70,13 @@ public class ApiController {
      */
     @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(path = "/{landscapeIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LandscapeDTO> landscape(@PathVariable String landscapeIdentifier) {
+    public ResponseEntity<LandscapeImpl> landscape(@PathVariable String landscapeIdentifier) {
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }
-
-        return new ResponseEntity<>(createDTO().apply(landscape), HttpStatus.OK);
+        LandscapeDTOFactory.addLinks(landscape);
+        return new ResponseEntity<>(landscape, HttpStatus.OK);
     }
 
     /**
@@ -197,5 +191,9 @@ public class ApiController {
         }
 
         return process(LandscapeDescriptionFactory.fromString(landscape.getSource(), landscape.getIdentifier() + " source"));
+    }
+
+    public class Index extends RepresentationModel<Index> {
+
     }
 }

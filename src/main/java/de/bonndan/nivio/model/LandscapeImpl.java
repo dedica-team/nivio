@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import de.bonndan.nivio.LandscapeConfig;
@@ -7,6 +8,7 @@ import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.output.Rendered;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
@@ -16,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
-public class LandscapeImpl implements Landscape, Rendered, Assessable {
+public class LandscapeImpl extends RepresentationModel<LandscapeImpl> implements Landscape, Rendered, Assessable {
 
     /**
      * Immutable unique identifier. Maybe use an URN.
@@ -38,7 +40,7 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
 
     private String source;
 
-    @JsonManagedReference
+    @JsonIgnore
     private LandscapeItems items = new LandscapeItems();
 
     private LandscapeConfig config;
@@ -48,8 +50,6 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
     private ProcessLog processLog;
 
     private Map<String, String> labels = new HashMap<>();
-
-    private Set<StatusValue> statusValues = new HashSet<>();
 
     public String getIdentifier() {
         return identifier;
@@ -72,6 +72,7 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
         this.name = name;
     }
 
+    @JsonIgnore
     public LandscapeItems getItems() {
         return items;
     }
@@ -101,9 +102,15 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
         return config;
     }
 
+    @JsonIgnore
     @Override
     public Map<String, GroupItem> getGroups() {
         return groups;
+    }
+
+    @JsonGetter("groups")
+    public Collection<GroupItem> getGroupItems() {
+        return groups.values();
     }
 
     public void setContact(String contact) {

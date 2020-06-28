@@ -7,6 +7,9 @@ import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.docs.DocsController;
 import de.bonndan.nivio.output.map.MapController;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
@@ -61,12 +64,8 @@ public class LandscapeDTOFactory {
         return groups;
     }
 
-    public static void addLinks(LandscapeDTO dto) {
-        dto.add(WebMvcLinkBuilder.linkTo(methodOn(ApiController.class).landscape(dto.getIdentifier()))
-                .withSelfRel()
-                .withTitle("JSON representation")
-                .withMedia(MediaType.APPLICATION_JSON_VALUE)
-        );
+    public static void addLinks(LandscapeImpl dto) {
+        dto.add(getLandscapeLink(dto, IanaLinkRelations.SELF));
         dto.add(linkTo(methodOn(ApiController.class).reindex(dto.getIdentifier()))
                 .withRel("reindex")
                 .withMedia(MediaType.APPLICATION_JSON_VALUE)
@@ -105,5 +104,17 @@ public class LandscapeDTOFactory {
                         .withMedia(MediaType.APPLICATION_JSON_VALUE)
                         .withTitle("Assessment")
         );
+    }
+
+    /**
+     * Returns the self-link to a landscape.
+     *
+     *
+     */
+    public static Link getLandscapeLink(LandscapeImpl landscape, LinkRelation rel) {
+        return WebMvcLinkBuilder.linkTo(methodOn(ApiController.class).landscape(landscape.getIdentifier()))
+                .withRel(rel)
+                .withTitle("JSON representation of " + landscape.getName())
+                .withMedia(MediaType.APPLICATION_JSON_VALUE);
     }
 }

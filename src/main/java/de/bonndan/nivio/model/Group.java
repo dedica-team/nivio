@@ -106,7 +106,6 @@ public class Group implements GroupItem, Rendered, Assessable {
         this.contact = contact;
     }
 
-    @JsonIdentityReference(alwaysAsId = true)
     public List<Item> getItems() {
         return items;
     }

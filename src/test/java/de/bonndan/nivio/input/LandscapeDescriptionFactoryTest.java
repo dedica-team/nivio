@@ -154,6 +154,19 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
+    public void customLabels() {
+        final String FILE_PATH_ENVIRONMENT_VARS = FILE_PATH + "example_items_extrafields.yml";
+        File file = new File(FILE_PATH_ENVIRONMENT_VARS);
+
+        LandscapeDescription landscapeDescription = factory.fromYaml(file);
+        assertNotNull(landscapeDescription);
+        ItemDescription one = landscapeDescription.getItemDescriptions().pick("one", null);
+        assertNotNull(one);
+        assertEquals("bar", one.getLabel("foo"));
+        assertEquals("baz", one.getLabel("bar"));
+    }
+    
+    @Test
     public void environmentTemplatesRead() {
         File file = new File(FILE_PATH_TEMPLATES);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);

@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
 
     @NotNull
@@ -99,6 +100,7 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
         return links;
     }
 
+    @JsonIgnore
     public String getGroup() {
         return group;
     }
@@ -152,7 +154,7 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
     /**
      * Returns all providers.
      */
-    @JsonIdentityReference(alwaysAsId = true)
+    @JsonIgnore
     public Set<Item> getProvidedBy() {
         return getRelations(RelationType.PROVIDER).stream()
                 .filter(relationItem -> relationItem.getTarget().equals(this))
