@@ -38,6 +38,7 @@ public class Seed {
         } catch (MalformedURLException e) {
             logger.error("Error in demo files: " + e.getMessage(), e);
         }
+        logger.info("Using demo files: {}", demoFiles);
         return demoFiles;
     }
 

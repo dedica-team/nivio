@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.compose2.ItemDescriptionFactoryCompose2;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Tagged;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
 import java.util.*;
@@ -18,10 +20,12 @@ import java.util.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
 
 class TemplateResolverTest {
 
     private TemplateResolver templateResolver;
+    private LandscapeDescriptionFactory factory;
 
     @Mock
     ProcessLog log;
@@ -30,6 +34,8 @@ class TemplateResolverTest {
     public void setup() {
         log = new ProcessLog(LoggerFactory.getLogger(TemplateResolver.class));
         templateResolver = new TemplateResolver();
+        FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
+        factory = new LandscapeDescriptionFactory(mock(ApplicationEventPublisher.class), fileFetcher);
     }
 
 
@@ -121,7 +127,9 @@ class TemplateResolverTest {
 
     private LandscapeDescription getLandscapeDescription(String s) {
         File file = new File(RootPath.get() + s);
-        return LandscapeDescriptionFactory.fromYaml(file);
+
+
+        return factory.fromYaml(file);
     }
 
 }

@@ -29,15 +29,19 @@ public class ApiController {
     public static final String PATH = "/api";
 
     private final LandscapeRepository landscapeRepository;
+    private final LandscapeDescriptionFactory landscapeDescriptionFactory;
     private final ItemDescriptionFormatFactory formatFactory;
     private final Indexer indexer;
-    private final FileFetcher fileFetcher;
 
-    public ApiController(LandscapeRepository landscapeRepository, ItemDescriptionFormatFactory formatFactory, Indexer indexer, FileFetcher fileFetcher) {
+    public ApiController(LandscapeRepository landscapeRepository,
+                         LandscapeDescriptionFactory landscapeDescriptionFactory,
+                         ItemDescriptionFormatFactory formatFactory,
+                         Indexer indexer
+    ) {
         this.landscapeRepository = landscapeRepository;
+        this.landscapeDescriptionFactory = landscapeDescriptionFactory;
         this.formatFactory = formatFactory;
         this.indexer = indexer;
-        this.fileFetcher = fileFetcher;
     }
 
     /**
@@ -177,13 +181,13 @@ public class ApiController {
 
         File file = new File(landscape.getSource());
         if (file.exists()) {
-            LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
+            LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
             return indexer.reIndex(Objects.requireNonNull(landscapeDescription));
         }
 
         URL url = URLHelper.getURL(landscape.getSource());
         if (url != null) {
-            return process(LandscapeDescriptionFactory.fromString(fileFetcher.get(url), url));
+            return process(landscapeDescriptionFactory.from(url));
         }
 
         return process(LandscapeDescriptionFactory.fromString(landscape.getSource(), landscape.getIdentifier() + " source"));

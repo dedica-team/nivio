@@ -27,7 +27,7 @@ public class NotificationService implements ApplicationListener<ProcessingErrorE
     public void sendError(ProcessingException exception, String subject) {
 
         if (exception.getLandscape() == null || StringUtils.isEmpty(exception.getLandscape().getContact())) {
-            logger.error("Cannot send error, landscape is not configured");
+            logger.warn("Cannot send error, landscape is not configured");
             return;
         }
 

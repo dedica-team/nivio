@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.util.Mappers;
 import de.bonndan.nivio.util.URLHelper;
 import org.apache.commons.text.StringSubstitutor;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -24,10 +26,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
+/**
+ * A static factory to create LandscapeDescription instances from files or strings.
+ */
 @Component
 public class LandscapeDescriptionFactory {
 
@@ -43,56 +45,26 @@ public class LandscapeDescriptionFactory {
     }
 
     /**
-     * Returns all {@link LandscapeDescription}s from config files named in the seed.
+     * Returns a {@link LandscapeDescription}s from config file url.
      *
-     * @param seed seed object
-     * @return list of fetched descriptions
+     * @param old an outdated landscape / description
+     * @return the description or null if the source is no URL
      */
-    public List<LandscapeDescription> getDescriptions(Seed seed) {
-
-        List<URL> locations = new ArrayList<>();
+    @Nullable
+    public LandscapeDescription from(Landscape old) {
         try {
-            if (seed.hasValue()) {
-                locations = seed.getLocations();
-            }
-            if (!StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
-                locations.addAll(seed.getDemoFiles());
-            }
+            URL url = new URL(old.getSource());
+            return from(url);
         } catch (MalformedURLException e) {
-            ProcessingException processingException = new ProcessingException("Failed to initialize watchers from seed", e);
-            publisher.publishEvent(new ProcessingErrorEvent(this, processingException));
+            String msg = "Source in landscape " + old.getIdentifier() + " might be no url: " + old.getSource();
+            LOGGER.info(msg);
+            return null;
         }
+    }
 
-        List<LandscapeDescription> descriptions = new ArrayList<>();
-
-        locations.forEach(url -> {
-            LandscapeDescription env = null;
-            if (URLHelper.isLocal(url)) {
-                try {
-                    File file = Paths.get(url.toURI()).toFile();
-                    env = LandscapeDescriptionFactory.fromYaml(file);
-                } catch (URISyntaxException | ProcessingException ex) {
-                    if (ex instanceof URISyntaxException) {
-                        publisher.publishEvent(new ProcessingErrorEvent(this, new ReadingException("Failed to handle file", ex)));
-                    } else {
-                        publisher.publishEvent(new ProcessingErrorEvent(this, (ProcessingException) ex));
-                    }
-                    LOGGER.error("Failed to parse file {}", url);
-                }
-            } else {
-                try {
-                    env = LandscapeDescriptionFactory.fromString(fileFetcher.get(url), url);
-                } catch (ReadingException ex) {
-                    publisher.publishEvent(new ProcessingErrorEvent(this, ex));
-                    LOGGER.error("Failed to parse file {}", url);
-                }
-            }
-            if (env != null) {
-                descriptions.add(env);
-            }
-        });
-
-        return descriptions;
+    @Nullable
+    public LandscapeDescription from(URL url) {
+        return fromString(fileFetcher.get(url), url);
     }
 
     /**
@@ -101,18 +73,13 @@ public class LandscapeDescriptionFactory {
      * @throws ReadingException on error
      */
     @NonNull
-    public static LandscapeDescription fromYaml(File file) {
-        try {
-            String content = new String(Files.readAllBytes(file.toPath()));
-            LandscapeDescription landscapeDescription = fromString(content, file.toString());
-            landscapeDescription.setSource(file.toString());
-            landscapeDescription.getSourceReferences().forEach(ref -> ref.setLandscapeDescription(landscapeDescription));
-            return landscapeDescription;
-        } catch (NoSuchFileException e) {
-            throw new ReadingException("Could not find file " + file.getAbsolutePath(), e);
-        } catch (IOException e) {
-            throw new ReadingException("Failed to create an environment from file " + file.getAbsolutePath(), e);
-        }
+    public LandscapeDescription fromYaml(File file) {
+
+        String content = fileFetcher.get(file);
+        LandscapeDescription landscapeDescription = fromString(content, file.toString());
+        landscapeDescription.setSource(file.toString());
+        landscapeDescription.getSourceReferences().forEach(ref -> ref.setLandscapeDescription(landscapeDescription));
+        return landscapeDescription;
     }
 
     /**
@@ -125,6 +92,10 @@ public class LandscapeDescriptionFactory {
      */
     @NonNull
     public static LandscapeDescription fromString(String yaml, String origin) {
+
+        if (StringUtils.isEmpty(yaml)) {
+            throw new ReadingException("Failed to create an environment from empty yaml input string.", new IllegalArgumentException("Got an empty string."));
+        }
 
         yaml = (new StringSubstitutor(StringLookupFactory.INSTANCE.environmentVariableStringLookup())).replace(yaml);
 
@@ -148,7 +119,9 @@ public class LandscapeDescriptionFactory {
      * @param yaml source
      * @param url  for updates
      * @return env description
+     * @throws ReadingException on error
      */
+    @NonNull
     public static LandscapeDescription fromString(String yaml, URL url) {
         LandscapeDescription env = fromString(yaml, url.toString());
         env.setSource(url.toString());

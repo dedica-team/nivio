@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.map;
 
 import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.ProcessLog;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
@@ -83,7 +84,7 @@ class PNGRenderCacheTest {
 
     @Test
     void onProcessingFinishedEvent() {
-        renderCache.onApplicationEvent(new ProcessingFinishedEvent(this, getLandscape()));
+        renderCache.onApplicationEvent(new ProcessingFinishedEvent(new LandscapeDescription(), getLandscape()));
 
         verify(mapFactory, times(1)).applyArtifactValues(any(), any());
     }
