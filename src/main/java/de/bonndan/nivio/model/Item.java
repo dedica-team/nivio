@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier")
@@ -36,8 +37,11 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
 
     private String group;
 
+    /**
+     * Can be both read and modified by {@link de.bonndan.nivio.input.ItemRelationResolver}
+     */
     @JsonManagedReference
-    private Set<RelationItem<Item>> relations = new HashSet<>();
+    private final Set<RelationItem<Item>> relations = ConcurrentHashMap.newKeySet();
 
     @JsonManagedReference
     private Set<InterfaceItem> interfaces = new HashSet<>();

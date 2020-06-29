@@ -46,18 +46,21 @@ class JGraphXRendererTest {
     private LandscapeRepository landscapeRepository;
     private ItemDescriptionFormatFactory formatFactory;
     private Indexer indexer;
+    private LandscapeDescriptionFactory factory;
 
     @BeforeEach
     public void setup() {
         landscapeRepository = new LandscapeRepository();
         formatFactory = ItemDescriptionFormatFactory.with(ItemDescriptionFactoryNivio.forTesting());
+        FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
+        factory = new LandscapeDescriptionFactory(mock(ApplicationEventPublisher.class), fileFetcher);
 
         indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class));
     }
 
     private LandscapeImpl getLandscape(String path) {
         File file = new File(RootPath.get() + path);
-        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = factory.fromYaml(file);
         indexer.reIndex(landscapeDescription);
         return landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
     }

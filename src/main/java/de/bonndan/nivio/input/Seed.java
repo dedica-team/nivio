@@ -38,6 +38,7 @@ public class Seed {
         } catch (MalformedURLException e) {
             logger.error("Error in demo files: " + e.getMessage(), e);
         }
+        logger.info("Using demo files: {}", demoFiles);
         return demoFiles;
     }
 
@@ -65,6 +66,10 @@ public class Seed {
         }
         logger.info("Using seeds: {}", list);
         return list;
+    }
+
+    public void setSeed(String seed) {
+        this.seed = seed;
     }
 
     private URL toURL(String s) throws MalformedURLException {

@@ -8,9 +8,12 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -19,23 +22,26 @@ class StartupListenerTest {
     private LandscapeDescriptionFactory factory;
     private ApplicationEventPublisher publisher;
     private StartupListener startupListener;
+    private Seed seed = new Seed(); // will use Seed.NIVIO_ENV_DIRECTORY
 
     @BeforeEach
     public void setup() {
         factory = mock(LandscapeDescriptionFactory.class);
         publisher = mock(ApplicationEventPublisher.class);
-        Seed seed = new Seed(); // will use Seed.NIVIO_ENV_DIRECTORY
         startupListener = new StartupListener(factory, publisher, seed);
     }
 
     @Test
-    public void fires() {
+    public void fires() throws MalformedURLException {
 
         //given
+        seed.setSeed("https://dedica.team");
+
         LandscapeDescription landscapeDescription = new LandscapeDescription();
         landscapeDescription.setIdentifier("foo");
-        List<LandscapeDescription> descriptionList = List.of(landscapeDescription);
-        when(factory.getDescriptions(any(Seed.class))).thenReturn(descriptionList);
+        landscapeDescription.setSource("https://dedica.team");
+        when(factory.from(any(URL.class))).thenReturn(landscapeDescription);
+
 
         //when
         startupListener.onApplicationEvent(mock(ApplicationReadyEvent.class));

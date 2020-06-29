@@ -55,7 +55,7 @@ public class Indexer {
             eventPublisher.publishEvent(new ProcessingErrorEvent(this, e));
         }
 
-        eventPublisher.publishEvent(new ProcessingFinishedEvent(this, landscape));
+        eventPublisher.publishEvent(new ProcessingFinishedEvent(input, landscape));
         logger.info("Reindexed landscape " + input.getIdentifier());
         landscape.setProcessLog(logger);
         return logger;

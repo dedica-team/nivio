@@ -1,10 +1,14 @@
 package de.bonndan.nivio.util;
 
+import org.springframework.lang.Nullable;
+
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -15,10 +19,26 @@ public class URLHelper {
         return Objects.nonNull(url) && url.toString().startsWith("file:/");
     }
 
+    /**
+     * Returns an URL is the string is an URL.
+     *
+     * Tries to create an URL if a path is given.
+     *
+     * @param url string url or local path to file
+     * @return an URL or null
+     */
+    @Nullable
     public static URL getURL(String url) {
+        if (url == null) {
+            return null;
+        }
         try {
             return new URL(url);
         } catch (MalformedURLException e) {
+            File file = new File(url);
+            if (file.exists() && !url.startsWith("file:")) {
+                return getURL("file:" + url);
+            }
             return null;
         }
     }
@@ -38,14 +58,27 @@ public class URLHelper {
         }
     }
 
-    public static String combine(URL baseUrl, String part) {
-        if (baseUrl == null)
+    /**
+     * Returns the combined base url and url part.
+     *
+     * If one argument is null, the other is returned.
+     *
+     * @param baseUrl
+     * @param part a relative path or full url/path or null
+     * @return combined url as string
+     */
+    public static String combine(@Nullable URL baseUrl, @Nullable String part) {
+        if (baseUrl == null) {
             return part;
-        if (part == null)
-            return baseUrl.toString();
+        }
 
-        if (part.startsWith(baseUrl.toString()))
+        if (part == null) {
+            return baseUrl.toString();
+        }
+
+        if (part.startsWith(baseUrl.toString())) {
             return part;
+        }
 
         String combined = baseUrl.toString().endsWith("/") ? baseUrl.toString() : baseUrl.toString() + "/";
         return combined + (part.startsWith("./") ? part.substring(2) : part);

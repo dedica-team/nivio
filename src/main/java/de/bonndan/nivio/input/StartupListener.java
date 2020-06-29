@@ -1,6 +1,9 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.IndexEvent;
+import de.bonndan.nivio.ProcessingErrorEvent;
+import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -9,10 +12,14 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * After the application has booted the SEED ({@link Seed}) is processed.
- *
- *
  */
 @Component
 public class StartupListener implements ApplicationListener<ApplicationReadyEvent> {
@@ -43,8 +50,24 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
             LOGGER.info("Running in demo mode");
         }
 
-        landscapeDescriptionFactory.getDescriptions(seed).forEach(landscapeDescription -> {
-            publisher.publishEvent(new IndexEvent(this, landscapeDescription, "Initialising from SEED"));
-        });
+        getUrls(seed).stream()
+                .map(landscapeDescriptionFactory::from)
+                .forEach(description -> publisher.publishEvent(new IndexEvent(this, description, "Initialising from SEED")));
+    }
+
+    private List<URL> getUrls(Seed seed) {
+        List<URL> landscapeDescriptionLocations = new ArrayList<>();
+        try {
+            if (seed.hasValue()) {
+                landscapeDescriptionLocations = seed.getLocations();
+            }
+            if (!StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
+                landscapeDescriptionLocations.addAll(seed.getDemoFiles());
+            }
+        } catch (MalformedURLException e) {
+            ProcessingException processingException = new ProcessingException("Failed to initialize watchers from seed", e);
+            publisher.publishEvent(new ProcessingErrorEvent(this, processingException));
+        }
+        return landscapeDescriptionLocations;
     }
 }

@@ -39,6 +39,9 @@ public class IndexerIntegrationTest {
     @Autowired
     ItemDescriptionFormatFactory formatFactory;
 
+    @Autowired
+    LandscapeDescriptionFactory landscapeDescriptionFactory;
+
     @Mock
     ApplicationEventPublisher applicationEventPublisher;
 
@@ -51,7 +54,7 @@ public class IndexerIntegrationTest {
 
     private LandscapeImpl index(String path) {
         File file = new File(getRootPath() + path);
-        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
 
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher);
 
