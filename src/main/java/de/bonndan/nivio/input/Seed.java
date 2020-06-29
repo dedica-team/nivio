@@ -68,6 +68,10 @@ public class Seed {
         return list;
     }
 
+    public void setSeed(String seed) {
+        this.seed = seed;
+    }
+
     private URL toURL(String s) throws MalformedURLException {
 
         if (ESCAPE_AUTHORITY && s.matches("^[a-zA-Z]\\:.*")) {

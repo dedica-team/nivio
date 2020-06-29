@@ -3,13 +3,17 @@ package de.bonndan.nivio.observation;
 import de.bonndan.nivio.IndexEvent;
 import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.LandscapeDescriptionFactory;
-import de.bonndan.nivio.input.LandscapeUrlsFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -30,17 +34,14 @@ public class ObserverRegistry implements ApplicationListener<ProcessingFinishedE
     private final Map<String, LandscapeObserverPool> observerMap = new ConcurrentHashMap<>();
     private final URLObserverFactory urlObserverFactory;
     private final LandscapeDescriptionFactory landscapeDescriptionFactory;
-    private final LandscapeUrlsFactory landscapeUrlsFactory;
     private final ApplicationEventPublisher publisher;
 
     public ObserverRegistry(URLObserverFactory urlObserverFactory,
                             LandscapeDescriptionFactory landscapeDescriptionFactory,
-                            LandscapeUrlsFactory landscapeUrlsFactory,
                             ApplicationEventPublisher publisher
     ) {
         this.urlObserverFactory = urlObserverFactory;
         this.landscapeDescriptionFactory = landscapeDescriptionFactory;
-        this.landscapeUrlsFactory = landscapeUrlsFactory;
         this.publisher = publisher;
     }
 
@@ -52,21 +53,48 @@ public class ObserverRegistry implements ApplicationListener<ProcessingFinishedE
     @Override
     public void onApplicationEvent(ProcessingFinishedEvent event) {
         LandscapeDescription from = (LandscapeDescription) event.getSource();
+        LandscapeImpl landscape = (LandscapeImpl) event.getLandscape();
+
         if (from == null) {
-            LOGGER.warn("Landscape {} could not be registered for observation", event.getLandscape().getIdentifier());
+            String msg = "No landscape description (input) available. Landscape " + landscape.getIdentifier() + "could not be registered for observation";
+            landscape.getLog().warn(msg);
+            LOGGER.warn(msg);
             return;
         }
 
-        URL sourceUrl = null;
-        try {
-            sourceUrl = new URL(from.getSource());
-        } catch (MalformedURLException e) {
-            LOGGER.info("Landscape {} does not seem to have a source", from.getIdentifier());
+        URL sourceUrl = URLHelper.getURL(from.getSource());
+        if (sourceUrl == null) {
+            LOGGER.info("Landscape {} does not seem to have a valid source ('" + from.getSource() + "')", from.getIdentifier());
         }
 
-        List<URL> landscapeSourceLocations = landscapeUrlsFactory.getLandscapeSourceLocations(from, sourceUrl);
+        List<URL> landscapeSourceLocations = getLandscapeSourceLocations(from, sourceUrl);
         setLandscapeUrls(from, landscapeSourceLocations);
         LOGGER.info("Registered landscape {} for observation with {} urls.", from, landscapeSourceLocations.size());
+    }
+
+    /**
+     * Returns all URLs of a landscape description.
+     *
+     * @param env description
+     * @param url config file url
+     * @return urls: config file and source references.
+     */
+    private List<URL> getLandscapeSourceLocations(@NonNull LandscapeDescription env, @Nullable URL url) {
+        List<URL> urls = new ArrayList<>();
+        if (url != null) {
+            urls.add(url);
+        }
+
+        URL baseUrl = URLHelper.getParentPath(env.getSource());
+        for (SourceReference sourceReference : env.getSourceReferences()) {
+            try {
+                urls.add(new URL(URLHelper.combine(baseUrl, sourceReference.getUrl())));
+            } catch (MalformedURLException e) {
+                LOGGER.error("Failed to handle url {}", sourceReference.getUrl(), e);
+            }
+        }
+
+        return urls;
     }
 
     /**
