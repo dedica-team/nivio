@@ -29,6 +29,9 @@ public class URLHelper {
      */
     @Nullable
     public static URL getURL(String url) {
+        if (url == null) {
+            return null;
+        }
         try {
             return new URL(url);
         } catch (MalformedURLException e) {
