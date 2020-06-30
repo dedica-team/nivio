@@ -18,7 +18,6 @@ public class LandscapeFactory {
 
     public static void assignAll(LandscapeDescription input, LandscapeImpl landscape) {
         landscape.setName(input.getName());
-        landscape.setName(input.getName());
         landscape.setContact(input.getContact());
         landscape.setConfig(input.getConfig());
         landscape.setDescription(input.getDescription());

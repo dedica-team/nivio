@@ -17,7 +17,7 @@ public interface Linked {
 
     //TODO add semantics, e.g. handle identifier "sonarqube" to grab metrics
     // see https://github.com/dedica-team/nivio/issues/97
-    public static final List<String> KNOWN_IDENTIFIERS = List.of(
+    List<String> KNOWN_IDENTIFIERS = List.of(
             "homepage",
             "repo",
             "wiki"
@@ -26,6 +26,9 @@ public interface Linked {
     String LINK_LABEL_PREFIX = "link.";
 
     /**
+     * Returns all assigned links.
+     *
+     * The map is not serialized, instead all links are turned into HateOAS links by a special serializer.
      *
      * @return map of links
      */
