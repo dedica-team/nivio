@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
@@ -20,6 +22,8 @@ import java.util.*;
  * This is representation of a service in the textual form as described in a source file.
  */
 public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemDescription.class);
 
     @NotEmpty
     private String environment;
@@ -33,7 +37,7 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
     private String owner;
     private String description;
     private String contact;
-    private Map<String, URL> links = new HashMap<>();
+    private final Map<String, URL> links = new HashMap<>();
     private String group;
 
     @JsonDeserialize(contentAs = InterfaceDescription.class)
@@ -132,7 +136,7 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
             try {
                 this.links.put(s, new URL(s2));
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                LOGGER.warn("Could not assign malformed URL {} to {}", s2, this.identifier);
             }
         });
     }

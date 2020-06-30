@@ -245,7 +245,7 @@ public class LandscapeDescription implements Landscape {
             try {
                 this.links.put(s, new URL(s2));
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                LOGGER.warn("Could not assign malformed URL {} to {}", s2, this.identifier);
             }
         });
     }
