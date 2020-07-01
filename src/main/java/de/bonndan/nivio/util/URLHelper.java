@@ -8,7 +8,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -36,8 +35,8 @@ public class URLHelper {
             return new URL(url);
         } catch (MalformedURLException e) {
             File file = new File(url);
-            if (file.exists() && !url.startsWith("file:")) {
-                return getURL("file:" + url);
+            if (file.exists() && !url.startsWith("file:///")) {
+                return getURL("file:///" + url);
             }
             return null;
         }
