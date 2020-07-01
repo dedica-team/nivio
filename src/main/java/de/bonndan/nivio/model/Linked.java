@@ -2,7 +2,6 @@ package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import de.bonndan.nivio.api.LinkFactory;
 import org.springframework.util.StringUtils;
 
 import java.net.URL;
@@ -51,7 +50,6 @@ public interface Linked {
     @JsonSetter("links")
     default void setLinks(Map<String, Link> links) {
         this.getLinks().putAll(links);
-        //this.getLinks().putAll(LinkFactory.fromStringMap(links));
     }
 
 }
