@@ -56,28 +56,27 @@ public class AsciiDocGenerator {
 
         builder.append(NL + "=== " + (isEmpty(item.getName()) ? item.getIdentifier() : item.getName()) + NL);
         builder.append(nice(item.getDescription()) + NL);
-        if (!isEmpty(item.getLabel(Label.NOTE))) {
-            builder.append(item.getLabel(Label.NOTE) + NL);
+        if (!isEmpty(item.getLabel(Label.note))) {
+            builder.append(item.getLabel(Label.note) + NL);
         }
 
         builder.append("[horizontal]" + NL);
         builder.append("FQI:: " + item.getFullyQualifiedIdentifier() + NL);
         builder.append("Name:: " + nice(item.getName()) + NL);
-        builder.append("Short Name:: " + nice(item.getLabel(Label.SHORTNAME)) + NL);
+        builder.append("Short Name:: " + nice(item.getLabel(Label.shortname)) + NL);
         builder.append("Type:: " + item.getType() + NL);
         builder.append("Links:: " + item.getLinks().entrySet().stream()
                 .map(stringURLEntry -> stringURLEntry.getValue().toString() + "[" + stringURLEntry.getKey() + "]")
                 .collect(Collectors.joining(" ")) + NL);
         builder.append("Tags:: " + FormatUtils.nice(item.getLabels(Tagged.LABEL_PREFIX_TAG)) + NL);
         builder.append("Contact:: " + nice(item.getContact()) + NL);
-        builder.append("Team:: " + nice(item.getLabel(Label.TEAM)) + NL);
+        builder.append("Team:: " + nice(item.getLabel(Label.team)) + NL);
         builder.append("Owner:: " + nice(item.getOwner()) + NL);
-        builder.append("Software:: " + nice(item.getLabel(Label.SOFTWARE)) + NL);
-        builder.append("Version:: " + nice(item.getLabel(Label.VERSION)) + NL);
-        builder.append("Machine:: " + nice(item.getLabel(Label.MACHINE)) + NL);
-        builder.append("Scale:: " + nice(item.getLabel(Label.SCALE)) + NL);
-        builder.append("Visibility:: " + nice(item.getLabel(Label.VISIBILITY)) + NL);
-        builder.append("Networks:: " + FormatUtils.nice(item.getLabels(Label.PREFIX_NETWORK)) + NL);
+        builder.append("Software:: " + nice(item.getLabel(Label.software)) + NL);
+        builder.append("Version:: " + nice(item.getLabel(Label.version)) + NL);
+        builder.append("Scale:: " + nice(item.getLabel(Label.scale)) + NL);
+        builder.append("Visibility:: " + nice(item.getLabel(Label.visibility)) + NL);
+        builder.append("Networks:: " + FormatUtils.nice(item.getLabels(Label.network)) + NL);
 
         //TODO include assessment
 

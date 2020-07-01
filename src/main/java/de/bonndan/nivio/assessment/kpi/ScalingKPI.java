@@ -19,7 +19,7 @@ public class ScalingKPI extends CustomKPI {
     );
 
     public ScalingKPI() {
-        super(Label.SCALE.toString().toLowerCase(), null, ranges, null);
+        super(Label.scale.toString().toLowerCase(), null, ranges, null);
     }
 
 }

@@ -1,75 +1,109 @@
 package de.bonndan.nivio.model;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
- * All names are used in lowercase variant.
+ * Landscape component labels (to be used like fields).
  *
+ * All names are used in lowercase variant.
  *
  */
 public enum Label {
 
-    /**
-     * Describes the capability the service provides for the business, or in case of infrastructure the technical
-     * capability like enabling service discovery, configuration, secrets or persistence.
-     */
-    BUSINESS_CAPABILITY,
+    capability("The capability the service provides for the business, or in case of infrastructure" +
+            " the technical capability like enabling service discovery, configuration, secrets or persistence."),
 
-    /**
-     * Running costs of the item.
-     *
-     */
-    COSTS,
+    costs("Running costs of the item."),
 
-    HEALTH,
+    health("description of the item's health status"),
 
-    HOSTTYPE,
+    icon("Name of the icon to render."),
 
-    /**
-     * icon to render
-     */
-    ICON,
+    layer("a technical layer"),
 
-    LAYER,
+    lifecycle("A lifecycle phase (PLANNED|plan, INTEGRATION|int, PRODUCTION|prod, END_OF_LIFE|eol|end)"),
 
-    NOTE,
+    note("a custom note"),
 
-    SCALE,
+    scale("number of instances"),
 
-    SECURITY,
+    security("description of the item's security status"),
 
-    SHORTNAME,
+    shortname("abbreviated name"),
 
-    SOFTWARE,
+    software("Software/OS name"),
 
-    STABILITY,
+    stability("description of the item's stability"),
 
-    /**
-     * Name of the responsible team
-     */
-    TEAM,
+    team("Name of the responsible team (e.g. technical owner)"),
 
-    /**
-     * the type (service, database, queue, loadbalancer...)
-     */
-    TYPE,
+    type("the type (service, database, queue, loadbalancer...)"),
 
-    VERSION,
+    version("The version (e.g. software version, protocol version)"),
 
-    MACHINE,
+    visibility("visibility to other items"),
 
-    VISIBILITY  ;
+    network("prefix for network labels",true),
 
-    public static final String PREFIX_NETWORK = "network";
-    public static final String PREFIX_STATUS = "status";
+    status("prefix for status labels, can be used as prefix all other labels to mark a status for the label", true),
+
+    condition("prefix for condition labels", true);
 
     /**
      * Separator for label key parts.
+     * Should not be used outside this package. Use key() methods instead.
      */
-    public static final String DELIMITER = ".";
+    static final String DELIMITER = ".";
+
+    public final String meaning;
+    public final boolean isPrefix;
+
+    Label(String meaning) {
+        this.meaning = meaning;
+        this.isPrefix = false;
+    }
+
+    Label(String meaning, boolean isPrefix) {
+        this.meaning = meaning;
+        this.isPrefix = isPrefix;
+    }
 
     /**
      * Builds a properly delimited label key.
      */
+    public static String key(Label prefix, String key) {
+        return prefix + DELIMITER + key.toLowerCase();
+    }
+
+    public static String key(String prefix, String key) {
+        return prefix + DELIMITER + key.toLowerCase();
+    }
+
+    public static String key(Label prefix, Label key, String suffix) {
+        return prefix + DELIMITER + key.toString().toLowerCase() + DELIMITER + suffix;
+    }
+
+    public static String key(Label prefix, String key, String suffix) {
+        return prefix + DELIMITER + key.toLowerCase() + DELIMITER + suffix;
+    }
+
     public static String key(String prefix, Label key, String suffix) {
         return prefix + DELIMITER + key.toString().toLowerCase() + DELIMITER + suffix;
+    }
+
+    /**
+     * Exports labels with their meanings as map.
+     *
+     * @param includePrefixes include labels which are prefixes
+     * @return key is label, value is meaning
+     */
+    public static Map<String, String> export(boolean includePrefixes) {
+        Map<String, String> labelExport = new LinkedHashMap<>();
+        Arrays.stream(Label.values())
+                .filter(label -> includePrefixes || !label.isPrefix)
+                .forEach(label -> labelExport.put(label.name(), label.meaning));
+        return labelExport;
     }
 }

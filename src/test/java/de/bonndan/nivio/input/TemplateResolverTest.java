@@ -3,15 +3,16 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.compose2.ItemDescriptionFactoryCompose2;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Tagged;
 import de.bonndan.nivio.util.RootPath;
-import org.bouncycastle.jcajce.provider.symmetric.TEA;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
 import java.util.*;
@@ -19,10 +20,12 @@ import java.util.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
 
 class TemplateResolverTest {
 
     private TemplateResolver templateResolver;
+    private LandscapeDescriptionFactory factory;
 
     @Mock
     ProcessLog log;
@@ -31,6 +34,8 @@ class TemplateResolverTest {
     public void setup() {
         log = new ProcessLog(LoggerFactory.getLogger(TemplateResolver.class));
         templateResolver = new TemplateResolver();
+        FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
+        factory = new LandscapeDescriptionFactory(mock(ApplicationEventPublisher.class), fileFetcher);
     }
 
 
@@ -92,8 +97,8 @@ class TemplateResolverTest {
 
         //other values from template
         assertNull(web.getName());
-        assertEquals("Wordpress", web.getLabel(Label.SOFTWARE));
-        assertEquals("alphateam", web.getLabel(Label.TEAM));
+        assertEquals("Wordpress", web.getLabel(Label.software));
+        assertEquals("alphateam", web.getLabel(Label.team));
         assertEquals("alphateam@acme.io", web.getContact());
         assertEquals(1, web.getLabels(Tagged.LABEL_PREFIX_TAG).size());
     }
@@ -107,7 +112,7 @@ class TemplateResolverTest {
 
         ItemDescription redis = landscapeDescription.getItemDescriptions().pick("redis", null);
         assertNotNull(redis);
-        assertNull(redis.getLabel(Label.SOFTWARE));
+        assertNull(redis.getLabel(Label.software));
     }
 
     private Map<ItemDescription, List<String>> getTemplates(LandscapeDescription landscapeDescription) {
@@ -122,7 +127,9 @@ class TemplateResolverTest {
 
     private LandscapeDescription getLandscapeDescription(String s) {
         File file = new File(RootPath.get() + s);
-        return LandscapeDescriptionFactory.fromYaml(file);
+
+
+        return factory.fromYaml(file);
     }
 
 }

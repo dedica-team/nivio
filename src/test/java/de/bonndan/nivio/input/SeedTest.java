@@ -12,22 +12,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SeedTest {
 
     @Test
-    public void empty() throws MalformedURLException {
-        Seed seed = new Seed("");
-        List<URL> locations = seed.getLocations();
-        assertFalse(locations.isEmpty());
-        assertEquals(Seed.NIVIO_ENV_DIRECTORY,locations.get(0).toString());
-    }
-
-    @Test
     public void twoLocal() throws MalformedURLException {
         Seed seed = new Seed("/tmp,file:///tmp2");
         List<URL> locations = seed.getLocations();
 
         assertFalse(locations.isEmpty());
         assertEquals(2, locations.size());
-        assertEquals("file:/tmp",locations.get(0).toString());
-        assertEquals("file:/tmp2",locations.get(1).toString());
+        assertEquals("file:/tmp", locations.get(0).toString());
+        assertEquals("file:/tmp2", locations.get(1).toString());
     }
 
     @Test
@@ -37,19 +29,19 @@ public class SeedTest {
 
         assertFalse(locations.isEmpty());
         assertEquals(2, locations.size());
-        assertEquals("http://somehost.com/somefile.yml",locations.get(1).toString());
+        assertEquals("http://somehost.com/somefile.yml", locations.get(1).toString());
     }
 
     @Test
     public void fails() throws MalformedURLException {
         Seed seed = new Seed(" :xxx");
-        assertThrows(MalformedURLException.class,() -> seed.getLocations());
+        assertThrows(MalformedURLException.class, () -> seed.getLocations());
     }
 
     @Test
     public void windowsFileLocation() throws MalformedURLException {
         final String separator = FileSystems.getDefault().getSeparator();
-        final String seedLocation = "c:" + separator + "a" + separator + "b" + separator+ "c.yml";
+        final String seedLocation = "c:" + separator + "a" + separator + "b" + separator + "c.yml";
 
         final String expectedLocation = "file:/c:/a/b/c.yml";
 

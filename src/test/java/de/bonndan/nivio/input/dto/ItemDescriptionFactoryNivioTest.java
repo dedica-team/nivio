@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.dto;
 
 
 import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
@@ -40,28 +41,29 @@ class ItemDescriptionFactoryNivioTest {
         List<ItemDescription> services = descriptionFactory.getDescriptions(file, null);
         ItemDescription service = services.get(0);
         assertEquals("Demo Blog", service.getName());
-        assertEquals("to be replaced", service.getLabel(Label.NOTE));
+        assertEquals("to be replaced", service.getLabel(Label.note));
         assertEquals("blog-server", service.getIdentifier());
-        assertEquals("blog", service.getLabel(Label.SHORTNAME));
-        assertEquals("1.0", service.getLabel(Label.VERSION));
-        assertEquals("public", service.getLabel(Label.VISIBILITY));
-        assertEquals("Wordpress", service.getLabel(Label.SOFTWARE));
-        assertEquals("5", service.getLabel(Label.SCALE));
+        assertEquals("blog", service.getLabel(Label.shortname));
+        assertEquals("1.0", service.getLabel(Label.version));
+        assertEquals("public", service.getLabel(Label.visibility));
+        assertEquals("Wordpress", service.getLabel(Label.software));
+        assertEquals("5", service.getLabel(Label.scale));
         assertEquals("https://acme.io", service.getLinks().get("homepage").toString());
         assertEquals("https://git.acme.io/blog-server", service.getLinks().get("repository").toString());
-        assertEquals("s", service.getLabel(Label.MACHINE));
-        assertNotNull(service.getLabels(Label.PREFIX_NETWORK));
-        assertEquals("content", service.getLabels(Label.PREFIX_NETWORK).values().toArray()[0]);
-        assertEquals("alphateam", service.getLabel(Label.TEAM));
+        assertEquals("s", service.getLabel("machine"));
+        assertNotNull(service.getLabels(Label.network));
+        assertEquals("content", service.getLabels(Label.network).values().toArray()[0]);
+        assertEquals("alphateam", service.getLabel(Label.team));
         assertEquals("alphateam@acme.io", service.getContact());
         assertEquals("content", service.getGroup());
-        assertEquals("docker", service.getLabel(Label.HOSTTYPE));
+        assertEquals("docker", service.getLabel("hosttype"));
         assertEquals(1, service.getTags().length);
         assertTrue(Arrays.asList(service.getTags()).contains("CMS"));
-        assertEquals(Lifecycle.END_OF_LIFE, service.getLifecycle());
+        assertTrue(Lifecycle.isEndOfLife(service));
 
-        assertEquals(Status.RED.toString(), service.getLabel(Label.key(Label.PREFIX_STATUS, Label.SECURITY, "status")));
-        assertEquals(Status.YELLOW.toString(), service.getLabel(Label.key(Label.PREFIX_STATUS, Label.BUSINESS_CAPABILITY, "status")));
+
+        assertEquals(Status.RED.toString(), service.indexedByPrefix(Label.status).get(Label.security.name()).get(StatusValue.LABEL_SUFFIX_STATUS));
+        assertEquals(Status.YELLOW.toString(), service.indexedByPrefix(Label.status).get(Label.capability.name().toLowerCase()).get("status"));
 
         assertNotNull(service.getInterfaces());
         assertEquals(3, service.getInterfaces().size());
@@ -84,15 +86,15 @@ class ItemDescriptionFactoryNivioTest {
         });
 
         ItemDescription web = services.get(2);
-        assertEquals(LandscapeItem.LAYER_INGRESS, web.getLabel(Label.LAYER));
+        assertEquals(LandscapeItem.LAYER_INGRESS, web.getLabel("layer"));
         assertEquals("wordpress-web", web.getIdentifier());
         assertEquals("Webserver", web.getDescription());
-        assertEquals("Apache", web.getLabel(Label.SOFTWARE));
-        assertEquals("2.4", web.getLabel(Label.VERSION));
-        assertEquals("Pentium 1 512MB RAM", web.getLabel(Label.MACHINE));
-        assertEquals("ops guys", web.getLabel(Label.TEAM));
-        assertEquals("content", web.getLabels(Label.PREFIX_NETWORK).values().toArray()[0]);
-        assertEquals("docker", web.getLabel(Label.HOSTTYPE));
+        assertEquals("Apache", web.getLabel(Label.software));
+        assertEquals("2.4", web.getLabel(Label.version));
+        assertEquals("Pentium 1 512MB RAM", web.getLabel("machine"));
+        assertEquals("ops guys", web.getLabel(Label.team));
+        assertEquals("content", web.getLabels(Label.network).values().toArray()[0]);
+        assertEquals("docker", web.getLabel("hosttype"));
     }
 
     @Test

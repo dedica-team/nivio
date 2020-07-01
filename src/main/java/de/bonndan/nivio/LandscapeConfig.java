@@ -1,7 +1,7 @@
 package de.bonndan.nivio;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.bonndan.nivio.assessment.kpi.CustomKPI;
+import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.assessment.kpi.KPIFactory;
 
@@ -147,7 +147,7 @@ public class LandscapeConfig {
     /**
      * The active KPIs.
      *
-     * @return all active {@link KPI}s with their unique identifier
+     * @return all active {@link AbstractKPI}s with their unique identifier
      */
     public Map<String, KPI> getKPIs() {
         return kpis;

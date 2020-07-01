@@ -1,6 +1,7 @@
 package de.bonndan.nivio.model;
 
-import de.bonndan.nivio.assessment.StatusValue;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.util.Set;
 
@@ -17,15 +18,28 @@ public interface LandscapeItem extends Component, Labeled, Linked {
 
     String IDENTIFIER_VALIDATION = "^[a-z0-9\\.\\:_-]{3,256}$";
 
-    String getGroup();
+    /**
+     * @return the group name (used as identifier)
+     */
+    @Nullable String getGroup();
 
-    String getType();
+    /**
+     * @return a type like "server", "container", "owner" ...
+     */
+    @Nullable String getType();
 
-    Lifecycle getLifecycle();
+    /**
+     * @return a set of {@link InterfaceItem}
+     */
+    @NonNull Set<InterfaceItem> getInterfaces();
 
-    Set<InterfaceItem> getInterfaces();
+    /**
+     * @return a string describing the owner
+     */
+    @Nullable String getOwner();
 
-    String getOwner();
-
-    Set<? extends RelationItem> getRelations();
+    /**
+     * @return Relations to other items
+     */
+    @NonNull Set<? extends RelationItem> getRelations();
 }

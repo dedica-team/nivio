@@ -1,7 +1,7 @@
 package de.bonndan.nivio.assessment;
 
 import de.bonndan.nivio.assessment.kpi.CustomKPI;
-import de.bonndan.nivio.assessment.kpi.KPI;
+import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.model.LandscapeImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
@@ -34,7 +34,7 @@ class AssessmentFactoryTest {
         verify(kpi).init();
     }
 
-    private LandscapeImpl getLandscape(List<KPI> kpis) {
+    private LandscapeImpl getLandscape(List<AbstractKPI> kpis) {
         LandscapeImpl landscape = new LandscapeImpl();
         landscape.setIdentifier("foo");
         kpis.forEach(kpi -> {

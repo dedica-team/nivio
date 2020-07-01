@@ -73,7 +73,7 @@ public class ReportGenerator extends HtmlGenerator {
                 .collect(Collectors.toList());
         return div(
                 div(
-                        iff(!isEmpty(item.getLabel(Label.NOTE)), div(item.getLabel(Label.NOTE)).attr("class", "alert alert-warning float float-right")),
+                        iff(!isEmpty(item.getLabel(Label.note)), div(item.getLabel(Label.note)).attr("class", "alert alert-warning float float-right")),
                         a().attr("id", item.getFullyQualifiedIdentifier().toString()),
                         h3(
                                 img().attr("src", localServer.getIconUrl(item)).attr("width", "30px").attr("class", "img-fluid"),
@@ -86,23 +86,23 @@ public class ReportGenerator extends HtmlGenerator {
                                 li("Name: " + FormatUtils.nice(item.getName()))
                                 , li("Full identifier: " + item.getFullyQualifiedIdentifier().toString())
                                 , li("Identifier: " + item.getIdentifier())
-                                , li("Short Name: " + FormatUtils.nice(item.getLabel(Label.SHORTNAME)))
+                                , li("Short Name: " + FormatUtils.nice(item.getLabel(Label.shortname)))
                                 , li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">" + GROUP_CIRCLE + "</span> " + FormatUtils.nice(item.getGroup())))
                                 , li("Contact: " + FormatUtils.nice(item.getContact()))
-                                , li("Team: " + FormatUtils.nice(item.getLabel(Label.TEAM)))
+                                , li("Team: " + FormatUtils.nice(item.getLabel(Label.team)))
                                 , li("Owner: " + FormatUtils.nice(item.getOwner()))
                                 , li("Type: " + item.getType())
-                                , li("Capability: " + FormatUtils.nice(item.getLabel(Label.BUSINESS_CAPABILITY)))
+                                , li("Capability: " + FormatUtils.nice(item.getLabel(Label.capability)))
                                 , li("Links: ").with(links)
                                 , li("Tags: " + FormatUtils.nice(item.getLabels(Tagged.LABEL_PREFIX_TAG)))
-                                , li("Lifecycle: " + FormatUtils.nice(item.getLifecycle() != null ? item.getLifecycle().toString() : "-"))
-                                , li("Software: " + FormatUtils.nice(item.getLabel(Label.SOFTWARE)))
-                                , li("Version: " + FormatUtils.nice(item.getLabel(Label.VERSION)))
-                                , li("Machine: " + FormatUtils.nice(item.getLabel(Label.MACHINE)))
-                                , li("Scale: " + FormatUtils.nice(item.getLabel(Label.SCALE)))
-                                , li("Visibility: " + FormatUtils.nice(item.getLabel(Label.VISIBILITY)))
-                                , li("Networks: " + FormatUtils.nice(item.getLabels(Label.PREFIX_NETWORK)))
-                                , li("Costs: " + FormatUtils.nice(item.getLabel(Label.COSTS)))
+                                , li("Lifecycle: " + FormatUtils.nice(item.getLabel(Label.lifecycle)))
+                                , li("Software: " + FormatUtils.nice(item.getLabel(Label.software)))
+                                , li("Version: " + FormatUtils.nice(item.getLabel(Label.version)))
+                                , li("Scale: " + FormatUtils.nice(item.getLabel(Label.scale)))
+                                , li("Visibility: " + FormatUtils.nice(item.getLabel(Label.visibility)))
+                                , li("Networks: " + FormatUtils.nice(item.getLabels(Label.network)))
+                                , li("Costs: " + FormatUtils.nice(item.getLabel(Label.costs)))
+                                // TODO use Label.export()
                         ),
 
 

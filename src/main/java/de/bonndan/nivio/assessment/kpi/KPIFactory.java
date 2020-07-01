@@ -1,49 +1,56 @@
 package de.bonndan.nivio.assessment.kpi;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.context.annotation.Scope;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Factory for custom and builtin KPIs.
- *
- *
- *
  */
 public class KPIFactory extends JsonDeserializer<Map<String, KPI>> implements Serializable {
 
     @Override
-    public Map<String, KPI> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public Map<String, KPI> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
 
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, Map<String, String>> result = mapper.convertValue(node, new TypeReference<Map<String, Map<String, ?>>>() {
-        });
+        Map<String, KPIConfig> result = mapper.convertValue(node, new TypeReference<>() {});
 
         Map<String, KPI> kpis = new HashMap<>();
-        result.forEach((s, params) -> {
+        result.forEach((s, kpiConfig) -> {
+            KPI kpi = null;
             if (s.equals(HealthKPI.IDENTIFIER)) {
-                kpis.put(HealthKPI.IDENTIFIER, mapper.convertValue(params, HealthKPI.class));
-                return;
+                kpi = mapper.convertValue(kpiConfig, HealthKPI.class);
+                Objects.requireNonNull(kpi);
             }
 
             if (s.equals(ScalingKPI.IDENTIFIER)) {
-                kpis.put(ScalingKPI.IDENTIFIER, mapper.convertValue(params, ScalingKPI.class));
-                return;
+                kpi = mapper.convertValue(kpiConfig, ScalingKPI.class);
+                Objects.requireNonNull(kpi);
             }
 
-            kpis.put(s, mapper.convertValue(params, CustomKPI.class));
+            if (s.equals(ConditionKPI.IDENTIFIER)) {
+                kpi = new ConditionKPI();
+            }
+
+            if (s.equals(LifecycleKPI.IDENTIFIER)) {
+                kpi = new LifecycleKPI();
+            }
+
+            if (kpi == null) {
+                kpi = mapper.convertValue(kpiConfig, CustomKPI.class);
+            }
+            kpis.put(s, kpi);
         });
 
         return kpis;

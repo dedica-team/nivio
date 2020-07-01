@@ -122,11 +122,11 @@ public class Dld4eRenderer implements Renderer<String> {
         private List<String> networks = new ArrayList<>();
 
         public void add(Item item) {
-            if (item.getLabels(Label.PREFIX_NETWORK).isEmpty()) {
+            if (item.getLabels(Label.network).isEmpty()) {
                 return;
             }
 
-            item.getLabels(Label.PREFIX_NETWORK).forEach((k,v) -> {
+            item.getLabels(Label.network).forEach((k, v) -> {
                 if (!networks.contains(v)) {
                     networks.add(v);
                 }

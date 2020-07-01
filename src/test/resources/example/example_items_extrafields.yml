@@ -1,0 +1,7 @@
+identifier: nivio:example
+name: items with extra fields
+
+items:
+  - identifier: one
+    foo: bar
+    bar: baz

@@ -14,22 +14,31 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Evaluation of the SEED environment variable.
+ *
+ *
+ */
 public class Seed {
 
     private static final Logger logger = LoggerFactory.getLogger(Seed.class);
 
     public static final String DEMO = "DEMO";
 
-    static final String NIVIO_ENV_DIRECTORY = "file:/opt/nivio/environments";
     static boolean ESCAPE_AUTHORITY = SystemUtils.IS_OS_WINDOWS;
 
-    public static List<File> getDemoFiles() {
+    public List<URL> getDemoFiles() {
         Path currentRelativePath = Paths.get("");
         String absPath = currentRelativePath.toAbsolutePath().toString();
-        List<File> demoFiles = new ArrayList<>();
-        demoFiles.add(new File(absPath + "/src/test/resources/example/example_env.yml"));
-        demoFiles.add(new File(absPath + "/src/test/resources/example/inout.yml"));
-        //demoFiles.add(new File(absPath + "/src/test/resources/example/dedica.yml"));
+        List<URL> demoFiles = new ArrayList<>();
+        try {
+            demoFiles.add(new File(absPath + "/src/test/resources/example/example_env.yml").toURI().toURL());
+            demoFiles.add(new File(absPath + "/src/test/resources/example/inout.yml").toURI().toURL());
+            //demoFiles.add(new File(absPath + "/src/test/resources/example/dedica.yml"));
+        } catch (MalformedURLException e) {
+            logger.error("Error in demo files: " + e.getMessage(), e);
+        }
+        logger.info("Using demo files: {}", demoFiles);
         return demoFiles;
     }
 
@@ -50,18 +59,17 @@ public class Seed {
 
     public List<URL> getLocations() throws MalformedURLException {
 
-        if (StringUtils.isEmpty(seed)) {
-            URL url = new URL(NIVIO_ENV_DIRECTORY);
-            logger.info("Using default directory " + NIVIO_ENV_DIRECTORY + " as seed.");
-            return List.of(url);
-        }
-
         String[] strings = StringUtils.commaDelimitedListToStringArray(seed);
         List<URL> list = new ArrayList<>();
         for (String s : strings) {
             list.add(toURL(s));
         }
+        logger.info("Using seeds: {}", list);
         return list;
+    }
+
+    public void setSeed(String seed) {
+        this.seed = seed;
     }
 
     private URL toURL(String s) throws MalformedURLException {

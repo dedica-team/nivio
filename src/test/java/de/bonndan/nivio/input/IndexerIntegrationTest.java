@@ -3,7 +3,6 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.notification.NotificationService;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.Assertions;
@@ -40,6 +39,9 @@ public class IndexerIntegrationTest {
     @Autowired
     ItemDescriptionFormatFactory formatFactory;
 
+    @Autowired
+    LandscapeDescriptionFactory landscapeDescriptionFactory;
+
     @Mock
     ApplicationEventPublisher applicationEventPublisher;
 
@@ -52,7 +54,7 @@ public class IndexerIntegrationTest {
 
     private LandscapeImpl index(String path) {
         File file = new File(getRootPath() + path);
-        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
 
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher);
 
@@ -191,7 +193,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(landscape1.getItems());
         Item blog1 = landscape1.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog1);
-        assertEquals("blog", blog1.getLabel(Label.SHORTNAME));
+        assertEquals("blog", blog1.getLabel(Label.shortname));
 
         Assertions.assertNotNull(landscape2);
         assertEquals("nivio:other", landscape2.getIdentifier());
@@ -199,7 +201,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(landscape2.getItems());
         Item blog2 = landscape2.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog2);
-        assertEquals("blog1", blog2.getLabel(Label.SHORTNAME));
+        assertEquals("blog1", blog2.getLabel(Label.shortname));
     }
 
     /**

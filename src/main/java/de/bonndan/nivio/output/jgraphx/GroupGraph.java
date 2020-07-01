@@ -12,10 +12,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static de.bonndan.nivio.output.map.MapFactory.DEFAULT_ICON_SIZE;
+
+/**
+ * Graph for one group (for the items INSIDE the group).
+ * <p>
+ * Uses a simple {@link mxOrganicLayout}.
+ */
 public class GroupGraph {
-    public final int DEFAULT_ICON_SIZE = 50;
+
     private final mxGraph graph;
-    private Map<LandscapeItem, mxCell> serviceVertexes = new HashMap<>();
+    private final Map<LandscapeItem, mxCell> serviceVertexes = new HashMap<>();
 
     public GroupGraph(List<Item> items) {
         graph = new mxGraph();
@@ -45,9 +52,6 @@ public class GroupGraph {
 
         //organic layout between group containers
         mxOrganicLayout layout = new mxOrganicLayout(graph);
-        layout.setTriesPerCell(16);
-        layout.setEdgeLengthCostFactor(layout.getEdgeLengthCostFactor() * 0.1); //edges tend to be longer
-        layout.setUseBoundingBox(false);
         layout.execute(graph.getDefaultParent());
     }
 

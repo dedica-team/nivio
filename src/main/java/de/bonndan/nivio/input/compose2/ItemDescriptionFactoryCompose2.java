@@ -64,7 +64,7 @@ public class ItemDescriptionFactoryCompose2 implements ItemDescriptionFactory {
 
         source.services.forEach((identifier, composeService) -> {
             composeService.setIdentifier(identifier);
-            itemDescriptions.add(composeService.toDto());
+            itemDescriptions.add(composeService.getDescription());
         });
 
         return itemDescriptions;

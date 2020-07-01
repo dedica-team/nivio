@@ -5,4 +5,4 @@ VOLUME /tmp
 
 ADD src/test/resources/example /src/test/resources/example
 ADD target/nivio.jar app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-Xmx400m","-jar","/app.jar"]

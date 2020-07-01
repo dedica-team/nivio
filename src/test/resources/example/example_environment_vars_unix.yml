@@ -5,5 +5,5 @@ contact: mail@acme.org
 sources:
   - url: "http://acme.io/dashboard.yml"
     format: nivio
-    headerTokenName: PRIVATE_TOKEN
-    headerTokenValue: ${PRIVATE_TOKEN}
+    headerTokenName: USER
+    headerTokenValue: ${USER}

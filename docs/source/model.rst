@@ -30,25 +30,9 @@ A item should have the following attributes:
 * **contact** support/notification contact (email) may be addressed in case of errors
 * **description** a short description
 
-Plus, there are "known" attributes having a special meaning:
+Other fields:
 
-* **type** e.g. microservice, database, proxy, loadbalancer, product owner ... (nivio tries to use icons based on the type)
-* **layer** ingress, applications, or infrastructure
-* **shortName** abbreviation
-* **capability** the capability the item provides for the business, or in case of infrastructure the technical purpose like enabling item discovery, configuration, secrets or persistence.
-* **version** any string describing a item version (e.g. 1.2.5)
-* **software** optional name of the used software/product
-* **owner** owning party (e.g. Marketing)
-* **team** technical owner
 * **links** a map/dictionary of urls to more information
-* **visibility** whether the item is publicly exposed
-* **tags** list of strings used as tag
-* **networks** list of network names (can be defined somewhere else)
-* **machine** description of the underlying virtual or physical machine
-* **scale** number of instances (or other description)
-* **hostType** e.g. docker, VM, bare metal
-* **note** any note attached to the item
-* **costs** running costs of the item. Stored as string
 * **lifecycle** life cycle phase. One of "planned", "integration", "production", "end of life" (abbrevs work)
 * **statuses** status objects, represented in colors
     * label: stability, capability, health, security ....)
@@ -66,6 +50,40 @@ Plus, there are "known" attributes having a special meaning:
 * **providedBy** array of references to other items (identifiers)
 
 
+Plus, there are labels having a special meaning:
+
+.. include:: labels.rst
+
+
+You can also store **custom properties** as labels, but keep in mind that
+
+* label keys are converted to lowercase
+* label values are stored as string
+
+**Item configuration**
+
+.. code-block:: yaml
+   :linenos:
+
+    items:
+      - identifier: blog-server
+        shortName: blog1
+        group: content
+        mycustomlabel1: foo
+        mycustomlabel_2: bar
+        any: entry is stored as label
+
+      - identifier: auth-gateway
+        shortName: blog1
+        layer: ingress
+        group: content
+
+      - identifier: DB1
+        software: MariaDB
+        version: 10.3.11
+        type: database
+        layer: infrastructure
+
 Item Groups
 -----------
 Groups can have the following attributes:
@@ -79,26 +97,10 @@ Groups can have the following attributes:
 * **color** a hex color code for rendering
 * **links** a map/dictionary of urls to more information
 
-**Item configuration **
+**Group configuration**
 
 .. code-block:: yaml
    :linenos:
-
-    items:
-      - identifier: blog-server
-        shortName: blog1
-        group: content
-
-      - identifier: auth-gateway
-        shortName: blog1
-        layer: ingress
-        group: content
-
-      - identifier: DB1
-        software: MariaDB
-        version: 10.3.11
-        type: database
-        layer: infrastructure
 
     groups:
       content:

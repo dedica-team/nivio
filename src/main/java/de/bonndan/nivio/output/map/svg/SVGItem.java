@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
+import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.Rendered;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
@@ -10,7 +11,7 @@ import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 
-import static de.bonndan.nivio.output.map.svg.SvgFactory.ICON_SIZE;
+import static de.bonndan.nivio.output.map.MapFactory.DEFAULT_ICON_SIZE;
 
 class SVGItem extends Component {
 
@@ -37,8 +38,8 @@ class SVGItem extends Component {
         var fillId = hasFill ? "url(#" + SVGPattern.idForLink(item.getFill()) + ")" : "white";
         DomContent content = null;
         //use the shortname as text instead
-        if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(item.getLabel(Label.SHORTNAME))) {
-            content = new SVGLabelText(item.getLabel(Label.SHORTNAME), "0", "3", "item_shortName").render();
+        if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(item.getLabel(Label.shortname))) {
+            content = new SVGLabelText(item.getLabel(Label.shortname), "0", "3", "item_shortName").render();
             fillId = "white";
             hasText = true;
         }
@@ -47,9 +48,9 @@ class SVGItem extends Component {
         if (!hasFill && !hasText && !StringUtils.isEmpty(item.getLabel(Rendered.LABEL_RENDERED_ICON))) {
             icon = SvgTagCreator.image()
                     .attr("xlink:href", item.getLabel(Rendered.LABEL_RENDERED_ICON))
-                    .attr("width", ICON_SIZE)
-                    .attr("height", ICON_SIZE)
-                    .attr("transform", "translate(-" + ICON_SIZE / 2 + ",-" + ICON_SIZE / 2 + ")")
+                    .attr("width", DEFAULT_ICON_SIZE)
+                    .attr("height", DEFAULT_ICON_SIZE)
+                    .attr("transform", "translate(-" + DEFAULT_ICON_SIZE / 2 + ",-" + DEFAULT_ICON_SIZE / 2 + ")")
             ;
         }
 
@@ -57,10 +58,10 @@ class SVGItem extends Component {
                 .attr("id", this.id)
                 .attr("cx", 0)
                 .attr("cy", 0)
-                .attr("r", ICON_SIZE - 10)
+                .attr("r", DEFAULT_ICON_SIZE - 10)
                 .attr("fill", fillId)
-                .attr("stroke", "#" + item.getColor());
-        if (Lifecycle.PLANNED.equals(item.getLifecycle())) {
+                .attr("stroke", "#" + (item.getColor() != null ? item.getColor() : Color.GRAY));
+        if (Lifecycle.isPlanned(item)) {
             circle.attr("stroke-dasharray", 5);
             circle.attr("opacity", 0.7);
         }

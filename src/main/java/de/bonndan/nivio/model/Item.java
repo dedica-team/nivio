@@ -10,9 +10,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
 
     @NotNull
@@ -35,13 +37,14 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
 
     private String group;
 
+    /**
+     * Can be both read and modified by {@link de.bonndan.nivio.input.ItemRelationResolver}
+     */
     @JsonManagedReference
-    private Set<RelationItem<Item>> relations = new HashSet<>();
+    private final Set<RelationItem<Item>> relations = ConcurrentHashMap.newKeySet();
 
     @JsonManagedReference
     private Set<InterfaceItem> interfaces = new HashSet<>();
-
-    private Lifecycle lifecycle;
 
     private Map<String, String> labels = new HashMap<>();
 
@@ -77,16 +80,6 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
         this.name = name;
     }
 
-    @Override
-    public String getIcon() {
-        return getLabel(Label.ICON);
-    }
-
-    public void setIcon(String icon) {
-        this.setLabel(Label.ICON, icon);
-        ;
-    }
-
     public String getOwner() {
         return owner;
     }
@@ -107,6 +100,7 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
         return links;
     }
 
+    @JsonIgnore
     public String getGroup() {
         return group;
     }
@@ -122,15 +116,6 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @Override
-    public Lifecycle getLifecycle() {
-        return lifecycle;
-    }
-
-    public void setLifecycle(Lifecycle lifecycle) {
-        this.lifecycle = lifecycle;
     }
 
     @Override
@@ -158,18 +143,18 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
     }
 
     public void setType(String type) {
-        this.setLabel(Label.TYPE, type);
+        this.setLabel(Label.type, type);
     }
 
     @Override
     public String getType() {
-        return getLabel(Label.TYPE);
+        return getLabel(Label.type);
     }
 
     /**
      * Returns all providers.
      */
-    @JsonIdentityReference(alwaysAsId = true)
+    @JsonIgnore
     public Set<Item> getProvidedBy() {
         return getRelations(RelationType.PROVIDER).stream()
                 .filter(relationItem -> relationItem.getTarget().equals(this))
@@ -229,14 +214,15 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
      */
     @Override
     public String toString() {
-        if (landscape == null)
+        if (landscape == null) {
             return identifier;
+        }
 
         return getFullyQualifiedIdentifier().toString();
     }
 
     @Override
     public Set<StatusValue> getAdditionalStatusValues() {
-        return StatusValue.fromMapping(indexedByPrefix(Label.PREFIX_STATUS));
+        return StatusValue.fromMapping(indexedByPrefix(Label.status));
     }
 }

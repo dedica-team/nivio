@@ -1,5 +1,6 @@
 package de.bonndan.nivio;
 
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Landscape;
 
 /**
@@ -12,7 +13,11 @@ public class ProcessingFinishedEvent extends ProcessingEvent {
 
     private final Landscape landscape;
 
-    public ProcessingFinishedEvent(Object source, Landscape landscape) {
+    /**
+     * @param source TODO is this a misuse of event source? We store the LandscapeDescription instead of the triggerer
+     * @param landscape out
+     */
+    public ProcessingFinishedEvent(LandscapeDescription source, Landscape landscape) {
         super(source);
         this.landscape = landscape;
     }
@@ -24,7 +29,7 @@ public class ProcessingFinishedEvent extends ProcessingEvent {
 
     @Override
     public String getLevel() {
-        return "info";
+        return LOG_LEVEL_INFO;
     }
 
     @Override

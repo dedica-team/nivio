@@ -1,6 +1,7 @@
 package de.bonndan.nivio;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -21,6 +22,9 @@ import java.time.ZoneId;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class ProcessingEvent extends ApplicationEvent {
+
+    public static final String LOG_LEVEL_INFO = "info";
+    public static final String LOG_LEVEL_ERROR = "error";
 
     public ProcessingEvent(Object source) {
         super(source);
@@ -55,5 +59,11 @@ public abstract class ProcessingEvent extends ApplicationEvent {
         public void serialize(Landscape value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
             gen.writeString(value.getIdentifier());
         }
+    }
+
+    @Override
+    @JsonIgnore
+    public Object getSource() {
+        return super.getSource();
     }
 }

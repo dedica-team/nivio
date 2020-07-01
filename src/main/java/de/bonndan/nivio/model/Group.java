@@ -106,7 +106,6 @@ public class Group implements GroupItem, Rendered, Assessable {
         this.contact = contact;
     }
 
-    @JsonIdentityReference(alwaysAsId = true)
     public List<Item> getItems() {
         return items;
     }
@@ -128,7 +127,7 @@ public class Group implements GroupItem, Rendered, Assessable {
 
     @Override
     public Set<StatusValue> getAdditionalStatusValues() {
-        return StatusValue.fromMapping(indexedByPrefix(Label.PREFIX_STATUS));
+        return StatusValue.fromMapping(indexedByPrefix(Label.status));
     }
 
     @JsonIgnore

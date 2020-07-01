@@ -95,6 +95,20 @@ public interface Labeled {
         return grouped;
     }
 
+    /**
+     * Returns all values having a key starting with the prefix.
+     *
+     * Labels:
+     * foo.bar.baz = hello
+     * Returned is prefix is "foo"
+     * bar.baz -> hello
+     * @param prefix label enum
+     * @return map
+     */
+    default Map<String, Map<String, String>> indexedByPrefix(Label prefix) {
+        return indexedByPrefix(prefix.name());
+    }
+
     default Map<String, Map<String, String>> indexedByPrefix(String prefix) {
         Map<String, Map<String, String>> byValue = new HashMap<>();
         getLabels().forEach((s, labelValue) -> {
@@ -130,7 +144,17 @@ public interface Labeled {
     }
 
     /**
-     * Convenience method.
+     * Convenience method to set array-like labels.
+     *
+     * @param prefix label prefix enum
+     * @param suffixAndValue value (label suffix is the same as the value)
+     */
+    default void setPrefixed(Label prefix, String suffixAndValue) {
+        setPrefixed(prefix.name(), suffixAndValue);
+    }
+
+    /**
+     * Convenience method to set array-like labels.
      *
      * @param prefix prefix, may contain a dot as delimiter
      * @param suffixAndValue value (label suffix is the same as the value)

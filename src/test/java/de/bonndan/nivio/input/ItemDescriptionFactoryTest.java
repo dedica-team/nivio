@@ -36,15 +36,15 @@ public class ItemDescriptionFactoryTest {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
-        sd1.setPrefixed(Label.PREFIX_NETWORK, "net1");
+        sd1.setPrefixed(Label.network, "net1");
 
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
-        increment.setPrefixed(Label.PREFIX_NETWORK, "net2");
+        increment.setPrefixed(Label.network, "net2");
 
         ItemDescriptionFactory.assignNotNull(sd1, increment);
 
-        assertEquals(2, sd1.getLabels(Label.PREFIX_NETWORK).size());
+        assertEquals(2, sd1.getLabels(Label.network).size());
     }
 
     @Test
@@ -96,12 +96,12 @@ public class ItemDescriptionFactoryTest {
 
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
-        increment.setLifecycle(Lifecycle.END_OF_LIFE);
+        increment.setLifecycle(Lifecycle.END_OF_LIFE.name());
 
 
         ItemDescriptionFactory.assignNotNull(sd1, increment);
 
-        assertEquals(Lifecycle.END_OF_LIFE, sd1.getLifecycle());
+        assertEquals(Lifecycle.END_OF_LIFE.name(), sd1.getLabel(Label.lifecycle));
     }
 
     @Test

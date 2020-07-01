@@ -3,6 +3,7 @@ package de.bonndan.nivio.output;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,7 +66,7 @@ class LocalServerTest {
     @Test
     public void returnsIcon() {
         Item item = new Item();
-        item.setIcon("http://my.icon");
+        item.setLabel(Label.icon, "http://my.icon");
         assertTrue(localServer.getIconUrl(item).toString().contains("http://my.icon"));
     }
 
@@ -73,7 +74,7 @@ class LocalServerTest {
     @Test
     public void usesVendorIcon() {
         Item item = new Item();
-        item.setIcon(VENDOR_PREFIX + "redis");
+        item.setLabel(Label.icon, VENDOR_PREFIX + "redis");
         assertTrue(localServer.getIconUrl(item).toString().contains("http://download.redis.io/logocontest/82.png"));
     }
 
@@ -86,7 +87,7 @@ class LocalServerTest {
         localServer.setImageProxy(urlprefix);
 
         Item item = new Item();
-        item.setIcon(VENDOR_PREFIX + "redis");
+        item.setLabel(Label.icon, VENDOR_PREFIX + "redis");
         assertEquals(urlprefix + "//" + "http://download.redis.io/logocontest/82.png", localServer.getIconUrl(item).toString());
     }
 
@@ -99,7 +100,7 @@ class LocalServerTest {
         localServer.setImageProxy(String.format("http://localhost:%d", wireMockServer.port()));
 
         Item item = new Item();
-        item.setIcon("http://my.icon");
+        item.setLabel(Label.icon, "http://my.icon");
         String urlprefix = String.format("http://localhost:%d", wireMockServer.port());
         assertEquals(urlprefix + "//" + "http://my.icon", localServer.getIconUrl(item).toString());
 
