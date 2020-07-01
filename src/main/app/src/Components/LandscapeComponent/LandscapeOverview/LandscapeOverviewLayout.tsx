@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 
 import TitleBar from '../../TitleBarComponent/TitleBar';
-import GenericModal from '../../ModalComponent/GenericModal';
 import { Link } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -9,18 +8,27 @@ import { Button } from '@material-ui/core';
 import './LandscapeOverview.scss';
 import { ILandscape } from '../../../interfaces';
 import dateFormat from 'dateformat';
+import { CSSTransition } from 'react-transition-group';
 
 interface Props {
-  modalContent: string | ReactElement | ReactElement[] | null;
+  sliderContent: string | ReactElement | ReactElement[] | null;
   landscapes: ILandscape[] | null | undefined;
-  enterLog: (landscape: ILandscape) => void;
+  showSlider: boolean;
+  cssAnimationKey: string;
+  enterLog: (e: any, landscape: ILandscape) => void;
 }
 
 /**
  * Displays all available landscapes and provides all needed navigation
  */
 
-const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog }) => {
+const HomeLayout: React.FC<Props> = ({
+  sliderContent,
+  landscapes,
+  enterLog,
+  showSlider,
+  cssAnimationKey,
+}) => {
   // Render
   /*
     value         |0px     600px    960px    1280px   1920px
@@ -95,7 +103,7 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog }) => 
             </Button>
 
             <Button
-              onClick={() => enterLog(landscape)}
+              onClick={(e) => enterLog(e, landscape)}
               fullWidth
               className={'button stackedButton'}
             >
@@ -133,7 +141,16 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog }) => 
 
   return (
     <div className='homeContainer'>
-      <GenericModal modalContent={modalContent} />
+      <CSSTransition
+        key={cssAnimationKey}
+        in={showSlider}
+        timeout={{ enter: 0, exit: 1000, appear: 1000 }}
+        appear
+        unmountOnExit
+        classNames='slider'
+      >
+        {sliderContent}
+      </CSSTransition>
       {content}
     </div>
   );

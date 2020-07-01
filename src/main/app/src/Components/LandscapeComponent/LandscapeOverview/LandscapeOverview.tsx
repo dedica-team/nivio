@@ -10,11 +10,13 @@ import { get } from '../../../utils/API/APIClient';
  */
 
 const LandscapeOverview: React.FC = () => {
-  const [modalContent, setModalContent] = useState<string | ReactElement | ReactElement[] | null>(
-    null
-  );
   const [landscapes, setLandscapes] = useState<ILandscape[] | null>();
   const [loadLandscapes, setLoadLandscapes] = useState<boolean>(true);
+  const [sliderContent, setSliderContent] = useState<string | ReactElement | ReactElement[] | null>(
+    null
+  );
+  const [showSlider, setShowSlider] = useState(false);
+  const [cssAnimationKey, setCssAnimationKey] = useState('');
 
   //Could be moved into useEffect but can be used for a reload button later on
   const getLandscapes = useCallback(async () => {
@@ -24,19 +26,23 @@ const LandscapeOverview: React.FC = () => {
     }
   }, [loadLandscapes]);
 
+  const enterLog = (e: any, landscape: ILandscape) => {
+    setSliderContent(<LandscapeLog landscape={landscape} />);
+    setCssAnimationKey(e.target.parentElement.id);
+    setShowSlider(true);
+  };
+
   useEffect(() => {
     getLandscapes();
   }, [getLandscapes]);
 
-  const enterLog = (landscape: ILandscape) => {
-    setModalContent(<LandscapeLog landscape={landscape} />);
-  };
-
   return (
     <LandscapeOverviewLayout
-      modalContent={modalContent}
+      sliderContent={sliderContent}
       landscapes={landscapes}
       enterLog={enterLog}
+      showSlider={showSlider}
+      cssAnimationKey={cssAnimationKey}
     />
   );
 };
