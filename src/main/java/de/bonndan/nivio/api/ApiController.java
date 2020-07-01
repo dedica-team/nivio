@@ -66,6 +66,10 @@ public class ApiController {
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }
+
+        //TODO this modifies the landscape
+        Map<String, Link> landscapeLinks = linkFactory.getLandscapeLinks(landscape);
+        landscape.setLinks(landscapeLinks);
         return new ResponseEntity<>(landscape, HttpStatus.OK);
     }
 
