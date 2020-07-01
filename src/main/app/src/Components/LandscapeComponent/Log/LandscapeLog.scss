@@ -2,33 +2,6 @@
 @import '../../../Ressources/styling/font.scss';
 
 .logContent {
-  .title {
-    display: block;
-    background-color: $header-color;
-
-    padding: 3px 0px;
-    box-shadow: 0px 0px 12px $box-shadow-color;
-
-    font-size: $header-font-size;
-    font-weight: bold;
-    text-transform: uppercase;
-    text-align: center;
-  }
-
-  .itemContainer {
-    margin-left: 10px;
-    margin-top: 10px;
-
-    .MuiChip-root {
-      margin-right: 0.3rem;
-    }
-    .item {
-      margin-bottom: 0.3rem;
-    }
-  }
-}
-
-.logContent {
   position: absolute;
   overflow: hidden;
   border: solid $border-color;
@@ -36,6 +9,20 @@
   z-index: 1;
   background-color: $background-grey;
 
+  .close {
+    float: right;
+    margin-right: 4px;
+    margin-top: 4px;
+    font-size: $large-font-size;
+    background-color: white;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-bottom: 0;
+    border-right: 0;
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
+  }
+
   .title {
     display: block;
     background-color: $header-color;
@@ -61,6 +48,7 @@
     }
   }
 }
+
 .logContent-enter-active {
   right: -810px;
 }

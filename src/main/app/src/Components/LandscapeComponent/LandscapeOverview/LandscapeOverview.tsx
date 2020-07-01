@@ -26,8 +26,12 @@ const LandscapeOverview: React.FC = () => {
     }
   }, [loadLandscapes]);
 
+  const closeSlider = () => {
+    setShowSlider(false);
+  };
+
   const enterLog = (e: any, landscape: ILandscape) => {
-    setSliderContent(<LandscapeLog landscape={landscape} />);
+    setSliderContent(<LandscapeLog landscape={landscape} closeSlider={closeSlider} />);
     setCssAnimationKey(e.target.parentElement.id);
     setShowSlider(true);
   };

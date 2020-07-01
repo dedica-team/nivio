@@ -147,7 +147,7 @@ const HomeLayout: React.FC<Props> = ({
         timeout={{ enter: 0, exit: 1000, appear: 1000 }}
         appear
         unmountOnExit
-        classNames='slider'
+        classNames='logContent'
       >
         {sliderContent}
       </CSSTransition>
