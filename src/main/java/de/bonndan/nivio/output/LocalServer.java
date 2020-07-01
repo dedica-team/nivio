@@ -10,12 +10,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Base64;
 
 import static de.bonndan.nivio.output.icons.Icons.DEFAULT_ICON;
 
@@ -39,7 +44,7 @@ public class LocalServer implements EnvironmentAware {
 
     public LocalServer(@Value("${nivio.baseUrl:}") String baseUrl, VendorIcons vendorIcons) {
         if (!StringUtils.isEmpty(baseUrl)) {
-            this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length()-1) : baseUrl;
+            this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
         } else {
             this.baseUrl = "http://" + host() + ":" + port();
         }
@@ -68,7 +73,7 @@ public class LocalServer implements EnvironmentAware {
      * @param parts path to add, concatenated by "/"
      * @return url with host, port
      */
-    public URL getUrl(String ...parts) {
+    public URL getUrl(String... parts) {
         return getUrl(StringUtils.arrayToDelimitedString(parts, "/"));
     }
 
@@ -116,19 +121,35 @@ public class LocalServer implements EnvironmentAware {
 
     private URL proxiedUrl(URL url) {
 
-        if (imageProxy == null){
+        if (imageProxy == null) {
             URL imageProxy = getUrl(VENDORICONS_PATH);
             setImageProxy(imageProxy.toString());
         }
 
         if (!StringUtils.isEmpty(imageProxy)) {
             try {
-                return new URL(imageProxy + "//" + url.toString());
+                return new URL(imageProxy + "/" + Base64.getUrlEncoder().encodeToString(url.toString().getBytes()));
             } catch (MalformedURLException e) {
-                LOGGER.error("Failed to build image proxy url from {}", imageProxy + "//" + url.getPath());
+                LOGGER.error("Failed to build image proxy url from {}", imageProxy + "/" + url.getPath());
             }
         }
         return url;
+    }
+
+    /**
+     * Turns the base 64 encode vendor icon url back into the orginal icon url.
+     *
+     * @param requestURI base64 encoded request including nivio path
+     * @return string icon url
+     */
+    public static String deproxyUrl(String requestURI) {
+        String part = VENDORICONS_PATH ;
+        String iconRequestURI = requestURI.split(part)[1];
+        iconRequestURI = StringUtils.trimLeadingCharacter(iconRequestURI, '/');
+
+        iconRequestURI = new String(Base64.getUrlDecoder().decode(iconRequestURI));
+
+        return iconRequestURI;
     }
 
     public void setImageProxy(String imageProxy) {
