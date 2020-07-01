@@ -23,6 +23,6 @@ public class LandscapeFactory {
         landscape.setDescription(input.getDescription());
         landscape.setOwner(input.getOwner());
         input.getLabels().forEach((s, s2) -> landscape.getLabels().put(s, s2));
-        input.getLinks().forEach(landscape::setLink);
+        input.getLinks().forEach((s, link) -> landscape.getLinks().put(s, link));
     }
 }

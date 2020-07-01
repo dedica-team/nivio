@@ -10,7 +10,6 @@ import de.bonndan.nivio.output.Rendered;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
-import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,7 +48,7 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
     private ProcessLog processLog;
 
     private Map<String, String> labels = new HashMap<>();
-    private Map<String, URL> links = new HashMap<>();
+    private Map<String, Link> links = new HashMap<>();
     private String owner;
 
     public String getIdentifier() {
@@ -210,7 +209,7 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
     }
 
     @Override
-    public Map<String, URL> getLinks() {
+    public Map<String, Link> getLinks() {
         return links;
     }
 }

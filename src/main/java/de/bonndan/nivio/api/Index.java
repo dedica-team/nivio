@@ -1,5 +1,6 @@
 package de.bonndan.nivio.api;
 
+import de.bonndan.nivio.model.Link;
 import de.bonndan.nivio.model.Linked;
 
 import java.net.URL;
@@ -11,10 +12,10 @@ import java.util.Map;
  */
 public class Index implements Linked {
 
-    private final Map<String, URL> links = new HashMap<>();
+    private final Map<String, Link> links = new HashMap<>();
 
     @Override
-    public Map<String, URL> getLinks() {
+    public Map<String, Link> getLinks() {
         return links;
     }
 }

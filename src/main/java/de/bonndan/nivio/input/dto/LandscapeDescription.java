@@ -9,6 +9,7 @@ import de.bonndan.nivio.input.ItemDescriptions;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.GroupItem;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.Link;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -71,7 +72,7 @@ public class LandscapeDescription implements Landscape {
     private boolean isPartial = false;
 
     private Map<String, GroupItem> groups = new HashMap<>();
-    private Map<String, URL> links = new HashMap<>();
+    private Map<String, Link> links = new HashMap<>();
     private Map<String, String> labels = new HashMap<>();
 
     public void setIsPartial(boolean isPartial) {
@@ -235,19 +236,8 @@ public class LandscapeDescription implements Landscape {
     }
 
     @Override
-    public Map<String, URL> getLinks() {
+    public Map<String, Link> getLinks() {
         return links;
-    }
-
-    @JsonSetter
-    public void setLinks(Map<String, String> links) {
-        links.forEach((s, s2) -> {
-            try {
-                this.links.put(s, new URL(s2));
-            } catch (MalformedURLException e) {
-                LOGGER.warn("Could not assign malformed URL {} to {}", s2, this.identifier);
-            }
-        });
     }
 
     public Map<String, String> getLabels() {

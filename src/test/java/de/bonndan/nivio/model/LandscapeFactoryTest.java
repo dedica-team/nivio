@@ -46,6 +46,6 @@ class LandscapeFactoryTest {
         assertEquals(1,  landscape.getLabels().size());
         assertEquals("two",  landscape.getLabels().get("one"));
         assertEquals(1,  landscape.getLinks().size());
-        assertEquals("https://dedica.team",  landscape.getLinks().get("home").toString());
+        assertEquals("https://dedica.team",  landscape.getLinks().get("home").getHref().toString());
     }
 }

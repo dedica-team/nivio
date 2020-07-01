@@ -6,14 +6,18 @@ import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.docs.DocsController;
 import de.bonndan.nivio.output.map.MapController;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.StreamSupport;
 
-import static de.bonndan.nivio.api.HateoasLink.HateoasLinkBuilder.linkTo;
+import static de.bonndan.nivio.model.Link.LinkBuilder.linkTo;
 
 
 /**
@@ -21,6 +25,8 @@ import static de.bonndan.nivio.api.HateoasLink.HateoasLinkBuilder.linkTo;
  */
 @Component
 public class LinkFactory {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LinkFactory.class);
 
     public static final String REL_SELF = "self";
 
@@ -30,8 +36,25 @@ public class LinkFactory {
         this.localServer = localServer;
     }
 
-    public Map<String, HateoasLink> getLandscapeLinks(LandscapeImpl landscape) {
-        Map<String, HateoasLink> links = new HashMap<>();
+    /**
+     * Creates a map of {@link Link}s from a string map.
+     *
+     * @param links string map
+     */
+    public static Map<String, Link> fromStringMap(Map<String, String> links) {
+        Map<String, Link> out = new HashMap<>();
+        links.forEach((s, s2) -> {
+            try {
+                out.put(s, linkTo(new URL(s2)).build());
+            } catch (MalformedURLException e) {
+                LOGGER.warn("Could not convert malformed URL {} to Link", s2);
+            }
+        });
+        return out;
+    }
+
+    public Map<String, Link> getLandscapeLinks(LandscapeImpl landscape) {
+        Map<String, Link> links = new HashMap<>();
         links.put(REL_SELF, linkTo(localServer.getUrl(ApiController.PATH, landscape.getIdentifier()))
                 .withMedia(MediaType.APPLICATION_JSON_VALUE)
                 .withTitle("JSON representation")
@@ -95,21 +118,5 @@ public class LinkFactory {
                     index.setLink(landscape.getIdentifier(), localServer.getUrl(ApiController.PATH, landscape.getIdentifier()));
                 });
         return index;
-    }
-
-    /**
-     * The Hateoas representation.
-     *
-     * @return links in hateoas format.
-     */
-    public Map<String, HateoasLink> getLinks(Linked linked) {
-        Map<String, HateoasLink> map = new HashMap<>();
-        linked.getLinks().forEach((rel, value) -> map.put(rel, linkTo(value).build()));
-
-        if (linked instanceof LandscapeImpl) {
-            getLandscapeLinks((LandscapeImpl) linked).forEach(map::put);
-        }
-
-        return map;
     }
 }

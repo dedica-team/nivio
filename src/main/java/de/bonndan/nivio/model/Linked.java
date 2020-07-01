@@ -1,7 +1,8 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import de.bonndan.nivio.api.LinkFactory;
 import org.springframework.util.StringUtils;
 
 import java.net.URL;
@@ -10,8 +11,6 @@ import java.util.Map;
 
 /**
  * A landscape component that has links.
- *
- *
  */
 public interface Linked {
 
@@ -28,30 +27,31 @@ public interface Linked {
     /**
      * Returns all assigned links.
      *
-     * The map is not serialized, instead all links are turned into HateOAS links by a special serializer.
-     *
      * @return map of links
      */
-    @JsonIgnore
-    Map<String, URL> getLinks();
+    @JsonProperty("_links")
+    Map<String, Link> getLinks();
 
     /**
-     * The Hateoas representation.
+     * Creates and set a {@link Link} when only having a URL.
      *
-     * @return links in hateoas format.
+     * @param identifier name/id
+     * @param url href
      */
-    @JsonProperty("_links")
-    default LinkedWrapper getHateoasLinks() {
-        return new LinkedWrapper(this);
-    }
-
     default void setLink(String identifier, URL url) {
-        if (StringUtils.isEmpty(identifier)){
+        if (StringUtils.isEmpty(identifier)) {
             throw new IllegalArgumentException("Link identifier is empty");
         }
         if (KNOWN_IDENTIFIERS.contains(identifier.toLowerCase())) {
             identifier = identifier.toLowerCase();
         }
-        getLinks().put(identifier, url);
+        getLinks().put(identifier, new Link(url, identifier));
     }
+
+    @JsonSetter("links")
+    default void setLinks(Map<String, Link> links) {
+        this.getLinks().putAll(links);
+        //this.getLinks().putAll(LinkFactory.fromStringMap(links));
+    }
+
 }

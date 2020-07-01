@@ -4,7 +4,6 @@ package de.bonndan.nivio.input.dto;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
@@ -14,16 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 
 /**
  * This is representation of a service in the textual form as described in a source file.
  */
 public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ItemDescription.class);
 
     @NotEmpty
     private String environment;
@@ -37,7 +32,7 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
     private String owner;
     private String description;
     private String contact;
-    private final Map<String, URL> links = new HashMap<>();
+    private final Map<String, Link> links = new HashMap<>();
     private String group;
 
     @JsonDeserialize(contentAs = InterfaceDescription.class)
@@ -126,19 +121,8 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
     }
 
     @Override
-    public Map<String, URL> getLinks() {
+    public Map<String, Link> getLinks() {
         return links;
-    }
-
-    @JsonSetter
-    public void setLinks(Map<String, String> links) {
-        links.forEach((s, s2) -> {
-            try {
-                this.links.put(s, new URL(s2));
-            } catch (MalformedURLException e) {
-                LOGGER.warn("Could not assign malformed URL {} to {}", s2, this.identifier);
-            }
-        });
     }
 
     public String getGroup() {
