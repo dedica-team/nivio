@@ -115,7 +115,13 @@ public class LinkFactory {
 
         StreamSupport.stream(landscapes.spliterator(), false)
                 .forEach((LandscapeImpl landscape) -> {
-                    index.setLink(landscape.getIdentifier(), localServer.getUrl(ApiController.PATH, landscape.getIdentifier()));
+                    Link link = linkTo(localServer.getUrl(ApiController.PATH, landscape.getIdentifier()))
+                            .withName(landscape.getName())
+                            .withRel("landscape")
+                            .withMedia("application/json")
+                            .build();
+
+                    index.getLinks().put(landscape.getIdentifier(), link);
                 });
         return index;
     }
