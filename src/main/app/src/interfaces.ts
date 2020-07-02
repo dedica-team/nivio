@@ -4,8 +4,16 @@ export interface ILandscape {
   description?: string;
   teams?: object[]; // TODO: Create interface
   items?: IItem[];
-  groups?: object[]; // TODO: Create interface
+  groups?: IGroup[];
   lastUpdate?: string;
+}
+
+export interface IGroup {
+  fullyQualifiedIdentifier: string;
+  name: string;
+  contact?: string;
+  description?: string;
+  items: IItem[];
 }
 
 export interface IItem {

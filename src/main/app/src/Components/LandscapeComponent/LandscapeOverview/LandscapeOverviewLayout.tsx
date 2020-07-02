@@ -39,6 +39,8 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
   let content: string | ReactElement[] = 'Loading landscapes...';
   if (Array.isArray(landscapes) && landscapes.length) {
     content = landscapes.map((landscape) => {
+      let itemCount = 0;
+      landscape.groups?.forEach((group) => (itemCount += group.items.length));
       return (
         <Grid key={landscape.identifier} className={'landscapeContainer'} container spacing={3}>
           <Grid item xs={12} sm={12}>
@@ -78,7 +80,7 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               Items
             </Typography>
             <Typography variant='h2' display='block' gutterBottom>
-              {landscape.items ? Object.keys(landscape.items).length : 0}
+              {itemCount}
             </Typography>
             in {landscape.groups ? Object.keys(landscape.groups).length : 0} groups
           </Grid>
