@@ -24,7 +24,7 @@ const LandscapeOverview: React.FC = () => {
     if (loadLandscapes) {
       setLandscapeLinks(await get('/api/'));
       if (landscapeLinks) {
-        for (var landscapeLink in landscapeLinks._links) {
+        for (const landscapeLink in landscapeLinks._links) {
           const landscapeDescription: ILandscape | null = await getJsonFromUrl(
             landscapeLinks._links[landscapeLink].href
           );
