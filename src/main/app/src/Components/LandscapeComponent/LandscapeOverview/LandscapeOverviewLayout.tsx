@@ -37,7 +37,7 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
     range         |   xs   |   sm   |   md   |   lg   |   xl
      */
   let content: string | ReactElement[] = 'Loading landscapes...';
-  if (Array.isArray(landscapes)) {
+  if (Array.isArray(landscapes) && landscapes.length) {
     content = landscapes.map((landscape) => {
       return (
         <Grid key={landscape.identifier} className={'landscapeContainer'} container spacing={3}>
