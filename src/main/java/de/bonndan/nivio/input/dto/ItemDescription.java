@@ -8,10 +8,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
-import java.net.URL;
 import java.util.*;
 
 /**
@@ -31,7 +32,7 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
     private String owner;
     private String description;
     private String contact;
-    private Map<String, URL> links = new HashMap<>();
+    private final Map<String, Link> links = new HashMap<>();
     private String group;
 
     @JsonDeserialize(contentAs = InterfaceDescription.class)
@@ -120,12 +121,8 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
     }
 
     @Override
-    public Map<String, URL> getLinks() {
+    public Map<String, Link> getLinks() {
         return links;
-    }
-
-    public void setLinks(Map<String, URL> links) {
-        this.links = links;
     }
 
     public String getGroup() {
@@ -276,7 +273,7 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         }
 
         if (value instanceof Map) {
-            throw new IllegalArgumentException("Cannot set " + key + " to " + value);
+            throw new IllegalArgumentException("Cannot set " + key + " to map " + value);
         }
 
         labels.put(key, String.valueOf(value));

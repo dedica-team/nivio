@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Link;
 import de.bonndan.nivio.model.Linked;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.PropertyAccessor;
@@ -70,7 +71,7 @@ public class LabelToFieldProcessor {
                     if ("links".equals(name)) {
                         logger.warn("Found deprecated label named links.");
                         try {
-                            propertyValue.put(String.valueOf(i + 1), new URL(o[i]));
+                            propertyValue.put(String.valueOf(i + 1), new Link(new URL(o[i])));
                         } catch (MalformedURLException e) {
                             logger.warn("Failed to parse link " + o[i]);
                         }

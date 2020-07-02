@@ -4,7 +4,7 @@ import de.bonndan.nivio.LandscapeConfig;
 
 import java.util.Map;
 
-public interface Landscape extends Component {
+public interface Landscape extends Component, Linked {
 
     /**
      * @return path or yaml content

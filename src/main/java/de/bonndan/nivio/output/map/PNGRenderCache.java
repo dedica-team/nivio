@@ -100,8 +100,9 @@ public class PNGRenderCache implements ApplicationListener<ProcessingFinishedEve
         Transcoder transcoder = new PNGTranscoder();
         try {
             transcoder.transcode(input_svg_image, transcoderOutput);
-        } catch (TranscoderException e) {
-            throw new RuntimeException("Failed to create PNG", e);
+        } catch (Exception e) {
+            //throw new RuntimeException("Failed to create PNG", e);
+            return null;
         }
         try {
             outputStream.flush();

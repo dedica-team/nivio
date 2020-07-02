@@ -20,10 +20,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @Controller
-@RequestMapping(path = "/docs")
+@RequestMapping(path = DocsController.PATH)
 public class DocsController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DocsController.class);
+    public static final String PATH = "/docs";
+    public static final String REPORT_HTML = "report.html";
 
     private final LandscapeRepository landscapeRepository;
     private final LocalServer localServer;
@@ -33,7 +35,7 @@ public class DocsController {
         this.localServer = localServer;
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/report.html")
+    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/" + REPORT_HTML)
     public ResponseEntity<String> htmlResource(@PathVariable(name = "landscape") final String landscapeIdentifier) {
 
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(

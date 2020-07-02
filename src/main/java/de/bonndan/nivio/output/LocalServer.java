@@ -49,7 +49,7 @@ public class LocalServer implements EnvironmentAware {
     }
 
     /**
-     * Returns the current publically visible url.
+     * Returns the visible url.
      *
      * @param path path to add
      * @return url with host, port
