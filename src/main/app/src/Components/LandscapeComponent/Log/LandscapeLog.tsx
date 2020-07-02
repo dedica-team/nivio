@@ -54,7 +54,7 @@ const LandscapeLog: React.FC<Props> = ({ landscape, closeSlider }) => {
   return (
     <div className='logContent'>
       <button className={'close'} onClick={closeSlider}>
-        close
+        X
       </button>
       <span className='title'>Landscape {landscape.name} Process Log</span>
       <div className='itemContainer'>{content}</div>

@@ -32,3 +32,18 @@ export interface IItem {
   x?: number;
   y?: number;
 }
+
+export interface ILandscapeLinks {
+  _links: ILinks;
+}
+
+export interface ILinks {
+  [key: string]: ILinkContent;
+}
+
+export interface ILinkContent {
+  rel: string;
+  href: string;
+  media: string;
+  name: string;
+}

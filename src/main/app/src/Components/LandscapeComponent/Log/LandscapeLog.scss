@@ -3,31 +3,40 @@
 
 .logContent {
   position: absolute;
-  overflow: hidden;
+  overflow: auto;
   border: solid $border-color;
   width: 800px;
+  max-height: 800px;
   z-index: 1;
   background-color: $background-grey;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   .close {
-    float: right;
-    margin-right: 4px;
-    margin-top: 4px;
-    font-size: $large-font-size;
-    background-color: white;
+    position: absolute;
+    z-index: 2;
+    right: 6px;
+    top: 3px;
+    font-size: $header-font-size;
+    color: $font-color;
+    background-color: $header-color;
+    border: 2px solid $border-color;
+    box-shadow: 0px 0px 12px $box-shadow-color;
     text-transform: uppercase;
     cursor: pointer;
-    border-bottom: 0;
-    border-right: 0;
-    padding-left: 0.3rem;
-    padding-right: 0.3rem;
   }
 
   .title {
+    position: relative;
+    z-index: 1;
     display: block;
     background-color: $header-color;
 
-    padding: 3px 0px;
+    padding: 3px 150px 0px 50px;
     box-shadow: 0px 0px 12px $box-shadow-color;
 
     font-size: $header-font-size;
