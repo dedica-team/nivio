@@ -1,0 +1,43 @@
+@import '../../Ressources/styling/font.scss';
+@import '../../Ressources/styling/colors.scss';
+
+.slider {
+  position: absolute;
+  overflow: hidden;
+  border: solid $border-color;
+  width: 800px;
+  z-index: 1;
+  background-color: $background-grey;
+  .close {
+    position: absolute;
+    z-index: 2;
+    right: 6px;
+    top: 5px;
+    font-size: $header-font-size;
+    color: $font-color;
+    background-color: $header-color;
+    border: 2px solid $border-color;
+    box-shadow: 0px 0px 12px $box-shadow-color;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+}
+.slider-enter-active {
+  right: -810px;
+}
+.slider-enter-done {
+  right: 10px;
+  transition: right 1000ms;
+}
+.slider-exit {
+  opacity: 1;
+  right: 10px;
+}
+.slider-exit-active {
+  right: 10px;
+  opacity: 0;
+  transition: opacity 1000ms;
+}
+.slider-appear-active {
+  right: 10px;
+}

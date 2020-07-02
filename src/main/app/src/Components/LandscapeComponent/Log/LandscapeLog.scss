@@ -2,7 +2,7 @@
 @import '../../../Ressources/styling/font.scss';
 
 .logContent {
-  position: absolute;
+  position: relative;
   overflow: auto;
   border: solid $border-color;
   width: 800px;
@@ -14,20 +14,6 @@
 
   &::-webkit-scrollbar {
     display: none;
-  }
-
-  .close {
-    position: absolute;
-    z-index: 2;
-    right: 6px;
-    top: 3px;
-    font-size: $header-font-size;
-    color: $font-color;
-    background-color: $header-color;
-    border: 2px solid $border-color;
-    box-shadow: 0px 0px 12px $box-shadow-color;
-    text-transform: uppercase;
-    cursor: pointer;
   }
 
   .title {
@@ -56,24 +42,4 @@
       margin-bottom: 0.3rem;
     }
   }
-}
-
-.logContent-enter-active {
-  right: -810px;
-}
-.logContent-enter-done {
-  right: 10px;
-  transition: right 1000ms;
-}
-.logContent-exit {
-  opacity: 1;
-  right: 10px;
-}
-.logContent-exit-active {
-  right: 10px;
-  opacity: 0;
-  transition: opacity 1000ms;
-}
-.slider-appear-active {
-  right: 10px;
 }

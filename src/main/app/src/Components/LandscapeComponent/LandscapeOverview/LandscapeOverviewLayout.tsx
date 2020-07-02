@@ -147,7 +147,7 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
         timeout={{ enter: 0, exit: 1000, appear: 1000 }}
         appear
         unmountOnExit
-        classNames='logContent'
+        classNames='slider'
       >
         <React.Fragment>{sliderContent}</React.Fragment>
       </CSSTransition>

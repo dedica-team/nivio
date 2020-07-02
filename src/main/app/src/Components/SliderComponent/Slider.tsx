@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 
-import './LandscapeSlider.scss';
+import './Slider.scss';
 
 interface Props {
   sliderContent: string | ReactElement | null;
@@ -16,7 +16,7 @@ const Landscape: React.FC<Props> = ({ sliderContent, closeSlider }) => {
   return (
     <div className='slider'>
       <button className={'close'} onClick={closeSlider}>
-        close
+        X
       </button>
       {sliderContent}
     </div>

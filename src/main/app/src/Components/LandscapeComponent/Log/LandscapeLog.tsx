@@ -7,7 +7,6 @@ import LevelChip from '../../LevelChipComponent/LevelChip';
 
 interface Props {
   landscape: ILandscape;
-  closeSlider(): void;
 }
 
 interface Log {
@@ -24,7 +23,7 @@ interface Entry {
  * Gets all logs from the backend for a landscape
  * @param landscape Landscape of which the log is to be shown
  */
-const LandscapeLog: React.FC<Props> = ({ landscape, closeSlider }) => {
+const LandscapeLog: React.FC<Props> = ({ landscape }) => {
   const [data, setData] = useState<Entry[] | null>(null);
   const [loadData, setLoadData] = useState<boolean>(true);
 
@@ -53,9 +52,6 @@ const LandscapeLog: React.FC<Props> = ({ landscape, closeSlider }) => {
 
   return (
     <div className='logContent'>
-      <button className={'close'} onClick={closeSlider}>
-        X
-      </button>
       <span className='title'>Landscape {landscape.name} Process Log</span>
       <div className='itemContainer'>{content}</div>
     </div>

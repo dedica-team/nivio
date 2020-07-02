@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback, ReactElement } from 'react';
 import { ILandscape, ILandscapeLinks } from '../../../interfaces';
 import LandscapeLog from '../Log/LandscapeLog';
 import LandscapeOverviewLayout from './LandscapeOverviewLayout';
+import Slider from '../../SliderComponent/Slider';
 import { get, getJsonFromUrl } from '../../../utils/API/APIClient';
 
 /**
@@ -41,7 +42,8 @@ const LandscapeOverview: React.FC = () => {
   };
 
   const enterLog = (e: any, landscape: ILandscape) => {
-    setSliderContent(<LandscapeLog landscape={landscape} closeSlider={closeSlider} />);
+    const sliderContent = <LandscapeLog landscape={landscape} />;
+    setSliderContent(<Slider sliderContent={sliderContent} closeSlider={closeSlider} />);
     setCssAnimationKey(e.target.parentElement.id);
     setShowSlider(true);
   };

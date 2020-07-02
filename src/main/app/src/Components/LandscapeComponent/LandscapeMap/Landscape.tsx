@@ -5,7 +5,7 @@ import { CSSTransition } from 'react-transition-group';
 
 import LandscapeItem from './Item/LandscapeItem';
 import LandscapeMap from './Map/LandscapeMap';
-import LandscapeSlider from './Slider/LandscapeSlider';
+import Slider from '../../SliderComponent/Slider';
 
 /**
  * Logic component for your landscape map
@@ -38,7 +38,7 @@ const Landscape: React.FC = () => {
           unmountOnExit
           classNames='slider'
         >
-          <LandscapeSlider sliderContent={sliderContent} closeSlider={closeSlider} />
+          <Slider sliderContent={sliderContent} closeSlider={closeSlider} />
         </CSSTransition>
         <LandscapeMap identifier={identifier} onItemClick={onItemClick} />
       </div>
