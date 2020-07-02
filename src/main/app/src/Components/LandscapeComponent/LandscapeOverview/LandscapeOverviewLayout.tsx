@@ -22,7 +22,7 @@ interface Props {
  * Displays all available landscapes and provides all needed navigation
  */
 
-const HomeLayout: React.FC<Props> = ({
+const LandscapeOverviewLayout: React.FC<Props> = ({
   sliderContent,
   landscapes,
   enterLog,
@@ -37,7 +37,7 @@ const HomeLayout: React.FC<Props> = ({
     range         |   xs   |   sm   |   md   |   lg   |   xl
      */
   let content: string | ReactElement[] = 'Loading landscapes...';
-  if (landscapes) {
+  if (Array.isArray(landscapes)) {
     content = landscapes.map((landscape) => {
       return (
         <Grid key={landscape.identifier} className={'landscapeContainer'} container spacing={3}>
@@ -149,11 +149,11 @@ const HomeLayout: React.FC<Props> = ({
         unmountOnExit
         classNames='logContent'
       >
-        {sliderContent}
+        <React.Fragment>{sliderContent}</React.Fragment>
       </CSSTransition>
       {content}
     </div>
   );
 };
 
-export default HomeLayout;
+export default LandscapeOverviewLayout;
