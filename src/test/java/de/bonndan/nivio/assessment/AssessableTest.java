@@ -101,6 +101,11 @@ class AssessableTest {
         }
 
         @Override
+        public String getOwner() {
+            return null;
+        }
+
+        @Override
         public List<? extends Assessable> getChildren() {
             return children;
         }

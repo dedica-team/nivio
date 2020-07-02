@@ -22,8 +22,8 @@ public class ItemFactoryTest {
         landscapeItem.setType("loadbalancer");
         landscapeItem.setLabel(Label.layer, LandscapeItem.LAYER_INFRASTRUCTURE);
         landscapeItem.setIdentifier("id");
-        landscapeItem.getLinks().put("homepage", new URL("http://home.page"));
-        landscapeItem.getLinks().put("repo", new URL("https://acme.git/repo1"));
+        landscapeItem.setLink("homepage", new URL("http://home.page"));
+        landscapeItem.setLink("repo", new URL("https://acme.git/repo1"));
         landscapeItem.setContact("contact");
         landscapeItem.setLabel(Label.note, "a note");
         landscapeItem.setOwner("Mr. T");

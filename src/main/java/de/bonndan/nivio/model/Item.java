@@ -31,7 +31,7 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
 
     private String contact;
 
-    private Map<String, URL> links = new HashMap<>();
+    private final Map<String, Link> links = new HashMap<>();
 
     private String description;
 
@@ -96,7 +96,7 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
         this.contact = contact;
     }
 
-    public Map<String, URL> getLinks() {
+    public Map<String, Link> getLinks() {
         return links;
     }
 

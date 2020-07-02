@@ -9,7 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -32,7 +31,6 @@ public class IconsController {
     private static final Logger LOGGER = LoggerFactory.getLogger(IconsController.class);
 
 
-
     private final Map<String, CachedResponse> imageCache;
 
     private final HttpService httpService;
@@ -46,9 +44,14 @@ public class IconsController {
     public ResponseEntity<byte[]> icons(HttpServletRequest request) {
 
         String requestURI = request.getRequestURI();
-        String part = VENDORICONS_PATH + "/";
-        String iconRequestURI = requestURI.substring(part.length());
-        iconRequestURI = StringUtils.trimLeadingCharacter(iconRequestURI, '/');
+        String iconRequestURI;
+        try {
+            iconRequestURI = LocalServer.deproxyUrl(requestURI);
+        } catch (IllegalArgumentException ex) {
+            LOGGER.error("Failed to decode " + requestURI + " : " + ex.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+
         if (imageCache.containsKey(iconRequestURI)) {
             return sendResponse(imageCache.get(iconRequestURI));
         }

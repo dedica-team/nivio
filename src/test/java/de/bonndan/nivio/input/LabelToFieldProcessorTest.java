@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.Link;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -81,15 +82,17 @@ class LabelToFieldProcessorTest {
         processor.process(input, null);
 
         //then
-        Map<String, URL> links = item1.getLinks();
+        Map<String, Link> links = item1.getLinks();
         assertFalse(links.isEmpty());
-        URL url = links.get("1");
-        assertNotNull(url);
-        assertEquals("http://one.com", url.toString());
+        Link link = links.get("1");
+        assertNotNull(link);
+        assertNotNull(link.getHref());
+        assertEquals("http://one.com", link.getHref().toString());
 
-        url = links.get("2");
-        assertNotNull(url);
-        assertEquals("https://two.net", url.toString());
+        link = links.get("2");
+        assertNotNull(link);
+        assertNotNull(link.getHref());
+        assertEquals("https://two.net", link.getHref().toString());
     }
 
     @Test
@@ -107,14 +110,16 @@ class LabelToFieldProcessorTest {
         processor.process(input, null);
 
         //then
-        Map<String, URL> links = item1.getLinks();
+        Map<String, Link> links = item1.getLinks();
         assertFalse(links.isEmpty());
-        URL url = links.get("wiki");
+        Link url = links.get("wiki");
         assertNotNull(url);
-        assertEquals("http://one.com", url.toString());
+        assertNotNull(url.getHref());
+        assertEquals("http://one.com", url.getHref().toString());
 
         url = links.get("repo");
         assertNotNull(url);
-        assertEquals("https://two.net", url.toString());
+        assertNotNull(url.getHref());
+        assertEquals("https://two.net", url.getHref().toString());
     }
 }

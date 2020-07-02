@@ -34,11 +34,6 @@ public interface LandscapeItem extends Component, Labeled, Linked {
     @NonNull Set<InterfaceItem> getInterfaces();
 
     /**
-     * @return a string describing the owner
-     */
-    @Nullable String getOwner();
-
-    /**
      * @return Relations to other items
      */
     @NonNull Set<? extends RelationItem> getRelations();
