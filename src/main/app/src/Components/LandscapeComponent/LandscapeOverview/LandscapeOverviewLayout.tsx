@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 
 import TitleBar from '../../TitleBarComponent/TitleBar';
-import GenericModal from '../../ModalComponent/GenericModal';
 import { Link } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -9,18 +8,27 @@ import { Button } from '@material-ui/core';
 import './LandscapeOverview.scss';
 import { ILandscape } from '../../../interfaces';
 import dateFormat from 'dateformat';
+import { CSSTransition } from 'react-transition-group';
 
 interface Props {
-  modalContent: string | ReactElement | ReactElement[] | null;
+  sliderContent: string | ReactElement | ReactElement[] | null;
   landscapes: ILandscape[] | null | undefined;
-  enterLog: (landscape: ILandscape) => void;
+  showSlider: boolean;
+  cssAnimationKey: string;
+  enterLog: (e: any, landscape: ILandscape) => void;
 }
 
 /**
  * Displays all available landscapes and provides all needed navigation
  */
 
-const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog }) => {
+const LandscapeOverviewLayout: React.FC<Props> = ({
+  sliderContent,
+  landscapes,
+  enterLog,
+  showSlider,
+  cssAnimationKey,
+}) => {
   // Render
   /*
     value         |0px     600px    960px    1280px   1920px
@@ -29,8 +37,10 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog }) => 
     range         |   xs   |   sm   |   md   |   lg   |   xl
      */
   let content: string | ReactElement[] = 'Loading landscapes...';
-  if (landscapes) {
+  if (Array.isArray(landscapes) && landscapes.length) {
     content = landscapes.map((landscape) => {
+      let itemCount = 0;
+      landscape.groups?.forEach((group) => (itemCount += group.items.length));
       return (
         <Grid key={landscape.identifier} className={'landscapeContainer'} container spacing={3}>
           <Grid item xs={12} sm={12}>
@@ -70,7 +80,7 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog }) => 
               Items
             </Typography>
             <Typography variant='h2' display='block' gutterBottom>
-              {landscape.items ? Object.keys(landscape.items).length : 0}
+              {itemCount}
             </Typography>
             in {landscape.groups ? Object.keys(landscape.groups).length : 0} groups
           </Grid>
@@ -95,7 +105,7 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog }) => 
             </Button>
 
             <Button
-              onClick={() => enterLog(landscape)}
+              onClick={(e) => enterLog(e, landscape)}
               fullWidth
               className={'button stackedButton'}
             >
@@ -133,10 +143,19 @@ const HomeLayout: React.FC<Props> = ({ modalContent, landscapes, enterLog }) => 
 
   return (
     <div className='homeContainer'>
-      <GenericModal modalContent={modalContent} />
+      <CSSTransition
+        key={cssAnimationKey}
+        in={showSlider}
+        timeout={{ enter: 0, exit: 1000, appear: 1000 }}
+        appear
+        unmountOnExit
+        classNames='slider'
+      >
+        <React.Fragment>{sliderContent}</React.Fragment>
+      </CSSTransition>
       {content}
     </div>
   );
 };
 
-export default HomeLayout;
+export default LandscapeOverviewLayout;

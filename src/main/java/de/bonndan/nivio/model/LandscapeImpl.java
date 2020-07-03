@@ -2,6 +2,7 @@ package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
@@ -10,12 +11,14 @@ import de.bonndan.nivio.output.Rendered;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LandscapeImpl implements Landscape, Rendered, Assessable {
 
     /**
@@ -211,5 +214,10 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
     @Override
     public Map<String, Link> getLinks() {
         return links;
+    }
+
+    @JsonGetter("lastUpdate")
+    public LocalDateTime getLastUpdate() {
+        return this.processLog == null ? null : this.processLog.getLastUpdate();
     }
 }

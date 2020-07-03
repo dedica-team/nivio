@@ -2,11 +2,27 @@
 @import '../../../Ressources/styling/font.scss';
 
 .logContent {
+  position: relative;
+  overflow: auto;
+  border: solid $border-color;
+  width: 800px;
+  max-height: 800px;
+  z-index: 1;
+  background-color: $background-grey;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
   .title {
+    position: relative;
+    z-index: 1;
     display: block;
     background-color: $header-color;
 
-    padding: 3px 0px;
+    padding: 3px 150px 0px 50px;
     box-shadow: 0px 0px 12px $box-shadow-color;
 
     font-size: $header-font-size;

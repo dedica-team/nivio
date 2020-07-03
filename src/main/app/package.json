@@ -11,6 +11,7 @@
     "@types/react": "^16.9.41",
     "@types/react-dom": "^16.9.8",
     "@types/react-html-parser": "^2.0.1",
+    "@types/react-transition-group": "^4.4.0",
     "@types/react-modal": "^3.10.6",
     "@types/react-router-dom": "^5.1.5",
     "@types/react-svg-pan-zoom": "^3.3.1",
@@ -28,6 +29,7 @@
     "react-scripts": "^3.4.1",
     "react-svg-pan-zoom": "^3.7.1",
     "react-svg-pan-zoom-loader": "^1.4.1",
+    "react-transition-group": "^4.4.1",
     "svg-path-properties": "^1.0.4",
     "typescript": "~3.7.2"
   },
