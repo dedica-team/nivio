@@ -35,7 +35,7 @@ it('should display all group information', () => {
   ];
 
   const landscape: ILandscape = {
-    name: 'Test',
+    name: 'landscapeTestName',
     identifier: 'testIdentifier',
     groups,
     lastUpdate: 'gestern',
@@ -45,7 +45,7 @@ it('should display all group information', () => {
       <LandscapeDashboardLayout landscape={landscape} />
     </MemoryRouter>
   );
-  expect(getByText('Landscape: Test')).toBeInTheDocument();
+  expect(getByText('landscapeTestName')).toBeInTheDocument();
   expect(getByText('groupName')).toBeInTheDocument();
   expect(getByText('Name')).toBeInTheDocument();
   expect(getByText('testIdentifier')).toBeInTheDocument();

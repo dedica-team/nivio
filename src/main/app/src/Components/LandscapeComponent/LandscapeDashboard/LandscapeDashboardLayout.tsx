@@ -29,7 +29,7 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape }) => {
         return (
           <Grid key={item.identifier} className={'itemContainer'} container spacing={3}>
             <Grid item xs={12} md={2} className={'itemIcon'}>
-              <img src={item.labels?.['nivio.rendered.icon']} className='icon' />
+              <img src={item.labels?.['nivio.rendered.icon']} className='icon' alt={'icon'} />
             </Grid>
             <Grid item xs={12} md={3} lg={2} className={'itemName'}>
               <Typography variant='overline' display='block' gutterBottom>
@@ -71,7 +71,7 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape }) => {
 
   return (
     <div className='landscapeDashboardContainer'>
-      <span className='title'>{landscape ? `Landscape: ${landscape.name}` : null}</span>
+      <span className='title'>{landscape ? `${landscape.name}` : null}</span>
       {content}
     </div>
   );
