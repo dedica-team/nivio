@@ -38,7 +38,6 @@ const LandscapeItem: React.FC<Props> = ({ element }) => {
       <p> {item?.name ? `name: ${item?.name}` : ''}</p>
       <p> {item?.description ? `description: ${item?.description}` : ''}</p>
       <p> {item?.contact ? `contact: ${item?.contact} <br />` : ''}</p>
-      <p> {item?.group ? `group: ${item?.group}` : ''}</p>
     </div>
   ); // TODO: styling
 };

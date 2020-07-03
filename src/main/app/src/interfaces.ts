@@ -3,42 +3,49 @@ export interface ILandscape {
   identifier: string;
   description?: string;
   teams?: object[]; // TODO: Create interface
-  items?: IItem[];
   groups?: IGroup[];
   lastUpdate?: string;
+  fullyQualifiedIdentifier?: string;
+  config?: object; //TODO: CREATE INTERFACE
+  labels?: ILabels;
+  source?: string;
 }
 
 export interface IGroup {
   fullyQualifiedIdentifier: string;
-  name: string;
+  name?: string;
   contact?: string;
   description?: string;
   items: IItem[];
+  identifier: string;
+  owner?: string;
+  _links?: ILinks;
 }
 
 export interface IItem {
-  color?: string;
   contact?: string;
   description?: string;
-  fill?: string;
   fullyQualifiedIdentifier: string;
-  group?: string;
-  height?: number;
-  icon?: string;
   identifier: string;
-  interfaces?: Array<Object>;
-  labels?: Object;
-  lifecycle?: String;
+  interfaces?: Array<Object>; //TODO: Create OBJECT Interface
+  labels?: ILabels;
+  name?: string;
+  owner?: string;
   links?: Object;
-  name: String;
-  owner?: String;
-  providedBy?: Array<Object>;
   relations?: Array<Object>;
-  tags?: Array<Object>;
-  type?: String;
-  width?: number;
-  x?: number;
-  y?: number;
+  tags?: Array<String>;
+  type?: string;
+  _links?: ILinks;
+}
+
+export interface ILabels {
+  'icon'?: string;
+  'nivio.rendered.color'?: string;
+  'nivio.rendered.heigth'?: string;
+  'nivio.rendered.icon'?: string;
+  'nivio.rendered.width'?: string;
+  'nivio.rendered.x'?: string;
+  'nivio.rendered.y'?: string;
 }
 
 export interface ILandscapeLinks {

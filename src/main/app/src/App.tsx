@@ -7,6 +7,7 @@ import Man from './Components/ManComponent/Man';
 import Layout from './Components/LayoutComponent/Layout';
 import Events from './Components/EventComponent/Events';
 import './App.scss';
+import LandscapeDashboard from './Components/LandscapeComponent/LandscapeDashboard/LandscapeDashboard';
 
 const App: React.FC = () => {
   return (
@@ -17,6 +18,11 @@ const App: React.FC = () => {
           <Route exact path='/events' component={Events} />
           <Route exact path='/landscape/:identifier' component={Landscape} />
           <Route exact path='/man/:usage' component={Man} />
+          <Route
+            exact
+            path='/landscapeDashboard/:landscapeIdentifier'
+            component={LandscapeDashboard}
+          />
         </Layout>
       </Switch>
     </Router>
