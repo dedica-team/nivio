@@ -102,12 +102,10 @@ public class ReportGenerator extends HtmlGenerator {
                                 , li("Visibility: " + FormatUtils.nice(item.getLabel(Label.visibility)))
                                 , li("Networks: " + FormatUtils.nice(item.getLabels(Label.network)))
                                 , li("Costs: " + FormatUtils.nice(item.getLabel(Label.costs)))
-                                // TODO use Label.export()
                         ),
 
 
                         //statuses
-                        //TODO use assessment
                         /*
                         iff(!item.getAdditionalStatusValues().isEmpty(), h4("Status information")),
                         dl().with(

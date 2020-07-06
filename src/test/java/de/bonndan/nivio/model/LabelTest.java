@@ -1,6 +1,5 @@
 package de.bonndan.nivio.model;
 
-import com.esotericsoftware.kryo.util.ObjectMap;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.Test;
@@ -9,20 +8,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class LabelTest {
 
     /**
      * Exports the labels for GUI and docs
      * @throws IOException
-     * @todo replace frontend export with DTO integration (#137)
      */
     @Test
     public void export() throws IOException {

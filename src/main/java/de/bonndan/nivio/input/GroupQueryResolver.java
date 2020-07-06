@@ -8,7 +8,7 @@ import de.bonndan.nivio.model.LandscapeImpl;
 /**
  * This class resolves all "contains" queries of a group description, i.e. the items are assigned dynamically to a group.
  *
- * @todo check if this can run earlier in GroupResolver (perhaps condition would not match items added in between)
+ *
  */
 public class GroupQueryResolver extends Resolver {
 
