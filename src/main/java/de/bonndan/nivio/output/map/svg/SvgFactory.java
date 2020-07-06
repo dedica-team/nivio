@@ -152,7 +152,7 @@ public class SvgFactory extends Component {
             InputStream resourceAsStream = getClass().getResourceAsStream("/static/css/svg.css");
             css = new String(StreamUtils.copyToByteArray(resourceAsStream));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to load stylesheet /static/css/svg.css");
         }
 
         return css + "\n" + mapStyleSheetFactory.getMapStylesheet(landscape.getConfig(), landscape.getLog());
@@ -175,13 +175,14 @@ public class SvgFactory extends Component {
         });
 
         var padding = DEFAULT_ICON_SIZE;
+        var halfPadding = padding /2;
         var startPoint = new Point2D.Double(minX.get() - padding, minY.get() - padding);
         var endPoint = new Point2D.Double(maxX.get() + padding, maxY.get() + padding);
 
         int width = (int) (endPoint.x - startPoint.x) + 2 * padding;
         int height = (int) (endPoint.y - startPoint.y) + 2 * padding;
 
-        return new SVGGroup(group, startPoint.x - padding / 2, startPoint.y - padding / 2, width, height);
+        return new SVGGroup(group, startPoint.x - halfPadding, startPoint.y - halfPadding, width, height);
     }
 
     public String getXML() {

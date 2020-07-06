@@ -1,6 +1,5 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
@@ -28,14 +27,13 @@ public class Group implements GroupItem, Rendered, Assessable {
     private String description;
     private String contact;
     private String color;
-    private Map<String, URL> links = new HashMap<>();
-
-    private Map<String, String> labels = new HashMap<>();
+    private final Map<String, Link> links = new HashMap<>();
+    private final Map<String, String> labels = new HashMap<>();
 
     /**
      * Items belonging to this group.
      */
-    private List<Item> items = new ArrayList<>();
+    private final List<Item> items = new ArrayList<>();
 
     private String landscapeIdentifier;
 
@@ -79,7 +77,7 @@ public class Group implements GroupItem, Rendered, Assessable {
     }
 
     @Override
-    public Map<String, URL> getLinks() {
+    public Map<String, Link> getLinks() {
         return links;
     }
 

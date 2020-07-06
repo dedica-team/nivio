@@ -1,5 +1,5 @@
-@import '../../../Ressources/styling/font.scss';
-@import '../../../Ressources/styling/colors.scss';
+@import '../../../../Ressources/styling/font.scss';
+@import '../../../../Ressources/styling/colors.scss';
 
 .landscapeContainer {
   svg {
@@ -69,36 +69,5 @@
   // Really dirty but wont work otherwise because it doesn't have an id or class and will overwrite everything that follows
   div > svg > g > rect {
     fill: transparent;
-  }
-}
-
-.landscapeError {
-  width: 300px;
-  height: 100px;
-
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
-  margin: auto;
-  .error {
-    font-size: $large-font-size;
-  }
-  .reload {
-    margin-top: 10px;
-    margin-left: 15px;
-    background-color: $header-color;
-
-    color: $font-color;
-    font-size: $large-font-size;
-    text-transform: uppercase;
-    text-shadow: 0 0 10px $text-shadow-color;
-
-    box-shadow: 0px 0px 12px $box-shadow-color;
-    border: 1px solid $border-color;
-
-    cursor: pointer;
   }
 }

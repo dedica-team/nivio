@@ -11,7 +11,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 public class Groups {
 
-    private Map<String, List<LandscapeItem>> groups = new HashMap<>();
+    private final Map<String, List<LandscapeItem>> groups = new HashMap<>();
 
     /**
      * Default grouping by group field.

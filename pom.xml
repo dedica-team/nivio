@@ -21,9 +21,8 @@
         <junit-jupiter.version>5.4.0</junit-jupiter.version>
         <mockito.version>2.24.0</mockito.version>
         <frontend-src-dir>${project.basedir}/src/main/app</frontend-src-dir>
-        <node.version>v12.16.2</node.version>
-        <!--<node.version>v12.3.1</node.version>-->
-        <yarn.version>v1.16.0</yarn.version>
+        <node.version>v12.18.2</node.version>
+        <yarnVersion>v1.22.4</yarnVersion>
         <frontend-maven-plugin.version>1.7.6</frontend-maven-plugin.version>
     </properties>
 
@@ -173,12 +172,6 @@
             </exclusions>
         </dependency>
 
-        <!-- hateoas -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-hateoas</artifactId>
-        </dependency>
-
         <!-- rancher api -->
         <!-- https://mvnrepository.com/artifact/br.com.basis/rancher-java-sdk -->
         <dependency>
@@ -283,21 +276,21 @@
 
                 <executions>
                     <execution>
-                        <id>Install node and npm locally to the project</id>
+                        <id>Install node and yarn locally to the project</id>
                         <goals>
-                            <goal>install-node-and-npm</goal>
+                            <goal>install-node-and-yarn</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>npm install</id>
+                        <id>yarn install</id>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>yarn</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>Run test</id>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>yarn</goal>
                         </goals>
                         <configuration>
                             <arguments>test</arguments>
@@ -309,10 +302,10 @@
                     <execution>
                         <id>Build frontend</id>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>yarn</goal>
                         </goals>
                         <configuration>
-                            <arguments>run build</arguments>
+                            <arguments>build</arguments>
                             <environmentVariables>
                                 <CI>true</CI>
                             </environmentVariables>

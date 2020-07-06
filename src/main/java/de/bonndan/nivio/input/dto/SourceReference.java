@@ -8,6 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This is a reference to a configuration file.
+ *
+ * TODO extend {@link de.bonndan.nivio.model.Link} but allow relative paths.
+ */
 public class SourceReference {
 
     private String url;

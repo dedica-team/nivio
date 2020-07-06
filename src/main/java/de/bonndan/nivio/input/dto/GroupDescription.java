@@ -1,12 +1,20 @@
 package de.bonndan.nivio.input.dto;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+import de.bonndan.nivio.api.LinkFactory;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.GroupItem;
+import de.bonndan.nivio.model.Link;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
 public class GroupDescription implements GroupItem {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroupDescription.class);
 
     private String identifier;
     private String owner;
@@ -14,8 +22,8 @@ public class GroupDescription implements GroupItem {
     private String contact;
     private String color;
     private List<String> contains = new ArrayList<>();
-    private Map<String, URL> links = new HashMap<>();
-    private Map<String, String> labels = new HashMap<>();
+    private final Map<String, Link> links = new HashMap<>();
+    private final Map<String, String> labels = new HashMap<>();
     private String environment;
 
     @Override
@@ -54,7 +62,7 @@ public class GroupDescription implements GroupItem {
     }
 
     @Override
-    public Map<String, URL> getLinks() {
+    public Map<String, Link> getLinks() {
         return links;
     }
 
@@ -76,10 +84,6 @@ public class GroupDescription implements GroupItem {
 
     public void setColor(String color) {
         this.color = color;
-    }
-
-    public void setLinks(Map<String, URL> links) {
-        this.links = links;
     }
 
     @Override

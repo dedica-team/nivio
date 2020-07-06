@@ -18,12 +18,13 @@ import java.io.IOException;
 
 
 @Controller
-@RequestMapping(path = "/render")
+@RequestMapping(path = MapController.PATH)
 public class MapController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapController.class);
     public static final String MAP_SVG_ENDPOINT = "map.svg";
     public static final String MAP_PNG_ENDPOINT = "graph.png";
+    public static final String PATH = "/render";
 
     private final LandscapeRepository landscapeRepository;
     private final PNGRenderCache pngRenderCache;

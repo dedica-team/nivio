@@ -48,8 +48,8 @@ class ItemDescriptionFactoryNivioTest {
         assertEquals("public", service.getLabel(Label.visibility));
         assertEquals("Wordpress", service.getLabel(Label.software));
         assertEquals("5", service.getLabel(Label.scale));
-        assertEquals("https://acme.io", service.getLinks().get("homepage").toString());
-        assertEquals("https://git.acme.io/blog-server", service.getLinks().get("repository").toString());
+        assertEquals("https://acme.io", service.getLinks().get("homepage").getHref().toString());
+        assertEquals("https://git.acme.io/blog-server", service.getLinks().get("repository").getHref().toString());
         assertEquals("s", service.getLabel("machine"));
         assertNotNull(service.getLabels(Label.network));
         assertEquals("content", service.getLabels(Label.network).values().toArray()[0]);
