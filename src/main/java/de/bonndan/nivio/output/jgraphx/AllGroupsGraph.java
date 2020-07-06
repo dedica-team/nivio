@@ -127,7 +127,7 @@ public class AllGroupsGraph implements RenderedArtifact<mxGraph, mxCell> {
 
     static class GroupConnections {
 
-        private List<Pair<String, String>> groupConnections = new ArrayList<>();
+        private final List<Pair<String, String>> groupConnections = new ArrayList<>();
 
         boolean isConnected(String group) {
             return groupConnections.stream()

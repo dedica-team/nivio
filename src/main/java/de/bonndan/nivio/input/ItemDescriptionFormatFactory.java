@@ -3,14 +3,10 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.input.http.HttpService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -19,7 +15,7 @@ public class ItemDescriptionFormatFactory {
     private final Map<ItemDescriptionFactory, List<String>> factoryListMap = new ConcurrentHashMap<>();
 
     public static ItemDescriptionFormatFactory with(ItemDescriptionFactory factory) {
-        return new ItemDescriptionFormatFactory(new ArrayList<>(Arrays.asList(factory)));
+        return new ItemDescriptionFormatFactory(new ArrayList<>(Collections.singletonList(factory)));
     }
 
     public ItemDescriptionFormatFactory(List<ItemDescriptionFactory> factories) {

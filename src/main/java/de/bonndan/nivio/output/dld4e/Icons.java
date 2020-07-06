@@ -9,7 +9,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 public class Icons {
 
-    private Map<Item, Icon> icons = new HashMap<>();
+    private final Map<Item, Icon> icons = new HashMap<>();
 
     public void add(Item item) {
         Icon icon = new Icon(item);
@@ -19,8 +19,7 @@ public class Icons {
     }
 
     public List<Icon> getAll() {
-        return icons.entrySet().stream()
-                .map(Map.Entry::getValue)
+        return icons.values().stream()
                 .collect(Collectors.toList());
     }
 
@@ -41,8 +40,7 @@ public class Icons {
 
     public Optional<Icon> by(Item item) {
 
-        return icons.entrySet().stream()
-                .map(serviceIconEntry -> serviceIconEntry.getValue())
+        return icons.values().stream()
                 .filter(icon -> icon.getItem() == item).findFirst();
     }
 }

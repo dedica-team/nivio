@@ -11,7 +11,6 @@ import de.bonndan.nivio.output.jgraphx.JGraphXRenderer;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
 import de.bonndan.nivio.output.map.svg.SvgFactory;
 import org.apache.batik.transcoder.Transcoder;
-import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;

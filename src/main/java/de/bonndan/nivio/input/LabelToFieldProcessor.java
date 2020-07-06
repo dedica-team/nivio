@@ -66,17 +66,19 @@ public class LabelToFieldProcessor {
 
             if (propertyType != null && propertyType.isAssignableFrom(Map.class)) {
                 String[] o = getParts(value); // value is only a list of strings
-                Map propertyValue = (Map) myAccessor.getPropertyValue(name);
-                for (int i = 0; i < o.length; i++) {
-                    if ("links".equals(name)) {
-                        logger.warn("Found deprecated label named links.");
-                        try {
-                            propertyValue.put(String.valueOf(i + 1), new Link(new URL(o[i])));
-                        } catch (MalformedURLException e) {
-                            logger.warn("Failed to parse link " + o[i]);
+                Map<String, Object> propertyValue = (Map<String, Object>) myAccessor.getPropertyValue(name);
+                if (propertyValue != null) {
+                    for (int i = 0; i < o.length; i++) {
+                        if ("links".equals(name)) {
+                            logger.warn("Found deprecated label named links.");
+                            try {
+                                propertyValue.put(String.valueOf(i + 1), new Link(new URL(o[i])));
+                            } catch (MalformedURLException e) {
+                                logger.warn("Failed to parse link " + o[i]);
+                            }
+                        } else {
+                            propertyValue.put(String.valueOf(i + 1), o[i]);
                         }
-                    } else {
-                        propertyValue.put(String.valueOf(i + 1), o[i]);
                     }
                 }
                 return;

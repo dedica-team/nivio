@@ -12,7 +12,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 public class Groups {
 
-    private Map<String, List<Item>> groups = new HashMap<>();
+    private final Map<String, List<Item>> groups = new HashMap<>();
 
     public void add(Item item) {
         if (isEmpty(item.getGroup()))

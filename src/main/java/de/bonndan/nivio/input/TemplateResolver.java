@@ -6,7 +6,6 @@ import de.bonndan.nivio.model.*;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 import static de.bonndan.nivio.util.SafeAssign.assignSafeIfAbsent;
 
@@ -67,11 +66,9 @@ public class TemplateResolver {
 
         Labeled.merge(template, item);
 
-        if (template.getInterfaces() != null) {
-            template.getInterfaces().forEach(interfaceItem -> {
-                if (!item.getInterfaces().contains(interfaceItem))
-                    item.getInterfaces().add(interfaceItem);
-            });
-        }
+        template.getInterfaces().forEach(interfaceItem -> {
+            if (!item.getInterfaces().contains(interfaceItem))
+                item.getInterfaces().add(interfaceItem);
+        });
     }
 }

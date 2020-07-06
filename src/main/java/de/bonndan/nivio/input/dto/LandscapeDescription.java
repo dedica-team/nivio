@@ -61,14 +61,14 @@ public class LandscapeDescription implements Landscape {
     /**
      * descriptions of items fetched and parsed from sources
      */
-    private ItemDescriptions itemDescriptions = new ItemDescriptions();
+    private final ItemDescriptions itemDescriptions = new ItemDescriptions();
 
-    private LandscapeConfig config = new LandscapeConfig();
+    private final LandscapeConfig config = new LandscapeConfig();
 
     private boolean isPartial = false;
 
     private Map<String, GroupItem> groups = new HashMap<>();
-    private Map<String, Link> links = new HashMap<>();
+    private final Map<String, Link> links = new HashMap<>();
     private Map<String, String> labels = new HashMap<>();
 
     public void setIsPartial(boolean isPartial) {

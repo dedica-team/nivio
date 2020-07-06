@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
-import de.bonndan.nivio.input.*;
+import de.bonndan.nivio.input.FileFetcher;
+import de.bonndan.nivio.input.Indexer;
+import de.bonndan.nivio.input.ItemDescriptionFormatFactory;
+import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.csv.ItemDescriptionFactoryCSV;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
@@ -14,7 +17,6 @@ import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
-import de.bonndan.nivio.notification.NotificationService;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.RenderedArtifact;
 import de.bonndan.nivio.output.icons.VendorIcons;
@@ -37,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -53,7 +55,7 @@ class JGraphXRendererTest {
         landscapeRepository = new LandscapeRepository();
         formatFactory = ItemDescriptionFormatFactory.with(ItemDescriptionFactoryNivio.forTesting());
         FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
-        factory = new LandscapeDescriptionFactory(mock(ApplicationEventPublisher.class), fileFetcher);
+        factory = new LandscapeDescriptionFactory(fileFetcher);
 
         indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class));
     }

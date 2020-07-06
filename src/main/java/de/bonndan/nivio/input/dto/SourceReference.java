@@ -30,7 +30,7 @@ public class SourceReference {
     private Map<String, List<String>> assignTemplates = new HashMap<>();
     private String content;
 
-    private Map<String, Object> props = new HashMap<>();
+    private final Map<String, Object> props = new HashMap<>();
 
     public SourceReference() {
     }

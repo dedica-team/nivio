@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.io.IOException;
-
 
 @Controller
 @RequestMapping(path = MapController.PATH)
@@ -55,7 +53,7 @@ public class MapController {
 
 
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/" + MAP_PNG_ENDPOINT)
-    public ResponseEntity<byte[]> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) throws IOException {
+    public ResponseEntity<byte[]> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) {
         LandscapeImpl landscape = getLandscape(landscapeIdentifier);
         byte[] png = pngRenderCache.getPNG(landscape);
 

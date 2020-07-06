@@ -16,15 +16,15 @@ public class LandscapeConfig {
 
     private JGraphXConfig jgraphx = new JGraphXConfig();
 
-    private List<String> groupBlacklist = new ArrayList<>();
-    private List<String> labelBlacklist = new ArrayList<>();
-    private Branding branding = new Branding();
+    private final List<String> groupBlacklist = new ArrayList<>();
+    private final List<String> labelBlacklist = new ArrayList<>();
+    private final Branding branding = new Branding();
 
     /**
      * KPIs by their unique identifier.
      */
     @JsonDeserialize(using = KPIFactory.class)
-    private Map<String, KPI> kpis = new HashMap<>();
+    private final Map<String, KPI> kpis = new HashMap<>();
 
     public JGraphXConfig getJgraphx() {
         return jgraphx;
