@@ -13,14 +13,13 @@ import java.util.Map;
 import java.util.Objects;
 
 public class URLHelper {
-
     public static boolean isLocal(URL url) {
         return Objects.nonNull(url) && url.toString().startsWith("file:/");
     }
 
     /**
      * Returns an URL is the string is an URL.
-     *
+     * <p>
      * Tries to create an URL if a path is given.
      *
      * @param url string url or local path to file
@@ -28,23 +27,25 @@ public class URLHelper {
      */
     @Nullable
     public static URL getURL(String url) {
-        if (url == null) {
+        if (url == null)
             return null;
-        }
         try {
             return new URL(url);
         } catch (MalformedURLException e) {
             File file = new File(url);
-            if (file.exists() && !url.startsWith("file:///")) {
-                return getURL("file:///" + url);
+            if (file.exists() && !url.startsWith("file:")) {
+                try {
+                    return file.toURI().toURL();
+                } catch (MalformedURLException malformedURLException) {
+                    return null;
+                }
             }
-            return null;
         }
+        return null;
     }
 
     /**
      * Returns the path of a file as URL or null
-     *
      */
     public static URL getParentPath(String url) {
         URL url1 = getURL(url);
@@ -59,11 +60,11 @@ public class URLHelper {
 
     /**
      * Returns the combined base url and url part.
-     *
+     * <p>
      * If one argument is null, the other is returned.
      *
      * @param baseUrl
-     * @param part a relative path or full url/path or null
+     * @param part    a relative path or full url/path or null
      * @return combined url as string
      */
     public static String combine(@Nullable URL baseUrl, @Nullable String part) {
