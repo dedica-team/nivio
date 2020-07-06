@@ -3,7 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.IndexEvent;
 import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -16,7 +16,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * After the application has booted the SEED ({@link Seed}) is processed.
@@ -59,7 +58,19 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
         List<URL> landscapeDescriptionLocations = new ArrayList<>();
         try {
             if (seed.hasValue()) {
-                landscapeDescriptionLocations = seed.getLocations();
+                List<String> strList = seed.getLocations();
+                List<String> errorMsgList = new ArrayList<>();
+                for (String s : strList) {
+                    URL tmpURL = URLHelper.getURL(s);
+                    if (tmpURL != null) {
+                        landscapeDescriptionLocations.add(tmpURL);
+                    } else {
+                        errorMsgList.add("Failed to create URL from " + s);
+                    }
+                }
+                if (errorMsgList.size() > 0) {
+                    throw new MalformedURLException(String.join(", ", errorMsgList));
+                }
             }
             if (!StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
                 landscapeDescriptionLocations.addAll(seed.getDemoFiles());

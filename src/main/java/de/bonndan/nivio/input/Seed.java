@@ -12,20 +12,26 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Evaluation of the SEED environment variable.
- *
- *
  */
 public class Seed {
 
-    private static final Logger logger = LoggerFactory.getLogger(Seed.class);
-
     public static final String DEMO = "DEMO";
+    private static final Logger logger = LoggerFactory.getLogger(Seed.class);
+    @Value("${SEED:}")
+    private String seed;
 
-    static boolean ESCAPE_AUTHORITY = SystemUtils.IS_OS_WINDOWS;
+    public Seed() {
+
+    }
+
+    public Seed(String seed) {
+        this.seed = seed;
+    }
 
     public List<URL> getDemoFiles() {
         Path currentRelativePath = Paths.get("");
@@ -42,46 +48,18 @@ public class Seed {
         return demoFiles;
     }
 
-    @Value("${SEED:}")
-    private String seed;
-
-    public Seed() {
-
-    }
-
-    public Seed(String seed) {
-        this.seed = seed;
-    }
-
     public boolean hasValue() {
         return !StringUtils.isEmpty(seed);
     }
 
-    public List<URL> getLocations() throws MalformedURLException {
-
+    public List<String> getLocations() {
         String[] strings = StringUtils.commaDelimitedListToStringArray(seed);
-        List<URL> list = new ArrayList<>();
-        for (String s : strings) {
-            list.add(toURL(s));
-        }
+        List<String> list = new ArrayList<>(Arrays.asList(strings));
         logger.info("Using seeds: {}", list);
         return list;
     }
 
     public void setSeed(String seed) {
         this.seed = seed;
-    }
-
-    private URL toURL(String s) throws MalformedURLException {
-
-        if (ESCAPE_AUTHORITY && s.matches("^[a-zA-Z]\\:.*")) {
-            s = "file:/" + s;
-        }
-
-        if (!s.contains(":/")) {
-            s = "file://" + s;
-        }
-
-        return new URL(s);
     }
 }
