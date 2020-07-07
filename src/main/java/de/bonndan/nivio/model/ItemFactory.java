@@ -1,13 +1,9 @@
 package de.bonndan.nivio.model;
 
-import de.bonndan.nivio.assessment.Status;
-import de.bonndan.nivio.assessment.StatusValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.util.SafeAssign.assignSafe;

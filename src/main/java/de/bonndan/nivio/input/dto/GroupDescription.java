@@ -1,15 +1,11 @@
 package de.bonndan.nivio.input.dto;
 
-import com.fasterxml.jackson.annotation.JsonSetter;
-import de.bonndan.nivio.api.LinkFactory;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.GroupItem;
 import de.bonndan.nivio.model.Link;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 
 public class GroupDescription implements GroupItem {

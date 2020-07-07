@@ -33,8 +33,8 @@ class APIWalker {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APIWalker.class);
 
-    private Rancher rancher;
-    private SourceReference reference;
+    private final Rancher rancher;
+    private final SourceReference reference;
 
     public APIWalker(SourceReference reference) {
         Rancher.Config config = getConfig(reference);
@@ -93,7 +93,7 @@ class APIWalker {
 
     private Optional<Project> getProject(String projectName) {
         ProjectService projectService = rancher.type(ProjectService.class);
-        List<Project> projects = null;
+        List<Project> projects;
         try {
             projects = projectService.list().execute().body().getData();
         } catch (IOException e) {

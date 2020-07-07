@@ -18,13 +18,13 @@ public class Dld4eRenderer implements Renderer<String> {
 
     private static final Logger logger = LoggerFactory.getLogger(Dld4eRenderer.class);
 
-    private Layouter layouter = new Layouter();
+    private final Layouter layouter = new Layouter();
     private StringBuilder ymlSource;
 
-    private Networks networks = new Networks();
-    private Groups groups = new Groups();
-    private Connections connections = new Connections();
-    private Icons icons = new Icons();
+    private final Networks networks = new Networks();
+    private final Groups groups = new Groups();
+    private final Connections connections = new Connections();
+    private final Icons icons = new Icons();
 
     @Override
     public String render(LandscapeImpl landscape) {
@@ -34,7 +34,7 @@ public class Dld4eRenderer implements Renderer<String> {
 
         layouter.arrange(icons, groups);
 
-        ymlSource = new StringBuilder("");
+        ymlSource = new StringBuilder();
         ymlSource.append(
                 new DiagramItem("diagram")
                         .set("fill", "\"snow\"")
@@ -119,7 +119,7 @@ public class Dld4eRenderer implements Renderer<String> {
 
     private static class Networks {
 
-        private List<String> networks = new ArrayList<>();
+        private final List<String> networks = new ArrayList<>();
 
         public void add(Item item) {
             if (item.getLabels(Label.network).isEmpty()) {

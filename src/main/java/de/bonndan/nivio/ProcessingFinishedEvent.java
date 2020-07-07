@@ -14,7 +14,7 @@ public class ProcessingFinishedEvent extends ProcessingEvent {
     private final Landscape landscape;
 
     /**
-     * @param source TODO is this a misuse of event source? We store the LandscapeDescription instead of the triggerer
+     * @param source the LandscapeDescription
      * @param landscape out
      */
     public ProcessingFinishedEvent(LandscapeDescription source, Landscape landscape) {

@@ -42,7 +42,7 @@ public class SourceReferencesResolverTest {
         );
 
         FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
-        factory = new LandscapeDescriptionFactory(mock(ApplicationEventPublisher.class), fileFetcher);
+        factory = new LandscapeDescriptionFactory(fileFetcher);
     }
 
     @Test

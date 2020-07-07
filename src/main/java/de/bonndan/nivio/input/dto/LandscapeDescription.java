@@ -1,6 +1,5 @@
 package de.bonndan.nivio.input.dto;
 
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.LandscapeConfig;
@@ -14,9 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 
 /**
@@ -65,14 +61,14 @@ public class LandscapeDescription implements Landscape {
     /**
      * descriptions of items fetched and parsed from sources
      */
-    private ItemDescriptions itemDescriptions = new ItemDescriptions();
+    private final ItemDescriptions itemDescriptions = new ItemDescriptions();
 
-    private LandscapeConfig config = new LandscapeConfig();
+    private final LandscapeConfig config = new LandscapeConfig();
 
     private boolean isPartial = false;
 
     private Map<String, GroupItem> groups = new HashMap<>();
-    private Map<String, Link> links = new HashMap<>();
+    private final Map<String, Link> links = new HashMap<>();
     private Map<String, String> labels = new HashMap<>();
 
     public void setIsPartial(boolean isPartial) {
@@ -188,19 +184,6 @@ public class LandscapeDescription implements Landscape {
     @Override
     public String toString() {
         return identifier;
-    }
-
-    public boolean hasReference(String source) {
-        return sources.stream().anyMatch(sourceReference -> {
-
-            if (sourceReference.getUrl().equals(source)) {
-                return true;
-            }
-
-            File file = new File(source);
-            //TODO
-            return sourceReference.getUrl().contains(file.getName());
-        });
     }
 
     @Override

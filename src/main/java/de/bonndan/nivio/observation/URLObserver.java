@@ -6,7 +6,6 @@ import de.bonndan.nivio.input.FileFetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.util.StringUtils;
 
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
@@ -21,7 +20,7 @@ class URLObserver implements Observer {
     private final FileFetcher fileFetcher;
     private final ApplicationEventPublisher publisher;
     private final URL url;
-    private String content = "";
+    private String content;
 
     public URLObserver(FileFetcher fileFetcher, ApplicationEventPublisher publisher, URL url) {
         this.fileFetcher = fileFetcher;

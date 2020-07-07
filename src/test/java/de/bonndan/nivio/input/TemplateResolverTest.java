@@ -35,7 +35,7 @@ class TemplateResolverTest {
         log = new ProcessLog(LoggerFactory.getLogger(TemplateResolver.class));
         templateResolver = new TemplateResolver();
         FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
-        factory = new LandscapeDescriptionFactory(mock(ApplicationEventPublisher.class), fileFetcher);
+        factory = new LandscapeDescriptionFactory(fileFetcher);
     }
 
 

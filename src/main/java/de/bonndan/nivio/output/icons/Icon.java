@@ -7,7 +7,7 @@ import java.net.URL;
  */
 class Icon {
 
-    private URL url;
+    private final URL url;
     private boolean isCustom = false;
 
     public Icon(URL url, boolean isCustom) {

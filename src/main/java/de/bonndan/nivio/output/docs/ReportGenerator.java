@@ -14,7 +14,6 @@ import static de.bonndan.nivio.output.FormatUtils.ifPresent;
 import static de.bonndan.nivio.output.FormatUtils.nice;
 import static de.bonndan.nivio.output.map.MapController.MAP_SVG_ENDPOINT;
 import static j2html.TagCreator.*;
-import static j2html.TagCreator.a;
 import static org.springframework.util.StringUtils.isEmpty;
 
 public class ReportGenerator extends HtmlGenerator {
@@ -64,8 +63,8 @@ public class ReportGenerator extends HtmlGenerator {
     }
 
     protected ContainerTag writeItem(Item item) {
-        boolean hasRelations = item.getRelations() != null && item.getRelations().size() > 0;
-        boolean hasInterfaces = item.getInterfaces() != null && item.getInterfaces().size() > 0;
+        boolean hasRelations = item.getRelations().size() > 0;
+        boolean hasInterfaces = item.getInterfaces().size() > 0;
         String groupColor = "#" + Color.nameToRGB(item.getGroup());
 
         var links = item.getLinks().entrySet().stream()
@@ -102,12 +101,10 @@ public class ReportGenerator extends HtmlGenerator {
                                 , li("Visibility: " + FormatUtils.nice(item.getLabel(Label.visibility)))
                                 , li("Networks: " + FormatUtils.nice(item.getLabels(Label.network)))
                                 , li("Costs: " + FormatUtils.nice(item.getLabel(Label.costs)))
-                                // TODO use Label.export()
                         ),
 
 
                         //statuses
-                        //TODO use assessment
                         /*
                         iff(!item.getAdditionalStatusValues().isEmpty(), h4("Status information")),
                         dl().with(
@@ -135,7 +132,7 @@ public class ReportGenerator extends HtmlGenerator {
                                             String direction = (df.getSource().equals(item)) ?
                                                     " &#10142; " : " incoming from ";
                                             Item end = (df.getSource().equals(item)) ?
-                                                    (Item) df.getTarget() : (Item) df.getSource();
+                                                    df.getTarget() : df.getSource();
 
                                             return li(rawHtml((df.getType() != null ? df.getType() : "") + " "
                                                             + ifPresent(df.getFormat()) + " "

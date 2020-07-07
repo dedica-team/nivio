@@ -8,7 +8,7 @@ import java.util.List;
 
 public class HexPath {
 
-    private List<Hex> hexes;
+    private final List<Hex> hexes;
     private List<Hex> bends = null;
 
     public HexPath(List<Hex> hexes) {

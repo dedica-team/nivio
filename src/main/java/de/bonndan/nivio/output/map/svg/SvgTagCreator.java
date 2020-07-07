@@ -1,6 +1,5 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.input.ItemDescriptionFormatFactory;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 

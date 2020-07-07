@@ -17,7 +17,7 @@ class SVGItem extends Component {
 
     private final String id;
     private final Item item;
-    private DomContent children;
+    private final DomContent children;
     private final Point2D.Double pixel;
 
     SVGItem(DomContent children, Item item, Point2D.Double position) {

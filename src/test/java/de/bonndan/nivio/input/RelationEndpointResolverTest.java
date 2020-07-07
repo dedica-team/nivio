@@ -38,7 +38,7 @@ class RelationEndpointResolverTest {
         log = new ProcessLog(Mockito.mock(Logger.class));
         relationEndpointResolver = new RelationEndpointResolver(log);
         FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
-        factory = new LandscapeDescriptionFactory(mock(ApplicationEventPublisher.class), fileFetcher);
+        factory = new LandscapeDescriptionFactory(fileFetcher);
     }
 
     @Test
