@@ -6,7 +6,6 @@ import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.output.Rendered;
 import org.springframework.util.StringUtils;
 
-import java.net.URL;
 import java.util.*;
 
 public class Group implements GroupItem, Rendered, Assessable {

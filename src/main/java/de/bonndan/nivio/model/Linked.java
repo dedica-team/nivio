@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public interface Linked {
 
-    //TODO add semantics, e.g. handle identifier "sonarqube" to grab metrics
+    // add semantics, e.g. handle identifier "sonarqube" to grab metrics
     // see https://github.com/dedica-team/nivio/issues/97
     List<String> KNOWN_IDENTIFIERS = List.of(
             "homepage",

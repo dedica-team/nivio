@@ -16,7 +16,6 @@ import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -68,7 +67,7 @@ class ObserverRegistryTest {
 
         String source = getRootPath() + "/src/test/resources/example/example_env.yml";
         File file = new File(source);
-        LandscapeDescriptionFactory landscapeDescriptionFactory = new LandscapeDescriptionFactory(publisher, new FileFetcher(new HttpService()));
+        LandscapeDescriptionFactory landscapeDescriptionFactory = new LandscapeDescriptionFactory(new FileFetcher(new HttpService()));
         LandscapeDescription description = landscapeDescriptionFactory.fromYaml(file);
         landscape.setSource(source);
 

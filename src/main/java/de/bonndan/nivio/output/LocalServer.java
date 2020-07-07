@@ -139,8 +139,7 @@ public class LocalServer implements EnvironmentAware {
      * @return string icon url
      */
     public static String deproxyUrl(String requestURI) {
-        String part = VENDORICONS_PATH ;
-        String iconRequestURI = requestURI.split(part)[1];
+        String iconRequestURI = requestURI.split(VENDORICONS_PATH)[1];
         iconRequestURI = StringUtils.trimLeadingCharacter(iconRequestURI, '/');
 
         iconRequestURI = new String(Base64.getUrlDecoder().decode(iconRequestURI));

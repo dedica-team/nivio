@@ -2,7 +2,7 @@ package de.bonndan.nivio.input.compose2;
 
 public class Network {
 
-    private String name;
+    private final String name;
 
     public Network(String name) {
         this.name = name;

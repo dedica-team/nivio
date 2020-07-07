@@ -111,10 +111,10 @@ public class RenderedXYMapFactory implements MapFactory<mxGraph, mxCell> {
 
     private static class DimensionsFromCell {
 
-        private long x;
-        private long y;
-        private long width;
-        private long height;
+        private final long x;
+        private final long y;
+        private final long width;
+        private final long height;
 
         public DimensionsFromCell(long x, long y, long width, long height) {
             this.x = x;

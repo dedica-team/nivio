@@ -3,7 +3,9 @@ package de.bonndan.nivio.observation;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * TODO k8s observer etc
+ * Observer for input sources.
+ *
+ * URL observer is implemented, but others like k8s observer to be done
  */
 interface Observer {
 

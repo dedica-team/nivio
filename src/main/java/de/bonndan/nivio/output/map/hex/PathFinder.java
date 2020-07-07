@@ -78,7 +78,7 @@ public class PathFinder {
         Tile currentStep = start;
         open.add(0, currentStep);
 
-        float G = 0f;
+        float G;
 
         int depth = 0;
         int depthMax = 1000;
@@ -192,13 +192,12 @@ public class PathFinder {
 
 
     private List<Tile> getNeighbours(Tile current) {
-        List<Tile> free = current.hex.neighbours().stream()
-                .map(hex -> new Tile(hex, this.isOccupied(hex)))
-                .collect(Collectors.toList());
 
         //LOGGER.debug("{} free tiles at {}", free.size(), current);
 
-        return free;
+        return current.hex.neighbours().stream()
+                .map(hex -> new Tile(hex, this.isOccupied(hex)))
+                .collect(Collectors.toList());
     }
 
     private boolean isOccupied(Hex hex) {

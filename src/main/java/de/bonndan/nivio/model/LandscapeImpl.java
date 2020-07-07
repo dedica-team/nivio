@@ -42,16 +42,16 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
     private String source;
 
     @JsonIgnore
-    private LandscapeItems items = new LandscapeItems();
+    private final LandscapeItems items = new LandscapeItems();
 
     private LandscapeConfig config;
 
-    private Map<String, GroupItem> groups = new HashMap<>();
+    private final Map<String, GroupItem> groups = new HashMap<>();
 
     private ProcessLog processLog;
 
-    private Map<String, String> labels = new HashMap<>();
-    private Map<String, Link> links = new HashMap<>();
+    private final Map<String, String> labels = new HashMap<>();
+    private final Map<String, Link> links = new HashMap<>();
     private String owner;
 
     public String getIdentifier() {

@@ -2,8 +2,7 @@ package de.bonndan.nivio.output.map.hex;
 
 public class HexFactory {
 
-    // TODO find constant
-    private final int scaleFactor= 50;
+    private final int scaleFactor = 50;
 
     /**
      * Creates a hexmap coord representation of the given coordinates.

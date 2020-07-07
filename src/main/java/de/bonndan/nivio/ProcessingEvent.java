@@ -61,6 +61,7 @@ public abstract class ProcessingEvent extends ApplicationEvent {
         }
     }
 
+    @SuppressWarnings("EmptyMethod")
     @Override
     @JsonIgnore
     public Object getSource() {

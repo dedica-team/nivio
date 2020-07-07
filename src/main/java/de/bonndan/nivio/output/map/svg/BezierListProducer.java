@@ -46,7 +46,7 @@ public class BezierListProducer implements PathHandler {
     	float offx = hist.lastPoint.x;
         float offy = hist.lastPoint.y;
 
-        movetoAbs(offx + x, offy + y);;
+        movetoAbs(offx + x, offy + y);
     }
 
     @Override

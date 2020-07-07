@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.jgraphx;
 
 import com.mxgraph.canvas.mxGraphics2DCanvas;
-import com.mxgraph.model.mxCell;
 import com.mxgraph.shape.mxConnectorShape;
 import com.mxgraph.util.mxLine;
 import com.mxgraph.util.mxPoint;
@@ -110,7 +109,7 @@ class CurvedShape extends mxConnectorShape {
         if (path == null || points.size() < 3) {
             return super.getMarkerVector(points, source, markerSize);
         }
-        double coords[] = new double[6];
+        double[] coords = new double[6];
         double x0 = 0;
         double y0 = 0;
         double x1 = 0;

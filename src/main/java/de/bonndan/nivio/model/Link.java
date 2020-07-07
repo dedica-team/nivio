@@ -2,15 +2,12 @@ package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.springframework.util.StringUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,7 +19,7 @@ import java.util.Map;
 public class Link {
 
     private String rel;
-    private URL href;
+    private final URL href;
     private String hreflang;
     private String media;
     private String title;
@@ -152,7 +149,7 @@ public class Link {
         private String basicAuthPassword;
         private String headerTokenName;
         private String headerTokenValue;
-        private Map<String, Object> props = new HashMap<>();
+        private final Map<String, Object> props = new HashMap<>();
 
         private LinkBuilder() {
         }

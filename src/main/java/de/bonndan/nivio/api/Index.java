@@ -3,7 +3,6 @@ package de.bonndan.nivio.api;
 import de.bonndan.nivio.model.Link;
 import de.bonndan.nivio.model.Linked;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 

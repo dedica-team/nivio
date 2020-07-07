@@ -78,8 +78,6 @@ public class AsciiDocGenerator {
         builder.append("Visibility:: " + nice(item.getLabel(Label.visibility)) + NL);
         builder.append("Networks:: " + FormatUtils.nice(item.getLabels(Label.network)) + NL);
 
-        //TODO include assessment
-
         builder.append(NL);
 
         if (item.getRelations() != null && item.getRelations().size() > 0) {

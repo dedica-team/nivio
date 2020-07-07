@@ -130,12 +130,12 @@ public class NivioGroupLayout extends mxGraphLayout {
      * Boolean flag that specifies if the layout is allowed to run. If this is
      * set to false, then the layout exits in the following iteration.
      */
-    protected boolean allowedToRun = true;
+    protected final boolean allowedToRun = true;
 
     /**
      * Maps from vertices to indices.
      */
-    protected Hashtable<Object, Integer> indices = new Hashtable<Object, Integer>();
+    protected final Hashtable<Object, Integer> indices = new Hashtable<Object, Integer>();
 
     /**
      * Constructs a new fast organic layout for the specified graph.

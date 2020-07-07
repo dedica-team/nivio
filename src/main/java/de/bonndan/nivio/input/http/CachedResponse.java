@@ -2,11 +2,9 @@ package de.bonndan.nivio.input.http;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.springframework.util.StreamUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class CachedResponse {
 

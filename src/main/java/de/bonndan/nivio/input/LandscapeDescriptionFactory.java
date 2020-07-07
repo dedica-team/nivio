@@ -2,17 +2,13 @@ package de.bonndan.nivio.input;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.bonndan.nivio.ProcessingErrorEvent;
-import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.util.Mappers;
-import de.bonndan.nivio.util.URLHelper;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookupFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -21,11 +17,7 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Paths;
 
 /**
  * A static factory to create LandscapeDescription instances from files or strings.
@@ -36,11 +28,9 @@ public class LandscapeDescriptionFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeDescriptionFactory.class);
     private static final ObjectMapper mapper = Mappers.gracefulYamlMapper;
 
-    private final ApplicationEventPublisher publisher;
     private final FileFetcher fileFetcher;
 
-    public LandscapeDescriptionFactory(ApplicationEventPublisher publisher, FileFetcher fileFetcher) {
-        this.publisher = publisher;
+    public LandscapeDescriptionFactory(FileFetcher fileFetcher) {
         this.fileFetcher = fileFetcher;
     }
 

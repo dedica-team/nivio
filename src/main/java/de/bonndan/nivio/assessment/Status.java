@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.springframework.util.StringUtils;
 
-import java.util.Set;
-
 public enum Status {
 
     UNKNOWN("grey", 0, ""),
@@ -65,22 +63,5 @@ public enum Status {
     @Deprecated
     public String getSymbol() {
         return symbol;
-    }
-
-    public static Status highestOf(Set<StatusValue> statuses) {
-
-        var ref = new Object() {
-            Status current = Status.UNKNOWN;
-        };
-
-        statuses.forEach(statusItem -> {
-            if (statusItem.getStatus().isHigherThan(ref.current))
-                ref.current = statusItem.getStatus();
-        });
-
-        return ref.current;
-    }
-
-    public class Comparator {
     }
 }

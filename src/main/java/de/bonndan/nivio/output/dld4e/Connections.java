@@ -8,7 +8,7 @@ import java.util.List;
 
 class Connections {
 
-    private List<DiagramItem> connections = new ArrayList<>();
+    private final List<DiagramItem> connections = new ArrayList<>();
 
     void addDataflow(RelationItem flow) {
         connections.add(new DiagramItem().merge("dataflow")
@@ -23,7 +23,7 @@ class Connections {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("connections:\n");
-        connections.forEach(i -> sb.append("  - " + i.inline()));
+        connections.forEach(i -> sb.append("  - ").append(i.inline()));
         return sb.toString();
     }
 }
