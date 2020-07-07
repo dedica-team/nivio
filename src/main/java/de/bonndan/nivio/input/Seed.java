@@ -1,6 +1,5 @@
 package de.bonndan.nivio.input;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +32,9 @@ public class Seed {
         this.seed = seed;
     }
 
+    /**
+     * @return the demo file locations
+     */
     public List<URL> getDemoFiles() {
         Path currentRelativePath = Paths.get("");
         String absPath = currentRelativePath.toAbsolutePath().toString();
@@ -52,6 +54,11 @@ public class Seed {
         return !StringUtils.isEmpty(seed);
     }
 
+    /**
+     * The configured locations (URLs) of configurations (files) to read.
+     *
+     * @return list of configs
+     */
     public List<String> getLocations() {
         String[] strings = StringUtils.commaDelimitedListToStringArray(seed);
         List<String> list = new ArrayList<>(Arrays.asList(strings));
