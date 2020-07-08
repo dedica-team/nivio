@@ -25,7 +25,6 @@ public class Seed {
     private String seed;
 
     public Seed() {
-
     }
 
     public Seed(String seed) {
@@ -36,9 +35,12 @@ public class Seed {
      * @return the demo file locations
      */
     public List<URL> getDemoFiles() {
+        List<URL> demoFiles = new ArrayList<>();
+        if (StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
+            return demoFiles;
+        }
         Path currentRelativePath = Paths.get("");
         String absPath = currentRelativePath.toAbsolutePath().toString();
-        List<URL> demoFiles = new ArrayList<>();
         try {
             demoFiles.add(new File(absPath + "/src/test/resources/example/example_env.yml").toURI().toURL());
             demoFiles.add(new File(absPath + "/src/test/resources/example/inout.yml").toURI().toURL());
@@ -48,10 +50,6 @@ public class Seed {
         }
         logger.info("Using demo files: {}", demoFiles);
         return demoFiles;
-    }
-
-    public boolean hasValue() {
-        return !StringUtils.isEmpty(seed);
     }
 
     /**

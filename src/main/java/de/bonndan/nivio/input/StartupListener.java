@@ -40,11 +40,6 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
 
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent event) {
-
-        if (seed.hasValue()) {
-            LOGGER.debug("Found seed");
-        }
-
         if (!StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
             LOGGER.info("Running in demo mode");
         }
@@ -55,28 +50,17 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
     }
 
     private List<URL> getUrls(Seed seed) {
-        List<URL> landscapeDescriptionLocations = new ArrayList<>();
-        try {
-            if (seed.hasValue()) {
-                List<String> strList = seed.getLocations();
-                List<String> errorMsgList = new ArrayList<>();
-                for (String s : strList) {
-                    URL tmpURL = URLHelper.getURL(s);
-                    if (tmpURL != null) {
-                        landscapeDescriptionLocations.add(tmpURL);
-                    } else {
-                        errorMsgList.add("Failed to create URL from " + s);
-                    }
-                }
-                if (errorMsgList.size() > 0) {
-                    throw new MalformedURLException(String.join(", ", errorMsgList));
-                }
+        List<URL> landscapeDescriptionLocations = new ArrayList<>(seed.getDemoFiles());
+        for (String s : seed.getLocations()) {
+            URL tmpURL = URLHelper.getURL(s);
+            if (tmpURL != null) {
+                landscapeDescriptionLocations.add(tmpURL);
+                continue;
             }
-            if (!StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
-                landscapeDescriptionLocations.addAll(seed.getDemoFiles());
-            }
-        } catch (MalformedURLException e) {
-            ProcessingException processingException = new ProcessingException("Failed to initialize watchers from seed", e);
+            ProcessingException processingException = new ProcessingException(
+                    "Failed to initialize watchers from seed",
+                    new MalformedURLException("Failed to create URL from " + s)
+            );
             publisher.publishEvent(new ProcessingErrorEvent(this, processingException));
         }
         return landscapeDescriptionLocations;
