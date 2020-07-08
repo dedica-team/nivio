@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.IndexEvent;
 import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -39,11 +40,6 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
 
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent event) {
-
-        if (seed.hasValue()) {
-            LOGGER.debug("Found seed");
-        }
-
         if (!StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
             LOGGER.info("Running in demo mode");
         }
@@ -54,16 +50,17 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
     }
 
     private List<URL> getUrls(Seed seed) {
-        List<URL> landscapeDescriptionLocations = new ArrayList<>();
-        try {
-            if (seed.hasValue()) {
-                landscapeDescriptionLocations = seed.getLocations();
+        List<URL> landscapeDescriptionLocations = new ArrayList<>(seed.getDemoFiles());
+        for (String s : seed.getLocations()) {
+            URL tmpURL = URLHelper.getURL(s);
+            if (tmpURL != null) {
+                landscapeDescriptionLocations.add(tmpURL);
+                continue;
             }
-            if (!StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
-                landscapeDescriptionLocations.addAll(seed.getDemoFiles());
-            }
-        } catch (MalformedURLException e) {
-            ProcessingException processingException = new ProcessingException("Failed to initialize watchers from seed", e);
+            ProcessingException processingException = new ProcessingException(
+                    "Failed to initialize watchers from seed",
+                    new MalformedURLException("Failed to create URL from " + s)
+            );
             publisher.publishEvent(new ProcessingErrorEvent(this, processingException));
         }
         return landscapeDescriptionLocations;
