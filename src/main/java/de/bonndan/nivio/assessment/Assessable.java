@@ -67,6 +67,9 @@ public interface Assessable extends Component {
         //apply each kpi to his
         FullyQualifiedIdentifier fqi = this.getFullyQualifiedIdentifier();
         kpis.forEach((s, kpi) -> {
+            if (!kpi.isEnabled()) {
+                return;
+            }
             if (!map.containsKey(fqi)) {
                 map.put(fqi, new ArrayList<>());
             }

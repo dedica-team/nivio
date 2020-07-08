@@ -18,6 +18,8 @@ public abstract class AbstractKPI implements KPI {
     private final Function<Component, String> msgFunction;
     private String description;
 
+    private boolean enabled = true;
+
     /**
      * @param valueFunction the label which is evaluated for status
      * @param msgFunction   the label which is used as optional message
@@ -59,5 +61,14 @@ public abstract class AbstractKPI implements KPI {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

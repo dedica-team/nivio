@@ -1,16 +1,15 @@
 package de.bonndan.nivio.assessment;
 
+import de.bonndan.nivio.assessment.kpi.AbstractKPI;
+import de.bonndan.nivio.assessment.kpi.KPI;
+import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AssessableTest {
 
@@ -55,6 +54,34 @@ class AssessableTest {
         assertNotNull(summary);
         assertEquals("summary.test", summary.getMessage());
         assertEquals(Status.YELLOW, summary.getStatus());
+    }
+
+    @Test
+    void skipsDisabledKPIs() {
+        var child1 = new TestAssessable(null);
+        child1.setStatusValue(new StatusValue("test", Status.GREEN));
+        child1.setStatusValue(new StatusValue("test2", Status.YELLOW));
+        var child2 = new TestAssessable(null);
+        child2.setStatusValue(new StatusValue("test", Status.GREEN));
+        var parent = new TestAssessable(List.of(child1, child2));
+
+        Map<String, KPI> kpis = new HashMap<>();
+        kpis.put("on", new AbstractKPI(component -> null, null) {
+            @Override
+            protected List<StatusValue> getStatusValues(String value, String message) {
+                return new ArrayList<>();
+            }
+        });
+        var disabled = new AbstractKPI(component -> null, null) {
+            @Override
+            protected List<StatusValue> getStatusValues(String value, String message) {
+                throw new RuntimeException("This should never happen.");
+            }
+        };
+        disabled.setEnabled(false);
+        kpis.put("off", disabled);
+
+        assertDoesNotThrow(() -> parent.applyKPIs(kpis));
     }
 
     class TestAssessable implements Assessable {

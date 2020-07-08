@@ -34,4 +34,11 @@ public interface KPI {
      * Describes the meaning of the KPI.
      */
     String getDescription();
+
+    /**
+     * Flag showing whether KPI should be used in assessment.
+     *
+     * @return true if active
+     */
+    boolean isEnabled();
 }
