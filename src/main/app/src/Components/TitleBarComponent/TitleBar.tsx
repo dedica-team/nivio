@@ -2,13 +2,17 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import './TitleBar.scss';
 
+interface Props {
+  title: string | undefined;
+}
+
 /*
     value         |0px     600px    960px    1280px   1920px
     key           |xs      sm       md       lg       xl
     screen width  |--------|--------|--------|--------|-------->
     range         |   xs   |   sm   |   md   |   lg   |   xl
   */
-const TitleBar: React.FC<any> = ({ title }) => {
+const TitleBar: React.FC<Props> = ({ title }) => {
   return (
     <Grid container className={'titleBar'} spacing={0}>
       <Grid item xs={1} className={'first'}></Grid>
