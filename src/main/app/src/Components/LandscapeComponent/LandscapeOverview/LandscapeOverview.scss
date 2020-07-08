@@ -7,10 +7,6 @@
       border-bottom: 1px solid $border-color;
     }
 
-    .floatButton {
-      float: right;
-    }
-
     .control {
       background-color: $header-color;
       color: $font-color;
@@ -21,36 +17,23 @@
       cursor: pointer;
     }
 
-    .bar {
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-      height: 1rem;
-
-      .first {
-        background-color: $header-color;
-        border-top-left-radius: 25px;
-        border-bottom-left-radius: 25px;
-        padding: 0;
+    .previewItem {
+      .preview {
+        border: 1px solid $border-color;
+        padding: 1rem;
       }
+    }
 
-      .title {
-        font-size: $large-font-size;
-        flex-grow: 1;
-        text-transform: uppercase;
-        text-align: center;
-        padding: 0;
-        padding-left: 0.3rem;
-        //background-color: darken($header-color, 10%);
-      }
-
-      .item {
-        background-color: $header-color;
-        padding: 0;
-      }
-
-      .no-item {
-        padding: 0;
-        border-left: 1px solid black;
+    .infoContainer {
+      .infoContent {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-top: 0.7rem;
+        .identifier,
+        .teams {
+          padding-top: 0.7rem;
+        }
       }
     }
   }

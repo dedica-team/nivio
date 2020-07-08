@@ -35,7 +35,7 @@ const Landscape: React.FC<Props> = ({ identifier, onItemClick }) => {
       render={(content: ReactElement[]) => (
         <ReactSVGPanZoom
           key={'panzoom'}
-          width={window.innerWidth * 0.88}
+          width={window.innerWidth}
           height={window.innerHeight}
           background={'transparent'}
           miniatureProps={{
