@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import './TitleBar.scss';
 
 interface Props {
-  title: string | undefined;
+  title: string;
 }
 
 /*

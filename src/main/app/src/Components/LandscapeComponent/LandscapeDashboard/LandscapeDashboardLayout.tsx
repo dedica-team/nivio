@@ -61,7 +61,7 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape }) => {
       return (
         <Grid key={group.name} className={'groupContainer'} container spacing={3}>
           <Grid item xs={12} sm={12}>
-            <TitleBar title={group.name} />
+            <TitleBar title={group.name || group.identifier || ''} />
           </Grid>
           {items}
         </Grid>
