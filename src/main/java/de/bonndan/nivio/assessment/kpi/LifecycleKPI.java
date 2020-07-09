@@ -19,6 +19,7 @@ public class LifecycleKPI extends CustomKPI {
     public LifecycleKPI() {
         super();
         label = Label.lifecycle.name();
+        messageLabel = Label.lifecycle.name();
         setDescription("This KPI evaluates the lifecycle label for known values (PLANNED, PRODUCTION).");
     }
 
@@ -26,10 +27,10 @@ public class LifecycleKPI extends CustomKPI {
     protected List<StatusValue> getStatusValues(String value, String message) {
         Lifecycle lifecycle = Lifecycle.from(value);
         if (Lifecycle.PRODUCTION.equals(lifecycle)) {
-            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.GREEN, null));
+            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.GREEN, label + ": " + value));
         }
         if (Lifecycle.END_OF_LIFE.equals(lifecycle)) {
-            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.ORANGE, null));
+            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.ORANGE, label + ": " + value));
         }
 
         return new ArrayList<>();

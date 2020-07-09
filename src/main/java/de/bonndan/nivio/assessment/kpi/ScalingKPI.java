@@ -15,6 +15,7 @@ public class ScalingKPI extends CustomKPI {
 
     public ScalingKPI() {
         label = Label.scale.name();
+        messageLabel = Label.scale.name();
         ranges = Map.of(
                 Status.GREEN, Range.between(2d, 10d),
                 Status.YELLOW, Range.between(0d, 1d),

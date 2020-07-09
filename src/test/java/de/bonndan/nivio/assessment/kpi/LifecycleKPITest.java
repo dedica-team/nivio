@@ -32,6 +32,7 @@ class LifecycleKPITest {
         assertEquals(1, statusValues.size());
         StatusValue statusValue = statusValues.get(0);
         assertEquals(Status.GREEN, statusValue.getStatus());
+        assertEquals("lifecycle: PRODUCTION", statusValue.getMessage());
     }
 
     @Test
