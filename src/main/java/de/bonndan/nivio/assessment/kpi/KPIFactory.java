@@ -17,7 +17,6 @@ import java.util.function.Supplier;
 public class KPIFactory {
 
     private final Map<String, Supplier<KPI>> defaultKPIs = new HashMap<>();
-
     private final ApplicationEventPublisher eventPublisher;
 
     public KPIFactory(ApplicationEventPublisher eventPublisher) {
