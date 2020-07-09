@@ -15,12 +15,13 @@ class ScalingKPITest {
     @Test
     public void testScale1() {
         ScalingKPI scalingKPI = new ScalingKPI();
-        scalingKPI.init();
+        scalingKPI.init(null);
         Item item = new Item();
         item.setLabel(Label.scale, "1");
 
         List<StatusValue> statusValues = scalingKPI.getStatusValues(item);
         assertNotNull(statusValues);
+        assertEquals(1, statusValues.size());
         StatusValue value = statusValues.get(0);
         assertNotNull(value);
         assertEquals(Status.YELLOW, value.getStatus());
@@ -30,11 +31,13 @@ class ScalingKPITest {
     @Test
     public void testScale2() {
         ScalingKPI scalingKPI = new ScalingKPI();
-        scalingKPI.init();
+        scalingKPI.init(null);
         Item item = new Item();
         item.setLabel(Label.scale, "2");
 
         List<StatusValue> statusValues = scalingKPI.getStatusValues(item);
+        assertNotNull(statusValues);
+        assertEquals(1, statusValues.size());
         StatusValue value = statusValues.get(0);
         assertEquals(Status.GREEN, value.getStatus());
     }

@@ -10,15 +10,17 @@ import java.util.function.Function;
 
 /**
  * A basic implementation using injected evaluation functions.
- *
  */
 public abstract class AbstractKPI implements KPI {
 
-    private final Function<Component, String> valueFunction;
-    private final Function<Component, String> msgFunction;
+    protected Function<Component, String> valueFunction;
+    protected Function<Component, String> msgFunction;
     private String description;
 
     private boolean enabled = true;
+
+    public AbstractKPI() {
+    }
 
     /**
      * @param valueFunction the label which is evaluated for status
@@ -40,6 +42,9 @@ public abstract class AbstractKPI implements KPI {
     @NonNull
     public List<StatusValue> getStatusValues(Component component) {
 
+        if (valueFunction == null) {
+            throw new RuntimeException("Value function not initialized ");
+        }
         String value = valueFunction.apply(component);
         String message = msgFunction != null ? msgFunction.apply(component) : null;
         return getStatusValues(value, message);

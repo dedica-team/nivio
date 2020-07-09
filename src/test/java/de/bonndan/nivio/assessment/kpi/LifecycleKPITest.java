@@ -5,6 +5,7 @@ import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -14,6 +15,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class LifecycleKPITest {
 
     LifecycleKPI kpi = new LifecycleKPI();
+
+    @BeforeEach
+    public void setup() {
+        kpi.init(null);
+    }
 
     @Test
     public void green() {

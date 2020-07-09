@@ -1,56 +1,70 @@
 package de.bonndan.nivio.assessment.kpi;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import de.bonndan.nivio.ProcessingErrorEvent;
+import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.model.LandscapeImpl;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Factory for custom and builtin KPIs.
  */
-public class KPIFactory extends JsonDeserializer<Map<String, KPI>> implements Serializable {
+@Service
+public class KPIFactory {
 
-    @Override
-    public Map<String, KPI> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+    private final Map<String, Supplier<KPI>> defaultKPIs = new HashMap<>();
 
-        JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+    private final ApplicationEventPublisher eventPublisher;
 
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, KPIConfig> result = mapper.convertValue(node, new TypeReference<>() {});
+    public KPIFactory(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
 
+        //replace this once https://github.com/dedica-team/nivio/issues/14 is implemented
+        defaultKPIs.put(HealthKPI.IDENTIFIER, HealthKPI::new);
+        defaultKPIs.put(ScalingKPI.IDENTIFIER, ScalingKPI::new);
+        defaultKPIs.put(ConditionKPI.IDENTIFIER, ConditionKPI::new);
+        defaultKPIs.put(LifecycleKPI.IDENTIFIER, LifecycleKPI::new);
+    }
+
+    /**
+     * Returns the default KPIs plus custom ones and configuration.
+     *
+     * @param landscape the landscape
+     * @return effective KPIs
+     */
+    public Map<String, KPI> getConfiguredKPIs(LandscapeImpl landscape) {
+
+        Map<String, KPIConfig> config = landscape.getConfig().getKPIs();
         Map<String, KPI> kpis = new HashMap<>();
-        result.forEach((s, kpiConfig) -> {
-            KPI kpi = null;
-            if (s.equals(HealthKPI.IDENTIFIER)) {
-                kpi = mapper.convertValue(kpiConfig, HealthKPI.class);
-                Objects.requireNonNull(kpi);
-            }
+        defaultKPIs.forEach((s, kpiSupplier) -> kpis.put(s, kpiSupplier.get()));
 
-            if (s.equals(ScalingKPI.IDENTIFIER)) {
-                kpi = mapper.convertValue(kpiConfig, ScalingKPI.class);
-                Objects.requireNonNull(kpi);
-            }
-
-            if (s.equals(ConditionKPI.IDENTIFIER)) {
-                kpi = new ConditionKPI();
-            }
-
-            if (s.equals(LifecycleKPI.IDENTIFIER)) {
-                kpi = new LifecycleKPI();
-            }
-
+        config.forEach((s, kpiConfig) -> {
+            KPI kpi = kpis.get(s);
             if (kpi == null) {
-                kpi = mapper.convertValue(kpiConfig, CustomKPI.class);
+                kpi = new CustomKPI();
+                kpis.put(s, kpi);
             }
-            kpis.put(s, kpi);
+        });
+
+        //init all
+        kpis.forEach((s, kpi) -> {
+            try {
+                kpi.init(config.get(s));
+            } catch (Exception e) {
+                ProcessingException p;
+                if (e instanceof ProcessingException) {
+                    p = (ProcessingException) e;
+                } else {
+                    p = new ProcessingException("Failed to initialize KPI", e);
+                }
+                landscape.getLog().error("Failed to initialize KPI", p);
+                eventPublisher.publishEvent(new ProcessingErrorEvent(this, p));
+                throw p;
+            }
         });
 
         return kpis;

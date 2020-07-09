@@ -2,6 +2,7 @@ package de.bonndan.nivio.assessment.kpi;
 
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.model.Label;
+import org.apache.commons.lang3.Range;
 
 import java.util.Map;
 
@@ -12,14 +13,13 @@ public class ScalingKPI extends CustomKPI {
 
     public static final String IDENTIFIER = "scaling";
 
-    private static final Map<Status, String> ranges = Map.of(
-            Status.GREEN, "2;10",
-            Status.YELLOW, "1",
-            Status.RED, "0"
-    );
-
     public ScalingKPI() {
-        super(Label.scale.toString().toLowerCase(), null, ranges, null);
+        label = Label.scale.name();
+        ranges = Map.of(
+                Status.GREEN, Range.between(2d, 10d),
+                Status.YELLOW, Range.between(0d, 1d),
+                Status.RED, Range.between(0d, 0d)
+        );
     }
 
 }

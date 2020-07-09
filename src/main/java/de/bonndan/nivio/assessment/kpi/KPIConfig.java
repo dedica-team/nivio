@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * POJO representing the yaml configuration.
  */
-class KPIConfig {
+public class KPIConfig {
 
     /**
      * Description of the KPI
@@ -17,6 +17,11 @@ class KPIConfig {
      * which label to read, e.g. "costs"
      */
     public String label;
+
+    /**
+     * What label content to display in the message
+     */
+    public String messageLabel = null;
 
     /**
      * GREEN: 0;99.999999
@@ -31,5 +36,10 @@ class KPIConfig {
      * RED: "BAD;err.*"
      */
     public Map<String, String> matches = new HashMap<>();
+
+    /**
+     * whether the kpi is active
+     */
+    public boolean enabled = true;
 
 }

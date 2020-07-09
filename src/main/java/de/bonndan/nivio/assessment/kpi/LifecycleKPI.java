@@ -17,7 +17,8 @@ public class LifecycleKPI extends CustomKPI {
     public static final String IDENTIFIER = Label.lifecycle.name();
 
     public LifecycleKPI() {
-        super(Label.lifecycle.name(), null, null, null);
+        super();
+        label = Label.lifecycle.name();
         setDescription("This KPI evaluates the lifecycle label for known values (PLANNED, PRODUCTION).");
     }
 
