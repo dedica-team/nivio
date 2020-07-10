@@ -1,15 +1,18 @@
 package de.bonndan.nivio;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
-import de.bonndan.nivio.assessment.kpi.KPI;
-import de.bonndan.nivio.assessment.kpi.KPIFactory;
+import de.bonndan.nivio.assessment.kpi.KPIConfig;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Global configuration for a landscape.
+ *
+ *
+ */
 public class LandscapeConfig {
 
     private boolean greedy = true;
@@ -21,10 +24,9 @@ public class LandscapeConfig {
     private final Branding branding = new Branding();
 
     /**
-     * KPIs by their unique identifier.
+     * KPI configs by their unique identifier.
      */
-    @JsonDeserialize(using = KPIFactory.class)
-    private final Map<String, KPI> kpis = new HashMap<>();
+    private final Map<String, KPIConfig> kpis = new HashMap<>();
 
     public JGraphXConfig getJgraphx() {
         return jgraphx;
@@ -149,7 +151,7 @@ public class LandscapeConfig {
      *
      * @return all active {@link AbstractKPI}s with their unique identifier
      */
-    public Map<String, KPI> getKPIs() {
+    public Map<String, KPIConfig> getKPIs() {
         return kpis;
     }
 

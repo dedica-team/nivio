@@ -1,7 +1,7 @@
 package de.bonndan.nivio.assessment;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.bonndan.nivio.assessment.kpi.AbstractKPI;
+import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
@@ -53,7 +53,7 @@ public interface Assessable extends Component {
     }
 
     /**
-     * Recursively applies the {@link AbstractKPI}s to children and self.
+     * Recursively applies the {@link KPI}s to children and self.
      *
      * @param kpis kpis used for assessment
      * @return a map with statusValues indexed by {@link FullyQualifiedIdentifier}
@@ -67,10 +67,18 @@ public interface Assessable extends Component {
         //apply each kpi to his
         FullyQualifiedIdentifier fqi = this.getFullyQualifiedIdentifier();
         kpis.forEach((s, kpi) -> {
+            if (!kpi.isEnabled()) {
+                return;
+            }
             if (!map.containsKey(fqi)) {
                 map.put(fqi, new ArrayList<>());
             }
-            map.get(fqi).addAll(kpi.getStatusValues(this));
+            try {
+                map.get(fqi).addAll(kpi.getStatusValues(this));
+            } catch (Exception ex) {
+                throw new ProcessingException("Failed to apply KPI " + s, ex);
+            }
+
         });
 
         Set<StatusValue> additionalStatusValues = getAdditionalStatusValues();

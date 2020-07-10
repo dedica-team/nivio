@@ -20,6 +20,8 @@ Built in KPIs
 * condition (K8s condition true/false evaluation)
 * custom (see below)
 
+By default all shipped KPIs are enabled. To disable them, set "enabled" to false in the config.
+
 Custom KPIs
 -----------
 
@@ -51,3 +53,5 @@ label "foo". Both ranges (inclusive lower and upper limits) and matchers are sep
             RED: "BAD;err.*"
         health:
           description: can be overridden
+        scaling:
+          enabled: false
