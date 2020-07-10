@@ -75,6 +75,9 @@ public interface Assessable extends Component {
 
         Set<StatusValue> additionalStatusValues = getAdditionalStatusValues();
         if (additionalStatusValues.size() > 0) {
+            if (!map.containsKey(fqi)) {
+                map.put(fqi, new ArrayList<>());
+            }
             map.get(fqi).addAll(additionalStatusValues);
         }
         return map;
