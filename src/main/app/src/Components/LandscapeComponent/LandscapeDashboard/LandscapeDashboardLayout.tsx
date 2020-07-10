@@ -10,7 +10,7 @@ interface Props {
   onItemClick: (e: MouseEvent<HTMLSpanElement>, item: IItem) => void;
 }
 
-const defaultColor = '#008000';
+const defaultColor = 'grey';
 
 /**
  * Displays all groups of given landscape and provides all needed navigation
@@ -31,11 +31,14 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assesments, onIt
       const groupColor = `#${group.color}` || defaultColor;
       const items: ReactElement[] = group.items.map((item) => {
         let assessmentColor = defaultColor;
-        let assessmentField = '';
+        let assesmentMessage = '';
         if (assesments) {
-          if (assesments.results[item.fullyQualifiedIdentifier]) {
-            const itemResults = assesments.results[item.fullyQualifiedIdentifier];
-            [assessmentColor, assessmentField] = getAssesmentColorAndField(itemResults);
+          const assesmentResults = assesments.results[item.fullyQualifiedIdentifier];
+          if (assesmentResults) {
+            [assessmentColor, assesmentMessage] = getAssesmentColorAndMessage(
+              assesmentResults,
+              item.identifier
+            );
           }
         }
         return (
@@ -45,7 +48,7 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assesments, onIt
                 className='statusDot'
                 onClick={(e: MouseEvent<HTMLSpanElement>) => onItemClick(e, item)}
               >
-                <span className='statusField'>{assessmentField}</span>
+                <span className='statusField'>{assesmentMessage}</span>
               </span>
             </span>
             <div className='itemDescription'>
@@ -80,22 +83,27 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assesments, onIt
   );
 };
 
-const getAssesmentColorAndField = (assesmentResults: IAssesmentProps[]): string[] => {
+const getAssesmentColorAndMessage = (
+  assesmentResults: IAssesmentProps[],
+  itemIdentifier: string
+): string[] => {
   let assesmentColor = defaultColor;
-  let assesmentField = '';
+  let assesmentMessage = '';
 
   const result = assesmentResults.find(
-    (assesmentResult) => assesmentResult.field === 'summary.kpi-dashboard'
+    (assesmentResult) => assesmentResult.field === `summary.${itemIdentifier}`
   );
 
   if (result) {
     if (result.status !== 'UNKNOWN') {
       assesmentColor = result.status;
+      assesmentMessage = result.message;
+    } else {
+      assesmentMessage = 'unknown status';
     }
-    assesmentField = result.status;
   }
 
-  return [assesmentColor, assesmentField];
+  return [assesmentColor, assesmentMessage];
 };
 
 export default LandscapeDashboardLayout;
