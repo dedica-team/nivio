@@ -10,6 +10,8 @@ interface Props {
   onItemClick: (e: MouseEvent<HTMLSpanElement>, item: IItem) => void;
 }
 
+const defaultColor = '#008000';
+
 /**
  * Displays all groups of given landscape and provides all needed navigation
  */
@@ -23,7 +25,6 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assesments, onIt
     range         |   xs   |   sm   |   md   |   lg   |   xl
      */
   let content: string | ReactElement[] = 'Loading landscapes...';
-  const defaultColor = 'grey';
 
   if (landscape && landscape.groups) {
     content = landscape.groups.map((group) => {
@@ -39,11 +40,10 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assesments, onIt
         }
         return (
           <Grid item key={item.identifier} className={'itemContainer'}>
-            <span className='dot' style={{ backgroundColor: groupColor }}>
+            <span className='dot' style={{ backgroundColor: assessmentColor }}>
               <span
                 className='statusDot'
                 onClick={(e: MouseEvent<HTMLSpanElement>) => onItemClick(e, item)}
-                style={{ backgroundColor: assessmentColor }}
               >
                 <span className='statusField'>{assessmentField}</span>
               </span>
@@ -80,41 +80,22 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assesments, onIt
   );
 };
 
-const getAssesmentColorAndField = (itemResults: IAssesmentProps[]): string[] => {
-  let itemColor = 'grey';
-  let itemField = '';
-  for (const itemResult of itemResults) {
-    switch (itemResult.status) {
-      case 'RED':
-        itemColor = itemResult.status;
-        itemField = itemResult.field;
-        break;
-      case 'YELLOW':
-        itemColor = itemResult.status;
-        itemField = itemResult.field;
-        break;
-      case 'GREEN':
-        if (itemColor !== 'YELLOW') {
-          itemColor = itemResult.status;
-          itemField = itemResult.field;
-        }
-        break;
-      case 'UNKNOWN':
-        if (itemColor !== 'GREEN') {
-          itemColor = 'grey';
-          itemField = itemResult.field;
-        }
-        break;
-      default:
-        itemColor = itemResult.status;
-        itemField = itemResult.field;
+const getAssesmentColorAndField = (assesmentResults: IAssesmentProps[]): string[] => {
+  let assesmentColor = defaultColor;
+  let assesmentField = '';
+
+  const result = assesmentResults.find(
+    (assesmentResult) => assesmentResult.field === 'summary.kpi-dashboard'
+  );
+
+  if (result) {
+    if (result.status !== 'UNKNOWN') {
+      assesmentColor = result.status;
     }
-    if (itemColor === 'RED') {
-      break;
-    }
+    assesmentField = result.status;
   }
 
-  return [itemColor, itemField];
+  return [assesmentColor, assesmentField];
 };
 
 export default LandscapeDashboardLayout;

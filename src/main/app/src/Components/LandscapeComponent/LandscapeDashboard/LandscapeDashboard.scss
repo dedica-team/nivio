@@ -51,10 +51,11 @@ $dotSize: 200px;
             text-align: center;
 
             .statusDot {
-              margin-top: calc(#{$dotSize} * 0.1);
-              margin-left: calc(#{$dotSize} * 0.1);
-              height: calc(#{$dotSize} * 0.8);
-              width: calc(#{$dotSize} * 0.8);
+              margin-top: calc(#{$dotSize} * 0.075);
+              margin-left: calc(#{$dotSize} * 0.075);
+              height: calc(#{$dotSize} * 0.85);
+              width: calc(#{$dotSize} * 0.85);
+              background-color: $background-grey;
               border-radius: 50%;
               display: flex;
               justify-content: center;
@@ -62,7 +63,8 @@ $dotSize: 200px;
               cursor: pointer;
               .statusField {
                 font-size: $small-font-size;
-                text-shadow: 2px 1px 1px black;
+                color: $font-color;
+                text-shadow: 0 0 10px $text-shadow-color;
                 text-transform: uppercase;
               }
             }
