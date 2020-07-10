@@ -1,7 +1,7 @@
 @import '../../../Ressources/styling/colors.scss';
 @import '../../../Ressources/styling/font.scss';
 
-$dotSize: 100px;
+$dotSize: 200px;
 
 .landscapeDashboardContainer {
   .title {
@@ -52,11 +52,19 @@ $dotSize: 100px;
 
             .statusDot {
               margin-top: calc(#{$dotSize} * 0.1);
+              margin-left: calc(#{$dotSize} * 0.1);
               height: calc(#{$dotSize} * 0.8);
               width: calc(#{$dotSize} * 0.8);
               border-radius: 50%;
-              display: inline-block;
+              display: flex;
+              justify-content: center;
+              align-items: center;
               cursor: pointer;
+              .statusField {
+                font-size: $small-font-size;
+                text-shadow: 2px 1px 1px black;
+                text-transform: uppercase;
+              }
             }
           }
 

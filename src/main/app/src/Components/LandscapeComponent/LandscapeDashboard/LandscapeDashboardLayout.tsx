@@ -2,7 +2,7 @@ import React, { ReactElement, MouseEvent } from 'react';
 
 import Grid from '@material-ui/core/Grid';
 import './LandscapeDashboard.scss';
-import { ILandscape, IItem, IAssesment } from '../../../interfaces';
+import { ILandscape, IItem, IAssesment, IAssesmentProps } from '../../../interfaces';
 
 interface Props {
   landscape: ILandscape | null | undefined;
@@ -23,17 +23,18 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assesments, onIt
     range         |   xs   |   sm   |   md   |   lg   |   xl
      */
   let content: string | ReactElement[] = 'Loading landscapes...';
-  const defaultColor = 'lightgrey';
+  const defaultColor = 'grey';
 
   if (landscape && landscape.groups) {
     content = landscape.groups.map((group) => {
       const groupColor = `#${group.color}` || defaultColor;
       const items: ReactElement[] = group.items.map((item) => {
-        let itemColor = defaultColor;
+        let assessmentColor = defaultColor;
+        let assessmentField = '';
         if (assesments) {
-          console.log(assesments.results[item.identifier]);
-          if (assesments.results[item.identifier]) {
-            itemColor = `#${assesments.results[item.identifier].status}`;
+          if (assesments.results[item.fullyQualifiedIdentifier]) {
+            const itemResults = assesments.results[item.fullyQualifiedIdentifier];
+            [assessmentColor, assessmentField] = getAssesmentColorAndField(itemResults);
           }
         }
         return (
@@ -42,8 +43,10 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assesments, onIt
               <span
                 className='statusDot'
                 onClick={(e: MouseEvent<HTMLSpanElement>) => onItemClick(e, item)}
-                style={{ backgroundColor: itemColor }}
-              ></span>
+                style={{ backgroundColor: assessmentColor }}
+              >
+                <span className='statusField'>{assessmentField}</span>
+              </span>
             </span>
             <div className='itemDescription'>
               <img src={item.labels?.['nivio.rendered.icon']} className='icon' alt={'icon'} />
@@ -75,6 +78,43 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assesments, onIt
       </Grid>
     </div>
   );
+};
+
+const getAssesmentColorAndField = (itemResults: IAssesmentProps[]): string[] => {
+  let itemColor = 'grey';
+  let itemField = '';
+  for (const itemResult of itemResults) {
+    switch (itemResult.status) {
+      case 'RED':
+        itemColor = itemResult.status;
+        itemField = itemResult.field;
+        break;
+      case 'YELLOW':
+        itemColor = itemResult.status;
+        itemField = itemResult.field;
+        break;
+      case 'GREEN':
+        if (itemColor !== 'YELLOW') {
+          itemColor = itemResult.status;
+          itemField = itemResult.field;
+        }
+        break;
+      case 'UNKNOWN':
+        if (itemColor !== 'GREEN') {
+          itemColor = 'grey';
+          itemField = itemResult.field;
+        }
+        break;
+      default:
+        itemColor = itemResult.status;
+        itemField = itemResult.field;
+    }
+    if (itemColor === 'RED') {
+      break;
+    }
+  }
+
+  return [itemColor, itemField];
 };
 
 export default LandscapeDashboardLayout;

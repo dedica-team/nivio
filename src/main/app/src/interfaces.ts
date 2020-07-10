@@ -70,7 +70,7 @@ export interface IAssesment {
 }
 
 export interface IAssesmentResults {
-  [key: string]: IAssesmentProps;
+  [key: string]: IAssesmentProps[];
 }
 
 export interface IAssesmentProps {

@@ -19,6 +19,7 @@ const LandscapeDashboard: React.FC = () => {
   const [showSlider, setShowSlider] = useState(false);
   const [cssAnimationKey, setCssAnimationKey] = useState('');
   const [assesments, setAssesments] = useState<IAssesment | null>(null);
+  const [loadAssesments, setLoadAssesments] = useState<boolean>(false);
 
   const onItemClick = (e: MouseEvent<HTMLSpanElement>, item: IItem) => {
     setSliderContent(
@@ -39,15 +40,17 @@ const LandscapeDashboard: React.FC = () => {
       setLandscape(await get(`/api/${landscapeIdentifier}`));
       if (landscape) {
         setLoadLandscape(false);
+        setLoadAssesments(true);
       }
     }
   }, [loadLandscape, landscape, landscapeIdentifier]);
 
   const getAllAssesments = useCallback(async () => {
-    if (landscape) {
+    if (loadAssesments && landscape) {
       setAssesments(await get(`/assessment/${landscape.identifier}`));
+      setLoadAssesments(false);
     }
-  }, [landscape]);
+  }, [landscape, loadAssesments]);
 
   useEffect(() => {
     getLandscape();
