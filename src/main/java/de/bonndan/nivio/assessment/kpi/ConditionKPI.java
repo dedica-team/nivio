@@ -21,6 +21,8 @@ public class ConditionKPI implements KPI {
 
     public static final String IDENTIFIER = "condition";
 
+    private boolean enabled = true;
+
     @Override
     public List<StatusValue> getStatusValues(Component component) {
         if (!(component instanceof Labeled))
@@ -53,5 +55,14 @@ public class ConditionKPI implements KPI {
     @Override
     public String getDescription() {
         return "Evaluates condition labels.";
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

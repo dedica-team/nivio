@@ -4,6 +4,7 @@ import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Component;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 
@@ -18,8 +19,9 @@ public interface KPI {
      * Controlled initialisation.
      *
      * @throws ProcessingException if initialisation fails (eg regex compiling)
+     * @param kpiConfig optional config
      */
-    default void init() {}
+    default void init(@Nullable KPIConfig kpiConfig) {}
 
     /**
      * Returns the status evaluation of the component on the configured field.
@@ -34,4 +36,11 @@ public interface KPI {
      * Describes the meaning of the KPI.
      */
     String getDescription();
+
+    /**
+     * Flag showing whether KPI should be used in assessment.
+     *
+     * @return true if active
+     */
+    boolean isEnabled();
 }

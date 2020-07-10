@@ -4,8 +4,10 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.assessment.kpi.CustomKPI;
 import de.bonndan.nivio.assessment.kpi.HealthKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
+import de.bonndan.nivio.assessment.kpi.KPIConfig;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
@@ -13,17 +15,13 @@ import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.RootPath;
 import org.apache.commons.lang3.SystemUtils;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -288,21 +286,24 @@ class LandscapeDescriptionFactoryTest {
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
         LandscapeConfig config = landscapeDescription.getConfig();
 
-        Map<String, KPI> kpIs = config.getKPIs();
+        Map<String, KPIConfig> kpIs = config.getKPIs();
         assertNotNull(kpIs);
+        assertEquals(3, kpIs.size());
 
-        KPI health = kpIs.get(HealthKPI.IDENTIFIER);
+        KPIConfig health = kpIs.get(HealthKPI.IDENTIFIER);
         assertNotNull(health);
-        assertEquals("can be overridden", health.getDescription());
+        assertEquals("can be overridden", health.description);
 
-        KPI monthlyCosts = kpIs.get("monthlyCosts");
+        KPIConfig monthlyCosts = kpIs.get("monthlyCosts");
         assertNotNull(monthlyCosts);
-        assertEquals("Evaluates the monthly maintenance costs", monthlyCosts.getDescription());
+        assertEquals("Evaluates the monthly maintenance costs", monthlyCosts.description);
 
-        monthlyCosts.init();
+        CustomKPI costKPI = new CustomKPI();
+        costKPI.init(monthlyCosts);
+
         Item item = new Item();
         item.setLabel(Label.costs, "200");
-        StatusValue statusValue = monthlyCosts.getStatusValues(item).get(0);
+        StatusValue statusValue = costKPI.getStatusValues(item).get(0);
         assertNotNull(statusValue);
         assertEquals(Status.RED, statusValue.getStatus());
     }
