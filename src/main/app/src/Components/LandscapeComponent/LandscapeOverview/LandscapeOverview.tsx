@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, ReactElement } from 'react';
+import React, { useState, useEffect, useCallback, ReactElement, MouseEvent } from 'react';
 
 import { ILandscape, ILandscapeLinks } from '../../../interfaces';
 import LandscapeLog from '../Log/LandscapeLog';
@@ -41,10 +41,10 @@ const LandscapeOverview: React.FC = () => {
     setShowSlider(false);
   };
 
-  const enterLog = (e: any, landscape: ILandscape) => {
+  const enterLog = (e: MouseEvent<HTMLButtonElement>, landscape: ILandscape) => {
     const sliderContent = <LandscapeLog landscape={landscape} />;
     setSliderContent(<Slider sliderContent={sliderContent} closeSlider={closeSlider} />);
-    setCssAnimationKey(e.target.parentElement.id);
+    setCssAnimationKey(e.currentTarget.id);
     setShowSlider(true);
   };
 

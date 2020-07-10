@@ -1,4 +1,4 @@
-import React, { useState, ReactElement } from 'react';
+import React, { useState, ReactElement, MouseEvent } from 'react';
 
 import { ReactSvgPanZoomLoader, SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
 import { ReactSVGPanZoom, TOOL_AUTO, Tool, Value } from 'react-svg-pan-zoom';
@@ -7,7 +7,7 @@ import './LandscapeMap.scss';
 
 interface Props {
   identifier: string;
-  onItemClick(e: any): void;
+  onItemClick(e: MouseEvent<HTMLElement>): void;
 }
 
 /**

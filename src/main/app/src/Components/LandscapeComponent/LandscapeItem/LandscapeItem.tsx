@@ -5,32 +5,23 @@ import './LandscapeItem.scss';
 import { IItem } from '../../../interfaces';
 
 interface Props {
-  element: Element;
+  fullyQualifiedItemIdentifier: string;
 }
 
 /**
  * Returns a choosen Landscape Item if informations are available
  * @param element Choosen SVG Element from our Landscape Component
  */
-const LandscapeItem: React.FC<Props> = ({ element }) => {
+const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier }) => {
   const [item, setItem] = useState<IItem | null>();
-  const [loadItem, setLoadItem] = useState<boolean>(true);
-  const [topic, setTopic] = useState<string | null>(null);
 
   const getItem = useCallback(async () => {
-    if (loadItem && topic) {
-      setItem(await get(`/api/${topic}`));
-      setLoadItem(false);
-    }
-  }, [loadItem, topic]);
+    setItem(await get(`/api/${fullyQualifiedItemIdentifier}`));
+  }, [fullyQualifiedItemIdentifier]);
 
   useEffect(() => {
-    let topic = element.getAttribute('data-identifier');
-    setTopic(topic);
-    if (topic !== null) {
-      getItem();
-    }
-  }, [element, topic, getItem]);
+    getItem();
+  }, [fullyQualifiedItemIdentifier, getItem]);
 
   return (
     <div className='landscapeItemContent'>

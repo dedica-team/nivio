@@ -1,4 +1,4 @@
-import React, { useState, ReactElement } from 'react';
+import React, { useState, ReactElement, MouseEvent } from 'react';
 
 import { useParams } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
@@ -17,10 +17,15 @@ const Landscape: React.FC = () => {
 
   const { identifier } = useParams();
 
-  const onItemClick = (e: any) => {
-    setSliderContent(<LandscapeItem element={e.target.parentElement} />);
-    setCssAnimationKey(e.target.parentElement.id);
-    setShowSlider(true);
+  const onItemClick = (e: MouseEvent<HTMLElement>) => {
+    const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
+    if (fullyQualifiedItemIdentifier) {
+      setSliderContent(
+        <LandscapeItem fullyQualifiedItemIdentifier={fullyQualifiedItemIdentifier} />
+      );
+      setCssAnimationKey(e.currentTarget.id);
+      setShowSlider(true);
+    }
   };
 
   const closeSlider = () => {

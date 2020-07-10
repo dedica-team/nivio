@@ -20,6 +20,7 @@ export interface IGroup {
   identifier: string;
   owner?: string;
   _links?: ILinks;
+  color?: string;
 }
 
 export interface IItem {
@@ -61,4 +62,19 @@ export interface ILinkContent {
   href: string;
   media: string;
   name: string;
+}
+
+export interface IAssesment {
+  results: IAssesmentResults;
+  date: string;
+}
+
+export interface IAssesmentResults {
+  [key: string]: IAssesmentProps;
+}
+
+export interface IAssesmentProps {
+  field: string;
+  status: string;
+  message: string;
 }

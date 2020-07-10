@@ -1,20 +1,20 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, MouseEvent } from 'react';
 
-import TitleBar from '../../TitleBarComponent/TitleBar';
-import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import './LandscapeDashboard.scss';
-import { ILandscape } from '../../../interfaces';
+import { ILandscape, IItem, IAssesment } from '../../../interfaces';
 
 interface Props {
   landscape: ILandscape | null | undefined;
+  assesments: IAssesment | null;
+  onItemClick: (e: MouseEvent<HTMLSpanElement>, item: IItem) => void;
 }
 
 /**
  * Displays all groups of given landscape and provides all needed navigation
  */
 
-const LandscapeDashboardLayout: React.FC<Props> = ({ landscape }) => {
+const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assesments, onItemClick }) => {
   // Render
   /*
     value         |0px     600px    960px    1280px   1920px
@@ -23,47 +23,43 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape }) => {
     range         |   xs   |   sm   |   md   |   lg   |   xl
      */
   let content: string | ReactElement[] = 'Loading landscapes...';
+  const defaultColor = 'lightgrey';
+
   if (landscape && landscape.groups) {
     content = landscape.groups.map((group) => {
+      const groupColor = `#${group.color}` || defaultColor;
       const items: ReactElement[] = group.items.map((item) => {
+        let itemColor = defaultColor;
+        if (assesments) {
+          console.log(assesments.results[item.identifier]);
+          if (assesments.results[item.identifier]) {
+            itemColor = `#${assesments.results[item.identifier].status}`;
+          }
+        }
         return (
-          <Grid key={item.identifier} className={'itemContainer'} container spacing={3}>
-            <Grid item xs={12} md={2} className={'itemIcon'}>
+          <Grid item key={item.identifier} className={'itemContainer'}>
+            <span className='dot' style={{ backgroundColor: groupColor }}>
+              <span
+                className='statusDot'
+                onClick={(e: MouseEvent<HTMLSpanElement>) => onItemClick(e, item)}
+                style={{ backgroundColor: itemColor }}
+              ></span>
+            </span>
+            <div className='itemDescription'>
               <img src={item.labels?.['nivio.rendered.icon']} className='icon' alt={'icon'} />
-            </Grid>
-            <Grid item xs={12} md={3} lg={2} className={'itemName'}>
-              <Typography variant='overline' display='block' gutterBottom>
-                Name
-              </Typography>
-              {item.name || item.identifier}
-            </Grid>
-            <Grid item xs={12} md={3} lg={4} className={'itemDescription'}>
-              <Typography variant='overline' display='block' gutterBottom>
-                Description
-              </Typography>
-              {item.description || 'No description provided'}
-            </Grid>
-            <Grid item xs={12} md={3} lg={2} className={'itemContact'}>
-              <Typography variant='overline' display='block' gutterBottom>
-                Contact
-              </Typography>
-              {item.contact || item.owner || 'No contact provided'}
-            </Grid>
-            <Grid item xs={12} md={3} lg={2} className={'itemContact'}>
-              <Typography variant='overline' display='block' gutterBottom>
-                Owner
-              </Typography>
-              {item.owner || 'No owner provided'}
-            </Grid>
+              <span className='itemName'>{item.name || item.identifier}</span>
+            </div>
           </Grid>
         );
       });
       return (
-        <Grid key={group.name} className={'groupContainer'} container spacing={3}>
-          <Grid item xs={12} sm={12}>
-            <TitleBar title={group.name || group.identifier || ''} />
+        <Grid item key={group.name} className='group'>
+          <Grid item className='groupName' style={{ backgroundColor: groupColor }}>
+            <span>{group.name || group.identifier || ''}</span>
           </Grid>
-          {items}
+          <Grid item className={'items'}>
+            {items}
+          </Grid>
         </Grid>
       );
     });
@@ -71,8 +67,12 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape }) => {
 
   return (
     <div className='landscapeDashboardContainer'>
-      <span className='title'>{landscape ? `${landscape.name}` : null}</span>
-      {content}
+      <div className='title'>
+        <span>{landscape ? `${landscape.name}` : null}</span>
+      </div>
+      <Grid key={'group'} className={'groupContainer'} container spacing={5}>
+        {content}
+      </Grid>
     </div>
   );
 };

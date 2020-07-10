@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, MouseEvent } from 'react';
 
 import TitleBar from '../../TitleBarComponent/TitleBar';
 import { Link } from 'react-router-dom';
@@ -15,7 +15,7 @@ interface Props {
   landscapes: ILandscape[] | null | undefined;
   showSlider: boolean;
   cssAnimationKey: string;
-  enterLog: (e: any, landscape: ILandscape) => void;
+  enterLog: (e: MouseEvent<HTMLButtonElement>, landscape: ILandscape) => void;
 }
 
 /**
