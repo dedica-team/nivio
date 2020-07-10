@@ -42,16 +42,10 @@ it('should display all group information', () => {
   };
   const { getByText } = render(
     <MemoryRouter>
-      <LandscapeDashboardLayout landscape={landscape} />
+      <LandscapeDashboardLayout landscape={landscape} assesments={null} onItemClick={() => {}} />
     </MemoryRouter>
   );
   expect(getByText('landscapeTestName')).toBeInTheDocument();
   expect(getByText('groupName')).toBeInTheDocument();
-  expect(getByText('Name')).toBeInTheDocument();
   expect(getByText('testIdentifier')).toBeInTheDocument();
-  expect(getByText('testDescription')).toBeInTheDocument();
-  expect(getByText('Contact')).toBeInTheDocument();
-  expect(getByText('marvin')).toBeInTheDocument();
-  expect(getByText('Owner')).toBeInTheDocument();
-  expect(getByText('daniel')).toBeInTheDocument();
 });
