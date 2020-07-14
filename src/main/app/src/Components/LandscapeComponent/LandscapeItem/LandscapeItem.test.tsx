@@ -4,6 +4,8 @@ import LandscapeItem from './LandscapeItem';
 
 it('should render log component', () => {
   const element = document.createElement('div');
-  const { getByText } = render(<LandscapeItem element={element} />);
-  expect(getByText('Identifier:')).toBeInTheDocument();
+  const { getByText } = render(
+    <LandscapeItem fullyQualifiedItemIdentifier={'nivio:example/test'} />
+  );
+  expect(getByText('Contact:')).toBeInTheDocument();
 });
