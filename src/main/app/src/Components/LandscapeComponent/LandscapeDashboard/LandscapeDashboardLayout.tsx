@@ -2,7 +2,8 @@ import React, { ReactElement, MouseEvent } from 'react';
 
 import Grid from '@material-ui/core/Grid';
 import './LandscapeDashboard.scss';
-import { ILandscape, IItem, IAssessment, IAssessmentProps } from '../../../interfaces';
+import { ILandscape, IItem, IAssessment } from '../../../interfaces';
+import { getAssessmentColorAndMessage } from '../../../utils/styling/style-helper';
 
 interface Props {
   landscape: ILandscape | null | undefined;
@@ -34,12 +35,10 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assessments, onI
         let assesmentMessage = '';
         if (assessments) {
           const assesmentResults = assessments.results[item.fullyQualifiedIdentifier];
-          if (assesmentResults) {
-            [assessmentColor, assesmentMessage] = getAssesmentColorAndMessage(
-              assesmentResults,
-              item.identifier
-            );
-          }
+          [assessmentColor, assesmentMessage] = getAssessmentColorAndMessage(
+            assesmentResults,
+            item.identifier
+          );
         }
         return (
           <Grid item key={item.identifier} className={'itemContainer'}>
@@ -81,29 +80,6 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assessments, onI
       </Grid>
     </div>
   );
-};
-
-const getAssesmentColorAndMessage = (
-  assessmentResults: IAssessmentProps[],
-  itemIdentifier: string
-): string[] => {
-  let assessmentColor = defaultColor;
-  let assessmentMessage = '';
-
-  const result = assessmentResults.find(
-    (assessmentResult) => assessmentResult.field === `summary.${itemIdentifier}`
-  );
-
-  if (result) {
-    if (result.status !== 'UNKNOWN') {
-      assessmentColor = result.status;
-      assessmentMessage = result.message;
-    } else {
-      assessmentMessage = 'unknown status';
-    }
-  }
-
-  return [assessmentColor, assessmentMessage];
 };
 
 export default LandscapeDashboardLayout;

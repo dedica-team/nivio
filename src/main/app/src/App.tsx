@@ -2,7 +2,7 @@ import React from 'react';
 import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 
 import LandscapeOverview from './Components/LandscapeComponent/LandscapeOverview/LandscapeOverview';
-import Landscape from './Components/LandscapeComponent/LandscapeMap/Landscape';
+import LandscapeMap from './Components/LandscapeComponent/LandscapeMap/LandscapeMap';
 import Man from './Components/ManComponent/Man';
 import Layout from './Components/LayoutComponent/Layout';
 import Events from './Components/EventComponent/Events';
@@ -16,7 +16,7 @@ const App: React.FC = () => {
         <Layout>
           <Route exact path='/' component={LandscapeOverview} />
           <Route exact path='/events' component={Events} />
-          <Route exact path='/landscape/:identifier' component={Landscape} />
+          <Route exact path='/landscape/:identifier' component={LandscapeMap} />
           <Route exact path='/man/:usage' component={Man} />
           <Route
             exact

@@ -1,4 +1,112 @@
-.landscapeItemContent {
-  margin-right: 10px;
-  margin-left: 10px;
+@import '../../../Ressources/styling/colors.scss';
+@import '../../../Ressources/styling/font.scss';
+
+$dotSize: 50px;
+
+.itemContent {
+  margin: 1rem;
+  position: relative;
+  overflow: auto;
+  width: 800px;
+  max-height: 85vh;
+  z-index: 1;
+  background-color: $background-grey;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  max-width: 100%;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+
+    .status {
+      height: $dotSize;
+      width: $dotSize;
+      background-color: $info-color;
+      border-radius: 50%;
+      text-align: center;
+      right: 50px;
+    }
+
+    .icon {
+      max-width: 64px;
+      max-height: 64px;
+    }
+
+    .title {
+      font-size: $large-font-size;
+      text-transform: uppercase;
+    }
+  }
+
+  .information,
+  .labels {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    font-size: $small-font-size;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid $border-color;
+
+    .item {
+      margin-top: 1rem;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+
+    .link {
+      font-weight: normal;
+      color: $font-color;
+      text-align: center;
+      width: 20%;
+      border: 1px solid $border-color;
+      border-radius: 25px;
+      margin-top: 0.5rem;
+      background-color: lighten($background-grey, 10%);
+    }
+  }
+
+  .linkContent,
+  .relationsContent {
+    margin-top: 1rem;
+    width: 100%;
+    .linkLabel,
+    .relationsLabel {
+      font-weight: bold;
+      font-size: $normal-font-size;
+    }
+    .links,
+    .relations {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      flex-basis: auto;
+      font-size: $small-font-size;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid $border-color;
+
+      .link,
+      .relation {
+        font-weight: normal;
+        color: $font-color;
+        text-align: center;
+        width: 20%;
+        border: 1px solid $border-color;
+        border-radius: 25px;
+        margin: 0.5rem;
+        min-width: 100px;
+        background-color: lighten($background-grey, 10%);
+      }
+    }
+  }
 }

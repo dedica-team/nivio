@@ -42,7 +42,7 @@ it('should display all group information', () => {
   };
   const { getByText } = render(
     <MemoryRouter>
-      <LandscapeDashboardLayout landscape={landscape} assesments={null} onItemClick={() => {}} />
+      <LandscapeDashboardLayout landscape={landscape} assessments={null} onItemClick={() => {}} />
     </MemoryRouter>
   );
   expect(getByText('landscapeTestName')).toBeInTheDocument();

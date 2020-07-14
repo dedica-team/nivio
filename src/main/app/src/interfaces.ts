@@ -33,20 +33,22 @@ export interface IItem {
   name?: string;
   owner?: string;
   links?: Object;
-  relations?: Array<Object>;
+  relations?: Array<IRelations>;
   tags?: Array<String>;
   type?: string;
   _links?: ILinks;
 }
 
+export interface IRelations {
+  source: string;
+  target: string;
+  type: string;
+  description?: string;
+  format?: string;
+}
+
 export interface ILabels {
-  'icon'?: string;
-  'nivio.rendered.color'?: string;
-  'nivio.rendered.heigth'?: string;
-  'nivio.rendered.icon'?: string;
-  'nivio.rendered.width'?: string;
-  'nivio.rendered.x'?: string;
-  'nivio.rendered.y'?: string;
+  [key: string]: string;
 }
 
 export interface ILandscapeLinks {

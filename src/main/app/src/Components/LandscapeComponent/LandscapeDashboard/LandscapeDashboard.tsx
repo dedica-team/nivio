@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, ReactElement, MouseEvent } from 'react';
+import React, { useState, useEffect, ReactElement, MouseEvent } from 'react';
 import { useParams } from 'react-router-dom';
 
 import LandscapeDashboardLayout from './LandscapeDashboardLayout';
@@ -14,12 +14,10 @@ import { CSSTransition } from 'react-transition-group';
 
 const LandscapeDashboard: React.FC = () => {
   const [landscape, setLandscape] = useState<ILandscape | null>();
-  const [loadLandscape, setLoadLandscape] = useState<boolean>(true);
   const [sliderContent, setSliderContent] = useState<string | ReactElement | null>(null);
   const [showSlider, setShowSlider] = useState(false);
   const [cssAnimationKey, setCssAnimationKey] = useState('');
   const [assessments, setAssessments] = useState<IAssessment | null>(null);
-  const [loadAssessments, setLoadAssessments] = useState<boolean>(false);
 
   const onItemClick = (e: MouseEvent<HTMLSpanElement>, item: IItem) => {
     setSliderContent(
@@ -35,27 +33,15 @@ const LandscapeDashboard: React.FC = () => {
 
   const { landscapeIdentifier } = useParams();
 
-  const getLandscape = useCallback(async () => {
-    if (loadLandscape) {
-      setLandscape(await get(`/api/${landscapeIdentifier}`));
-      if (landscape) {
-        setLoadLandscape(false);
-        setLoadAssessments(true);
-      }
-    }
-  }, [loadLandscape, landscape, landscapeIdentifier]);
-
-  const getAllAssessments = useCallback(async () => {
-    if (loadAssessments && landscape) {
-      setAssessments(await get(`/assessment/${landscape.identifier}`));
-      setLoadAssessments(false);
-    }
-  }, [landscape, loadAssessments]);
-
   useEffect(() => {
-    getLandscape();
-    getAllAssessments();
-  }, [getLandscape, getAllAssessments]);
+    get(`/api/${landscapeIdentifier}`).then((response) => {
+      setLandscape(response);
+    });
+
+    get(`/assessment/${landscapeIdentifier}`).then((response) => {
+      setAssessments(response);
+    });
+  }, [landscapeIdentifier]);
 
   return (
     <div className='landscapeContainer'>
