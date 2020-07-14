@@ -6,5 +6,5 @@ it('should render log component', () => {
   const { getByText } = render(
     <LandscapeItem fullyQualifiedItemIdentifier={'nivio:example/test'} />
   );
-  expect(getByText('Contact:')).toBeInTheDocument();
+  expect(getByText('Error Loading Item')).toBeInTheDocument();
 });

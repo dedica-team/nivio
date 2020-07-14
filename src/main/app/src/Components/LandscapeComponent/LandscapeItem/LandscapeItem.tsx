@@ -101,51 +101,59 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
         );
       });
     }
+
+    return (
+      <div className='itemContent'>
+        <div className='header'>
+          <img src={item?.labels?.['nivio.rendered.icon']} alt='Item Icon' className='icon'></img>
+          <span
+            className='title'
+            onClick={(e) => {
+              if (findItem && x && y) {
+                findItem(x, y);
+              }
+            }}
+          >
+            {item ? item.name || item.identifier : null}
+          </span>
+          <span className='status' style={{ backgroundColor: assesmentColor }}></span>
+        </div>
+        <div className='information'>
+          <span className='description item'>
+            {item?.description ? `${item?.description}` : ''}
+          </span>
+          <span className='contact item'>
+            <span className='label'>Contact: </span>
+            {item?.contact || 'No Contact provided'}
+          </span>
+          <span className='owner item'>
+            <span className='label'>Owner: </span>
+            {item?.owner || 'No Owner provided'}
+          </span>
+        </div>
+
+        {labels.length ? <div className='labels'>{labels}</div> : null}
+
+        {links.length ? (
+          <div className='linkContent'>
+            <span className='linkLabel'>Links</span>
+            <div className='links'>{links}</div>
+          </div>
+        ) : null}
+
+        {relations.length ? (
+          <div className='relationsContent'>
+            <span className='relationsLabel'>Relations</span>
+            <div className='relations'>{relations}</div>
+          </div>
+        ) : null}
+      </div>
+    );
   }
-
   return (
-    <div className='itemContent'>
-      <div className='header'>
-        <img src={item?.labels?.['nivio.rendered.icon']} alt='Item Icon' className='icon'></img>
-        <span
-          className='title'
-          onClick={(e) => {
-            if (findItem && x && y) {
-              findItem(x, y);
-            }
-          }}
-        >
-          {item ? item.name || item.identifier : null}
-        </span>
-        <span className='status' style={{ backgroundColor: assesmentColor }}></span>
-      </div>
-      <div className='information'>
-        <span className='description item'>{item?.description ? `${item?.description}` : ''}</span>
-        <span className='contact item'>
-          <span className='label'>Contact: </span>
-          {item?.contact || 'No Contact provided'}
-        </span>
-        <span className='owner item'>
-          <span className='label'>Owner: </span>
-          {item?.owner || 'No Owner provided'}
-        </span>
-      </div>
-
-      {labels.length ? <div className='labels'>{labels}</div> : null}
-
-      {links.length ? (
-        <div className='linkContent'>
-          <span className='linkLabel'>Links</span>
-          <div className='links'>{links}</div>
-        </div>
-      ) : null}
-
-      {relations.length ? (
-        <div className='relationsContent'>
-          <span className='relationsLabel'>Relations</span>
-          <div className='relations'>{relations}</div>
-        </div>
-      ) : null}
+    <div className='itemError'>
+      <span className='errorMessage'>Error Loading Item</span>
+      <span className='errorIdentifier'>{fullyQualifiedItemIdentifier} does not exist!</span>
     </div>
   );
 };

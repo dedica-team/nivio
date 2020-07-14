@@ -110,3 +110,20 @@ $dotSize: 50px;
     }
   }
 }
+
+.itemError {
+  margin: 2rem;
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  height: 200px;
+  .errorMessage {
+    color: red;
+    font-size: $large-font-size;
+    text-transform: uppercase;
+  }
+  .errorIdentifier {
+    margin-top: 20px;
+    font-size: $normal-font-size;
+  }
+}
