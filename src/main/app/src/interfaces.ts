@@ -65,12 +65,12 @@ export interface ILinkContent {
 }
 
 export interface IAssessment {
-  results: IAssesmentResults;
+  results: IAssessmentResults;
   date: string;
 }
 
 export interface IAssessmentResults {
-  [key: string]: IAssesmentProps[];
+  [key: string]: IAssessmentProps[];
 }
 
 export interface IAssessmentProps {

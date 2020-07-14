@@ -4,5 +4,25 @@
 .events {
   .itemContainer {
     padding: 1rem;
+    .item {
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: row;
+      align-items: center;
+      border-bottom: 1px solid $border-color;
+
+      .levelChip {
+        margin-right: 0.5rem;
+        min-width: 150px;
+        max-width: 15vw;
+      }
+
+      .type,
+      .date {
+        margin-right: 0.5rem;
+      }
+    }
   }
 }

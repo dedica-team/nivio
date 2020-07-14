@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Divider } from '@material-ui/core';
 import './Events.scss';
 import TitleBar from '../TitleBarComponent/TitleBar';
 import LevelChip from '../LevelChipComponent/LevelChip';
@@ -35,10 +34,9 @@ const Events: React.FC<{}> = () => {
 
   const content = data?.map((m, i) => {
     return (
-      <div className={'item'} key={i}>
-        <span className={'date'}>{m.date}</span> <LevelChip level={m.level} title={m.landscape} />{' '}
-        <span className={'type'}>{m.type}</span> {m.message}
-        <Divider />
+      <div className='item' key={i}>
+        <span className='date'>{m.date}</span> <LevelChip level={m.level} title={m.landscape} />
+        <span className='type'>{m.type}</span> <span className='message'> {m.message}</span>
       </div>
     );
   });
