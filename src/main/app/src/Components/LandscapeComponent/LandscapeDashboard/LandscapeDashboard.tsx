@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import LandscapeDashboardLayout from './LandscapeDashboardLayout';
 import Slider from '../../SliderComponent/Slider';
-import { ILandscape, IItem, IAssesment } from '../../../interfaces';
+import { ILandscape, IItem, IAssessment } from '../../../interfaces';
 import { get } from '../../../utils/API/APIClient';
 import LandscapeItem from '../LandscapeItem/LandscapeItem';
 import { CSSTransition } from 'react-transition-group';
@@ -18,8 +18,8 @@ const LandscapeDashboard: React.FC = () => {
   const [sliderContent, setSliderContent] = useState<string | ReactElement | null>(null);
   const [showSlider, setShowSlider] = useState(false);
   const [cssAnimationKey, setCssAnimationKey] = useState('');
-  const [assesments, setAssesments] = useState<IAssesment | null>(null);
-  const [loadAssesments, setLoadAssesments] = useState<boolean>(false);
+  const [assessments, setAssessments] = useState<IAssessment | null>(null);
+  const [loadAssessments, setLoadAssessments] = useState<boolean>(false);
 
   const onItemClick = (e: MouseEvent<HTMLSpanElement>, item: IItem) => {
     setSliderContent(
@@ -40,22 +40,22 @@ const LandscapeDashboard: React.FC = () => {
       setLandscape(await get(`/api/${landscapeIdentifier}`));
       if (landscape) {
         setLoadLandscape(false);
-        setLoadAssesments(true);
+        setLoadAssessments(true);
       }
     }
   }, [loadLandscape, landscape, landscapeIdentifier]);
 
-  const getAllAssesments = useCallback(async () => {
-    if (loadAssesments && landscape) {
-      setAssesments(await get(`/assessment/${landscape.identifier}`));
-      setLoadAssesments(false);
+  const getAllAssessments = useCallback(async () => {
+    if (loadAssessments && landscape) {
+      setAssessments(await get(`/assessment/${landscape.identifier}`));
+      setLoadAssessments(false);
     }
-  }, [landscape, loadAssesments]);
+  }, [landscape, loadAssessments]);
 
   useEffect(() => {
     getLandscape();
-    getAllAssesments();
-  }, [getLandscape, getAllAssesments]);
+    getAllAssessments();
+  }, [getLandscape, getAllAssessments]);
 
   return (
     <div className='landscapeContainer'>
@@ -71,7 +71,7 @@ const LandscapeDashboard: React.FC = () => {
       </CSSTransition>
       <LandscapeDashboardLayout
         landscape={landscape}
-        assesments={assesments}
+        assessments={assessments}
         onItemClick={onItemClick}
       />
     </div>

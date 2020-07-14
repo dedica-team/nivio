@@ -64,16 +64,16 @@ export interface ILinkContent {
   name: string;
 }
 
-export interface IAssesment {
+export interface IAssessment {
   results: IAssesmentResults;
   date: string;
 }
 
-export interface IAssesmentResults {
+export interface IAssessmentResults {
   [key: string]: IAssesmentProps[];
 }
 
-export interface IAssesmentProps {
+export interface IAssessmentProps {
   field: string;
   status: string;
   message: string;
