@@ -61,7 +61,7 @@ public class SvgFactory extends Component {
                 i++;
             }
 
-            hex.id = item.getFullyQualifiedIdentifier().toString();
+            hex.id = item.getFullyQualifiedIdentifier().jsonValue();
             vertexHexes.put(item, hex);
             occupied.add(hex);
         });

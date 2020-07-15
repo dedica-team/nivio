@@ -13,6 +13,11 @@ import java.awt.geom.Point2D;
 
 import static de.bonndan.nivio.output.map.MapFactory.DEFAULT_ICON_SIZE;
 
+/**
+ * A landscape item to be rendered in svg.
+ *
+ *
+ */
 class SVGItem extends Component {
 
     private final String id;
@@ -24,7 +29,7 @@ class SVGItem extends Component {
         this.children = children;
         this.pixel = position;
         this.item = item;
-        this.id = item.getFullyQualifiedIdentifier().toString();
+        this.id = item.getFullyQualifiedIdentifier().jsonValue();
     }
 
     /**
