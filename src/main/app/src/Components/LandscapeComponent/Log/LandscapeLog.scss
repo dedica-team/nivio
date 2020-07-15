@@ -4,13 +4,13 @@
 .logContent {
   position: relative;
   overflow: auto;
-  border: solid $border-color;
   width: 800px;
-  max-height: 800px;
+  max-height: 85vh;
   z-index: 1;
   background-color: $background-grey;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  max-width: 100%;
 
   &::-webkit-scrollbar {
     display: none;
@@ -31,15 +31,15 @@
     text-align: center;
   }
 
-  .itemContainer {
-    margin-left: 10px;
-    margin-top: 10px;
+  .logContainer {
+    margin-left: 0.4rem;
+    padding-right: 0.9rem;
+    margin-top: 0.7rem;
+    display: flex;
+    flex-direction: row;
 
-    .MuiChip-root {
-      margin-right: 0.3rem;
-    }
-    .item {
-      margin-bottom: 0.3rem;
+    .logMessage {
+      align-self: center;
     }
   }
 }

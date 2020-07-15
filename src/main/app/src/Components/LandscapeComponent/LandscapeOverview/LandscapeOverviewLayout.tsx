@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, MouseEvent } from 'react';
 
 import TitleBar from '../../TitleBarComponent/TitleBar';
 import { Link } from 'react-router-dom';
@@ -15,7 +15,7 @@ interface Props {
   landscapes: ILandscape[] | null | undefined;
   showSlider: boolean;
   cssAnimationKey: string;
-  enterLog: (e: any, landscape: ILandscape) => void;
+  enterLog: (e: MouseEvent<HTMLButtonElement>, landscape: ILandscape) => void;
 }
 
 /**
@@ -35,7 +35,7 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
     key           |xs      sm       md       lg       xl
     screen width  |--------|--------|--------|--------|-------->
     range         |   xs   |   sm   |   md   |   lg   |   xl
-     */
+  */
   let content: string | ReactElement[] = 'Loading landscapes...';
   if (Array.isArray(landscapes) && landscapes.length) {
     content = landscapes.map((landscape) => {
@@ -43,11 +43,11 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
       landscape.groups?.forEach((group) => (itemCount += group.items.length));
       return (
         <Grid key={landscape.identifier} className={'landscapeContainer'} container spacing={3}>
-          <Grid item xs={12} sm={12}>
+          <Grid item xs={12}>
             <TitleBar title={landscape.name} />
           </Grid>
 
-          <Grid item xs={12} md={3} lg={2} className={'previewItem'}>
+          <Grid item xs={12} sm={4} md={2} lg={2} xl={1} className={'previewItem'}>
             <Button component={Link} to={`/landscape/${landscape.identifier}`}>
               <img
                 className={'preview'}
@@ -62,30 +62,32 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               />
             </Button>
           </Grid>
-          <Grid item xs={12} md={3} lg={2}>
+          <Grid item xs={12} sm={6} md={3} lg={3} xl={3} className='infoContainer'>
             <Typography variant='overline' display='block' gutterBottom>
               Info
             </Typography>
-            {landscape.description}
-            <br />
-            <br />
-            Identifier: {landscape.identifier}
-            <br />
-            {landscape.teams ? `Teams: ${landscape.teams.join(', ')}` : ''}
-            <br />
+            <div className='infoContent'>
+              <span className='description'>{landscape.description}</span>
+              <span className='identifier'>Identifier: {landscape.identifier}</span>
+              <span className='teams'>
+                {landscape.teams ? `Teams: ${landscape.teams.join(', ')}` : ''}
+              </span>
+            </div>
           </Grid>
 
-          <Grid item xs={12} md={3} lg={2}>
-            <Typography variant='overline' display='block' gutterBottom>
+          <Grid item xs={12} sm={4} md={1} lg={1} xl={1} className='itemContainer'>
+            <Typography variant='overline' display='block' className='itemTitle'>
               Items
             </Typography>
-            <Typography variant='h2' display='block' gutterBottom>
+            <Typography variant='h2' display='block' className='itemCount'>
               {itemCount}
             </Typography>
-            in {landscape.groups ? Object.keys(landscape.groups).length : 0} groups
+            <span className='itemGroups'>
+              in {landscape.groups ? Object.keys(landscape.groups).length : 0} groups
+            </span>
           </Grid>
 
-          <Grid item xs={12} lg={2}>
+          <Grid item xs={12} sm={6} md={3} lg={3} xl={3}>
             <Typography variant='overline' display='block' gutterBottom>
               Last update
             </Typography>
@@ -94,12 +96,12 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
             </Typography>
           </Grid>
 
-          <Grid item xs={12} lg={2}>
+          <Grid item xs={12} sm={6} md={3} lg={3} xl={4} className='last'>
             <Button
               fullWidth
               component={Link}
               className={'button stackedButton'}
-              to={`/landscape/${landscape.identifier}`}
+              to={`/landscapeDashboard/${landscape.identifier}`}
             >
               enter
             </Button>

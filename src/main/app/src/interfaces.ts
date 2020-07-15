@@ -3,42 +3,52 @@ export interface ILandscape {
   identifier: string;
   description?: string;
   teams?: object[]; // TODO: Create interface
-  items?: IItem[];
   groups?: IGroup[];
   lastUpdate?: string;
+  fullyQualifiedIdentifier?: string;
+  config?: object; //TODO: CREATE INTERFACE
+  labels?: ILabels;
+  source?: string;
 }
 
 export interface IGroup {
   fullyQualifiedIdentifier: string;
-  name: string;
+  name?: string;
   contact?: string;
   description?: string;
   items: IItem[];
+  identifier: string;
+  owner?: string;
+  _links?: ILinks;
+  color?: string;
 }
 
 export interface IItem {
-  color?: string;
   contact?: string;
   description?: string;
-  fill?: string;
   fullyQualifiedIdentifier: string;
-  group?: string;
-  height?: number;
-  icon?: string;
   identifier: string;
-  interfaces?: Array<Object>;
-  labels?: Object;
-  lifecycle?: String;
+  interfaces?: Array<Object>; //TODO: Create OBJECT Interface
+  labels?: ILabels;
+  name?: string;
+  owner?: string;
   links?: Object;
-  name: String;
-  owner?: String;
-  providedBy?: Array<Object>;
-  relations?: Array<Object>;
-  tags?: Array<Object>;
-  type?: String;
-  width?: number;
-  x?: number;
-  y?: number;
+  relations?: Array<IRelations>;
+  tags?: Array<String>;
+  type?: string;
+  _links?: ILinks;
+}
+
+export interface IRelations {
+  source: string;
+  target: string;
+  type: string;
+  description?: string;
+  format?: string;
+}
+
+export interface ILabels {
+  [key: string]: string;
 }
 
 export interface ILandscapeLinks {
@@ -54,4 +64,19 @@ export interface ILinkContent {
   href: string;
   media: string;
   name: string;
+}
+
+export interface IAssessment {
+  results: IAssessmentResults;
+  date: string;
+}
+
+export interface IAssessmentResults {
+  [key: string]: IAssessmentProps[];
+}
+
+export interface IAssessmentProps {
+  field: string;
+  status: string;
+  message: string;
 }

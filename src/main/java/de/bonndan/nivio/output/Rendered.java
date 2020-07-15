@@ -44,7 +44,6 @@ public interface Rendered extends Labeled {
         setLabel(LABEL_RENDERED_COLOR, color);
     }
 
-    @JsonIgnore
     default String getColor() {
         return getLabel(LABEL_RENDERED_COLOR);
     }

@@ -13,6 +13,11 @@ interface Props {
  * @param closeSlider Enable/Disable CSS Transition in Parent Component
  */
 const Landscape: React.FC<Props> = ({ sliderContent, closeSlider }) => {
+  document.onkeydown = (e) => {
+    if (e.key === 'Escape') {
+      closeSlider();
+    }
+  };
   return (
     <div className='slider'>
       <button className={'close'} onClick={closeSlider}>

@@ -4,7 +4,7 @@
 div.levelChip {
   background-color: $header-color;
   text-shadow: none;
-
+  justify-content: flex-start;
   .MuiAvatar-root.info {
     background-color: $info-color;
   }
