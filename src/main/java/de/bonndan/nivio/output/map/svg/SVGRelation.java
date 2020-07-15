@@ -66,8 +66,8 @@ class SVGRelation extends Component {
     private ContainerTag addAttributes(ContainerTag g, RelationItem<Item> relation) {
         String type = !StringUtils.isEmpty(relation.getType()) ? relation.getType().name() : "-";
         g.attr("data-type", type)
-                .attr("data-source", relation.getSource().getFullyQualifiedIdentifier())
-                .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier());
+                .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().jsonValue())
+                .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().jsonValue());
 
         return g;
     }
