@@ -2,6 +2,7 @@ package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.util.StringUtils;
 
@@ -26,7 +27,6 @@ public class Link {
     private String type;
     private String deprecation;
     private String name;
-
 
     private String basicAuthUsername;
     private String basicAuthPassword;
@@ -85,10 +85,12 @@ public class Link {
         return name;
     }
 
+    @JsonIgnore
     public boolean hasBasicAuth() {
         return !StringUtils.isEmpty(basicAuthUsername) && !StringUtils.isEmpty(basicAuthPassword);
     }
 
+    @JsonIgnore
     public String getBasicAuthUsername() {
         return basicAuthUsername;
     }
@@ -97,6 +99,7 @@ public class Link {
         this.basicAuthUsername = basicAuthUsername;
     }
 
+    @JsonIgnore
     public String getBasicAuthPassword() {
         return basicAuthPassword;
     }
@@ -109,6 +112,7 @@ public class Link {
         return !StringUtils.isEmpty(headerTokenName) && !StringUtils.isEmpty(headerTokenValue);
     }
 
+    @JsonIgnore
     public String getHeaderTokenName() {
         return headerTokenName;
     }
@@ -117,6 +121,7 @@ public class Link {
         this.headerTokenName = headerTokenName;
     }
 
+    @JsonIgnore
     public String getHeaderTokenValue() {
         return headerTokenValue;
     }

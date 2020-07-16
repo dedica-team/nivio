@@ -1,48 +1,120 @@
 export interface ILandscape {
-  name: string;
   identifier: string;
-  description?: string;
-  teams?: object[]; // TODO: Create interface
-  groups?: IGroup[];
-  lastUpdate?: string;
-  fullyQualifiedIdentifier?: string;
-  config?: object; //TODO: CREATE INTERFACE
-  labels?: ILabels;
+  name: string;
+  contact: string;
   source?: string;
+  config?: IConfig;
+  processLog?: IProcessLog;
+  description: string;
+  labels?: ILabels;
+  owner: string;
+  fullyQualifiedIdentifier: string;
+  color?: string;
+  _links?: ILinks;
+  links?: ILinks;
+  lastUpdate?: string;
+  groups: IGroup[];
+}
+
+export interface IProcessLog {
+  messages: Array<IMessages>;
+  landscape?: string;
+}
+
+export interface IMessages {
+  level: string;
+  message: string;
+  date: Date;
+}
+
+export interface IConfig {
+  greedy?: boolean;
+  jgraphx?: IJgraphx;
+  groupBlacklist?: Array<string>;
+  labelBlacklist?: Array<string>;
+  branding?: IBranding;
+  kpis?: IKpis;
+}
+
+export interface IKpis {
+  [key: string]: IKpi;
+}
+
+export interface IKpi {
+  description?: string;
+  label?: string;
+  messageLabel?: string;
+  ranges?: IRanges;
+  matches?: IMatches;
+  enabled?: boolean;
+}
+
+export interface IRanges {
+  [key: string]: string;
+}
+
+export interface IMatches {
+  [key: string]: string;
+}
+
+export interface IBranding {
+  mapStylesheet?: string;
+  mapLogo?: string;
+}
+
+export interface IJgraphx {
+  edgeLengthCostFactor?: number;
+  nodeDistributionCostFactor?: number;
+  borderLineCostFactor?: number;
+  triesPerCell?: number;
+  maxIterations?: number;
+  initialTemp?: number;
+  forceConstantFactor?: number;
+  minDistanceLimitFactor?: number;
 }
 
 export interface IGroup {
-  fullyQualifiedIdentifier: string;
-  name?: string;
-  contact?: string;
-  description?: string;
-  items: IItem[];
-  identifier: string;
   owner?: string;
-  _links?: ILinks;
   color?: string;
+  name?: string;
+  description?: string;
+  identifier: string;
+  contact?: string;
+  fullyQualifiedIdentifier: string;
+  labels?: ILabels;
+  _links?: ILinks;
+  links?: ILinks;
+  items: IItem[];
 }
 
 export interface IItem {
-  contact?: string;
-  description?: string;
-  fullyQualifiedIdentifier: string;
   identifier: string;
-  interfaces?: Array<Object>; //TODO: Create OBJECT Interface
-  labels?: ILabels;
-  name?: string;
-  owner?: string;
+  name: string;
+  owner: string;
+  description?: string;
+  contact: string;
+  relations: Array<IRelations>;
+  interfaces?: Array<IInterfaces>;
+  labels: ILabels;
+  type: string;
+  fullyQualifiedIdentifier: string;
+  tags: Array<String>;
+  color?: string;
   links?: Object;
-  relations?: Array<IRelations>;
-  tags?: Array<String>;
-  type?: string;
   _links?: ILinks;
+}
+
+export interface IInterfaces {
+  description?: string;
+  format?: string;
+  url?: string;
+  protection?: string;
 }
 
 export interface IRelations {
   source: string;
   target: string;
-  type: string;
+  type?: string;
   description?: string;
   format?: string;
 }
@@ -53,6 +125,7 @@ export interface ILabels {
 
 export interface ILandscapeLinks {
   _links: ILinks;
+  links: ILinks;
 }
 
 export interface ILinks {
@@ -60,10 +133,14 @@ export interface ILinks {
 }
 
 export interface ILinkContent {
-  rel: string;
+  rel?: string;
   href: string;
-  media: string;
-  name: string;
+  hreflang?: string;
+  media?: string;
+  title?: string;
+  type?: string;
+  deprecation?: string;
+  name?: string;
 }
 
 export interface IAssessment {

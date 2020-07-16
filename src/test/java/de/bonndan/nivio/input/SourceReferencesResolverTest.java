@@ -75,7 +75,9 @@ public class SourceReferencesResolverTest {
         sourceReferencesResolver.resolve(landscapeDescription, templatesAndTargets);
 
         //then
-        assertFalse(StringUtils.isEmpty(log.getError()));
+        var last = log.getMessages().get(log.getMessages().size() -1);
+        assertEquals("WARN", last.level);
+        assertFalse(StringUtils.isEmpty(last.message));
         assertTrue(landscapeDescription.isPartial());
     }
 

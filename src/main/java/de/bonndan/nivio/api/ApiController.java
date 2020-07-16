@@ -7,6 +7,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.URLHelper;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -162,7 +163,9 @@ public class ApiController {
     public ProcessLog reindex(@PathVariable String landscape) {
         LandscapeImpl distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape).orElse(null);
         if (distinctByIdentifier == null) {
-            return new ProcessLog(new ProcessingException(null, "Could not find landscape " + landscape));
+            ProcessLog p = new ProcessLog(LoggerFactory.getLogger("nivio"));
+            p.error(new ProcessingException(null, "Could not find landscape " + landscape));
+            return p;
         }
 
         return process(distinctByIdentifier);
@@ -170,7 +173,9 @@ public class ApiController {
 
     private ProcessLog process(Landscape landscape) {
         if (landscape == null || StringUtils.isEmpty(landscape.getSource())) {
-            return new ProcessLog(new ProcessingException(landscape, "Cannot process empty source."));
+            ProcessLog p = new ProcessLog(LoggerFactory.getLogger("nivio"));
+            p.error(new ProcessingException(landscape, "Cannot process empty source."));
+            return p;
         }
 
         File file = new File(landscape.getSource());

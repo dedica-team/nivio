@@ -69,9 +69,6 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
             <div className='infoContent'>
               <span className='description'>{landscape.description}</span>
               <span className='identifier'>Identifier: {landscape.identifier}</span>
-              <span className='teams'>
-                {landscape.teams ? `Teams: ${landscape.teams.join(', ')}` : ''}
-              </span>
             </div>
           </Grid>
 
