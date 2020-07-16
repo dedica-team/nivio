@@ -30,7 +30,6 @@ const Landscape: React.FC<Props> = () => {
 
   const [sliderContent, setSliderContent] = useState<string | ReactElement | null>(null);
   const [showSlider, setShowSlider] = useState(false);
-  const [cssAnimationKey, setCssAnimationKey] = useState('');
   const [data, setData] = useState('');
   const { identifier } = useParams();
 
@@ -59,7 +58,6 @@ const Landscape: React.FC<Props> = () => {
           findItem={findItem}
         />
       );
-      setCssAnimationKey(e.currentTarget.id);
       setShowSlider(true);
     }
   };
@@ -76,7 +74,6 @@ const Landscape: React.FC<Props> = () => {
     return (
       <div className='landscapeContainer'>
         <CSSTransition
-          key={cssAnimationKey}
           in={showSlider}
           timeout={{ enter: 0, exit: 1000, appear: 1000 }}
           appear

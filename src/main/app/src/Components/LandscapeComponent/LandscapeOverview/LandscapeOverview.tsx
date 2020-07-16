@@ -18,7 +18,6 @@ const LandscapeOverview: React.FC = () => {
     null
   );
   const [showSlider, setShowSlider] = useState(false);
-  const [cssAnimationKey, setCssAnimationKey] = useState('');
 
   const getLandscapes = useCallback(async () => {
     if (loadLandscapes) {
@@ -44,7 +43,6 @@ const LandscapeOverview: React.FC = () => {
   const enterLog = (e: MouseEvent<HTMLButtonElement>, landscape: ILandscape) => {
     const sliderContent = <LandscapeLog landscape={landscape} />;
     setSliderContent(<Slider sliderContent={sliderContent} closeSlider={closeSlider} />);
-    setCssAnimationKey(e.currentTarget.id);
     setShowSlider(true);
   };
 
@@ -58,7 +56,6 @@ const LandscapeOverview: React.FC = () => {
       landscapes={landscapes}
       enterLog={enterLog}
       showSlider={showSlider}
-      cssAnimationKey={cssAnimationKey}
     />
   );
 };

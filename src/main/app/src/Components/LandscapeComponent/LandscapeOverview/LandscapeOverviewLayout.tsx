@@ -14,7 +14,6 @@ interface Props {
   sliderContent: string | ReactElement | ReactElement[] | null;
   landscapes: ILandscape[] | null | undefined;
   showSlider: boolean;
-  cssAnimationKey: string;
   enterLog: (e: MouseEvent<HTMLButtonElement>, landscape: ILandscape) => void;
 }
 
@@ -27,7 +26,6 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
   landscapes,
   enterLog,
   showSlider,
-  cssAnimationKey,
 }) => {
   // Render
   /*
@@ -146,7 +144,6 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
   return (
     <div className='homeContainer'>
       <CSSTransition
-        key={cssAnimationKey}
         in={showSlider}
         timeout={{ enter: 0, exit: 1000, appear: 1000 }}
         appear
