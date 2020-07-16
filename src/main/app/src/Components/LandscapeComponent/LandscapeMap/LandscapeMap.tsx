@@ -44,7 +44,8 @@ const Landscape: React.FC<Props> = () => {
         const y = parseFloat(dataY);
         console.log(fullyQualifiedItemIdentifier);
         console.log(`data-x: ${x}, data-y ${y}`);
-        setValue(fitSelection(value, x, y, window.innerWidth * 0.5, window.innerHeight * 0.5));
+        console.log('--------------------------');
+        setValue(fitSelection(value, x, y, window.innerWidth * 0.3, window.innerHeight * 0.3));
       }
     }
   };
