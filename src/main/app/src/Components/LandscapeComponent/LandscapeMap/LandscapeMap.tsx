@@ -74,7 +74,6 @@ const Landscape: React.FC<Props> = () => {
     return (
       <div className='landscapeContainer'>
         <CSSTransition
-          key={'slider'}
           in={showSlider}
           timeout={{ enter: 0, exit: 1000, appear: 1000 }}
           appear
