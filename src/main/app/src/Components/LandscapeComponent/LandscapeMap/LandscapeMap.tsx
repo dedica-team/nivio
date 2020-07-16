@@ -34,8 +34,19 @@ const Landscape: React.FC<Props> = () => {
   const [data, setData] = useState('');
   const { identifier } = useParams();
 
-  const findItem = (x: number, y: number) => {
-    setValue(fitSelection(value, x, y, window.innerWidth * 0.5, window.innerHeight * 0.5));
+  const findItem = (fullyQualifiedItemIdentifier: string) => {
+    const element = document.getElementById(fullyQualifiedItemIdentifier);
+    if (element) {
+      let dataX = element.getAttribute('data-x');
+      let dataY = element.getAttribute('data-y');
+      if (dataX && dataY) {
+        const x = parseFloat(dataX);
+        const y = parseFloat(dataY);
+        console.log(fullyQualifiedItemIdentifier);
+        console.log(`data-x: ${x}, data-y ${y}`);
+        setValue(fitSelection(value, x, y, window.innerWidth * 0.5, window.innerHeight * 0.5));
+      }
+    }
   };
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
