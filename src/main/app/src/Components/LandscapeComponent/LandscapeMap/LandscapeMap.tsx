@@ -40,8 +40,8 @@ const Landscape: React.FC<Props> = () => {
       let dataX = element.getAttribute('data-x');
       let dataY = element.getAttribute('data-y');
       if (dataX && dataY) {
-        const x = parseFloat(dataX);
-        const y = parseFloat(dataY);
+        const x = parseFloat(dataX) - 350;
+        const y = parseFloat(dataY) - 50;
         console.log(fullyQualifiedItemIdentifier);
         console.log(`data-x: ${x}, data-y ${y}`);
         console.log('--------------------------');
