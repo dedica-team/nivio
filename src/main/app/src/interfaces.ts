@@ -1,13 +1,13 @@
 export interface ILandscape {
   identifier: string;
   name: string;
-  contact?: string;
+  contact: string;
   source?: string;
   config?: IConfig;
   processLog?: IProcessLog;
-  description?: string;
+  description: string;
   labels?: ILabels;
-  owner?: string;
+  owner: string;
   fullyQualifiedIdentifier: string;
   color?: string;
   _links?: ILinks;
@@ -17,14 +17,14 @@ export interface ILandscape {
 }
 
 export interface IProcessLog {
-  messages?: Array<IMessages>;
-  error?: string;
+  messages: Array<IMessages>;
+  landscape?: string;
 }
 
 export interface IMessages {
-  level?: string;
-  message?: string;
-  date?: Date;
+  level: string;
+  message: string;
+  date: Date;
 }
 
 export interface IConfig {
@@ -89,16 +89,16 @@ export interface IGroup {
 
 export interface IItem {
   identifier: string;
-  name?: string;
-  owner?: string;
+  name: string;
+  owner: string;
   description?: string;
-  contact?: string;
+  contact: string;
   relations: Array<IRelations>;
   interfaces?: Array<IInterfaces>;
-  labels?: ILabels;
-  type?: string;
+  labels: ILabels;
+  type: string;
   fullyQualifiedIdentifier: string;
-  tags?: Array<String>;
+  tags: Array<String>;
   color?: string;
   links?: Object;
   _links?: ILinks;
@@ -141,10 +141,6 @@ export interface ILinkContent {
   type?: string;
   deprecation?: string;
   name?: string;
-  basicAuthUsername?: string;
-  basicAuthPassword?: string;
-  headerTokenName?: string;
-  headerTokenValue?: string;
 }
 
 export interface IAssessment {

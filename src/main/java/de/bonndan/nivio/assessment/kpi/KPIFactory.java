@@ -58,9 +58,9 @@ public class KPIFactory {
                 if (e instanceof ProcessingException) {
                     p = (ProcessingException) e;
                 } else {
-                    p = new ProcessingException("Failed to initialize KPI", e);
+                    p = new ProcessingException("Failed to initialize KPI " + s, e);
                 }
-                landscape.getLog().error("Failed to initialize KPI", p);
+                landscape.getLog().error(p);
                 eventPublisher.publishEvent(new ProcessingErrorEvent(this, p));
                 throw p;
             }
