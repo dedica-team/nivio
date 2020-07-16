@@ -16,14 +16,12 @@ const LandscapeDashboard: React.FC = () => {
   const [landscape, setLandscape] = useState<ILandscape | null>();
   const [sliderContent, setSliderContent] = useState<string | ReactElement | null>(null);
   const [showSlider, setShowSlider] = useState(false);
-  const [cssAnimationKey, setCssAnimationKey] = useState('');
   const [assessments, setAssessments] = useState<IAssessment | null>(null);
 
   const onItemClick = (e: MouseEvent<HTMLSpanElement>, item: IItem) => {
     setSliderContent(
       <LandscapeItem fullyQualifiedItemIdentifier={item.fullyQualifiedIdentifier} />
     );
-    setCssAnimationKey(e.currentTarget.id);
     setShowSlider(true);
   };
 
@@ -46,7 +44,7 @@ const LandscapeDashboard: React.FC = () => {
   return (
     <div className='landscapeContainer'>
       <CSSTransition
-        key={cssAnimationKey}
+        key={'slider'}
         in={showSlider}
         timeout={{ enter: 0, exit: 1000, appear: 1000 }}
         appear

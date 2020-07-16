@@ -5,15 +5,10 @@ import './LandscapeItem.scss';
 import { IItem, IAssessmentProps } from '../../../interfaces';
 import { getAssessmentColorAndMessage } from '../../../utils/styling/style-helper';
 
-import Axios from 'axios';
-
 interface Props {
   fullyQualifiedItemIdentifier: string;
   findItem?: (fullyQualifiedItemIdentifier: string) => void;
 }
-
-const CancelToken = Axios.CancelToken;
-const source = CancelToken.source();
 
 /**
  * Returns a choosen Landscape Item if informations are available
@@ -30,16 +25,12 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
 
     const landscapeIdentifier = fullyQualifiedItemIdentifier.split('/');
     if (landscapeIdentifier[0]) {
-      get(`/assessment/${landscapeIdentifier[0]}`, source).then((response) => {
+      get(`/assessment/${landscapeIdentifier[0]}`).then((response) => {
         if (response) {
           setAssessment(response.results[fullyQualifiedItemIdentifier]);
         }
       });
     }
-
-    return () => {
-      source.cancel();
-    };
   }, [fullyQualifiedItemIdentifier]);
 
   let assesmentColor = 'grey';
