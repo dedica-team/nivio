@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.output.Rendered;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -76,6 +77,7 @@ public class Group implements GroupItem, Rendered, Assessable {
     }
 
     @Override
+    @Schema(name = "_links")
     public Map<String, Link> getLinks() {
         return links;
     }

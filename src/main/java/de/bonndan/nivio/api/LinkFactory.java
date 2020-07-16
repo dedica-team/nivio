@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.StreamSupport;
@@ -55,11 +56,7 @@ public class LinkFactory {
 
     public Map<String, Link> getLandscapeLinks(LandscapeImpl landscape) {
         Map<String, Link> links = new HashMap<>();
-        links.put(REL_SELF, linkTo(localServer.getUrl(ApiController.PATH, landscape.getIdentifier()))
-                .withMedia(MediaType.APPLICATION_JSON_VALUE)
-                .withTitle("JSON representation")
-                .build()
-        );
+        links.put(REL_SELF, generateSelfLink(landscape));
 
         links.put("reindex", linkTo(localServer.getUrl(ApiController.PATH, "reindex", landscape.getIdentifier()))
                 .withMedia(MediaType.APPLICATION_JSON_VALUE)
@@ -104,6 +101,13 @@ public class LinkFactory {
         return links;
     }
 
+    private Link generateSelfLink(de.bonndan.nivio.model.Component component) {
+        return linkTo(localServer.getUrl(ApiController.PATH, component.getFullyQualifiedIdentifier().jsonValue()))
+                .withMedia(MediaType.APPLICATION_JSON_VALUE)
+                .withTitle("JSON representation")
+                .build();
+    }
+
     /**
      * Returns the "root" api response (a list of landscapes).
      *
@@ -124,5 +128,33 @@ public class LinkFactory {
                     index.getLinks().put(landscape.getIdentifier(), link);
                 });
         return index;
+    }
+
+    /**
+     * Adds hateoas self rel links to all landscape components.
+     *
+     * @param landscape landscape
+     */
+    void setLandscapeLinksRecursive(LandscapeImpl landscape) {
+        Map<String, Link> landscapeLinks = getLandscapeLinks(landscape);
+        landscape.setLinks(landscapeLinks);
+        setGroupSelfLinksRecursive(landscape.getGroups());
+    }
+
+    void setGroupSelfLinksRecursive(Map<String, GroupItem> groups) {
+        groups.forEach((s, groupItem) -> setGroupLinksRecursive((Group) groupItem));
+    }
+
+    void setGroupLinksRecursive(Group groupItem) {
+        if (!groupItem.getLinks().containsKey(REL_SELF)) {
+            groupItem.getLinks().put(REL_SELF, generateSelfLink(groupItem));
+        }
+        groupItem.getItems().forEach(this::setItemSelfLink);
+    }
+
+    void setItemSelfLink(Item item) {
+        if (!item.getLinks().containsKey(REL_SELF)) {
+            item.getLinks().put(REL_SELF, generateSelfLink(item));
+        }
     }
 }

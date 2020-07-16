@@ -68,9 +68,8 @@ public class ApiController {
             return ResponseEntity.notFound().build();
         }
 
-        //TODO this modifies the landscape
-        Map<String, Link> landscapeLinks = linkFactory.getLandscapeLinks(landscape);
-        landscape.setLinks(landscapeLinks);
+        //TODO this modifies the landscape components by adding SELF links
+        linkFactory.setLandscapeLinksRecursive(landscape);
         return new ResponseEntity<>(landscape, HttpStatus.OK);
     }
 
@@ -87,7 +86,10 @@ public class ApiController {
             return ResponseEntity.notFound().build();
         }
 
-        return new ResponseEntity<>(landscape.getGroup(groupIdentifier), HttpStatus.OK);
+        //TODO this modifies the landscape components by adding SELF links
+        Group group = landscape.getGroup(groupIdentifier);
+        linkFactory.setGroupLinksRecursive(group);
+        return new ResponseEntity<>(group, HttpStatus.OK);
     }
 
     /**
@@ -108,7 +110,9 @@ public class ApiController {
         if (item.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return new ResponseEntity<>(item.get(), HttpStatus.OK);
+        Item item1 = item.get();
+        linkFactory.setItemSelfLink(item1);
+        return new ResponseEntity<>(item1, HttpStatus.OK);
     }
 
     /**

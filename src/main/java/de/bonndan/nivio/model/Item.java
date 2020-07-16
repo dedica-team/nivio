@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.output.Rendered;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
@@ -21,7 +22,8 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
     private String identifier;
 
     @NotNull
-    @JsonBackReference
+    @JsonIgnore
+    @Schema(hidden = true)
     private LandscapeImpl landscape;
 
     private String name;
@@ -95,6 +97,7 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
         this.contact = contact;
     }
 
+    @Schema(name = "_links")
     public Map<String, Link> getLinks() {
         return links;
     }

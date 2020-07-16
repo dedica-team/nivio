@@ -8,6 +8,7 @@ import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.output.Rendered;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
@@ -212,6 +213,7 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
     }
 
     @Override
+    @Schema(name = "_links")
     public Map<String, Link> getLinks() {
         return links;
     }
