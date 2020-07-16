@@ -30,12 +30,23 @@ const Landscape: React.FC<Props> = () => {
 
   const [sliderContent, setSliderContent] = useState<string | ReactElement | null>(null);
   const [showSlider, setShowSlider] = useState(false);
-  const [cssAnimationKey, setCssAnimationKey] = useState('');
   const [data, setData] = useState('');
   const { identifier } = useParams();
 
-  const findItem = (x: number, y: number) => {
-    setValue(fitSelection(value, x, y, window.innerWidth * 0.5, window.innerHeight * 0.5));
+  const findItem = (fullyQualifiedItemIdentifier: string) => {
+    const element = document.getElementById(fullyQualifiedItemIdentifier);
+    if (element) {
+      let dataX = element.getAttribute('data-x');
+      let dataY = element.getAttribute('data-y');
+      if (dataX && dataY) {
+        const x = parseFloat(dataX) - 350;
+        const y = parseFloat(dataY) - 50;
+        console.log(fullyQualifiedItemIdentifier);
+        console.log(`data-x: ${x}, data-y ${y}`);
+        console.log('--------------------------');
+        setValue(fitSelection(value, x, y, window.innerWidth * 0.3, window.innerHeight * 0.3));
+      }
+    }
   };
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
@@ -47,7 +58,6 @@ const Landscape: React.FC<Props> = () => {
           findItem={findItem}
         />
       );
-      setCssAnimationKey(e.currentTarget.id);
       setShowSlider(true);
     }
   };
@@ -64,7 +74,6 @@ const Landscape: React.FC<Props> = () => {
     return (
       <div className='landscapeContainer'>
         <CSSTransition
-          key={cssAnimationKey}
           in={showSlider}
           timeout={{ enter: 0, exit: 1000, appear: 1000 }}
           appear

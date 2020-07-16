@@ -10,6 +10,7 @@ import j2html.tags.DomContent;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
+import java.util.Locale;
 
 import static de.bonndan.nivio.output.map.MapFactory.DEFAULT_ICON_SIZE;
 
@@ -65,7 +66,9 @@ class SVGItem extends Component {
                 .attr("cy", 0)
                 .attr("r", DEFAULT_ICON_SIZE - 10)
                 .attr("fill", fillId)
-                .attr("stroke", "#" + (item.getColor() != null ? item.getColor() : Color.GRAY));
+                .attr("stroke", "#" + (item.getColor() != null ? item.getColor() : Color.GRAY))
+                .attr("data-x", String.format(Locale.ENGLISH, "%.2f", pixel.x))
+                .attr("data-y", String.format(Locale.ENGLISH, "%.2f", pixel.y));
         if (Lifecycle.isPlanned(item)) {
             circle.attr("stroke-dasharray", 5);
             circle.attr("opacity", 0.7);

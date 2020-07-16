@@ -7,7 +7,7 @@ import { getAssessmentColorAndMessage } from '../../../utils/styling/style-helpe
 
 interface Props {
   fullyQualifiedItemIdentifier: string;
-  findItem?: (x: number, y: number) => void;
+  findItem?: (fullyQualifiedItemIdentifier: string) => void;
 }
 
 /**
@@ -37,8 +37,6 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
   let labels: ReactElement[] = [];
   let links: ReactElement[] = [];
   let relations: ReactElement[] = [];
-  let x: number;
-  let y: number;
 
   if (item) {
     [assesmentColor] = getAssessmentColorAndMessage(assessment, item.identifier);
@@ -57,11 +55,6 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
           }
         }
       });
-
-      if (item.labels['nivio.rendered.x'] && item.labels['nivio.rendered.y']) {
-        x = parseInt(item.labels['nivio.rendered.x']);
-        y = parseInt(item.labels['nivio.rendered.y']);
-      }
     }
 
     if (item._links) {
@@ -88,14 +81,30 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
         if (relation.target.endsWith(item.identifier)) {
           const relationTarget = relation.source.split('/').pop();
           return (
-            <span className='relation' key={relation.source}>
+            <span
+              className='relation'
+              key={relation.source}
+              onClick={() => {
+                if (findItem) {
+                  findItem(relation.source);
+                }
+              }}
+            >
               {relationTarget}
             </span>
           );
         }
         const relationTarget2 = relation.target.split('/').pop();
         return (
-          <span className='relation' key={relation.target}>
+          <span
+            className='relation'
+            key={relation.target}
+            onClick={() => {
+              if (findItem) {
+                findItem(relation.target);
+              }
+            }}
+          >
             {relationTarget2}
           </span>
         );
@@ -109,8 +118,8 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
           <span
             className='title'
             onClick={(e) => {
-              if (findItem && x && y) {
-                findItem(x, y);
+              if (findItem) {
+                findItem(fullyQualifiedItemIdentifier);
               }
             }}
           >

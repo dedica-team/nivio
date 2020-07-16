@@ -25,4 +25,20 @@ class SVGItemTest {
         SVGItem svgItem = new SVGItem(null, foo, new Point2D.Double(1,1));
         assertTrue( svgItem.render().render().contains("l1/common/foo"));
     }
+
+    @Test
+    @DisplayName("contains x and y data")
+    public void xyData() {
+        LandscapeImpl landscape = new LandscapeImpl();
+        landscape.setIdentifier("l1");
+
+        // item has no group
+        Item foo = new Item();
+        foo.setIdentifier("foo");
+        foo.setLandscape(landscape);
+
+        SVGItem svgItem = new SVGItem(null, foo, new Point2D.Double(1,2.0303030));
+        assertTrue( svgItem.render().render().contains("data-x=\"1.00\""));
+        assertTrue( svgItem.render().render().contains("data-y=\"2.03\""));
+    }
 }
