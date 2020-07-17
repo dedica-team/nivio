@@ -28,16 +28,20 @@ public class Indexer {
 
     private final LandscapeRepository landscapeRepo;
     private final InputFormatHandlerFactory formatFactory;
+    private final ItemDescriptionFormatFactory formatFactory;
+    private final LinkResolverFactory linkResolverFactory;
     private final ApplicationEventPublisher eventPublisher;
     private final IconService iconService;
 
     public Indexer(LandscapeRepository landscapeRepository,
                    InputFormatHandlerFactory formatFactory,
+                   LinkResolverFactory linkResolverFactory,
                    ApplicationEventPublisher eventPublisher,
                    IconService iconService
     ) {
         this.landscapeRepo = landscapeRepository;
         this.formatFactory = formatFactory;
+        this.linkResolverFactory = linkResolverFactory;
         this.eventPublisher = eventPublisher;
         this.iconService = iconService;
     }
@@ -120,6 +124,9 @@ public class Indexer {
 
         // create relations between items
         new ItemRelationResolver(logger).process(input, landscape);
+
+        // 11. resolve links on components to gather more data, this runs async.
+        new LinksResolver(logger, linkResolverFactory).process(input, landscape);
 
         // ensures that item have a resolved icon in the api
         new AppearanceResolver(logger, iconService).process(input, landscape);

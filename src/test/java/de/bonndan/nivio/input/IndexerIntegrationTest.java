@@ -46,6 +46,9 @@ public class IndexerIntegrationTest {
     IconService iconService;
 
     @Mock
+    LinkResolverFactory linkResolverFactory;
+
+    @Mock
     ApplicationEventPublisher applicationEventPublisher;
 
     private Landscape index() {
@@ -164,7 +167,7 @@ public class IndexerIntegrationTest {
         exsistingWordPress.setName("Other name");
         landscapeDescription.getItemDescriptions().add(exsistingWordPress);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, iconService);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher);
 
         //created
         landscape = (Landscape) indexer.index(landscapeDescription).getLandscape();
