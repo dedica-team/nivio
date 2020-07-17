@@ -43,6 +43,9 @@ public class IndexerIntegrationTest {
     LandscapeDescriptionFactory landscapeDescriptionFactory;
 
     @Mock
+    LinkResolverFactory linkResolverFactory;
+
+    @Mock
     ApplicationEventPublisher applicationEventPublisher;
 
     @MockBean
@@ -56,7 +59,7 @@ public class IndexerIntegrationTest {
         File file = new File(getRootPath() + path);
         LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkResolverFactory, applicationEventPublisher);
 
         ProcessLog processLog = indexer.reIndex(landscapeDescription);
         return (LandscapeImpl) processLog.getLandscape();
@@ -164,7 +167,7 @@ public class IndexerIntegrationTest {
         exsistingWordPress.setName("Other name");
         landscapeDescription.getItemDescriptions().add(exsistingWordPress);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkResolverFactory, applicationEventPublisher);
 
         //created
         landscape = (LandscapeImpl) indexer.reIndex(landscapeDescription).getLandscape();

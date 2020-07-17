@@ -21,14 +21,17 @@ public class Indexer {
 
     private final LandscapeRepository landscapeRepo;
     private final ItemDescriptionFormatFactory formatFactory;
+    private final LinkResolverFactory linkResolverFactory;
     private final ApplicationEventPublisher eventPublisher;
 
     public Indexer(LandscapeRepository landscapeRepository,
                    ItemDescriptionFormatFactory formatFactory,
+                   LinkResolverFactory linkResolverFactory,
                    ApplicationEventPublisher eventPublisher
     ) {
         this.landscapeRepo = landscapeRepository;
         this.formatFactory = formatFactory;
+        this.linkResolverFactory = linkResolverFactory;
         this.eventPublisher = eventPublisher;
     }
 
@@ -92,6 +95,9 @@ public class Indexer {
 
         // 10. create relations between items
         new ItemRelationResolver(logger).process(input, landscape);
+
+        // 11. resolve links on components to gather more data, this runs async.
+        new LinksResolver(logger, linkResolverFactory).process(input, landscape);
     }
 
 }

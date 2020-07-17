@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
-import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.Indexer;
-import de.bonndan.nivio.input.ItemDescriptionFormatFactory;
-import de.bonndan.nivio.input.LandscapeDescriptionFactory;
+import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.csv.ItemDescriptionFactoryCSV;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
@@ -57,7 +54,10 @@ class JGraphXRendererTest {
         FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
         factory = new LandscapeDescriptionFactory(fileFetcher);
 
-        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class));
+        indexer = new Indexer(landscapeRepository,
+                formatFactory,
+                mock(LinkResolverFactory.class),
+                mock(ApplicationEventPublisher.class));
     }
 
     private LandscapeImpl getLandscape(String path) {
@@ -230,7 +230,7 @@ class JGraphXRendererTest {
     public void renderCSV() throws IOException {
 
         formatFactory = ItemDescriptionFormatFactory.with(new ItemDescriptionFactoryCSV(new FileFetcher(new HttpService())));
-        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class));
+        indexer = new Indexer(landscapeRepository, formatFactory, mock(LinkResolverFactory.class), mock(ApplicationEventPublisher.class));
 
         debugRender("/src/test/resources/example/example_csv", false);
     }
