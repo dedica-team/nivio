@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "@stomp/stompjs": "^5.4.4",
     "@types/dateformat": "^3.0.1",
     "@types/jest": "^24.0.0",
     "@types/node": "^12.12.47",
