@@ -31,6 +31,7 @@ const Landscape: React.FC<Props> = () => {
   const [sliderContent, setSliderContent] = useState<string | ReactElement | null>(null);
   const [showSlider, setShowSlider] = useState(false);
   const [data, setData] = useState('');
+  const [renderWithTransition, setRenderWithTransition] = useState(false);
   const { identifier } = useParams();
 
   const findItem = (fullyQualifiedItemIdentifier: string) => {
@@ -39,13 +40,17 @@ const Landscape: React.FC<Props> = () => {
       let dataX = element.getAttribute('data-x');
       let dataY = element.getAttribute('data-y');
       if (dataX && dataY) {
-        const x = parseFloat(dataX) - 350;
-        const y = parseFloat(dataY) - 50;
-        console.log(fullyQualifiedItemIdentifier);
-        console.log(`data-x: ${x}, data-y ${y}`);
-        console.log('--------------------------');
-        setValue(fitSelection(value, x, y, window.innerWidth * 0.3, window.innerHeight * 0.3));
+        const x = parseFloat(dataX) - 500;
+        const y = parseFloat(dataY) - 100;
+        setValue(fitSelection(value, x, y, window.innerWidth, window.innerHeight * 0.92));
+        setRenderWithTransition(true);
       }
+
+      element.classList.add('highlight');
+      setTimeout(() => {
+        element.classList.remove('highlight');
+        setRenderWithTransition(false);
+      }, 3000);
     }
   };
 
@@ -98,17 +103,19 @@ const Landscape: React.FC<Props> = () => {
               miniatureProps={{
                 position: 'none',
                 background: '#616264',
-                width: 100,
-                height: 80,
+                width: 200,
+                height: 300,
               }}
+              preventPanOutside={false}
               toolbarProps={{ position: 'none' }}
               detectAutoPan={false}
               tool={tool}
               onChangeTool={(newTool) => setTool(newTool)}
               value={value}
               onChangeValue={(newValue) => setValue(newValue)}
+              className={`ReactSVGPanZoom ${renderWithTransition ? 'with-transition' : ''}`}
             >
-              <svg width={1000} height={1000}>
+              <svg width={window.innerWidth} height={window.innerHeight * 0.92}>
                 {content}
               </svg>
             </ReactSVGPanZoom>

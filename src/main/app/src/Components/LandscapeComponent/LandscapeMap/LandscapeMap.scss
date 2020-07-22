@@ -70,4 +70,61 @@
   div > svg > g > rect {
     fill: transparent;
   }
+
+  @-o-keyframes highlightBg {
+    0% {
+      fill: #fff;
+    }
+    50% {
+      fill: #ff4081;
+    }
+    to {
+      fill: #fff;
+    }
+  }
+
+  @-webkit-keyframes highlightBg {
+    0% {
+      fill: #fff;
+    }
+    50% {
+      fill: #ff4081;
+    }
+    to {
+      fill: #fff;
+    }
+  }
+
+  @keyframes highlightBg {
+    0% {
+      fill: #fff;
+    }
+    50% {
+      fill: #ff4081;
+    }
+    to {
+      fill: #fff;
+    }
+  }
+
+  .highlight {
+    /*     box-shadow: 0 0 0 2px #FF4081; */
+    -webkit-animation: highlightBg 1s linear;
+    -o-animation: highlightBg 1s linear;
+    animation: highlightBg 1s linear;
+    -webkit-animation-iteration-count: 3;
+    -o-animation-iteration-count: 3;
+    animation-iteration-count: 3;
+  }
+
+  .with-transition {
+    z-index: 2;
+    svg > g {
+      transition: transform 1s ease-out;
+    }
+  }
+
+  .showHighlight {
+    z-index: 2;
+  }
 }
