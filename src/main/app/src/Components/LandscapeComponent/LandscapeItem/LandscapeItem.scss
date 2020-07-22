@@ -4,10 +4,10 @@
 $dotSize: 50px;
 
 .itemContent {
-  margin: 1rem;
+  margin: 16px;
   position: relative;
   overflow: auto;
-  width: 800px;
+  width: 500px;
   max-height: 85vh;
   z-index: 1;
   background-color: $background-grey;
@@ -53,11 +53,11 @@ $dotSize: 50px;
     flex-direction: column;
     flex-wrap: wrap;
     font-size: $small-font-size;
-    padding-bottom: 1rem;
+    padding-bottom: 16px;
     border-bottom: 1px solid $border-color;
 
     .item {
-      margin-top: 1rem;
+      margin-top: 16px;
     }
 
     .label {
@@ -71,14 +71,14 @@ $dotSize: 50px;
       width: 20%;
       border: 1px solid $border-color;
       border-radius: 25px;
-      margin-top: 0.5rem;
+      margin-top: 8px;
       background-color: lighten($background-grey, 10%);
     }
   }
 
   .linkContent,
   .relationsContent {
-    margin-top: 1rem;
+    margin-top: 16px;
     width: 100%;
     .linkLabel,
     .relationsLabel {
@@ -92,7 +92,7 @@ $dotSize: 50px;
       flex-wrap: wrap;
       flex-basis: auto;
       font-size: $small-font-size;
-      padding-bottom: 1rem;
+      padding-bottom: 16px;
       border-bottom: 1px solid $border-color;
 
       .link,
@@ -100,19 +100,19 @@ $dotSize: 50px;
         font-weight: normal;
         color: $font-color;
         text-align: center;
-        width: 20%;
         border: 1px solid $border-color;
         border-radius: 25px;
-        margin: 0.5rem;
-        min-width: 100px;
+        margin: 3px;
+        padding: 5px 10px;
         background-color: lighten($background-grey, 10%);
+        cursor: pointer;
       }
     }
   }
 }
 
 .itemError {
-  margin: 2rem;
+  margin: 32px;
   display: flex;
   flex-direction: column;
   width: 400px;
