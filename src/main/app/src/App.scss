@@ -12,8 +12,8 @@ body {
   .button {
     color: lighten($header-color, 20%);
     padding: 0;
-    border-top: 0.1rem solid $header-color;
-    border-left: 0.3rem solid $header-color;
+    border-top: 1.6px solid $header-color;
+    border-left: 4.8px solid $header-color;
     border-radius: 0;
     text-shadow: 0 0 10px $text-shadow-color;
 
@@ -74,7 +74,7 @@ body {
   }
 
   .stackedButton {
-    margin-bottom: 0.3rem;
+    margin-bottom: 4.8px;
   }
 }
 

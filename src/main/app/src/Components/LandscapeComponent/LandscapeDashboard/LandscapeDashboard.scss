@@ -5,16 +5,16 @@ $dotSize: 200px;
 
 .landscapeDashboardContainer {
   .title {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding-top: 16px;
+    padding-bottom: 16px;
     font-size: $header-font-size;
     text-align: center;
     border-bottom: 1px solid $border-color;
   }
 
   .groupContainer {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin-top: 16px;
+    margin-bottom: 16px;
     padding: 0px 5px 18px 0px;
 
     .group {
@@ -38,7 +38,7 @@ $dotSize: 200px;
           flex-direction: column;
           align-items: center;
           min-width: 250px;
-          margin-top: 1rem;
+          margin-top: 16px;
 
           .dot {
             height: $dotSize;
@@ -46,7 +46,7 @@ $dotSize: 200px;
             background-color: $info-color;
             border-radius: 50%;
             display: inline-block;
-            margin-bottom: 2rem;
+            margin-bottom: 32px;
             text-align: center;
 
             .statusDot {
@@ -80,13 +80,13 @@ $dotSize: 200px;
             .icon {
               max-width: 32px;
               max-height: 32px;
-              margin-right: 0.3rem;
+              margin-right: 4.8px;
             }
 
             .itemName {
               max-width: 300px;
               font-size: $normal-font-size;
-              margin-left: 0.2rem;
+              margin-left: 3.2px;
             }
           }
         }
