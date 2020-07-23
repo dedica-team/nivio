@@ -143,7 +143,7 @@ const Landscape: React.FC<Props> = () => {
     return () => clearTimeout(timeout);
   }, [highlightElement]);
 
-  if (data !== '') {
+  if (data) {
     return (
       <div className='landscapeContainer'>
         <CSSTransition

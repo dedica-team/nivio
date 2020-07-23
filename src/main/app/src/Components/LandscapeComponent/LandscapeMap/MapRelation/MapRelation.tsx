@@ -5,7 +5,7 @@ interface Props {
   sourceIdentifier: string;
   targetIdentifier: string;
   type: string | null;
-  findItem?: (fullyQualifiedItemIdentifier: string) => void;
+  findItem: (fullyQualifiedItemIdentifier: string) => void;
 }
 
 /**
@@ -21,9 +21,7 @@ const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type
           className='relation'
           key={sourceIdentifier}
           onClick={() => {
-            if (findItem) {
-              findItem(sourceIdentifier);
-            }
+            findItem(sourceIdentifier);
           }}
         >
           {sourceIdentifier}
@@ -32,9 +30,7 @@ const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type
           className='relation'
           key={targetIdentifier}
           onClick={() => {
-            if (findItem) {
-              findItem(targetIdentifier);
-            }
+            findItem(targetIdentifier);
           }}
         >
           {targetIdentifier}
