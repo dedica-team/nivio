@@ -40,13 +40,8 @@ public class MapStyleSheetFactory {
         String mapCss = "";
         processLog.debug("Loading customer stylesheet: " + mapStylesheet);
         try {
-            URL url = new URL(mapStylesheet);
-            if (URLHelper.isLocal(url)) {
-                mapCss = Files.readString(new File(url.toString()).toPath());
-            } else {
-                mapCss = fileFetcher.get(url);
-            }
-        } catch (IOException | ReadingException e ) {
+            mapCss = fileFetcher.get(URLHelper.getURL(mapStylesheet));
+        } catch (ReadingException e ) {
             processLog.warn("Failed to load customer stylesheet " + mapStylesheet + ": " + e.getMessage());
         }
         return mapCss;
