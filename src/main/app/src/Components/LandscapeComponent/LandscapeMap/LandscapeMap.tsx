@@ -10,6 +10,7 @@ import './LandscapeMap.scss';
 import LandscapeItem from '../LandscapeItem/LandscapeItem';
 
 import Slider from '../../SliderComponent/Slider';
+import MapRelation from './MapRelation/MapRelation';
 
 interface Props {
   identifier: string;
@@ -32,7 +33,7 @@ const Landscape: React.FC<Props> = () => {
   const [showSlider, setShowSlider] = useState(false);
   const [data, setData] = useState('');
   const [renderWithTransition, setRenderWithTransition] = useState(false);
-  const [highlightElement, setHighlightElement] = useState<HTMLElement | null>(null);
+  const [highlightElement, setHighlightElement] = useState<Element | null>(null);
   const { identifier } = useParams();
 
   const findItem = (fullyQualifiedItemIdentifier: string) => {
@@ -65,9 +66,55 @@ const Landscape: React.FC<Props> = () => {
 
   const onRelationClick = (e: MouseEvent<HTMLElement>) => {
     const dataSource = e.currentTarget.getAttribute('data-source');
+    let sourceElement, sourceX, sourceY;
+    if (dataSource) {
+      sourceElement = document.getElementById(dataSource);
+      if (sourceElement) {
+        sourceX = sourceElement.getAttribute('data-x');
+        sourceY = sourceElement.getAttribute('data-y');
+      }
+    }
+
     const dataTarget = e.currentTarget.getAttribute('data-target');
+    let targetElement, targetX, targetY;
+    if (dataTarget) {
+      targetElement = document.getElementById(dataTarget);
+      if (targetElement) {
+        targetX = targetElement.getAttribute('data-x');
+        targetY = targetElement.getAttribute('data-y');
+      }
+    }
+
+    if (sourceX && sourceY && targetX && targetY) {
+      sourceX = parseFloat(sourceX) / 2;
+      targetX = parseFloat(targetX) / 2;
+      sourceY = parseFloat(sourceY) / 2;
+      targetY = parseFloat(targetY) / 2;
+
+      const x = (sourceX + targetX) / 2;
+      const y = (sourceY + targetY) / 2;
+
+      const zoomWidth = Math.abs(Math.min(sourceX, targetX)) + window.innerWidth;
+      const zoomHeight = Math.abs(Math.min(sourceY, targetY)) + window.innerHeight * 0.92;
+
+      setHighlightElement(e.currentTarget.children[0]);
+      setRenderWithTransition(true);
+      setValue(fitSelection(value, x - 500, y, zoomWidth, zoomHeight));
+    }
+
     const dataType = e.currentTarget.getAttribute('data-type');
-    console.log(`Source: ${dataSource}, Target: ${dataTarget}, Type: ${dataType}`);
+
+    if (dataSource && dataTarget) {
+      setSliderContent(
+        <MapRelation
+          sourceIdentifier={dataSource}
+          targetIdentifier={dataTarget}
+          type={dataType}
+          findItem={findItem}
+        />
+      );
+      setShowSlider(true);
+    }
   };
 
   const closeSlider = () => {
@@ -81,9 +128,14 @@ const Landscape: React.FC<Props> = () => {
   useEffect(() => {
     let timeout: NodeJS.Timeout;
     if (highlightElement) {
-      highlightElement.classList.add('highlight');
+      if (highlightElement.tagName === 'path') {
+        highlightElement.classList.add('highlightRelation');
+      } else {
+        highlightElement.classList.add('highlightLabel');
+      }
       timeout = setTimeout(() => {
-        highlightElement.classList.remove('highlight');
+        highlightElement.classList.remove('highlightRelation');
+        highlightElement.classList.remove('highlightLabel');
         setRenderWithTransition(false);
         setHighlightElement(null);
       }, 3000);

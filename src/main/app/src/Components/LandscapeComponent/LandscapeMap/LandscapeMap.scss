@@ -9,6 +9,10 @@
     g {
       stroke-width: 0.3;
 
+      .relation {
+        cursor: pointer;
+      }
+
       g {
         svg {
           .title {
@@ -40,6 +44,7 @@
             .label {
               text {
                 fill: $font-color;
+                cursor: pointer;
               }
               rect {
                 fill: $background-grey;
@@ -71,7 +76,7 @@
     fill: transparent;
   }
 
-  @-o-keyframes highlightBg {
+  @-o-keyframes highlightLabel {
     0% {
       fill: #fff;
     }
@@ -83,7 +88,7 @@
     }
   }
 
-  @-webkit-keyframes highlightBg {
+  @-webkit-keyframes highlightLabel {
     0% {
       fill: #fff;
     }
@@ -95,7 +100,7 @@
     }
   }
 
-  @keyframes highlightBg {
+  @keyframes highlightLabel {
     0% {
       fill: #fff;
     }
@@ -107,14 +112,61 @@
     }
   }
 
-  .highlight {
+  @-o-keyframes highlightRelation {
+    0% {
+      stroke: #fff;
+    }
+    50% {
+      stroke: #ff4081;
+    }
+    to {
+      stroke: #fff;
+    }
+  }
+
+  @-webkit-keyframes highlightRelation {
+    0% {
+      stroke: #fff;
+    }
+    50% {
+      stroke: #ff4081;
+    }
+    to {
+      stroke: #fff;
+    }
+  }
+
+  @keyframes highlightRelation {
+    0% {
+      stroke: #fff;
+    }
+    50% {
+      stroke: #ff4081;
+    }
+    to {
+      stroke: #fff;
+    }
+  }
+
+  .highlightLabel {
     /*     box-shadow: 0 0 0 2px #FF4081; */
-    -webkit-animation: highlightBg 1s linear;
-    -o-animation: highlightBg 1s linear;
-    animation: highlightBg 1s linear;
+    -webkit-animation: highlightLabel 1s linear;
+    -o-animation: highlightLabel 1s linear;
+    animation: highlightLabel 1s linear;
     -webkit-animation-iteration-count: 3;
     -o-animation-iteration-count: 3;
     animation-iteration-count: 3;
+  }
+
+  .highlightRelation {
+    /*     box-shadow: 0 0 0 2px #FF4081; */
+    -webkit-animation: highlightRelation 1s linear;
+    -o-animation: highlightRelation 1s linear;
+    animation: highlightRelation 1s linear;
+    -webkit-animation-iteration-count: 3;
+    -o-animation-iteration-count: 3;
+    animation-iteration-count: 3;
+    z-index: 3;
   }
 
   .with-transition {
