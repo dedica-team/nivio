@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -105,8 +106,8 @@ public class FileFetcher {
     @NonNull
     public static String readFile(File source) {
         try {
-            return new String(Files.readAllBytes(Paths.get(source.toURI())));
-        } catch (IOException e) {
+            return Files.readString(Paths.get(source.toURI()), StandardCharsets.UTF_8);
+        } catch (IOException | OutOfMemoryError | SecurityException e) {
             LOGGER.error("Failed to read file " + source.getAbsolutePath(), e);
             throw new ReadingException("Failed to read file " + source.getAbsolutePath(), e);
         }
