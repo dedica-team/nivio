@@ -8,5 +8,5 @@ it('should render mapRelation component', () => {
   );
   expect(getByText('source')).toBeInTheDocument();
   expect(getByText('target')).toBeInTheDocument();
-  expect(getByText('typeTest')).toBeInTheDocument();
+  expect(getByText('Type: typeTest')).toBeInTheDocument();
 });
