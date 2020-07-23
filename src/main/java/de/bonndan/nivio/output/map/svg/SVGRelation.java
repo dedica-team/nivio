@@ -67,7 +67,8 @@ class SVGRelation extends Component {
         String type = !StringUtils.isEmpty(relation.getType()) ? relation.getType().name() : "-";
         g.attr("data-type", type)
                 .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().jsonValue())
-                .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().jsonValue());
+                .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().jsonValue())
+                .attr("class", "relation");
 
         return g;
     }

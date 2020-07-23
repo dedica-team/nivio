@@ -32,6 +32,7 @@ const Landscape: React.FC<Props> = () => {
   const [showSlider, setShowSlider] = useState(false);
   const [data, setData] = useState('');
   const [renderWithTransition, setRenderWithTransition] = useState(false);
+  const [highlightElement, setHighlightElement] = useState<HTMLElement | null>(null);
   const { identifier } = useParams();
 
   const findItem = (fullyQualifiedItemIdentifier: string) => {
@@ -44,13 +45,8 @@ const Landscape: React.FC<Props> = () => {
         const y = parseFloat(dataY) - 100;
         setValue(fitSelection(value, x, y, window.innerWidth, window.innerHeight * 0.92));
         setRenderWithTransition(true);
+        setHighlightElement(element);
       }
-
-      element.classList.add('highlight');
-      setTimeout(() => {
-        element.classList.remove('highlight');
-        setRenderWithTransition(false);
-      }, 3000);
     }
   };
 
@@ -67,6 +63,13 @@ const Landscape: React.FC<Props> = () => {
     }
   };
 
+  const onRelationClick = (e: MouseEvent<HTMLElement>) => {
+    const dataSource = e.currentTarget.getAttribute('data-source');
+    const dataTarget = e.currentTarget.getAttribute('data-target');
+    const dataType = e.currentTarget.getAttribute('data-type');
+    console.log(`Source: ${dataSource}, Target: ${dataTarget}, Type: ${dataType}`);
+  };
+
   const closeSlider = () => {
     setShowSlider(false);
   };
@@ -74,6 +77,19 @@ const Landscape: React.FC<Props> = () => {
   useEffect(() => {
     setData(process.env.REACT_APP_BACKEND_URL + '/render/' + identifier + '/map.svg');
   }, [identifier]);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (highlightElement) {
+      highlightElement.classList.add('highlight');
+      timeout = setTimeout(() => {
+        highlightElement.classList.remove('highlight');
+        setRenderWithTransition(false);
+        setHighlightElement(null);
+      }, 3000);
+    }
+    return () => clearTimeout(timeout);
+  }, [highlightElement]);
 
   if (data !== '') {
     return (
@@ -92,6 +108,7 @@ const Landscape: React.FC<Props> = () => {
           proxy={
             <>
               <SvgLoaderSelectElement selector='.label' onClick={onItemClick} />
+              <SvgLoaderSelectElement selector='.relation' onClick={onRelationClick} />
             </>
           }
           render={(content: ReactElement[]) => (
