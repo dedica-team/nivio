@@ -22,13 +22,14 @@
     display: block;
     background-color: $header-color;
 
-    padding: 3px 150px 0px 50px;
+    padding: 5px 09px;
     box-shadow: 0px 0px 12px $box-shadow-color;
 
     font-size: $header-font-size;
     font-weight: bold;
     text-transform: uppercase;
     text-align: center;
+    width: 100%;
   }
 
   .logContainer {

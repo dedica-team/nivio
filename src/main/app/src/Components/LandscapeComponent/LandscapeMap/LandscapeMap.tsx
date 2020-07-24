@@ -33,7 +33,7 @@ const Landscape: React.FC<Props> = () => {
   const [showSlider, setShowSlider] = useState(false);
   const [data, setData] = useState('');
   const [renderWithTransition, setRenderWithTransition] = useState(false);
-  const [highlightElement, setHighlightElement] = useState<Element | null>(null);
+  const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
   const { identifier } = useParams();
 
   const findItem = (fullyQualifiedItemIdentifier: string) => {
@@ -97,7 +97,7 @@ const Landscape: React.FC<Props> = () => {
       const zoomWidth = Math.abs(Math.min(sourceX, targetX)) + window.innerWidth;
       const zoomHeight = Math.abs(Math.min(sourceY, targetY)) + window.innerHeight * 0.92;
 
-      setHighlightElement(e.currentTarget.children[0]);
+      setHighlightElement(e.currentTarget.children);
       setRenderWithTransition(true);
       setValue(fitSelection(value, x - 500, y, zoomWidth, zoomHeight));
     }
@@ -127,19 +127,40 @@ const Landscape: React.FC<Props> = () => {
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
-    if (highlightElement) {
-      if (highlightElement.tagName === 'path') {
-        highlightElement.classList.add('highlightRelation');
-      } else {
-        highlightElement.classList.add('highlightLabel');
-      }
+
+    if (highlightElement instanceof Element) {
+      highlightElement.classList.add('highlightLabel');
+
       timeout = setTimeout(() => {
-        highlightElement.classList.remove('highlightRelation');
         highlightElement.classList.remove('highlightLabel');
         setRenderWithTransition(false);
         setHighlightElement(null);
       }, 3000);
     }
+
+    if (highlightElement instanceof HTMLCollection) {
+      for (const element in highlightElement) {
+        if (!isNaN(+element)) {
+          if (highlightElement[element].tagName === 'path') {
+            highlightElement[element].classList.add('highlightRelation');
+            break;
+          }
+          highlightElement[element].classList.add('highlightLabel');
+        }
+      }
+
+      timeout = setTimeout(() => {
+        for (const element in highlightElement) {
+          if (!isNaN(+element)) {
+            highlightElement[element].classList.remove('highlightRelation');
+            highlightElement[element].classList.remove('highlightLabel');
+          }
+        }
+        setRenderWithTransition(false);
+        setHighlightElement(null);
+      }, 3000);
+    }
+
     return () => clearTimeout(timeout);
   }, [highlightElement]);
 

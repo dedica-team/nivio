@@ -19,28 +19,36 @@ const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type
   const targetGroupNameStart = targetIdentifier.indexOf('/') + 1;
   const targetRelation = targetIdentifier.substr(targetGroupNameStart);
 
+  const sourceTitle = sourceIdentifier.split('/').pop();
+  const targetTitle = targetIdentifier.split('/').pop();
+
   return (
-    <div className='mapRelationContent'>
-      <span className='type'>Type: {type}</span>
-      <div className='relationsContent'>
-        <span
-          className='relation'
-          key={sourceIdentifier}
-          onClick={() => {
-            findItem(sourceIdentifier);
-          }}
-        >
-          {sourceRelation}
-        </span>
-        <span
-          className='relation'
-          key={targetIdentifier}
-          onClick={() => {
-            findItem(targetIdentifier);
-          }}
-        >
-          {targetRelation}
-        </span>
+    <div className='mapRelation'>
+      <span className='title'>
+        {sourceTitle} {'⇄'} {targetTitle}
+      </span>
+      <div className='mapRelationContent'>
+        <span className='type'>Type: {type}</span>
+        <div className='relationsContent'>
+          <span
+            className='relation'
+            key={sourceIdentifier}
+            onClick={() => {
+              findItem(sourceIdentifier);
+            }}
+          >
+            {sourceRelation}
+          </span>
+          <span
+            className='relation'
+            key={targetIdentifier}
+            onClick={() => {
+              findItem(targetIdentifier);
+            }}
+          >
+            {targetRelation}
+          </span>
+        </div>
       </div>
     </div>
   );
