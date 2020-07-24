@@ -13,6 +13,12 @@ interface Props {
  * @param element Choosen SVG Element from our Landscape Component
  */
 const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type, findItem }) => {
+  const sourceGroupNameStart = sourceIdentifier.indexOf('/') + 1;
+  const sourceRelation = targetIdentifier.substr(sourceGroupNameStart);
+
+  const targetGroupNameStart = sourceIdentifier.indexOf('/') + 1;
+  const targetRelation = targetIdentifier.substr(targetGroupNameStart);
+
   return (
     <div className='mapRelationContent'>
       <span className='type'>Type: {type}</span>
@@ -24,7 +30,7 @@ const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type
             findItem(sourceIdentifier);
           }}
         >
-          {sourceIdentifier}
+          {sourceRelation}
         </span>
         <span
           className='relation'
@@ -33,7 +39,7 @@ const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type
             findItem(targetIdentifier);
           }}
         >
-          {targetIdentifier}
+          {targetRelation}
         </span>
       </div>
     </div>

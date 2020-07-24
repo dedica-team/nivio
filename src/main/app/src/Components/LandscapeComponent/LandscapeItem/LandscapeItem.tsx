@@ -78,8 +78,11 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
 
     if (item.relations && item.relations.length) {
       relations = item.relations.map((relation) => {
+        let relationTarget: string;
+        let groupNameStart: number;
         if (relation.target.endsWith(item.identifier)) {
-          const relationTarget = relation.source.split('/').pop();
+          groupNameStart = relation.source.indexOf('/') + 1;
+          relationTarget = relation.source.substr(groupNameStart);
           return (
             <span
               className='relation'
@@ -94,7 +97,8 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
             </span>
           );
         }
-        const relationTarget2 = relation.target.split('/').pop();
+        groupNameStart = relation.target.indexOf('/') + 1;
+        relationTarget = relation.target.substr(groupNameStart);
         return (
           <span
             className='relation'
@@ -105,7 +109,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
               }
             }}
           >
-            {relationTarget2}
+            {relationTarget}
           </span>
         );
       });
