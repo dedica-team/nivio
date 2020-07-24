@@ -4,6 +4,7 @@ jobs:
   test:
     runs-on: ${{matrix.os}}
     strategy:
+      max-parallel: 1
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
