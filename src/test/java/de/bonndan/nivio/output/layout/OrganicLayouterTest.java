@@ -182,7 +182,7 @@ class OrganicLayouterTest {
         indexer.reIndex(input);
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
-        debugRenderLandscape(RootPath.get() + "/src/test/resources/example/large", landscape, false);
+        debugRenderLandscape("/src/test/resources/example/large", landscape, false);
     }
 
     @Test
