@@ -13,4 +13,4 @@ jobs:
         with:
           java-version: 11.0.8
       - name: Test with Maven
-		run: mvn test -B --file pom.xml
+        run: mvn test -B --file pom.xml
