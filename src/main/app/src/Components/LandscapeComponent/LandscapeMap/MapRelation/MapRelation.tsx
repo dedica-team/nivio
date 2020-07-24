@@ -24,9 +24,11 @@ const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type
 
   return (
     <div className='mapRelation'>
-      <span className='title'>
-        {sourceTitle} {'⇄'} {targetTitle}
-      </span>
+      <div className='titleContainer'>
+        <span className='title'>
+          {sourceTitle} {'⇄'} {targetTitle}
+        </span>
+      </div>
       <div className='mapRelationContent'>
         <span className='type'>Type: {type}</span>
         <div className='relationsContent'>

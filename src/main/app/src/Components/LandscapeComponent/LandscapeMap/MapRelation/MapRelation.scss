@@ -18,20 +18,21 @@ $dotSize: 50px;
     display: none;
   }
 
-  .title {
-    position: relative;
-    z-index: 1;
-    display: block;
+  .titleContainer {
     background-color: $header-color;
-
-    padding: 5px 0px;
     box-shadow: 0px 0px 12px $box-shadow-color;
+    .title {
+      position: relative;
+      z-index: 1;
+      display: block;
+      padding: 5px 0px 5px 5%;
 
-    font-size: $header-font-size;
-    font-weight: bold;
-    text-transform: uppercase;
-    text-align: center;
-    width: 100%;
+      font-size: $header-font-size;
+      font-weight: bold;
+      text-transform: uppercase;
+      text-align: center;
+      width: 90%;
+    }
   }
 
   .mapRelationContent {

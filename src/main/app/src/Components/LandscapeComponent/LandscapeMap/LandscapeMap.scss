@@ -153,9 +153,9 @@
     -webkit-animation: highlightLabel 1s linear;
     -o-animation: highlightLabel 1s linear;
     animation: highlightLabel 1s linear;
-    -webkit-animation-iteration-count: 3;
-    -o-animation-iteration-count: 3;
-    animation-iteration-count: 3;
+    -webkit-animation-iteration-count: 2;
+    -o-animation-iteration-count: 2;
+    animation-iteration-count: 2;
   }
 
   .highlightRelation {
@@ -163,9 +163,9 @@
     -webkit-animation: highlightRelation 1s linear;
     -o-animation: highlightRelation 1s linear;
     animation: highlightRelation 1s linear;
-    -webkit-animation-iteration-count: 3;
-    -o-animation-iteration-count: 3;
-    animation-iteration-count: 3;
+    -webkit-animation-iteration-count: 2;
+    -o-animation-iteration-count: 2;
+    animation-iteration-count: 2;
   }
 
   .with-transition {

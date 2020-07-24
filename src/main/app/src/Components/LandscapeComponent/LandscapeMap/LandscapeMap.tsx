@@ -135,7 +135,7 @@ const Landscape: React.FC<Props> = () => {
         highlightElement.classList.remove('highlightLabel');
         setRenderWithTransition(false);
         setHighlightElement(null);
-      }, 3000);
+      }, 2000);
     }
 
     if (highlightElement instanceof HTMLCollection) {
@@ -158,7 +158,7 @@ const Landscape: React.FC<Props> = () => {
         }
         setRenderWithTransition(false);
         setHighlightElement(null);
-      }, 3000);
+      }, 2000);
     }
 
     return () => clearTimeout(timeout);
