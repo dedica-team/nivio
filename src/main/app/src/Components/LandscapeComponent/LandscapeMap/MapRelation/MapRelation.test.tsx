@@ -5,13 +5,13 @@ import MapRelation from './MapRelation';
 it('should render mapRelation component', () => {
   const { getByText } = render(
     <MapRelation
-      sourceIdentifier={'source'}
-      targetIdentifier={'target'}
+      sourceIdentifier={'source/test/source'}
+      targetIdentifier={'target/test/target'}
       type='typeTest'
       findItem={() => {}}
     />
   );
-  expect(getByText('source')).toBeInTheDocument();
-  expect(getByText('target')).toBeInTheDocument();
+  expect(getByText('test/source')).toBeInTheDocument();
+  expect(getByText('test/target')).toBeInTheDocument();
   expect(getByText('Type: typeTest')).toBeInTheDocument();
 });

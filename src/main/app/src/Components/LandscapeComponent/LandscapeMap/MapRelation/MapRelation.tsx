@@ -14,9 +14,9 @@ interface Props {
  */
 const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type, findItem }) => {
   const sourceGroupNameStart = sourceIdentifier.indexOf('/') + 1;
-  const sourceRelation = targetIdentifier.substr(sourceGroupNameStart);
+  const sourceRelation = sourceIdentifier.substr(sourceGroupNameStart);
 
-  const targetGroupNameStart = sourceIdentifier.indexOf('/') + 1;
+  const targetGroupNameStart = targetIdentifier.indexOf('/') + 1;
   const targetRelation = targetIdentifier.substr(targetGroupNameStart);
 
   return (
