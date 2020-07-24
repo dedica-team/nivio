@@ -20,13 +20,14 @@ import java.util.*;
  */
 public class AllGroupsGraph implements RenderedArtifact<mxGraph, mxCell> {
 
-    private static final Logger logger = LoggerFactory.getLogger(JGraphXRenderer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JGraphXRenderer.class);
 
     private final mxGraph graph;
-    private final Map<Group, mxCell> groupNodes = new HashMap<>();
+    private final Map<Group, mxCell> groupNodes = new LinkedHashMap<>();
 
     public AllGroupsGraph(LandscapeConfig config, Map<String, Group> groups, Map<String, GroupGraph> subgraphs) {
 
+        LOGGER.debug("Subgraphs sequence: {}", subgraphs);
         graph = new mxGraph();
 
         List<LandscapeItem> items = new ArrayList<>();
@@ -45,6 +46,7 @@ public class AllGroupsGraph implements RenderedArtifact<mxGraph, mxCell> {
             groupNodes.put(groupItem, groupnode);
             items.addAll(serviceItems);
         });
+        LOGGER.debug("Group node sequence: {}", groupNodes);
 
         addVirtualEdgesBetweenGroups(items);
 
@@ -56,7 +58,7 @@ public class AllGroupsGraph implements RenderedArtifact<mxGraph, mxCell> {
                 .ifPresent(f -> layout.setMinDistanceLimit(layout.getMinDistanceLimit() * f));
 
         layout.execute(graph.getDefaultParent());
-        logger.info("AllGroupsGraph bounds: {}", graph.getGraphBounds());
+        LOGGER.info("AllGroupsGraph bounds: {}", graph.getGraphBounds());
     }
 
 
@@ -70,7 +72,7 @@ public class AllGroupsGraph implements RenderedArtifact<mxGraph, mxCell> {
         items.forEach(item -> {
             final String group;
             if (StringUtils.isEmpty(item.getGroup())) {
-                logger.warn("Item {} has no group, using " + Group.COMMON, item);
+                LOGGER.warn("Item {} has no group, using " + Group.COMMON, item);
                 group = Group.COMMON;
             } else {
                 group = item.getGroup();
@@ -80,7 +82,7 @@ public class AllGroupsGraph implements RenderedArtifact<mxGraph, mxCell> {
             item.getRelations().forEach(relationItem -> {
                 Item targetItem = (Item) relationItem.getTarget();
                 if (targetItem == null) {
-                    logger.warn("Virtual connections: No target in relation item {}", relationItem);
+                    LOGGER.warn("Virtual connections: No target in relation item {}", relationItem);
                     return;
                 }
 
@@ -135,13 +137,13 @@ public class AllGroupsGraph implements RenderedArtifact<mxGraph, mxCell> {
         }
 
         void connect(String a, String b, String message) {
-            logger.debug(message + a + " and " + b);
+            LOGGER.debug(message + a + " and " + b);
             groupConnections.add(new ImmutablePair(a, b));
         }
 
         boolean canConnect(String a, String b) {
             if (StringUtils.isEmpty(a) || StringUtils.isEmpty(b)) {
-                logger.warn("Empty group names in virtual connection check between {} and {}", a, b);
+                LOGGER.warn("Empty group names in virtual connection check between {} and {}", a, b);
                 return false;
             }
 

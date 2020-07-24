@@ -1,13 +1,10 @@
 package de.bonndan.nivio.output.jgraphx;
 
-import com.mxgraph.canvas.mxGraphics2DCanvas;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxPoint;
-import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
-import com.mxgraph.view.mxStyleRegistry;
 import com.mxgraph.view.mxStylesheet;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Color;
@@ -17,8 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 import static de.bonndan.nivio.output.Color.getGroupColor;
 import static de.bonndan.nivio.output.map.MapFactory.DEFAULT_ICON_SIZE;
@@ -34,22 +29,15 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
     private static final String CUSTOM_TYPE = "custom";
 
     private final Logger logger = LoggerFactory.getLogger(FinalGraph.class);
-    private final Map<Item, mxCell> itemVertexes = new HashMap<>();
+    private final Map<Item, mxCell> itemVertexes = new LinkedHashMap<>();
     private mxStylesheet stylesheet;
     private mxGraph graph;
-    private final Map<Group, mxCell> groups = new HashMap<>();
+    private final Map<Group, mxCell> groups = new LinkedHashMap<>();
 
     public FinalGraph() {
     }
 
     public mxGraph render(AllGroupsGraph allGroupsGraph, Map<String, GroupGraph> subgraphs) {
-
-        //circular image
-        mxGraphics2DCanvas.putShape(mxCircularImageShape.NAME, new mxCircularImageShape());
-
-        //curved edges, https://stackoverflow.com/questions/22746439/jgraphx-custom-layoult-curved-edges
-        mxGraphics2DCanvas.putShape(CurvedShape.KEY, new CurvedShape());
-        mxStyleRegistry.putValue(CurvedEdgeStyle.KEY, new CurvedEdgeStyle());
 
         graph = new mxGraph();
         graph.setGridEnabled(true);
@@ -57,8 +45,6 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
         graph.setHtmlLabels(true);
         stylesheet = graph.getStylesheet();
 
-
-        //graph.orderCells(true, virtualNodes.toArray());
         final List<Item> items = new ArrayList<>();
 
         allGroupsGraph.getGroupObjects().forEach((group, mxCell) -> {
@@ -88,8 +74,6 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
         });
 
         addDataFlow(items);
-
-        //renderExtras(itemVertexes);
 
         return graph;
     }
@@ -160,62 +144,6 @@ public class FinalGraph implements RenderedArtifact<mxGraph, mxCell> {
                 DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE,
                 style
         );
-    }
-
-    private void renderExtras(Map<Item, mxCell> map) {
-
-        map.entrySet().forEach(entry -> {
-            mxCell cell = entry.getValue();
-            mxRectangle cellBounds = graph.getCellBounds(cell);
-
-            //sort statuses, pick worst
-            Item item = entry.getKey();
-
-            //statuses at left
-            if (cellBounds == null) {
-                logger.warn("Render extras: no cell bounds for {}", item);
-                return;
-            }
-
-            //interfaces
-            int intfBoxSize = 10;
-            double intfOffsetX = cellBounds.getCenterX() - 0.5 * intfBoxSize;
-            double intfOffsetY = cellBounds.getCenterY() - 0.5 * intfBoxSize;
-            String intfStyle = mxConstants.STYLE_SHAPE + "=" + mxConstants.SHAPE_ELLIPSE + ";"
-                    + mxConstants.STYLE_FONTCOLOR + "=black;"
-                    + mxConstants.STYLE_LABEL_POSITION + "=right;"
-                    + mxConstants.STYLE_ALIGN + "=left;"
-                    + mxConstants.STYLE_FILLCOLOR + "=#" + getGroupColor(item) + ";"
-                    + mxConstants.STYLE_STROKEWIDTH + "=0;";
-
-
-            AtomicInteger count = new AtomicInteger(0);
-            Stream<InterfaceItem> sorted = item.getInterfaces().stream()
-                    .sorted((interfaceItem, t1) -> interfaceItem.getDescription().compareToIgnoreCase(t1.getDescription()));
-            sorted.forEach(intf -> {
-
-                double angleInRadians = -1 + count.getAndIncrement() * 0.5;
-                double radius = intfBoxSize * 4;
-                double x = Math.cos(angleInRadians) * radius;
-                double y = Math.sin(angleInRadians) * radius;
-
-                Object v1 = graph.insertVertex(graph.getDefaultParent(), null,
-                        intf.getDescription() + " (" + intf.getFormat() + ")",
-                        intfOffsetX + x, intfOffsetY + y, intfBoxSize, intfBoxSize,
-                        intfStyle
-                );
-
-                graph.insertEdge(
-                        graph.getDefaultParent(), null, "",
-                        cell,
-                        v1,
-                        mxConstants.STYLE_ENDARROW + "=none;"
-                                + mxConstants.STYLE_STROKEWIDTH + "=2;"
-                                + mxConstants.STYLE_STROKECOLOR + "=#" + getGroupColor(item) + ";"
-                );
-            });
-        });
-
     }
 
     private String getItemStyle(LandscapeItem landscapeItem) {

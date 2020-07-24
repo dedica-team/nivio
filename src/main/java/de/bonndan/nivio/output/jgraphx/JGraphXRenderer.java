@@ -12,7 +12,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -28,11 +27,11 @@ public class JGraphXRenderer implements Renderer<RenderedArtifact<mxGraph, mxCel
 
         Map<String, GroupGraph> subgraphs = new LinkedHashMap<>();
         landscape.getGroups().forEach((name, groupItem) ->  {
-            GroupGraph groupGraph = new GroupGraph(((Group)groupItem).getItems());
+            GroupGraph groupGraph = new GroupGraph(name, ((Group)groupItem).getItems());
             subgraphs.put(name, groupGraph);
         });
 
-        Map<String, Group> groupMap = new HashMap<>();
+        Map<String, Group> groupMap = new LinkedHashMap<>();
         landscape.getGroups().forEach((s, groupItem) -> groupMap.put(s, (Group)groupItem));
         AllGroupsGraph allGroupsGraph = new AllGroupsGraph(landscape.getConfig(), groupMap, subgraphs);
 
