@@ -3,10 +3,12 @@ package de.bonndan.nivio.output.map;
 import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
-import org.apache.catalina.startup.UserConfig;
+import de.bonndan.nivio.output.map.svg.SVGRenderer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -18,24 +20,17 @@ import static org.mockito.Mockito.*;
 class PNGRenderCacheTest {
 
     private PNGRenderCache renderCache;
-    private MapFactory mapFactory;
+    private LocalServer localServer;
     private MapStyleSheetFactory stylesheetFactory;
+    private SVGRenderer svgRenderer;
 
     @BeforeEach
     public void setup() {
-        mapFactory = mock(MapFactory.class);
+        localServer = new LocalServer("", null);
         stylesheetFactory = mock(MapStyleSheetFactory.class);
-        renderCache = new PNGRenderCache(mapFactory, stylesheetFactory);
+        svgRenderer = new SVGRenderer(stylesheetFactory);
+        renderCache = new PNGRenderCache(localServer, svgRenderer);
         when(stylesheetFactory.getMapStylesheet(any(), any())).thenReturn("");
-
-        doAnswer(invocationOnMock -> {
-            LandscapeImpl argument = invocationOnMock.getArgument(0);
-            argument.getItems().all().forEach(item -> {
-                item.setX(50L);
-                item.setY(50L);
-            });
-            return null;
-        }).when(mapFactory).applyArtifactValues(any(LandscapeImpl.class), any());
     }
 
     @Test
@@ -43,7 +38,7 @@ class PNGRenderCacheTest {
         byte[] png = renderCache.getPNG(getLandscape());
         assertNotNull(png);
 
-        verify(mapFactory, times(1)).applyArtifactValues(any(), any());
+        verify(stylesheetFactory, times(1)).getMapStylesheet(any(), any());
     }
 
     @Test
@@ -52,7 +47,7 @@ class PNGRenderCacheTest {
         byte[] first = renderCache.getPNG(landscape);
         byte[] second = renderCache.getPNG(landscape);
 
-        verify(mapFactory, times(1)).applyArtifactValues(any(), any());
+        verify(stylesheetFactory, times(1)).getMapStylesheet(any(), any());
     }
 
     @Test
@@ -60,7 +55,7 @@ class PNGRenderCacheTest {
         byte[] first = renderCache.getPNG(getLandscape());
         byte[] second = renderCache.getPNG(getLandscape());
 
-        verify(mapFactory, times(2)).applyArtifactValues(any(), any());
+        verify(stylesheetFactory, times(2)).getMapStylesheet(any(), any());
     }
 
     @Test
@@ -72,7 +67,7 @@ class PNGRenderCacheTest {
         two.setIdentifier("second");
         byte[] second = renderCache.getPNG(two);
 
-        verify(mapFactory, times(2)).applyArtifactValues(any(), any());
+        verify(stylesheetFactory, times(2)).getMapStylesheet(any(), any());
     }
 
     @Test
@@ -86,7 +81,7 @@ class PNGRenderCacheTest {
     void onProcessingFinishedEvent() {
         renderCache.onApplicationEvent(new ProcessingFinishedEvent(new LandscapeDescription(), getLandscape()));
 
-        verify(mapFactory, times(1)).applyArtifactValues(any(), any());
+        verify(stylesheetFactory, times(1)).getMapStylesheet(any(), any());
     }
 
     private LandscapeImpl getLandscape() {
@@ -94,7 +89,12 @@ class PNGRenderCacheTest {
         landscape.setIdentifier("test");
         Item item = new Item();
         item.setIdentifier("foo");
+        item.setGroup("bar");
         landscape.getItems().add(item);
+
+        Group bar = new Group("bar");
+        bar.getItems().add(item);
+        landscape.getGroups().put("bar", bar);
 
         ProcessLog test = new ProcessLog(LoggerFactory.getLogger("test"));
         test.info("foo");

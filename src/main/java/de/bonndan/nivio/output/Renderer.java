@@ -8,7 +8,7 @@ import java.io.IOException;
 /**
  * Any class that can transform a landscape into some sort of output.
  *
- * @param <T>
+ * @param <T> output type
  */
 public interface Renderer<T> {
 

@@ -4,7 +4,7 @@
 [![Documentation Status](https://readthedocs.org/projects/nivio/badge/?version=master)](https://nivio.readthedocs.io/en/master/?badge=master)
 
 
- ![renderedArtifact graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/gui.png)
+ ![layoutedArtifact graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/gui.png)
  
 Nivio is application landscape management for teams (developers, operators, managers). It follows a bottom-up no-op 
 approach, i.e. there is no interface for manual data maintenance. It is designed to gather the application landscape
@@ -17,7 +17,7 @@ approach, i.e. there is no interface for manual data maintenance. It is designed
 
 ## Example Graph, Input and Output
 
- ![renderedArtifact graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/graph.png)
+ ![layoutedArtifact graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/graph.png)
 
 ![input output_graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/inout.png)
 

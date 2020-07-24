@@ -57,24 +57,24 @@ public interface Rendered extends Labeled {
         return getLabel(LABEL_FILL);
     }
 
-    default void setX(Long x) {
+    default void setX(Double x) {
         setLabel(LX, String.valueOf(x));
     }
 
     @JsonIgnore
-    default Long getX() {
+    default Double getX() {
         String x = getLabel(LX);
-        return x == null ? null : Long.parseLong(x);
+        return x == null ? null : Double.parseDouble(x);
     }
 
-    default void setY(Long y) {
+    default void setY(Double y) {
         setLabel(LY, String.valueOf(y));
     }
 
     @JsonIgnore
-    default Long getY() {
+    default Double getY() {
         String y = getLabel(LY);
-        return y == null ? null : Long.parseLong(y);
+        return y == null ? null : Double.parseDouble(y);
     }
 
 }

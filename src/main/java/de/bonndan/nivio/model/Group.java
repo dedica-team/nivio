@@ -138,4 +138,11 @@ public class Group implements GroupItem, Rendered, Assessable {
     public void setLandscape(String landscapeIdentifier) {
         this.landscapeIdentifier = landscapeIdentifier;
     }
+
+    @Override
+    public String toString() {
+        return "Group{" +
+                "identifier='" + identifier + '\'' +
+                '}';
+    }
 }

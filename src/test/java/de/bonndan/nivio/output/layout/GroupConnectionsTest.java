@@ -1,14 +1,14 @@
-package de.bonndan.nivio.output.jgraphx;
+package de.bonndan.nivio.output.layout;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AllGroupsGraphTest {
+class GroupConnectionsTest {
 
     @Test
     public void testGroupConnections() {
-        AllGroupsGraph.GroupConnections groupConnections = new AllGroupsGraph.GroupConnections();
+        GroupConnections groupConnections = new GroupConnections();
         assertFalse(groupConnections.isConnected("a"));
 
         assertTrue((groupConnections.canConnect("a", "b")));

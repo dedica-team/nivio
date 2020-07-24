@@ -1,9 +1,6 @@
-package de.bonndan.nivio.output.jgraphx;
+package de.bonndan.nivio.output.layout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mxgraph.model.mxCell;
-import com.mxgraph.util.mxCellRenderer;
-import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.Indexer;
 import de.bonndan.nivio.input.ItemDescriptionFormatFactory;
@@ -17,12 +14,11 @@ import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
+import de.bonndan.nivio.output.LayoutedArtifact;
 import de.bonndan.nivio.output.LocalServer;
-import de.bonndan.nivio.output.RenderedArtifact;
 import de.bonndan.nivio.output.icons.VendorIcons;
-import de.bonndan.nivio.output.map.MapFactory;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
-import de.bonndan.nivio.output.map.svg.SvgFactory;
+import de.bonndan.nivio.output.map.svg.SVGDocument;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -30,8 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.context.ApplicationEventPublisher;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -39,11 +33,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class JGraphXRendererTest {
+class OrganicLayouterTest {
 
     private LandscapeRepository landscapeRepository;
     private ItemDescriptionFormatFactory formatFactory;
@@ -67,28 +60,39 @@ class JGraphXRendererTest {
         return landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
     }
 
-    private mxGraph debugRender(String path) throws IOException {
+    private ComponentBounds debugRender(String path) throws IOException {
         return debugRender(path, true);
     }
 
-    private mxGraph debugRender(String path, boolean debugMode) throws IOException {
+    private ComponentBounds debugRender(String path, boolean debugMode) throws IOException {
         LandscapeImpl landscape = getLandscape(path + ".yml");
         return debugRenderLandscape(path, landscape, debugMode);
     }
 
-    private mxGraph debugRenderLandscape(String path, LandscapeImpl landscape, boolean debugMode) throws IOException {
+    private ComponentBounds debugRenderLandscape(String path, LandscapeImpl landscape, boolean debugMode) throws IOException {
 
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer();
-        jGraphXRenderer.setDebugMode(debugMode);
-        mxGraph graph = jGraphXRenderer.render(landscape).getRendered();
+        OrganicLayouter layouter = new OrganicLayouter(new LocalServer("", new VendorIcons()));
+        LayoutedArtifact<ComponentBounds> graph = layouter.layout(landscape);
+        toSVG(landscape, graph, RootPath.get() + path);
+        return graph.getRendered();
+    }
 
-        BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, null, true, null);
-        assertNotNull(image);
+    private void toSVG(LandscapeImpl landscape, LayoutedArtifact<ComponentBounds> render, String filename) throws IOException {
 
-        File png = new File(RootPath.get() + path + "_debug.png");
-        ImageIO.write(image, "PNG", png);
+        MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
+        when(mapStyleSheetFactory.getMapStylesheet(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn("");
 
-        return graph;
+        File json = new File(filename + "_debug.json");
+        new ObjectMapper().writeValue(json, render);
+
+        SVGDocument SVGDocument = new SVGDocument(landscape, mapStyleSheetFactory);
+        SVGDocument.setDebug(true);
+        String svg = SVGDocument.getXML();
+
+        File svgFile = new File(filename + "_debug.svg");
+        FileWriter fileWriter = new FileWriter(svgFile);
+        fileWriter.write(svg);
+        fileWriter.close();
     }
 
     @Test
@@ -142,7 +146,6 @@ class JGraphXRendererTest {
     }
 
     @Test
-    @Disabled
     public void debugRenderLargeGraphSVG() throws IOException {
 
         LandscapeDescription input = new LandscapeDescription();
@@ -179,21 +182,7 @@ class JGraphXRendererTest {
         indexer.reIndex(input);
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer();
-        MapFactory<mxGraph, mxCell> mapFactory = new RenderedXYMapFactory(new LocalServer("", new VendorIcons()));
-        RenderedArtifact<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
-        mapFactory.applyArtifactValues(landscape, render);
-
-        MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
-        when(mapStyleSheetFactory.getMapStylesheet(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn("");
-        SvgFactory svgFactory = new SvgFactory(landscape, mapStyleSheetFactory);
-        svgFactory.setDebug(true);
-        String svg = svgFactory.getXML();
-
-        File png = new File(RootPath.get() + "/src/test/resources/example/large" + ".svg");
-        FileWriter fileWriter = new FileWriter(png);
-        fileWriter.write(svg);
-        fileWriter.close();
+        debugRenderLandscape(RootPath.get() + "/src/test/resources/example/large", landscape, false);
     }
 
     @Test

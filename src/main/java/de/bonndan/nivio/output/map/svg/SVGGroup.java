@@ -3,7 +3,7 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.model.Group;
 import j2html.tags.DomContent;
 
-import static de.bonndan.nivio.output.map.MapFactory.DEFAULT_ICON_SIZE;
+import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 
 class SVGGroup extends Component {
 

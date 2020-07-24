@@ -1,15 +1,14 @@
 package de.bonndan.nivio.output.map;
 
-import com.mxgraph.model.mxCell;
-import com.mxgraph.view.mxGraph;
 import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.output.RenderedArtifact;
-import de.bonndan.nivio.output.jgraphx.JGraphXRenderer;
-import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
-import de.bonndan.nivio.output.map.svg.SvgFactory;
+import de.bonndan.nivio.output.LayoutedArtifact;
+import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.layout.ComponentBounds;
+import de.bonndan.nivio.output.layout.OrganicLayouter;
+import de.bonndan.nivio.output.map.svg.SVGRenderer;
 import org.apache.batik.transcoder.Transcoder;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -38,12 +37,12 @@ public class PNGRenderCache implements ApplicationListener<ProcessingFinishedEve
 
     private final Map<String, Pair<LandscapeImpl, byte[]>> renderings = new HashMap<>();
 
-    private final MapFactory<mxGraph, mxCell> mapFactory;
-    private final MapStyleSheetFactory mapStyleSheetFactory;
+    private final LocalServer localServer;
+    private final SVGRenderer svgRenderer;
 
-    public PNGRenderCache(MapFactory<mxGraph, mxCell> mapFactory, MapStyleSheetFactory mapStyleSheetFactory) {
-        this.mapFactory = mapFactory;
-        this.mapStyleSheetFactory = mapStyleSheetFactory;
+    public PNGRenderCache(LocalServer localServer, SVGRenderer svgRenderer) {
+        this.localServer = localServer;
+        this.svgRenderer = svgRenderer;
     }
 
     /**
@@ -71,16 +70,15 @@ public class PNGRenderCache implements ApplicationListener<ProcessingFinishedEve
      * @return the svg as string, uncached
      */
     public String getSVG(LandscapeImpl landscape) {
-        JGraphXRenderer jGraphXRenderer = new JGraphXRenderer();
-        RenderedArtifact<mxGraph, mxCell> render = jGraphXRenderer.render(landscape);
-        mapFactory.applyArtifactValues(landscape, render);
+        OrganicLayouter layouter = new OrganicLayouter(localServer);
+        layouter.layout(landscape);
+
         if (landscape.getLog() == null) {
             ProcessLog processLog = new ProcessLog(LOGGER);
             processLog.setLandscape(landscape);
             landscape.setProcessLog(processLog);
         }
-        SvgFactory svgFactory = new SvgFactory(landscape, mapStyleSheetFactory);
-        return svgFactory.getXML();
+        return svgRenderer.render(landscape);
     }
 
     @Override

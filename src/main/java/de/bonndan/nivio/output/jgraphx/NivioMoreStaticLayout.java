@@ -48,8 +48,9 @@ public class NivioMoreStaticLayout extends mxFastOrganicLayout {
      * @return Returns true if the vertex should be ignored.
      */
     public boolean isVertexIgnored(Object vertex) {
-        return super.isVertexIgnored(vertex)
-                || graph.getConnections(vertex).length == 0;
+        // XXX || graph.getConnections(vertex).length == 0;
+        // XXX we must take unconnected into account, so using the original method
+        return !this.graph.getModel().isVertex(vertex) || !this.graph.isCellVisible(vertex);
     }
 
     /* (non-Javadoc)

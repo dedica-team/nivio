@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 import java.awt.geom.Point2D;
 import java.util.Locale;
 
-import static de.bonndan.nivio.output.map.MapFactory.DEFAULT_ICON_SIZE;
+import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 
 /**
  * A landscape item to be rendered in svg.

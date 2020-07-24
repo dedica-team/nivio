@@ -4,7 +4,6 @@ import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeItem;
-import de.bonndan.nivio.output.Rendered;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexFactory;
 import de.bonndan.nivio.output.map.hex.PathFinder;
@@ -23,23 +22,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.output.map.MapFactory.DEFAULT_ICON_SIZE;
 import static de.bonndan.nivio.output.map.svg.SVGItemLabel.LABEL_WIDTH;
+import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 import static j2html.TagCreator.rawHtml;
 
 /**
  * Creates an SVG document based on pre-rendered map items.
  */
-public class SvgFactory extends Component {
+public class SVGDocument extends Component {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SvgFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SVGDocument.class);
 
     private final Set<Hex> occupied = new HashSet<>();
     private final LandscapeImpl landscape;
     private final MapStyleSheetFactory mapStyleSheetFactory;
     private boolean debug = false;
 
-    public SvgFactory(LandscapeImpl landscape, MapStyleSheetFactory mapStyleSheetFactory) {
+    public SVGDocument(LandscapeImpl landscape, MapStyleSheetFactory mapStyleSheetFactory) {
         this.landscape = landscape;
         this.mapStyleSheetFactory = mapStyleSheetFactory;
     }
@@ -57,7 +56,7 @@ public class SvgFactory extends Component {
             Hex hex = null;
             int i = 0;
             while (hex == null || occupied.contains(hex)) {
-                hex = hexFactory.of(item.getX() - i, item.getY() - i);
+                hex = hexFactory.of(Math.round(item.getX()) - i, Math.round(item.getY()) - i);
                 i++;
             }
 
@@ -167,7 +166,7 @@ public class SvgFactory extends Component {
         AtomicLong maxY = new AtomicLong(Long.MIN_VALUE);
 
         items.forEach(item -> {
-            Point2D.Double p = hexFactory.of(Integer.parseInt(item.getLabel(Rendered.LX)), Integer.parseInt(item.getLabel(Rendered.LY))).toPixel();
+            Point2D.Double p = hexFactory.of(Math.round(item.getX()), Math.round(item.getY())).toPixel();
             if (p.x < minX.get()) minX.set((long) p.x);
             if (p.x > maxX.get()) maxX.set((long) p.x);
             if (p.y < minY.get()) minY.set((long) p.y);
