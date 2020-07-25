@@ -49,7 +49,7 @@ public class AllGroupsGraph implements LayoutedArtifact<ComponentBounds> {
         //Optional.ofNullable(config.getJgraphx().getMinDistanceLimitFactor())
         //        .ifPresent(f -> layout.setMinDistanceLimit(layout.getMinDistanceLimit() * f));
 
-        layout.setForceConstant(250);
+        layout.setForceConstant(350);
         layout.setMaxDistanceLimit(1000);
         layout.execute();
         LOGGER.info("AllGroupsGraph bounds: {}", layout.getBounds());

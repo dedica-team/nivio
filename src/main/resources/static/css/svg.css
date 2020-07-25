@@ -6,11 +6,6 @@ svg g {
   stroke-width: 0.3;
 }
 
-svg g polygon {
-  stroke: #3F51B5;
-  stroke-width: 0.2;
-}
-
 svg g circle {
   stroke-width: 0.4em;
 }

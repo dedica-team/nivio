@@ -86,12 +86,8 @@ public class SVGDocument extends Component {
         AtomicInteger height = new AtomicInteger(0);
 
         List<DomContent> groups = landscape.getGroups().values().stream().map(group -> {
-            SVGGroup SVGGroup = getGroup(hexFactory, (Group) group, vertexHexes);
-            if ((SVGGroup.x + SVGGroup.width) > width.get())
-                width.set((int) (SVGGroup.x + SVGGroup.width));
-            if ((SVGGroup.y + SVGGroup.height) > height.get())
-                height.set((int) (SVGGroup.y + SVGGroup.height));
-            return SVGGroup.render();
+            SVGGroupArea area = SVGGroupAreaFactory.getGroup(occupied, (Group) group, vertexHexes);
+            return area.render();
         }).collect(Collectors.toList());
 
         List<DomContent> patterns = landscape.getItems().all().stream()
@@ -104,6 +100,12 @@ public class SVGDocument extends Component {
         List<DomContent> items = landscape.getItems().all().stream().map(item -> {
             SVGItemLabel label = new SVGItemLabel(item);
             Point2D.Double pos = vertexHexes.get(item).toPixel();
+
+            if ((pos.x + DEFAULT_ICON_SIZE) > width.get())
+                width.set((int) (pos.x + DEFAULT_ICON_SIZE));
+            if ((pos.y + DEFAULT_ICON_SIZE) > height.get())
+                height.set((int) (pos.y + DEFAULT_ICON_SIZE));
+
             SVGItem SVGItem = new SVGItem(label.render(), item, pos);
             return SVGItem.render();
         }).collect(Collectors.toList());

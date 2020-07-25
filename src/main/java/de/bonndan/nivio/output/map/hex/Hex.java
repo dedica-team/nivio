@@ -71,6 +71,23 @@ public class Hex {
         return DIRECTIONS.get((6 + _direction % 6) % 6);
     }
 
+    private Point2D.Double hex_corner_offset(int corner, int s) {
+        Point2D.Double size = new Point2D.Double(s, s);
+        double angle = 2.0 * Math.PI * (Hex.Layout.startAngle + corner) / 6;
+        return new Point2D.Double(size.x * Math.cos(angle), size.y * Math.sin(angle));
+    }
+
+    public ArrayList<Point2D.Double> asPoints(int size) {
+
+        ArrayList<Point2D.Double> corners = new ArrayList<>();
+        Point2D.Double center = toPixel();
+        for (int i = 0; i < 6; i++) {
+            Point2D.Double offset = hex_corner_offset(i, size);
+            corners.add(new Point2D.Double(center.x + offset.x, center.y + offset.y));
+        }
+        return corners;
+    }
+
     @Override
     public String toString() {
         return "Hex{" +
@@ -99,5 +116,43 @@ public class Hex {
         result = 31 * result + r;
         result = 31 * result + s;
         return result;
+    }
+
+    public static class Orientation {
+
+        static Orientation LAYOUT_FLAT = new Orientation(3.0 / 2.0, 0.0, Math.sqrt(3.0) / 2.0, Math.sqrt(3.0), 2.0 / 3.0, 0.0, -1.0 / 3.0, Math.sqrt(3.0) / 3.0, 0.0);
+
+        private final double startAngle;
+        public double f0;
+        public double f1;
+        public double f2;
+        public double f3;
+
+        private final double b0;
+        private final double b1;
+        private final double b2;
+        private final double b3;
+
+
+        Orientation(double f0, double f1, double f2, double f3, double b0, double b1, double b2, double b3, double startAngle) {
+
+            this.f0 = f0;
+            this.f1 = f1;
+            this.f2 = f2;
+            this.f3 = f3;
+            this.b0 = b0;
+            this.b1 = b1;
+            this.b2 = b2;
+            this.b3 = b3;
+            this.startAngle = startAngle;
+        }
+
+    }
+
+    public static class Layout {
+
+        static final int SIZE = 100;
+        public static final Point2D.Double origin = new Point2D.Double(200, 200);
+        public static final int startAngle = 0;
     }
 }
