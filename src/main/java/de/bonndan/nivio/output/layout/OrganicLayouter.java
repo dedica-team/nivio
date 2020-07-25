@@ -58,16 +58,14 @@ public class OrganicLayouter implements Layouter<ComponentBounds> {
         AtomicLong minY = new AtomicLong(0);
         AtomicLong maxY = new AtomicLong(0);
         layoutedArtifact.getRendered().getChildren().forEach(groupBounds -> {
-            groupBounds.getChildren().forEach(item -> {
-                if (item.getX() < minX.get())
-                    minX.set((long) item.getX());
-                if (item.getX() > maxX.get())
-                    maxX.set((long) item.getX());
-                if (item.getY() < minY.get())
-                    minY.set((long) item.getY());
-                if (item.getY() > maxY.get())
-                    maxY.set((long) item.getY());
-            });
+                if (groupBounds.getX() < minX.get())
+                    minX.set((long) groupBounds.getX());
+                if (groupBounds.getX() > maxX.get())
+                    maxX.set((long) groupBounds.getX());
+                if (groupBounds.getY() < minY.get())
+                    minY.set((long) groupBounds.getY());
+                if (groupBounds.getY() > maxY.get())
+                    maxY.set((long) groupBounds.getY());
         });
 
         landscape.setWidth(maxX.get() - minX.get());
@@ -83,6 +81,7 @@ public class OrganicLayouter implements Layouter<ComponentBounds> {
             marginY += minY.get()*-1;
         }
 
+        LOGGER.debug("Shifting elements into positive coords by x {} and y {}", marginX, marginY);
         applyValues(layoutedArtifact, marginX, marginY);
     }
 

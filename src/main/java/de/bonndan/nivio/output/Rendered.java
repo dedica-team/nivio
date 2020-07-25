@@ -25,9 +25,9 @@ public interface Rendered extends Labeled {
     }
 
     @JsonIgnore
-    default Long getWidth() {
+    default Double getWidth() {
         String width = getLabel(LABEL_RENDERED_WIDTH);
-        return width == null ? null : Long.parseLong(width);
+        return width == null ? null : Double.parseDouble(width);
     }
 
     default void setHeight(Long height) {
@@ -35,9 +35,9 @@ public interface Rendered extends Labeled {
     }
 
     @JsonIgnore
-    default Long getHeight() {
+    default Double getHeight() {
         String height = getLabel(LABEL_RENDERED_HEIGHT);
-        return height == null ? null : Long.parseLong(height);
+        return height == null ? null : Double.parseDouble(height);
     }
 
     default void setColor(String color) {

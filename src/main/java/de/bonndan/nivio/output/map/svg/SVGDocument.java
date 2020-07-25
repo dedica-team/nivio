@@ -159,29 +159,15 @@ public class SVGDocument extends Component {
 
     private SVGGroup getGroup(HexFactory hexFactory, Group group) {
 
-        List<Item> items = group.getItems();
-        AtomicLong minX = new AtomicLong(Long.MAX_VALUE);
-        AtomicLong maxX = new AtomicLong(Long.MIN_VALUE);
-        AtomicLong minY = new AtomicLong(Long.MAX_VALUE);
-        AtomicLong maxY = new AtomicLong(Long.MIN_VALUE);
-
-        items.forEach(item -> {
-            Point2D.Double p = hexFactory.of(Math.round(item.getX()), Math.round(item.getY())).toPixel();
-            if (p.x < minX.get()) minX.set((long) p.x);
-            if (p.x > maxX.get()) maxX.set((long) p.x);
-            if (p.y < minY.get()) minY.set((long) p.y);
-            if (p.y > maxY.get()) maxY.set((long) p.y);
-        });
-
-        var padding = DEFAULT_ICON_SIZE;
-        var halfPadding = padding /2;
-        var startPoint = new Point2D.Double(minX.get() - padding, minY.get() - padding);
-        var endPoint = new Point2D.Double(maxX.get() + padding, maxY.get() + padding);
-
-        int width = (int) (endPoint.x - startPoint.x) + 2 * padding;
-        int height = (int) (endPoint.y - startPoint.y) + 2 * padding;
-
-        return new SVGGroup(group, startPoint.x - halfPadding, startPoint.y - halfPadding, width, height);
+        var halfPadding = DEFAULT_ICON_SIZE /2;
+        Point2D.Double p = hexFactory.of(Math.round(group.getX()), Math.round(group.getY())).toPixel();
+        Point2D.Double d = hexFactory.of(Math.round(group.getWidth()), Math.round(group.getHeight())).toPixel();
+        return new SVGGroup(group,
+                p.getX() -halfPadding,
+                p.getY() - halfPadding,
+                Double.valueOf(d.getX()).intValue(),
+                Double.valueOf(d.getY()).intValue()
+        );
     }
 
     public String getXML() {
