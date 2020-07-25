@@ -71,6 +71,9 @@ public class Hex {
         return DIRECTIONS.get((6 + _direction % 6) % 6);
     }
 
+    /**
+     * see https://www.redblobgames.com/grids/hexagons/implementation.html#hex-geometry
+     */
     private Point2D.Double hex_corner_offset(int corner, int s) {
         Point2D.Double size = new Point2D.Double(s, s);
         double angle = 2.0 * Math.PI * (Hex.Layout.startAngle + corner) / 6;
