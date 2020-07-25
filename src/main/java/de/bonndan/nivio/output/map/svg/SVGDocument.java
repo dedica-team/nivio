@@ -86,7 +86,7 @@ public class SVGDocument extends Component {
         AtomicInteger height = new AtomicInteger(0);
 
         List<DomContent> groups = landscape.getGroups().values().stream().map(group -> {
-            SVGGroup SVGGroup = getGroup(hexFactory, (Group) group);
+            SVGGroup SVGGroup = getGroup(hexFactory, (Group) group, vertexHexes);
             if ((SVGGroup.x + SVGGroup.width) > width.get())
                 width.set((int) (SVGGroup.x + SVGGroup.width));
             if ((SVGGroup.y + SVGGroup.height) > height.get())
@@ -157,17 +157,31 @@ public class SVGDocument extends Component {
         return css + "\n" + mapStyleSheetFactory.getMapStylesheet(landscape.getConfig(), landscape.getLog());
     }
 
-    private SVGGroup getGroup(HexFactory hexFactory, Group group) {
+    private SVGGroup getGroup(HexFactory hexFactory, Group group, Map<LandscapeItem, Hex> vertexHexes) {
 
-        var halfPadding = DEFAULT_ICON_SIZE /2;
-        Point2D.Double p = hexFactory.of(Math.round(group.getX()), Math.round(group.getY())).toPixel();
-        Point2D.Double d = hexFactory.of(Math.round(group.getWidth()), Math.round(group.getHeight())).toPixel();
-        return new SVGGroup(group,
-                p.getX() -halfPadding,
-                p.getY() - halfPadding,
-                Double.valueOf(d.getX()).intValue(),
-                Double.valueOf(d.getY()).intValue()
-        );
+        List<Item> items = group.getItems();
+        AtomicLong minX = new AtomicLong(Long.MAX_VALUE);
+        AtomicLong maxX = new AtomicLong(Long.MIN_VALUE);
+        AtomicLong minY = new AtomicLong(Long.MAX_VALUE);
+        AtomicLong maxY = new AtomicLong(Long.MIN_VALUE);
+
+        items.forEach(item -> {
+            Point2D.Double p = vertexHexes.get(item).toPixel();
+            if (p.x < minX.get()) minX.set((long) p.x);
+            if (p.x > maxX.get()) maxX.set((long) p.x);
+            if (p.y < minY.get()) minY.set((long) p.y);
+            if (p.y > maxY.get()) maxY.set((long) p.y);
+        });
+
+        var padding = DEFAULT_ICON_SIZE;
+        var halfPadding = padding /2;
+        var startPoint = new Point2D.Double(minX.get() - padding, minY.get() - padding);
+        var endPoint = new Point2D.Double(maxX.get() + padding, maxY.get());
+
+        int width = (int) (endPoint.x - startPoint.x) + padding;
+        int height = (int) (endPoint.y - startPoint.y) + 2 * padding;
+
+        return new SVGGroup(group, startPoint.x - halfPadding, startPoint.y - halfPadding, width, height);
     }
 
     public String getXML() {
