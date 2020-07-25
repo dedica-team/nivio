@@ -41,7 +41,7 @@ public class AllGroupsGraph implements LayoutedArtifact<ComponentBounds> {
         addVirtualEdgesBetweenGroups(items);
 
         layout = new FastOrganicLayout(new ArrayList<>(groupNodes.values()));
-        layout.setDebug(true);
+        //layout.setDebug(true);
 
         //Optional.ofNullable(config.getJgraphx().getMaxIterations())
         //        .ifPresent(layout::setMaxIterations);
