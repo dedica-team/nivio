@@ -4,7 +4,6 @@ import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeItem;
-import de.bonndan.nivio.output.LayoutedArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -14,11 +13,11 @@ import java.util.*;
 /**
  * Renders a graph of group containers only, not regarding items inside the containers.
  */
-public class AllGroupsGraph implements LayoutedArtifact<ComponentBounds> {
+public class AllGroupsGraph {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AllGroupsGraph.class);
 
-    private final Map<Group, ComponentBounds> groupNodes = new LinkedHashMap<>();
+    private final Map<Group, LayoutedComponent> groupNodes = new LinkedHashMap<>();
     private final FastOrganicLayout layout;
     private final Landscape landscape;
 
@@ -29,7 +28,7 @@ public class AllGroupsGraph implements LayoutedArtifact<ComponentBounds> {
 
         List<LandscapeItem> items = new ArrayList<>();
         groups.forEach((groupName, groupItem) -> {
-            ComponentBounds groupGeometry = subgraphs.get(groupName).getOuterBounds();
+            LayoutedComponent groupGeometry = subgraphs.get(groupName).getOuterBounds();
             groupNodes.put(groupItem, groupGeometry);
             items.addAll(groupItem.getItems());
         });
@@ -68,7 +67,7 @@ public class AllGroupsGraph implements LayoutedArtifact<ComponentBounds> {
             } else {
                 group = item.getGroup();
             }
-            ComponentBounds groupNode = findGroupBounds(group);
+            LayoutedComponent groupNode = findGroupBounds(group);
 
             item.getRelations().forEach(relationItem -> {
                 Item targetItem = (Item) relationItem.getTarget();
@@ -78,7 +77,7 @@ public class AllGroupsGraph implements LayoutedArtifact<ComponentBounds> {
                 }
 
                 String targetGroup = targetItem.getGroup() == null ? Group.COMMON : targetItem.getGroup();
-                ComponentBounds targetGroupNode = findGroupBounds(targetGroup);
+                LayoutedComponent targetGroupNode = findGroupBounds(targetGroup);
 
                 if (groupConnections.canConnect(group, targetGroup)) {
                     groupNode.getOpposites().add(targetGroupNode.getComponent());
@@ -89,7 +88,7 @@ public class AllGroupsGraph implements LayoutedArtifact<ComponentBounds> {
         });
     }
 
-    private ComponentBounds findGroupBounds(String group) {
+    private LayoutedComponent findGroupBounds(String group) {
 
         if (StringUtils.isEmpty(group))
             group = Group.COMMON;
@@ -103,7 +102,7 @@ public class AllGroupsGraph implements LayoutedArtifact<ComponentBounds> {
     /**
      * For layout debugging.
      */
-    public ComponentBounds getRendered() {
+    public LayoutedComponent getRendered() {
         return layout.getOuterBounds(landscape);
     }
 

@@ -5,6 +5,7 @@ import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.output.Renderer;
+import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated //this is both layouter and renderer
 public class Dld4eRenderer implements Renderer<String> {
 
     private static final Logger logger = LoggerFactory.getLogger(Dld4eRenderer.class);
@@ -27,10 +29,10 @@ public class Dld4eRenderer implements Renderer<String> {
     private final Icons icons = new Icons();
 
     @Override
-    public String render(LandscapeImpl landscape) {
+    public String render(LayoutedComponent landscape) {
 
-        landscape.getItems().stream().forEach(this::addService);
-        landscape.getItems().stream().forEach(this::addLinks);
+        List<Item> items = new ArrayList<>();
+        landscape.getChildren().forEach(layoutedComponent -> layoutedComponent.getChildren().forEach(li -> items.add((Item) li.getComponent())));
 
         layouter.arrange(icons, groups);
 
@@ -50,8 +52,8 @@ public class Dld4eRenderer implements Renderer<String> {
                         .set("heightPercentage", 5)
                         .set("logoFill", "none")
                         .set("stroke", "lightgrey")
-                        .set("subText", landscape.getIdentifier())
-                        .set("text", landscape.getName())
+                        .set("subText", landscape.getComponent().getIdentifier())
+                        .set("text", landscape.getComponent().getName())
                         .set("type", "bar")
         );
         ymlSource.append(
@@ -96,7 +98,7 @@ public class Dld4eRenderer implements Renderer<String> {
 
 
     @Override
-    public void render(LandscapeImpl landscape, File file) throws IOException {
+    public void render(LayoutedComponent landscape, File file) throws IOException {
         render(landscape);
         FileWriter fileWriter = new FileWriter(file);
         fileWriter.append(ymlSource.toString());

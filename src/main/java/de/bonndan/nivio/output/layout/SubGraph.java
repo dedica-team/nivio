@@ -23,7 +23,7 @@ public class SubGraph {
         String name = parent.getName();
         this.parent = parent;
 
-        List<ComponentBounds> list = new ArrayList<>();
+        List<LayoutedComponent> list = new ArrayList<>();
         items.forEach(item -> {
             List<Component> relationTargets = new ArrayList<>();
             item.getRelations().forEach(relationItem -> {
@@ -37,7 +37,7 @@ public class SubGraph {
                     relationTargets.add(other);
 
             });
-            list.add(new ComponentBounds(item, relationTargets));
+            list.add(new LayoutedComponent(item, relationTargets));
         });
 
 
@@ -48,7 +48,7 @@ public class SubGraph {
         LOGGER.debug("Subgraph {} layouted items: {}", name, layout.getBounds());
     }
 
-    public ComponentBounds getOuterBounds() {
+    public LayoutedComponent getOuterBounds() {
         return layout.getOuterBounds(parent);
     }
 }

@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.Renderer;
+import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -19,13 +20,13 @@ public class SVGRenderer implements Renderer<String> {
     }
 
     @Override
-    public String render(LandscapeImpl landscape) {
+    public String render(LayoutedComponent landscape) {
         SVGDocument svgDocument = new SVGDocument(landscape, mapStyleSheetFactory);
         return svgDocument.getXML();
     }
 
     @Override
-    public void render(LandscapeImpl landscape, File file) throws IOException {
+    public void render(LayoutedComponent landscape, File file) throws IOException {
         FileWriter fileWriter = new FileWriter(file);
         fileWriter.write(render(landscape));
         fileWriter.close();

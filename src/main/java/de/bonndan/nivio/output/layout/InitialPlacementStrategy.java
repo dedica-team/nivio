@@ -10,11 +10,11 @@ import java.util.List;
  */
 public class InitialPlacementStrategy {
 
-    private final List<ComponentBounds> bounds;
+    private final List<LayoutedComponent> bounds;
     private final Point2D.Double origin = new Point2D.Double(0, 0);
     private final int radius = 50;
 
-    public InitialPlacementStrategy(List<ComponentBounds> bounds) {
+    public InitialPlacementStrategy(List<LayoutedComponent> bounds) {
         this.bounds = bounds;
     }
 

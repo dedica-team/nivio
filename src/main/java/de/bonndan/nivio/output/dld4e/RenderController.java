@@ -1,8 +1,10 @@
 package de.bonndan.nivio.output.dld4e;
 
 import de.bonndan.nivio.api.NotFoundException;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
+import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 @Controller
 @RequestMapping(path = "/render")
@@ -74,7 +77,7 @@ public class RenderController {
         );
 
         Dld4eRenderer graphRenderer = new Dld4eRenderer();
-        return graphRenderer.render(landscape);
+        return graphRenderer.render(new LayoutedComponent(landscape, new ArrayList<>()));
     }
 
 

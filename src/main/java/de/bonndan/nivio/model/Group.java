@@ -3,13 +3,12 @@ package de.bonndan.nivio.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.output.Rendered;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
 
-public class Group implements GroupItem, Rendered, Assessable {
+public class Group implements GroupItem, Labeled, Assessable {
 
     public static final Group DEFAULT_GROUP;
 

@@ -7,7 +7,6 @@ import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ProcessLog;
-import de.bonndan.nivio.output.Rendered;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.StringUtils;
 
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LandscapeImpl implements Landscape, Rendered, Assessable {
+public class LandscapeImpl implements Landscape, Labeled, Assessable {
 
     /**
      * Immutable unique identifier. Maybe use an URN.

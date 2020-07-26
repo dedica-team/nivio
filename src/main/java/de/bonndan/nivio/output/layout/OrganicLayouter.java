@@ -4,9 +4,7 @@ import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.Color;
-import de.bonndan.nivio.output.LayoutedArtifact;
 import de.bonndan.nivio.output.LocalServer;
-import de.bonndan.nivio.output.Rendered;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -20,7 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  *
  */
-public class OrganicLayouter implements Layouter<ComponentBounds> {
+public class OrganicLayouter implements Layouter<LayoutedComponent> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrganicLayouter.class);
 
@@ -31,7 +29,7 @@ public class OrganicLayouter implements Layouter<ComponentBounds> {
     }
 
     @Override
-    public LayoutedArtifact<ComponentBounds> layout(LandscapeImpl landscape) {
+    public LayoutedComponent layout(LandscapeImpl landscape) {
 
         Map<String, SubGraph> subgraphs = new LinkedHashMap<>();
         landscape.getGroups().forEach((name, groupItem) ->  {
@@ -44,20 +42,18 @@ public class OrganicLayouter implements Layouter<ComponentBounds> {
 
         AllGroupsGraph allGroupsGraph = new AllGroupsGraph(landscape, groupMap, subgraphs);
 
-        // TODO remove, this just stores in the landscape items what is already stored in the ComponentBounds objects
-        // TODO SVGRender could read directly from ComponentBounds
-        applyArtifactValues(landscape, allGroupsGraph);
+        applyArtifactValues(allGroupsGraph.getRendered());
 
-        return allGroupsGraph;
+        return allGroupsGraph.getRendered();
     }
 
-    public void applyArtifactValues(LandscapeImpl landscape, LayoutedArtifact<ComponentBounds> layoutedArtifact) {
+    public void applyArtifactValues(LayoutedComponent layoutedComponent) {
 
         AtomicLong minX = new AtomicLong(0);
         AtomicLong maxX = new AtomicLong(0);
         AtomicLong minY = new AtomicLong(0);
         AtomicLong maxY = new AtomicLong(0);
-        layoutedArtifact.getRendered().getChildren().forEach(groupBounds -> {
+        layoutedComponent.getChildren().forEach(groupBounds -> {
                 if (groupBounds.getX() < minX.get())
                     minX.set((long) groupBounds.getX());
                 if (groupBounds.getX() > maxX.get())
@@ -68,8 +64,8 @@ public class OrganicLayouter implements Layouter<ComponentBounds> {
                     maxY.set((long) groupBounds.getY());
         });
 
-        landscape.setWidth(maxX.get() - minX.get());
-        landscape.setHeight(maxY.get() - minY.get());
+        layoutedComponent.setWidth(maxX.get() - minX.get());
+        layoutedComponent.setHeight(maxY.get() - minY.get());
 
         int marginX = 50;
         if (minX.get() < 0) {
@@ -82,18 +78,18 @@ public class OrganicLayouter implements Layouter<ComponentBounds> {
         }
 
         LOGGER.debug("Shifting elements into positive coords by x {} and y {}", marginX, marginY);
-        applyValues(layoutedArtifact, marginX, marginY);
+        applyValues(layoutedComponent, marginX, marginY);
     }
 
     /**
      *
-     * @param layoutedArtifact layouted landscape
+     * @param layoutedComponent layouted landscape
      * @param marginX shift all groups in x direction
      * @param marginY shift all groups in y direction
      */
-    private void applyValues(LayoutedArtifact<ComponentBounds> layoutedArtifact, int marginX, int marginY) {
+    private void applyValues(LayoutedComponent layoutedComponent, int marginX, int marginY) {
 
-        layoutedArtifact.getRendered().getChildren().forEach(groupBounds -> {
+        layoutedComponent.getChildren().forEach(groupBounds -> {
 
             LOGGER.debug("group offset {} {}", groupBounds.getX(), groupBounds.getY());
             Group group = (Group) groupBounds.getComponent();
@@ -110,20 +106,9 @@ public class OrganicLayouter implements Layouter<ComponentBounds> {
                 LOGGER.debug("item pos with group offset: {} {}", itemBounds.getX(), itemBounds.getY());
 
                 Item item = (Item) itemBounds.getComponent();
-                item.setColor(group.getColor());
-                setRenderedLabels(item, itemBounds);
+                itemBounds.setColor(group.getColor());
+                itemBounds.setIcon(localServer.getIconUrl(item).toString());
             });
-            setRenderedLabels(group, groupBounds);
-
         });
-
-    }
-
-    private void setRenderedLabels(Rendered item, ComponentBounds dim) {
-        item.setLabel(Rendered.LABEL_RENDERED_ICON, localServer.getIconUrl(item).toString());
-        item.setLabel(Rendered.LX, String.valueOf(dim.getX()));
-        item.setLabel(Rendered.LY, String.valueOf(dim.getY()));
-        item.setLabel(Rendered.LABEL_RENDERED_WIDTH, String.valueOf(dim.getWidth()));
-        item.setLabel(Rendered.LABEL_RENDERED_HEIGHT, String.valueOf(dim.getHeight()));
     }
 }

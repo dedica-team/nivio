@@ -13,14 +13,13 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Fast organic layout algorithm.
  * <p>
- * based on {@link com.mxgraph.layout.mxFastOrganicLayout}
- * Copyright (c) 2007, Gaudenz Alder
+ * based on mxFastOrganicLayout from JGraphX by Gaudenz Alder Copyright (c) 2007
  */
 public class FastOrganicLayout {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FastOrganicLayout.class);
 
-    private final List<ComponentBounds> bounds;
+    private final List<LayoutedComponent> bounds;
 
     /**
      * The force constant by which the attractive forces are divided and the
@@ -110,13 +109,13 @@ public class FastOrganicLayout {
     /**
      * Maps from vertices to indices.
      */
-    protected Hashtable<ComponentBounds, Integer> indices = new Hashtable<>();
+    protected Hashtable<LayoutedComponent, Integer> indices = new Hashtable<>();
     private boolean debug;
 
     /**
      * Constructs a new fast organic layout.
      */
-    public FastOrganicLayout(List<ComponentBounds> bounds) {
+    public FastOrganicLayout(List<LayoutedComponent> bounds) {
         this.bounds = bounds;
     }
 
@@ -161,17 +160,17 @@ public class FastOrganicLayout {
         // the indices into vertexArray
 
         for (int i = 0; i < bounds.size(); i++) {
-            ComponentBounds componentBounds = this.bounds.get(i);
-            indices.put(componentBounds, i);
+            LayoutedComponent layoutedComponent = this.bounds.get(i);
+            indices.put(layoutedComponent, i);
             centerLocations[i] = new double[2];
 
 
             // Set the X,Y value of the internal version of the cell to
             // the center point of the vertex for better positioning
-            double width = componentBounds.getWidth();
-            double height = componentBounds.getHeight();
-            double x = componentBounds.getX();
-            double y = componentBounds.getY();
+            double width = layoutedComponent.getWidth();
+            double height = layoutedComponent.getHeight();
+            double x = layoutedComponent.getX();
+            double y = layoutedComponent.getY();
 
             centerLocations[i][0] = x + width / 2.0;
             centerLocations[i][1] = y + height / 2.0;
@@ -243,13 +242,13 @@ public class FastOrganicLayout {
         }
 
         for (int i = 0; i < bounds.size(); i++) {
-            ComponentBounds vertex = bounds.get(i);
+            LayoutedComponent vertex = bounds.get(i);
             vertex.setX(centerLocations[i][0]);
             vertex.setY(centerLocations[i][1]);
         }
     }
 
-    private ComponentBounds getBoundsForComponents(Component component) {
+    private LayoutedComponent getBoundsForComponents(Component component) {
         return bounds.stream().filter(bounds1 -> bounds1.getComponent().equals(component)).findFirst().orElse(null);
     }
 
@@ -384,19 +383,19 @@ public class FastOrganicLayout {
         }
     }
 
-    public List<ComponentBounds> getBounds() {
+    public List<LayoutedComponent> getBounds() {
         return bounds;
     }
 
-    public ComponentBounds getOuterBounds(Component parent) {
+    public LayoutedComponent getOuterBounds(Component parent) {
 
-        ComponentBounds outer = new ComponentBounds(parent, new ArrayList<>());
+        LayoutedComponent outer = new LayoutedComponent(parent, new ArrayList<>());
         var minX = new AtomicLong(0);
         var maxX = new AtomicLong(0);
         var minY = new AtomicLong(0);
         var maxY = new AtomicLong(0);
 
-        for (ComponentBounds b : this.bounds) {
+        for (LayoutedComponent b : this.bounds) {
             if (b.x < minX.get()) minX.set((long) b.x);
             if (b.x > maxX.get()) maxX.set((long) b.x);
             if (b.y < minY.get()) minY.set((long) b.y);

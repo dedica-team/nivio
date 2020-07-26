@@ -4,9 +4,8 @@ import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.output.LayoutedArtifact;
 import de.bonndan.nivio.output.LocalServer;
-import de.bonndan.nivio.output.layout.ComponentBounds;
+import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.layout.OrganicLayouter;
 import de.bonndan.nivio.output.map.svg.SVGRenderer;
 import org.apache.batik.transcoder.Transcoder;
@@ -71,14 +70,14 @@ public class PNGRenderCache implements ApplicationListener<ProcessingFinishedEve
      */
     public String getSVG(LandscapeImpl landscape) {
         OrganicLayouter layouter = new OrganicLayouter(localServer);
-        layouter.layout(landscape);
+        LayoutedComponent layout = layouter.layout(landscape);
 
         if (landscape.getLog() == null) {
             ProcessLog processLog = new ProcessLog(LOGGER);
             processLog.setLandscape(landscape);
             landscape.setProcessLog(processLog);
         }
-        return svgRenderer.render(landscape);
+        return svgRenderer.render(layout);
     }
 
     @Override

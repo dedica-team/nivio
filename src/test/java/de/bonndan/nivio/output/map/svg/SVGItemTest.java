@@ -2,10 +2,12 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,7 +24,7 @@ class SVGItemTest {
         foo.setIdentifier("foo");
         foo.setLandscape(landscape);
 
-        SVGItem svgItem = new SVGItem(null, foo, new Point2D.Double(1,1));
+        SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo), new Point2D.Double(1,1));
         assertTrue( svgItem.render().render().contains("l1/common/foo"));
     }
 
@@ -37,7 +39,7 @@ class SVGItemTest {
         foo.setIdentifier("foo");
         foo.setLandscape(landscape);
 
-        SVGItem svgItem = new SVGItem(null, foo, new Point2D.Double(1,2.0303030));
+        SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo), new Point2D.Double(1,2.0303030));
         assertTrue( svgItem.render().render().contains("data-x=\"1.00\""));
         assertTrue( svgItem.render().render().contains("data-y=\"2.03\""));
     }

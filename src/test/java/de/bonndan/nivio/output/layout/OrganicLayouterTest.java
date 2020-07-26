@@ -14,7 +14,6 @@ import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
-import de.bonndan.nivio.output.LayoutedArtifact;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
@@ -60,24 +59,24 @@ class OrganicLayouterTest {
         return landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
     }
 
-    private ComponentBounds debugRender(String path) throws IOException {
+    private LayoutedComponent debugRender(String path) throws IOException {
         return debugRender(path, true);
     }
 
-    private ComponentBounds debugRender(String path, boolean debugMode) throws IOException {
+    private LayoutedComponent debugRender(String path, boolean debugMode) throws IOException {
         LandscapeImpl landscape = getLandscape(path + ".yml");
         return debugRenderLandscape(path, landscape, debugMode);
     }
 
-    private ComponentBounds debugRenderLandscape(String path, LandscapeImpl landscape, boolean debugMode) throws IOException {
+    private LayoutedComponent debugRenderLandscape(String path, LandscapeImpl landscape, boolean debugMode) throws IOException {
 
         OrganicLayouter layouter = new OrganicLayouter(new LocalServer("", new VendorIcons()));
-        LayoutedArtifact<ComponentBounds> graph = layouter.layout(landscape);
+        LayoutedComponent graph = layouter.layout(landscape);
         toSVG(landscape, graph, RootPath.get() + path);
-        return graph.getRendered();
+        return graph;
     }
 
-    private void toSVG(LandscapeImpl landscape, LayoutedArtifact<ComponentBounds> render, String filename) throws IOException {
+    private void toSVG(LandscapeImpl landscape, LayoutedComponent render, String filename) throws IOException {
 
         MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
         when(mapStyleSheetFactory.getMapStylesheet(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn("");
@@ -85,7 +84,7 @@ class OrganicLayouterTest {
         File json = new File(filename + "_debug.json");
         new ObjectMapper().writeValue(json, render);
 
-        SVGDocument SVGDocument = new SVGDocument(landscape, mapStyleSheetFactory);
+        SVGDocument SVGDocument = new SVGDocument(render, mapStyleSheetFactory);
         SVGDocument.setDebug(true);
         String svg = SVGDocument.getXML();
 

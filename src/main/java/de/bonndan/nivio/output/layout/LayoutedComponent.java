@@ -1,7 +1,9 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.Component;
+import de.bonndan.nivio.model.Item;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,7 +11,7 @@ import java.util.List;
  *
  * Also holds children to allow recursive operations.
  */
-public class ComponentBounds {
+public class LayoutedComponent {
 
     private final Component component;
 
@@ -18,11 +20,19 @@ public class ComponentBounds {
     public double width = 50;
     public double height = 50;
     private final List<Component> opposites;
-    private List<ComponentBounds> children;
+    private List<LayoutedComponent> children;
+    private String fill;
+    private String icon;
+    private String color;
 
-    public ComponentBounds(Component component, List<Component> opposites) {
+    public LayoutedComponent(Component component, List<Component> opposites) {
         this.component = component;
         this.opposites = opposites;
+    }
+
+    public LayoutedComponent(Component component) {
+        this.component = component;
+        opposites = new ArrayList<>();
     }
 
     public double getX() {
@@ -65,18 +75,42 @@ public class ComponentBounds {
         return component;
     }
 
-    public void setChildren(List<ComponentBounds> children) {
+    public void setChildren(List<LayoutedComponent> children) {
         this.children = children;
     }
 
-    public List<ComponentBounds> getChildren() {
+    public List<LayoutedComponent> getChildren() {
         return children;
+    }
+
+    public String getFill() {
+        return fill;
+    }
+
+    public void setFill(String fill) {
+        this.fill = fill;
     }
 
     @Override
     public String toString() {
-        return "ComponentBounds{" +
+        return "LayoutedComponent{" +
                 "component=" + component +
                 '}';
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getColor() {
+        return color;
     }
 }
