@@ -12,7 +12,7 @@ public class InitialPlacementStrategy {
 
     private final List<ComponentBounds> bounds;
     private final Point2D.Double origin = new Point2D.Double(0, 0);
-    private final int r = 50;
+    private final int radius = 50;
 
     public InitialPlacementStrategy(List<ComponentBounds> bounds) {
         this.bounds = bounds;
@@ -21,8 +21,8 @@ public class InitialPlacementStrategy {
     public Point2D.Double place(int i) {
 
         double t = 2 * Math.PI * i / bounds.size();
-        int x = (int) Math.round(origin.x + r * Math.cos(t));
-        int y = (int) Math.round(origin.y + r * Math.sin(t));
+        int x = (int) Math.round(origin.x + radius * Math.cos(t));
+        int y = (int) Math.round(origin.y + radius * Math.sin(t));
 
         return new Point2D.Double(x, y);
     }
