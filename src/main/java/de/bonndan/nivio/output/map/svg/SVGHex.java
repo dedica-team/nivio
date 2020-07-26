@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
  */
 public class SVGHex extends Component {
 
-    public static final int HEX_SIZE = 100;
     private final Hex hex;
     private final String fillId;
 
@@ -29,7 +28,7 @@ public class SVGHex extends Component {
     }
 
     private String asPoints(Hex hex) {
-        return hex.asPoints(HEX_SIZE - 1).stream()
+        return hex.asPoints(Hex.HEX_SIZE - 1).stream()
                 .map(aDouble -> aDouble.x + " " + aDouble.y)
                 .collect(Collectors.joining(","));
     }

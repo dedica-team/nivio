@@ -2,14 +2,11 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.output.map.hex.Hex;
-import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 
 class SVGGroupArea extends Component {
 

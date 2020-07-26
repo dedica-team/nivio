@@ -9,10 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Renders a graph of group containers only, not regarding items inside the containers.
@@ -43,11 +40,11 @@ public class AllGroupsGraph implements LayoutedArtifact<ComponentBounds> {
         layout = new FastOrganicLayout(new ArrayList<>(groupNodes.values()));
         //layout.setDebug(true);
 
-        //Optional.ofNullable(config.getJgraphx().getMaxIterations())
-        //        .ifPresent(layout::setMaxIterations);
+        Optional.ofNullable(landscape.getConfig().getJgraphx().getMaxIterations())
+                .ifPresent(layout::setMaxIterations);
 
-        //Optional.ofNullable(config.getJgraphx().getMinDistanceLimitFactor())
-        //        .ifPresent(f -> layout.setMinDistanceLimit(layout.getMinDistanceLimit() * f));
+        Optional.ofNullable(landscape.getConfig().getJgraphx().getMinDistanceLimitFactor())
+                .ifPresent(f -> layout.setMinDistanceLimit(layout.getMinDistanceLimit() * f));
 
         layout.setForceConstant(350);
         layout.setMaxDistanceLimit(1000);

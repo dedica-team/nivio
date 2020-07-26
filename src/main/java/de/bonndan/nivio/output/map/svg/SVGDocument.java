@@ -90,6 +90,7 @@ public class SVGDocument extends Component {
             return area.render();
         }).collect(Collectors.toList());
 
+        //iterate items to generate patterns (for icons)
         List<DomContent> patterns = landscape.getItems().all().stream()
                 .filter(item -> !StringUtils.isEmpty(item.getFill()))
                 .map(item -> {
@@ -97,14 +98,16 @@ public class SVGDocument extends Component {
                     return SVGPattern.render();
                 }).collect(Collectors.toList());
 
+        //iterate all items to render them and collect max svg dimension
         List<DomContent> items = landscape.getItems().all().stream().map(item -> {
             SVGItemLabel label = new SVGItemLabel(item);
             Point2D.Double pos = vertexHexes.get(item).toPixel();
 
-            if ((pos.x + DEFAULT_ICON_SIZE) > width.get())
-                width.set((int) (pos.x + DEFAULT_ICON_SIZE));
-            if ((pos.y + DEFAULT_ICON_SIZE) > height.get())
-                height.set((int) (pos.y + DEFAULT_ICON_SIZE));
+            // add extra margins size group area is larger than max item positions
+            if ((pos.x + 3 * Hex.HEX_SIZE) > width.get())
+                width.set((int) (pos.x + 3 * Hex.HEX_SIZE));
+            if ((pos.y + 3 * Hex.HEX_SIZE) > height.get())
+                height.set((int) (pos.y + 3 * Hex.HEX_SIZE));
 
             SVGItem SVGItem = new SVGItem(label.render(), item, pos);
             return SVGItem.render();
@@ -176,7 +179,7 @@ public class SVGDocument extends Component {
         });
 
         var padding = DEFAULT_ICON_SIZE;
-        var halfPadding = padding /2;
+        var halfPadding = padding / 2;
         var startPoint = new Point2D.Double(minX.get() - padding, minY.get() - padding);
         var endPoint = new Point2D.Double(maxX.get() + padding, maxY.get());
 

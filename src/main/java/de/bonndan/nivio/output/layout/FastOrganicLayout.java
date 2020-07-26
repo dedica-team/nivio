@@ -123,17 +123,9 @@ public class FastOrganicLayout {
         this.debug = debug;
     }
 
-    /**
-     *
-     */
-    public double getMaxIterations() {
-        return maxIterations;
-    }
-
     public void setMaxIterations(double value) {
         maxIterations = value;
     }
-
 
     /**
      * Reduces the temperature of the layout from an initial setting in a linear
@@ -142,7 +134,6 @@ public class FastOrganicLayout {
     protected void reduceTemperature() {
         temperature = initialTemp * (1.0 - iteration / maxIterations);
     }
-
 
     public void execute() {
 
@@ -423,5 +414,13 @@ public class FastOrganicLayout {
 
     public void setMaxDistanceLimit(double maxDistanceLimit) {
         this.maxDistanceLimit = maxDistanceLimit;
+    }
+
+    public void setMinDistanceLimit(double minDistanceLimit) {
+        this.minDistanceLimit = minDistanceLimit;
+    }
+
+    public double getMinDistanceLimit() {
+        return minDistanceLimit;
     }
 }

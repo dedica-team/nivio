@@ -8,6 +8,9 @@ public class Hex {
 
     public static final List<Hex> DIRECTIONS = new ArrayList<>();
 
+    //double DEFAULT_ICON_SIZE
+    public static final int HEX_SIZE = 100;
+
     static {
         DIRECTIONS.add(new Hex(1, 0, -1));
         DIRECTIONS.add(new Hex(1, -1, 0));
