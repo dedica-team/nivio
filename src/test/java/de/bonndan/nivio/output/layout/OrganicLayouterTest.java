@@ -17,7 +17,7 @@ import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
-import de.bonndan.nivio.output.map.svg.SVGDocument;
+import de.bonndan.nivio.output.map.svg.SVGRenderer;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -70,23 +70,22 @@ class OrganicLayouterTest {
 
     private LayoutedComponent debugRenderLandscape(String path, LandscapeImpl landscape, boolean debugMode) throws IOException {
 
-        OrganicLayouter layouter = new OrganicLayouter(new LocalServer("", new VendorIcons()));
+        OrganicLayouter layouter = new OrganicLayouter();
         LayoutedComponent graph = layouter.layout(landscape);
-        toSVG(landscape, graph, RootPath.get() + path);
+        toSVG(graph, RootPath.get() + path);
         return graph;
     }
 
-    private void toSVG(LandscapeImpl landscape, LayoutedComponent render, String filename) throws IOException {
+    private void toSVG(LayoutedComponent layoutedComponent, String filename) throws IOException {
 
         MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
         when(mapStyleSheetFactory.getMapStylesheet(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn("");
 
         File json = new File(filename + "_debug.json");
-        new ObjectMapper().writeValue(json, render);
+        new ObjectMapper().writeValue(json, layoutedComponent);
 
-        SVGDocument SVGDocument = new SVGDocument(render, mapStyleSheetFactory);
-        SVGDocument.setDebug(true);
-        String svg = SVGDocument.getXML();
+        SVGRenderer svgRenderer = new SVGRenderer(new LocalServer("", new VendorIcons()), mapStyleSheetFactory);
+        String svg = svgRenderer.render(layoutedComponent);
 
         File svgFile = new File(filename + "_debug.svg");
         FileWriter fileWriter = new FileWriter(svgFile);

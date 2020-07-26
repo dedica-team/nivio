@@ -69,7 +69,7 @@ public class PNGRenderCache implements ApplicationListener<ProcessingFinishedEve
      * @return the svg as string, uncached
      */
     public String getSVG(LandscapeImpl landscape) {
-        OrganicLayouter layouter = new OrganicLayouter(localServer);
+        OrganicLayouter layouter = new OrganicLayouter();
         LayoutedComponent layout = layouter.layout(landscape);
 
         if (landscape.getLog() == null) {
