@@ -22,6 +22,11 @@ class SVGRelation extends Component {
     private final String fill;
     private final RelationItem<Item> relation;
 
+    /**
+     * @param hexPath the calculated best path
+     * @param fill color
+     * @param relation graph edge, source is the item this relation belongs to
+     */
     SVGRelation(HexPath hexPath, String fill, RelationItem<Item> relation) {
         this.hexPath = hexPath;
         this.fill = fill;
@@ -102,6 +107,14 @@ class SVGRelation extends Component {
                 .attr("y", 0)
                 .attr("fill", fillId)
                 .attr("transform", transform);
+    }
+
+    public RelationItem<Item> getRelationItem() {
+        return relation;
+    }
+
+    public HexPath getHexPath() {
+        return hexPath;
     }
 }
 

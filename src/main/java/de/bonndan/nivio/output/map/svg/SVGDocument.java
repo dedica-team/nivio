@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.map.hex.Hex;
@@ -19,12 +18,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.output.map.svg.SVGItemLabel.LABEL_WIDTH;
 import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 import static j2html.TagCreator.rawHtml;
+import static j2html.TagCreator.s;
 
 /**
  * Creates an SVG document based on pre-rendered map items.
@@ -112,11 +111,11 @@ public class SVGDocument extends Component {
         // find and render relations
         var pathFinder = new PathFinder(occupied);
         pathFinder.debug = this.debug;
-        List<DomContent> relations = getRelations(vertexHexes, pathFinder);
+        List<SVGRelation> relations = getRelations(vertexHexes, pathFinder);
 
         //generate group areas
         List<DomContent> groups = landscape.getGroups().values().stream().map(group -> {
-            SVGGroupArea area = SVGGroupAreaFactory.getGroup(occupied, (Group) group, vertexHexes);
+            SVGGroupArea area = SVGGroupAreaFactory.getGroup(occupied, (Group) group, vertexHexes, relations);
             return area.render();
         }).collect(Collectors.toList());
 
@@ -132,12 +131,12 @@ public class SVGDocument extends Component {
 
                         .with(logo, title)
                         .with(groups)
-                        .with(relations)
+                        .with(relations.stream().map(SVGRelation::render))
                         .with(items)
                         .with(SvgTagCreator.defs().with(patterns));
     }
 
-    private List<DomContent> getRelations(Map<LandscapeItem, Hex> vertexHexes, PathFinder pathFinder) {
+    private List<SVGRelation> getRelations(Map<LandscapeItem, Hex> vertexHexes, PathFinder pathFinder) {
         return landscape.getItems().all().stream().flatMap(item -> {
                         LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
                         return item.getRelations().stream()
@@ -149,7 +148,7 @@ public class SVGDocument extends Component {
                                     if (bestPath != null) {
                                         SVGRelation svgRelation = new SVGRelation(bestPath, item.getColor(), rel);
                                         LOGGER.debug("Added path for item {} relation {} -> {}", item, rel.getSource(), rel.getTarget());
-                                        return svgRelation.render();
+                                        return svgRelation;
                                     }
                                     LOGGER.error("No path found for item {} relation {}", item, rel);
                                     return null;
