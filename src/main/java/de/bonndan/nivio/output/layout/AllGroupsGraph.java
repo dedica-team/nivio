@@ -100,7 +100,7 @@ public class AllGroupsGraph {
     }
 
     /**
-     * For layout debugging.
+     * Returns the layouted landscape.
      */
     public LayoutedComponent getRendered() {
         return layout.getOuterBounds(landscape);
