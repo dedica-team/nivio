@@ -8,6 +8,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Displays a group as an area containing items.
+ *
+ *
+ */
 class SVGGroupArea extends Component {
 
     private final Group group;

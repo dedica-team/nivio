@@ -52,6 +52,7 @@ public class SVGDocument extends Component {
         Map<LandscapeItem, Hex> vertexHexes = new HashMap<>();
         final HexFactory hexFactory = new HexFactory();
 
+        //transform all item positions to hex map postions
         landscape.getItems().all().forEach(item -> {
             Hex hex = null;
             int i = 0;
@@ -65,8 +66,7 @@ public class SVGDocument extends Component {
             occupied.add(hex);
         });
 
-        var pathFinder = new PathFinder(occupied);
-        pathFinder.debug = this.debug;
+
 
         DomContent title = SvgTagCreator.text(landscape.getName())
                 .attr("x", LABEL_WIDTH + 10)
@@ -82,13 +82,7 @@ public class SVGDocument extends Component {
                     .attr("height", LABEL_WIDTH);
         }
 
-        AtomicInteger width = new AtomicInteger(0);
-        AtomicInteger height = new AtomicInteger(0);
 
-        List<DomContent> groups = landscape.getGroups().values().stream().map(group -> {
-            SVGGroupArea area = SVGGroupAreaFactory.getGroup(occupied, (Group) group, vertexHexes);
-            return area.render();
-        }).collect(Collectors.toList());
 
         //iterate items to generate patterns (for icons)
         List<DomContent> patterns = landscape.getItems().all().stream()
@@ -99,6 +93,8 @@ public class SVGDocument extends Component {
                 }).collect(Collectors.toList());
 
         //iterate all items to render them and collect max svg dimension
+        AtomicInteger width = new AtomicInteger(0);
+        AtomicInteger height = new AtomicInteger(0);
         List<DomContent> items = landscape.getItems().all().stream().map(item -> {
             SVGItemLabel label = new SVGItemLabel(item);
             Point2D.Double pos = vertexHexes.get(item).toPixel();
@@ -113,29 +109,20 @@ public class SVGDocument extends Component {
             return SVGItem.render();
         }).collect(Collectors.toList());
 
-        List<DomContent> relations = landscape.getItems().all().stream().flatMap(item -> {
-                    LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
-                    return item.getRelations().stream()
-                            .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
-                            .map(rel -> {
-                                Hex start = vertexHexes.get(item);
-                                Hex target = vertexHexes.get(rel.getTarget());
-                                HexPath bestPath = pathFinder.getPath(start, target);
-                                if (bestPath != null) {
-                                    SVGRelation svgRelation = new SVGRelation(bestPath, item.getColor(), rel);
-                                    LOGGER.debug("Added path for item {} relation {} -> {}", item, rel.getSource(), rel.getTarget());
-                                    return svgRelation.render();
-                                }
-                                LOGGER.error("No path found for item {} relation {}", item, rel);
-                                return null;
-                            });
-                }
-        ).collect(Collectors.toList());
+        // find and render relations
+        var pathFinder = new PathFinder(occupied);
+        pathFinder.debug = this.debug;
+        List<DomContent> relations = getRelations(vertexHexes, pathFinder);
+
+        //generate group areas
+        List<DomContent> groups = landscape.getGroups().values().stream().map(group -> {
+            SVGGroupArea area = SVGGroupAreaFactory.getGroup(occupied, (Group) group, vertexHexes);
+            return area.render();
+        }).collect(Collectors.toList());
 
         UnescapedText style = rawHtml("<style>\n" + getStyles() + "</style>");
 
-        return
-                SvgTagCreator.svg(style)
+        return SvgTagCreator.svg(style)
                         .attr("version", "1.1")
                         .attr("xmlns", "http://www.w3.org/2000/svg")
                         .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
@@ -150,6 +137,27 @@ public class SVGDocument extends Component {
                         .with(SvgTagCreator.defs().with(patterns));
     }
 
+    private List<DomContent> getRelations(Map<LandscapeItem, Hex> vertexHexes, PathFinder pathFinder) {
+        return landscape.getItems().all().stream().flatMap(item -> {
+                        LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
+                        return item.getRelations().stream()
+                                .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
+                                .map(rel -> {
+                                    Hex start = vertexHexes.get(item);
+                                    Hex target = vertexHexes.get(rel.getTarget());
+                                    HexPath bestPath = pathFinder.getPath(start, target);
+                                    if (bestPath != null) {
+                                        SVGRelation svgRelation = new SVGRelation(bestPath, item.getColor(), rel);
+                                        LOGGER.debug("Added path for item {} relation {} -> {}", item, rel.getSource(), rel.getTarget());
+                                        return svgRelation.render();
+                                    }
+                                    LOGGER.error("No path found for item {} relation {}", item, rel);
+                                    return null;
+                                });
+                    }
+            ).collect(Collectors.toList());
+    }
+
     private String getStyles() {
         String css = "";
         try {
@@ -160,33 +168,6 @@ public class SVGDocument extends Component {
         }
 
         return css + "\n" + mapStyleSheetFactory.getMapStylesheet(landscape.getConfig(), landscape.getLog());
-    }
-
-    private SVGGroup getGroup(HexFactory hexFactory, Group group, Map<LandscapeItem, Hex> vertexHexes) {
-
-        List<Item> items = group.getItems();
-        AtomicLong minX = new AtomicLong(Long.MAX_VALUE);
-        AtomicLong maxX = new AtomicLong(Long.MIN_VALUE);
-        AtomicLong minY = new AtomicLong(Long.MAX_VALUE);
-        AtomicLong maxY = new AtomicLong(Long.MIN_VALUE);
-
-        items.forEach(item -> {
-            Point2D.Double p = vertexHexes.get(item).toPixel();
-            if (p.x < minX.get()) minX.set((long) p.x);
-            if (p.x > maxX.get()) maxX.set((long) p.x);
-            if (p.y < minY.get()) minY.set((long) p.y);
-            if (p.y > maxY.get()) maxY.set((long) p.y);
-        });
-
-        var padding = DEFAULT_ICON_SIZE;
-        var halfPadding = padding / 2;
-        var startPoint = new Point2D.Double(minX.get() - padding, minY.get() - padding);
-        var endPoint = new Point2D.Double(maxX.get() + padding, maxY.get());
-
-        int width = (int) (endPoint.x - startPoint.x) + padding;
-        int height = (int) (endPoint.y - startPoint.y) + 2 * padding;
-
-        return new SVGGroup(group, startPoint.x - halfPadding, startPoint.y - halfPadding, width, height);
     }
 
     public String getXML() {
