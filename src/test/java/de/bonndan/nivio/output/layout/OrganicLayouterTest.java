@@ -100,6 +100,11 @@ class OrganicLayouterTest {
     }
 
     @Test
+    public void debugRenderInOut() throws IOException {
+        debugRender("/src/test/resources/example/inout");
+    }
+
+    @Test
     public void debugRenderFourGroups() throws IOException {
         debugRender("/src/test/resources/example/example_four_groups");
     }
