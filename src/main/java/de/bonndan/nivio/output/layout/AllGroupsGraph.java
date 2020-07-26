@@ -16,6 +16,8 @@ import java.util.*;
 public class AllGroupsGraph {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AllGroupsGraph.class);
+    public static final int FORCE_CONSTANT = 350;
+    public static final int MAX_DISTANCE_LIMIT = 1000;
 
     private final Map<Group, LayoutedComponent> groupNodes = new LinkedHashMap<>();
     private final FastOrganicLayout layout;
@@ -45,8 +47,8 @@ public class AllGroupsGraph {
         Optional.ofNullable(landscape.getConfig().getJgraphx().getMinDistanceLimitFactor())
                 .ifPresent(f -> layout.setMinDistanceLimit(layout.getMinDistanceLimit() * f));
 
-        layout.setForceConstant(350);
-        layout.setMaxDistanceLimit(1000);
+        layout.setForceConstant(FORCE_CONSTANT);
+        layout.setMaxDistanceLimit(MAX_DISTANCE_LIMIT);
         layout.execute();
         LOGGER.info("AllGroupsGraph bounds: {}", layout.getBounds());
     }

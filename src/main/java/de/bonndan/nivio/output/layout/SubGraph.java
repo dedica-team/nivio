@@ -15,6 +15,8 @@ import java.util.List;
 public class SubGraph {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubGraph.class);
+    public static final int FORCE_CONSTANT = 50;
+    public static final int MAX_DISTANCE_LIMIT = 200;
 
     private final FastOrganicLayout layout;
     private final Component parent;
@@ -42,8 +44,8 @@ public class SubGraph {
 
 
         layout = new FastOrganicLayout(list);
-        layout.setForceConstant(50);
-        layout.setMaxDistanceLimit(200);
+        layout.setForceConstant(FORCE_CONSTANT);
+        layout.setMaxDistanceLimit(MAX_DISTANCE_LIMIT);
         layout.execute();
         LOGGER.debug("Subgraph {} layouted items: {}", name, layout.getBounds());
     }

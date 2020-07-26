@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.Component;
-import de.bonndan.nivio.model.Item;
 
 import java.util.ArrayList;
 import java.util.List;
