@@ -4,6 +4,7 @@ import de.bonndan.nivio.model.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -182,10 +183,11 @@ public class FastOrganicLayout {
         // Moves cell location back to top-left from center locations used in
         // algorithm, resetting the edge points is part of the transaction
 
+        InitialPlacementStrategy initialPlacementStrategy = new InitialPlacementStrategy(this.bounds);
         for (int i = 0; i < n; i++) {
-            //XXX building diagonal row at start
-            dispX[i] = 0;
-            dispY[i] = 0;
+            Point2D.Double start = initialPlacementStrategy.place(i);
+            dispX[i] = start.x;
+            dispY[i] = start.y;
 
             // Get lists of neighbours to all vertices, translate the cells
             // obtained in indices into vertexArray and store as an array
