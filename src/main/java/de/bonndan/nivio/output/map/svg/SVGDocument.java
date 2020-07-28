@@ -124,18 +124,18 @@ public class SVGDocument extends Component {
         UnescapedText style = rawHtml("<style>\n" + getStyles() + "</style>");
 
         return SvgTagCreator.svg(style)
-                    .attr("version", "1.1")
-                    .attr("xmlns", "http://www.w3.org/2000/svg")
-                    .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
-                    .attr("width", width.addAndGet(DEFAULT_ICON_SIZE + LABEL_WIDTH / 2))
-                    .attr("height", height.addAndGet(DEFAULT_ICON_SIZE))
-                    .attr("viewBox", "0 -" + LABEL_WIDTH + " " + (width.get() + LABEL_WIDTH) + " " + (height.get() + LABEL_WIDTH))
+                .attr("version", "1.1")
+                .attr("xmlns", "http://www.w3.org/2000/svg")
+                .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
+                .attr("width", width.addAndGet(DEFAULT_ICON_SIZE + LABEL_WIDTH / 2))
+                .attr("height", height.addAndGet(DEFAULT_ICON_SIZE))
+                .attr("viewBox", "0 -" + LABEL_WIDTH + " " + (width.get() + LABEL_WIDTH) + " " + (height.get() + LABEL_WIDTH))
 
-                    .with(logo, title)
-                    .with(groups)
-                    .with(relations.stream().map(SVGRelation::render))
-                    .with(items)
-                    .with(SvgTagCreator.defs().with(patterns));
+                .with(logo, title)
+                .with(groups)
+                .with(relations.stream().map(SVGRelation::render))
+                .with(items)
+                .with(SvgTagCreator.defs().with(patterns));
     }
 
     /**
@@ -154,11 +154,9 @@ public class SVGDocument extends Component {
                 LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
                 item.getRelations().stream()
                         .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
-                        .map(rel -> {
-                            return getSvgRelation(vertexHexes, pathFinder, layoutedItem, item, rel);
-                        })
+                        .map(rel -> getSvgRelation(vertexHexes, pathFinder, layoutedItem, item, rel))
                         .filter(Objects::nonNull)
-                        .forEach(svgRelation -> relations.add(svgRelation));
+                        .forEach(relations::add);
             });
         });
 
@@ -180,8 +178,7 @@ public class SVGDocument extends Component {
 
     private String getStyles() {
         String css = "";
-        try {
-            InputStream resourceAsStream = getClass().getResourceAsStream("/static/css/svg.css");
+        try (InputStream resourceAsStream = getClass().getResourceAsStream("/static/css/svg.css")) {
             css = new String(StreamUtils.copyToByteArray(resourceAsStream));
         } catch (IOException e) {
             LOGGER.error("Failed to load stylesheet /static/css/svg.css");
