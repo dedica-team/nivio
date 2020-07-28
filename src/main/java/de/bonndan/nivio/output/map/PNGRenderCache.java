@@ -9,6 +9,7 @@ import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.layout.OrganicLayouter;
 import de.bonndan.nivio.output.map.svg.SVGRenderer;
 import org.apache.batik.transcoder.Transcoder;
+import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
@@ -27,7 +28,6 @@ import java.util.Map;
 
 /**
  * A service that caches expensive batik svg to png rendering.
- *
  */
 @Service
 public class PNGRenderCache implements ApplicationListener<ProcessingFinishedEvent> {
@@ -90,23 +90,17 @@ public class PNGRenderCache implements ApplicationListener<ProcessingFinishedEve
     }
 
     private byte[] asByteArray(LandscapeImpl landscape) {
-        TranscoderInput input_svg_image = new TranscoderInput(new ByteArrayInputStream(getSVG(landscape).getBytes()));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        TranscoderOutput transcoderOutput = new TranscoderOutput(outputStream);
+        TranscoderInput input_svg_image = new TranscoderInput(
+                new ByteArrayInputStream(getSVG(landscape).getBytes())
+        );
         Transcoder transcoder = new PNGTranscoder();
-        try {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            TranscoderOutput transcoderOutput = new TranscoderOutput(outputStream);
             transcoder.transcode(input_svg_image, transcoderOutput);
-        } catch (Exception e) {
-            //throw new RuntimeException("Failed to create PNG", e);
-            return null;
-        }
-        try {
             outputStream.flush();
-            outputStream.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to render landscape " + landscape.getIdentifier(), e);
+            return outputStream.toByteArray();
+        } catch (TranscoderException | IOException e) {
+            throw new RuntimeException("Failed to create PNG", e);
         }
-
-        return outputStream.toByteArray();
     }
 }
