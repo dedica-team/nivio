@@ -1,9 +1,9 @@
 package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.LocalServer;
-import de.bonndan.nivio.output.Color;
 import j2html.tags.ContainerTag;
 import org.springframework.util.StringUtils;
 
@@ -35,7 +35,7 @@ public class ReportGenerator extends HtmlGenerator {
                 getHead(landscape),
                 body(
                         h1(landscape.getName()),
-                        p("Contact: " + nice(landscape.getContact())),
+                        iff(!isEmpty(landscape.getContact()), p("Contact: " + nice(landscape.getContact()))),
                         div(embed().attr("src", "/render/" + landscape.getIdentifier() + "/" + MAP_SVG_ENDPOINT).attr("class", "img-fluid img-thumbnail mx-auto d-block")),
                         br(), br(),
                         rawHtml(writeGroups(landscape))
@@ -81,26 +81,27 @@ public class ReportGenerator extends HtmlGenerator {
                         ),
                         p(FormatUtils.nice(item.getDescription())),
 
+
                         ul().with(
-                                li("Name: " + FormatUtils.nice(item.getName()))
-                                , li("Full identifier: " + item.getFullyQualifiedIdentifier().toString())
-                                , li("Identifier: " + item.getIdentifier())
-                                , li("Short Name: " + FormatUtils.nice(item.getLabel(Label.shortname)))
-                                , li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">" + GROUP_CIRCLE + "</span> " + FormatUtils.nice(item.getGroup())))
-                                , li("Contact: " + FormatUtils.nice(item.getContact()))
-                                , li("Team: " + FormatUtils.nice(item.getLabel(Label.team)))
-                                , li("Owner: " + FormatUtils.nice(item.getOwner()))
-                                , li("Type: " + item.getType())
-                                , li("Capability: " + FormatUtils.nice(item.getLabel(Label.capability)))
-                                , li("Links: ").with(links)
-                                , li("Tags: " + FormatUtils.nice(item.getLabels(Tagged.LABEL_PREFIX_TAG)))
-                                , li("Lifecycle: " + FormatUtils.nice(item.getLabel(Label.lifecycle)))
-                                , li("Software: " + FormatUtils.nice(item.getLabel(Label.software)))
-                                , li("Version: " + FormatUtils.nice(item.getLabel(Label.version)))
-                                , li("Scale: " + FormatUtils.nice(item.getLabel(Label.scale)))
-                                , li("Visibility: " + FormatUtils.nice(item.getLabel(Label.visibility)))
-                                , li("Networks: " + FormatUtils.nice(item.getLabels(Label.network)))
-                                , li("Costs: " + FormatUtils.nice(item.getLabel(Label.costs)))
+                                iff(!isEmpty(item.getName()), li("Name: " + FormatUtils.nice(item.getName())))
+                                , iff(!isEmpty(item.getFullyQualifiedIdentifier().toString()), li("Full identifier: " + item.getFullyQualifiedIdentifier().toString()))
+                                , iff(!isEmpty(item.getIdentifier()), li("Identifier: " + item.getIdentifier()))
+                                , iff(!isEmpty(item.getLabel(Label.shortname)), li("Short Name: " + FormatUtils.nice(item.getLabel(Label.shortname))))
+                                , iff(!isEmpty(item.getGroup()), li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">" + GROUP_CIRCLE + "</span> " + FormatUtils.nice(item.getGroup()))))
+                                , iff(!isEmpty(item.getContact()), li("Contact: " + FormatUtils.nice(item.getContact())))
+                                , iff(!isEmpty(item.getLabel(Label.team)), li("Team: " + FormatUtils.nice(item.getLabel(Label.team))))
+                                , iff(!isEmpty(item.getOwner()), li("Owner: " + FormatUtils.nice(item.getOwner())))
+                                , iff(!isEmpty(item.getType()), li("Type: " + item.getType()))
+                                , iff(!isEmpty(item.getLabel(Label.capability)), li("Capability: " + FormatUtils.nice(item.getLabel(Label.capability))))
+                                , iff(links.size() > 1, li("Links: ").with(links))
+                                , iff(item.getLabels(Tagged.LABEL_PREFIX_TAG).size() > 0, li("Tags: " + FormatUtils.nice(item.getLabels(Tagged.LABEL_PREFIX_TAG))))
+                                , iff(!isEmpty(item.getLabel(Label.lifecycle)), li("Lifecycle: " + FormatUtils.nice(item.getLabel(Label.lifecycle))))
+                                , iff(!isEmpty(item.getLabel(Label.software)), li("Software: " + FormatUtils.nice(item.getLabel(Label.software))))
+                                , iff(!isEmpty(item.getLabel(Label.version)), li("Version: " + FormatUtils.nice(item.getLabel(Label.version))))
+                                , iff(!isEmpty(item.getLabel(Label.scale)), li("Scale: " + FormatUtils.nice(item.getLabel(Label.scale))))
+                                , iff(!isEmpty(item.getLabel(Label.visibility)), li("Visibility: " + FormatUtils.nice(item.getLabel(Label.visibility))))
+                                , iff(item.getLabels(Label.network).size() > 0, li("Networks: " + FormatUtils.nice(item.getLabels(Label.network))))
+                                , iff(!isEmpty(item.getLabel(Label.costs)), li("Costs: " + FormatUtils.nice(item.getLabel(Label.costs))))
                         ),
 
 
