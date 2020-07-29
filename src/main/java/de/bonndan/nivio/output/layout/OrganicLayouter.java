@@ -21,7 +21,7 @@ public class OrganicLayouter implements Layouter<LayoutedComponent> {
 
         Map<String, SubGraph> subgraphs = new LinkedHashMap<>();
         landscape.getGroups().forEach((name, groupItem) ->  {
-            SubGraph subGraph = new SubGraph(groupItem, ((Group)groupItem).getItems());
+            SubGraph subGraph = new SubGraph(groupItem, ((Group)groupItem).getItems(), landscape.getConfig().getItemLayoutConfig());
             subgraphs.put(name, subGraph);
         });
 

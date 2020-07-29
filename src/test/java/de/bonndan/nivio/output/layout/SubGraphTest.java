@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
+import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Relation;
@@ -30,7 +31,7 @@ class SubGraphTest {
         baz.getRelations().add(new Relation(baz, bar));
 
         //when
-        SubGraph subGraph = new SubGraph(foo, List.of(bar, baz));
+        SubGraph subGraph = new SubGraph(foo, List.of(bar, baz), new LandscapeConfig.LayoutConfig());
 
         //then
         LayoutedComponent outerBounds = subGraph.getOuterBounds();

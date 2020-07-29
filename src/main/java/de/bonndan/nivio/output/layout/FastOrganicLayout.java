@@ -1,13 +1,16 @@
 package de.bonndan.nivio.output.layout;
 
+import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.model.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -417,11 +420,26 @@ public class FastOrganicLayout {
         this.maxDistanceLimit = maxDistanceLimit;
     }
 
-    public void setMinDistanceLimit(double minDistanceLimit) {
-        this.minDistanceLimit = minDistanceLimit;
-    }
+    /**
+     * Applies factors from the layout config if present.
+     *
+     * @param config layout config
+     */
+    public void configure(@Nullable LandscapeConfig.LayoutConfig config) {
+        if (config == null) {
+            return;
+        }
 
-    public double getMinDistanceLimit() {
-        return minDistanceLimit;
+        Optional.ofNullable(config.getMaxIterations())
+                .ifPresent(this::setMaxIterations);
+
+        Optional.ofNullable(config.getMinDistanceLimitFactor())
+                .ifPresent(f -> minDistanceLimit = minDistanceLimit * f);
+
+        Optional.ofNullable(config.getMaxDistanceLimitFactor())
+                .ifPresent(f -> setMaxDistanceLimit(maxDistanceLimit * f));
+
+        Optional.ofNullable(config.getForceConstantFactor())
+                .ifPresent(f -> setForceConstant(forceConstant * f));
     }
 }

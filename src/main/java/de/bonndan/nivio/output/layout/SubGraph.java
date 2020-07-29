@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
+import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Item;
 import org.slf4j.Logger;
@@ -21,7 +22,7 @@ public class SubGraph {
     private final FastOrganicLayout layout;
     private final Component parent;
 
-    public SubGraph(Component parent, List<Item> items) {
+    public SubGraph(Component parent, List<Item> items, LandscapeConfig.LayoutConfig itemLayoutConfig) {
         String name = parent.getName();
         this.parent = parent;
 
@@ -46,6 +47,7 @@ public class SubGraph {
         layout = new FastOrganicLayout(list);
         layout.setForceConstant(FORCE_CONSTANT);
         layout.setMaxDistanceLimit(MAX_DISTANCE_LIMIT);
+        layout.configure(itemLayoutConfig);
         layout.execute();
         LOGGER.debug("Subgraph {} layouted items: {}", name, layout.getBounds());
     }

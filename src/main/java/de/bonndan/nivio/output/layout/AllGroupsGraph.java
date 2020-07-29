@@ -40,15 +40,11 @@ public class AllGroupsGraph {
 
         layout = new FastOrganicLayout(new ArrayList<>(groupNodes.values()));
         //layout.setDebug(true);
-
-        Optional.ofNullable(landscape.getConfig().getJgraphx().getMaxIterations())
-                .ifPresent(layout::setMaxIterations);
-
-        Optional.ofNullable(landscape.getConfig().getJgraphx().getMinDistanceLimitFactor())
-                .ifPresent(f -> layout.setMinDistanceLimit(layout.getMinDistanceLimit() * f));
-
         layout.setForceConstant(FORCE_CONSTANT);
         layout.setMaxDistanceLimit(MAX_DISTANCE_LIMIT);
+
+        layout.configure(landscape.getConfig().getGroupLayoutConfig());
+
         layout.execute();
         LOGGER.info("AllGroupsGraph bounds: {}", layout.getBounds());
     }

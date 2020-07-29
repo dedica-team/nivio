@@ -29,7 +29,8 @@ export interface IMessages {
 
 export interface IConfig {
   greedy?: boolean;
-  jgraphx?: IJgraphx;
+  groupLayoutConfig?: ILayoutConfig;
+  itemLayoutConfig?: ILayoutConfig;
   groupBlacklist?: Array<string>;
   labelBlacklist?: Array<string>;
   branding?: IBranding;
@@ -62,15 +63,11 @@ export interface IBranding {
   mapLogo?: string;
 }
 
-export interface IJgraphx {
-  edgeLengthCostFactor?: number;
-  nodeDistributionCostFactor?: number;
-  borderLineCostFactor?: number;
-  triesPerCell?: number;
+export interface ILayoutConfig {
   maxIterations?: number;
-  initialTemp?: number;
   forceConstantFactor?: number;
   minDistanceLimitFactor?: number;
+  maxDistanceLimitFactor?: number;
 }
 
 export interface IGroup {
