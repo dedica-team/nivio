@@ -34,7 +34,6 @@ public class ApiController {
                          LandscapeDescriptionFactory landscapeDescriptionFactory,
                          ItemDescriptionFormatFactory formatFactory,
                          Indexer indexer,
-                         FileFetcher fileFetcher,
                          LinkFactory linkFactory
     ) {
         this.landscapeRepository = landscapeRepository;
