@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 class GroupResolverTest {
 

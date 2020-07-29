@@ -8,6 +8,7 @@ import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ProcessLog;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
@@ -153,10 +154,23 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
         }
     }
 
+    /**
+     * Returns the group with the given name.
+     *
+     * @param group name
+     * @return group
+     */
+    @NonNull
     public Group getGroup(String group) {
         if (StringUtils.isEmpty(group))
             group = Group.COMMON;
-        return (Group) groups.get(group);
+        GroupItem groupItem = groups.get(group);
+        if (groupItem == null) {
+            processLog.warn("Group " + group + " was not found, returning COMMON");
+            groupItem = groups.get(Group.COMMON);
+        }
+
+        return (Group) groupItem;
     }
 
     public void setProcessLog(ProcessLog processLog) {

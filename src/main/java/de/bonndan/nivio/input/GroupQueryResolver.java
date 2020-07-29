@@ -29,10 +29,14 @@ public class GroupQueryResolver extends Resolver {
                 processLog.warn("Could not resolve group with identifier " + groupDescription.getIdentifier());
                 return;
             }
+            // run the query against all landscape items which match the condition
             groupDescription.getContains().forEach(condition -> group.getItems().addAll(landscape.getItems().query(condition)));
         });
 
-        //cleanup to ensure every items has the group identifier
+        /*
+          cleanup to ensure every item has the group identifier: The input DTOs might not have the group reference,
+          and all following resolvers might fail to find or set a group. So this is a fallback.
+         */
         landscape.getItems().stream().forEach(item -> {
             Group group = landscape.getGroup(item.getGroup()); //if group is empty, COMMON is returned
             item.setGroup(group.getIdentifier());
