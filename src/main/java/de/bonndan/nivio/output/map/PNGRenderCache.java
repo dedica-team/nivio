@@ -4,8 +4,8 @@ import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
+import de.bonndan.nivio.output.layout.Layouter;
 import de.bonndan.nivio.output.layout.OrganicLayouter;
 import de.bonndan.nivio.output.map.svg.SVGRenderer;
 import org.apache.batik.transcoder.Transcoder;
@@ -36,12 +36,12 @@ public class PNGRenderCache implements ApplicationListener<ProcessingFinishedEve
 
     private final Map<String, Pair<LandscapeImpl, byte[]>> renderings = new HashMap<>();
 
-    private final LocalServer localServer;
     private final SVGRenderer svgRenderer;
+    private final Layouter<LayoutedComponent> layouter;
 
-    public PNGRenderCache(LocalServer localServer, SVGRenderer svgRenderer) {
-        this.localServer = localServer;
+    public PNGRenderCache(SVGRenderer svgRenderer) {
         this.svgRenderer = svgRenderer;
+        layouter = new OrganicLayouter();
     }
 
     /**
@@ -69,7 +69,7 @@ public class PNGRenderCache implements ApplicationListener<ProcessingFinishedEve
      * @return the svg as string, uncached
      */
     public String getSVG(LandscapeImpl landscape) {
-        OrganicLayouter layouter = new OrganicLayouter();
+
         LayoutedComponent layout = layouter.layout(landscape);
 
         if (landscape.getLog() == null) {

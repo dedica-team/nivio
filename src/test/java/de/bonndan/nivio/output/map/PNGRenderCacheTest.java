@@ -49,7 +49,7 @@ class PNGRenderCacheTest {
         localServer = new LocalServer("", null);
         stylesheetFactory = mock(MapStyleSheetFactory.class);
         svgRenderer = new SVGRenderer(localServer, stylesheetFactory);
-        renderCache = new PNGRenderCache(localServer, svgRenderer);
+        renderCache = new PNGRenderCache(svgRenderer);
         when(stylesheetFactory.getMapStylesheet(any(), any())).thenReturn("");
     }
 
