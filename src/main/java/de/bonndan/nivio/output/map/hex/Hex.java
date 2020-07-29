@@ -4,6 +4,11 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is all copied code from https://www.redblobgames.com/grids/hexagons/implementation.html#hex-geometry and several
+ * stackoverflow questions.
+ *
+ */
 public class Hex {
 
     public static final List<Hex> DIRECTIONS = new ArrayList<>();
