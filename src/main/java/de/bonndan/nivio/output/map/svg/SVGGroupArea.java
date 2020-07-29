@@ -4,14 +4,13 @@ import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.DomContent;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Displays a group as an area containing items.
- *
- *
  */
 class SVGGroupArea extends Component {
 
@@ -31,15 +30,19 @@ class SVGGroupArea extends Component {
                 .map(hex -> new SVGHex(hex, fillId).render())
                 .collect(Collectors.toList());
 
-        Hex first = territory.iterator().next();
-        territoryHexes.add(
-                SvgTagCreator.text(group.getIdentifier())
-                        .attr("x", first.toPixel().x)
-                        .attr("y",  first.toPixel().y)
-                        .attr("fill", fillId)
-                        .attr("font-size", 24)
-                        .attr("class", "groupLabel")
-        );
+        Iterator<Hex> iterator = territory.iterator();
+        if (iterator.hasNext()) {
+            Hex first = iterator.next();
+            territoryHexes.add(
+                    SvgTagCreator.text(group.getIdentifier())
+                            .attr("x", first.toPixel().x)
+                            .attr("y", first.toPixel().y)
+                            .attr("fill", fillId)
+                            .attr("font-size", 24)
+                            .attr("class", "groupLabel")
+            );
+        }
+
 
         return SvgTagCreator.g(territoryHexes.toArray(DomContent[]::new));
     }

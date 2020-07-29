@@ -18,6 +18,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * Turns the layouted landscape into a SVG image.
+ *
+ *
+ */
 @Service
 public class SVGRenderer implements Renderer<String> {
 
