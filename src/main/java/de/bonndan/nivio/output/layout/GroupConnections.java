@@ -30,15 +30,11 @@ class GroupConnections {
             return false;
         }
 
-
         if (a.equals(b))
             return false;
 
         boolean hasLink = groupConnections.stream()
-                .anyMatch(pair ->
-                        (pair.getKey().equals(a) && pair.getValue().equals(b))
-                               // || (pair.getKey().equals(b) && pair.getValue().equals(a))
-                );
+                .anyMatch(pair -> (pair.getKey().equals(a) && pair.getValue().equals(b)));
 
         return !hasLink;
     }
