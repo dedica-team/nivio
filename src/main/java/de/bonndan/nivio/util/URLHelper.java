@@ -88,13 +88,15 @@ public class URLHelper {
      * https://stackoverflow.com/questions/13592236/parse-a-uri-string-into-name-value-collection,
      */
     public static Map<String, String> splitQuery(URL url) {
-        Map<String, String> query_pairs = new LinkedHashMap<>();
+        Map<String, String> queryPairs = new LinkedHashMap<>();
         String query = url.getQuery();
+        if (query == null) { return queryPairs; }
         String[] pairs = query.split("&");
         for (String pair : pairs) {
             int idx = pair.indexOf("=");
-            query_pairs.put(URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8), URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8));
+            if (idx == -1 || idx + 1 > pair.length() - 1) { continue; }
+            queryPairs.put(URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8), URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8));
         }
-        return query_pairs;
+        return queryPairs;
     }
 }

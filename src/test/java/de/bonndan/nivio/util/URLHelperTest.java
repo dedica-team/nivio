@@ -8,9 +8,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class URLHelperTest {
 
@@ -36,5 +37,29 @@ public class URLHelperTest {
         URL url = URLHelper.getURL("src/test/resources/example/example_templates.yml");
         assert url != null;
         assertEquals("file:" + root + "/src/test/resources/example/example_templates.yml", url.toString());
+    }
+
+    @Test
+    void test_splitQuery() throws MalformedURLException {
+        URL url = new URL("http://192.168.99.100:8080?namespace=default&groupLabel=release");
+        Map<String, String> expected = Map.of("namespace", "default", "groupLabel", "release");
+        Map<String, String> actual = URLHelper.splitQuery(url);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void test_splitQuery_withoutQuery() throws MalformedURLException {
+        URL url = new URL("http://192.168.99.100:8080");
+        Map<String, String> expected = new HashMap<>();
+        Map<String, String> actual = URLHelper.splitQuery(url);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void test_splitQuery_badQuery() throws MalformedURLException {
+        URL url = new URL("http://192.168.99.100:8080?foo=");
+        Map<String, String> expected = new HashMap<>();
+        Map<String, String> actual = URLHelper.splitQuery(url);
+        assertEquals(expected, actual);
     }
 }
