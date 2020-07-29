@@ -6,3 +6,4 @@ _templates
 /.env
 *.iml
 src/test/resources/example/*_debug.png
+src/test/resources/example/*_debug.json
