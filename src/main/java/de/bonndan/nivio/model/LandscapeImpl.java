@@ -113,8 +113,10 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
     }
 
     @JsonGetter("groups")
-    public Collection<GroupItem> getGroupItems() {
-        return groups.values();
+    public Collection<Group> getGroupItems() {
+        return groups.values().stream()
+                .map(groupItem -> (Group)groupItem)
+                .collect(Collectors.toList());
     }
 
     public void setContact(String contact) {
