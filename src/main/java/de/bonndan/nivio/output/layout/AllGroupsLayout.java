@@ -13,9 +13,9 @@ import java.util.*;
 /**
  * Renders a graph of group containers only, not regarding items inside the containers.
  */
-public class AllGroupsGraph {
+public class AllGroupsLayout {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AllGroupsGraph.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AllGroupsLayout.class);
     public static final int FORCE_CONSTANT = 350;
     public static final int MAX_DISTANCE_LIMIT = 1000;
 
@@ -23,7 +23,7 @@ public class AllGroupsGraph {
     private final FastOrganicLayout layout;
     private final Landscape landscape;
 
-    public AllGroupsGraph(Landscape landscape, Map<String, Group> groups, Map<String, SubGraph> subgraphs) {
+    public AllGroupsLayout(Landscape landscape, Map<String, Group> groups, Map<String, SubLayout> subgraphs) {
         this.landscape = landscape;
 
         LOGGER.debug("Subgraphs sequence: {}", subgraphs);
@@ -46,7 +46,7 @@ public class AllGroupsGraph {
         layout.configure(landscape.getConfig().getGroupLayoutConfig());
 
         layout.execute();
-        LOGGER.info("AllGroupsGraph bounds: {}", layout.getBounds());
+        LOGGER.info("AllGroupsLayout bounds: {}", layout.getBounds());
     }
 
 

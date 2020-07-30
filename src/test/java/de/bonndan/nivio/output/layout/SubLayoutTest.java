@@ -11,7 +11,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class SubGraphTest {
+class SubLayoutTest {
 
     @Test
     public void testWithARelation() {
@@ -31,10 +31,10 @@ class SubGraphTest {
         baz.getRelations().add(new Relation(baz, bar));
 
         //when
-        SubGraph subGraph = new SubGraph(foo, List.of(bar, baz), new LandscapeConfig.LayoutConfig());
+        SubLayout subLayout = new SubLayout(foo, List.of(bar, baz), new LandscapeConfig.LayoutConfig());
 
         //then
-        LayoutedComponent outerBounds = subGraph.getOuterBounds();
+        LayoutedComponent outerBounds = subLayout.getOuterBounds();
         assertNotNull(outerBounds);
         assertEquals(foo, outerBounds.getComponent());
         LayoutedComponent one = outerBounds.getChildren().get(0);

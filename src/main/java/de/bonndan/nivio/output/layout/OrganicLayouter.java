@@ -19,16 +19,16 @@ public class OrganicLayouter implements Layouter<LayoutedComponent> {
     @Override
     public LayoutedComponent layout(LandscapeImpl landscape) {
 
-        Map<String, SubGraph> subgraphs = new LinkedHashMap<>();
+        Map<String, SubLayout> subgraphs = new LinkedHashMap<>();
         landscape.getGroups().forEach((name, groupItem) ->  {
-            SubGraph subGraph = new SubGraph(groupItem, ((Group)groupItem).getItems(), landscape.getConfig().getItemLayoutConfig());
-            subgraphs.put(name, subGraph);
+            SubLayout subLayout = new SubLayout(groupItem, ((Group)groupItem).getItems(), landscape.getConfig().getItemLayoutConfig());
+            subgraphs.put(name, subLayout);
         });
 
         Map<String, Group> groupMap = new LinkedHashMap<>();
         landscape.getGroups().forEach((s, groupItem) -> groupMap.put(s, (Group)groupItem));
 
-        AllGroupsGraph allGroupsGraph = new AllGroupsGraph(landscape, groupMap, subgraphs);
-        return allGroupsGraph.getRendered();
+        AllGroupsLayout allGroupsLayout = new AllGroupsLayout(landscape, groupMap, subgraphs);
+        return allGroupsLayout.getRendered();
     }
 }

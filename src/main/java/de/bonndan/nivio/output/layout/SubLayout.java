@@ -10,19 +10,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Graph for one group (for the items INSIDE the group).
+ * Layout for one group (for the items INSIDE the group).
  * <p>
  */
-public class SubGraph {
+public class SubLayout {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubGraph.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubLayout.class);
     public static final int FORCE_CONSTANT = 50;
     public static final int MAX_DISTANCE_LIMIT = 200;
 
     private final FastOrganicLayout layout;
     private final Component parent;
 
-    public SubGraph(Component parent, List<Item> items, LandscapeConfig.LayoutConfig itemLayoutConfig) {
+    public SubLayout(Component parent, List<Item> items, LandscapeConfig.LayoutConfig itemLayoutConfig) {
         String name = parent.getName();
         this.parent = parent;
 
