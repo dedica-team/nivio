@@ -162,12 +162,13 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
      */
     @NonNull
     public Group getGroup(String group) {
-        if (StringUtils.isEmpty(group))
+        if (StringUtils.isEmpty(group)) {
             group = Group.COMMON;
+        }
         GroupItem groupItem = groups.get(group);
         if (groupItem == null) {
             processLog.warn("Group " + group + " was not found, returning COMMON");
-            groupItem = groups.get(Group.COMMON);
+            groupItem = new Group(Group.COMMON);
         }
 
         return (Group) groupItem;
