@@ -7,6 +7,7 @@ import de.bonndan.nivio.model.Relation;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -31,7 +32,7 @@ class SubLayoutTest {
         baz.getRelations().add(new Relation(baz, bar));
 
         //when
-        SubLayout subLayout = new SubLayout(foo, List.of(bar, baz), new LandscapeConfig.LayoutConfig());
+        SubLayout subLayout = new SubLayout(foo, Set.of(bar, baz), new LandscapeConfig.LayoutConfig());
 
         //then
         LayoutedComponent outerBounds = subLayout.getOuterBounds();

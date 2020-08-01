@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -35,9 +36,9 @@ class AllGroupsLayoutTest {
         );
 
         //add some inter-group relations
-        Item item1 = a.getItems().get(0);
-        Item item2 = b.getItems().get(0);
-        Item item3 = c.getItems().get(0);
+        Item item1 = a.getItems().iterator().next();
+        Item item2 = b.getItems().iterator().next();
+        Item item3 = c.getItems().iterator().next();
         item1.getRelations().add(new Relation(item1, item2));
         item2.getRelations().add(new Relation(item2, item3));
 
@@ -72,6 +73,6 @@ class AllGroupsLayoutTest {
         group.getItems().add(baz);
         baz.getRelations().add(new Relation(baz, bar));
 
-        return new SubLayout(group, List.of(bar, baz), new LandscapeConfig.LayoutConfig());
+        return new SubLayout(group, Set.of(bar, baz), new LandscapeConfig.LayoutConfig());
     }
 }

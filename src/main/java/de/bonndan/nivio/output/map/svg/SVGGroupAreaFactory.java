@@ -26,7 +26,7 @@ public class SVGGroupAreaFactory {
      */
     public static SVGGroupArea getGroup(Set<Hex> occupied, Group group, Map<LandscapeItem, Hex> vertexHexes, List<SVGRelation> relations) {
 
-        List<Item> items = group.getItems();
+        Set<Item> items = group.getItems();
         Set<Hex> inArea = new HashSet<>();
 
         //surround each item

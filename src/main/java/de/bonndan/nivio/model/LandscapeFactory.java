@@ -10,9 +10,20 @@ public class LandscapeFactory {
      * @param input the description
      */
     public static LandscapeImpl create(LandscapeDescription input) {
-        LandscapeImpl landscape = new LandscapeImpl();
-        landscape.setIdentifier(input.getIdentifier());
+        LandscapeImpl landscape = create(input.getIdentifier());
         landscape.setSource(input.getSource());
+        return landscape;
+    }
+
+    /**
+     * This factory method can be used to create landscapes for testing.
+     *
+     * @param identifier landscape identifier
+     * @return new landscape
+     */
+    public static LandscapeImpl create(String identifier) {
+        LandscapeImpl landscape = new LandscapeImpl();
+        landscape.setIdentifier(identifier);
         landscape.addGroup(new Group(Group.COMMON));
         return landscape;
     }

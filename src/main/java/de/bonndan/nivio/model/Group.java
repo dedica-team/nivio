@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Group implements GroupItem, Labeled, Assessable {
 
@@ -26,7 +27,7 @@ public class Group implements GroupItem, Labeled, Assessable {
     /**
      * Items belonging to this group.
      */
-    private final List<Item> items = new ArrayList<>();
+    private final Set<Item> items = new HashSet<>();
 
     private String landscapeIdentifier;
 
@@ -98,7 +99,7 @@ public class Group implements GroupItem, Labeled, Assessable {
         this.contact = contact;
     }
 
-    public List<Item> getItems() {
+    public Set<Item> getItems() {
         return items;
     }
 
@@ -125,7 +126,7 @@ public class Group implements GroupItem, Labeled, Assessable {
     @JsonIgnore
     @Override
     public List<? extends Assessable> getChildren() {
-        return getItems();
+        return new ArrayList<>(getItems());
     }
 
     public void setLandscape(String landscapeIdentifier) {

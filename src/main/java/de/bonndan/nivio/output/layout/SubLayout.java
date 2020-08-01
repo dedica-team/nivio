@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Layout for one group (for the items INSIDE the group).
@@ -22,7 +23,7 @@ public class SubLayout {
     private final FastOrganicLayout layout;
     private final Component parent;
 
-    public SubLayout(Component parent, List<Item> items, LandscapeConfig.LayoutConfig itemLayoutConfig) {
+    public SubLayout(Component parent, Set<Item> items, LandscapeConfig.LayoutConfig itemLayoutConfig) {
         String name = parent.getName();
         this.parent = parent;
 

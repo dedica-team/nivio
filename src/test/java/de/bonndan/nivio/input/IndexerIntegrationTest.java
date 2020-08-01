@@ -115,8 +115,9 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
 
-        ArrayList<Item> landscapeItems = new ArrayList<>(blog.getProvidedBy());
-        Item webserver = LandscapeItems.of(landscapeItems).pick("wordpress-web", null);
+        LandscapeItems items = new LandscapeItems();
+        items.setItems(blog.getProvidedBy());
+        Item webserver = items.pick("wordpress-web", null);
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
 
@@ -256,7 +257,8 @@ public class IndexerIntegrationTest {
     public void readGroupsContains() {
         LandscapeImpl landscape1 = index("/src/test/resources/example/example_groups.yml");
         Group a = (Group) landscape1.getGroups().get("groupA");
-        LandscapeItems items = LandscapeItems.of(a.getItems());
+        LandscapeItems items = new LandscapeItems();
+        items.setItems(a.getItems());
         assertNotNull(items.pick("blog-server", null));
         assertNotNull(items.pick("crappy_dockername-234234", null));
     }
