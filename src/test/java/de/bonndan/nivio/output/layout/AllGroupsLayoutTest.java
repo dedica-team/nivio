@@ -1,10 +1,7 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.LandscapeConfig;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.model.Relation;
+import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
@@ -24,8 +21,8 @@ class AllGroupsLayoutTest {
         Group b = new Group("b");
         Group c = new Group("c");
 
-        LandscapeImpl landscape = new LandscapeImpl();
-        landscape.setIdentifier("test");
+        LandscapeImpl landscape = LandscapeFactory.create("test");
+
         landscape.getGroups().put("a", a);
         landscape.getGroups().put("b", b);
         landscape.getGroups().put("c", c);

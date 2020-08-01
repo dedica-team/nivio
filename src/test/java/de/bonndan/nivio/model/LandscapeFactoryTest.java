@@ -35,6 +35,12 @@ class LandscapeFactoryTest {
     }
 
     @Test
+    public void createWithMinIdentifier() {
+        LandscapeImpl landscape = LandscapeFactory.create("l1");
+        assertNotNull(landscape);
+    }
+
+    @Test
     public void createAddsCommonGroup() {
         LandscapeImpl landscape = LandscapeFactory.create(description);
         assertNotNull(landscape);

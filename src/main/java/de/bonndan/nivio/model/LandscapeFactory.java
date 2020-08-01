@@ -22,10 +22,7 @@ public class LandscapeFactory {
      * @return new landscape
      */
     public static LandscapeImpl create(String identifier) {
-        LandscapeImpl landscape = new LandscapeImpl();
-        landscape.setIdentifier(identifier);
-        landscape.addGroup(new Group(Group.COMMON));
-        return landscape;
+        return new LandscapeImpl(identifier, new Group(Group.COMMON));
     }
 
     public static void assignAll(LandscapeDescription input, LandscapeImpl landscape) {

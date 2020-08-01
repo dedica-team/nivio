@@ -8,12 +8,15 @@ import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ProcessLog;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
 
 /**
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
@@ -24,7 +27,7 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
     /**
      * Immutable unique identifier. Maybe use an URN.
      */
-    @Pattern(regexp = LandscapeItem.IDENTIFIER_VALIDATION)
+    @Pattern(regexp = IDENTIFIER_VALIDATION)
     private String identifier;
 
     /**
@@ -54,6 +57,11 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
     private final Map<String, Link> links = new HashMap<>();
     private String owner;
 
+    public LandscapeImpl(@NonNull String identifier, @NonNull Group defaultGroup) {
+        setIdentifier(identifier);
+        this.addGroup(defaultGroup);
+    }
+
     public String getIdentifier() {
         return identifier;
     }
@@ -64,6 +72,10 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
     }
 
     public void setIdentifier(String identifier) {
+
+        if (StringUtils.isEmpty(identifier) || !identifier.matches(IDENTIFIER_VALIDATION)) {
+            throw new IllegalArgumentException("Invalid landscape identifier given: '" + identifier + "', it must match " + IDENTIFIER_VALIDATION);
+        }
         this.identifier = StringUtils.trimAllWhitespace(identifier);
     }
 
@@ -144,7 +156,11 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
         this.config = config;
     }
 
-    public void addGroup(Group g) {
+    public void addGroup(@NonNull Group g) {
+        if (g == null) {
+            throw new IllegalArgumentException("Trying to add null group");
+        }
+
         g.setLandscape(this.identifier);
         if (groups.containsKey(g.getIdentifier())) {
             Groups.merge((Group) groups.get(g.getIdentifier()), g);

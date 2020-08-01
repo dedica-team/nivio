@@ -1,9 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Labeled;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.Test;
@@ -48,9 +45,7 @@ class SVGRendererTest {
     }
 
     private LayoutedComponent getLayoutedLandscape() {
-        LandscapeImpl foo = new LandscapeImpl();
-        foo.setIdentifier("foo");
-
+        LandscapeImpl foo = LandscapeFactory.create("foo");
 
         LayoutedComponent lc = new LayoutedComponent(foo);
         lc.setChildren(new ArrayList<>());

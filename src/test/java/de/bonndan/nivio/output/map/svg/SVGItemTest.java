@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +17,7 @@ class SVGItemTest {
     @Test
     @DisplayName("ensure item uses proper fqi as id")
     public void regression184() {
-        LandscapeImpl landscape = new LandscapeImpl();
-        landscape.setIdentifier("l1");
+        LandscapeImpl landscape = LandscapeFactory.create("l1");
 
         // item has no group
         Item foo = new Item();
@@ -31,8 +31,7 @@ class SVGItemTest {
     @Test
     @DisplayName("contains x and y data")
     public void xyData() {
-        LandscapeImpl landscape = new LandscapeImpl();
-        landscape.setIdentifier("l1");
+        LandscapeImpl landscape = LandscapeFactory.create("l1");
 
         // item has no group
         Item foo = new Item();

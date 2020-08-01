@@ -4,6 +4,7 @@ import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,11 +28,11 @@ class GroupResolverTest {
     void process() {
 
         LandscapeDescription input = getLandscapeDescription();
-        LandscapeImpl landscape = new LandscapeImpl();
+        LandscapeImpl landscape = LandscapeFactory.create("test");
 
         groupResolver.process(input, landscape);
 
-        assertEquals(2, landscape.getGroups().size());
+        assertEquals(3, landscape.getGroups().size());
     }
 
     @Test
@@ -43,7 +44,7 @@ class GroupResolverTest {
         item.setIdentifier("abc");
         input.addItems(Arrays.asList(item));
 
-        LandscapeImpl landscape = new LandscapeImpl();
+        LandscapeImpl landscape = LandscapeFactory.create("test");
 
 
         groupResolver.process(input, landscape);
@@ -56,10 +57,10 @@ class GroupResolverTest {
     public void testBlacklistOnGroups() {
         LandscapeDescription input = getLandscapeDescription();
         input.getConfig().getGroupBlacklist().add("test2");
-        LandscapeImpl landscape = new LandscapeImpl();
+        LandscapeImpl landscape = LandscapeFactory.create("test");
 
         groupResolver.process(input, landscape);
-        assertEquals(1, landscape.getGroups().size());
+        assertEquals(2, landscape.getGroups().size()); //COMMON is always present
         assertTrue(landscape.getGroup("test1").isPresent());
         assertEquals("test1", landscape.getGroup("test1").get().getIdentifier());
     }
@@ -68,10 +69,10 @@ class GroupResolverTest {
     public void testBlacklistOnGroupsWithRegex() {
         LandscapeDescription input = getLandscapeDescription();
         input.getConfig().getGroupBlacklist().add("^test[0-9].*");
-        LandscapeImpl landscape = new LandscapeImpl();
+        LandscapeImpl landscape = LandscapeFactory.create("test");
 
         groupResolver.process(input, landscape);
-        assertEquals(0, landscape.getGroups().size());
+        assertEquals(1, landscape.getGroups().size()); //COMMON only
     }
 
     @Test
@@ -87,11 +88,11 @@ class GroupResolverTest {
         test2item.setGroup("test2");
         input.getItemDescriptions().add(test2item);
 
-        LandscapeImpl landscape = new LandscapeImpl();
+        LandscapeImpl landscape = LandscapeFactory.create("test");
 
         groupResolver.process(input, landscape);
 
-        assertEquals(1, landscape.getGroups().size());
+        assertEquals(2, landscape.getGroups().size()); //incl COMMON
         assertEquals(1, input.getItemDescriptions().all().size());
     }
 

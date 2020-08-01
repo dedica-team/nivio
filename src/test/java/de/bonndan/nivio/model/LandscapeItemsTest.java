@@ -18,8 +18,7 @@ class LandscapeItemsTest {
     @BeforeEach
     public void setup() {
 
-        landscape = new LandscapeImpl();
-        landscape.setIdentifier("l");
+        landscape = new LandscapeImpl("l1", new Group(Group.COMMON));
 
         items = new ArrayList<>();
 

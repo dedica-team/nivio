@@ -7,6 +7,7 @@ import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
@@ -60,7 +61,7 @@ class PNGRenderCacheTest {
 
     @Test
     void toPNG() {
-        byte[] png = renderCache.getPNG(getLandscape());
+        byte[] png = renderCache.getPNG(getLandscape("test"));
         assertNotNull(png);
 
         verify(stylesheetFactory, times(1)).getMapStylesheet(any(), any());
@@ -68,7 +69,7 @@ class PNGRenderCacheTest {
 
     @Test
     void toPNGCached() {
-        LandscapeImpl landscape = getLandscape();
+        LandscapeImpl landscape = getLandscape("test");
         byte[] first = renderCache.getPNG(landscape);
         byte[] second = renderCache.getPNG(landscape);
 
@@ -77,17 +78,17 @@ class PNGRenderCacheTest {
 
     @Test
     void toPNGRefreshCaches() {
-        byte[] first = renderCache.getPNG(getLandscape());
-        byte[] second = renderCache.getPNG(getLandscape());
+        byte[] first = renderCache.getPNG(getLandscape("test"));
+        byte[] second = renderCache.getPNG(getLandscape("test"));
 
         verify(stylesheetFactory, times(2)).getMapStylesheet(any(), any());
     }
 
     @Test
     void cachesBasedOnIdentifier() {
-        LandscapeImpl one = getLandscape();
-        byte[] first = renderCache.getPNG(getLandscape());
-        LandscapeImpl two = getLandscape();
+        LandscapeImpl one = getLandscape("test");
+        byte[] first = renderCache.getPNG(getLandscape("test"));
+        LandscapeImpl two = getLandscape("test");
         two.setProcessLog(one.getLog()); //sync last update
         two.setIdentifier("second");
         byte[] second = renderCache.getPNG(two);
@@ -97,21 +98,21 @@ class PNGRenderCacheTest {
 
     @Test
     void toSVG() {
-        String svg = renderCache.getSVG(getLandscape());
+        String svg = renderCache.getSVG(getLandscape("test"));
         assertNotNull(svg);
         assertTrue(svg.contains("svg"));
     }
 
     @Test
     void onProcessingFinishedEvent() {
-        renderCache.onApplicationEvent(new ProcessingFinishedEvent(new LandscapeDescription(), getLandscape()));
+        renderCache.onApplicationEvent(new ProcessingFinishedEvent(new LandscapeDescription(), getLandscape("test")));
 
         verify(stylesheetFactory, times(1)).getMapStylesheet(any(), any());
     }
 
-    private LandscapeImpl getLandscape() {
-        LandscapeImpl landscape = new LandscapeImpl();
-        landscape.setIdentifier("test");
+    private LandscapeImpl getLandscape(String identifier) {
+        LandscapeImpl landscape = LandscapeFactory.create(identifier);
+
         Item item = new Item();
         item.setIdentifier("foo");
         item.setGroup("bar");

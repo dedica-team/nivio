@@ -30,7 +30,10 @@ public class AllGroupsLayout {
 
         List<LandscapeItem> items = new ArrayList<>();
         groups.forEach((groupName, groupItem) -> {
-            LayoutedComponent groupGeometry = subgraphs.get(groupName).getOuterBounds();
+            SubLayout subLayout = subgraphs.get(groupName);
+            if (subLayout == null)
+                return;
+            LayoutedComponent groupGeometry = subLayout.getOuterBounds();
             groupNodes.put(groupItem, groupGeometry);
             items.addAll(groupItem.getItems());
         });

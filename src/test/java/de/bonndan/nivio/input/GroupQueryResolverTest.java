@@ -82,7 +82,7 @@ class GroupQueryResolverTest {
          * I have removed the magic from landscape.getGroup() and made that LandscapeFactory creates the COMMON group
          * as default. I've also added a test, so this test is obsolete.
          */
-        LandscapeImpl landscape = new LandscapeImpl();
+        LandscapeImpl landscape = LandscapeFactory.create("test");
         landscape.setProcessLog(processLog);
         Item item = new Item();
         item.setIdentifier("itemIdentifier");
