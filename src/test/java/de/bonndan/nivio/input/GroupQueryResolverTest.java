@@ -76,7 +76,6 @@ class GroupQueryResolverTest {
         assertThat(landscape.getGroup("groupIdentifier").get().getItems()).containsExactly(item);
     }
 
-    @Disabled
     @Test
     void process_containsCommonGroupIfGroupWasEmpty() {
         /*
@@ -100,6 +99,27 @@ class GroupQueryResolverTest {
         assertThat(landscape.getItems().stream().count()).isEqualTo(1L);
         assertThat(landscape.getGroups().values().size()).isEqualTo(1);
         assertThat(landscape.getGroups().values().stream().findFirst().get().getIdentifier()).isEqualTo("common");
+    }
+
+    @Test
+    void process_withLandscapeFromLandscapeFactory_containsCommonGroupIfNoGroupWasSet() {
+        LandscapeImpl landscape = LandscapeFactory.create("landscapeIdentifier");
+        Item item = new Item();
+        item.setIdentifier("itemIdentifier");
+
+        landscape.setItems(Set.of(item));
+
+        LandscapeDescription input = new LandscapeDescription();
+        GroupDescription groupDescription = new GroupDescription();
+
+        input.getGroups().put("group", groupDescription);
+
+        groupResolver.process(input, landscape);
+
+        assertThat(landscape.getItems().stream().count()).isEqualTo(1L);
+        assertThat(landscape.getGroups().values().size()).isEqualTo(1);
+        assertThat(landscape.getGroups().values().stream().findFirst().get().getIdentifier()).isEqualTo("common");
+
     }
 
 }
