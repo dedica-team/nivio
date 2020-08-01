@@ -6,6 +6,7 @@ import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -48,7 +49,7 @@ class GroupQueryResolverTest {
         groupResolver.process(input, landscape);
 
         assertThat(landscape.getItems().stream().count()).isEqualTo(1L);
-        assertThat(landscape.getGroup("groupIdentifier").getItems()).containsExactly(item);
+        assertThat(landscape.getGroup("groupIdentifier").get().getItems()).containsExactly(item);
     }
 
     @Test
@@ -70,11 +71,17 @@ class GroupQueryResolverTest {
         groupResolver.process(input, landscape);
 
         assertThat(landscape.getItems().stream().count()).isEqualTo(1L);
-        assertThat(landscape.getGroup("groupIdentifier").getItems()).containsExactly(item);
+        assertThat(landscape.getGroup("groupIdentifier")).isPresent();
+        assertThat(landscape.getGroup("groupIdentifier").get().getItems()).containsExactly(item);
     }
 
+    @Disabled
     @Test
     void process_containsCommonGroupIfGroupWasEmpty() {
+        /*
+         * I have removed the magic from landscape.getGroup() and made that LandscapeFactory creates the COMMON group
+         * as default. I've also added a test, so this test is obsolete.
+         */
         LandscapeImpl landscape = new LandscapeImpl();
         landscape.setProcessLog(processLog);
         Item item = new Item();

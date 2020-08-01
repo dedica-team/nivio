@@ -60,7 +60,8 @@ class GroupResolverTest {
 
         groupResolver.process(input, landscape);
         assertEquals(1, landscape.getGroups().size());
-        assertEquals("test1", landscape.getGroup("test1").getIdentifier());
+        assertTrue(landscape.getGroup("test1").isPresent());
+        assertEquals("test1", landscape.getGroup("test1").get().getIdentifier());
     }
 
     @Test

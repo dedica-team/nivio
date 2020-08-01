@@ -34,10 +34,15 @@ public class SubLayout {
                     return;
 
                 Item other = relationItem.getTarget();
-                boolean sameGroup = (item.getGroup() == null && other.getGroup() == null)
-                        || item.getGroup().equals(other.getGroup());
-                if (sameGroup)
+                if (item.getGroup() == null)
+                    throw new RuntimeException("Item " + item + "has no group");
+                if (other.getGroup() == null)
+                    throw new RuntimeException("Item " + other + "has no group");
+
+
+                if (item.getGroup().equals(other.getGroup())) {
                     relationTargets.add(other);
+                }
 
             });
             list.add(new LayoutedComponent(item, relationTargets));

@@ -5,14 +5,15 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 public class LandscapeFactory {
 
     /**
-     * Creates a new ladnscape impl.
+     * Creates a new landscape impl.
      *
      * @param input the description
      */
-    public static LandscapeImpl toLandscape(LandscapeDescription input) {
+    public static LandscapeImpl create(LandscapeDescription input) {
         LandscapeImpl landscape = new LandscapeImpl();
         landscape.setIdentifier(input.getIdentifier());
         landscape.setSource(input.getSource());
+        landscape.addGroup(new Group(Group.COMMON));
         return landscape;
     }
 

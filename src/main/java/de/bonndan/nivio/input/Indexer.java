@@ -38,7 +38,7 @@ public class Indexer {
 
         LandscapeImpl landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier()).orElseGet(() -> {
             logger.info("Creating new landscape " + input.getIdentifier());
-            LandscapeImpl landscape1 = LandscapeFactory.toLandscape(input);
+            LandscapeImpl landscape1 = LandscapeFactory.create(input);
             landscapeRepo.save(landscape1);
             return landscape1;
         });

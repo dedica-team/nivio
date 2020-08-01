@@ -10,16 +10,10 @@ import java.util.*;
 
 public class Group implements GroupItem, Labeled, Assessable {
 
-    public static final Group DEFAULT_GROUP;
-
     /**
      * Default group identifier (items are assigned to this group if no group is given
      */
     public static final String COMMON = "common";
-
-    static {
-        DEFAULT_GROUP = new Group(COMMON);
-    }
 
     private String identifier;
     private String owner;

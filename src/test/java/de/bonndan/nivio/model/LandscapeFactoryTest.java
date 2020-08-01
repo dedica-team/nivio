@@ -28,15 +28,23 @@ class LandscapeFactoryTest {
 
     @Test
     public void create() {
-        LandscapeImpl landscape = LandscapeFactory.toLandscape(description);
+        LandscapeImpl landscape = LandscapeFactory.create(description);
         assertNotNull(landscape);
         assertEquals(description.getIdentifier(), landscape.getIdentifier());
         assertEquals(description.getSource(), landscape.getSource());
     }
 
     @Test
+    public void createAddsCommonGroup() {
+        LandscapeImpl landscape = LandscapeFactory.create(description);
+        assertNotNull(landscape);
+        assertEquals(1, landscape.getGroups().size());
+        assertNotNull(landscape.getGroup(Group.COMMON));
+    }
+
+    @Test
     public void assignAll() {
-        LandscapeImpl landscape = LandscapeFactory.toLandscape(description);
+        LandscapeImpl landscape = LandscapeFactory.create(description);
         LandscapeFactory.assignAll(description, landscape);
         assertEquals(description.getContact(), landscape.getContact());
         assertEquals(description.getConfig(), landscape.getConfig());

@@ -8,8 +8,6 @@ import org.springframework.util.StringUtils;
 
 /**
  * This class resolves all "contains" queries of a group description, i.e. the items are assigned dynamically to a group.
- *
- *
  */
 public class GroupQueryResolver extends Resolver {
 
@@ -19,9 +17,7 @@ public class GroupQueryResolver extends Resolver {
 
     @Override
     public void process(LandscapeDescription input, LandscapeImpl landscape) {
-
-        landscape.getItems().stream().forEach(item -> landscape.getGroup(item.getGroup()).getItems().add(item));
-
+        
         input.getGroups().forEach((s, groupItem) -> {
             GroupDescription groupDescription = (GroupDescription) groupItem;
             Group group = (Group) landscape.getGroups().get(groupDescription.getIdentifier());
@@ -37,9 +33,15 @@ public class GroupQueryResolver extends Resolver {
           cleanup to ensure every item has the group identifier: The input DTOs might not have the group reference,
           and all following resolvers might fail to find or set a group. So this is a fallback.
          */
+        Group common = landscape.getGroup(Group.COMMON).get();
         landscape.getItems().stream().forEach(item -> {
-            Group group = landscape.getGroup(item.getGroup()); //if group is empty, COMMON is returned
-            item.setGroup(group.getIdentifier());
+            landscape.getGroup(item.getGroup()).ifPresentOrElse(
+                    group -> group.getItems().add(item),
+                    () -> {
+                        common.getItems().add(item);
+                        item.setGroup(common.getIdentifier());
+                    }
+            );
         });
     }
 }
