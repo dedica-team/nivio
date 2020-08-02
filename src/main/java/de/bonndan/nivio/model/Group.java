@@ -25,9 +25,9 @@ public class Group implements GroupItem, Labeled, Assessable {
     private final Map<String, String> labels = new HashMap<>();
 
     /**
-     * Items belonging to this group.
+     * Items belonging to this group. Order is important for layouting (until items are ordered there).
      */
-    private final Set<Item> items = new HashSet<>();
+    private final Set<Item> items = new LinkedHashSet<>();
 
     private String landscapeIdentifier;
 
