@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
  */
 class SVGGroupArea extends Component {
 
-    private final Group group;
-    private final Set<Hex> territory;
+   final Group group;
+   final Set<Hex> territory;
 
     SVGGroupArea(Group group, Set<Hex> territory) {
         this.group = group;
