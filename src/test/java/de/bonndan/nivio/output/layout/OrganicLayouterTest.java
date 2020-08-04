@@ -109,7 +109,6 @@ class OrganicLayouterTest {
     }
 
     @Test
-    @Disabled("Requires network connection without debug mode")
     public void renderInout() throws IOException {
         String path = "/src/test/resources/example/inout";
         LandscapeImpl landscape = getLandscape(path + ".yml");
