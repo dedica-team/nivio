@@ -6,6 +6,7 @@ import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Relation;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,8 +32,11 @@ class SubLayoutTest {
         foo.getItems().add(baz);
         baz.getRelations().add(new Relation(baz, bar));
 
+        HashSet<Item> objects = new HashSet<>();
+        objects.add(bar);
+        objects.add(baz);
         //when
-        SubLayout subLayout = new SubLayout(foo, Set.of(bar, baz), new LandscapeConfig.LayoutConfig());
+        SubLayout subLayout = new SubLayout(foo, objects, new LandscapeConfig.LayoutConfig());
 
         //then
         LayoutedComponent outerBounds = subLayout.getOuterBounds();
