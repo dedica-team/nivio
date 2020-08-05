@@ -1,0 +1,8 @@
+name: format
+on: [pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest9
+    name: Check frontend format
+    script: cd /src/main/app
+    run: yarn install && yarn format:check
