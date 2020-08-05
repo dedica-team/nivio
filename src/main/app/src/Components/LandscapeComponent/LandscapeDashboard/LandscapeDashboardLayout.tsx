@@ -51,7 +51,7 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assessments, onI
               </span>
             </span>
             <div className='itemDescription'>
-              <img src={item.labels?.['nivio.rendered.icon']} className='icon' alt={'icon'} />
+              <img src={item.labels?.['icon']} className='icon' alt={'icon'} />
               <span className='itemName'>{item.name || item.identifier}</span>
             </div>
           </Grid>

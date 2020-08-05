@@ -44,7 +44,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
     if (item.labels) {
       Object.keys(item.labels).forEach((key) => {
         if (item && item.labels && item.labels[key]) {
-          if (!key.startsWith('nivio') && !key.startsWith('icon') && !key.startsWith('status')) {
+          if (!key.startsWith('icon') && !key.startsWith('status')) {
             const labelContent = (
               <span className='labelContent item' key={key}>
                 <span className='label'>{key}: </span>
@@ -59,7 +59,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
 
     if (item._links) {
       Object.keys(item._links).forEach((key) => {
-        if (item && item._links) {
+        if (item && item._links && !key.startsWith('self')) {
           const linkContent = (
             <a
               href={item._links[key].href}
@@ -114,7 +114,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
     return (
       <div className='itemContent'>
         <div className='header'>
-          <img src={item?.labels?.['nivio.rendered.icon']} alt='Item Icon' className='icon'></img>
+          <img src={item?.labels?.['icon']} alt='Icon' className='icon' />
           <span className='title'>{item ? item.name || item.identifier : null}</span>
           <span className='status' style={{ backgroundColor: assesmentColor }}></span>
         </div>
