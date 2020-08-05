@@ -1,10 +1,9 @@
 name: format
 on: [push]
-jobs:
-  test:
-    image: node:12
-    name: Check frontend format
-    script:
-    - cd /src/main/app
-    - yarn install
-    - yarn format:check
+job:
+  image: node:12
+  name: Check frontend format
+  script:
+  - cd /src/main/app
+  - yarn install
+  - yarn format:check
