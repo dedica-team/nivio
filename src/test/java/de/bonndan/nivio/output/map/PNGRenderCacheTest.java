@@ -12,9 +12,7 @@ import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
 import de.bonndan.nivio.output.map.svg.SVGRenderer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -24,10 +22,10 @@ import java.nio.file.Paths;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PNGRenderCacheTest {
 
     private PNGRenderCache renderCache;
@@ -57,6 +55,13 @@ class PNGRenderCacheTest {
     @AfterEach
     void stopWireMockServer() {
         wireMockServer.stop();
+    }
+
+    @Order(1)
+    @Test
+    void throwsWithoutLocalWebserverOrCache() {
+        wireMockServer.stop();
+        assertThrows(Exception.class, () -> renderCache.getPNG(getLandscape("test")));
     }
 
     @Test
