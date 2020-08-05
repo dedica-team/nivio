@@ -87,7 +87,9 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               Last update
             </Typography>
             <Typography variant='h5' display='block'>
-              {landscape.lastUpdate ? dateFormat(landscape.lastUpdate, 'dd-mm-yyyy hh:MM:ss') : '-'}
+              {landscape.lastUpdate
+                ? dateFormat(landscape.lastUpdate, 'dd-mm-yyyy hh:MM:ss TT')
+                : '-'}
             </Typography>
           </Grid>
 
