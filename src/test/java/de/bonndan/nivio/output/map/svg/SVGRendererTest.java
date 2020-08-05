@@ -21,9 +21,9 @@ class SVGRendererTest {
 
         //given
         LocalServer localServer = mock(LocalServer.class);
-        when(localServer.getIconUrl(any(Labeled.class))).thenReturn(new URL("https://foo.bar/icon.png"));
+        when(localServer.getIconUrl(any(Item.class))).thenReturn(new URL("https://foo.bar/icon.png"));
         MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
-        SVGRenderer svgRenderer = new SVGRenderer(localServer, mapStyleSheetFactory);
+        SVGRenderer svgRenderer = new SVGRenderer(mapStyleSheetFactory);
 
         LayoutedComponent lc = getLayoutedLandscape();
 
@@ -36,8 +36,6 @@ class SVGRendererTest {
         LayoutedComponent itemComponent = lc.getChildren().get(0).getChildren().get(0);
         assertNotNull(itemComponent);
 
-        //check icon is set
-        assertEquals("https://foo.bar/icon.png", itemComponent.getIcon());
 
         //check items are shifted
         assertEquals(250, itemComponent.getX()); //margin + group offset + own offset

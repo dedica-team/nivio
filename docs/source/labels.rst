@@ -1,7 +1,6 @@
 * **capability** The capability the service provides for the business, or in case of infrastructure the technical capability like enabling service discovery, configuration, secrets or persistence.
 * **costs** Running costs of the item.
 * **health** description of the item's health status
-* **icon** Name of the icon to render.
 * **layer** a technical layer
 * **lifecycle** A lifecycle phase (PLANNED|plan, INTEGRATION|int, PRODUCTION|prod, END_OF_LIFE|eol|end)
 * **note** a custom note

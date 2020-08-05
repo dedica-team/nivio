@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.output.LocalServer;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.Assertions;
@@ -42,11 +43,11 @@ public class IndexerIntegrationTest {
     @Autowired
     LandscapeDescriptionFactory landscapeDescriptionFactory;
 
+    @Autowired
+    LocalServer localServer;
+
     @Mock
     ApplicationEventPublisher applicationEventPublisher;
-
-    @MockBean
-    JavaMailSender mailSender;
 
     private LandscapeImpl index() {
         return index("/src/test/resources/example/example_env.yml");
@@ -56,7 +57,7 @@ public class IndexerIntegrationTest {
         File file = new File(getRootPath() + path);
         LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, localServer);
 
         ProcessLog processLog = indexer.reIndex(landscapeDescription);
         return (LandscapeImpl) processLog.getLandscape();
@@ -165,7 +166,7 @@ public class IndexerIntegrationTest {
         exsistingWordPress.setName("Other name");
         landscapeDescription.getItemDescriptions().add(exsistingWordPress);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, localServer);
 
         //created
         landscape = (LandscapeImpl) indexer.reIndex(landscapeDescription).getLandscape();

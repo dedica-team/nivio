@@ -29,11 +29,9 @@ public class SVGRenderer implements Renderer<String> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGRenderer.class);
     public static final int DEFAULT_ICON_SIZE = 50;
 
-    private final LocalServer localServer;
     private final MapStyleSheetFactory mapStyleSheetFactory;
 
-    public SVGRenderer(LocalServer localServer, MapStyleSheetFactory mapStyleSheetFactory) {
-        this.localServer = localServer;
+    public SVGRenderer(MapStyleSheetFactory mapStyleSheetFactory) {
         this.mapStyleSheetFactory = mapStyleSheetFactory;
     }
 
@@ -61,9 +59,6 @@ public class SVGRenderer implements Renderer<String> {
 
             LOGGER.debug("group offset {} {}", groupBounds.getX(), groupBounds.getY());
             Group group = (Group) groupBounds.getComponent();
-            if (StringUtils.isEmpty(group.getColor())) {
-                group.setColor(Color.getGroupColor(group));
-            }
             groupBounds.setX(groupBounds.getX() + margin.x);
             groupBounds.setY(groupBounds.getY() + margin.y);
 
@@ -72,10 +67,6 @@ public class SVGRenderer implements Renderer<String> {
                 itemBounds.setX(itemBounds.getX() + groupBounds.getX());
                 itemBounds.setY(itemBounds.getY() + groupBounds.getY());
                 LOGGER.debug("item pos with group offset: {} {}", itemBounds.getX(), itemBounds.getY());
-
-                Item item = (Item) itemBounds.getComponent();
-                itemBounds.setColor(group.getColor());
-                itemBounds.setIcon(localServer.getIconUrl(item).toString());
             });
         });
     }

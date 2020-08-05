@@ -97,6 +97,7 @@ export interface IItem {
   fullyQualifiedIdentifier: string;
   tags: Array<String>;
   color?: string;
+  icon?: string;
   links?: Object;
   _links?: ILinks;
 }

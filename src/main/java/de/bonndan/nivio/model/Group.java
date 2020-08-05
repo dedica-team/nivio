@@ -20,6 +20,7 @@ public class Group implements GroupItem, Labeled, Assessable {
     private String owner;
     private String description;
     private String contact;
+    private String icon;
     private String color;
     private final Map<String, Link> links = new HashMap<>();
     private final Map<String, String> labels = new HashMap<>();
@@ -131,6 +132,15 @@ public class Group implements GroupItem, Labeled, Assessable {
 
     public void setLandscape(String landscapeIdentifier) {
         this.landscapeIdentifier = landscapeIdentifier;
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     @Override
