@@ -76,5 +76,6 @@ Clone nivio, build and run a Docker image:
   
   You can use your own configuration files, if you add SEED=/path/to/config as an environment variable.
   
+  Open http://localhost:8080
   
-  To start our React frontend, read further into our [Frontend Readme](https://github.com/dedica-team/nivio/tree/develop/src/main/app)
+  If you want to contribute to our frontend, read further into our [Frontend Readme](https://github.com/dedica-team/nivio/tree/develop/src/main/app)
