@@ -50,12 +50,9 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               <img
                 className={'preview'}
                 alt={'preview'}
-                src={
-                  process.env.REACT_APP_BACKEND_URL +
-                  '/render/' +
-                  landscape.identifier +
-                  '/graph.png'
-                }
+                src={`${process.env.REACT_APP_BACKEND_URL || ''}/render/${
+                  landscape.identifier
+                }/graph.png`}
                 style={{ maxWidth: 100, float: 'left' }}
               />
             </Button>
@@ -114,9 +111,9 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               className={'button stackedButton'}
               rel='noopener noreferrer'
               target={'_blank'}
-              href={
-                process.env.REACT_APP_BACKEND_URL + '/render/' + landscape.identifier + '/map.svg'
-              }
+              href={`${process.env.REACT_APP_BACKEND_URL || ''}/render/${
+                landscape.identifier
+              }/map.svg`}
             >
               Printable Graph
             </Button>
@@ -126,9 +123,9 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               className={'button'}
               rel='noopener noreferrer'
               target={'_blank'}
-              href={
-                process.env.REACT_APP_BACKEND_URL + '/docs/' + landscape.identifier + '/report.html'
-              }
+              href={`${process.env.REACT_APP_BACKEND_URL || ''}/docs/${
+                landscape.identifier
+              }/report.html`}
             >
               Printable Report
             </Button>
