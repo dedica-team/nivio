@@ -12,6 +12,7 @@ jobs:
           node-version: '12.x'
       - name: Install dependencies and check format
         run: yarn && yarn format:check
+        working-directory: ./src/main/app
   test:
     runs-on: ${{matrix.os}}
     strategy:
