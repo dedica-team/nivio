@@ -4,7 +4,7 @@ jobs:
   test:
     image: node:12
     steps:
-      - name: Check frontend format
+      name: Check frontend format
       script:
       - cd /src/main/app
       - yarn install
