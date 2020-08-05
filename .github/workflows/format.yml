@@ -2,7 +2,7 @@ name: format
 on: [push, pull_request]
 jobs:
   test:
-    runs-on: ubuntu-latest9
+    image: node:12
     steps:
       - name: Check frontend format
       script: cd /src/main/app
