@@ -1,9 +1,11 @@
 name: format
-on: [push, pull_request]
+on: [push]
 jobs:
   test:
     image: node:12
     steps:
       - name: Check frontend format
-      script: cd /src/main/app
-      run: yarn install && yarn format:check
+      script:
+      - cd /src/main/app
+      - yarn install
+      - yarn format:check
