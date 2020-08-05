@@ -14,4 +14,4 @@ jobs:
         with:
           node-version: '12.x'
       - name: Install dependencies
-        run: yarn && yarn format:check
+        run: cd src/main/app && yarn && yarn format:check
