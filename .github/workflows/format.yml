@@ -3,9 +3,8 @@ on: [push]
 jobs:
   test:
     image: node:12
-    steps:
-      name: Check frontend format
-      script:
-      - cd /src/main/app
-      - yarn install
-      - yarn format:check
+    name: Check frontend format
+    script:
+    - cd /src/main/app
+    - yarn install
+    - yarn format:check
