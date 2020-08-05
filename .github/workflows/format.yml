@@ -2,6 +2,10 @@ name: format
 
 on: [pull_request]
 
+defaults:
+  run:
+    working-directory: ./src/main/app
+
 jobs:
   build:
 
@@ -14,4 +18,4 @@ jobs:
         with:
           node-version: '12.x'
       - name: Install dependencies
-        run: cd src/main/app && yarn && yarn format:check
+        run: yarn && yarn format:check
