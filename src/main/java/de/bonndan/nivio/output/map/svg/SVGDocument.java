@@ -9,12 +9,11 @@ import j2html.tags.DomContent;
 import j2html.tags.UnescapedText;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StreamUtils;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -33,14 +32,14 @@ public class SVGDocument extends Component {
 
     private final Set<Hex> occupied = new HashSet<>();
     private final LayoutedComponent layouted;
-    private final MapStyleSheetFactory mapStyleSheetFactory;
     private final LandscapeImpl landscape;
+    private final String cssStyles;
     private boolean debug = false;
 
-    public SVGDocument(LayoutedComponent layouted, MapStyleSheetFactory mapStyleSheetFactory) {
-        this.layouted = layouted;
+    public SVGDocument(@NonNull LayoutedComponent layouted, @Nullable String cssStyles) {
+        this.layouted = Objects.requireNonNull(layouted);
         this.landscape = (LandscapeImpl) layouted.getComponent();
-        this.mapStyleSheetFactory = mapStyleSheetFactory;
+        this.cssStyles = StringUtils.isEmpty(cssStyles) ? "" : cssStyles;
     }
 
     public void setDebug(boolean debug) {
@@ -57,7 +56,7 @@ public class SVGDocument extends Component {
         AtomicInteger width = new AtomicInteger(0);
         AtomicInteger height = new AtomicInteger(0);
 
-        //transform all item positions to hex map postions
+        //transform all item positions to hex map positions
         layouted.getChildren().forEach(group -> {
             group.getChildren().forEach(layoutedItem -> {
                 Hex hex = null;
@@ -121,7 +120,7 @@ public class SVGDocument extends Component {
             return area.render();
         }).collect(Collectors.toList());
 
-        UnescapedText style = rawHtml("<style>\n" + getStyles() + "</style>");
+        UnescapedText style = rawHtml("<style>\n" + cssStyles + "</style>");
 
         return SvgTagCreator.svg(style)
                 .attr("version", "1.1")
@@ -140,11 +139,6 @@ public class SVGDocument extends Component {
 
     /**
      * Iterates over all items and invokes pathfinding for their relations.
-     *
-     * @param layouted
-     * @param vertexHexes
-     * @param pathFinder
-     * @return
      */
     private List<SVGRelation> getRelations(LayoutedComponent layouted, Map<LandscapeItem, Hex> vertexHexes, PathFinder pathFinder) {
         List<SVGRelation> relations = new ArrayList<>();
@@ -174,17 +168,6 @@ public class SVGDocument extends Component {
         }
         LOGGER.error("No path found for item {} relation {}", item, rel);
         return null;
-    }
-
-    private String getStyles() {
-        String css = "";
-        try (InputStream resourceAsStream = getClass().getResourceAsStream("/static/css/svg.css")) {
-            css = new String(StreamUtils.copyToByteArray(resourceAsStream));
-        } catch (IOException e) {
-            LOGGER.error("Failed to load stylesheet /static/css/svg.css");
-        }
-
-        return css + "\n" + mapStyleSheetFactory.getMapStylesheet(landscape.getConfig(), landscape.getLog());
     }
 
     public String getXML() {

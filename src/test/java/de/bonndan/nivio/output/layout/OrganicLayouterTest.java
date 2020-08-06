@@ -15,6 +15,7 @@ import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.RenderingTest;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
 import de.bonndan.nivio.output.map.svg.SVGRenderer;
@@ -35,28 +36,11 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class OrganicLayouterTest {
-
-    private LandscapeRepository landscapeRepository;
-    private ItemDescriptionFormatFactory formatFactory;
-    private Indexer indexer;
-    private LandscapeDescriptionFactory factory;
+class OrganicLayouterTest extends RenderingTest {
 
     @BeforeEach
     public void setup() {
-        landscapeRepository = new LandscapeRepository();
-        formatFactory = ItemDescriptionFormatFactory.with(ItemDescriptionFactoryNivio.forTesting());
-        FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
-        factory = new LandscapeDescriptionFactory(fileFetcher);
-
-        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class),new LocalServer("", new VendorIcons()));
-    }
-
-    private LandscapeImpl getLandscape(String path) {
-        File file = new File(RootPath.get() + path);
-        LandscapeDescription landscapeDescription = factory.fromYaml(file);
-        indexer.reIndex(landscapeDescription);
-        return landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
+        super.setup();
     }
 
     private LayoutedComponent debugRender(String path) throws IOException {
@@ -65,33 +49,10 @@ class OrganicLayouterTest {
 
     private LayoutedComponent debugRender(String path, boolean debugMode) throws IOException {
         LandscapeImpl landscape = getLandscape(path + ".yml");
-        return debugRenderLandscape(path, landscape, debugMode);
+        return debugRenderLandscape(path, landscape);
     }
 
-    private LayoutedComponent debugRenderLandscape(String path, LandscapeImpl landscape, boolean debugMode) throws IOException {
 
-        OrganicLayouter layouter = new OrganicLayouter();
-        LayoutedComponent graph = layouter.layout(landscape);
-        toSVG(graph, RootPath.get() + path);
-        return graph;
-    }
-
-    private void toSVG(LayoutedComponent layoutedComponent, String filename) throws IOException {
-
-        MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
-        when(mapStyleSheetFactory.getMapStylesheet(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn("");
-
-        File json = new File(filename + "_debug.json");
-        new ObjectMapper().writeValue(json, layoutedComponent);
-
-        SVGRenderer svgRenderer = new SVGRenderer(mapStyleSheetFactory);
-        String svg = svgRenderer.render(layoutedComponent);
-
-        File svgFile = new File(filename + "_debug.svg");
-        FileWriter fileWriter = new FileWriter(svgFile);
-        fileWriter.write(svg);
-        fileWriter.close();
-    }
 
     @Test
     public void debugRenderExample() throws IOException {
@@ -112,7 +73,7 @@ class OrganicLayouterTest {
     public void renderInout() throws IOException {
         String path = "/src/test/resources/example/inout";
         LandscapeImpl landscape = getLandscape(path + ".yml");
-        debugRenderLandscape(path, landscape, false);
+        debugRenderLandscape(path, landscape);
     }
 
     @Test
@@ -144,7 +105,7 @@ class OrganicLayouterTest {
         indexer.reIndex(input);
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
-        debugRenderLandscape("/src/test/resources/example/large", landscape, false);
+        debugRenderLandscape("/src/test/resources/example/large", landscape);
     }
 
     @Test
@@ -184,7 +145,7 @@ class OrganicLayouterTest {
         indexer.reIndex(input);
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
-        debugRenderLandscape("/src/test/resources/example/large", landscape, false);
+        debugRenderLandscape("/src/test/resources/example/large", landscape);
     }
 
     @Test
@@ -212,7 +173,7 @@ class OrganicLayouterTest {
         indexer.reIndex(landscapeDescription);
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
 
-        debugRenderLandscape("/src/test/resources/example/model", landscape, false);
+        debugRenderLandscape("/src/test/resources/example/model", landscape);
     }
 
     @Test

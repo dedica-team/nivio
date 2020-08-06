@@ -1,7 +1,9 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.Renderer;
@@ -10,12 +12,14 @@ import de.bonndan.nivio.output.map.hex.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -38,7 +42,7 @@ public class SVGRenderer implements Renderer<String> {
     @Override
     public String render(LayoutedComponent layoutedComponent) {
         applyValues(layoutedComponent);
-        SVGDocument svgDocument = new SVGDocument(layoutedComponent, mapStyleSheetFactory);
+        SVGDocument svgDocument = new SVGDocument(layoutedComponent, getStyles((LandscapeImpl) layoutedComponent.getComponent()));
         return svgDocument.getXML();
     }
 
@@ -47,6 +51,17 @@ public class SVGRenderer implements Renderer<String> {
         FileWriter fileWriter = new FileWriter(file);
         fileWriter.write(render(landscape));
         fileWriter.close();
+    }
+
+    private String getStyles(LandscapeImpl landscape) {
+        String css = "";
+        try (InputStream resourceAsStream = getClass().getResourceAsStream("/static/css/svg.css")) {
+            css = new String(StreamUtils.copyToByteArray(resourceAsStream));
+        } catch (IOException e) {
+            LOGGER.error("Failed to load stylesheet /static/css/svg.css");
+        }
+
+        return css + "\n" + mapStyleSheetFactory.getMapStylesheet(landscape.getConfig(), landscape.getLog());
     }
 
     /**
