@@ -1,0 +1,47 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1370" height="1156" viewBox="0 -140 1510 1296"><style>
+svg {
+  font-family: sans-serif;
+}
+
+svg g {
+  stroke-width: 0.3;
+}
+
+svg g circle {
+  stroke-width: 0.4em;
+}
+
+rect.group {
+  stroke-width: 0.0em;
+  fill-opacity: 0.5;
+}
+
+svg g.label {
+  cursor: pointer;
+}
+
+svg g.label rect {
+  stroke-width: 0.1em;
+  stroke: #3F51B5;
+}
+
+text.title {
+  font-size: 3em;
+}
+
+text.item_shortName {
+  font-size: 2em;
+}
+
+text.groupLabel {
+  text-shadow: 1px 1px 1px black;
+}
+
+svg path {
+  fill: none;
+  stroke-width: 0.4em;
+  stroke-opacity: 0.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+</style><text x="150" y="-50" class="title">null</text><g><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="749.0 459.8076211353316,699.5 545.544136109991,600.5 545.5441361099911,551.0 459.8076211353316,600.5 374.07110616067223,699.5 374.0711061606722"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="1049.0 633.0127018922193,999.5 718.7492168668787,900.5 718.7492168668787,851.0 633.0127018922193,900.5 547.2761869175599,999.5 547.2761869175599"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="899.0 546.4101615137754,849.5 632.1466764884348,750.5 632.1466764884349,701.0 546.4101615137754,750.5 460.673646539116,849.5 460.67364653911596"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="599.0 373.2050807568877,549.5 458.9415957315471,450.5 458.9415957315471,401.0 373.2050807568877,450.49999999999994 287.4685657822283,549.5 287.46856578222827"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="1199.0 719.6152422706632,1149.5 805.3517572453226,1050.5 805.3517572453227,1001.0 719.6152422706632,1050.5 633.8787272960038,1149.5 633.8787272960038"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="899.0 373.2050807568877,849.5 458.9415957315471,750.5 458.9415957315471,701.0 373.2050807568877,750.5 287.4685657822283,849.5 287.46856578222827"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="749.0 286.6025403784439,699.5 372.33905535310333,600.5 372.33905535310333,551.0 286.6025403784439,600.5 200.8660254037845,699.5 200.86602540378448"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="1199.0 546.4101615137755,1149.5 632.1466764884349,1050.5 632.1466764884349,1001.0 546.4101615137755,1050.5 460.67364653911613,1149.5 460.6736465391161"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="1049.0 459.80762113533154,999.5 545.544136109991,900.5 545.544136109991,851.0 459.80762113533154,900.5 374.0711061606721,999.5 374.0711061606721"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="599.0 892.8203230275509,549.5 978.5568380022103,450.5 978.5568380022103,401.0 892.8203230275509,450.49999999999994 807.0838080528915,549.5 807.0838080528915"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="749.0 979.4228634059948,699.5 1065.1593783806543,600.5 1065.1593783806543,551.0 979.4228634059948,600.5 893.6863484313354,699.5 893.6863484313354"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="749.0 806.217782649107,699.5 891.9542976237664,600.5 891.9542976237665,551.0 806.217782649107,600.5 720.4812676744476,699.5 720.4812676744476"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="899.0 892.8203230275509,849.5 978.5568380022103,750.5 978.5568380022103,701.0 892.8203230275509,750.5 807.0838080528915,849.5 807.0838080528915"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="599.0 719.6152422706632,549.5 805.3517572453226,450.5 805.3517572453227,401.0 719.6152422706632,450.49999999999994 633.8787272960038,549.5 633.8787272960038"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="899.0 719.6152422706632,849.5 805.3517572453226,750.5 805.3517572453227,701.0 719.6152422706632,750.5 633.8787272960038,849.5 633.8787272960038"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="749.0 633.0127018922193,699.5 718.7492168668787,600.5 718.7492168668787,551.0 633.0127018922193,600.5 547.2761869175599,699.5 547.2761869175599"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="599.0 546.4101615137754,549.5 632.1466764884348,450.5 632.1466764884349,401.0 546.4101615137754,450.49999999999994 460.673646539116,549.5 460.67364653911596"></polygon><polygon stroke="#AF3F29" fill="#AF3F29" fill-opacity="0.1" stroke-width="2" points="1049.0 806.217782649107,999.5 891.9542976237664,900.5 891.9542976237665,851.0 806.217782649107,900.5 720.4812676744476,999.5 720.4812676744476"></polygon><text x="650.0" y="459.8076211353316" fill="#AF3F29" font-size="24" class="groupLabel">common</text></g><g data-type="PROVIDER" data-source="csvtest/common/foo" data-target="csvtest/common/bar"><path d="M 650.0,806.217782649107 L 650.0,633.0127018922193 L 650.0,459.8076211353316 " stroke="#AF3F29"></path><text x="0" y="0" fill="#AF3F29" transform="translate(650.0 626.48) rotate(-90.0 0 0)"></text></g><g data-type="PROVIDER" data-source="csvtest/common/foo" data-target="csvtest/common/super1"><path d="M 650.0,806.217782649107 L 800.0,719.6152422706632 L 950.0,633.0127018922193 " stroke="#AF3F29"></path><text x="0" y="0" fill="#AF3F29" transform="translate(797.0 711.35) rotate(-30.0 0 0)"></text></g><g data-type="PROVIDER" data-source="csvtest/common/super1" data-target="csvtest/common/bar"><path d="M 950.0,633.0127018922193 L 800.0,546.4101615137754 L 650.0,459.8076211353316 " stroke="#AF3F29"></path><text x="0" y="0" fill="#AF3F29" transform="translate(803.0 538.14) rotate(30.0 0 0)"></text></g><g class="hexagon-group" transform="translate(650.0,806.217782649107)"><g class="hexagon"><circle id="csvtest/common/foo" cx="0" cy="0" r="40" fill="white" stroke="#AF3F29" data-x="650.00" data-y="806.22"></circle><g class="label" id="label_csvtest_common_foo" data-identifier="csvtest/common/foo" data-name="foo" data-description="This does nothing" data-nivio="This does nothing;foo;"><rect x="-50" y="44" rx="10" ry="10" fill="white" width="100" height="20"></rect><text x="0" y="55" class="" alignment-baseline="middle" text-anchor="middle">foo</text></g></g><image xlink:href="http://localhost:8080/icons/service.png" width="50" height="50" transform="translate(-25,-25)"></image></g><g class="hexagon-group" transform="translate(650.0,459.8076211353316)"><g class="hexagon"><circle id="csvtest/common/bar" cx="0" cy="0" r="40" fill="white" stroke="#AF3F29" data-x="650.00" data-y="459.81"></circle><g class="label" id="label_csvtest_common_bar" data-identifier="csvtest/common/bar" data-name="bar" data-nivio="bar;foo, super1"><rect x="-50" y="44" rx="10" ry="10" fill="white" width="100" height="20"></rect><text x="0" y="55" class="" alignment-baseline="middle" text-anchor="middle">bar</text></g></g><image xlink:href="http://localhost:8080/icons/service.png" width="50" height="50" transform="translate(-25,-25)"></image></g><g class="hexagon-group" transform="translate(950.0,633.0127018922193)"><g class="hexagon"><circle id="csvtest/common/super1" cx="0" cy="0" r="40" fill="white" stroke="#AF3F29" data-x="950.00" data-y="633.01"></circle><g class="label" id="label_csvtest_common_super1" data-identifier="csvtest/common/super1" data-name="Super Service" data-description="superior" data-nivio="superior;Super Service;foo"><rect x="-70" y="44" rx="10" ry="10" fill="white" width="140" height="20"></rect><text x="0" y="55" class="" alignment-baseline="middle" text-anchor="middle">Super Service</text></g></g><image xlink:href="http://localhost:8080/icons/service.png" width="50" height="50" transform="translate(-25,-25)"></image></g><defs></defs></svg>

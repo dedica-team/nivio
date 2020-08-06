@@ -1,9 +1,11 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.Component;
+import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A value object to hold dimensions and position data of rendered {@link Component}s.
@@ -21,10 +23,9 @@ public class LayoutedComponent {
     private final List<Component> opposites;
     private List<LayoutedComponent> children;
     private String fill;
-    private String icon;
-    private String color;
 
-    public LayoutedComponent(Component component, List<Component> opposites) {
+    public LayoutedComponent(@NonNull Component component, List<Component> opposites) {
+        Objects.requireNonNull(component);
         this.component = component;
         this.opposites = opposites;
     }
@@ -98,18 +99,10 @@ public class LayoutedComponent {
     }
 
     public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
+        return component.getIcon();
     }
 
     public String getColor() {
-        return color;
+        return component.getColor();
     }
 }

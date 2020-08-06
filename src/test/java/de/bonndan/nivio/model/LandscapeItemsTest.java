@@ -1,6 +1,5 @@
 package de.bonndan.nivio.model;
 
-import de.bonndan.nivio.input.ItemDescriptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

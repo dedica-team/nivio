@@ -29,44 +29,47 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assessments, onI
 
   if (landscape && landscape.groups) {
     content = landscape.groups.map((group) => {
-      const groupColor = `#${group.color}` || defaultColor;
-      const items: ReactElement[] = group.items.map((item) => {
-        let assessmentColor = defaultColor;
-        let assesmentMessage = '';
-        if (assessments) {
-          const assesmentResults = assessments.results[item.fullyQualifiedIdentifier];
-          [assessmentColor, assesmentMessage] = getAssessmentColorAndMessage(
-            assesmentResults,
-            item.identifier
-          );
-        }
-        return (
-          <Grid item key={item.identifier} className={'itemContainer'}>
-            <span className='dot' style={{ backgroundColor: assessmentColor }}>
-              <span
-                className='statusDot'
-                onClick={(e: MouseEvent<HTMLSpanElement>) => onItemClick(e, item)}
-              >
-                <span className='statusField'>{assesmentMessage}</span>
+      if (group.items.length > 0) {
+        const groupColor = `#${group.color}` || defaultColor;
+        const items: ReactElement[] = group.items.map((item) => {
+          let assessmentColor = defaultColor;
+          let assesmentMessage = '';
+          if (assessments) {
+            const assesmentResults = assessments.results[item.fullyQualifiedIdentifier];
+            [assessmentColor, assesmentMessage] = getAssessmentColorAndMessage(
+              assesmentResults,
+              item.identifier
+            );
+          }
+          return (
+            <Grid item key={item.identifier} className={'itemContainer'}>
+              <span className='dot' style={{ backgroundColor: assessmentColor }}>
+                <span
+                  className='statusDot'
+                  onClick={(e: MouseEvent<HTMLSpanElement>) => onItemClick(e, item)}
+                >
+                  <span className='statusField'>{assesmentMessage}</span>
+                </span>
               </span>
-            </span>
-            <div className='itemDescription'>
-              <img src={item.labels?.['icon']} className='icon' alt={'icon'} />
-              <span className='itemName'>{item.name || item.identifier}</span>
-            </div>
+              <div className='itemDescription'>
+                <img src={item?.icon} className='icon' alt={'icon'} />
+                <span className='itemName'>{item.name || item.identifier}</span>
+              </div>
+            </Grid>
+          );
+        });
+        return (
+          <Grid item key={group.name} className='group'>
+            <Grid item className='groupName' style={{ backgroundColor: groupColor }}>
+              <span>{group.name || group.identifier || ''}</span>
+            </Grid>
+            <Grid item className={'items'}>
+              {items}
+            </Grid>
           </Grid>
         );
-      });
-      return (
-        <Grid item key={group.name} className='group'>
-          <Grid item className='groupName' style={{ backgroundColor: groupColor }}>
-            <span>{group.name || group.identifier || ''}</span>
-          </Grid>
-          <Grid item className={'items'}>
-            {items}
-          </Grid>
-        </Grid>
-      );
+      }
+      return <React.Fragment key={group.identifier} />;
     });
   }
 

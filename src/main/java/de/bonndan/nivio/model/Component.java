@@ -40,4 +40,16 @@ public interface Component {
      */
     @Nullable
     String getOwner();
+
+    /**
+     * @return an icon url
+     */
+    @Nullable
+    String getIcon();
+
+    /**
+     * @return a html color
+     */
+    @Nullable
+    String getColor();
 }

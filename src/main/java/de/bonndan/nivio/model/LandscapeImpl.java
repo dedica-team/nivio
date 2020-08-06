@@ -241,4 +241,14 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
     public LocalDateTime getLastUpdate() {
         return this.processLog == null ? null : this.processLog.getLastUpdate();
     }
+
+    @Override
+    public String getColor() {
+        return null;
+    }
+
+    @Override
+    public String getIcon() {
+        return null;
+    }
 }

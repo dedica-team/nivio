@@ -47,6 +47,8 @@ public class Item implements LandscapeItem, Tagged, Labeled, Assessable {
     private Set<InterfaceItem> interfaces = new HashSet<>();
 
     private Map<String, String> labels = new HashMap<>();
+    private String color;
+    private String icon;
 
     public String getIdentifier() {
         return identifier;
@@ -82,6 +84,24 @@ public class Item implements LandscapeItem, Tagged, Labeled, Assessable {
 
     public String getOwner() {
         return owner;
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    @Override
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public void setOwner(String owner) {

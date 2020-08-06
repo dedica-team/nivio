@@ -49,7 +49,7 @@ class OrganicLayouterTest {
         FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
         factory = new LandscapeDescriptionFactory(fileFetcher);
 
-        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class));
+        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class),new LocalServer("", new VendorIcons()));
     }
 
     private LandscapeImpl getLandscape(String path) {
@@ -84,7 +84,7 @@ class OrganicLayouterTest {
         File json = new File(filename + "_debug.json");
         new ObjectMapper().writeValue(json, layoutedComponent);
 
-        SVGRenderer svgRenderer = new SVGRenderer(new LocalServer("", new VendorIcons()), mapStyleSheetFactory);
+        SVGRenderer svgRenderer = new SVGRenderer(mapStyleSheetFactory);
         String svg = svgRenderer.render(layoutedComponent);
 
         File svgFile = new File(filename + "_debug.svg");
@@ -217,11 +217,10 @@ class OrganicLayouterTest {
     }
 
     @Test
-    @Disabled("Requires network connection without debug mode")
     public void renderCSV() throws IOException {
 
         formatFactory = ItemDescriptionFormatFactory.with(new ItemDescriptionFactoryCSV(new FileFetcher(new HttpService())));
-        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class));
+        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class), new LocalServer("", new VendorIcons()));
 
         debugRender("/src/test/resources/example/example_csv", false);
     }
