@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.map;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import de.bonndan.nivio.ProcessingFinishedEvent;
+import de.bonndan.nivio.input.AppearanceResolver;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
@@ -10,6 +11,7 @@ import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.icons.VendorIcons;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
 import de.bonndan.nivio.output.map.svg.SVGRenderer;
 import org.junit.jupiter.api.*;
@@ -61,7 +63,9 @@ class PNGRenderCacheTest {
     @Test
     void throwsWithoutLocalWebserverOrCache() {
         wireMockServer.stop();
-        assertThrows(Exception.class, () -> renderCache.getPNG(getLandscape("test")));
+
+        LandscapeImpl test = getLandscape("test");
+        assertThrows(Exception.class, () -> renderCache.getPNG(test));
     }
 
     @Test
@@ -131,6 +135,7 @@ class PNGRenderCacheTest {
         test.info("foo");
         landscape.setProcessLog(test);
 
+        new AppearanceResolver(landscape.getLog(), new LocalServer("", new VendorIcons())).process(null, landscape);
         return landscape;
     }
 }

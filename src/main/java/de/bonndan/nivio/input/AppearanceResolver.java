@@ -17,7 +17,7 @@ public class AppearanceResolver extends Resolver {
 
     private final LocalServer localServer;
 
-    protected AppearanceResolver(ProcessLog processLog, LocalServer localServer) {
+    public AppearanceResolver(ProcessLog processLog, LocalServer localServer) {
         super(processLog);
         this.localServer = localServer;
     }

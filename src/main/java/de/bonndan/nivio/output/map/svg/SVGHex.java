@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.DomContent;
+import org.springframework.util.StringUtils;
 
 import java.util.stream.Collectors;
 
@@ -20,9 +21,9 @@ public class SVGHex extends Component {
 
     public DomContent render() {
         return SvgTagCreator.polygon()
-                .attr("stroke", fillId)
-                .attr("fill", fillId)
-                .attr("fill-opacity", 0.1)
+                .condAttr(!StringUtils.isEmpty(fillId), "stroke", fillId)
+                .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
+                .condAttr(!StringUtils.isEmpty(fillId), "fill-opacity", String.valueOf(0.1))
                 .attr("stroke-width", 2)
                 .attr("points", asPoints(hex));
     }

@@ -66,7 +66,7 @@ class SVGItem extends Component {
                 .attr("cx", 0)
                 .attr("cy", 0)
                 .attr("r", DEFAULT_ICON_SIZE - 10)
-                .attr("fill", fillId)
+                .condAttr(!StringUtils.isEmpty(fillId),"fill", fillId)
                 .attr("stroke", "#" + (layoutedComponent.getColor() != null ? layoutedComponent.getColor() : Color.GRAY))
                 .attr("data-x", String.format(Locale.ENGLISH, "%.2f", pixel.x))
                 .attr("data-y", String.format(Locale.ENGLISH, "%.2f", pixel.y));
