@@ -114,7 +114,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
     return (
       <div className='itemContent'>
         <div className='header'>
-          <img src={item?.labels?.['icon']} alt='Icon' className='icon' />
+          <img src={item?.icon} alt='Icon' className='icon' />
           <span className='title'>{item ? item.name || item.identifier : null}</span>
           <span className='status' style={{ backgroundColor: assesmentColor }}></span>
         </div>
