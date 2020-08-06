@@ -30,6 +30,12 @@ public class AllGroupsLayout {
 
         List<LandscapeItem> items = new ArrayList<>();
         groups.forEach((groupName, groupItem) -> {
+
+            //do not layout the default group if empty
+            if (Group.COMMON.equals(groupName)&& groupItem.getItems().size() == 0) {
+                return;
+            }
+
             SubLayout subLayout = subgraphs.get(groupName);
             if (subLayout == null)
                 return;

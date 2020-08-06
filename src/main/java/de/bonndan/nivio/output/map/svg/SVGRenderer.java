@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -72,10 +73,10 @@ public class SVGRenderer implements Renderer<String> {
         Point2D.Double margin = getMargins(layoutedComponent);
         layoutedComponent.getChildren().forEach(groupBounds -> {
 
-            LOGGER.debug("group offset {} {}", groupBounds.getX(), groupBounds.getY());
-            Group group = (Group) groupBounds.getComponent();
+            LOGGER.debug("group {} offset {} {}", groupBounds.getComponent().getIdentifier(), groupBounds.getX(), groupBounds.getY());
             groupBounds.setX(groupBounds.getX() + margin.x);
             groupBounds.setY(groupBounds.getY() + margin.y);
+            LOGGER.debug("corrected group {} offset {} {}", groupBounds.getComponent().getIdentifier(), groupBounds.getX(), groupBounds.getY());
 
             groupBounds.getChildren().forEach(itemBounds -> {
                 LOGGER.debug("original item pos {} {}", itemBounds.getX(), itemBounds.getY());
@@ -89,36 +90,59 @@ public class SVGRenderer implements Renderer<String> {
     /**
      * @return the left/top extra margin to shift all items into positive coordinates
      */
-    private Point2D.Double getMargins(LayoutedComponent layoutedComponent) {
-        AtomicLong minX = new AtomicLong(0);
-        AtomicLong maxX = new AtomicLong(0);
-        AtomicLong minY = new AtomicLong(0);
-        AtomicLong maxY = new AtomicLong(0);
-        layoutedComponent.getChildren().forEach(g -> {
-            if (g.getX() < minX.get())
-                minX.set((long) g.getX());
-            if (g.getX() > maxX.get())
-                maxX.set((long) g.getX());
-            if (g.getY() < minY.get())
-                minY.set((long) g.getY());
-            if (g.getY() > maxY.get())
-                maxY.set((long) g.getY());
-        });
+    private Point2D.Double getMargins(LayoutedComponent layoutedLandscape) {
+        List<Point2D.Double> minMaxBoundaries = getMinMaxBoundaries(layoutedLandscape);
+        var min = minMaxBoundaries.get(0);
+        var max = minMaxBoundaries.get(1);
 
-        layoutedComponent.setWidth(maxX.get() - minX.get());
-        layoutedComponent.setHeight(maxY.get() - minY.get());
+        layoutedLandscape.setWidth(max.x - min.x);
+        layoutedLandscape.setHeight(max.y - min.y);
 
         int marginX = 2 * Hex.HEX_SIZE;
-        if (minX.get() < 0) {
-            marginX += minX.get() * -1;
+        int marginY = 2 * Hex.HEX_SIZE;
+
+        if (min.x < 0) {
+            LOGGER.debug("fixing minX by {}", min.x * -1);
+            marginX += min.x * -1;
         }
 
-        int marginY = 2 * Hex.HEX_SIZE;
-        if (minY.get() < 0) {
-            marginY += minY.get() * -1;
+        if (min.y < 0) {
+            LOGGER.debug("fixing minY by {}", min.y * -1);
+            marginY += min.y * -1;
         }
 
         LOGGER.debug("Map shift x {} y {} ", marginX, marginY);
         return new Point2D.Double(marginX, marginY);
+    }
+
+    /**
+     * @param layoutedComponent parent
+     * @return top-left and bottom-right as points
+     */
+    static List<Point2D.Double> getMinMaxBoundaries(LayoutedComponent layoutedComponent) {
+        AtomicLong minX = new AtomicLong(Integer.MAX_VALUE);
+        AtomicLong maxX = new AtomicLong(Integer.MIN_VALUE);
+        AtomicLong minY = new AtomicLong(Integer.MAX_VALUE);
+        AtomicLong maxY = new AtomicLong(Integer.MIN_VALUE);
+
+        layoutedComponent.getChildren().forEach(c -> {
+            double x = c.getX();
+            double y = c.getY();
+
+            if (x < minX.get())
+                minX.set((long) x);
+            if (x > maxX.get())
+                maxX.set((long) x);
+
+            if (y < minY.get())
+                minY.set((long) y);
+            if (y > maxY.get())
+                maxY.set((long) y);
+        });
+
+        return List.of(
+                new Point2D.Double(minX.get(), minY.get()),
+                new Point2D.Double(maxX.get(), maxY.get())
+        );
     }
 }

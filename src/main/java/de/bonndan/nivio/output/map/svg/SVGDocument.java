@@ -53,8 +53,7 @@ public class SVGDocument extends Component {
 
         List<DomContent> patterns = new ArrayList<>();
         List<DomContent> items = new ArrayList<>();
-        AtomicInteger width = new AtomicInteger(0);
-        AtomicInteger height = new AtomicInteger(0);
+
 
         //transform all item positions to hex map positions
         layouted.getChildren().forEach(group -> {
@@ -81,32 +80,10 @@ public class SVGDocument extends Component {
                 SVGItemLabel label = new SVGItemLabel(item);
                 Point2D.Double pos = vertexHexes.get(item).toPixel();
 
-                //iterate all items to render them and collect max svg dimension
-                // add extra margins size group area is larger than max item positions
-                if ((pos.x + 3 * Hex.HEX_SIZE) > width.get())
-                    width.set((int) (pos.x + 3 * Hex.HEX_SIZE));
-                if ((pos.y + 3 * Hex.HEX_SIZE) > height.get())
-                    height.set((int) (pos.y + 3 * Hex.HEX_SIZE));
-
                 SVGItem SVGItem = new SVGItem(label.render(), layoutedItem, pos);
                 items.add(SVGItem.render());
             });
         });
-
-
-        DomContent title = SvgTagCreator.text(landscape.getName())
-                .attr("x", LABEL_WIDTH + 10)
-                .attr("y", -LABEL_WIDTH / 2 + 20)
-                .attr("class", "title");
-        DomContent logo = null;
-        String logoUrl = landscape.getConfig().getBranding().getMapLogo();
-        if (!StringUtils.isEmpty(logoUrl)) {
-            logo = SvgTagCreator.image()
-                    .attr("xlink:href", logoUrl)
-                    .attr("y", -LABEL_WIDTH)
-                    .attr("width", LABEL_WIDTH)
-                    .attr("height", LABEL_WIDTH);
-        }
 
 
         // find and render relations
@@ -115,20 +92,63 @@ public class SVGDocument extends Component {
         List<SVGRelation> relations = getRelations(layouted, vertexHexes, pathFinder);
 
         //generate group areas
+        AtomicInteger width = new AtomicInteger(0);
+        AtomicInteger height = new AtomicInteger(0);
+        AtomicInteger minX = new AtomicInteger(Integer.MAX_VALUE);
+        AtomicInteger minY = new AtomicInteger(Integer.MAX_VALUE);
+
         List<DomContent> groups = layouted.getChildren().stream().map(groupLayout -> {
             SVGGroupArea area = SVGGroupAreaFactory.getGroup(occupied, (Group) groupLayout.getComponent(), vertexHexes, relations);
+
+            //fix viewport, because xy and hex coordinate system have different offsets
+            area.territory.forEach(hex -> {
+                var pos = hex.toPixel();
+                if (pos.x < minX.get())
+                    minX.set((int) pos.x);
+
+                if (pos.y < minY.get())
+                    minY.set((int) pos.y);
+
+                //iterate all items to render them and collect max svg dimension
+                // add extra margins size group area is larger than max item positions
+                if (pos.x > width.get())
+                    width.set((int) pos.x);
+                if (pos.y > height.get())
+                    height.set((int) pos.y);
+            });
+
             return area.render();
         }).collect(Collectors.toList());
 
+        int paddingTopLeft = 2 * Hex.HEX_SIZE;
+
+        DomContent title = SvgTagCreator.text(landscape.getName())
+                .attr("x", minX.get() - paddingTopLeft)
+                .attr("y", minY.get() - paddingTopLeft + 40)
+                .attr("class", "title");
+        DomContent logo = null;
+        String logoUrl = landscape.getConfig().getBranding().getMapLogo();
+        if (!StringUtils.isEmpty(logoUrl)) {
+            logo = SvgTagCreator.image()
+                    .attr("xlink:href", logoUrl)
+                    .attr("x", minX.get() - paddingTopLeft)
+                    .attr("y", minY.get() - paddingTopLeft + 60)
+                    .attr("width", LABEL_WIDTH)
+                    .attr("height", LABEL_WIDTH);
+        }
+
+
         UnescapedText style = rawHtml("<style>\n" + cssStyles + "</style>");
 
+
+        int viewBoxPadding2 = 2 * Hex.HEX_SIZE;
         return SvgTagCreator.svg(style)
                 .attr("version", "1.1")
                 .attr("xmlns", "http://www.w3.org/2000/svg")
                 .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
                 .attr("width", width.addAndGet(DEFAULT_ICON_SIZE + LABEL_WIDTH / 2))
                 .attr("height", height.addAndGet(DEFAULT_ICON_SIZE))
-                .attr("viewBox", "0 -" + LABEL_WIDTH + " " + (width.get() + LABEL_WIDTH) + " " + (height.get() + LABEL_WIDTH))
+                .attr("viewBox", (minX.get() - paddingTopLeft) + " " + (minY.get() - paddingTopLeft) + " " + (width.get() + viewBoxPadding2) + " " + (height.get() + viewBoxPadding2))
 
                 .with(logo, title)
                 .with(groups)

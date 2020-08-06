@@ -52,8 +52,6 @@ class OrganicLayouterTest extends RenderingTest {
         return debugRenderLandscape(path, landscape);
     }
 
-
-
     @Test
     public void debugRenderExample() throws IOException {
         debugRender("/src/test/resources/example/example_env");
