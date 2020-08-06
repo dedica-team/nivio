@@ -4,9 +4,10 @@
 
 1. [Installation & Settings](https://github.com/dedica-team/nivio/blob/develop/src/main/app/README.md#installation-settings)
 2. [Technology used](https://github.com/dedica-team/nivio/blob/develop/src/main/app/README.md#technology-used)
-3. [Styling](https://github.com/dedica-team/nivio/blob/develop/src/main/app/README.md#styling)
-4. [Codeanalysis & Tests](https://github.com/dedica-team/nivio/blob/develop/src/main/app/README.md#Codeanalysis-tests)
-5. [CI/CD](https://github.com/dedica-team/nivio/blob/develop/src/main/app/README.md#cicd)
+3. [Environment Variables](https://github.com/dedica-team/nivio/blob/develop/src/main/app/README.md#environment-variables)
+4. [Styling](https://github.com/dedica-team/nivio/blob/develop/src/main/app/README.md#styling)
+5. [Codeanalysis & Tests](https://github.com/dedica-team/nivio/blob/develop/src/main/app/README.md#Codeanalysis-tests)
+6. [CI/CD](https://github.com/dedica-team/nivio/blob/develop/src/main/app/README.md#cicd)
 
 # Installation & Settings
 
@@ -29,14 +30,7 @@
     git pull
 ```
 
-2. Install node_modules:
-
-```bash
-    cd src/main/app
-    yarn install
-```
-
-3. Start the spring backend in IntelliJ
+2. Start the spring backend in IntelliJ
 
 ```bash
     mvn clean package
@@ -47,7 +41,7 @@ If you want to see the demo you have to set environmental variable in spring boo
 
 ![Spring Config](doc/spring_config.png 'Spring Config')
 
-4. Start nivio frontend
+3. Start nivio frontend
 
 ```bash
    cd src/main/app
@@ -82,6 +76,10 @@ Nivio can be reached at http://localhost:3000
 # Styling
 
 We use [Material-UI](https://material-ui.com/) for most of our styling combined with our own .scss files for clean, easy and less CSS. [Learn More](https://sass-lang.com/)
+
+# Environment Variables
+
+We set our REACT_APP_BACKEND_URL in .env.development to http://localhost:8080, because our frontend now runs on a different port. This way we can use hot reloading from React while developing, because we dont have to rebuild the maven package everytime we change something. If you want to run the frontend app on another port or domain in production, you can create a .env.production file with the same content as .env.development, but change the URL appropriatly.
 
 # Codeanalysis, Formatting & Tests
 
