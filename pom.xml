@@ -282,18 +282,18 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>yarn install</id>
+                        <id>npm install</id>
                         <goals>
-                            <goal>yarn</goal>
+                            <goal>npm</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>Run test</id>
                         <goals>
-                            <goal>yarn</goal>
+                            <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>test</arguments>
+                            <arguments>run test</arguments>
                             <environmentVariables>
                                 <CI>true</CI>
                             </environmentVariables>
@@ -302,10 +302,10 @@
                     <execution>
                         <id>Build frontend</id>
                         <goals>
-                            <goal>yarn</goal>
+                            <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>build</arguments>
+                            <arguments>run build</arguments>
                             <environmentVariables>
                                 <CI>true</CI>
                             </environmentVariables>
