@@ -22,19 +22,20 @@
     display: block;
     background-color: $header-color;
 
-    padding: 3px 150px 0px 50px;
+    padding: 5px 09px;
     box-shadow: 0px 0px 12px $box-shadow-color;
 
     font-size: $header-font-size;
     font-weight: bold;
     text-transform: uppercase;
     text-align: center;
+    width: 100%;
   }
 
   .logContainer {
-    margin-left: 0.4rem;
-    padding-right: 0.9rem;
-    margin-top: 0.7rem;
+    margin-left: 6.4px;
+    padding-right: 14.4px;
+    margin-top: 11px;
     display: flex;
     flex-direction: row;
 

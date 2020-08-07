@@ -51,15 +51,15 @@
 
   h1 {
     margin: 0;
-    margin-bottom: 1em;
+    margin-bottom: 16px;
   }
 
   h2,
   h3 {
     margin: 10px 0px;
     display: inline-block;
-    padding-left: 1em;
-    padding-right: 1em;
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   pre {
@@ -67,7 +67,7 @@
     white-space: pre;
     padding: 7px 20px;
     margin: 15px 0px;
-    line-height: 1.3em;
+    line-height: 21px;
     overflow: auto;
     overflow-y: hidden;
     background-color: $highlight-grey;

@@ -10,6 +10,7 @@ import './LandscapeMap.scss';
 import LandscapeItem from '../LandscapeItem/LandscapeItem';
 
 import Slider from '../../SliderComponent/Slider';
+import MapRelation from './MapRelation/MapRelation';
 
 interface Props {
   identifier: string;
@@ -31,6 +32,8 @@ const Landscape: React.FC<Props> = () => {
   const [sliderContent, setSliderContent] = useState<string | ReactElement | null>(null);
   const [showSlider, setShowSlider] = useState(false);
   const [data, setData] = useState('');
+  const [renderWithTransition, setRenderWithTransition] = useState(false);
+  const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
   const { identifier } = useParams();
 
   const findItem = (fullyQualifiedItemIdentifier: string) => {
@@ -39,12 +42,11 @@ const Landscape: React.FC<Props> = () => {
       let dataX = element.getAttribute('data-x');
       let dataY = element.getAttribute('data-y');
       if (dataX && dataY) {
-        const x = parseFloat(dataX) - 350;
-        const y = parseFloat(dataY) - 50;
-        console.log(fullyQualifiedItemIdentifier);
-        console.log(`data-x: ${x}, data-y ${y}`);
-        console.log('--------------------------');
-        setValue(fitSelection(value, x, y, window.innerWidth * 0.3, window.innerHeight * 0.3));
+        const x = parseFloat(dataX) - 500;
+        const y = parseFloat(dataY) - 100;
+        setValue(fitSelection(value, x, y, window.innerWidth, window.innerHeight * 0.92));
+        setRenderWithTransition(true);
+        setHighlightElement(element);
       }
     }
   };
@@ -62,15 +64,107 @@ const Landscape: React.FC<Props> = () => {
     }
   };
 
+  const onRelationClick = (e: MouseEvent<HTMLElement>) => {
+    const dataSource = e.currentTarget.getAttribute('data-source');
+    let sourceElement, sourceX, sourceY;
+    if (dataSource) {
+      sourceElement = document.getElementById(dataSource);
+      if (sourceElement) {
+        sourceX = sourceElement.getAttribute('data-x');
+        sourceY = sourceElement.getAttribute('data-y');
+      }
+    }
+
+    const dataTarget = e.currentTarget.getAttribute('data-target');
+    let targetElement, targetX, targetY;
+    if (dataTarget) {
+      targetElement = document.getElementById(dataTarget);
+      if (targetElement) {
+        targetX = targetElement.getAttribute('data-x');
+        targetY = targetElement.getAttribute('data-y');
+      }
+    }
+
+    if (sourceX && sourceY && targetX && targetY) {
+      sourceX = parseFloat(sourceX) / 2;
+      targetX = parseFloat(targetX) / 2;
+      sourceY = parseFloat(sourceY) / 2;
+      targetY = parseFloat(targetY) / 2;
+
+      const x = (sourceX + targetX) / 2;
+      const y = (sourceY + targetY) / 2;
+
+      const zoomWidth = Math.abs(Math.min(sourceX, targetX)) + window.innerWidth;
+      const zoomHeight = Math.abs(Math.min(sourceY, targetY)) + window.innerHeight * 0.92;
+
+      setHighlightElement(e.currentTarget.children);
+      setRenderWithTransition(true);
+      setValue(fitSelection(value, x - 500, y, zoomWidth, zoomHeight));
+    }
+
+    const dataType = e.currentTarget.getAttribute('data-type');
+
+    if (dataSource && dataTarget) {
+      setSliderContent(
+        <MapRelation
+          sourceIdentifier={dataSource}
+          targetIdentifier={dataTarget}
+          type={dataType}
+          findItem={findItem}
+        />
+      );
+      setShowSlider(true);
+    }
+  };
+
   const closeSlider = () => {
     setShowSlider(false);
   };
 
   useEffect(() => {
-    setData(process.env.REACT_APP_BACKEND_URL + '/render/' + identifier + '/map.svg');
+    setData(`${process.env.REACT_APP_BACKEND_URL || ''}/render/${identifier}/map.svg`);
   }, [identifier]);
 
-  if (data !== '') {
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+
+    if (highlightElement instanceof Element) {
+      highlightElement.classList.add('highlightLabel');
+
+      timeout = setTimeout(() => {
+        highlightElement.classList.remove('highlightLabel');
+        setRenderWithTransition(false);
+        setHighlightElement(null);
+      }, 2000);
+    }
+
+    if (highlightElement instanceof HTMLCollection) {
+      for (const element in highlightElement) {
+        if (!isNaN(+element)) {
+          if (highlightElement[element].tagName === 'path') {
+            highlightElement[element].classList.add('highlightRelation');
+            break;
+          }
+          highlightElement[element].classList.add('highlightLabel');
+        }
+      }
+
+      timeout = setTimeout(() => {
+        for (const element in highlightElement) {
+          if (!isNaN(+element)) {
+            highlightElement[element].classList.remove('highlightRelation');
+            highlightElement[element].classList.remove('highlightLabel');
+          }
+        }
+        setRenderWithTransition(false);
+        setHighlightElement(null);
+      }, 2000);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [highlightElement]);
+
+  if (data) {
     return (
       <div className='landscapeContainer'>
         <CSSTransition
@@ -87,6 +181,7 @@ const Landscape: React.FC<Props> = () => {
           proxy={
             <>
               <SvgLoaderSelectElement selector='.label' onClick={onItemClick} />
+              <SvgLoaderSelectElement selector='.relation' onClick={onRelationClick} />
             </>
           }
           render={(content: ReactElement[]) => (
@@ -98,17 +193,19 @@ const Landscape: React.FC<Props> = () => {
               miniatureProps={{
                 position: 'none',
                 background: '#616264',
-                width: 100,
-                height: 80,
+                width: 200,
+                height: 300,
               }}
+              preventPanOutside={false}
               toolbarProps={{ position: 'none' }}
               detectAutoPan={false}
               tool={tool}
               onChangeTool={(newTool) => setTool(newTool)}
               value={value}
               onChangeValue={(newValue) => setValue(newValue)}
+              className={`ReactSVGPanZoom ${renderWithTransition ? 'with-transition' : ''}`}
             >
-              <svg width={1000} height={1000}>
+              <svg width={window.innerWidth} height={window.innerHeight * 0.92}>
                 {content}
               </svg>
             </ReactSVGPanZoom>

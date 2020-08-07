@@ -78,8 +78,11 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
 
     if (item.relations && item.relations.length) {
       relations = item.relations.map((relation) => {
+        let relationName: string;
+        let groupNameStart: number;
         if (relation.target.endsWith(item.identifier)) {
-          const relationTarget = relation.source.split('/').pop();
+          groupNameStart = relation.source.indexOf('/') + 1;
+          relationName = relation.source.substr(groupNameStart);
           return (
             <span
               className='relation'
@@ -90,11 +93,12 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
                 }
               }}
             >
-              {relationTarget}
+              {relationName}
             </span>
           );
         }
-        const relationTarget2 = relation.target.split('/').pop();
+        groupNameStart = relation.target.indexOf('/') + 1;
+        relationName = relation.target.substr(groupNameStart);
         return (
           <span
             className='relation'
@@ -105,7 +109,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
               }
             }}
           >
-            {relationTarget2}
+            {relationName}
           </span>
         );
       });
@@ -115,16 +119,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
       <div className='itemContent'>
         <div className='header'>
           <img src={item?.labels?.['nivio.rendered.icon']} alt='Item Icon' className='icon'></img>
-          <span
-            className='title'
-            onClick={(e) => {
-              if (findItem) {
-                findItem(fullyQualifiedItemIdentifier);
-              }
-            }}
-          >
-            {item ? item.name || item.identifier : null}
-          </span>
+          <span className='title'>{item ? item.name || item.identifier : null}</span>
           <span className='status' style={{ backgroundColor: assesmentColor }}></span>
         </div>
         <div className='information'>

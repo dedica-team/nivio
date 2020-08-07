@@ -4,7 +4,7 @@ description: Misuses the landscape graph to show the input and output possibilit
 
 config:
   branding:
-    mapStylesheet: https://nivio-demo.herokuapp.com/css/inout.css
+    mapStylesheet: http://localhost:8080/css/inout.css
     mapLogo: https://dedica.team/images/logo_orange_weiss.png
 
 groups:
