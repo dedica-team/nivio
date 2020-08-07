@@ -157,3 +157,12 @@ export interface IAssessmentProps {
   status: string;
   message: string;
 }
+
+export interface INotificationMessage {
+  timestamp: string;
+  landscape: string;
+  message?: string;
+  level: string;
+  type: string;
+  date: Date;
+}
