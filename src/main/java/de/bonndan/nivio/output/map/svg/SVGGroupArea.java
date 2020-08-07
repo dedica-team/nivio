@@ -5,9 +5,10 @@ import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.DomContent;
 import org.springframework.util.StringUtils;
 
-import java.util.Iterator;
+import java.awt.geom.Point2D;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -27,19 +28,26 @@ class SVGGroupArea extends Component {
         var fill = group.getColor();
         var fillId = fill != null ? "#" + fill : "";
 
+        AtomicReference<Hex> lowest = new AtomicReference<>(null);
+
         List<DomContent> territoryHexes = territory.stream()
-                .map(hex -> new SVGHex(hex, fillId).render())
+                .map(hex -> {
+                    Point2D.Double coords = hex.toPixel();
+                    if (lowest.get() == null || coords.y > lowest.get().toPixel().y)
+                        lowest.set(hex);
+                    return new SVGHex(hex, fillId).render();
+                })
                 .collect(Collectors.toList());
 
-        Iterator<Hex> iterator = territory.iterator();
-        if (iterator.hasNext()) {
-            Hex first = iterator.next();
+        if (lowest.get() != null) {
+            Point2D.Double anchor = lowest.get().toPixel();
             territoryHexes.add(
                     SvgTagCreator.text(group.getIdentifier())
-                            .attr("x", first.toPixel().x)
-                            .attr("y", first.toPixel().y)
+                            .attr("x", anchor.x)
+                            .attr("y", anchor.y + Hex.HEX_SIZE + 10)
                             .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
                             .attr("font-size", 24)
+                            .attr("text-anchor", "middle")
                             .attr("class", "groupLabel")
             );
         }
