@@ -4,6 +4,7 @@ import { Button } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
 import './Navigation.scss';
+import Search from "../SearchComponent/Search";
 
 /**
  * Header Component
@@ -51,7 +52,9 @@ const Navigation: React.FC = () => {
         <Grid item className={'title'} xs={12} sm={3} md={3} lg={3} xl={3}>
           Nivio
         </Grid>
-        <Grid item className={'last'} xs={12} sm={1} md={1} lg={3} xl={3}></Grid>
+        <Grid item className={'last'} xs={12} sm={1} md={1} lg={3} xl={3}>
+          <Search />
+        </Grid>
       </Grid>
     </div>
   );
