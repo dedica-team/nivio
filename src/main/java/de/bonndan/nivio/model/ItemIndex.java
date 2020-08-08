@@ -42,7 +42,7 @@ public class ItemIndex {
 
     private final SQLParser<Item> parser;
     private final Directory searchIndex;
-    private final IndexWriter writer;
+
     IndexedCollection<Item> index = new ConcurrentIndexedCollection<>();
 
     /**
@@ -60,13 +60,6 @@ public class ItemIndex {
 
         //init lucene
         searchIndex = new RAMDirectory();
-        StandardAnalyzer analyzer = new StandardAnalyzer();
-        IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
-        try {
-            writer = new IndexWriter(searchIndex, indexWriterConfig);
-        } catch (IOException e) {
-            throw new ProcessingException("Could not create wrter for search index.", e);
-        }
     }
 
     public ItemIndex(Set<Item> items) {
@@ -183,6 +176,8 @@ public class ItemIndex {
      */
     public void indexForSearch() {
         try {
+
+            IndexWriter writer = new IndexWriter(searchIndex, new IndexWriterConfig(new StandardAnalyzer()));
             writer.deleteAll();
             for (Item item : index) {
                 writer.addDocument(SearchDocumentFactory.from(item));
@@ -212,7 +207,7 @@ public class ItemIndex {
         DirectoryReader ireader = DirectoryReader.open(searchIndex);
         IndexSearcher isearcher = new IndexSearcher(ireader);
         // Parse a simple query that searches for "text":
-        QueryParser parser = new MultiFieldQueryParser(new String[] {LUCENE_FIELD_NAME, LUCENE_FIELD_DESCRIPTION}, new StandardAnalyzer());
+        QueryParser parser = new MultiFieldQueryParser(new String[]{LUCENE_FIELD_NAME, LUCENE_FIELD_DESCRIPTION}, new StandardAnalyzer());
         Query query = parser.parse(queryString);
         ScoreDoc[] hits = isearcher.search(query, 10).scoreDocs;
 

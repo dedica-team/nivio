@@ -282,7 +282,7 @@ public class IndexerIntegrationTest {
         Set<Item> result = landscape.getItems().search("contact:alphateam@acme.io");
         assertEquals(2, result.size());
 
-        result = landscape.getItems().search("contact:alphateam@acme.io AND name:'Demo Blog'");
+        result = landscape.getItems().search("contact:alphateam@acme.io AND name:\"Demo Blog\"");
         assertEquals(1, result.size());
     }
 

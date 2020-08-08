@@ -159,6 +159,24 @@ public class ApiController {
 
     }
 
+    @CrossOrigin(methods = RequestMethod.GET)
+    @RequestMapping(path = "/landscape/{identifier}/search/{query}", method = RequestMethod.GET)
+    public ResponseEntity<Set<Item>> search(@PathVariable String identifier, @PathVariable String query) {
+
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
+        if (landscape == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            return new ResponseEntity<>(landscape.getItems().search(query), HttpStatus.OK);
+        } catch (RuntimeException ignored) {
+            return ResponseEntity.badRequest().build();
+        }
+
+    }
+
+
     /**
      * Trigger reindexing of a landscape source.
      */

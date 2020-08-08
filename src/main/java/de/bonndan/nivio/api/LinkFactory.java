@@ -91,6 +91,13 @@ public class LinkFactory {
                         .build()
         );
 
+        links.put("search",
+                linkTo(localServer.getUrl(ApiController.PATH, "landscape", landscape.getIdentifier(), "search/{lucene:query}"))
+                        .withMedia(MediaType.APPLICATION_JSON_VALUE)
+                        .withTitle("Search for items")
+                        .build()
+        );
+
         links.put("assessment",
                 linkTo(localServer.getUrl(AssessmentController.PATH, landscape.getFullyQualifiedIdentifier().toString()))
                         .withMedia(MediaType.APPLICATION_JSON_VALUE)
