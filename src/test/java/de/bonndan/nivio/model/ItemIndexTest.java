@@ -10,7 +10,7 @@ import java.util.HashSet;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class LandscapeItemsTest {
+class ItemIndexTest {
 
     private ArrayList<Item> items;
     private LandscapeImpl landscape;

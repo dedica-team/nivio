@@ -116,7 +116,7 @@ public class IndexerIntegrationTest {
         assertEquals(3, blog.getProvidedBy().size());
 
         ArrayList<Item> landscapeItems = new ArrayList<>(blog.getProvidedBy());
-        Item webserver = LandscapeItems.of(landscapeItems).pick("wordpress-web", null);
+        Item webserver = new ItemIndex(new HashSet<>(landscapeItems)).pick("wordpress-web", null);
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
 
@@ -256,9 +256,9 @@ public class IndexerIntegrationTest {
     public void readGroupsContains() {
         LandscapeImpl landscape1 = index("/src/test/resources/example/example_groups.yml");
         Group a = (Group) landscape1.getGroups().get("groupA");
-        LandscapeItems items = LandscapeItems.of(a.getItems());
-        assertNotNull(items.pick("blog-server", null));
-        assertNotNull(items.pick("crappy_dockername-234234", null));
+        ItemIndex index = new ItemIndex(new HashSet<>(a.getItems()));
+        assertNotNull(index.pick("blog-server", null));
+        assertNotNull(index.pick("crappy_dockername-234234", null));
     }
 
     @Test
@@ -270,6 +270,20 @@ public class IndexerIntegrationTest {
         Item foo = landscape.getItems().all().iterator().next();
         assertEquals("foo", foo.getIdentifier());
         assertEquals(1, foo.getRelations().size());
+    }
+
+    @Test
+    public void triggersSearchIndexing() {
+
+        //when
+        LandscapeImpl landscape = index("/src/test/resources/example/example_env.yml");
+
+        //then
+        Set<Item> result = landscape.getItems().search("contact:alphateam@acme.io");
+        assertEquals(2, result.size());
+
+        result = landscape.getItems().search("contact:alphateam@acme.io AND name:'Demo Blog'");
+        assertEquals(1, result.size());
     }
 
     private String getRootPath() {

@@ -24,6 +24,7 @@
         <node.version>v12.18.2</node.version>
         <yarnVersion>v1.22.4</yarnVersion>
         <frontend-maven-plugin.version>1.7.6</frontend-maven-plugin.version>
+        <lucene.version>8.6.0</lucene.version>
     </properties>
 
     <dependencies>
@@ -170,6 +171,22 @@
                     <artifactId>sqlite-jdbc</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>${lucene.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queryparser</artifactId>
+            <version>${lucene.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-common</artifactId>
+            <version>${lucene.version}</version>
         </dependency>
 
         <!-- rancher api -->

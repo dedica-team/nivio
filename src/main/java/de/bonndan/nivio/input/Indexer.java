@@ -92,6 +92,9 @@ public class Indexer {
 
         // 10. create relations between items
         new ItemRelationResolver(logger).process(input, landscape);
+
+        // this step must be final or very late to include all item modifications
+        landscape.getItems().indexForSearch();
     }
 
 }

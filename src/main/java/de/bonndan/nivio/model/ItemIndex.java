@@ -5,35 +5,73 @@ import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
+import de.bonndan.nivio.ProcessingException;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.RAMDirectory;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.googlecode.cqengine.query.QueryFactory.attribute;
 import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
+import static de.bonndan.nivio.model.SearchDocumentFactory.*;
 
 /**
  * A queryable index on all landscape items.
- *
- *
- *
  */
-public class LandscapeItems {
+public class ItemIndex {
 
-    private static final Attribute<Item, String> IDENTIFIER = attribute("identifier", Item::getIdentifier);
-    private static final Attribute<Item, String> NAME = attribute("name", Item::getName);
+    private static final String CQE_FIELD_FQI = "fqi";
+    private static final Attribute<Item, String> CQE_ATTR_FQI = attribute("fqi", o -> o.getFullyQualifiedIdentifier().toString());
+    private static final Attribute<Item, String> CQE_ATTR_IDENTIFIER = attribute("identifier", Item::getIdentifier);
+    private static final Attribute<Item, String> CQE_ATTR_NAME = attribute("name", Item::getName);
 
+    private final SQLParser<Item> parser;
+    private final Directory searchIndex;
+    private final IndexWriter writer;
     IndexedCollection<Item> index = new ConcurrentIndexedCollection<>();
 
     /**
-     * @deprecated use only for testing
+     * Creates a new empty index.
      */
-    public static LandscapeItems of(List<Item> items) {
-        LandscapeItems landscapeItems = new LandscapeItems();
-        landscapeItems.setItems(new HashSet<>(items));
-        return landscapeItems;
+    public ItemIndex() {
+
+        //init cq engine
+        parser = SQLParser.forPojoWithAttributes(Item.class,
+                Map.of(
+                        CQE_FIELD_FQI, CQE_ATTR_FQI,
+                        "identifier", CQE_ATTR_IDENTIFIER,
+                        "name", CQE_ATTR_NAME)
+        );
+
+        //init lucene
+        searchIndex = new RAMDirectory();
+        StandardAnalyzer analyzer = new StandardAnalyzer();
+        IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
+        try {
+            writer = new IndexWriter(searchIndex, indexWriterConfig);
+        } catch (IOException e) {
+            throw new ProcessingException("Could not create wrter for search index.", e);
+        }
+    }
+
+    public ItemIndex(Set<Item> items) {
+        this();
+        setItems(items);
     }
 
     public Stream<Item> stream() {
@@ -140,10 +178,57 @@ public class LandscapeItems {
         return Optional.ofNullable((found.size() == 1) ? found.get(0) : null);
     }
 
+    /**
+     * Creates a search index based in a snapshot of current items state (later modifications won't be shown).
+     */
+    public void indexForSearch() {
+        try {
+            writer.deleteAll();
+            for (Item item : index) {
+                writer.addDocument(SearchDocumentFactory.from(item));
+            }
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to update search index", e);
+        }
+    }
+
+    public Set<Item> search(String queryString) {
+        try {
+            return documentSearch("name", queryString).stream()
+                    .map(doc -> {
+                        //TODO this is ineffective, there must be a way (index?) to obtain the item directly
+                        return cqnQueryOnIndex("SELECT * FROM items WHERE " + CQE_FIELD_FQI + " = '" + doc.get(LUCENE_FIELD_FQI) + "'").stream().findFirst().orElse(null);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException("Failed to execute search");
+        }
+    }
+
+    private List<Document> documentSearch(String fieldname, String queryString) throws IOException, ParseException {
+
+        DirectoryReader ireader = DirectoryReader.open(searchIndex);
+        IndexSearcher isearcher = new IndexSearcher(ireader);
+        // Parse a simple query that searches for "text":
+        QueryParser parser = new MultiFieldQueryParser(new String[] {LUCENE_FIELD_NAME, LUCENE_FIELD_DESCRIPTION}, new StandardAnalyzer());
+        Query query = parser.parse(queryString);
+        ScoreDoc[] hits = isearcher.search(query, 10).scoreDocs;
+
+        List<Document> documents = new ArrayList<>();
+        // Iterate through the results:
+        for (int i = 0; i < hits.length; i++) {
+            Document hitDoc = isearcher.doc(hits[i].doc);
+            documents.add(hitDoc);
+        }
+        ireader.close();
+
+        return documents;
+    }
+
     public List<Item> cqnQueryOnIndex(String condition) {
-        SQLParser<Item> parser = SQLParser.forPojoWithAttributes(Item.class,
-                Map.of("identifier", IDENTIFIER, "name", NAME)
-        );
+
 
         ResultSet<Item> results = parser.retrieve(index, condition);
         return results.stream().collect(Collectors.toList());

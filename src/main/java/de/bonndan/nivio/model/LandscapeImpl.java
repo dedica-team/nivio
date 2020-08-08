@@ -43,7 +43,7 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
     private String source;
 
     @JsonIgnore
-    private final LandscapeItems items = new LandscapeItems();
+    private final ItemIndex items = new ItemIndex();
 
     private LandscapeConfig config;
 
@@ -77,7 +77,7 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
     }
 
     @JsonIgnore
-    public LandscapeItems getItems() {
+    public ItemIndex getItems() {
         return items;
     }
 
