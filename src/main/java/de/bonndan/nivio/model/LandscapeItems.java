@@ -45,10 +45,6 @@ public class LandscapeItems {
         index.addAll(items);
     }
 
-    public void add(Item item) {
-        index.add(item);
-    }
-
     /**
      * Returns all items matching the given term.
      *

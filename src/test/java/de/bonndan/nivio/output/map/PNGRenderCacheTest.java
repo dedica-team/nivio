@@ -11,6 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -94,7 +96,7 @@ class PNGRenderCacheTest {
         landscape.setIdentifier("test");
         Item item = new Item();
         item.setIdentifier("foo");
-        landscape.getItems().add(item);
+        landscape.setItems(Set.of(item));
 
         ProcessLog test = new ProcessLog(LoggerFactory.getLogger("test"));
         test.info("foo");

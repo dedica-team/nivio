@@ -123,12 +123,6 @@ public class LandscapeImpl implements Landscape, Rendered, Assessable {
         this.contact = contact;
     }
 
-    public void addItem(Item item) {
-        item.setLandscape(this);
-        item.getProvidedBy().forEach(s -> s.setLandscape(this));
-        items.add(item);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
