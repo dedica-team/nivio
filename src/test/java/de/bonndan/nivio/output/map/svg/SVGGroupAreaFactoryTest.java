@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.map.hex.Hex;
 import org.apache.commons.collections4.set.UnmodifiableSet;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -67,8 +68,8 @@ class SVGGroupAreaFactoryTest {
         SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(occupied, group, vertexHexes, relations);
 
         assertThat(svgGroupArea.group).isEqualTo(group);
-        assertThat(svgGroupArea.territory).containsAll(expectedTerritory);
-        assertThat(svgGroupArea.territory).contains(landscapeItemHex);
+        assertThat(svgGroupArea.groupArea).containsAll(expectedTerritory);
+        assertThat(svgGroupArea.groupArea).contains(landscapeItemHex);
     }
 
     @Test
@@ -97,7 +98,7 @@ class SVGGroupAreaFactoryTest {
         SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(occupied, group, vertexHexes, relations);
 
         assertThat(svgGroupArea.group).isEqualTo(group);
-        assertThat(svgGroupArea.territory).isEqualTo(expectedTerritory);
+        assertThat(svgGroupArea.groupArea).isEqualTo(expectedTerritory);
     }
 
     @Test
@@ -125,7 +126,7 @@ class SVGGroupAreaFactoryTest {
         SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(occupied, group, vertexHexes, relations);
 
         assertThat(svgGroupArea.group).isEqualTo(group);
-        assertThat(svgGroupArea.territory).isEqualTo(expectedTerritory);
+        assertThat(svgGroupArea.groupArea).isEqualTo(expectedTerritory);
     }
 
     @Test
@@ -154,6 +155,6 @@ class SVGGroupAreaFactoryTest {
         SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(occupied, group, vertexHexes, relations);
 
         assertThat(svgGroupArea.group).isEqualTo(group);
-        assertThat(svgGroupArea.territory).isEqualTo(expectedTerritory);
+        assertThat(svgGroupArea.groupArea).isEqualTo(expectedTerritory);
     }
 }

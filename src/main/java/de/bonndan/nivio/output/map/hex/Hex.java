@@ -7,23 +7,23 @@ import java.util.List;
 /**
  * This is all copied code from https://www.redblobgames.com/grids/hexagons/implementation.html#hex-geometry and several
  * stackoverflow questions.
- *
  */
 public class Hex {
 
-    public static final List<Hex> DIRECTIONS = new ArrayList<>();
+    /**
+     * clockwise neighbours, starting with "southeast"
+     */
+    public static final List<Hex> DIRECTIONS = List.of(
+            new Hex(1, 0, -1),
+            new Hex(0, 1, -1), //south
+            new Hex(-1, 1, 0),
+            new Hex(-1, 0, 1),
+            new Hex(0, -1, 1), //north
+            new Hex(1, -1, 0)
+    );
 
     //double DEFAULT_ICON_SIZE
     public static final int HEX_SIZE = 100;
-
-    static {
-        DIRECTIONS.add(new Hex(1, 0, -1));
-        DIRECTIONS.add(new Hex(1, -1, 0));
-        DIRECTIONS.add(new Hex(0, -1, 1));
-        DIRECTIONS.add(new Hex(-1, 0, 1));
-        DIRECTIONS.add(new Hex(-1, 1, 0));
-        DIRECTIONS.add(new Hex(0, 1, -1));
-    }
 
     public final int q;
     public final int r;
@@ -52,9 +52,8 @@ public class Hex {
     }
 
     public Point2D.Double toPixel() {
-        var M = Orientation.LAYOUT_FLAT;
-        double x = (M.f0 * this.q + M.f1 * this.r) * Layout.SIZE;
-        double y = (M.f2 * this.q + M.f3 * this.r) * Layout.SIZE;
+        double x = (FlatOrientation.f0 * this.q + FlatOrientation.f1 * this.r) * Layout.SIZE;
+        double y = (FlatOrientation.f2 * this.q + FlatOrientation.f3 * this.r) * Layout.SIZE;
         return new Point2D.Double(x + Layout.origin.x, y + Layout.origin.y);
     }
 
@@ -94,7 +93,9 @@ public class Hex {
         Point2D.Double center = toPixel();
         for (int i = 0; i < 6; i++) {
             Point2D.Double offset = hex_corner_offset(i, size);
-            corners.add(new Point2D.Double(center.x + offset.x, center.y + offset.y));
+            corners.add(
+                    new Point2D.Double(Math.round(center.x + offset.x), Math.round(center.y + offset.y))
+            );
         }
         return corners;
     }
@@ -129,41 +130,24 @@ public class Hex {
         return result;
     }
 
-    public static class Orientation {
-
-        static Orientation LAYOUT_FLAT = new Orientation(3.0 / 2.0, 0.0, Math.sqrt(3.0) / 2.0, Math.sqrt(3.0), 2.0 / 3.0, 0.0, -1.0 / 3.0, Math.sqrt(3.0) / 3.0, 0.0);
-
-        private final double startAngle;
-        public double f0;
-        public double f1;
-        public double f2;
-        public double f3;
-
-        private final double b0;
-        private final double b1;
-        private final double b2;
-        private final double b3;
-
-
-        Orientation(double f0, double f1, double f2, double f3, double b0, double b1, double b2, double b3, double startAngle) {
-
-            this.f0 = f0;
-            this.f1 = f1;
-            this.f2 = f2;
-            this.f3 = f3;
-            this.b0 = b0;
-            this.b1 = b1;
-            this.b2 = b2;
-            this.b3 = b3;
-            this.startAngle = startAngle;
-        }
-
+    /**
+     * flat orientation (flat top)
+     */
+    static class FlatOrientation {
+        public static final double f0 = 3.0 / 2.0;
+        public static final double f1 = 0.0;
+        public static final double f2 = Math.sqrt(3.0) / 2.0;
+        public static final double f3 = Math.sqrt(3.0);
     }
 
     public static class Layout {
 
         static final int SIZE = 100;
         public static final Point2D.Double origin = new Point2D.Double(200, 200);
+
+        /**
+         * starting at east, right before the first neighbour (which is southeast (r+1) in clockwise direction)
+         */
         public static final int startAngle = 0;
     }
 }

@@ -2,13 +2,14 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.output.map.hex.Hex;
+import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Displays a group as an area containing items.
@@ -16,22 +17,23 @@ import java.util.stream.Collectors;
 class SVGGroupArea extends Component {
 
     final Group group;
-    final Set<Hex> territory;
+    final Set<Hex> groupArea;
+    private final List<ContainerTag> outlines;
 
-    SVGGroupArea(Group group, Set<Hex> territory) {
+    SVGGroupArea(Group group, Set<Hex> groupArea, List<ContainerTag> outlines) {
         this.group = group;
-        this.territory = territory;
+        this.groupArea = groupArea;
+        this.outlines = outlines;
     }
 
     public DomContent render() {
         var fill = group.getColor();
         var fillId = fill != null ? "#" + fill : "";
 
-        List<DomContent> territoryHexes = territory.stream()
-                .map(hex -> new SVGHex(hex, fillId).render())
-                .collect(Collectors.toList());
+        List<DomContent> territoryHexes = new ArrayList<>();
+        territoryHexes.addAll(outlines);
 
-        Iterator<Hex> iterator = territory.iterator();
+        Iterator<Hex> iterator = groupArea.iterator();
         if (iterator.hasNext()) {
             Hex first = iterator.next();
             territoryHexes.add(
