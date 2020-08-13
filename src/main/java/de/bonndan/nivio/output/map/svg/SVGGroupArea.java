@@ -6,10 +6,12 @@ import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.util.StringUtils;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+
 
 /**
  * Displays a group as an area containing items.
@@ -30,17 +32,26 @@ class SVGGroupArea extends Component {
         var fill = group.getColor();
         var fillId = fill != null ? "#" + fill : "";
 
-        List<DomContent> territoryHexes = outlines !=null ? new ArrayList<>(outlines):new ArrayList<>();
+        List<DomContent> territoryHexes = outlines != null ? new ArrayList<>(outlines) : new ArrayList<>();
 
-        Iterator<Hex> iterator = groupArea.iterator();
-        if (iterator.hasNext()) {
-            Hex first = iterator.next();
+        AtomicReference<Hex> lowest = new AtomicReference<>(null);
+
+        groupArea.forEach(hex -> {
+            Point2D.Double coords = hex.toPixel();
+            if (lowest.get() == null || coords.y > lowest.get().toPixel().y)
+                lowest.set(hex);
+        });
+
+        if (lowest.get() != null) {
+            Point2D.Double anchor = lowest.get().toPixel();
+
             territoryHexes.add(
                     SvgTagCreator.text(group.getIdentifier())
-                            .attr("x", first.toPixel().x)
-                            .attr("y", first.toPixel().y)
+                            .attr("x", anchor.x)
+                            .attr("y", anchor.y + Hex.HEX_SIZE + 10)
                             .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
                             .attr("font-size", 24)
+                            .attr("text-anchor", "middle")
                             .attr("class", "groupLabel")
             );
         }
