@@ -30,8 +30,7 @@ class SVGGroupArea extends Component {
         var fill = group.getColor();
         var fillId = fill != null ? "#" + fill : "";
 
-        List<DomContent> territoryHexes = new ArrayList<>();
-        territoryHexes.addAll(outlines);
+        List<DomContent> territoryHexes = outlines !=null ? new ArrayList<>(outlines):new ArrayList<>();
 
         Iterator<Hex> iterator = groupArea.iterator();
         if (iterator.hasNext()) {
