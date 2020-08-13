@@ -86,9 +86,13 @@ public class ApiController {
         }
 
         //TODO this modifies the landscape components by adding SELF links
-        Group group = landscape.getGroup(groupIdentifier);
-        linkFactory.setGroupLinksRecursive(group);
-        return new ResponseEntity<>(group, HttpStatus.OK);
+        Optional<Group> group = landscape.getGroup(groupIdentifier);
+        if (group.isPresent()) {
+            linkFactory.setGroupLinksRecursive(group.get());
+            return new ResponseEntity<>(group.get(), HttpStatus.OK);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**

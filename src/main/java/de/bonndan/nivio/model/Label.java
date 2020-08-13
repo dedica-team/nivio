@@ -19,8 +19,6 @@ public enum Label {
 
     health("description of the item's health status"),
 
-    icon("Name of the icon to render."),
-
     layer("a technical layer"),
 
     lifecycle("A lifecycle phase (PLANNED|plan, INTEGRATION|int, PRODUCTION|prod, END_OF_LIFE|eol|end)"),

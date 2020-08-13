@@ -42,6 +42,8 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
     private final Map<String, String> labels = new HashMap<>();
 
     private List<String> providedBy = new ArrayList<>();
+    private String icon;
+    private String color;
 
     public ItemDescription() {
     }
@@ -96,6 +98,24 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
     @Override
     public String getOwner() {
         return owner;
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    @Override
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public void setOwner(String owner) {

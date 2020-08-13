@@ -31,6 +31,10 @@ public class HexPath {
          */
     }
 
+    public List<Hex> getHexes() {
+        return hexes;
+    }
+
     String getPoints() {
         calcBends();
         String points = "M";

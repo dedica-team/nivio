@@ -36,13 +36,16 @@ public class ItemFactory {
         item.setName(description.getName());
         item.setDescription(description.getDescription());
         item.setOwner(description.getOwner());
+        item.setColor(description.getColor());
+        item.setIcon(description.getIcon());
+        item.setContact(description.getContact());
 
         item.setInterfaces(description.getInterfaces().stream()
                 .map(ServiceInterface::new)
                 .collect(Collectors.toSet()));
 
         item.getLinks().putAll(description.getLinks());
-        item.setContact(description.getContact());
+
         assignSafe(description.getGroup(), item::setGroup);
 
         description.getLabels().forEach((key, value) -> {

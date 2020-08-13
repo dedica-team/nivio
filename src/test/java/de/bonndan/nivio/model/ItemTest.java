@@ -9,8 +9,8 @@ public class ItemTest {
     @Test
     public void equalsWithGroup() {
 
-        LandscapeImpl landscape = new LandscapeImpl();
-        landscape.setIdentifier("l");
+        LandscapeImpl landscape = LandscapeFactory.create("l1");
+
 
         Item s1 = new Item();
         s1.setIdentifier("a");
@@ -42,8 +42,7 @@ public class ItemTest {
     @Test
     public void equalsWithoutGroup() {
 
-        LandscapeImpl landscape = new LandscapeImpl();
-        landscape.setIdentifier("l");
+        LandscapeImpl landscape = LandscapeFactory.create("l1");
 
         Item s1 = new Item();
         s1.setIdentifier("a");
@@ -68,8 +67,7 @@ public class ItemTest {
     @Test
     public void equalsWithLandscape() {
 
-        LandscapeImpl landscape = new LandscapeImpl();
-        landscape.setIdentifier("l");
+        LandscapeImpl landscape = LandscapeFactory.create("l1");
 
         Item s1 = new Item();
         s1.setIdentifier("a");

@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.output.LocalServer;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.Assertions;
@@ -42,11 +43,11 @@ public class IndexerIntegrationTest {
     @Autowired
     LandscapeDescriptionFactory landscapeDescriptionFactory;
 
+    @Autowired
+    LocalServer localServer;
+
     @Mock
     ApplicationEventPublisher applicationEventPublisher;
-
-    @MockBean
-    JavaMailSender mailSender;
 
     private LandscapeImpl index() {
         return index("/src/test/resources/example/example_env.yml");
@@ -56,7 +57,7 @@ public class IndexerIntegrationTest {
         File file = new File(getRootPath() + path);
         LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, localServer);
 
         ProcessLog processLog = indexer.reIndex(landscapeDescription);
         return (LandscapeImpl) processLog.getLandscape();
@@ -115,8 +116,9 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
 
-        ArrayList<Item> landscapeItems = new ArrayList<>(blog.getProvidedBy());
-        Item webserver = LandscapeItems.of(landscapeItems).pick("wordpress-web", null);
+        LandscapeItems items = new LandscapeItems();
+        items.setItems(blog.getProvidedBy());
+        Item webserver = items.pick("wordpress-web", null);
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
 
@@ -164,7 +166,7 @@ public class IndexerIntegrationTest {
         exsistingWordPress.setName("Other name");
         landscapeDescription.getItemDescriptions().add(exsistingWordPress);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, localServer);
 
         //created
         landscape = (LandscapeImpl) indexer.reIndex(landscapeDescription).getLandscape();
@@ -256,7 +258,8 @@ public class IndexerIntegrationTest {
     public void readGroupsContains() {
         LandscapeImpl landscape1 = index("/src/test/resources/example/example_groups.yml");
         Group a = (Group) landscape1.getGroups().get("groupA");
-        LandscapeItems items = LandscapeItems.of(a.getItems());
+        LandscapeItems items = new LandscapeItems();
+        items.setItems(a.getItems());
         assertNotNull(items.pick("blog-server", null));
         assertNotNull(items.pick("crappy_dockername-234234", null));
     }
@@ -264,7 +267,7 @@ public class IndexerIntegrationTest {
     @Test
     public void labelRelations() {
         LandscapeImpl landscape = index("/src/test/resources/example/example_label_relations.yml");
-        assertEquals(1, landscape.getGroups().size());
+        assertEquals(2, landscape.getGroups().size()); //common group is present by default
         assertEquals(2, landscape.getItems().all().size());
 
         Item foo = landscape.getItems().all().iterator().next();

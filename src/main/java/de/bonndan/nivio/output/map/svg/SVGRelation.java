@@ -3,11 +3,13 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.model.*;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static de.bonndan.nivio.output.map.svg.SvgTagCreator.g;
@@ -22,8 +24,14 @@ class SVGRelation extends Component {
     private final String fill;
     private final RelationItem<Item> relation;
 
-    SVGRelation(HexPath hexPath, String fill, RelationItem<Item> relation) {
+    /**
+     * @param hexPath the calculated best path
+     * @param fill color
+     * @param relation graph edge, source is the item this relation belongs to
+     */
+    SVGRelation(@NonNull HexPath hexPath, @NonNull String fill, @NonNull RelationItem<Item> relation) {
         this.hexPath = hexPath;
+        Objects.requireNonNull(fill);
         this.fill = fill;
         this.relation = relation;
     }
@@ -101,8 +109,16 @@ class SVGRelation extends Component {
         return SvgTagCreator.text(text)
                 .attr("x", xOffset)
                 .attr("y", 0)
-                .attr("fill", fillId)
+                .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
                 .attr("transform", transform);
+    }
+
+    public RelationItem<Item> getRelationItem() {
+        return relation;
+    }
+
+    public HexPath getHexPath() {
+        return hexPath;
     }
 }
 

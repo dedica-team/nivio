@@ -3,7 +3,6 @@ package de.bonndan.nivio.model;
 import com.fasterxml.jackson.annotation.*;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.output.Rendered;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.StringUtils;
 
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
+public class Item implements LandscapeItem, Tagged, Labeled, Assessable {
 
     @NotNull
     @Pattern(regexp = LandscapeItem.IDENTIFIER_VALIDATION)
@@ -48,6 +47,8 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
     private Set<InterfaceItem> interfaces = new HashSet<>();
 
     private Map<String, String> labels = new HashMap<>();
+    private String color;
+    private String icon;
 
     public String getIdentifier() {
         return identifier;
@@ -83,6 +84,24 @@ public class Item implements LandscapeItem, Tagged, Rendered, Assessable {
 
     public String getOwner() {
         return owner;
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    @Override
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public void setOwner(String owner) {
