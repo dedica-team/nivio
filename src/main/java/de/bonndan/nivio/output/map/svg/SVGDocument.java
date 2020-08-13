@@ -101,7 +101,7 @@ public class SVGDocument extends Component {
             SVGGroupArea area = SVGGroupAreaFactory.getGroup(occupied, (Group) groupLayout.getComponent(), vertexHexes, relations);
 
             //fix viewport, because xy and hex coordinate system have different offsets
-            area.territory.forEach(hex -> {
+            area.groupArea.forEach(hex -> {
                 var pos = hex.toPixel();
                 if (pos.x < minX.get())
                     minX.set((int) pos.x);

@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 class SVGRendererTest {
 
     @Test
-    public void testRendering() throws MalformedURLException {
+    void testRendering() throws MalformedURLException {
 
         //given
         LocalServer localServer = mock(LocalServer.class);

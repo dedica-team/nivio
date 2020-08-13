@@ -4,10 +4,15 @@ import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.map.hex.Hex;
+import j2html.tags.ContainerTag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
+import org.springframework.util.StringUtils;
 
+import java.awt.geom.Point2D;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Collects all hexes close to group item hexes to create an area.
@@ -53,7 +58,13 @@ public class SVGGroupAreaFactory {
         bridges = getBridges(inArea);
         inArea.addAll(bridges);
 
-        return new SVGGroupArea(group, inArea);
+        var fill = group.getColor();
+        var fillId = fill != null ? "#" + fill : "";
+
+        SVGGroupAreaOutlineFactory svgGroupAreaOutlineFactory = new SVGGroupAreaOutlineFactory(inArea);
+        List<ContainerTag> outlines = svgGroupAreaOutlineFactory.getOutline(fillId);
+
+        return new SVGGroupArea(group, inArea, outlines);
     }
 
     static Set<Hex> getBridges(Set<Hex> inArea) {
