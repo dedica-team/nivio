@@ -37,7 +37,7 @@ public class SVGGroupAreaOutlineFactory {
         }
 
         //filter all which cannot have an outline
-        groupArea.stream().filter(hex -> completelySurrounded(hex)).forEach(hex -> processed.add(hex));
+        groupArea.stream().filter(this::completelySurrounded).forEach(processed::add);
 
         List<ContainerTag> outlines = new ArrayList<>();
         while(processed.size() < groupArea.size()) {

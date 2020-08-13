@@ -48,10 +48,10 @@ public class SVGRenderer implements Renderer<String> {
     }
 
     @Override
-    public void render(LayoutedComponent landscape, File file) throws IOException {
-        FileWriter fileWriter = new FileWriter(file);
-        fileWriter.write(render(landscape));
-        fileWriter.close();
+    public void render(LayoutedComponent landscape, File file)  {
+        try (FileWriter fileWriter = new FileWriter(file)) {
+            fileWriter.write(render(landscape));
+        } catch (IOException ignored) {}
     }
 
     private String getStyles(LandscapeImpl landscape) {
