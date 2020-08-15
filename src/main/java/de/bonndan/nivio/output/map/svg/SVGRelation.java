@@ -38,10 +38,11 @@ class SVGRelation extends Component {
 
     public DomContent render() {
 
-        var fillId = (fill) != null ? "#" + fill : "";
+        var fillId = "#" + fill;
         var stringPath = hexPath.getPoints();
         boolean isPlanned = Lifecycle.isPlanned(relation.getSource()) || Lifecycle.isPlanned(relation.getTarget());
 
+        //the bezier path is only used to interpolate the "stringPath"
         BezierPath bezierPath = new BezierPath();
         bezierPath.parsePathString(stringPath);
 

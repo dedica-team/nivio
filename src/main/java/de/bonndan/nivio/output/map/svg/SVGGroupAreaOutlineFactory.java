@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 
 /**
  * Collects all hexes close to group item hexes to create an outline around an area
- *
- *
  */
 public class SVGGroupAreaOutlineFactory {
 
@@ -40,7 +38,7 @@ public class SVGGroupAreaOutlineFactory {
         groupArea.stream().filter(this::completelySurrounded).forEach(processed::add);
 
         List<ContainerTag> outlines = new ArrayList<>();
-        while(processed.size() < groupArea.size()) {
+        while (processed.size() < groupArea.size()) {
             ContainerTag pointsPath = getContainer(fillId);
             if (pointsPath != null) {
                 outlines.add(pointsPath);
@@ -86,16 +84,50 @@ public class SVGGroupAreaOutlineFactory {
                 .collect(Collectors.toList());
          */
 
-        String points = path.stream()
-                .map(aDouble -> aDouble.x + " " + aDouble.y)
-                .collect(Collectors.joining(","));
-
-        return SvgTagCreator.polygon()
+        String bezierPath = getBezierPath(new ArrayList<>(path));
+        return SvgTagCreator.path()
+                .attr("d", bezierPath)
                 .condAttr(!StringUtils.isEmpty(fillId), "stroke", fillId)
                 .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
-                .condAttr(!StringUtils.isEmpty(fillId), "fill-opacity", String.valueOf(0.1))
-                .attr("stroke-width", 1)
-                .attr("points", points);
+                .condAttr(!StringUtils.isEmpty(fillId), "fill-opacity", String.valueOf(0.1));
+    }
+
+    private String getBezierPath(ArrayList<Point2D.Double> doubles) {
+        ArrayList<Point2D.Double> middles = new ArrayList<>();
+
+        for (int i = 0; i < doubles.size(); i++) {
+            int j = (i == doubles.size() - 1) ? 0 : i + 1;
+            Point2D.Double point = doubles.get(i);
+            Point2D.Double following = doubles.get(j);
+            middles.add(
+                    new Point2D.Double(
+                            point.x + (following.x - point.x) / 2,
+                            point.y + (following.y - point.y) / 2
+                    )
+            );
+        }
+
+        StringBuilder points = new StringBuilder("M");
+        for (var i = 0; i < middles.size(); i++) {
+
+            var j = i+1;
+            if (i == middles.size() - 1) //when the last ist reached, reconnect to first
+                j = 0;
+
+            //cubic curve, original points are now the control points
+            var prev = middles.get(i);
+            var controlPoint = doubles.get(j);
+            var next = middles.get(j);
+
+            points.append(" ").append(prev.x).append(",").append(prev.y).append(" ");
+            points.append("Q ").append(controlPoint.x).append(",").append(controlPoint.y);
+
+            if (j == 0) {
+                points.append(" ").append(next.x).append(",").append(next.y);
+            }
+
+        }
+        return points.toString();
     }
 
     @Nullable

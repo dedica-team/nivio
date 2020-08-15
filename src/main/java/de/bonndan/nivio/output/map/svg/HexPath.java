@@ -6,11 +6,19 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Produces a point path along the centers of the given hexes.
+ *
+ *
+ */
 public class HexPath {
 
     private final List<Hex> hexes;
     private List<Hex> bends = null;
 
+    /**
+     * @param hexes the hex tile chain in correct order.
+     */
     public HexPath(List<Hex> hexes) {
         this.hexes = hexes;
     }
@@ -31,10 +39,20 @@ public class HexPath {
          */
     }
 
+    /**
+     * Returns all hex tiles which are part of the path.
+     *
+     *
+     */
     public List<Hex> getHexes() {
         return hexes;
     }
 
+    /**
+     * Returns the path as svg path description with bezier curves.
+     *
+     * @return M...L notation
+     */
     String getPoints() {
         calcBends();
         String points = "M";

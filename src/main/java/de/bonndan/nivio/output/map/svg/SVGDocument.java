@@ -3,7 +3,6 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.hex.Hex;
-import de.bonndan.nivio.output.map.hex.HexFactory;
 import de.bonndan.nivio.output.map.hex.PathFinder;
 import j2html.tags.DomContent;
 import j2html.tags.UnescapedText;
@@ -49,11 +48,8 @@ public class SVGDocument extends Component {
     public DomContent render() {
 
         Map<LandscapeItem, Hex> vertexHexes = new HashMap<>();
-        final HexFactory hexFactory = new HexFactory();
-
         List<DomContent> patterns = new ArrayList<>();
         List<DomContent> items = new ArrayList<>();
-
 
         //transform all item positions to hex map positions
         layouted.getChildren().forEach(group -> {
@@ -61,7 +57,7 @@ public class SVGDocument extends Component {
                 Hex hex = null;
                 int i = 0;
                 while (hex == null || occupied.contains(hex)) {
-                    hex = hexFactory.of(Math.round(layoutedItem.getX()) - i, Math.round(layoutedItem.getY()) - i);
+                    hex = Hex.of(Math.round(layoutedItem.getX()) - i, Math.round(layoutedItem.getY()) - i);
                     i++;
                 }
 
