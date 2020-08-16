@@ -56,8 +56,10 @@ public class SearchDocumentFactory {
             document.add(new TextField(s, val, Field.Store.YES));
         });
 
-        //tags TODO not clear how
-        document.add(new TextField(LUCENE_FIELD_TAG, StringUtils.arrayToDelimitedString(item.getTags(), " "), Field.Store.YES));
+        //tags
+        Arrays.stream(item.getTags()).forEach(s -> {
+            document.add(new TextField(LUCENE_FIELD_TAG, s.toLowerCase(), Field.Store.YES));
+        });
 
         return document;
     }

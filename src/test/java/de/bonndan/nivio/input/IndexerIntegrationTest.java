@@ -286,6 +286,29 @@ public class IndexerIntegrationTest {
         assertEquals(1, result.size());
     }
 
+    @Test
+    public void searchForTags() {
+
+        //when
+        LandscapeImpl landscape = index("/src/test/resources/example/example_env.yml");
+
+        //then
+        Set<Item> result = landscape.getItems().search("tag:CMS");
+        assertEquals(1, result.size());
+        Item match = result.iterator().next();
+        assertEquals("nivio:example/content/blog-server", match.getFullyQualifiedIdentifier().toString());
+        assertTrue(List.of(match.getTags()).contains("cms"));
+        assertTrue(List.of(match.getTags()).contains("ui"));
+
+        result = landscape.getItems().search("tag:UI");
+        assertEquals(1, result.size());
+        match = result.iterator().next();
+        assertEquals("nivio:example/content/blog-server", match.getFullyQualifiedIdentifier().toString());
+        assertTrue(List.of(match.getTags()).contains("cms"));
+        assertTrue(List.of(match.getTags()).contains("ui"));
+    }
+
+
     private String getRootPath() {
         Path currentRelativePath = Paths.get("");
         return currentRelativePath.toAbsolutePath().toString();

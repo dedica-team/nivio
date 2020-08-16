@@ -57,8 +57,9 @@ class ItemDescriptionFactoryNivioTest {
         assertEquals("alphateam@acme.io", service.getContact());
         assertEquals("content", service.getGroup());
         assertEquals("docker", service.getLabel("hosttype"));
-        assertEquals(1, service.getTags().length);
-        assertTrue(Arrays.asList(service.getTags()).contains("CMS"));
+        assertEquals(2, service.getTags().length);
+        assertTrue(Arrays.asList(service.getTags()).contains("cms"));
+        assertTrue(Arrays.asList(service.getTags()).contains("ui"));
         assertTrue(Lifecycle.isEndOfLife(service));
 
 

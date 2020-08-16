@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import static de.bonndan.nivio.model.SearchDocumentFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,10 +38,9 @@ class SearchDocumentFactoryTest {
         assertEquals(item.getLabel("foo2"), document.get("foo2"));
 
         assertEquals(item.getLinks().get("wiki").getHref().toString(), document.get("wiki"));
-        String tag = document.get("tag");
-        assertTrue(tag.contains("one"));
-        assertTrue(tag.contains("two"));
-
-
+        String[] tag =  document.getValues("tag");
+        List<String> tags = List.of(tag);
+        assertTrue(tags.contains("one"));
+        assertTrue(tags.contains("two"));
     }
 }
