@@ -4,11 +4,21 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
+
 /**
  * This is all copied code from https://www.redblobgames.com/grids/hexagons/implementation.html#hex-geometry and several
  * stackoverflow questions.
  */
 public class Hex {
+
+    //was layout origin
+    public static final Point2D.Double origin = new Point2D.Double(200, 200);
+
+    /**
+     * starting at east, right before the first neighbour (which is southeast (r+1) in clockwise direction)
+     */
+    public static final int startAngle = 0;
 
     /**
      * clockwise neighbours, starting with "southeast"
@@ -23,7 +33,7 @@ public class Hex {
     );
 
     //double DEFAULT_ICON_SIZE
-    public static final int HEX_SIZE = 100;
+    public static final int HEX_SIZE = 2 * DEFAULT_ICON_SIZE;
 
     public final int q;
     public final int r;
@@ -39,6 +49,45 @@ public class Hex {
         this.s = s;
     }
 
+    /**
+     * Creates a hexmap coord representation of the given coordinates.
+     *
+     * @param x map item x coord
+     * @param y map item y coord
+     * @return hex with q,r coordinates derived from x,y coords (rounded)
+     */
+    public static Hex of(long x, long y) {
+        return of(x, y, 1f);
+    }
+
+    public static Hex of(long x, long y, float scaling) {
+        var q = (2. / 3 * x) / (DEFAULT_ICON_SIZE * scaling);
+        var r = (-1. / 3 * x + Math.sqrt(3) / 3 * y) / (DEFAULT_ICON_SIZE * scaling);
+
+        double s = -q - r;
+        if (Math.round(q + r + s) != 0) {
+            throw new RuntimeException("q + r + s must be 0");
+        }
+
+        int qi = (int) Math.round(q);
+        int ri = (int) Math.round(r);
+        int si = (int) Math.round(s);
+
+        var q_diff = Math.abs(qi - q);
+        var r_diff = Math.abs(ri - r);
+        var s_diff = Math.abs(si - s);
+
+        if (q_diff > r_diff && q_diff > s_diff) {
+            qi = -ri - si;
+        } else if (r_diff > s_diff) {
+            ri = -qi - si;
+        } else {
+            si = -qi - ri;
+        }
+        return new Hex(qi, ri, si);
+    }
+
+
     public int distance(Hex target) {
         return lengths(this.subtract(target));
     }
@@ -51,10 +100,21 @@ public class Hex {
         return n;
     }
 
+
+    /**
+     * flat orientation (flat top)
+     */
+    static class FlatOrientation {
+        public static final double f0 = 3.0 / 2.0;
+        public static final double f1 = 0.0;
+        public static final double f2 = Math.sqrt(3.0) / 2.0;
+        public static final double f3 = Math.sqrt(3.0);
+    }
+
     public Point2D.Double toPixel() {
-        double x = (FlatOrientation.f0 * this.q + FlatOrientation.f1 * this.r) * Layout.SIZE;
-        double y = (FlatOrientation.f2 * this.q + FlatOrientation.f3 * this.r) * Layout.SIZE;
-        return new Point2D.Double(x + Layout.origin.x, y + Layout.origin.y);
+        double x = (FlatOrientation.f0 * this.q + FlatOrientation.f1 * this.r) * HEX_SIZE;
+        double y = (FlatOrientation.f2 * this.q + FlatOrientation.f3 * this.r) * HEX_SIZE;
+        return new Point2D.Double(x + origin.x, y + origin.y);
     }
 
     private static Hex add(Hex a, Hex b) {
@@ -83,10 +143,16 @@ public class Hex {
      */
     private Point2D.Double hex_corner_offset(int corner, int s) {
         Point2D.Double size = new Point2D.Double(s, s);
-        double angle = 2.0 * Math.PI * (Hex.Layout.startAngle + corner) / 6;
+        double angle = 2.0 * Math.PI * (startAngle + corner) / 6;
         return new Point2D.Double(size.x * Math.cos(angle), size.y * Math.sin(angle));
     }
 
+    /**
+     * Returns the outline (corners) of a flat top hex as points.
+     *
+     * @param size
+     * @return
+     */
     public ArrayList<Point2D.Double> asPoints(int size) {
 
         ArrayList<Point2D.Double> corners = new ArrayList<>();
@@ -130,24 +196,4 @@ public class Hex {
         return result;
     }
 
-    /**
-     * flat orientation (flat top)
-     */
-    static class FlatOrientation {
-        public static final double f0 = 3.0 / 2.0;
-        public static final double f1 = 0.0;
-        public static final double f2 = Math.sqrt(3.0) / 2.0;
-        public static final double f3 = Math.sqrt(3.0);
-    }
-
-    public static class Layout {
-
-        static final int SIZE = 100;
-        public static final Point2D.Double origin = new Point2D.Double(200, 200);
-
-        /**
-         * starting at east, right before the first neighbour (which is southeast (r+1) in clockwise direction)
-         */
-        public static final int startAngle = 0;
-    }
 }
