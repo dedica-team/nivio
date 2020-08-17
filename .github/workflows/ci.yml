@@ -58,4 +58,5 @@ jobs:
           restore-keys: ${{runner.os}}-yarn-
 
       - name: Test with Maven
-        run: mvn test -B --f pom.xml
+        run: |
+          mvn test --batch-mode --f pom.xml
