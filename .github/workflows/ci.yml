@@ -61,4 +61,4 @@ jobs:
         # The logger config ensures that dependency downloads are not logged.
         # Reference: https://blogs.itemis.com/en/in-a-nutshell-removing-artifact-messages-from-maven-log-output
         # This is useful as the tests run in fresh containers and, therefore, dependencies are *always* downloaded.
-        run: mvn test --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn --f pom.xml
+        run: mvn test --batch-mode "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn" --f pom.xml
