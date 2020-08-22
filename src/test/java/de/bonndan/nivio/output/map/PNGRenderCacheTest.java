@@ -17,6 +17,7 @@ import de.bonndan.nivio.output.map.svg.SVGRenderer;
 import org.junit.jupiter.api.*;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.Set;
 
 import java.io.IOException;
@@ -128,7 +129,7 @@ class PNGRenderCacheTest {
         item.setIdentifier("foo");
         landscape.setItems(Set.of(item));
         item.setGroup("bar");
-        landscape.getItems().add(item);
+        landscape.setItems(Collections.singleton(item));
 
         Group bar = new Group("bar");
         bar.getItems().add(item);

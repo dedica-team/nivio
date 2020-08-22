@@ -20,7 +20,7 @@ const App: React.FC = () => {
           <Route exact path='/man/:usage' component={Man} />
           <Route
             exact
-            path='/landscapeDashboard/:landscapeIdentifier'
+            path='/landscapeDashboard/:identifier'
             component={LandscapeDashboard}
           />
         </Layout>

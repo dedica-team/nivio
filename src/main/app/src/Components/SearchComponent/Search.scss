@@ -1,3 +1,9 @@
 @import '../../Ressources/styling/colors.scss';
 @import '../../Ressources/styling/font.scss';
 
+.results {
+  position: absolute;
+  width: 300px;
+  background-color: $header-color;
+  padding: 5px;
+}

@@ -8,17 +8,21 @@ import { getAssessmentColorAndMessage } from '../../../utils/styling/style-helpe
 interface Props {
   fullyQualifiedItemIdentifier: string;
   findItem?: (fullyQualifiedItemIdentifier: string) => void;
+  item?: IItem;
+  small?: boolean;
 }
 
 /**
  * Returns a choosen Landscape Item if informations are available
  * @param element Choosen SVG Element from our Landscape Component
  */
-const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem }) => {
+const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem , item: IItem, small}) => {
   const [item, setItem] = useState<IItem | null>();
+
   const [assessment, setAssessment] = useState<IAssessmentProps[] | null>(null);
 
   useEffect(() => {
+    if (item == null)
     get(`/api/${fullyQualifiedItemIdentifier}`).then((item) => {
       setItem(item);
     });
@@ -41,7 +45,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
   if (item) {
     [assesmentColor] = getAssessmentColorAndMessage(assessment, item.identifier);
 
-    if (item.labels) {
+    if (!small && item.labels) {
       Object.keys(item.labels).forEach((key) => {
         if (item && item.labels && item.labels[key]) {
           if (!key.startsWith('icon') && !key.startsWith('status')) {

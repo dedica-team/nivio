@@ -29,17 +29,17 @@ const LandscapeDashboard: React.FC = () => {
     setShowSlider(false);
   };
 
-  const { landscapeIdentifier } = useParams();
+  const { identifier } = useParams();
 
   useEffect(() => {
-    get(`/api/${landscapeIdentifier}`).then((response) => {
+    get(`/api/${identifier}`).then((response) => {
       setLandscape(response);
     });
 
-    get(`/assessment/${landscapeIdentifier}`).then((response) => {
+    get(`/assessment/${identifier}`).then((response) => {
       setAssessments(response);
     });
-  }, [landscapeIdentifier]);
+  }, [identifier]);
 
   return (
     <div className='landscapeContainer'>
