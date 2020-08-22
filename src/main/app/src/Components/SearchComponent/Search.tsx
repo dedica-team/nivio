@@ -1,4 +1,4 @@
-import React, {ReactElement, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './Search.scss';
 import {TextField} from "@material-ui/core";
 import {get} from "../../utils/API/APIClient";
@@ -32,8 +32,8 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
         );
 
         let map: any = result?.map(value1 => {
-            return <LandscapeItem
-                fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier} item={value1}
+            return <LandscapeItem key={value1.fullyQualifiedIdentifier}
+                fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier} item={value1} small={true}
             />
         });
         setResults(map);

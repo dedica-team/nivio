@@ -61,7 +61,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
       });
     }
 
-    if (item._links) {
+    if (!small && item._links) {
       Object.keys(item._links).forEach((key) => {
         if (item && item._links && !key.startsWith('self')) {
           const linkContent = (
