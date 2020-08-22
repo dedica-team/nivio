@@ -17,7 +17,8 @@ public class LandscapeConfig {
 
     private boolean greedy = true;
 
-    private JGraphXConfig jgraphx = new JGraphXConfig();
+    private LayoutConfig groupLayoutConfig = new LayoutConfig();
+    private LayoutConfig itemLayoutConfig = new LayoutConfig();
 
     private final List<String> groupBlacklist = new ArrayList<>();
     private final List<String> labelBlacklist = new ArrayList<>();
@@ -28,13 +29,13 @@ public class LandscapeConfig {
      */
     private final Map<String, KPIConfig> kpis = new HashMap<>();
 
-    public JGraphXConfig getJgraphx() {
-        return jgraphx;
+    public LayoutConfig getGroupLayoutConfig() {
+        return groupLayoutConfig;
     }
 
-    public void setJgraphx(JGraphXConfig jgraphx) {
-        if (jgraphx != null) {
-            this.jgraphx = jgraphx;
+    public void setGroupLayoutConfig(LayoutConfig groupLayoutConfig) {
+        if (groupLayoutConfig != null) {
+            this.groupLayoutConfig = groupLayoutConfig;
         }
     }
 
@@ -64,54 +65,24 @@ public class LandscapeConfig {
         return branding;
     }
 
+    public void setItemLayoutConfig(LayoutConfig itemLayoutConfig) {
+        if (itemLayoutConfig != null) {
+            this.itemLayoutConfig = itemLayoutConfig;
+        }
+    }
+
+    public LayoutConfig getItemLayoutConfig() {
+        return itemLayoutConfig;
+    }
+
     /**
-     * @link https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxOrganicLayout.html
+     * @link https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxFastOrganicLayout.html
      */
-    public static class JGraphXConfig {
-        private Double edgeLengthCostFactor;
-        private Double nodeDistributionCostFactor;
-        private Double borderLineCostFactor;
-        private Integer triesPerCell;
+    public static class LayoutConfig {
         private Integer maxIterations;
-        private Integer initialTemp;
         private Float forceConstantFactor = 1f;
+        private Float maxDistanceLimitFactor = 1f;
         private Float minDistanceLimitFactor = 1f;
-
-        public Double getEdgeLengthCostFactor() {
-            return edgeLengthCostFactor;
-        }
-
-        public void setEdgeLengthCostFactor(Double edgeLengthCostFactor) {
-            if (edgeLengthCostFactor != null)
-                this.edgeLengthCostFactor = edgeLengthCostFactor;
-        }
-
-        public Double getNodeDistributionCostFactor() {
-            return nodeDistributionCostFactor;
-        }
-
-        public void setNodeDistributionCostFactor(Double nodeDistributionCostFactor) {
-            if (nodeDistributionCostFactor != null)
-                this.nodeDistributionCostFactor = nodeDistributionCostFactor;
-        }
-
-        public Double getBorderLineCostFactor() {
-            return borderLineCostFactor;
-        }
-
-        public void setBorderLineCostFactor(Double borderLineCostFactor) {
-            if (borderLineCostFactor != null)
-                this.borderLineCostFactor = borderLineCostFactor;
-        }
-
-        public Integer getTriesPerCell() {
-            return triesPerCell;
-        }
-
-        public void setTriesPerCell(Integer triesPerCell) {
-            if (triesPerCell != null)
-                this.triesPerCell = triesPerCell;
-        }
 
         public Integer getMaxIterations() {
             return maxIterations;
@@ -119,14 +90,6 @@ public class LandscapeConfig {
 
         public void setMaxIterations(Integer maxIterations) {
             this.maxIterations = maxIterations;
-        }
-
-        public Integer getInitialTemp() {
-            return initialTemp;
-        }
-
-        public void setInitialTemp(Integer initialTemp) {
-            this.initialTemp = initialTemp;
         }
 
         public Float getForceConstantFactor() {
@@ -143,6 +106,14 @@ public class LandscapeConfig {
 
         public void setMinDistanceLimitFactor(Float minDistanceLimitFactor) {
             this.minDistanceLimitFactor = minDistanceLimitFactor;
+        }
+
+        public Float getMaxDistanceLimitFactor() {
+            return maxDistanceLimitFactor;
+        }
+
+        public void setMaxDistanceLimitFactor(Float maxDistanceLimitFactor) {
+            this.maxDistanceLimitFactor = maxDistanceLimitFactor;
         }
     }
 

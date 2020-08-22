@@ -16,7 +16,7 @@ public interface LandscapeItem extends Component, Labeled, Linked {
     String LAYER_APPLICATION = "applications";
     String LAYER_INGRESS = "ingress";
 
-    String IDENTIFIER_VALIDATION = "^[a-z0-9\\.\\:_-]{3,256}$";
+    String IDENTIFIER_VALIDATION = "^[a-zA-Z0-9\\.\\:_-]{2,256}$";
 
     /**
      * @return the group name (used as identifier)

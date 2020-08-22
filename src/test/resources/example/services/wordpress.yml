@@ -54,7 +54,7 @@ items:
     type: dataflow
   - description: reminder
     target: emailer
-    type: dataflow
+    type: provider
   providedBy:
   - wordpress-web
   - wordpress-mariadb

@@ -4,6 +4,7 @@ import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.input.ProcessLog;
+import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ class KPIFactoryTest {
         publisher = mock(ApplicationEventPublisher.class);
         kpiFactory = new KPIFactory(publisher);
 
-        landscape = new LandscapeImpl();
+        landscape = LandscapeFactory.create("test");
         landscape.setConfig(new LandscapeConfig());
         landscape.setProcessLog(new ProcessLog(mock(Logger.class)));
     }

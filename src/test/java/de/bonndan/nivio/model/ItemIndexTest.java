@@ -1,6 +1,5 @@
 package de.bonndan.nivio.model;
 
-import de.bonndan.nivio.input.ItemDescriptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,8 +17,7 @@ class ItemIndexTest {
     @BeforeEach
     public void setup() {
 
-        landscape = new LandscapeImpl();
-        landscape.setIdentifier("l");
+        landscape = new LandscapeImpl("l1", new Group(Group.COMMON));
 
         items = new ArrayList<>();
 

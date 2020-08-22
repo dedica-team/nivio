@@ -7,6 +7,7 @@ import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.output.LocalServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -22,14 +23,17 @@ public class Indexer {
     private final LandscapeRepository landscapeRepo;
     private final ItemDescriptionFormatFactory formatFactory;
     private final ApplicationEventPublisher eventPublisher;
+    private final LocalServer localServer;
 
     public Indexer(LandscapeRepository landscapeRepository,
                    ItemDescriptionFormatFactory formatFactory,
-                   ApplicationEventPublisher eventPublisher
+                   ApplicationEventPublisher eventPublisher,
+                   LocalServer localServer
     ) {
         this.landscapeRepo = landscapeRepository;
         this.formatFactory = formatFactory;
         this.eventPublisher = eventPublisher;
+        this.localServer = localServer;
     }
 
     public ProcessLog reIndex(final LandscapeDescription input) {
@@ -38,7 +42,7 @@ public class Indexer {
 
         LandscapeImpl landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier()).orElseGet(() -> {
             logger.info("Creating new landscape " + input.getIdentifier());
-            LandscapeImpl landscape1 = LandscapeFactory.toLandscape(input);
+            LandscapeImpl landscape1 = LandscapeFactory.create(input);
             landscapeRepo.save(landscape1);
             return landscape1;
         });
@@ -92,6 +96,8 @@ public class Indexer {
 
         // 10. create relations between items
         new ItemRelationResolver(logger).process(input, landscape);
+
+        new AppearanceResolver(logger, localServer).process(input, landscape);
 
         // this step must be final or very late to include all item modifications
         landscape.getItems().indexForSearch();

@@ -239,7 +239,7 @@ class MagicLabelRelationsTest {
 
 
     private LandscapeImpl getLandscapeWith(Set<Item> items) {
-        LandscapeImpl landscape = new LandscapeImpl();
+        LandscapeImpl landscape = LandscapeFactory.create("test");
         landscape.setItems(items);
         return landscape;
     }

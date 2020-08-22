@@ -81,8 +81,8 @@ included. A logo is configured in the landscape config, too, and must be a URL p
 Graph Layout Tweaking
 =====================
 
-In rare cases the layout needs some manual improvements. Internally nivio uses mxGraph (for Java), which can be influences
-by tweaking some parameters (see https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxOrganicLayout.html).
+In rare cases the layout needs some manual improvements. Internally nivio uses a force directed layout, which can be
+influence dby tweaking some parameters (although mxgraph is not used anymore, for further explanation see https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxFastOrganicLayout.html).
 
 .. code-block:: yaml
    :linenos:
@@ -95,15 +95,7 @@ by tweaking some parameters (see https://jgraph.github.io/mxgraph/java/docs/com/
 
     # landscape configuration
     config:
-      jgraphx:
-        triesPerCell: 8
-        edgeLengthCostFactor: 0.0001
-        nodeDistributionCostFactor: 900000.0
-        borderLineCostFactor: 7.0
-
-        #
-        # for group alignment
-        #
+      groupLayoutConfig:
 
         # the higher, the longer the edges between groups
         forceConstantFactor: 2.8
@@ -113,3 +105,20 @@ by tweaking some parameters (see https://jgraph.github.io/mxgraph/java/docs/com/
 
         # can also influence edge length and layout
         minDistanceLimitFactor: 3.05
+
+        # multiplies the max distance limit (where repul
+        maxDistanceLimitFactor: 2
+
+      itemLayoutConfig:
+
+        # the higher, the longer the edges between groups
+        forceConstantFactor: 2.8
+
+        # higher value is cpu intensive, but can lead to better layouts
+        maxIterations: 1000
+
+        # can also influence edge length and layout
+        minDistanceLimitFactor: 3.05
+
+        # multiplies the max distance limit (where repul
+        maxDistanceLimitFactor: 2

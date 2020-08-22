@@ -24,6 +24,10 @@ public class SvgTagCreator {
         return (new ContainerTag("circle"));
     }
 
+    public static ContainerTag polygon() {
+        return (new ContainerTag("polygon"));
+    }
+
     public static ContainerTag rect() {
         return (new ContainerTag("rect"));
     }

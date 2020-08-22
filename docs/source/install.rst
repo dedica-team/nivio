@@ -55,7 +55,6 @@ Think of GitLab or GitHub and the related tokens.
 You can also add state providers which are used to gather live data and thereby provide state for the items.
 
 To finetune the visual appearance of rendered landscapes, the automatic color choice for groups can be overridden as well.
-For jgraphx output, some force directed graph params can be set. More configuration options will be added over time.
 
 .. code-block:: yaml
    :linenos:

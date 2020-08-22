@@ -79,7 +79,7 @@ class ItemDescriptionFactoryNivioTest {
 
         List<RelationItem> dataflows = RelationType.DATAFLOW.filter(service.getRelations());
         assertNotNull(dataflows);
-        assertEquals(3, dataflows.size());
+        assertEquals(2, dataflows.size());
         dataflows.forEach(dataFlow -> {
             if (dataFlow.getDescription().equals("kpis")) {
                 Assert.assertEquals("content-kpi-dashboard", dataFlow.getTarget());

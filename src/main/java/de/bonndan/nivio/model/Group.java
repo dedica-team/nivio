@@ -3,37 +3,32 @@ package de.bonndan.nivio.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.output.Rendered;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class Group implements GroupItem, Rendered, Assessable {
-
-    public static final Group DEFAULT_GROUP;
+public class Group implements GroupItem, Labeled, Assessable {
 
     /**
      * Default group identifier (items are assigned to this group if no group is given
      */
     public static final String COMMON = "common";
 
-    static {
-        DEFAULT_GROUP = new Group(COMMON);
-    }
-
     private String identifier;
     private String owner;
     private String description;
     private String contact;
+    private String icon;
     private String color;
     private final Map<String, Link> links = new HashMap<>();
     private final Map<String, String> labels = new HashMap<>();
 
     /**
-     * Items belonging to this group.
+     * Items belonging to this group. Order is important for layouting (until items are ordered there).
      */
-    private final List<Item> items = new ArrayList<>();
+    private final Set<Item> items = new LinkedHashSet<>();
 
     private String landscapeIdentifier;
 
@@ -105,7 +100,7 @@ public class Group implements GroupItem, Rendered, Assessable {
         this.contact = contact;
     }
 
-    public List<Item> getItems() {
+    public Set<Item> getItems() {
         return items;
     }
 
@@ -132,10 +127,26 @@ public class Group implements GroupItem, Rendered, Assessable {
     @JsonIgnore
     @Override
     public List<? extends Assessable> getChildren() {
-        return getItems();
+        return new ArrayList<>(getItems());
     }
 
     public void setLandscape(String landscapeIdentifier) {
         this.landscapeIdentifier = landscapeIdentifier;
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    @Override
+    public String toString() {
+        return "Group{" +
+                "identifier='" + identifier + '\'' +
+                '}';
     }
 }
