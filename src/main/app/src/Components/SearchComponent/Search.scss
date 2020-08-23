@@ -3,7 +3,20 @@
 
 .results {
   position: absolute;
-  width: 300px;
-  background-color: $header-color;
-  padding: 5px;
+  width: 400px;
+  right:0px;
+  margin-top: 15px;
+  z-index: 1200;
+}
+.searchField {
+  padding: 6px 0 7px !important;
+}
+
+.resultsDrawer {
+  z-index: 1000 !important;
+}
+
+.searchResult {
+  margin-top: 5px;
+  background-color: $header-color !important;
 }

@@ -2,9 +2,9 @@ import React, {useEffect, useState} from 'react';
 import './Search.scss';
 import {TextField} from "@material-ui/core";
 import {get} from "../../utils/API/APIClient";
-import LandscapeItem from "../LandscapeComponent/LandscapeItem/LandscapeItem";
 import {IItem, Routes} from "../../interfaces";
 import {withRouter, RouteComponentProps, matchPath} from 'react-router-dom';
+import SearchResult from "./SearchResult";
 
 interface PropsInterface extends RouteComponentProps {
 }
@@ -18,7 +18,7 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
     });
 
     const identifier = match?.params?.identifier;
-    const [results, setResults] = useState('');
+    const [results, setResults] = useState<IItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [hasChange, setHasChange] = useState(false);
 
@@ -30,13 +30,10 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
             '/api/landscape/' + identifier + '/search/' + searchTerm
         );
 
-        let map: any = result?.map(value1 => {
-            return <LandscapeItem key={value1.fullyQualifiedIdentifier}
-                                  fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier} item={value1}
-                                  small={true}
-            />
-        });
-        setResults(map);
+        if (!result)
+            return;
+
+        setResults(result);
         setHasChange(false);
     }
 
@@ -44,6 +41,7 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
         if (newTerm !== searchTerm) {
             setSearchTerm(newTerm);
             setHasChange(true);
+
         }
     }
 
@@ -58,10 +56,12 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
     }
 
 
+    // @ts-ignore
+    const x = results.map(value1 => <SearchResult key={value1.fullyQualifiedIdentifier} item={value1}/>);
     return (
         <div className={'search'}>
             <TextField value={searchTerm} onChange={event => setSearchTermSafely(event.target.value)}>Search</TextField>
-            { results ? (<div className={'results'}>{results}</div>) : ''}
+            {results ? (<div className={'results'}>{x}</div>) : null}
         </div>
     );
 };

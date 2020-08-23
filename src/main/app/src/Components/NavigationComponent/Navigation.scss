@@ -1,6 +1,14 @@
 @import '../../Ressources/styling/colors.scss';
 @import '../../Ressources/styling/font.scss';
 
+.title {
+  margin-right: 20px;
+}
+
+.appBar {
+  background-color: $header-color !important;
+}
+
 .navigationContainer {
   .header {
     margin-bottom: 1px;
