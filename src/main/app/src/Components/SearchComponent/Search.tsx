@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import './Search.scss';
-import {TextField} from "@material-ui/core";
+import {TextField, Theme} from "@material-ui/core";
 import {get} from "../../utils/API/APIClient";
 import {IItem, Routes} from "../../interfaces";
 import {withRouter, RouteComponentProps, matchPath} from 'react-router-dom';
@@ -9,6 +9,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
 import {Clear} from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
+import Tooltip from "@material-ui/core/Tooltip";
+import withStyles from "@material-ui/core/styles/withStyles";
+import Typography from "@material-ui/core/Typography";
 
 interface PropsInterface extends RouteComponentProps {
 }
@@ -67,14 +70,36 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
         return null;
     }
 
+    const HtmlTooltip = withStyles((theme: Theme) => ({
+        tooltip: {
+            backgroundColor: '#f5f5f9',
+            color: 'rgba(0, 0, 0, 0.87)',
+            maxWidth: 220,
+            fontSize: theme.typography.pxToRem(12),
+            border: '1px solid #dadde9',
+        },
+    }))(Tooltip);
 
     // @ts-ignore
     const x = results.map(value1 => <SearchResult key={value1.fullyQualifiedIdentifier} item={value1}/>);
     return (
         <div className={'search'}>
-            <SearchIcon className={'searchIcon'}></SearchIcon>
+            <HtmlTooltip
+                title={
+                    <React.Fragment>
+                        <Typography color="inherit">Search: </Typography>
+                        <em>{'foo*'}</em><br/>
+                        <em>{'*press'}</em><br/>
+                        <em>{'tag:cms'}</em><br/><br/>
+                        <strong>{"You can use the Lucene query syntax."}</strong>
+                    </React.Fragment>
+                }
+            >
+                <SearchIcon className={'searchIcon'} />
+            </HtmlTooltip>
             <TextField value={searchTerm} onChange={event => setSearchTermSafely(event.target.value)}>Search</TextField>
             {results ? (<div className={'results'}>{x}</div>) : null}
+
             <IconButton className={'searchIcon'} size={"small"} onClick={e => clear()}>
                 <Clear ></Clear>
             </IconButton>
