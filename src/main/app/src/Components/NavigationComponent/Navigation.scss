@@ -7,6 +7,11 @@
 
 .appBar {
   background-color: $header-color !important;
+  border-radius: 50px;
+}
+
+.toolBar {
+  min-height: inherit !important;
 }
 
 .navigationContainer {

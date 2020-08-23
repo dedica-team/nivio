@@ -35,7 +35,7 @@ const Navigation: React.FC = () => {
     const classes = useStyles();
 
     return <AppBar position="static" className={'appBar'}>
-        <Toolbar>
+        <Toolbar className={'toolBar'}>
             <Typography variant="h6" className={classes.title}>
                 <AcUnitIcon alignmentBaseline={"central"}
                             style={{verticalAlign: 'top', paddingTop: '3px', paddingRight: '3px'}}/>Nivio
