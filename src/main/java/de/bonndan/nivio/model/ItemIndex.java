@@ -5,7 +5,6 @@ import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
-import de.bonndan.nivio.ProcessingException;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -27,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.googlecode.cqengine.query.QueryFactory.attribute;
+import static com.googlecode.cqengine.query.QueryFactory.in;
 import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
 import static de.bonndan.nivio.model.SearchDocumentFactory.*;
 
@@ -173,24 +173,28 @@ public class ItemIndex {
 
     /**
      * Creates a search index based in a snapshot of current items state (later modifications won't be shown).
+     * @return number of indexed items
      */
-    public void indexForSearch() {
+    public int indexForSearch() {
+        int indexed = 0;
         try {
-
             IndexWriter writer = new IndexWriter(searchIndex, new IndexWriterConfig(new StandardAnalyzer()));
             writer.deleteAll();
             for (Item item : index) {
                 writer.addDocument(SearchDocumentFactory.from(item));
+                indexed++;
             }
             writer.close();
         } catch (IOException e) {
             throw new RuntimeException("Failed to update search index", e);
         }
+
+        return indexed;
     }
 
     public Set<Item> search(String queryString) {
         try {
-            return documentSearch("name", queryString).stream()
+            return documentSearch(queryString).stream()
                     .map(doc -> {
                         //TODO this is ineffective, there must be a way (index?) to obtain the item directly
                         return cqnQueryOnIndex("SELECT * FROM items WHERE " + CQE_FIELD_FQI + " = '" + doc.get(LUCENE_FIELD_FQI) + "'").stream().findFirst().orElse(null);
@@ -198,16 +202,17 @@ public class ItemIndex {
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
         } catch (IOException | ParseException e) {
-            throw new RuntimeException("Failed to execute search");
+            throw new RuntimeException("Failed to execute search for " + queryString);
         }
     }
 
-    private List<Document> documentSearch(String fieldname, String queryString) throws IOException, ParseException {
+    private List<Document> documentSearch(String queryString) throws IOException, ParseException {
 
         DirectoryReader ireader = DirectoryReader.open(searchIndex);
         IndexSearcher isearcher = new IndexSearcher(ireader);
         // Parse a simple query that searches for "text":
         QueryParser parser = new MultiFieldQueryParser(new String[]{LUCENE_FIELD_NAME, LUCENE_FIELD_DESCRIPTION}, new StandardAnalyzer());
+        parser.setAllowLeadingWildcard(true);
         Query query = parser.parse(queryString);
         ScoreDoc[] hits = isearcher.search(query, 10).scoreDocs;
 
