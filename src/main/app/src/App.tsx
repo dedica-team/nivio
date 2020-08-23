@@ -6,22 +6,20 @@ import LandscapeMap from './Components/LandscapeComponent/LandscapeMap/Landscape
 import Man from './Components/ManComponent/Man';
 import Layout from './Components/LayoutComponent/Layout';
 import Events from './Components/EventComponent/Events';
-import './App.scss';
 import LandscapeDashboard from './Components/LandscapeComponent/LandscapeDashboard/LandscapeDashboard';
+import {Routes} from "./interfaces";
 
 const App: React.FC = () => {
+
   return (
     <Router hashType='slash'>
       <Switch>
         <Layout>
           <Route exact path='/' component={LandscapeOverview} />
           <Route exact path='/events' component={Events} />
-          <Route exact path='/landscape/:identifier' component={LandscapeMap} />
+          <Route exact path={Routes.MAP_ROUTE} component={LandscapeMap} />
           <Route exact path='/man/:usage' component={Man} />
-          <Route
-            exact
-            path='/landscapeDashboard/:identifier'
-            component={LandscapeDashboard}
+          <Route exact path={Routes.DASHBOARD_ROUTE} component={LandscapeDashboard}
           />
         </Layout>
       </Switch>

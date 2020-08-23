@@ -35,7 +35,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
         }
       });
     }
-  }, [fullyQualifiedItemIdentifier]);
+  }, [fullyQualifiedItemIdentifier, item]);
 
   let assesmentColor = 'grey';
   let labels: ReactElement[] = [];

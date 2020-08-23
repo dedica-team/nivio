@@ -95,7 +95,7 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               fullWidth
               component={Link}
               className={'button stackedButton'}
-              to={`/landscapeDashboard/${landscape.identifier}`}
+              to={`/landscape/${landscape.identifier}/dashboard`}
             >
               enter
             </Button>
