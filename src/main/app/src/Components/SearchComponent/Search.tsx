@@ -5,6 +5,10 @@ import {get} from "../../utils/API/APIClient";
 import {IItem, Routes} from "../../interfaces";
 import {withRouter, RouteComponentProps, matchPath} from 'react-router-dom';
 import SearchResult from "./SearchResult";
+import SearchIcon from '@material-ui/icons/Search';
+import ClearIcon from '@material-ui/icons/Clear';
+import {Clear} from "@material-ui/icons";
+import IconButton from "@material-ui/core/IconButton";
 
 interface PropsInterface extends RouteComponentProps {
 }
@@ -47,6 +51,12 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
         }
     }
 
+    function clear() {
+        setSearchTerm('');
+        setHasChange(false);
+        setResults([]);
+    }
+
     useEffect(() => {
         if (identifier && hasChange)
             search(searchTerm, identifier)
@@ -62,8 +72,13 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
     const x = results.map(value1 => <SearchResult key={value1.fullyQualifiedIdentifier} item={value1}/>);
     return (
         <div className={'search'}>
+            <SearchIcon className={'searchIcon'}></SearchIcon>
             <TextField value={searchTerm} onChange={event => setSearchTermSafely(event.target.value)}>Search</TextField>
             {results ? (<div className={'results'}>{x}</div>) : null}
+            <IconButton className={'searchIcon'} size={"small"} onClick={e => clear()}>
+                <Clear ></Clear>
+            </IconButton>
+
         </div>
     );
 };
