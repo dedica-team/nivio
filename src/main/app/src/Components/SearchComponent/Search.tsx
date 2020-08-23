@@ -27,7 +27,9 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
             return;
 
         const result: IItem[] | null = await get(
-            '/api/landscape/' + identifier + '/search/' + searchTerm
+            '/api/landscape/' + identifier + '/search/' + encodeURIComponent(searchTerm)
+                .replace(/[!'()]/g, escape)
+                .replace(/\*/g, "%2A")
         );
 
         if (!result)
