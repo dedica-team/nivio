@@ -1,3 +1,0 @@
-[submodule "src/main/resources/aws-icons"]
-	path = src/main/resources/aws-icons
-	url = https://github.com/areichman/aws-icons.git
