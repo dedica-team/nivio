@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.ReadingException;
+import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ class MapStyleSheetFactoryTest {
 
     private FileFetcher fileFetcher;
     private MapStyleSheetFactory factory;
-    private LandscapeImpl landscape  = new LandscapeImpl();;
+    private LandscapeImpl landscape  = LandscapeFactory.create("test");
     private ProcessLog processLog;
 
     @BeforeEach

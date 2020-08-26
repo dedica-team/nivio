@@ -121,6 +121,16 @@ public class LandscapeDescription implements Landscape {
         return owner;
     }
 
+    @Override
+    public String getIcon() {
+        return null;
+    }
+
+    @Override
+    public String getColor() {
+        return null;
+    }
+
     public void setOwner(String owner) {
         this.owner = owner;
     }

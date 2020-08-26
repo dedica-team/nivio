@@ -11,6 +11,7 @@ import de.bonndan.nivio.input.LabelToFieldProcessor;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.StringReader;
 import java.net.URL;
@@ -51,7 +52,15 @@ public class ItemDescriptionFactoryCSV implements ItemDescriptionFactory {
         reader.iterator().forEachRemaining(strings -> {
             ItemDescription itemDescription = new ItemDescription();
             mapping.forEach((key, value) -> {
-                Integer colNum = Integer.valueOf((String)value);
+                Integer colNum = 0;
+                if (value instanceof String) {
+                    colNum = Integer.valueOf((String)value);
+                }
+
+                if (value instanceof Integer) {
+                    colNum = (Integer) value;
+                }
+
 
                 if (IDENTIFIER_KEY.equals(key)) {
                     itemDescription.setIdentifier(strings[colNum]);

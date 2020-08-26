@@ -6,6 +6,7 @@ import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
+import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,8 +38,7 @@ class ObserverRegistryTest {
         urlObserverFactory = mock(URLObserverFactory.class);
         observerRegistry = new ObserverRegistry(urlObserverFactory, landscapeDescriptionFactory, publisher);
 
-        landscape = new LandscapeImpl();
-        landscape.setIdentifier("test");
+        landscape = LandscapeFactory.create("test");
     }
 
     @Test

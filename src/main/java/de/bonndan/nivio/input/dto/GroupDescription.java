@@ -43,6 +43,11 @@ public class GroupDescription implements GroupItem {
     }
 
     @Override
+    public String getIcon() {
+        return null; //TODO remove #212
+    }
+
+    @Override
     public String getDescription() {
         return description;
     }

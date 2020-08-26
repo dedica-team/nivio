@@ -53,7 +53,8 @@ public class Color {
     }
 
     public static String getGroupColor(String name, LandscapeImpl landscape) {
-        return getGroupColor(landscape.getGroups().getOrDefault(name, Group.DEFAULT_GROUP));
+        Group g = landscape.getGroup(name).orElse(landscape.getGroup(Group.COMMON).get());
+        return getGroupColor(g);
     }
 
     public static String getGroupColor(GroupItem group) {

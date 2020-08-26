@@ -122,7 +122,7 @@ const Landscape: React.FC<Props> = () => {
   };
 
   useEffect(() => {
-    setData(process.env.REACT_APP_BACKEND_URL + '/render/' + identifier + '/map.svg');
+    setData(`${process.env.REACT_APP_BACKEND_URL || ''}/render/${identifier}/map.svg`);
   }, [identifier]);
 
   useEffect(() => {

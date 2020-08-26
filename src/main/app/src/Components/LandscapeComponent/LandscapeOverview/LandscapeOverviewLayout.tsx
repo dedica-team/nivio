@@ -35,6 +35,8 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
     range         |   xs   |   sm   |   md   |   lg   |   xl
   */
   let content: string | ReactElement[] = 'Loading landscapes...';
+  const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+
   if (Array.isArray(landscapes) && landscapes.length) {
     content = landscapes.map((landscape) => {
       let itemCount = 0;
@@ -50,12 +52,7 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               <img
                 className={'preview'}
                 alt={'preview'}
-                src={
-                  process.env.REACT_APP_BACKEND_URL +
-                  '/render/' +
-                  landscape.identifier +
-                  '/graph.png'
-                }
+                src={`${backendUrl}/render/${landscape.identifier}/graph.png`}
                 style={{ maxWidth: 100, float: 'left' }}
               />
             </Button>
@@ -87,7 +84,9 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               Last update
             </Typography>
             <Typography variant='h5' display='block'>
-              {landscape.lastUpdate ? dateFormat(landscape.lastUpdate, 'dd-mm-yyyy hh:MM:ss') : '-'}
+              {landscape.lastUpdate
+                ? dateFormat(landscape.lastUpdate, 'dd-mm-yyyy hh:MM:ss TT')
+                : '-'}
             </Typography>
           </Grid>
 
@@ -114,9 +113,7 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               className={'button stackedButton'}
               rel='noopener noreferrer'
               target={'_blank'}
-              href={
-                process.env.REACT_APP_BACKEND_URL + '/render/' + landscape.identifier + '/map.svg'
-              }
+              href={`${backendUrl}/render/${landscape.identifier}/map.svg`}
             >
               Printable Graph
             </Button>
@@ -126,9 +123,7 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               className={'button'}
               rel='noopener noreferrer'
               target={'_blank'}
-              href={
-                process.env.REACT_APP_BACKEND_URL + '/docs/' + landscape.identifier + '/report.html'
-              }
+              href={`${backendUrl}/docs/${landscape.identifier}/report.html`}
             >
               Printable Report
             </Button>

@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output;
 
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.output.layout.LayoutedComponent;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,11 +8,11 @@ import java.io.IOException;
 /**
  * Any class that can transform a landscape into some sort of output.
  *
- * @param <T>
+ * @param <T> output type
  */
 public interface Renderer<T> {
 
-    T render(LandscapeImpl landscape);
+    T render(LayoutedComponent landscape);
 
-    void render(LandscapeImpl landscape, File file) throws IOException;
+    void render(LayoutedComponent landscape, File file) throws IOException;
 }

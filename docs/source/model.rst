@@ -29,6 +29,8 @@ A item should have the following attributes:
 * **name** human readable, displayed name
 * **contact** support/notification contact (email) may be addressed in case of errors
 * **description** a short description
+* **icon** an icon url
+* **color** a html color
 
 Other fields:
 

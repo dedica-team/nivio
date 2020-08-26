@@ -37,14 +37,12 @@
     "@testing-library/react": "^10.4.7",
     "@testing-library/user-event": "^12.0.11",
     "eslint": "^6.6.0",
-    "husky": "^4.2.5",
     "prettier": "^2.0.5"
   },
   "scripts": {
     "dev": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "test:ci": "react-scripts test --watchAll=false",
     "test:coverage": "react-scripts test --coverage --watchAll",
     "eject": "react-scripts eject",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
@@ -53,12 +51,6 @@
   },
   "eslintConfig": {
     "extends": "react-app"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn format:check",
-      "pre-push": "yarn test:ci && yarn lint && yarn format:check"
-    }
   },
   "jest": {
     "collectCoverageFrom": [
