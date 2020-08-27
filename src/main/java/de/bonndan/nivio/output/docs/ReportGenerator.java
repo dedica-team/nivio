@@ -1,5 +1,8 @@
 package de.bonndan.nivio.output.docs;
 
+import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.assessment.kpi.KPIFactory;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.FormatUtils;
@@ -9,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.output.FormatUtils.ifPresent;
@@ -20,18 +24,23 @@ import static org.springframework.util.StringUtils.isEmpty;
 public class ReportGenerator extends HtmlGenerator {
 
     private static final String GROUP_CIRCLE = "&#10687;";
+    private final KPIFactory factory;
+    private Assessment assessment;
 
-    public ReportGenerator(LocalServer localServer) {
+    public ReportGenerator(LocalServer localServer, KPIFactory factory) {
         super(localServer);
+        this.factory = factory;
     }
 
     public String toDocument(LandscapeImpl landscape) {
-
         return writeLandscape(landscape);
     }
 
     private String writeLandscape(LandscapeImpl landscape) {
 
+        assessment = new Assessment(
+                landscape.applyKPIs(factory.getConfiguredKPIs(landscape))
+        );
         return html(
                 getHead(landscape),
                 body(
@@ -73,16 +82,10 @@ public class ReportGenerator extends HtmlGenerator {
                 .collect(Collectors.toList());
 
 
-        List<ContainerTag> labelList = item.getLabels().entrySet().stream()
-                .filter(mapEntry-> !mapEntry.getKey().equals("type") && !isEmpty(mapEntry.getValue()))
-                .map(mapEntry-> {
-                    String key = StringUtils.capitalize(mapEntry.getKey());
-                    if (key.equals("Network")){key="Networks";}
-                    if (key.equals("Shortname")){key="Short Name";}
-                   return li(key + ": " + FormatUtils.nice(mapEntry.getValue()));
-                })
-                .collect(Collectors.toList());
-        
+        List<ContainerTag> labelList = getLabelList(item);
+
+        List<StatusValue> statusValues = assessment.getResults().get(item.getFullyQualifiedIdentifier());
+
         return div(
                 div(
                         iff(!isEmpty(item.getLabel(Label.note)), div(item.getLabel(Label.note)).attr("class", "alert alert-warning float float-right")),
@@ -104,19 +107,17 @@ public class ReportGenerator extends HtmlGenerator {
                                 , iff(!isEmpty(item.getOwner()), li("Owner: " + FormatUtils.nice(item.getOwner())))
                                 , iff(!isEmpty(item.getType()), li("Type: " + item.getType()))
                                 , iff(links.size() > 1, li("Links: ").with(links))
-                                //, iff(item.getLabels(Tagged.LABEL_PREFIX_TAG).size() > 0, li("Tags: " + FormatUtils.nice(item.getLabels(Tagged.LABEL_PREFIX_TAG))))
                         ).with(labelList),
 
 
                         //statuses
-                        /*
-                        iff(!item.getAdditionalStatusValues().isEmpty(), h4("Status information")),
+
+                        iff(!statusValues.isEmpty(), h4("Status information")),
                         dl().with(
-                                item.getAdditionalStatusValues().stream().map(statusItem ->
+                                statusValues.stream().map(statusItem ->
                                         join(
                                                 dt(FormatUtils.nice(statusItem.getField())),
                                                 dd(
-                                                        img().attr("src", localServer.getUrl("/icons/" + statusItem.getStatus().getSymbol() + ".png")).attr("width", "30px").attr("class", "img-fluid"),
                                                         span(" " + statusItem.getStatus().toString() + " ")
                                                                 .attr("class", "badge")
                                                                 .attr("style", "background-color: " + statusItem.getStatus() + " !important"),
@@ -125,7 +126,7 @@ public class ReportGenerator extends HtmlGenerator {
                                 )
 
                         ),
-                         */
+
 
                         //data flow
                         iff(hasRelations, h4("Relations")),
@@ -163,6 +164,34 @@ public class ReportGenerator extends HtmlGenerator {
                 ).attr("class", "card-body")
 
         ).attr("class", "card");
+    }
+
+    protected List<ContainerTag> getLabelList(Item item) {
+        Function<Map.Entry<String, String>, Boolean> filter = s -> {
+            if (s.getKey().equals("type") || isEmpty(s.getValue())) {
+                return false;
+            }
+
+            //filter out statuses, they are part of the assessment
+            if (s.getKey().startsWith(Label.status.name())) {
+                return false;
+            }
+
+            return true;
+        };
+
+        List<ContainerTag> labels = Labeled.groupedByPrefixes(item.getLabels()).entrySet().stream()
+                .filter(filter::apply)
+                .map(mapEntry -> {
+                    String key = StringUtils.capitalize(mapEntry.getKey());
+                    if (key.equals(Label.shortname.name())) {
+                        key = Label.shortname.meaning;
+                    }
+                    return li(key + ": " + nice(mapEntry.getValue()));
+                })
+                .collect(Collectors.toList());
+
+        return labels;
     }
 
 }
