@@ -7,6 +7,7 @@ import de.bonndan.nivio.output.LocalServer;
 import j2html.tags.ContainerTag;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -67,9 +68,21 @@ public class ReportGenerator extends HtmlGenerator {
         boolean hasInterfaces = item.getInterfaces().size() > 0;
         String groupColor = "#" + Color.nameToRGB(item.getGroup());
 
-        var links = item.getLinks().entrySet().stream()
+        List<ContainerTag> links = item.getLinks().entrySet().stream()
                 .map(stringURLEntry -> a(" " + stringURLEntry.getKey()).attr("href", stringURLEntry.getValue().toString()))
                 .collect(Collectors.toList());
+
+
+        List<ContainerTag> labelList = item.getLabels().entrySet().stream()
+                .filter(mapEntry-> !mapEntry.getKey().equals("type") && !isEmpty(mapEntry.getValue()))
+                .map(mapEntry-> {
+                    String key = StringUtils.capitalize(mapEntry.getKey());
+                    if (key.equals("Network")){key="Networks";}
+                    if (key.equals("Shortname")){key="Short Name";}
+                   return li(key + ": " + FormatUtils.nice(mapEntry.getValue()));
+                })
+                .collect(Collectors.toList());
+        
         return div(
                 div(
                         iff(!isEmpty(item.getLabel(Label.note)), div(item.getLabel(Label.note)).attr("class", "alert alert-warning float float-right")),
@@ -86,23 +99,13 @@ public class ReportGenerator extends HtmlGenerator {
                                 iff(!isEmpty(item.getName()), li("Name: " + FormatUtils.nice(item.getName())))
                                 , iff(!isEmpty(item.getFullyQualifiedIdentifier().toString()), li("Full identifier: " + item.getFullyQualifiedIdentifier().toString()))
                                 , iff(!isEmpty(item.getIdentifier()), li("Identifier: " + item.getIdentifier()))
-                                , iff(!isEmpty(item.getLabel(Label.shortname)), li("Short Name: " + FormatUtils.nice(item.getLabel(Label.shortname))))
                                 , iff(!isEmpty(item.getGroup()), li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">" + GROUP_CIRCLE + "</span> " + FormatUtils.nice(item.getGroup()))))
                                 , iff(!isEmpty(item.getContact()), li("Contact: " + FormatUtils.nice(item.getContact())))
-                                , iff(!isEmpty(item.getLabel(Label.team)), li("Team: " + FormatUtils.nice(item.getLabel(Label.team))))
                                 , iff(!isEmpty(item.getOwner()), li("Owner: " + FormatUtils.nice(item.getOwner())))
                                 , iff(!isEmpty(item.getType()), li("Type: " + item.getType()))
-                                , iff(!isEmpty(item.getLabel(Label.capability)), li("Capability: " + FormatUtils.nice(item.getLabel(Label.capability))))
                                 , iff(links.size() > 1, li("Links: ").with(links))
-                                , iff(item.getLabels(Tagged.LABEL_PREFIX_TAG).size() > 0, li("Tags: " + FormatUtils.nice(item.getLabels(Tagged.LABEL_PREFIX_TAG))))
-                                , iff(!isEmpty(item.getLabel(Label.lifecycle)), li("Lifecycle: " + FormatUtils.nice(item.getLabel(Label.lifecycle))))
-                                , iff(!isEmpty(item.getLabel(Label.software)), li("Software: " + FormatUtils.nice(item.getLabel(Label.software))))
-                                , iff(!isEmpty(item.getLabel(Label.version)), li("Version: " + FormatUtils.nice(item.getLabel(Label.version))))
-                                , iff(!isEmpty(item.getLabel(Label.scale)), li("Scale: " + FormatUtils.nice(item.getLabel(Label.scale))))
-                                , iff(!isEmpty(item.getLabel(Label.visibility)), li("Visibility: " + FormatUtils.nice(item.getLabel(Label.visibility))))
-                                , iff(item.getLabels(Label.network).size() > 0, li("Networks: " + FormatUtils.nice(item.getLabels(Label.network))))
-                                , iff(!isEmpty(item.getLabel(Label.costs)), li("Costs: " + FormatUtils.nice(item.getLabel(Label.costs))))
-                        ),
+                                //, iff(item.getLabels(Tagged.LABEL_PREFIX_TAG).size() > 0, li("Tags: " + FormatUtils.nice(item.getLabels(Tagged.LABEL_PREFIX_TAG))))
+                        ).with(labelList),
 
 
                         //statuses
