@@ -4,13 +4,13 @@
 $dotSize: 50px;
 
 .itemContent {
-  margin: 16px;
+  padding: 16px;
   position: relative;
   overflow: auto;
   width: 500px;
   max-height: 85vh;
   z-index: 1;
-  background-color: $background-grey;
+  background-color: $header-color;
   -ms-overflow-style: none;
   scrollbar-width: none;
   max-width: 100%;
@@ -42,8 +42,12 @@ $dotSize: 50px;
     }
 
     .title {
+      max-width: 316px;
+      text-align: center;
+      overflow-wrap: anywhere;
       font-size: $large-font-size;
       text-transform: uppercase;
+      cursor: pointer;
     }
   }
 
@@ -104,7 +108,7 @@ $dotSize: 50px;
         border-radius: 25px;
         margin: 3px;
         padding: 5px 10px;
-        background-color: lighten($background-grey, 10%);
+        background-color: lighten($header-color, 10%);
         cursor: pointer;
       }
     }

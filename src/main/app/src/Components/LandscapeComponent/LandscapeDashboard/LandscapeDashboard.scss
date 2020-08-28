@@ -4,12 +4,17 @@
 $dotSize: 200px;
 
 .landscapeDashboardContainer {
-  .title {
-    padding-top: 16px;
-    padding-bottom: 16px;
-    font-size: $header-font-size;
-    text-align: center;
+  .titleContainer {
     border-bottom: 1px solid $border-color;
+    max-width: 100%;
+    margin-left: 0px;
+    .title {
+      text-align: center;
+      font-size: $header-font-size;
+    }
+    .search {
+      text-align: center;
+    }
   }
 
   .groupContainer {

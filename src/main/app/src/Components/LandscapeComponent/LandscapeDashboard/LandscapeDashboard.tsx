@@ -42,7 +42,7 @@ const LandscapeDashboard: React.FC = () => {
   }, [identifier]);
 
   return (
-    <div className='landscapeContainer'>
+    <React.Fragment>
       <CSSTransition
         in={showSlider}
         timeout={{ enter: 0, exit: 1000, appear: 1000 }}
@@ -57,7 +57,7 @@ const LandscapeDashboard: React.FC = () => {
         assessments={assessments}
         onItemClick={onItemClick}
       />
-    </div>
+    </React.Fragment>
   );
 };
 

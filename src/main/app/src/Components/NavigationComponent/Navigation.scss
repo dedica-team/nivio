@@ -1,45 +1,17 @@
 @import '../../Ressources/styling/colors.scss';
 @import '../../Ressources/styling/font.scss';
 
-.title {
-  margin-right: 20px;
-}
-
 .appBar {
   background-color: $header-color !important;
-  border-radius: 50px;
-}
+  .MuiButton-root {
+    color: $font-color;
+  }
 
-.toolBar {
-  min-height: inherit !important;
-}
+  .title {
+    margin-right: 20px;
+  }
 
-.navigationContainer {
-  .header {
-    margin-bottom: 1px;
-    .first,
-    .last {
-      background-color: $header-color;
-    }
-
-    .buttonContainer {
-      background-color: $header-color;
-      padding-right: 4px;
-      padding-bottom: 0.1px;
-      .navButton {
-        height: 100%;
-        color: $font-color;
-        border-radius: 0px;
-        box-shadow: 2px -1px 3px, -2px -1px 3px $box-shadow-color;
-      }
-    }
-
-    .title {
-      font-size: $header-font-size;
-      font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-      font-weight: bold;
-      text-transform: uppercase;
-      text-align: center;
-    }
+  .toolBar {
+    min-height: inherit !important;
   }
 }

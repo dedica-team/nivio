@@ -11,6 +11,7 @@ import LandscapeItem from '../LandscapeItem/LandscapeItem';
 
 import Slider from '../../SliderComponent/Slider';
 import MapRelation from './MapRelation/MapRelation';
+import Search from '../../SearchComponent/Search';
 
 interface Props {
   identifier: string;
@@ -166,7 +167,8 @@ const Landscape: React.FC<Props> = () => {
 
   if (data) {
     return (
-      <div className='landscapeContainer'>
+      <div className='landscapeMapContainer'>
+        <Search findItem={findItem} />
         <CSSTransition
           in={showSlider}
           timeout={{ enter: 0, exit: 1000, appear: 1000 }}

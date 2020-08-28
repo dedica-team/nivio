@@ -5,6 +5,8 @@ import './LandscapeDashboard.scss';
 import { ILandscape, IItem, IAssessment } from '../../../interfaces';
 import { getAssessmentColorAndMessage } from '../../../utils/styling/style-helper';
 
+import Search from '../../SearchComponent/Search';
+
 interface Props {
   landscape: ILandscape | null | undefined;
   assessments: IAssessment | null;
@@ -75,9 +77,14 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assessments, onI
 
   return (
     <div className='landscapeDashboardContainer'>
-      <div className='title'>
-        <span>{landscape ? `${landscape.name}` : null}</span>
-      </div>
+      <Grid className={'titleContainer'} container spacing={2}>
+        <Grid item className='title' xs={12} md={7} lg={8} xl={10}>
+          {landscape ? `${landscape.name}` : null}
+        </Grid>
+        <Grid item xs={12} md={5} lg={4} xl={2}>
+          <Search />
+        </Grid>
+      </Grid>
       <Grid key={'group'} className={'groupContainer'} container spacing={5}>
         {content}
       </Grid>

@@ -16,13 +16,12 @@ interface Props {
  * Returns a choosen Landscape Item if informations are available
  * @param element Choosen SVG Element from our Landscape Component
  */
-const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem , item: IItem, small}) => {
+const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem }) => {
   const [item, setItem] = useState<IItem | null>();
 
   const [assessment, setAssessment] = useState<IAssessmentProps[] | null>(null);
 
   useEffect(() => {
-    if (item == null)
     get(`/api/${fullyQualifiedItemIdentifier}`).then((item) => {
       setItem(item);
     });
@@ -35,7 +34,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
         }
       });
     }
-  }, [fullyQualifiedItemIdentifier, item]);
+  }, [fullyQualifiedItemIdentifier]);
 
   let assesmentColor = 'grey';
   let labels: ReactElement[] = [];
@@ -45,7 +44,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
   if (item) {
     [assesmentColor] = getAssessmentColorAndMessage(assessment, item.identifier);
 
-    if (!small && item.labels) {
+    if (item.labels) {
       Object.keys(item.labels).forEach((key) => {
         if (item && item.labels && item.labels[key]) {
           if (!key.startsWith('icon') && !key.startsWith('status')) {
@@ -61,7 +60,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
       });
     }
 
-    if (!small && item._links) {
+    if (item._links) {
       Object.keys(item._links).forEach((key) => {
         if (item && item._links && !key.startsWith('self')) {
           const linkContent = (
@@ -123,7 +122,16 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
       <div className='itemContent'>
         <div className='header'>
           <img src={item?.icon} alt='Icon' className='icon' />
-          <span className='title'>{item ? item.name || item.identifier : null}</span>
+          <span
+            className='title'
+            onClick={() => {
+              if (findItem) {
+                findItem(item.fullyQualifiedIdentifier);
+              }
+            }}
+          >
+            {item ? item.name || item.identifier : null}
+          </span>
           <span className='status' style={{ backgroundColor: assesmentColor }}></span>
         </div>
         <div className='information'>
