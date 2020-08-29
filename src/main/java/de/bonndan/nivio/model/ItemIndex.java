@@ -7,6 +7,14 @@ import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.facet.FacetResult;
+import org.apache.lucene.facet.Facets;
+import org.apache.lucene.facet.FacetsCollector;
+import org.apache.lucene.facet.FacetsConfig;
+import org.apache.lucene.facet.taxonomy.FastTaxonomyFacetCounts;
+import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
+import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyReader;
+import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyWriter;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -14,10 +22,12 @@ import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.IOUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -42,6 +52,7 @@ public class ItemIndex {
 
     private final SQLParser<Item> parser;
     private final Directory searchIndex;
+    private final Directory taxoIndex;
 
     IndexedCollection<Item> index = new ConcurrentIndexedCollection<>();
 
@@ -60,6 +71,7 @@ public class ItemIndex {
 
         //init lucene
         searchIndex = new RAMDirectory();
+        taxoIndex = new RAMDirectory();
     }
 
     public ItemIndex(Set<Item> items) {
@@ -178,13 +190,17 @@ public class ItemIndex {
     public int indexForSearch() {
         int indexed = 0;
         try {
+            FacetsConfig config = SearchDocumentFactory.getConfig();
+            TaxonomyWriter taxoWriter = new DirectoryTaxonomyWriter(taxoIndex, IndexWriterConfig.OpenMode.CREATE);
             IndexWriter writer = new IndexWriter(searchIndex, new IndexWriterConfig(new StandardAnalyzer()));
             writer.deleteAll();
             for (Item item : index) {
-                writer.addDocument(SearchDocumentFactory.from(item));
+
+                Document doc = from(item);
+                writer.addDocument(config.build(taxoWriter, doc));
                 indexed++;
             }
-            writer.close();
+            IOUtils.close(writer, taxoWriter); //, searchIndex, taxoIndex);
         } catch (IOException e) {
             throw new RuntimeException("Failed to update search index", e);
         }
@@ -204,6 +220,32 @@ public class ItemIndex {
         } catch (IOException | ParseException e) {
             throw new RuntimeException("Failed to execute search for " + queryString);
         }
+    }
+
+    /**
+     * Returns the facets for the given query.
+     *
+     * @param query TODO unused, returns all facets.
+     * @return top 10 facets
+     */
+    public List<FacetResult> facets(String query) {
+        try {
+            DirectoryReader ireader = DirectoryReader.open(searchIndex);
+            IndexSearcher searcher = new IndexSearcher(ireader);
+
+            DirectoryTaxonomyReader taxoReader = new DirectoryTaxonomyReader(taxoIndex);
+            FacetsCollector fc = new FacetsCollector();
+            FacetsConfig config = getConfig();
+            FacetsCollector.search(searcher, new MatchAllDocsQuery(), 10, fc);
+
+            Facets facets = new FastTaxonomyFacetCounts(taxoReader, config, fc);
+            ireader.close();
+            return facets.getAllDims(10);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     private List<Document> documentSearch(String queryString) throws IOException, ParseException {
@@ -226,6 +268,8 @@ public class ItemIndex {
 
         return documents;
     }
+
+
 
     public List<Item> cqnQueryOnIndex(String condition) {
 

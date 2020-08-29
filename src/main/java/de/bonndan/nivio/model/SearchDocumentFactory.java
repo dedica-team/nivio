@@ -1,15 +1,12 @@
 package de.bonndan.nivio.model;
 
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.IndexableFieldType;
+import org.apache.lucene.facet.FacetField;
+import org.apache.lucene.facet.FacetsConfig;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -27,7 +24,22 @@ public class SearchDocumentFactory {
     public static final String LUCENE_FIELD_ITEM_TYPE = "type";
     public static final String LUCENE_FIELD_OWNER = "owner";
     public static final String LUCENE_FIELD_TAG = "tag";
+    private static final String LUCENE_FIELD_LIFECYCLE = Label.lifecycle.name();
+    private static final String LUCENE_FIELD_CAPABILITY = Label.capability.name();
+    private static final String LUCENE_FIELD_LAYER = Label.layer.name();
 
+    public static FacetsConfig getConfig() {
+        FacetsConfig config = new FacetsConfig();
+        config.setMultiValued(LUCENE_FIELD_TAG, true);
+        return config;
+    }
+
+    /**
+     * Creates a new lucene document containing item fields and labels.
+     *
+     * @param item the item to idnex
+     * @return searchable document
+     */
     public static Document from(Item item) {
         Document document = new Document();
         document.add(new TextField(LUCENE_FIELD_COMPONENT_TYPE, "item", Field.Store.YES));
@@ -56,11 +68,35 @@ public class SearchDocumentFactory {
             document.add(new TextField(s, val, Field.Store.YES));
         });
 
-        //tags
+        //tags (searchable)
         Arrays.stream(item.getTags()).forEach(s -> {
             document.add(new TextField(LUCENE_FIELD_TAG, s.toLowerCase(), Field.Store.YES));
         });
 
+        addFacets(document, item);
         return document;
+    }
+
+    /**
+     * facets (categories)  not stored/searchable, but can be drilled down into
+     *
+     * @param document the doc to add facets to
+     */
+    private static void addFacets(Document document, Item item) {
+        document.add(new FacetField(LUCENE_FIELD_COMPONENT_TYPE, "item"));
+
+        //tag facets
+        Arrays.stream(item.getTags()).forEach(s -> {
+            document.add(new FacetField(LUCENE_FIELD_TAG, s.toLowerCase()));
+        });
+
+        Optional.ofNullable(item.getLabel(Label.lifecycle))
+                .ifPresent(s -> document.add(new FacetField(LUCENE_FIELD_LIFECYCLE, s)));
+
+        Optional.ofNullable(item.getLabel(Label.capability))
+                .ifPresent(s -> document.add(new FacetField(LUCENE_FIELD_CAPABILITY, s)));
+
+        Optional.ofNullable(item.getLabel(Label.layer))
+                .ifPresent(s -> document.add(new FacetField(LUCENE_FIELD_LAYER, s)));
     }
 }

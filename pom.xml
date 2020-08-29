@@ -182,6 +182,12 @@
             <artifactId>lucene-analyzers-common</artifactId>
             <version>${lucene.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-facet</artifactId>
+            <version>${lucene.version}</version>
+        </dependency>
+
 
         <!-- rancher api -->
         <!-- https://mvnrepository.com/artifact/br.com.basis/rancher-java-sdk -->

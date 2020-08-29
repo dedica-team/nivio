@@ -7,6 +7,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.URLHelper;
+import org.apache.lucene.facet.FacetResult;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -174,6 +175,23 @@ public class ApiController {
 
         try {
             return new ResponseEntity<>(landscape.getItems().search(query), HttpStatus.OK);
+        } catch (RuntimeException ignored) {
+            return ResponseEntity.badRequest().build();
+        }
+
+    }
+
+    @CrossOrigin(methods = RequestMethod.GET)
+    @RequestMapping(path = "/landscape/{identifier}/facets/{query}", method = RequestMethod.GET)
+    public ResponseEntity<List<FacetResult>> facets(@PathVariable String identifier, @PathVariable(required = false) String query) {
+
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
+        if (landscape == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            return new ResponseEntity<>(landscape.getItems().facets(query), HttpStatus.OK);
         } catch (RuntimeException ignored) {
             return ResponseEntity.badRequest().build();
         }

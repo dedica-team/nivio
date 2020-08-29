@@ -91,26 +91,23 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
           </Grid>
 
           <Grid item xs={12} sm={6} md={3} lg={3} xl={4} className='last'>
-            <Button
+            <Button variant="outlined" color="primary"
               fullWidth
               component={Link}
-              className={'button stackedButton'}
               to={`/landscape/${landscape.identifier}/dashboard`}
             >
               enter
             </Button>
 
-            <Button
-              onClick={(e) => enterLog(e, landscape)}
-              fullWidth
-              className={'button stackedButton'}
+            <Button variant="outlined" color="secondary"
+                    onClick={(e) => enterLog(e, landscape)} fullWidth
             >
               log
             </Button>
 
             <Button
               fullWidth
-              className={'button stackedButton'}
+              color="secondary"
               rel='noopener noreferrer'
               target={'_blank'}
               href={`${backendUrl}/render/${landscape.identifier}/map.svg`}
@@ -120,7 +117,7 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
 
             <Button
               fullWidth
-              className={'button'}
+              color="secondary"
               rel='noopener noreferrer'
               target={'_blank'}
               href={`${backendUrl}/docs/${landscape.identifier}/report.html`}
