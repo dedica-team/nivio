@@ -225,10 +225,9 @@ public class ItemIndex {
     /**
      * Returns the facets for the given query.
      *
-     * @param query TODO unused, returns all facets.
      * @return top 10 facets
      */
-    public List<FacetResult> facets(String query) {
+    public List<FacetResult> facets() {
         try {
             DirectoryReader ireader = DirectoryReader.open(searchIndex);
             IndexSearcher searcher = new IndexSearcher(ireader);
