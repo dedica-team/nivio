@@ -31,6 +31,7 @@ jobs:
       max-parallel: 1
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
+        jdk: [11.0.8, 13.0.2]
 
     steps:
       - uses: actions/checkout@v2
@@ -38,8 +39,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: ${{matrix.jdk}}
-          matrix:
-            jdk: [11, 13]
 
       - name: Cache local Maven repository
         uses: actions/cache@v2
