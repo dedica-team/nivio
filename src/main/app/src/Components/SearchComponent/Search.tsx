@@ -6,7 +6,7 @@ import {IItem, Routes} from '../../interfaces';
 import {withRouter, RouteComponentProps, matchPath} from 'react-router-dom';
 import SearchResult from './SearchResult';
 import SearchIcon from '@material-ui/icons/Search';
-import {Clear} from '@material-ui/icons';
+import {Backspace, Clear} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -27,7 +27,8 @@ interface IFacet {
 }
 
 interface ILabelValue {
-    label: string, value: number
+    label: string,
+    value: number
 }
 
 const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
@@ -43,6 +44,9 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [hasChange, setHasChange] = useState(false);
     const [hasFocus, setHasFocus] = useState(false);
+
+    const searchInput = React.useRef<HTMLDivElement>(null);
+
 
     async function search(searchTerm: string, identifier: string) {
         if (searchTerm.length < 2) return;
@@ -121,8 +125,20 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
     const searchResult = results.map((value1) => (
         <SearchResult key={value1.fullyQualifiedIdentifier} item={value1} findItem={props.findItem}/>
     ));
-    const facetsHtml = facets.map((value1) => (
-        <Chip key={value1.dim} label={value1.dim} avatar={<Avatar>{value1.value}</Avatar>}/>
+    const facetsHtml = facets.map((facet) => (
+        <div className={'facet'} key={facet.dim}>
+            <Typography variant={'h6'}>{facet.dim}</Typography>
+            {facet.labelValues.map(lv =>
+                <Chip onClick={e => {
+                    let current = searchInput.current;
+                    if (!current) return;
+                    setSearchTermSafely(facet.dim  + ':' + lv.label);
+                    current.focus();
+                }} variant={"outlined"} key={facet.dim + '' + lv.label} label={lv.label}
+                      avatar={<Avatar>{lv.value}</Avatar>}/>
+            )}
+            <br/>
+        </div>
     ));
 
     return (
@@ -131,32 +147,32 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
                 title={
                     <React.Fragment>
                         <Typography color='inherit'>Search: </Typography>
-                        <strong>{'You can use the Lucene query syntax.'}</strong>
+                        <strong>{'You can use the Lucene query syntax.'}</strong><br />
                         <em>{'foo*'}</em>
                         <br/>
                         <em>{'*press'}</em>
                         <br/>
                         <em>{'tag:cms'}</em>
                         <br/>
-                        <strong>Categories:</strong>
-                        <br/>
-
-
                     </React.Fragment>
                 }
             >
                 <SearchIcon className={'searchIcon'}/>
             </HtmlTooltip>
             <TextField value={searchTerm} onChange={(event) => setSearchTermSafely(event.target.value)}
-                       onFocus={event => setHasFocus(true)}
-                       onBlur={event => setHasFocus(false)}>
+                       onFocus={e => setHasFocus(true)}
+                       //onBlur={e => setHasFocus(false)}
+                       ref={searchInput}>
                 Search
             </TextField>
             {results ? <div className={'results'}>{searchResult}</div> : null}
 
             <IconButton className={'searchIcon'} size={'small'} onClick={(e) => clear()}>
-                <Clear></Clear>
+                <Backspace></Backspace>
             </IconButton>
+            {hasFocus ? <IconButton className={'closeIcon'} size={'small'} onClick={(e) => setHasFocus(false)}>
+                <Clear></Clear>
+            </IconButton> : null}
             {hasFocus ? <div className={'facets'}>{facetsHtml}</div> : null}
         </div>
     );
