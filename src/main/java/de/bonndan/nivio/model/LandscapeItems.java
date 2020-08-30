@@ -3,10 +3,12 @@ package de.bonndan.nivio.model;
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
+import com.googlecode.cqengine.attribute.support.SimpleFunction;
 import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,8 +24,30 @@ import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
  */
 public class LandscapeItems {
 
-    private static final Attribute<Item, String> IDENTIFIER = attribute("identifier", Item::getIdentifier);
-    private static final Attribute<Item, String> NAME = attribute("name", Item::getName);
+    /**
+     * The {@link com.googlecode.cqengine.query.QueryFactory#attribute(String, SimpleFunction)})} relies on a method
+     * {@link net.jodah.typetools.TypeResolver#resolveRawArguments(Type, Class)}, which in Java 13 is not able to retrieve
+     * information about the generic types, if a lambda or anonymous method reference is provided. By providing an anonymous
+     * class of the {@link SimpleFunction}, the generic types can be resolved without running into exceptions.
+     */
+    @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef"})
+    private static final Attribute<Item, String> IDENTIFIER = attribute("identifier", new SimpleFunction<>() {
+        @Override
+        public String apply(Item item) {
+            return item.getIdentifier();
+        }
+    });
+
+    /**
+     * See {@link #IDENTIFIER}
+     */
+    @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef"})
+    private static final Attribute<Item, String> NAME = attribute("name", new SimpleFunction<>() {
+        @Override
+        public String apply(Item item) {
+            return item.getName();
+        }
+    });
 
     IndexedCollection<Item> index = new ConcurrentIndexedCollection<>();
 

@@ -145,19 +145,19 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-client</artifactId>
-            <version>4.10.1</version>
+            <version>4.11.0</version>
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-server-mock</artifactId>
-            <version>4.10.1</version>
+            <version>4.11.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.googlecode.cqengine</groupId>
             <artifactId>cqengine</artifactId>
-            <version>3.4.0</version>
+            <version>3.5.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.xerial</groupId>
@@ -397,7 +397,7 @@
         <repository>
             <id>spring-releases</id>
             <name>Spring Releases</name>
-            <url>https://repo.spring.io/libs-release</url>
+            <url>https://repo.spring.io/release</url>
         </repository>
 
         <repository>
