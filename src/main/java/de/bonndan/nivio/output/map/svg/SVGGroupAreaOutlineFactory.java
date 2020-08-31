@@ -84,21 +84,33 @@ public class SVGGroupAreaOutlineFactory {
                 .collect(Collectors.toList());
          */
 
-        String bezierPath = getBezierPath(new ArrayList<>(path));
+        String pointsPath = getCornerPath(new ArrayList<>(path));
         return SvgTagCreator.path()
-                .attr("d", bezierPath)
+                .attr("d", pointsPath)
                 .condAttr(!StringUtils.isEmpty(fillId), "stroke", fillId)
                 .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
                 .condAttr(!StringUtils.isEmpty(fillId), "fill-opacity", String.valueOf(0.1));
     }
 
-    private String getBezierPath(ArrayList<Point2D.Double> doubles) {
+    private String getCornerPath(ArrayList<Point2D.Double> corners) {
+
+        StringBuilder points = new StringBuilder("M");
+        for (var i = 0; i < corners.size(); i++) {
+            var point = corners.get(i);
+            points.append(" ").append(point.x).append(",").append(point.y);
+        }
+
+        points.append(" ").append(corners.get(0).x).append(",").append(corners.get(0).y);
+        return points.toString();
+    }
+
+    private String getWobblyPath(ArrayList<Point2D.Double> corners) {
         ArrayList<Point2D.Double> middles = new ArrayList<>();
 
-        for (int i = 0; i < doubles.size(); i++) {
-            int j = (i == doubles.size() - 1) ? 0 : i + 1;
-            Point2D.Double point = doubles.get(i);
-            Point2D.Double following = doubles.get(j);
+        for (int i = 0; i < corners.size(); i++) {
+            int j = (i == corners.size() - 1) ? 0 : i + 1;
+            Point2D.Double point = corners.get(i);
+            Point2D.Double following = corners.get(j);
             middles.add(
                     new Point2D.Double(
                             point.x + (following.x - point.x) / 2,
@@ -116,7 +128,7 @@ public class SVGGroupAreaOutlineFactory {
 
             //cubic curve, original points are now the control points
             var prev = middles.get(i);
-            var controlPoint = doubles.get(j);
+            var controlPoint = corners.get(j);
             var next = middles.get(j);
 
             points.append(" ").append(prev.x).append(",").append(prev.y).append(" ");
@@ -155,7 +167,7 @@ public class SVGGroupAreaOutlineFactory {
         }
 
         final List<Point2D.Double> ownSegments = new ArrayList<>();
-        final List<Point2D.Double> points = start.hex.asPoints(Hex.HEX_SIZE);
+        final List<Point2D.Double> points = start.hex.asPoints(Hex.HEX_SIZE-1);
         final List<Hex> neighbours = start.hex.neighbours();
 
         Hex neighbour = null;
