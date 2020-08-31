@@ -107,7 +107,9 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
 
             <Button
               fullWidth
+              className={'noShadow'}
               color="secondary"
+              variant="outlined"
               rel='noopener noreferrer'
               target={'_blank'}
               href={`${backendUrl}/render/${landscape.identifier}/map.svg`}
@@ -117,7 +119,9 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
 
             <Button
               fullWidth
+              className={'noShadow'}
               color="secondary"
+              variant="outlined"
               rel='noopener noreferrer'
               target={'_blank'}
               href={`${backendUrl}/docs/${landscape.identifier}/report.html`}

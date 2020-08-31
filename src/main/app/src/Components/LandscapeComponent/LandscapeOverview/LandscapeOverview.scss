@@ -7,14 +7,8 @@
       border-bottom: 1px solid $border-color;
     }
 
-    .control {
-      background-color: $header-color;
-      color: $font-color;
-      text-transform: uppercase;
-      text-shadow: 0 0 10px $text-shadow-color;
-      box-shadow: 0px 0px 12px $box-shadow-color;
-      border: 1px solid $border-color;
-      cursor: pointer;
+    .noShadow {
+      text-shadow: none;
     }
 
     .previewItem {
