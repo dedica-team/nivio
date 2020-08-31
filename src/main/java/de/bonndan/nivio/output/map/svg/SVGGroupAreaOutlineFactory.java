@@ -10,14 +10,11 @@ import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Collects all hexes close to group item hexes to create an outline around an area
  */
 public class SVGGroupAreaOutlineFactory {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SVGGroupAreaOutlineFactory.class);
 
     private final Set<Hex> processed = new HashSet<>();
     private final Set<Hex> groupArea;
