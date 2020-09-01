@@ -11,17 +11,3 @@ export const get = async (route: string, cancelTokenSource?: CancelTokenSource) 
 
   return data;
 };
-
-export const getJsonFromUrl = async (url: string, cancelTokenSource?: CancelTokenSource) => {
-  let data = null;
-  const response = await Axios({
-    method: 'get',
-    url,
-    responseType: 'json',
-    cancelToken: cancelTokenSource?.token,
-  });
-
-  data = response.data;
-
-  return data;
-};
