@@ -303,6 +303,9 @@
                         <goals>
                             <goal>yarn</goal>
                         </goals>
+                        <configuration>
+                            <arguments>--network-timeout 500000</arguments>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>Run test</id>

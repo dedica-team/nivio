@@ -10,11 +10,6 @@ svg g circle {
   stroke-width: 0.4em;
 }
 
-rect.group {
-  stroke-width: 0.0em;
-  fill-opacity: 0.5;
-}
-
 svg g.label {
   cursor: pointer;
 }
@@ -36,13 +31,14 @@ text.groupLabel {
   text-shadow: 1px 1px 1px black;
 }
 
-
-svg g.relation path {
-  fill: none;
-}
 svg path {
-  stroke-width: 0.4em;
+  stroke-width: 0.2em;
   stroke-opacity: 0.8;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+svg g.relation path {
+  fill: none;
+  stroke-width: 0.4em;
 }
