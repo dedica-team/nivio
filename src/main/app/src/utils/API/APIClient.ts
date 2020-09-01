@@ -1,5 +1,5 @@
 import API from './APIConfig';
-import Axios, { CancelTokenSource } from 'axios';
+import { CancelTokenSource } from 'axios';
 
 export const get = async (route: string, cancelTokenSource?: CancelTokenSource) => {
   let data = null;
