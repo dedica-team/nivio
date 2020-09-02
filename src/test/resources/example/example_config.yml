@@ -3,10 +3,7 @@ name: Landscape example
 contact: mail@acme.org
 
 config:
-  jgraphx:
-    #nodeDistributionCostFactor: 9000000.0
-    #edgeLengthCostFactor;
-    #borderLineCostFactor;
+  groupLayoutConfig:
 
     # the higher, the longer the edges between groups
     forceConstantFactor: 8

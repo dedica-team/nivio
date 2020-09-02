@@ -5,15 +5,24 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 public class LandscapeFactory {
 
     /**
-     * Creates a new ladnscape impl.
+     * Creates a new landscape impl.
      *
      * @param input the description
      */
-    public static LandscapeImpl toLandscape(LandscapeDescription input) {
-        LandscapeImpl landscape = new LandscapeImpl();
-        landscape.setIdentifier(input.getIdentifier());
+    public static LandscapeImpl create(LandscapeDescription input) {
+        LandscapeImpl landscape = create(input.getIdentifier());
         landscape.setSource(input.getSource());
         return landscape;
+    }
+
+    /**
+     * This factory method can be used to create landscapes for testing.
+     *
+     * @param identifier landscape identifier
+     * @return new landscape
+     */
+    public static LandscapeImpl create(String identifier) {
+        return new LandscapeImpl(identifier, new Group(Group.COMMON));
     }
 
     public static void assignAll(LandscapeDescription input, LandscapeImpl landscape) {

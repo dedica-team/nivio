@@ -13,9 +13,15 @@ The Docker image is about 350MB and can be started with:
 
 .. code-block:: bash
 
-    docker run -e DEMO=1 dedica-team/nivio
+    docker run -e DEMO=1 dedica/nivio
 
-Set SERVER_CONTEXT_PATH env var to the path if nivio won't be runner under "/".
+Set SERVER_CONTEXT_PATH and NIVIO_BASEURL env vars to the path if nivio won't be runner under "/" (like behind a reverse proxy).
+
+.. code-block:: bash
+
+   SERVER_SERVLET_CONTEXT_PATH: /my-landscape
+   NIVIO_BASEURL: https://foo.com/my-landscape/
+
 
 Demo mode
 ---------
@@ -55,7 +61,6 @@ Think of GitLab or GitHub and the related tokens.
 You can also add state providers which are used to gather live data and thereby provide state for the items.
 
 To finetune the visual appearance of rendered landscapes, the automatic color choice for groups can be overridden as well.
-For jgraphx output, some force directed graph params can be set. More configuration options will be added over time.
 
 .. code-block:: yaml
    :linenos:

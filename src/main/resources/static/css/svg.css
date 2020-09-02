@@ -6,18 +6,8 @@ svg g {
   stroke-width: 0.3;
 }
 
-svg g polygon {
-  stroke: #3F51B5;
-  stroke-width: 0.2;
-}
-
 svg g circle {
   stroke-width: 0.4em;
-}
-
-rect.group {
-  stroke-width: 0.0em;
-  fill-opacity: 0.5;
 }
 
 svg g.label {
@@ -26,7 +16,7 @@ svg g.label {
 
 svg g.label rect {
   stroke-width: 0.1em;
-  stroke: #3F51B5;
+  stroke: #007F7F;
 }
 
 text.title {
@@ -43,8 +33,12 @@ text.groupLabel {
 
 svg path {
   fill: none;
-  stroke-width: 0.4em;
+  stroke-width: 0.2em;
   stroke-opacity: 0.8;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+svg g.relation path {
+  stroke-width: 0.4em;
 }

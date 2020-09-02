@@ -1,9 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.model.Relation;
-import de.bonndan.nivio.model.RelationItem;
+import de.bonndan.nivio.model.*;
 import j2html.tags.DomContent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,8 +15,7 @@ class SVGRelationTest {
     @DisplayName("items without groups use proper fqi")
     public void regression184() {
 
-        LandscapeImpl landscape = new LandscapeImpl();
-        landscape.setIdentifier("l1");
+        LandscapeImpl landscape = LandscapeFactory.create("l1");
 
         //both items have no group
         Item foo = new Item();

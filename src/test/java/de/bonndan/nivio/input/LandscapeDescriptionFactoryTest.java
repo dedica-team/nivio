@@ -6,7 +6,6 @@ import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.CustomKPI;
 import de.bonndan.nivio.assessment.kpi.HealthKPI;
-import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.assessment.kpi.KPIConfig;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
@@ -224,8 +223,8 @@ class LandscapeDescriptionFactoryTest {
         LandscapeConfig config = landscapeDescription.getConfig();
 
         assertNotNull(config);
-        assertNotNull(config.getJgraphx());
-        assertNotNull(config.getJgraphx().getForceConstantFactor());
+        assertNotNull(config.getGroupLayoutConfig());
+        assertNotNull(config.getGroupLayoutConfig().getForceConstantFactor());
     }
 
     @Test

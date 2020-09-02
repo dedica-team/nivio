@@ -1,5 +1,7 @@
 package de.bonndan.nivio.output;
 
+import de.bonndan.nivio.model.Component;
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.output.icons.Icons;
@@ -10,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.net.InetAddress;
@@ -20,7 +22,7 @@ import java.util.Base64;
 
 import static de.bonndan.nivio.output.icons.Icons.DEFAULT_ICON;
 
-@Component
+@Service
 public class LocalServer implements EnvironmentAware {
 
     private static Environment env;
@@ -73,9 +75,9 @@ public class LocalServer implements EnvironmentAware {
         return getUrl(StringUtils.arrayToDelimitedString(parts, "/"));
     }
 
-    public URL getIconUrl(Labeled item) {
+    public URL getIconUrl(Item item) {
 
-        String icon = item.getLabel(Label.icon);
+        String icon = item.getIcon();
         if (!StringUtils.isEmpty(icon)) {
 
             if (icon.startsWith(VENDOR_PREFIX)) {

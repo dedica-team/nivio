@@ -66,7 +66,7 @@ class LocalServerTest {
     @Test
     public void returnsIcon() {
         Item item = new Item();
-        item.setLabel(Label.icon, "http://my.icon");
+        item.setIcon("http://my.icon");
         String s = localServer.getIconUrl(item).toString();
         assertEquals("http://localhost:8080/vendoricons/aHR0cDovL215Lmljb24=",s);
         assertEquals("http://my.icon", LocalServer.deproxyUrl(s));
@@ -76,7 +76,7 @@ class LocalServerTest {
     @Test
     public void usesVendorIcon() {
         Item item = new Item();
-        item.setLabel(Label.icon, VENDOR_PREFIX + "redis");
+        item.setIcon(VENDOR_PREFIX + "redis");
         String s = localServer.getIconUrl(item).toString();
         assertEquals("http://localhost:8080/vendoricons/aHR0cDovL2Rvd25sb2FkLnJlZGlzLmlvL2xvZ29jb250ZXN0LzgyLnBuZw==", s);
         assertEquals("http://download.redis.io/logocontest/82.png", LocalServer.deproxyUrl(s));
@@ -91,7 +91,7 @@ class LocalServerTest {
         localServer.setImageProxy(urlprefix);
 
         Item item = new Item();
-        item.setLabel(Label.icon, VENDOR_PREFIX + "redis");
+        item.setIcon(VENDOR_PREFIX + "redis");
         assertEquals(urlprefix + "/aHR0cDovL2Rvd25sb2FkLnJlZGlzLmlvL2xvZ29jb250ZXN0LzgyLnBuZw==", localServer.getIconUrl(item).toString());
     }
 
@@ -104,7 +104,7 @@ class LocalServerTest {
         localServer.setImageProxy(String.format("http://localhost:%d", wireMockServer.port()));
 
         Item item = new Item();
-        item.setLabel(Label.icon, "http://my.icon");
+        item.setIcon("http://my.icon");
         String urlprefix = String.format("http://localhost:%d", wireMockServer.port());
         assertEquals(urlprefix + "/aHR0cDovL215Lmljb24=", localServer.getIconUrl(item).toString());
 
