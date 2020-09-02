@@ -70,7 +70,7 @@ const Notification: React.FC = () => {
       setSnackPack((prev) => prev.slice(1));
       setOpen(true);
     } else if (snackPack.length && messageInfo && open) {
-      // Close an active snack when a new one is added
+      // Close an active snack when a new one is added and the close delay is over
       if (new Date().getTime() - messageInfo.key > snackPackCloseDelay) {
         setOpen(false);
       }
