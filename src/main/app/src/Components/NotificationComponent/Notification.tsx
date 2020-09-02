@@ -25,7 +25,7 @@ export interface SnackbarMessage {
  * Displays a notification if a file change is detected
  */
 const Notification: React.FC = () => {
-  const snackPackCloseDelay = 2000000;
+  const snackPackCloseDelay = 20000;
   const [snackPack, setSnackPack] = useState<SnackbarMessage[]>([]);
   const [messageInfo, setMessageInfo] = useState<SnackbarMessage | undefined>(undefined);
   const [open, setOpen] = useState(false);
