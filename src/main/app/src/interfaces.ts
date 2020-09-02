@@ -162,7 +162,7 @@ export interface INotificationMessage {
   timestamp: string;
   landscape: string;
   message?: string;
-  level: string;
+  level: 'success' | 'info' | 'warning' | 'error' | undefined;
   type: string;
   date: Date;
 }
