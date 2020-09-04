@@ -43,17 +43,19 @@ const Notification: React.FC = () => {
         const subscriptions: StompSubscription[] = [];
         const eventSubscription = client.subscribe('/topic/events', (message) => {
           const notificationMessage: INotificationMessage = JSON.parse(message.body);
-          const formattedMessage = notificationMessage.message
-            ? `Message: ${notificationMessage.message}`
-            : '';
-          const snackPackMessage = {
-            message: `Change in ${notificationMessage.landscape} ${formattedMessage}`,
-            key: new Date().getTime(),
-            landscape: notificationMessage.landscape,
-            level: notificationMessage.level,
-          };
-          setSnackPack((prevArray) => [...prevArray, snackPackMessage]);
-          setOpen(true);
+          if (notificationMessage.type !== 'ProcessingFinishedEvent') {
+            const formattedMessage = notificationMessage.message
+              ? `Message: ${notificationMessage.message}`
+              : '';
+            const snackPackMessage = {
+              message: `Change in ${notificationMessage.landscape} ${formattedMessage}`,
+              key: new Date().getTime(),
+              landscape: notificationMessage.landscape,
+              level: notificationMessage.level,
+            };
+            setSnackPack((prevArray) => [...prevArray, snackPackMessage]);
+            setOpen(true);
+          }
         });
 
         subscriptions.push(eventSubscription);
