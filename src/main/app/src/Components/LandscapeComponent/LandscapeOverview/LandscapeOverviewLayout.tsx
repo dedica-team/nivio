@@ -91,7 +91,9 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
           </Grid>
 
           <Grid item xs={12} sm={6} md={3} lg={3} xl={4} className='last'>
-            <Button variant="outlined" color="primary"
+            <Button
+              variant='outlined'
+              color='primary'
               fullWidth
               component={Link}
               to={`/landscape/${landscape.identifier}/dashboard`}
@@ -99,8 +101,11 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               enter
             </Button>
 
-            <Button variant="outlined" color="secondary"
-                    onClick={(e) => enterLog(e, landscape)} fullWidth
+            <Button
+              variant='outlined'
+              color='secondary'
+              onClick={(e) => enterLog(e, landscape)}
+              fullWidth
             >
               log
             </Button>
@@ -108,8 +113,8 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
             <Button
               fullWidth
               className={'noShadow'}
-              color="secondary"
-              variant="outlined"
+              color='secondary'
+              variant='outlined'
               rel='noopener noreferrer'
               target={'_blank'}
               href={`${backendUrl}/render/${landscape.identifier}/map.svg`}
@@ -120,8 +125,8 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
             <Button
               fullWidth
               className={'noShadow'}
-              color="secondary"
-              variant="outlined"
+              color='secondary'
+              variant='outlined'
               rel='noopener noreferrer'
               target={'_blank'}
               href={`${backendUrl}/docs/${landscape.identifier}/report.html`}
