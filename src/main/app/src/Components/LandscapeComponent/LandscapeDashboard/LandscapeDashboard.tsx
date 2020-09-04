@@ -17,10 +17,38 @@ const LandscapeDashboard: React.FC = () => {
   const [sliderContent, setSliderContent] = useState<string | ReactElement | null>(null);
   const [showSlider, setShowSlider] = useState(false);
   const [assessments, setAssessments] = useState<IAssessment | null>(null);
+  const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
+
+  const findItem = (fullyQualifiedItemIdentifier: string) => {
+    const element = document.getElementById(fullyQualifiedItemIdentifier);
+    setHighlightElement(element);
+  };
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+
+    if (highlightElement instanceof Element) {
+      highlightElement.classList.add('highlightDot');
+      highlightElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      const itemGroup = highlightElement.parentElement?.parentElement?.parentElement;
+      itemGroup?.classList.add('highlightGroup');
+
+      timeout = setTimeout(() => {
+        highlightElement.classList.remove('highlightDot');
+        itemGroup?.classList.remove('highlightGroup');
+        setHighlightElement(null);
+      }, 2000);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [highlightElement]);
 
   const onItemClick = (e: MouseEvent<HTMLSpanElement>, item: IItem) => {
     setSliderContent(
-      <LandscapeItem fullyQualifiedItemIdentifier={item.fullyQualifiedIdentifier} />
+      <LandscapeItem
+        fullyQualifiedItemIdentifier={item.fullyQualifiedIdentifier}
+        findItem={findItem}
+      />
     );
     setShowSlider(true);
   };
@@ -56,6 +84,7 @@ const LandscapeDashboard: React.FC = () => {
         landscape={landscape}
         assessments={assessments}
         onItemClick={onItemClick}
+        findItem={findItem}
       />
     </React.Fragment>
   );

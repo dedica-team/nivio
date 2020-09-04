@@ -20,6 +20,7 @@ $dotSize: 200px;
     padding: 0px 5px 18px 0px;
 
     .group {
+      background-color: $background-grey;
       .groupName {
         padding: 5px;
         font-size: $large-font-size;
@@ -94,5 +95,54 @@ $dotSize: 200px;
         }
       }
     }
+  }
+
+  @-o-keyframes highlightDot {
+    0% {
+      background-color: #fff;
+    }
+    50% {
+      background-color: #ff4081;
+    }
+    to {
+      background-color: #fff;
+    }
+  }
+
+  @-webkit-keyframes highlightDot {
+    0% {
+      background-color: #fff;
+    }
+    50% {
+      background-color: #ff4081;
+    }
+    to {
+      background-color: #fff;
+    }
+  }
+
+  @keyframes highlightDot {
+    0% {
+      background-color: #fff;
+    }
+    50% {
+      background-color: #ff4081;
+    }
+    to {
+      background-color: #fff;
+    }
+  }
+
+  .highlightDot {
+    -webkit-animation: highlightDot 1s linear;
+    -o-animation: highlightDot 1s linear;
+    animation: highlightDot 1s linear;
+    -webkit-animation-iteration-count: 2;
+    -o-animation-iteration-count: 2;
+    animation-iteration-count: 2;
+  }
+
+  .highlightGroup {
+    z-index: 2;
   }
 }

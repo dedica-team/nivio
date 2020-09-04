@@ -11,6 +11,7 @@ interface Props {
   landscape: ILandscape | null | undefined;
   assessments: IAssessment | null;
   onItemClick: (e: MouseEvent<HTMLSpanElement>, item: IItem) => void;
+  findItem: (fullyQualifiedItemIdentifier: string) => void;
 }
 
 const defaultColor = 'grey';
@@ -19,7 +20,12 @@ const defaultColor = 'grey';
  * Displays all groups of given landscape and provides all needed navigation
  */
 
-const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assessments, onItemClick }) => {
+const LandscapeDashboardLayout: React.FC<Props> = ({
+  landscape,
+  assessments,
+  onItemClick,
+  findItem,
+}) => {
   // Render
   /*
     value         |0px     600px    960px    1280px   1920px
@@ -45,7 +51,11 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assessments, onI
           }
           return (
             <Grid item key={item.identifier} className={'itemContainer'}>
-              <span className='dot' style={{ backgroundColor: assessmentColor }}>
+              <span
+                className='dot'
+                id={item.fullyQualifiedIdentifier}
+                style={{ backgroundColor: assessmentColor }}
+              >
                 <span
                   className='statusDot'
                   onClick={(e: MouseEvent<HTMLSpanElement>) => onItemClick(e, item)}
@@ -76,13 +86,13 @@ const LandscapeDashboardLayout: React.FC<Props> = ({ landscape, assessments, onI
   }
 
   return (
-    <div className='landscapeDashboardContainer'>
+    <div className='landscapeDashboardContainer' id='landscapeDashboardContainer'>
       <Grid className={'titleContainer'} container spacing={2}>
         <Grid item className='title' xs={12} md={7} lg={8} xl={10}>
           {landscape ? `${landscape.name}` : null}
         </Grid>
         <Grid item xs={12} md={5} lg={4} xl={2}>
-          <Search />
+          <Search findItem={findItem} />
         </Grid>
       </Grid>
       <Grid key={'group'} className={'groupContainer'} container spacing={5}>
