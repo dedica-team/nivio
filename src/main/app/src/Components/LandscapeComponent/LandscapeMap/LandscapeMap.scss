@@ -2,14 +2,6 @@
 @import '../../../Ressources/styling/colors.scss';
 
 .landscapeMapContainer {
-  .search {
-    position: absolute;
-    right: 10px;
-    z-index: 1200;
-    background-color: $header-color;
-    padding: 5px;
-    border-radius: 5px;
-  }
   svg {
     font-family: $svg-font;
     text-shadow: none;

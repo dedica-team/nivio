@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     title: {
       marginRight: '20px',
+      color: 'rgba(255, 255, 255, 0.75)',
     },
   })
 );

@@ -4,17 +4,34 @@
 $dotSize: 30px;
 
 .search {
+  position: absolute;
+  background-color: $header-color;
+  top: 0px;
+  right: 20px;
+  z-index: 1200;
+  border-radius: 5px;
+  max-width: 300px;
   .results {
     position: absolute;
     width: 400px;
     right: 0px;
-    margin-top: 15px;
+    margin-top: 5px;
     z-index: 1200;
-    text-align: start;
+    max-height: 95vh;
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
-  .facet {
-    text-shadow: none;
+  .facets {
+    padding: 5px;
+    .facet {
+      text-shadow: none;
+    }
   }
 
   .relation {
@@ -64,7 +81,10 @@ $dotSize: 30px;
     margin-top: 5px;
     background-color: $header-color !important;
     color: $font-color !important;
-    border-radius: 5px;
+
+    &:first-child {
+      margin-top: 0px;
+    }
   }
 
   .information {
