@@ -6,7 +6,7 @@ import { IItem, Routes } from '../../interfaces';
 import { withRouter, RouteComponentProps, matchPath } from 'react-router-dom';
 import SearchResult from './SearchResult';
 import SearchIcon from '@material-ui/icons/Search';
-import { Backspace, Clear } from '@material-ui/icons';
+import { Backspace } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import withStyles from '@material-ui/core/styles/withStyles';
