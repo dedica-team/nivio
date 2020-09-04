@@ -3,11 +3,11 @@
 
 body {
   background-color: $background-grey;
-  margin: 0px;
   font-family: $nivio-font;
   color: $font-color;
   text-shadow: 0 0 10px $text-shadow-color;
   overflow-x: hidden;
+  margin: 0;
 
   .button {
     color: lighten($header-color, 20%);

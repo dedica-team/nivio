@@ -1,3 +1,8 @@
+export class Routes {
+  static MAP_ROUTE: string = '/landscape/:identifier';
+  static DASHBOARD_ROUTE: string = '/landscape/:identifier/dashboard';
+}
+
 export interface ILandscape {
   identifier: string;
   name: string;

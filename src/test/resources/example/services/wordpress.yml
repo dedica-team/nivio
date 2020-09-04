@@ -17,6 +17,7 @@ items:
   visibility: public
   tags:
   - CMS
+  - UI
   networks:
   - content
   machine: s

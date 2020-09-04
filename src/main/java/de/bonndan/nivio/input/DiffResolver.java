@@ -31,7 +31,6 @@ public class DiffResolver extends Resolver {
                 serviceDescription -> {
                     processLog.info("Creating new service " + serviceDescription.getIdentifier() + " in env " + input.getIdentifier());
                     Item created = ItemFactory.fromDescription(serviceDescription, landscape);
-                    landscape.addItem(created);
                     inLandscape.add(created);
                 }
         );

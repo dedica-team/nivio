@@ -1,7 +1,7 @@
 @import '../../../Ressources/styling/font.scss';
 @import '../../../Ressources/styling/colors.scss';
 
-.landscapeContainer {
+.landscapeMapContainer {
   .map {
     font-family: $svg-font;
     text-shadow: none;
@@ -46,13 +46,13 @@
         fill: $svg-shortname-color;
       }
     }
-  }
 
-  path {
-    fill: none;
-    stroke-opacity: 0.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    path {
+      fill: none;
+      stroke-opacity: 0.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
   }
 
   .ReactSVGPanZoom {

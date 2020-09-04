@@ -1,9 +1,26 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import { Button } from '@material-ui/core';
+// import Grid from '@material-ui/core/Grid';
+import { Button, Typography, AppBar, Theme, createStyles, ButtonGroup } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
+import Toolbar from '@material-ui/core/Toolbar';
 import './Navigation.scss';
+
+import FavoriteIcon from '@material-ui/icons/Favorite';
+
+import makeStyles from '@material-ui/core/styles/makeStyles';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    grow: {
+      flexGrow: 1,
+    },
+    title: {
+      marginRight: '20px',
+      color: 'rgba(255, 255, 255, 0.75)',
+    },
+  })
+);
 
 /**
  * Header Component
@@ -15,45 +32,32 @@ import './Navigation.scss';
     range         |   xs   |   sm   |   md   |   lg   |   xl
      */
 const Navigation: React.FC = () => {
+  const classes = useStyles();
+
   return (
-    <div className='navigationContainer'>
-      <Grid container spacing={1} className={'header'}>
-        <Grid item xs={12} sm={1} md={1} xl={1} className={'first'}></Grid>
-        <Grid item xs={4} sm={2} md={2} lg={1} xl={1} className='buttonContainer'>
-          <Button component={Link} to={``} fullWidth className={'navButton firstButton'}>
+    <AppBar position='static' className={'appBar'}>
+      <Toolbar className={'toolBar'}>
+        <Typography variant='h6' className={classes.title}>
+          <FavoriteIcon
+            alignmentBaseline={'central'}
+            style={{ verticalAlign: 'top', paddingTop: '7px', paddingRight: '3px' }}
+          />
+          Nivio
+        </Typography>
+        <ButtonGroup variant={'text'} aria-label='contained primary button group'>
+          <Button component={Link} to={``}>
             Home
           </Button>
-        </Grid>
-        <Grid item xs={4} sm={2} md={2} lg={1} xl={1} className='buttonContainer'>
-          <Button
-            data-testid='ManualButton'
-            component={Link}
-            to={`/man/install`}
-            fullWidth
-            className={'navButton'}
-          >
+          <Button data-testid='ManualButton' component={Link} to={`/man/install`}>
             Manual
           </Button>
-        </Grid>
-
-        <Grid item xs={4} sm={2} md={2} lg={1} xl={1} className='buttonContainer'>
-          <Button
-            data-testid='EventsButton'
-            component={Link}
-            to={`/events`}
-            fullWidth
-            className={'navButton'}
-          >
+          <Button data-testid='EventsButton' component={Link} to={`/events`}>
             Events
           </Button>
-        </Grid>
-        <Grid item className={'last'} xs={12} sm={1} md={1} lg={2} xl={2}></Grid>
-        <Grid item className={'title'} xs={12} sm={3} md={3} lg={3} xl={3}>
-          Nivio
-        </Grid>
-        <Grid item className={'last'} xs={12} sm={1} md={1} lg={3} xl={3}></Grid>
-      </Grid>
-    </div>
+        </ButtonGroup>
+        <div className={classes.grow} />
+      </Toolbar>
+    </AppBar>
   );
 };
 

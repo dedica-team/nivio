@@ -45,7 +45,7 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
     private String source;
 
     @JsonIgnore
-    private final LandscapeItems items = new LandscapeItems();
+    private final ItemIndex items = new ItemIndex();
 
     private LandscapeConfig config;
 
@@ -88,7 +88,7 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
     }
 
     @JsonIgnore
-    public LandscapeItems getItems() {
+    public ItemIndex getItems() {
         return items;
     }
 
@@ -132,12 +132,6 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
 
     public void setContact(String contact) {
         this.contact = contact;
-    }
-
-    public void addItem(Item item) {
-        item.setLandscape(this);
-        item.getProvidedBy().forEach(s -> s.setLandscape(this));
-        items.add(item);
     }
 
     @Override
