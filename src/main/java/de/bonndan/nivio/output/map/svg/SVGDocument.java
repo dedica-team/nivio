@@ -145,6 +145,7 @@ public class SVGDocument extends Component {
                 .attr("width", width.addAndGet(DEFAULT_ICON_SIZE + LABEL_WIDTH / 2))
                 .attr("height", height.addAndGet(DEFAULT_ICON_SIZE))
                 .attr("viewBox", (minX.get() - paddingTopLeft) + " " + (minY.get() - paddingTopLeft) + " " + (width.get() + viewBoxPadding2) + " " + (height.get() + viewBoxPadding2))
+                .attr("class", "map")
 
                 .with(logo, title)
                 .with(groups)

@@ -6,7 +6,8 @@ import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import dateFormat from 'dateformat';
+
+import './Notification.scss';
 
 import { Link } from 'react-router-dom';
 
@@ -46,9 +47,7 @@ const Notification: React.FC = () => {
             ? `Message: ${notificationMessage.message}`
             : '';
           const snackPackMessage = {
-            message: `${dateFormat(notificationMessage.date, 'hh:MM:ss TT')}: Change in ${
-              notificationMessage.landscape
-            } ${formattedMessage}`,
+            message: `Change in ${notificationMessage.landscape} ${formattedMessage}`,
             key: new Date().getTime(),
             landscape: notificationMessage.landscape,
             level: notificationMessage.level,
@@ -112,7 +111,11 @@ const Notification: React.FC = () => {
           severity={messageInfo?.level}
           action={
             <React.Fragment>
-              <Button component={Link} to={`/landscape/${messageInfo?.landscape}`}>
+              <Button
+                component={Link}
+                className={'mapButton'}
+                to={`/landscape/${messageInfo?.landscape}`}
+              >
                 Show Map
               </Button>
               <IconButton aria-label='close' color='inherit' onClick={handleClose}>
