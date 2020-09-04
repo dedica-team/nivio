@@ -1,37 +1,37 @@
-svg {
+.map {
   font-family: sans-serif;
 }
 
-svg g {
+.map g {
   stroke-width: 0.3;
 }
 
-svg g circle {
+.map g circle {
   stroke-width: 0.4em;
 }
 
-svg g.label {
+.map g.label {
   cursor: pointer;
 }
 
-svg g.label rect {
+.map g.label rect {
   stroke-width: 0.1em;
   stroke: #007F7F;
 }
 
-text.title {
+.map text.title {
   font-size: 3em;
 }
 
-text.item_shortName {
+.map text.item_shortName {
   font-size: 2em;
 }
 
-text.groupLabel {
+.map text.groupLabel {
   text-shadow: 1px 1px 1px black;
 }
 
-svg path {
+.map path {
   fill: none;
   stroke-width: 0.2em;
   stroke-opacity: 0.8;
@@ -39,6 +39,6 @@ svg path {
   stroke-linejoin: round;
 }
 
-svg g.relation path {
+.map g.relation path {
   stroke-width: 0.4em;
 }

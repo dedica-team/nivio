@@ -2,75 +2,67 @@
 @import '../../../Ressources/styling/colors.scss';
 
 .landscapeContainer {
-  svg {
+  .map {
     font-family: $svg-font;
     text-shadow: none;
-
+    .title {
+      fill: $font-color;
+    }
+    .details {
+      border: 1px solid $svg-border-color;
+      border-radius: 10px;
+      background-color: white;
+    }
     g {
-      stroke-width: 0.3;
-
-      .relation {
-        cursor: pointer;
+      circle {
+        stroke-width: 0.4em;
+      }
+      .group {
+        stroke-width: 0.1em;
+        fill-opacity: 0.4;
+        transition: fill-opacity 0.2s;
+        stroke: $svg-border-color;
+        stroke-width: 0em;
+        box-shadow: 0px 0px 12px $box-shadow-color;
+      }
+      polygon {
+        stroke-width: 0.2;
+        transition: fill-opacity 0.2s;
       }
 
-      g {
-        svg {
-          .title {
-            fill: $font-color;
-          }
-          .details {
-            border: 1px solid $svg-border-color;
-            border-radius: 10px;
-            background-color: white;
-          }
-          g {
-            circle {
-              stroke-width: 0.4em;
-            }
-            .group {
-              stroke-width: 0.1em;
-              fill-opacity: 0.4;
-              transition: fill-opacity 0.2s;
-              stroke: $svg-border-color;
-              stroke-width: 0em;
-              box-shadow: 0px 0px 12px $box-shadow-color;
-            }
-            polygon {
-              stroke-width: 0.2;
-              transition: fill-opacity 0.2s;
-            }
-
-            .label {
-              text {
-                fill: $font-color;
-                cursor: pointer;
-              }
-              rect {
-                fill: $background-grey;
-                fill-opacity: 1;
-                stroke-width: 0.1em;
-              }
-            }
-
-            .item_shortName {
-              fill: $svg-shortname-color;
-            }
-          }
+      .label {
+        text {
+          fill: $font-color;
+          cursor: pointer;
+        }
+        rect {
+          fill: $background-grey;
+          fill-opacity: 1;
+          stroke-width: 0.1em;
         }
       }
-    }
 
-    path {
-      fill: none;
-      stroke-opacity: 0.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+      .item_shortName {
+        fill: $svg-shortname-color;
+      }
     }
   }
 
-  // Really dirty but wont work otherwise because it doesn't have an id or class and will overwrite everything that follows
-  div > svg > g > rect {
-    fill: transparent;
+  path {
+    fill: none;
+    stroke-opacity: 0.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .ReactSVGPanZoom {
+    svg {
+      g {
+        rect {
+          fill: transparent;
+        }
+      }
+    }
   }
 
   @-o-keyframes highlightLabel {
