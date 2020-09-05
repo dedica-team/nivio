@@ -37,10 +37,8 @@ class APIWalker {
 
     private final Rancher rancher;
     private final SourceReference reference;
-    private final Rancher.Config config;
 
     public APIWalker(SourceReference reference, Rancher.Config config) {
-        this.config = config;
         this.rancher = new Rancher(config);
         this.reference = reference;
     }
@@ -49,12 +47,14 @@ class APIWalker {
 
         String projectName = (String) reference.getProperty("projectName");
         Project project = getProject(projectName)
-                .orElseThrow(() -> new ProcessingException(reference.getLandscapeDescription(), "Project " + projectName + "not found"));
+                .orElseThrow(() -> new ProcessingException(reference.getLandscapeDescription(),
+                        "Error while reading rancher API: project " + projectName + " not found")
+                );
         String accountId = project.getId();
-
 
         Map<String, Stack> stacks = getStacksById(accountId);
         List<Service> services = getServices(accountId);
+        LOGGER.info("Found {} services in project {}", services.size(), project.getName());
 
         return asDescriptions(services, stacks);
     }
@@ -102,10 +102,10 @@ class APIWalker {
             TypeCollection<Project> body = response.body();
             if (!response.isSuccessful() || body == null) {
 
-                //TODO remove access key
                 throw new ProcessingException(
                         reference.getLandscapeDescription(),
-                        "No projects found: code " + response.code() + " access key " + config.getAccessKey());
+                        "No projects found: code " + response.code()
+                );
             }
             projects =  body.getData();
         } catch (IOException | NullPointerException e) {
