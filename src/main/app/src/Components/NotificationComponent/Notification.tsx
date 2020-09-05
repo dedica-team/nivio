@@ -32,7 +32,7 @@ const Notification: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [backendUrl] = useState(
     process.env.REACT_APP_BACKEND_URL?.replace(/^https?:\/\//i, '') ||
-      `${window.location.hostname}:${window.location.port}`
+      `${window.location.href.split('#')[0]}`
   );
   const protocol = window.location.protocol !== 'https:' ? 'ws' : 'wss';
   const [socketUrl] = useState(protocol + `://${backendUrl}/subscribe`);
