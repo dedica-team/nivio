@@ -35,7 +35,7 @@ const Notification: React.FC = () => {
       `${window.location.href.split('#')[0]}`
   );
   const protocol = window.location.protocol !== 'https:' ? 'ws' : 'wss';
-  const [socketUrl] = useState(protocol + `://${backendUrl}/subscribe`);
+  const [socketUrl] = useState(protocol + `://${backendUrl}subscribe`);
   const [subscriptions, setSubscriptions] = useState<StompSubscription[]>([]);
   const [client] = useState(
     new Client({
