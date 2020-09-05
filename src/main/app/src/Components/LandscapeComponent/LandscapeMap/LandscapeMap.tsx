@@ -2,7 +2,14 @@ import React, { useState, useEffect, ReactElement, MouseEvent } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { ReactSvgPanZoomLoader, SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
-import { ReactSVGPanZoom, TOOL_AUTO, Tool, Value, fitSelection } from 'react-svg-pan-zoom';
+import {
+  ReactSVGPanZoom,
+  TOOL_AUTO,
+  Tool,
+  Value,
+  fitSelection,
+  setPointOnViewerCenter,
+} from 'react-svg-pan-zoom';
 
 import { CSSTransition } from 'react-transition-group';
 
@@ -11,6 +18,7 @@ import LandscapeItem from '../LandscapeItem/LandscapeItem';
 
 import Slider from '../../SliderComponent/Slider';
 import MapRelation from './MapRelation/MapRelation';
+import Search from '../../SearchComponent/Search';
 
 interface Props {
   identifier: string;
@@ -42,9 +50,10 @@ const Landscape: React.FC<Props> = () => {
       let dataX = element.getAttribute('data-x');
       let dataY = element.getAttribute('data-y');
       if (dataX && dataY) {
-        const x = parseFloat(dataX) - 500;
-        const y = parseFloat(dataY) - 100;
-        setValue(fitSelection(value, x, y, window.innerWidth, window.innerHeight * 0.92));
+        const shift: number = 200; //shift all a bit to left, since on the right is the sidebar
+        const x = parseFloat(dataX) + shift;
+        const y = parseFloat(dataY) + shift / 2;
+        setValue(setPointOnViewerCenter(value, x, y, 1));
         setRenderWithTransition(true);
         setHighlightElement(element);
       }
@@ -166,7 +175,8 @@ const Landscape: React.FC<Props> = () => {
 
   if (data) {
     return (
-      <div className='landscapeContainer'>
+      <div className='landscapeMapContainer'>
+        <Search findItem={findItem} />
         <CSSTransition
           in={showSlider}
           timeout={{ enter: 0, exit: 1000, appear: 1000 }}

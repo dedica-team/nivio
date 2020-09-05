@@ -3,7 +3,7 @@ package de.bonndan.nivio.model;
 /**
  * A relation between two landscape items.
  *
- * @param <T> Strings for relation descriptions, LandscapeItems in the final graph
+ * @param <T> Strings for relation descriptions, ItemIndex in the final graph
  */
 public interface RelationItem<T> {
 

@@ -1,5 +1,7 @@
 package de.bonndan.nivio.model;
 
+import org.springframework.util.StringUtils;
+
 /**
  * A component with tags (label key equals value).
  */
@@ -22,8 +24,12 @@ public interface Tagged extends Labeled {
      * @param tags tags to add
      */
     default void setTags(String[] tags) {
+
         for (String tag : tags) {
-            setLabel(LABEL_PREFIX_TAG + tag, tag);
+            if (!StringUtils.isEmpty(tag)) {
+                tag = tag.toLowerCase();
+                setLabel(LABEL_PREFIX_TAG + tag, tag);
+            }
         }
     }
 }

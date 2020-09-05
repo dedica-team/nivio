@@ -9,8 +9,15 @@ The API offers three types of output:
 * JSON under /api
 * rendered maps under /render
 * generated landscape documentation under /docs
+* search under /api/{lanscape}/search/{lucene style query}
 
 Please see the swagger documentation under /v2/api-docs (JSON) or /swagger-ui.html (html gui) for details.
+
+Searching
+---------
+
+Nivio indexes all landscape items in an in-memory search engine called Lucene. You can build sophisticated queries on
+various item fields (see Model). For further information, see https://www.lucenetutorial.com/lucene-query-syntax.html
 
 
 Item Icons and Background

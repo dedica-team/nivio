@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 
 import Navigation from '../NavigationComponent/Navigation';
+import Notification from '../NotificationComponent/Notification';
 import './Layout.scss';
 
 interface Props {
@@ -16,6 +17,7 @@ const Layout: React.FC<Props> = ({ children }) => {
     <React.Fragment>
       <Navigation />
       <div className='content'>{children}</div>
+      <Notification />
     </React.Fragment>
   );
 };

@@ -8,6 +8,8 @@ import { getAssessmentColorAndMessage } from '../../../utils/styling/style-helpe
 interface Props {
   fullyQualifiedItemIdentifier: string;
   findItem?: (fullyQualifiedItemIdentifier: string) => void;
+  item?: IItem;
+  small?: boolean;
 }
 
 /**
@@ -16,6 +18,7 @@ interface Props {
  */
 const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem }) => {
   const [item, setItem] = useState<IItem | null>();
+
   const [assessment, setAssessment] = useState<IAssessmentProps[] | null>(null);
 
   useEffect(() => {
@@ -119,7 +122,16 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
       <div className='itemContent'>
         <div className='header'>
           <img src={item?.icon} alt='Icon' className='icon' />
-          <span className='title'>{item ? item.name || item.identifier : null}</span>
+          <span
+            className='title'
+            onClick={() => {
+              if (findItem) {
+                findItem(item.fullyQualifiedIdentifier);
+              }
+            }}
+          >
+            {item ? item.name || item.identifier : null}
+          </span>
           <span className='status' style={{ backgroundColor: assesmentColor }}></span>
         </div>
         <div className='information'>

@@ -4,12 +4,14 @@
 $dotSize: 200px;
 
 .landscapeDashboardContainer {
-  .title {
-    padding-top: 16px;
-    padding-bottom: 16px;
-    font-size: $header-font-size;
-    text-align: center;
+  .titleContainer {
     border-bottom: 1px solid $border-color;
+    max-width: 100%;
+    margin-left: 0px;
+    .title {
+      text-align: center;
+      font-size: $header-font-size;
+    }
   }
 
   .groupContainer {
@@ -18,6 +20,7 @@ $dotSize: 200px;
     padding: 0px 5px 18px 0px;
 
     .group {
+      background-color: $background-grey;
       .groupName {
         padding: 5px;
         font-size: $large-font-size;
@@ -92,5 +95,54 @@ $dotSize: 200px;
         }
       }
     }
+  }
+
+  @-o-keyframes highlightDot {
+    0% {
+      background-color: #fff;
+    }
+    50% {
+      background-color: #ff4081;
+    }
+    to {
+      background-color: #fff;
+    }
+  }
+
+  @-webkit-keyframes highlightDot {
+    0% {
+      background-color: #fff;
+    }
+    50% {
+      background-color: #ff4081;
+    }
+    to {
+      background-color: #fff;
+    }
+  }
+
+  @keyframes highlightDot {
+    0% {
+      background-color: #fff;
+    }
+    50% {
+      background-color: #ff4081;
+    }
+    to {
+      background-color: #fff;
+    }
+  }
+
+  .highlightDot {
+    -webkit-animation: highlightDot 1s linear;
+    -o-animation: highlightDot 1s linear;
+    animation: highlightDot 1s linear;
+    -webkit-animation-iteration-count: 2;
+    -o-animation-iteration-count: 2;
+    animation-iteration-count: 2;
+  }
+
+  .highlightGroup {
+    z-index: 2;
   }
 }

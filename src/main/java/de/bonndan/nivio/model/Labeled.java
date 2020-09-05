@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
@@ -18,6 +19,7 @@ public interface Labeled {
         return getLabel(key.name().toLowerCase());
     }
 
+    @Nullable
     String getLabel(String key);
 
     /**

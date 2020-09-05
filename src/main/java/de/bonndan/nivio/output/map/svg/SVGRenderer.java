@@ -1,11 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.model.Component;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.output.Color;
-import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.Renderer;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.hex.Hex;
@@ -13,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
-import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 import java.io.File;
