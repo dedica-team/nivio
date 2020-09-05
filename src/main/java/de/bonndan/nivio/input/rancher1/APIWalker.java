@@ -38,8 +38,7 @@ class APIWalker {
     private final Rancher rancher;
     private final SourceReference reference;
 
-    public APIWalker(SourceReference reference) {
-        Rancher.Config config = getConfig(reference);
+    public APIWalker(SourceReference reference, Rancher.Config config) {
         this.rancher = new Rancher(config);
         this.reference = reference;
     }
@@ -102,7 +101,7 @@ class APIWalker {
             if (!response.isSuccessful() || body == null) {
                 throw new ProcessingException(
                         reference.getLandscapeDescription(),
-                        "No projects found: code " + response.code() + " " + response.errorBody());
+                        "No projects found: code " + response.code());
             }
             projects =  body.getData();
         } catch (IOException | NullPointerException e) {
@@ -159,21 +158,4 @@ class APIWalker {
         return descriptions;
     }
 
-    private Rancher.Config getConfig(SourceReference reference) {
-        Rancher.Config config;
-        try {
-            String accessKey = (String) reference.getProperty(API_ACCESS_KEY);
-            String secretKey = (String) reference.getProperty(API_SECRET_KEY);
-            if (StringUtils.isEmpty(accessKey)) {
-                throw new ProcessingException(reference.getLandscapeDescription(), "Rancher API access key is empty.");
-            }
-            if (StringUtils.isEmpty(secretKey)) {
-                throw new ProcessingException(reference.getLandscapeDescription(), "Rancher API secret key is empty.");
-            }
-            config = new Rancher.Config(new URL(reference.getUrl()), accessKey, secretKey);
-        } catch (MalformedURLException e) {
-            throw new ProcessingException(reference.getLandscapeDescription(), "Could not configure rancher API: " + e.getMessage(), e);
-        }
-        return config;
-    }
 }
