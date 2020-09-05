@@ -37,8 +37,10 @@ class APIWalker {
 
     private final Rancher rancher;
     private final SourceReference reference;
+    private final Rancher.Config config;
 
     public APIWalker(SourceReference reference, Rancher.Config config) {
+        this.config = config;
         this.rancher = new Rancher(config);
         this.reference = reference;
     }
@@ -99,9 +101,11 @@ class APIWalker {
             Response<TypeCollection<Project>> response = projectService.list().execute();
             TypeCollection<Project> body = response.body();
             if (!response.isSuccessful() || body == null) {
+
+                //TODO remove access key
                 throw new ProcessingException(
                         reference.getLandscapeDescription(),
-                        "No projects found: code " + response.code());
+                        "No projects found: code " + response.code() + " access key " + config.getAccessKey());
             }
             projects =  body.getData();
         } catch (IOException | NullPointerException e) {
