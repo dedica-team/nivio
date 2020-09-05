@@ -96,7 +96,7 @@ class APIWalker {
         List<Project> projects;
         try {
             projects = projectService.list().execute().body().getData();
-        } catch (IOException e) {
+        } catch (IOException|NullPointerException e) {
             throw new ProcessingException("Could not load projects", e);
         }
         return projects.stream()
