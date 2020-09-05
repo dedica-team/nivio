@@ -31,11 +31,10 @@ const Notification: React.FC = () => {
   const [messageInfo, setMessageInfo] = useState<SnackbarMessage | undefined>(undefined);
   const [open, setOpen] = useState(false);
   const [backendUrl] = useState(
-    process.env.REACT_APP_BACKEND_URL?.replace(/^https?:\/\//i, '') ||
-      `${window.location.href.split('#')[0]}`
+    process.env.REACT_APP_BACKEND_URL || `${window.location.href.split('#')[0]}`
   );
   const protocol = window.location.protocol !== 'https:' ? 'ws' : 'wss';
-  const [socketUrl] = useState(protocol + `://${backendUrl}subscribe`);
+  const [socketUrl] = useState(protocol + `://${backendUrl.replace(/^https?:\/\//i, '')}subscribe`);
   const [subscriptions, setSubscriptions] = useState<StompSubscription[]>([]);
   const [client] = useState(
     new Client({
