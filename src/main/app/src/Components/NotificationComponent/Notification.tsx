@@ -34,7 +34,7 @@ const Notification: React.FC = () => {
     process.env.REACT_APP_BACKEND_URL?.replace(/^https?:\/\//i, '') ||
       `${window.location.hostname}:${window.location.port}`
   );
-  const protocol = location.protocol !== 'https:' ? 'ws' : 'wss';
+  const protocol = window.location.protocol !== 'https:' ? 'ws' : 'wss';
   const [socketUrl] = useState(protocol + `://${backendUrl}/subscribe`);
   const [subscriptions, setSubscriptions] = useState<StompSubscription[]>([]);
   const [client] = useState(
