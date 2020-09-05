@@ -7,6 +7,7 @@ import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.Label;
 import io.rancher.Rancher;
+import io.rancher.base.TypeCollection;
 import io.rancher.service.ProjectService;
 import io.rancher.service.ServiceService;
 import io.rancher.service.StackService;
@@ -16,6 +17,7 @@ import io.rancher.type.Stack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+import retrofit2.Response;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -95,9 +97,16 @@ class APIWalker {
         ProjectService projectService = rancher.type(ProjectService.class);
         List<Project> projects;
         try {
-            projects = projectService.list().execute().body().getData();
-        } catch (IOException|NullPointerException e) {
-            throw new ProcessingException("Could not load projects", e);
+            Response<TypeCollection<Project>> response = projectService.list().execute();
+            TypeCollection<Project> body = response.body();
+            if (!response.isSuccessful() || body == null) {
+                throw new ProcessingException(
+                        reference.getLandscapeDescription(),
+                        "No projects found: code " + response.code() + " " + response.errorBody());
+            }
+            projects =  body.getData();
+        } catch (IOException | NullPointerException e) {
+            throw new ProcessingException("Could not load projects" + projectService.toString(), e);
         }
         return projects.stream()
                 .filter(project -> StringUtils.isEmpty(projectName) || project.getName().equals(projectName))
