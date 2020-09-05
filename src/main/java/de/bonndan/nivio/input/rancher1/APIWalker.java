@@ -153,11 +153,15 @@ class APIWalker {
     private Rancher.Config getConfig(SourceReference reference) {
         Rancher.Config config;
         try {
-            config = new Rancher.Config(
-                    new URL(reference.getUrl()),
-                    (String) reference.getProperty(API_ACCESS_KEY),
-                    (String) reference.getProperty(API_SECRET_KEY)
-            );
+            String accessKey = (String) reference.getProperty(API_ACCESS_KEY);
+            String secretKey = (String) reference.getProperty(API_SECRET_KEY);
+            if (StringUtils.isEmpty(accessKey)) {
+                throw new ProcessingException(reference.getLandscapeDescription(), "Rancher API access key is empty.");
+            }
+            if (StringUtils.isEmpty(secretKey)) {
+                throw new ProcessingException(reference.getLandscapeDescription(), "Rancher API secret key is empty.");
+            }
+            config = new Rancher.Config(new URL(reference.getUrl()), accessKey, secretKey);
         } catch (MalformedURLException e) {
             throw new ProcessingException(reference.getLandscapeDescription(), "Could not configure rancher API: " + e.getMessage(), e);
         }
