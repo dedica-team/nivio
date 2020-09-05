@@ -10,7 +10,7 @@ services:
       - ../src/test/resources/example:/usr/share/nginx/html:ro
 
   nivio:
-    image: bonndan/nivio:latest
+    image: dedica/nivio:latest
     #environment:
       # enable DEMO to have a preloaded landscape
       # DEMO: 1

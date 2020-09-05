@@ -26,7 +26,7 @@ Set SERVER_CONTEXT_PATH and NIVIO_BASEURL env vars to the path if nivio won't be
 Demo mode
 ---------
 
-In the demo mode Nivio loads sample data for demonstration purposes. Run
+In the demo mode Nivio loads sample data for demonstration purposes. From the `nivio/src/test` directory, run
 
 .. code-block:: bash
 
@@ -34,8 +34,7 @@ In the demo mode Nivio loads sample data for demonstration purposes. Run
 
 then point your browser to http://localhost:8080/render/nivio:example/graph.png
 
-There is also a demo project "nivio-demo" in the repository, which starts an nginx to simulate a remote server.
-
+There is also a demo project "nivio-demo" in the repository under `nivio/nivio-demo`, which starts an nginx to simulate a remote server.
 
 Seed config
 -----------

@@ -9,9 +9,10 @@ services:
       - 9229:9229
 
   nivio:
-    image: bonndan/nivio:latest
+    image: dedica/nivio:latest
     environment:
-      DEMO: 1
+      DEMO: ${DEMO}
+      SEED: ${SEED}
     ports: 
       - 8080:8080
 
