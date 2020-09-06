@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class URLHelper {
     public static boolean isLocal(URL url) {
-        return Objects.nonNull(url) && url.toString().startsWith("file:/");
+        return Objects.nonNull(url) && url.getProtocol().equals("file");
     }
 
     /**
@@ -27,8 +27,9 @@ public class URLHelper {
      */
     @Nullable
     public static URL getURL(String url) {
-        if (url == null)
+        if (url == null) {
             return null;
+        }
         try {
             return new URL(url);
         } catch (MalformedURLException e) {
@@ -36,7 +37,7 @@ public class URLHelper {
             if (file.exists() && !url.startsWith("file:")) {
                 try {
                     return file.toURI().toURL();
-                } catch (MalformedURLException malformedURLException) {
+                } catch (MalformedURLException ignored) {
                     return null;
                 }
             }
@@ -49,11 +50,12 @@ public class URLHelper {
      */
     public static URL getParentPath(String url) {
         URL url1 = getURL(url);
-        if (url1 == null)
+        if (url1 == null) {
             return null;
+        }
         try {
             return url1.toURI().resolve(".").toURL();
-        } catch (URISyntaxException | MalformedURLException e) {
+        } catch (URISyntaxException | MalformedURLException ignored) {
             return null;
         }
     }
@@ -68,15 +70,16 @@ public class URLHelper {
      * @return combined url as string
      */
     public static String combine(@Nullable URL baseUrl, @Nullable String part) {
+        if (baseUrl == null && part == null) {
+            return null;
+        }
         if (baseUrl == null) {
             return part;
         }
-
         if (part == null) {
             return baseUrl.toString();
         }
-
-        if (part.startsWith(baseUrl.toString())) {
+        if (part.startsWith(baseUrl.toString()) || part.startsWith("http") || part.startsWith("file:/")) {
             return part;
         }
 
@@ -90,11 +93,15 @@ public class URLHelper {
     public static Map<String, String> splitQuery(URL url) {
         Map<String, String> queryPairs = new LinkedHashMap<>();
         String query = url.getQuery();
-        if (query == null) { return queryPairs; }
+        if (query == null) {
+            return queryPairs;
+        }
         String[] pairs = query.split("&");
         for (String pair : pairs) {
             int idx = pair.indexOf("=");
-            if (idx == -1 || idx + 1 > pair.length() - 1) { continue; }
+            if (idx == -1 || idx + 1 > pair.length() - 1) {
+                continue;
+            }
             queryPairs.put(URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8), URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8));
         }
         return queryPairs;
