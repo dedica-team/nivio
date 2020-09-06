@@ -7,18 +7,29 @@ The Docker image is about 350MB and can be started with:
 
 .. code-block:: bash
 
-    docker run -e DEMO=1 dedica/nivio
+    docker run dedica/nivio
 
 Demo mode
 ---------
 
-In the demo mode Nivio loads sample data for demonstration purposes. From the `./nivio-demo` directory, run
+.. code-block:: bash
+
+    docker run -e DEMO=1 dedica/nivio
+
+In the demo mode Nivio loads sample data for demonstration purposes.
+
+
+There is a demo in the directory `./nivio-demo` which starts an nginx to serve all example configs from the project and
+starts nivio as docker container.
+
+From the directory, run
 
 .. code-block:: bash
 
-    DEMO=1 docker-compose up
+    docker-compose up
 
 then point your browser to http://localhost:8080/
+
 
 Adding your own content (seed config)
 --------------------------------------
@@ -38,9 +49,6 @@ Nivio expects a seed configuration at start time (unless you want to run the dem
     SEED=https://foo.com/bar.yml java -jar nivio
 
 then point your browser to the GUI at http://localhost:8080 or the API at http://localhost:8080/api/.
-
-There is a demo project "nivio-demo" in the repository under `nivio/nivio-demo`, which starts an nginx to simulate a remote server.
-
 
 
 Landscape configuration
