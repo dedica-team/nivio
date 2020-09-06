@@ -1,13 +1,7 @@
 Getting Started
 ===============
 
-The easiest way to get started is run to Nivio using Docker. **Make sure to read about using templates before putting too much effort in item configuration.**
-
-
-Requirements
-------------
-
-Nivio can either be run using Docker or Java 11.
+The easiest way to get started is run to nivio using Docker (to compile it, you need Java 11).
 
 The Docker image is about 350MB and can be started with:
 
@@ -18,7 +12,7 @@ The Docker image is about 350MB and can be started with:
 Demo mode
 ---------
 
-In the demo mode Nivio loads sample data for demonstration purposes. From the `nivio/src/test` directory, run
+In the demo mode Nivio loads sample data for demonstration purposes. From the `./nivio-demo` directory, run
 
 .. code-block:: bash
 
@@ -26,10 +20,11 @@ In the demo mode Nivio loads sample data for demonstration purposes. From the `n
 
 then point your browser to http://localhost:8080/
 
-There is also a demo project "nivio-demo" in the repository under `nivio/nivio-demo`, which starts an nginx to simulate a remote server.
+Adding your own content (seed config)
+--------------------------------------
 
-Seed config
------------
+**Make sure to read about using templates before putting too much effort in item configuration.**
+
 
 Nivio expects a seed configuration at start time (unless you want to run the demo mode). You need to set an environment variable
 *SEED* to a path or URL nivio can read from.
@@ -44,16 +39,7 @@ Nivio expects a seed configuration at start time (unless you want to run the dem
 
 then point your browser to the GUI at http://localhost:8080 or the API at http://localhost:8080/api/.
 
-Behind a proxy
---------------
-
-If you deploy nivio to run under a different path than root ("/"), make sure to set the environment variables
-SERVER_CONTEXT_PATH and NIVIO_BASEURL to the path.
-
-.. code-block:: bash
-
-   SERVER_SERVLET_CONTEXT_PATH: /my-landscape
-   NIVIO_BASEURL: https://foo.com/my-landscape/
+There is a demo project "nivio-demo" in the repository under `nivio/nivio-demo`, which starts an nginx to simulate a remote server.
 
 
 
@@ -123,3 +109,15 @@ Items not referenced anymore in the descriptions will be deleted automatically o
 If an error occurs fetching the source while indexing, the behaviour of the indexer changes to treat the available data as
  partial input. This means only upserts will happen, and no deletion.
 
+
+
+Behind a proxy
+--------------
+
+If you deploy nivio to run under a different path than root ("/"), make sure to set the environment variables
+SERVER_CONTEXT_PATH and NIVIO_BASEURL to the path.
+
+.. code-block:: bash
+
+   SERVER_SERVLET_CONTEXT_PATH: /my-landscape
+   NIVIO_BASEURL: https://foo.com/my-landscape/
