@@ -7,6 +7,7 @@ import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.map.MapController;
 import j2html.tags.ContainerTag;
 import org.springframework.util.StringUtils;
 
@@ -38,15 +39,13 @@ public class ReportGenerator extends HtmlGenerator {
 
     private String writeLandscape(LandscapeImpl landscape) {
 
-        assessment = new Assessment(
-                landscape.applyKPIs(factory.getConfiguredKPIs(landscape))
-        );
+        assessment = new Assessment(landscape.applyKPIs(factory.getConfiguredKPIs(landscape)));
         return html(
                 getHead(landscape),
                 body(
                         h1(landscape.getName()),
                         iff(!isEmpty(landscape.getContact()), p("Contact: " + nice(landscape.getContact()))),
-                        div(embed().attr("src", "/render/" + landscape.getIdentifier() + "/" + MAP_SVG_ENDPOINT).attr("class", "img-fluid img-thumbnail mx-auto d-block")),
+                        div(embed().attr("src", MapController.PATH + "/" + landscape.getIdentifier() + "/" + MAP_SVG_ENDPOINT).attr("class", "img-fluid img-thumbnail mx-auto d-block")),
                         br(), br(),
                         rawHtml(writeGroups(landscape))
                 )
@@ -73,8 +72,8 @@ public class ReportGenerator extends HtmlGenerator {
     }
 
     protected ContainerTag writeItem(Item item) {
-        boolean hasRelations = item.getRelations().size() > 0;
-        boolean hasInterfaces = item.getInterfaces().size() > 0;
+        boolean hasRelations = item.getRelations().isEmpty();
+        boolean hasInterfaces = item.getInterfaces().isEmpty();
         String groupColor = "#" + Color.nameToRGB(item.getGroup());
 
         List<ContainerTag> links = item.getLinks().entrySet().stream()
@@ -116,15 +115,20 @@ public class ReportGenerator extends HtmlGenerator {
                         dl().with(
                                 statusValues.stream().map(statusItem ->
                                         join(
-                                                dt(FormatUtils.nice(statusItem.getField())),
-                                                dd(
-                                                        span(" " + statusItem.getStatus().toString() + " ")
-                                                                .attr("class", "badge")
-                                                                .attr("style", "background-color: " + statusItem.getStatus() + " !important"),
-                                                        span(" " + FormatUtils.nice(statusItem.getMessage())))
+                                                dt(FormatUtils.nice(
+                                                        statusItem.getField().endsWith("." + item.getIdentifier())
+                                                                ? statusItem.getField().replace("." + item.getIdentifier(), "")
+                                                                : statusItem.getField()
+                                                )),
+                                                span(" " + statusItem.getStatus().toString() + " ")
+                                                        .attr("class", "badge")
+                                                        .attr("style", "background-color: " + statusItem.getStatus() + " !important"),
+                                                iff(
+                                                        !isEmpty(statusItem.getMessage()) && !"summary".equals(statusItem.getMessage()),
+                                                        dd(span(" " + FormatUtils.nice(statusItem.getMessage())))
+                                                )
                                         )
                                 )
-
                         ),
 
 
@@ -158,9 +162,7 @@ public class ReportGenerator extends HtmlGenerator {
                                                 span(", ").with(a(interfaceItem.getUrl().toString()).attr("href", interfaceItem.getUrl().toString()))
                                         )
                                 ))
-                                )
-                        )
-
+                        ))
                 ).attr("class", "card-body")
 
         ).attr("class", "card");
@@ -168,30 +170,23 @@ public class ReportGenerator extends HtmlGenerator {
 
     protected List<ContainerTag> getLabelList(Item item) {
         Function<Map.Entry<String, String>, Boolean> filter = s -> {
-            if (s.getKey().equals("type") || isEmpty(s.getValue())) {
+            if ("type".equals(s.getKey()) || isEmpty(s.getValue())) {
                 return false;
             }
-
             //filter out statuses, they are part of the assessment
-            if (s.getKey().startsWith(Label.status.name())) {
-                return false;
-            }
-
-            return true;
+            return !s.getKey().startsWith(Label.status.name());
         };
 
-        List<ContainerTag> labels = Labeled.groupedByPrefixes(item.getLabels()).entrySet().stream()
+        return Labeled.groupedByPrefixes(item.getLabels()).entrySet().stream()
                 .filter(filter::apply)
                 .map(mapEntry -> {
                     String key = StringUtils.capitalize(mapEntry.getKey());
-                    if (key.equals(Label.shortname.name())) {
+                    if (key.equals(StringUtils.capitalize(Label.shortname.name()))) {
                         key = Label.shortname.meaning;
                     }
                     return li(key + ": " + nice(mapEntry.getValue()));
                 })
                 .collect(Collectors.toList());
-
-        return labels;
     }
 
 }

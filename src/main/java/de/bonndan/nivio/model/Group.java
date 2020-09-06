@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Group implements GroupItem, Labeled, Assessable {
 
@@ -15,21 +14,18 @@ public class Group implements GroupItem, Labeled, Assessable {
      * Default group identifier (items are assigned to this group if no group is given
      */
     public static final String COMMON = "common";
-
+    private final Map<String, Link> links = new HashMap<>();
+    private final Map<String, String> labels = new HashMap<>();
+    /**
+     * Items belonging to this group. Order is important for layouting (until items are ordered there).
+     */
+    private final Set<Item> items = new LinkedHashSet<>();
     private String identifier;
     private String owner;
     private String description;
     private String contact;
     private String icon;
     private String color;
-    private final Map<String, Link> links = new HashMap<>();
-    private final Map<String, String> labels = new HashMap<>();
-
-    /**
-     * Items belonging to this group. Order is important for layouting (until items are ordered there).
-     */
-    private final Set<Item> items = new LinkedHashSet<>();
-
     private String landscapeIdentifier;
 
     public Group(String identifier) {
@@ -39,6 +35,10 @@ public class Group implements GroupItem, Labeled, Assessable {
     @Override
     public String getIdentifier() {
         return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = StringUtils.isEmpty(identifier) ? COMMON : identifier;
     }
 
     @Override
@@ -56,9 +56,17 @@ public class Group implements GroupItem, Labeled, Assessable {
         return owner;
     }
 
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
     @Override
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
@@ -66,38 +74,23 @@ public class Group implements GroupItem, Labeled, Assessable {
         return contact;
     }
 
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+
     @Override
     public String getColor() {
         return color;
-    }
-
-    @Override
-    @Schema(name = "_links")
-    public Map<String, Link> getLinks() {
-        return links;
-    }
-
-    public void setIdentifier(String identifier) {
-        if (StringUtils.isEmpty(identifier))
-            identifier = COMMON;
-
-        this.identifier = identifier;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public void setColor(String color) {
         this.color = color;
     }
 
-    public void setContact(String contact) {
-        this.contact = contact;
+    @Override
+    @Schema(name = "_links")
+    public Map<String, Link> getLinks() {
+        return links;
     }
 
     public Set<Item> getItems() {

@@ -18,29 +18,22 @@ import java.util.*;
  */
 public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
 
+    private final Map<String, Link> links = new HashMap<>();
+    @JsonDeserialize(contentAs = RelationDescription.class)
+    private final Set<RelationItem<String>> relations = new HashSet<>();
+    private final Map<String, String> labels = new HashMap<>();
     @NotEmpty
     private String environment;
-
     @NotEmpty
     private String identifier;
-
     @NotEmpty
     private String name;
-
     private String owner;
     private String description;
     private String contact;
-    private final Map<String, Link> links = new HashMap<>();
     private String group;
-
     @JsonDeserialize(contentAs = InterfaceDescription.class)
     private Set<InterfaceItem> interfaces = new HashSet<>();
-
-    @JsonDeserialize(contentAs = RelationDescription.class)
-    private final Set<RelationItem<String>> relations = new HashSet<>();
-
-    private final Map<String, String> labels = new HashMap<>();
-
     private List<String> providedBy = new ArrayList<>();
     private String icon;
     private String color;
@@ -100,6 +93,10 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         return owner;
     }
 
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
     @Override
     public String getIcon() {
         return icon;
@@ -116,10 +113,6 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
 
     public void setColor(String color) {
         this.color = color;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
     }
 
     public String getDescription() {
@@ -156,8 +149,9 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         //try to standardize using enum values
         if (!StringUtils.isEmpty(lifecycle)) {
             Lifecycle from = Lifecycle.from(lifecycle);
-            if (from != null)
+            if (from != null) {
                 lifecycle = from.name();
+            }
         }
 
         if (lifecycle != null) {
@@ -178,11 +172,6 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         this.interfaces = interfaces;
     }
 
-    public void setProvidedBy(List<String> providedBy) {
-        this.providedBy = providedBy;
-    }
-
-
     /**
      * Syntactic sugar to create relations from providers.
      *
@@ -192,14 +181,13 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         return providedBy;
     }
 
+    public void setProvidedBy(List<String> providedBy) {
+        this.providedBy = providedBy;
+    }
+
     @Override
     public Set<RelationItem<String>> getRelations() {
         return relations;
-    }
-
-    public void addRelation(RelationItem<String> relationItem) {
-        Objects.requireNonNull(relationItem);
-        this.relations.add(relationItem);
     }
 
     /**
@@ -213,6 +201,11 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
                 .filter(s -> !StringUtils.isEmpty(s))
                 .map(s -> RelationBuilder.createDataflowDescription(this, s))
                 .forEach(this::addRelation);
+    }
+
+    public void addRelation(RelationItem<String> relationItem) {
+        Objects.requireNonNull(relationItem);
+        this.relations.add(relationItem);
     }
 
     @Override
@@ -236,8 +229,9 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
      */
     @Override
     public String toString() {
-        if (StringUtils.isEmpty(environment))
+        if (StringUtils.isEmpty(environment)) {
             return identifier;
+        }
 
         return FullyQualifiedIdentifier.build(environment, group, identifier).toString();
     }
@@ -253,8 +247,8 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
             if (key != null) {
                 String value = map.get(StatusValue.LABEL_SUFFIX_STATUS);
                 String message = map.get(StatusValue.LABEL_SUFFIX_MESSAGE);
-                setLabel(Label.key(Label.status, key , StatusValue.LABEL_SUFFIX_STATUS), value);
-                setLabel(Label.key(Label.status, key , StatusValue.LABEL_SUFFIX_MESSAGE), message);
+                setLabel(Label.key(Label.status, key, StatusValue.LABEL_SUFFIX_STATUS), value);
+                setLabel(Label.key(Label.status, key, StatusValue.LABEL_SUFFIX_MESSAGE), message);
             }
         });
     }
@@ -284,10 +278,10 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         if (value instanceof List) {
             try {
                 ((List) value).forEach(s -> setPrefixed(key, (String) s));
+                return;
             } catch (ClassCastException e) {
                 throw new ProcessingException("Cannot set " + key + " to " + value, e);
             }
-            return;
         }
 
         if (value instanceof Map) {

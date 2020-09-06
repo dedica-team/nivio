@@ -27,10 +27,10 @@ public class LifecycleKPI extends CustomKPI {
     protected List<StatusValue> getStatusValues(String value, String message) {
         Lifecycle lifecycle = Lifecycle.from(value);
         if (Lifecycle.PRODUCTION.equals(lifecycle)) {
-            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.GREEN, label + ": " + value));
+            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.GREEN, value));
         }
         if (Lifecycle.END_OF_LIFE.equals(lifecycle)) {
-            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.ORANGE, label + ": " + value));
+            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.ORANGE, value));
         }
 
         return new ArrayList<>();

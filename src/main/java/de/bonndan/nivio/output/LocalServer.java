@@ -1,9 +1,7 @@
 package de.bonndan.nivio.output;
 
-import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.output.icons.Icons;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import de.bonndan.nivio.util.URLHelper;
@@ -25,20 +23,17 @@ import static de.bonndan.nivio.output.icons.Icons.DEFAULT_ICON;
 @Service
 public class LocalServer implements EnvironmentAware {
 
-    private static Environment env;
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalServer.class);
     public static final String VENDORICONS_PATH = "/vendoricons";
     public static final String VENDOR_PREFIX = "vendor://";
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalServer.class);
+    private static Environment env;
     private final VendorIcons vendorIcons;
     private final URL defaultIcon;
-
-    private String imageProxy;
-
     /**
      * without slash
      */
     private final String baseUrl;
+    private String imageProxy;
 
     public LocalServer(@Value("${nivio.baseUrl:}") String baseUrl, VendorIcons vendorIcons) {
         if (!StringUtils.isEmpty(baseUrl)) {
@@ -48,6 +43,37 @@ public class LocalServer implements EnvironmentAware {
         }
         this.vendorIcons = vendorIcons;
         defaultIcon = getUrl(DEFAULT_ICON.getName());
+    }
+
+    /**
+     * Turns the base 64 encode vendor icon url back into the orginal icon url.
+     *
+     * @param requestURI base64 encoded request including nivio path
+     * @return string icon url
+     */
+    public static String deproxyUrl(String requestURI) {
+        String iconRequestURI = requestURI.split(VENDORICONS_PATH)[1];
+        iconRequestURI = StringUtils.trimLeadingCharacter(iconRequestURI, '/');
+
+        iconRequestURI = new String(Base64.getUrlDecoder().decode(iconRequestURI));
+
+        return iconRequestURI;
+    }
+
+    private static String host() {
+        return InetAddress.getLoopbackAddress().getHostName();
+    }
+
+    private static String port() {
+
+        if (env != null) {
+            String port = env.getProperty("local.server.port");
+            if (port != null && Integer.parseInt(port) != 0) {
+                return port;
+            }
+        }
+
+        return "8080";
     }
 
     /**
@@ -82,7 +108,7 @@ public class LocalServer implements EnvironmentAware {
 
             if (icon.startsWith(VENDOR_PREFIX)) {
                 String key = icon.replace(VENDOR_PREFIX, "").toLowerCase();
-                return vendorIcons.getUrl(key).map(url -> proxiedUrl(url)).orElse(defaultIcon);
+                return vendorIcons.getUrl(key).map(this::proxiedUrl).orElse(defaultIcon);
             }
 
             URL iconUrl = getIconUrl(icon);
@@ -134,38 +160,8 @@ public class LocalServer implements EnvironmentAware {
         return url;
     }
 
-    /**
-     * Turns the base 64 encode vendor icon url back into the orginal icon url.
-     *
-     * @param requestURI base64 encoded request including nivio path
-     * @return string icon url
-     */
-    public static String deproxyUrl(String requestURI) {
-        String iconRequestURI = requestURI.split(VENDORICONS_PATH)[1];
-        iconRequestURI = StringUtils.trimLeadingCharacter(iconRequestURI, '/');
-
-        iconRequestURI = new String(Base64.getUrlDecoder().decode(iconRequestURI));
-
-        return iconRequestURI;
-    }
-
     public void setImageProxy(String imageProxy) {
         this.imageProxy = imageProxy;
-    }
-
-    private static String host() {
-        return InetAddress.getLoopbackAddress().getHostName();
-    }
-
-    private static String port() {
-
-        if (env != null) {
-            String port = env.getProperty("local.server.port");
-            if (port != null && Integer.valueOf(port) != 0)
-                return port;
-        }
-
-        return "8080";
     }
 
     @Override
