@@ -11,7 +11,9 @@ services:
 
   nivio:
     image: dedica/nivio:latest
-    #environment:
+    environment:
+      SEED: ${SEED}
+      DEMO: ${DEMO}
       # enable DEMO to have a preloaded landscape
       # DEMO: 1
       # SEED also loads data, but uses the sources from the webserver
