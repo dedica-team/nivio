@@ -15,14 +15,6 @@ The Docker image is about 350MB and can be started with:
 
     docker run -e DEMO=1 dedica/nivio
 
-Set SERVER_CONTEXT_PATH and NIVIO_BASEURL env vars to the path if nivio won't be runner under "/" (like behind a reverse proxy).
-
-.. code-block:: bash
-
-   SERVER_SERVLET_CONTEXT_PATH: /my-landscape
-   NIVIO_BASEURL: https://foo.com/my-landscape/
-
-
 Demo mode
 ---------
 
@@ -32,22 +24,37 @@ In the demo mode Nivio loads sample data for demonstration purposes. From the `n
 
     DEMO=1 docker-compose up
 
-then point your browser to http://localhost:8080/render/nivio:example/graph.png
+then point your browser to http://localhost:8080/
 
 There is also a demo project "nivio-demo" in the repository under `nivio/nivio-demo`, which starts an nginx to simulate a remote server.
 
 Seed config
 -----------
 
-Nivio expects a seed configuration at start time. You can either set an landscapeDescription variable *SEED* to a path to read from,
-or you can omit the variable and place landscapeDescription files in /opt/nivio/environments.
+Nivio expects a seed configuration at start time (unless you want to run the demo mode). You need to set an environment variable
+*SEED* to a path or URL nivio can read from.
 
 .. code-block:: bash
 
     SEED=/my/files/here docker-compose up
 
-then point your browser to http://localhost:8080/render/dld4e/{landscape} where landscape is the identifier of the landscape
-to be rendered. The seed can also be an URL.
+.. code-block:: bash
+
+    SEED=https://foo.com/bar.yml java -jar nivio
+
+then point your browser to the GUI at http://localhost:8080 or the API at http://localhost:8080/api/.
+
+Behind a proxy
+--------------
+
+If you deploy nivio to run under a different path than root ("/"), make sure to set the environment variables
+SERVER_CONTEXT_PATH and NIVIO_BASEURL to the path.
+
+.. code-block:: bash
+
+   SERVER_SERVLET_CONTEXT_PATH: /my-landscape
+   NIVIO_BASEURL: https://foo.com/my-landscape/
+
 
 
 Landscape configuration
