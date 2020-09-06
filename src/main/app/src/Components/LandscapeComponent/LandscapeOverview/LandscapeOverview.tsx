@@ -4,7 +4,7 @@ import { ILandscape, ILandscapeLinks } from '../../../interfaces';
 import LandscapeLog from '../Log/LandscapeLog';
 import LandscapeOverviewLayout from './LandscapeOverviewLayout';
 import Slider from '../../SliderComponent/Slider';
-import { get, getJsonFromUrl } from '../../../utils/API/APIClient';
+import { get } from '../../../utils/API/APIClient';
 
 /**
  * Logic Component to display all available landscapes
@@ -24,7 +24,7 @@ const LandscapeOverview: React.FC = () => {
       setLandscapeLinks(await get('/api/'));
       if (landscapeLinks) {
         for (const landscapeLink in landscapeLinks._links) {
-          const landscapeDescription: ILandscape | null = await getJsonFromUrl(
+          const landscapeDescription: ILandscape | null = await get(
             landscapeLinks._links[landscapeLink].href
           );
           if (landscapeDescription) {

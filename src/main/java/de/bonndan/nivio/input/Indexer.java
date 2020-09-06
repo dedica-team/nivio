@@ -98,6 +98,9 @@ public class Indexer {
         new ItemRelationResolver(logger).process(input, landscape);
 
         new AppearanceResolver(logger, localServer).process(input, landscape);
+
+        // this step must be final or very late to include all item modifications
+        landscape.getItems().indexForSearch();
     }
 
 }

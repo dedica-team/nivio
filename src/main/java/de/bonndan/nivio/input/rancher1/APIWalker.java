@@ -7,6 +7,7 @@ import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.Label;
 import io.rancher.Rancher;
+import io.rancher.base.TypeCollection;
 import io.rancher.service.ProjectService;
 import io.rancher.service.ServiceService;
 import io.rancher.service.StackService;
@@ -16,6 +17,7 @@ import io.rancher.type.Stack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+import retrofit2.Response;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -36,8 +38,7 @@ class APIWalker {
     private final Rancher rancher;
     private final SourceReference reference;
 
-    public APIWalker(SourceReference reference) {
-        Rancher.Config config = getConfig(reference);
+    public APIWalker(SourceReference reference, Rancher.Config config) {
         this.rancher = new Rancher(config);
         this.reference = reference;
     }
@@ -46,12 +47,14 @@ class APIWalker {
 
         String projectName = (String) reference.getProperty("projectName");
         Project project = getProject(projectName)
-                .orElseThrow(() -> new ProcessingException(reference.getLandscapeDescription(), "Project " + projectName + "not found"));
+                .orElseThrow(() -> new ProcessingException(reference.getLandscapeDescription(),
+                        "Error while reading rancher API: project " + projectName + " not found")
+                );
         String accountId = project.getId();
-
 
         Map<String, Stack> stacks = getStacksById(accountId);
         List<Service> services = getServices(accountId);
+        LOGGER.info("Found {} services in project {}", services.size(), project.getName());
 
         return asDescriptions(services, stacks);
     }
@@ -95,9 +98,18 @@ class APIWalker {
         ProjectService projectService = rancher.type(ProjectService.class);
         List<Project> projects;
         try {
-            projects = projectService.list().execute().body().getData();
-        } catch (IOException e) {
-            throw new ProcessingException("Could not load projects", e);
+            Response<TypeCollection<Project>> response = projectService.list().execute();
+            TypeCollection<Project> body = response.body();
+            if (!response.isSuccessful() || body == null) {
+
+                throw new ProcessingException(
+                        reference.getLandscapeDescription(),
+                        "No projects found: code " + response.code()
+                );
+            }
+            projects =  body.getData();
+        } catch (IOException | NullPointerException e) {
+            throw new ProcessingException("Could not load projects" + projectService.toString(), e);
         }
         return projects.stream()
                 .filter(project -> StringUtils.isEmpty(projectName) || project.getName().equals(projectName))
@@ -150,17 +162,4 @@ class APIWalker {
         return descriptions;
     }
 
-    private Rancher.Config getConfig(SourceReference reference) {
-        Rancher.Config config;
-        try {
-            config = new Rancher.Config(
-                    new URL(reference.getUrl()),
-                    (String) reference.getProperty(API_ACCESS_KEY),
-                    (String) reference.getProperty(API_SECRET_KEY)
-            );
-        } catch (MalformedURLException e) {
-            throw new ProcessingException(reference.getLandscapeDescription(), "Could not configure rancher API: " + e.getMessage(), e);
-        }
-        return config;
-    }
 }

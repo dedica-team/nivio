@@ -13,9 +13,15 @@ The Docker image is about 350MB and can be started with:
 
 .. code-block:: bash
 
-    docker run -e DEMO=1 dedica-team/nivio
+    docker run -e DEMO=1 dedica/nivio
 
-Set SERVER_CONTEXT_PATH env var to the path if nivio won't be runner under "/".
+Set SERVER_CONTEXT_PATH and NIVIO_BASEURL env vars to the path if nivio won't be runner under "/" (like behind a reverse proxy).
+
+.. code-block:: bash
+
+   SERVER_SERVLET_CONTEXT_PATH: /my-landscape
+   NIVIO_BASEURL: https://foo.com/my-landscape/
+
 
 Demo mode
 ---------

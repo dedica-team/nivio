@@ -7,6 +7,8 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.URLHelper;
+import org.apache.http.entity.ContentType;
+import org.apache.lucene.facet.FacetResult;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -162,6 +164,36 @@ public class ApiController {
         return new ResponseEntity<>(landscape.getLog(), HttpStatus.OK);
 
     }
+
+    @CrossOrigin(methods = RequestMethod.GET)
+    @RequestMapping(path = "/landscape/{identifier}/search/{query}", method = RequestMethod.GET)
+    public ResponseEntity<Set<Item>> search(@PathVariable String identifier, @PathVariable String query) {
+
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
+        if (landscape == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            return new ResponseEntity<>(landscape.getItems().search(query), HttpStatus.OK);
+        } catch (RuntimeException ignored) {
+            return ResponseEntity.badRequest().build();
+        }
+
+    }
+
+    @CrossOrigin(methods = RequestMethod.GET)
+    @RequestMapping(path = "/landscape/{identifier}/facets", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<List<FacetResult>> facets(@PathVariable String identifier) {
+
+        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
+        if (landscape == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return new ResponseEntity<>(landscape.getItems().facets(), HttpStatus.OK);
+    }
+
 
     /**
      * Trigger reindexing of a landscape source.

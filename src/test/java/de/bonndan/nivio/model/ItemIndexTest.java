@@ -5,11 +5,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class LandscapeItemsTest {
+class ItemIndexTest {
 
     private ArrayList<Item> items;
     private LandscapeImpl landscape;
@@ -23,11 +25,13 @@ class LandscapeItemsTest {
 
         Item s1 = new Item();
         s1.setIdentifier("s1");
+        s1.setName("foo");
         s1.setGroup("g1");
         s1.setLandscape(landscape);
         items.add(s1);
 
         Item s2 = new Item();
+        s2.setName("bar");
         s2.setIdentifier("s2");
         s2.setGroup("g1");
         s2.setLandscape(landscape);
@@ -75,5 +79,13 @@ class LandscapeItemsTest {
         landscape.setItems(new HashSet<>(items));
 
         assertThrows(RuntimeException.class,() -> landscape.getItems().pick("s2", null));
+    }
+
+    @Test
+    public void searchStartingWithWildcard() {
+        int i = landscape.getItems().indexForSearch();
+        assertEquals(2, i);
+        Set<Item> search = landscape.getItems().search("*oo");
+        assertEquals(1, search.size());
     }
 }

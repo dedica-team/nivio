@@ -1,3 +1,8 @@
+export class Routes {
+  static MAP_ROUTE: string = '/landscape/:identifier';
+  static DASHBOARD_ROUTE: string = '/landscape/:identifier/dashboard';
+}
+
 export interface ILandscape {
   identifier: string;
   name: string;
@@ -154,4 +159,13 @@ export interface IAssessmentProps {
   field: string;
   status: string;
   message: string;
+}
+
+export interface INotificationMessage {
+  timestamp: string;
+  landscape: string;
+  message?: string;
+  level: 'success' | 'info' | 'warning' | 'error' | undefined;
+  type: string;
+  date: Date;
 }

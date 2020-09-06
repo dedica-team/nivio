@@ -7,3 +7,4 @@ _templates
 *.iml
 src/test/resources/example/*_debug.png
 src/test/resources/example/*_debug.json
+src/test/resources/example/*_debug.svg

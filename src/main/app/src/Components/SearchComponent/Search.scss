@@ -1,0 +1,126 @@
+@import '../../Ressources/styling/colors.scss';
+@import '../../Ressources/styling/font.scss';
+
+$dotSize: 30px;
+
+.search {
+  position: absolute;
+  background-color: $header-color;
+  top: 0px;
+  right: 20px;
+  z-index: 1200;
+  border-radius: 5px;
+  max-width: 300px;
+  .results {
+    position: absolute;
+    width: 400px;
+    right: 0px;
+    margin-top: 5px;
+    z-index: 1200;
+    max-height: 95vh;
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .facets {
+    padding: 5px;
+    .facet {
+      text-shadow: none;
+    }
+  }
+
+  .relation {
+    color: $font-color !important;
+    border-color: $border-color !important;
+  }
+
+  .searchIcon {
+    vertical-align: middle;
+    margin-top: 5px;
+    color: $font-color !important;
+  }
+
+  .MuiTooltip-tooltip {
+    background-color: $header-color !important;
+    color: $font-color !important;
+  }
+
+  .MuiIconButton-root {
+    color: '';
+  }
+
+  .MuiButton-label,
+  .MuiButton-outlinedSizeSmall,
+  .MuiButton-outlinedSizeSmall:hover {
+    background-color: lighten($header-color, 10%);
+  }
+
+  .MuiInputBase-root {
+    color: $font-color !important;
+    border-bottom: 1px solid $font-color;
+
+    &:hover {
+      border-bottom: 1px solid $font-color;
+    }
+
+    &:before {
+      content: '';
+    }
+  }
+
+  .resultsDrawer {
+    z-index: 1000 !important;
+  }
+
+  .searchResult {
+    margin-top: 5px;
+    background-color: $header-color !important;
+    color: $font-color !important;
+
+    &:first-child {
+      margin-top: 0px;
+    }
+  }
+
+  .information {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+
+    .status {
+      height: $dotSize;
+      width: $dotSize;
+      background-color: $info-color;
+      border-radius: 50%;
+      text-align: center;
+      right: 50px;
+    }
+
+    .icon {
+      max-width: 32px;
+      max-height: 32px;
+    }
+
+    .title {
+      max-width: 269px;
+      cursor: pointer;
+      text-align: center;
+      overflow-wrap: anywhere;
+      font-size: $large-font-size;
+      text-transform: uppercase;
+    }
+  }
+}
