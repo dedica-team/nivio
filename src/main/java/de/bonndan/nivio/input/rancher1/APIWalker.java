@@ -1,15 +1,14 @@
 package de.bonndan.nivio.input.rancher1;
 
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.LabelProcessor;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.Label;
 import io.rancher.Rancher;
 import io.rancher.base.TypeCollection;
 import io.rancher.service.ProjectService;
-import io.rancher.service.ServiceService;
 import io.rancher.service.StackService;
 import io.rancher.type.Project;
 import io.rancher.type.Service;
@@ -20,13 +19,8 @@ import org.springframework.util.StringUtils;
 import retrofit2.Response;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static de.bonndan.nivio.input.rancher1.ItemDescriptionFactoryRancher1API.API_ACCESS_KEY;
-import static de.bonndan.nivio.input.rancher1.ItemDescriptionFactoryRancher1API.API_SECRET_KEY;
 
 /**
  * Gathers projects, stacks and services from a Rancher 1.6 API
@@ -52,7 +46,7 @@ class APIWalker {
                 );
         String accountId = project.getId();
 
-        Map<String, Stack> stacks = getStacksById(accountId);
+        Map<String, Stack> stacks = getStacks(accountId);
         List<Service> services = getServices(accountId);
         LOGGER.info("Found {} services in project {}", services.size(), project.getName());
 
@@ -60,15 +54,22 @@ class APIWalker {
     }
 
     private List<Service> getServices(final String accountId) {
-        ServiceService service = rancher.type(ServiceService.class);
+        ProjectServices service = rancher.type(ProjectServices.class);
+        TypeCollection<Service> body;
         try {
-            return service.list().execute().body().getData().stream()
-                    .filter(service1 -> service1.getAccountId().equals(accountId))
-                    .filter(service1 -> hasInstances(service1))
-                    .collect(Collectors.toList());
+            body = service.getServices(accountId).execute().body();
         } catch (IOException e) {
             throw new ProcessingException(reference.getLandscapeDescription(), "Could not load services from Rancher API", e);
         }
+
+        if (body == null) {
+            LOGGER.warn("No services found in project {}", accountId);
+            return new ArrayList<>();
+        }
+
+        return body.getData().stream()
+                .filter(this::hasInstances)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -81,17 +82,25 @@ class APIWalker {
         return service.getInstanceIds() != null && !service.getInstanceIds().isEmpty();
     }
 
-    private Map<String, Stack> getStacksById(String accountId) {
-        StackService stackService = rancher.type(StackService.class);
+    private Map<String, Stack> getStacks(String accountId) {
+        ProjectStacks stackService = rancher.type(ProjectStacks.class);
         Map<String, Stack> stacks = new HashMap<>();
+
+        TypeCollection<Stack> body;
         try {
-            stackService.list().execute().body().getData().stream()
-                    .filter(stack -> stack.getAccountId().equals(accountId))
-                    .forEach(stack -> stacks.put(stack.getId(), stack));
-            return stacks;
+             body = stackService.getStacks(accountId).execute().body();
         } catch (IOException e) {
             throw new ProcessingException(reference.getLandscapeDescription(), "Could not access Rancher API", e);
         }
+
+        if (body == null) {
+            LOGGER.warn("Could not load stacks from project {}", accountId);
+            return new HashMap<>(0);
+        }
+        body.getData().stream()
+                .filter(stack -> stack.getAccountId().equals(accountId))
+                .forEach(stack -> stacks.put(stack.getId(), stack));
+        return stacks;
     }
 
     private Optional<Project> getProject(String projectName) {
