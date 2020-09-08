@@ -52,7 +52,7 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               <img
                 className={'preview'}
                 alt={'preview'}
-                src={withBasePath(`/render/${landscape.identifier}/graph.png`)}
+                src={withBasePath(`/render/${landscape.identifier}/map.svg`)}
                 style={{ maxWidth: 100, float: 'left' }}
               />
             </Button>
