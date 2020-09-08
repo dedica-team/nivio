@@ -21,15 +21,14 @@ public class MapController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapController.class);
     public static final String MAP_SVG_ENDPOINT = "map.svg";
-    public static final String MAP_PNG_ENDPOINT = "graph.png";
     public static final String PATH = "/render";
 
     private final LandscapeRepository landscapeRepository;
-    private final PNGRenderCache pngRenderCache;
+    private final RenderCache renderCache;
 
-    public MapController(LandscapeRepository landscapeRepository, PNGRenderCache pngRenderCache) {
+    public MapController(LandscapeRepository landscapeRepository, RenderCache renderCache) {
         this.landscapeRepository = landscapeRepository;
-        this.pngRenderCache = pngRenderCache;
+        this.renderCache = renderCache;
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
@@ -41,7 +40,7 @@ public class MapController {
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_TYPE, "image/svg+xml");
             return new ResponseEntity<>(
-                    pngRenderCache.getSVG(landscape),
+                    renderCache.getSVG(landscape),
                     headers,
                     HttpStatus.OK
             );
@@ -49,17 +48,6 @@ public class MapController {
             LOGGER.warn("Could not render svg: ", ex);
             throw ex;
         }
-    }
-
-
-    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/" + MAP_PNG_ENDPOINT)
-    public ResponseEntity<byte[]> pngResource(@PathVariable(name = "landscape") final String landscapeIdentifier) {
-        LandscapeImpl landscape = getLandscape(landscapeIdentifier);
-        byte[] png = pngRenderCache.getPNG(landscape);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "image/png");
-        return new ResponseEntity<>(png, headers, HttpStatus.OK);
     }
 
     private LandscapeImpl getLandscape(@PathVariable(name = "landscape") String landscapeIdentifier) {
