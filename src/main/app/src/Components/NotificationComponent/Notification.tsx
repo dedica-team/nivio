@@ -10,6 +10,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import './Notification.scss';
 
 import { Link } from 'react-router-dom';
+import {withBasePath} from "../../utils/API/BasePath";
 
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant='filled' {...props} />;
@@ -30,11 +31,9 @@ const Notification: React.FC = () => {
   const [snackPack, setSnackPack] = useState<SnackbarMessage[]>([]);
   const [messageInfo, setMessageInfo] = useState<SnackbarMessage | undefined>(undefined);
   const [open, setOpen] = useState(false);
-  const [backendUrl] = useState(
-    process.env.REACT_APP_BACKEND_URL || `${window.location.href.split('#')[0]}`
-  );
+  const backendUrl = withBasePath('/subscribe');
   const protocol = window.location.protocol !== 'https:' ? 'ws' : 'wss';
-  const [socketUrl] = useState(protocol + `://${backendUrl.replace(/^https?:\/\//i, '')}subscribe`);
+  const [socketUrl] = useState(protocol + `://${backendUrl.replace(/^https?:\/\//i, '')}`);
   const [subscriptions, setSubscriptions] = useState<StompSubscription[]>([]);
   const [client] = useState(
     new Client({
