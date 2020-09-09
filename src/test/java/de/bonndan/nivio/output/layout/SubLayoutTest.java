@@ -21,15 +21,11 @@ class SubLayoutTest {
         //given
         Group foo = new Group("foo");
 
-        Item bar = new Item();
-        bar.setIdentifier("bar");
-        bar.setGroup(foo.getIdentifier());
-        foo.getItems().add(bar);
+        Item bar = new Item(foo.getIdentifier(), "bar");;
+        foo.addItem(bar);
 
-        Item baz = new Item();
-        baz.setIdentifier("baz");
-        baz.setGroup(foo.getIdentifier());
-        foo.getItems().add(baz);
+        Item baz = new Item(foo.getIdentifier(), "baz");
+        foo.addItem(baz);
         baz.getRelations().add(new Relation(baz, bar));
 
         HashSet<Item> objects = new HashSet<>();

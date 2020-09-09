@@ -48,22 +48,19 @@ class SVGGroupAreaFactoryTest {
         occupied.add(new Hex(1, 1, -2));
         occupied.add(new Hex(3, 3, -6));
 
-        Item landscapeItem = new Item();
-        landscapeItem.setIdentifier("landscapeItem");
+        Item landscapeItem = new Item("group", "landscapeItem");
 
         Map<LandscapeItem, Hex> vertexHexes = Map.of(landscapeItem, new Hex(1, 2, -3));
         Hex landscapeItemHex = new Hex(4, 5, -9);
         HexPath hexPath = new HexPath(List.of(landscapeItemHex));
 
-        Item target = new Item();
-        target.setIdentifier("target");
-        target.setGroup("group");
+        Item target = new Item("group", "target");
         RelationItem<Item> relation = new Relation(landscapeItem, target);
         SVGRelation svgRelation = new SVGRelation(hexPath, "blue", relation);
         List<SVGRelation> relations = List.of(svgRelation);
 
         Group group = new Group("group");
-        group.getItems().add(landscapeItem);
+        group.addItem(landscapeItem);
 
         SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(occupied, group, vertexHexes, relations);
 
@@ -78,22 +75,19 @@ class SVGGroupAreaFactoryTest {
         occupied.add(new Hex(1, 1, -2));
         occupied.add(new Hex(3, 3, -6));
 
-        Item landscapeItem = new Item();
-        landscapeItem.setIdentifier("landscapeItem");
+        Item landscapeItem = new Item("group", "landscapeItem");
 
         Map<LandscapeItem, Hex> vertexHexes = Map.of(landscapeItem, new Hex(1, 2, -3));
         Hex landscapeItemHex = new Hex(4, 5, -9);
         HexPath hexPath = new HexPath(List.of(landscapeItemHex));
 
-        Item target = new Item();
-        target.setIdentifier("target");
-        target.setGroup("otherGroup");
+        Item target = new Item("otherGroup", "target");
         RelationItem<Item> relation = new Relation(landscapeItem, target);
         SVGRelation svgRelation = new SVGRelation(hexPath, "blue", relation);
         List<SVGRelation> relations = List.of(svgRelation);
 
         Group group = new Group("group");
-        group.getItems().add(landscapeItem);
+        group.addItem(landscapeItem);
 
         SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(occupied, group, vertexHexes, relations);
 
@@ -107,21 +101,19 @@ class SVGGroupAreaFactoryTest {
         occupied.add(new Hex(1, 1, -2));
         occupied.add(new Hex(3, 3, -6));
 
-        Item landscapeItem = new Item();
-        landscapeItem.setIdentifier("landscapeItem");
+        Item landscapeItem = new Item("group", "landscapeItem");
 
         Map<LandscapeItem, Hex> vertexHexes = Map.of(landscapeItem, new Hex(1, 2, -3));
         Hex landscapeItemHex = new Hex(4, 5, -9);
         HexPath hexPath = new HexPath(List.of(landscapeItemHex));
 
-        Item target = new Item();
-        target.setIdentifier("target");
+        Item target = new Item(null, "target");
         RelationItem<Item> relation = new Relation(landscapeItem, target);
         SVGRelation svgRelation = new SVGRelation(hexPath, "blue", relation);
         List<SVGRelation> relations = List.of(svgRelation);
 
         Group group = new Group("group");
-        group.getItems().add(landscapeItem);
+        group.addItem(landscapeItem);
 
         SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(occupied, group, vertexHexes, relations);
 
@@ -135,22 +127,19 @@ class SVGGroupAreaFactoryTest {
         occupied.add(new Hex(1, 1, -2));
         occupied.add(new Hex(3, 3, -6));
 
-        Item landscapeItem = new Item();
-        landscapeItem.setIdentifier("landscapeItem");
+        Item landscapeItem = new Item("group", "landscapeItem");
 
         Map<LandscapeItem, Hex> vertexHexes = Map.of(landscapeItem, new Hex(1, 2, -3));
         HexPath hexPath = new HexPath(List.of(new Hex(4, 5, -9)));
 
-        Item source = new Item();
-        source.setIdentifier("source");
-        Item target = new Item();
-        target.setIdentifier("target");
+        Item source = new Item(null,"source");
+        Item target = new Item(null, "target");
         RelationItem<Item> relation = new Relation(source, target);
         SVGRelation svgRelation = new SVGRelation(hexPath, "blue", relation);
         List<SVGRelation> relations = List.of(svgRelation);
 
         Group group = new Group("group");
-        group.getItems().add(landscapeItem);
+        group.addItem(landscapeItem);
 
         SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(occupied, group, vertexHexes, relations);
 

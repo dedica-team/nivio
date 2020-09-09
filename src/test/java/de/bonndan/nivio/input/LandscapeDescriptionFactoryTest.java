@@ -300,7 +300,7 @@ class LandscapeDescriptionFactoryTest {
         CustomKPI costKPI = new CustomKPI();
         costKPI.init(monthlyCosts);
 
-        Item item = new Item();
+        Item item = new Item("test", "a");
         item.setLabel(Label.costs, "200");
         StatusValue statusValue = costKPI.getStatusValues(item).get(0);
         assertNotNull(statusValue);

@@ -22,8 +22,7 @@ class ConditionKPITest {
 
     @Test
     public void testGreen() {
-        Item item = new Item();
-        item.setIdentifier("foo");
+        Item item = new Item(null, "foo");
         item.setLabel(Label.key(Label.condition, "bar"), "True");
 
         List<StatusValue> statusValues = kpi.getStatusValues(item);
@@ -33,8 +32,7 @@ class ConditionKPITest {
 
     @Test
     public void testRed() {
-        Item item = new Item();
-        item.setIdentifier("foo");
+        Item item = new Item(null, "foo");
         item.setLabel(Label.key(Label.condition, "bar"), "True");
         item.setLabel(Label.key(Label.condition, "baz"), "False");
 

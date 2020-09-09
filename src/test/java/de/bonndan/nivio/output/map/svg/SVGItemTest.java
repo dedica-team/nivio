@@ -20,8 +20,7 @@ class SVGItemTest {
         LandscapeImpl landscape = LandscapeFactory.create("l1");
 
         // item has no group
-        Item foo = new Item();
-        foo.setIdentifier("foo");
+        Item foo = new Item(null, "foo");
         foo.setLandscape(landscape);
 
         SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo), new Point2D.Double(1,1));
@@ -34,8 +33,7 @@ class SVGItemTest {
         LandscapeImpl landscape = LandscapeFactory.create("l1");
 
         // item has no group
-        Item foo = new Item();
-        foo.setIdentifier("foo");
+        Item foo = new Item(null, "foo");
         foo.setLandscape(landscape);
 
         SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo), new Point2D.Double(1,2.0303030));

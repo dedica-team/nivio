@@ -35,9 +35,7 @@ class GroupQueryResolverTest {
     void process_doesNotContainDuplicatedItemsInGroups() {
         LandscapeImpl landscape = LandscapeFactory.create("test");
         landscape.setProcessLog(processLog);
-        Item item = new Item();
-        item.setIdentifier("itemIdentifier");
-        item.setGroup("groupIdentifier");
+        Item item = new Item("groupIdentifier", "itemIdentifier");
         landscape.setItems(Set.of(item));
         landscape.addGroup(new Group("groupIdentifier"));
 
@@ -57,9 +55,7 @@ class GroupQueryResolverTest {
     void process_findsItemsIfQueryConditionIsNotLowercase() {
         LandscapeImpl landscape = LandscapeFactory.create("test");
         landscape.setProcessLog(processLog);
-        Item item = new Item();
-        item.setIdentifier("itemIdentifier");
-        item.setGroup("groupIdentifier");
+        Item item = new Item("groupIdentifier", "itemIdentifier");
         landscape.setItems(Set.of(item));
         landscape.addGroup(new Group("groupIdentifier"));
 
@@ -84,8 +80,7 @@ class GroupQueryResolverTest {
          */
         LandscapeImpl landscape = LandscapeFactory.create("test");
         landscape.setProcessLog(processLog);
-        Item item = new Item();
-        item.setIdentifier("itemIdentifier");
+        Item item = new Item(null, "itemIdentifier");
 
         landscape.setItems(Set.of(item));
 
@@ -104,8 +99,7 @@ class GroupQueryResolverTest {
     @Test
     void process_withLandscapeFromLandscapeFactory_containsCommonGroupIfNoGroupWasSet() {
         LandscapeImpl landscape = LandscapeFactory.create("landscapeIdentifier");
-        Item item = new Item();
-        item.setIdentifier("itemIdentifier");
+        Item item = new Item(null, "itemIdentifier");
 
         landscape.setItems(Set.of(item));
 

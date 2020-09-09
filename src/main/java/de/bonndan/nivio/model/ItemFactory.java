@@ -17,9 +17,8 @@ public class ItemFactory {
             throw new RuntimeException("landscape item is null");
         }
 
-        Item landscapeItemImpl = new Item();
+        Item landscapeItemImpl = new Item(item.getGroup(), item.getIdentifier());
         landscapeItemImpl.setLandscape(landscape);
-        landscapeItemImpl.setIdentifier(item.getIdentifier());
         assignAll(landscapeItemImpl, item);
         return landscapeItemImpl;
     }

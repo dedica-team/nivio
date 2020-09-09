@@ -17,8 +17,7 @@ class SVGItemLabelTest {
         LandscapeImpl landscape = LandscapeFactory.create("l1");
 
         // item has no group
-        Item foo = new Item();
-        foo.setIdentifier("foo");
+        Item foo = new Item(null, "foo");
         foo.setLandscape(landscape);
 
 

@@ -18,12 +18,10 @@ class SVGRelationTest {
         LandscapeImpl landscape = LandscapeFactory.create("l1");
 
         //both items have no group
-        Item foo = new Item();
-        foo.setIdentifier("foo");
+        Item foo = new Item(null, "foo");
         foo.setLandscape(landscape);
 
-        Item bar = new Item();
-        bar.setIdentifier("bar");
+        Item bar = new Item(null, "bar");
         bar.setLandscape(landscape);
 
         RelationItem<Item> itemRelationItem = new Relation(foo, bar);

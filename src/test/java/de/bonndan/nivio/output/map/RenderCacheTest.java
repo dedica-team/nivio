@@ -98,14 +98,12 @@ class RenderCacheTest {
     private LandscapeImpl getLandscape(String identifier) {
         LandscapeImpl landscape = LandscapeFactory.create(identifier);
 
-        Item item = new Item();
-        item.setIdentifier("foo");
+        Item item = new Item("bar", "foo");
         landscape.setItems(Set.of(item));
-        item.setGroup("bar");
         landscape.setItems(Collections.singleton(item));
 
         Group bar = new Group("bar");
-        bar.getItems().add(item);
+        bar.addItem(item);
         landscape.getGroups().put("bar", bar);
 
         ProcessLog test = new ProcessLog(LoggerFactory.getLogger("test"));
