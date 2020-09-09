@@ -61,14 +61,8 @@ public class LinkFactory {
         );
 
         /*
-         * map out put
+         * map output
          */
-        links.put("png", linkTo(localServer.getUrl(MapController.PATH, landscape.getIdentifier(), MapController.MAP_PNG_ENDPOINT))
-                .withMedia(MediaType.IMAGE_PNG_VALUE)
-                .withTitle("Rendered Landscape")
-                .build()
-        );
-
         links.put("svg", linkTo(localServer.getUrl(MapController.PATH, landscape.getIdentifier(), MapController.MAP_SVG_ENDPOINT))
                 .withMedia("image/svg+xml")
                 .withTitle("SVG map")

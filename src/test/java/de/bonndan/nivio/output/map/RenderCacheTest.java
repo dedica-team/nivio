@@ -31,10 +31,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class PNGRenderCacheTest {
+class RenderCacheTest {
 
-    private PNGRenderCache renderCache;
-    private LocalServer localServer;
+    private RenderCache renderCache;
     private MapStyleSheetFactory stylesheetFactory;
     private SVGRenderer svgRenderer;
 
@@ -50,10 +49,9 @@ class PNGRenderCacheTest {
                         Files.readAllBytes(Paths.get("src/main/resources/static/icons/service.png")))
                 ));
 
-        localServer = new LocalServer("", null);
         stylesheetFactory = mock(MapStyleSheetFactory.class);
         svgRenderer = new SVGRenderer(stylesheetFactory);
-        renderCache = new PNGRenderCache(svgRenderer);
+        renderCache = new RenderCache(svgRenderer);
         when(stylesheetFactory.getMapStylesheet(any(), any())).thenReturn("");
     }
 
@@ -62,48 +60,23 @@ class PNGRenderCacheTest {
         wireMockServer.stop();
     }
 
-    @Order(1)
-    @Test
-    void throwsWithoutLocalWebserverOrCache() {
-        wireMockServer.stop();
-
-        LandscapeImpl test = getLandscape("test");
-        assertThrows(Exception.class, () -> renderCache.getPNG(test));
-    }
-
-    @Test
-    void toPNG() {
-        byte[] png = renderCache.getPNG(getLandscape("test"));
-        assertNotNull(png);
-
-        verify(stylesheetFactory, times(1)).getMapStylesheet(any(), any());
-    }
-
     @Test
     void toPNGCached() {
         LandscapeImpl landscape = getLandscape("test");
-        byte[] first = renderCache.getPNG(landscape);
-        byte[] second = renderCache.getPNG(landscape);
+        String first = renderCache.getSVG(landscape);
+        String second = renderCache.getSVG(landscape);
 
         verify(stylesheetFactory, times(1)).getMapStylesheet(any(), any());
-    }
-
-    @Test
-    void toPNGRefreshCaches() {
-        byte[] first = renderCache.getPNG(getLandscape("test"));
-        byte[] second = renderCache.getPNG(getLandscape("test"));
-
-        verify(stylesheetFactory, times(2)).getMapStylesheet(any(), any());
     }
 
     @Test
     void cachesBasedOnIdentifier() {
         LandscapeImpl one = getLandscape("test");
-        byte[] first = renderCache.getPNG(getLandscape("test"));
+        String first = renderCache.getSVG(getLandscape("test"));
         LandscapeImpl two = getLandscape("test");
         two.setProcessLog(one.getLog()); //sync last update
         two.setIdentifier("second");
-        byte[] second = renderCache.getPNG(two);
+        String second = renderCache.getSVG(two);
 
         verify(stylesheetFactory, times(2)).getMapStylesheet(any(), any());
     }
