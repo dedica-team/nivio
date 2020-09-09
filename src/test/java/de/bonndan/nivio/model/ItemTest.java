@@ -3,6 +3,7 @@ package de.bonndan.nivio.model;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ItemTest {
 
@@ -70,5 +71,18 @@ public class ItemTest {
         s3.setLandscape(null);
 
         assertNotEquals(s1, s3);
+    }
+
+    @Test
+    void setGroupIfNull() {
+        Item a = new Item(null, "a");
+        a.setGroup("b");
+        assertEquals("b", a.getGroup());
+    }
+
+    @Test
+    void setGroupForbidden() {
+        Item a = new Item("b", "a");
+        assertThrows(IllegalArgumentException.class, ()->a.setGroup("c"));
     }
 }
