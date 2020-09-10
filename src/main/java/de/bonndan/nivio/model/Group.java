@@ -20,7 +20,7 @@ public class Group implements GroupItem, Labeled, Assessable {
      * Items belonging to this group. Order is important for layouting (until items are ordered there).
      */
     private final Set<Item> items = new LinkedHashSet<>();
-    private String identifier;
+    private final String identifier;
     private String owner;
     private String description;
     private String contact;
@@ -29,16 +29,15 @@ public class Group implements GroupItem, Labeled, Assessable {
     private String landscapeIdentifier;
 
     public Group(String identifier) {
-        setIdentifier(identifier);
+        if (StringUtils.isEmpty(identifier)) {
+            throw new IllegalArgumentException("Group identifier must not be empty");
+        }
+        this.identifier = identifier;
     }
 
     @Override
     public String getIdentifier() {
         return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = StringUtils.isEmpty(identifier) ? COMMON : identifier;
     }
 
     @Override
@@ -93,8 +92,13 @@ public class Group implements GroupItem, Labeled, Assessable {
         return links;
     }
 
+    /**
+     * Returns an immutable copy of the items.
+     *
+     * @return immutable copy
+     */
     public Set<Item> getItems() {
-        return items;
+        return Collections.unmodifiableSet(items);
     }
 
     @Override
@@ -141,5 +145,23 @@ public class Group implements GroupItem, Labeled, Assessable {
         return "Group{" +
                 "identifier='" + identifier + '\'' +
                 '}';
+    }
+
+    /**
+     * Adds an item to this group.
+     *
+     * @param item the item to add.
+     * @throws IllegalArgumentException if the item group field mismatches
+     */
+    public void addItem(Item item) {
+        boolean canAdd = item.getGroup() == null || (item.getGroup().equals(identifier));
+
+        if (canAdd) {
+            item.setGroup(identifier);
+            items.add(item);
+            return;
+        }
+
+        throw new IllegalArgumentException(String.format("Item group '%s' cannot be added to group '%s'", item.getGroup(), identifier));
     }
 }

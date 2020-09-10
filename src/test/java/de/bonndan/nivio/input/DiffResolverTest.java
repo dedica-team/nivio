@@ -25,15 +25,11 @@ public class DiffResolverTest {
 
         items = new ArrayList<>();
 
-        Item s1 = new Item();
-        s1.setIdentifier("s1");
-        s1.setGroup("g1");
+        Item s1 = new Item("g1","s1");
         s1.setLandscape(landscape);
         items.add(s1);
 
-        Item s2 = new Item();
-        s2.setIdentifier("s2");
-        s2.setGroup("g1");
+        Item s2 = new Item("g1","s2");
         s2.setLandscape(landscape);
         items.add(s2);
     }

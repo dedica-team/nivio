@@ -59,15 +59,11 @@ class AllGroupsLayoutTest {
 
     private SubLayout getSubLayout(Group group) {
 
-        Item bar = new Item();
-        bar.setIdentifier("bar" + group.getIdentifier());
-        bar.setGroup(group.getIdentifier());
-        group.getItems().add(bar);
+        Item bar = new Item(group.getIdentifier(), "bar" + group.getIdentifier());
+        group.addItem(bar);
 
-        Item baz = new Item();
-        baz.setIdentifier("baz" + group.getIdentifier());
-        baz.setGroup(group.getIdentifier());
-        group.getItems().add(baz);
+        Item baz = new Item(group.getIdentifier(), "baz" + group.getIdentifier());
+        group.addItem(baz);
         baz.getRelations().add(new Relation(baz, bar));
 
         return new SubLayout(group, Set.of(bar, baz), new LandscapeConfig.LayoutConfig());

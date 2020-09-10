@@ -53,6 +53,7 @@ public class SVGDocument extends Component {
 
         //transform all item positions to hex map positions
         layouted.getChildren().forEach(group -> {
+            LOGGER.info("rendering group {} with items {}", group.getComponent().getIdentifier(), group.getChildren());
             group.getChildren().forEach(layoutedItem -> {
                 Hex hex = null;
                 int i = 0;

@@ -10,7 +10,7 @@ class TaggedTest {
 
     @Test
     public void setsNonEmpty() {
-        Item item = new Item();
+        Item item = new Item("test", "a");
         item.setTags(new String[]{null, "", "foo", "bar"});
 
         //when
@@ -26,7 +26,7 @@ class TaggedTest {
 
     @Test
     public void setsOnlyLowerCase() {
-        Item item = new Item();
+        Item item = new Item("test", "a");
         item.setTags(new String[]{"foo", "Foo"});
 
         //when

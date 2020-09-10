@@ -16,7 +16,7 @@ class ScalingKPITest {
     public void testScale1() {
         ScalingKPI scalingKPI = new ScalingKPI();
         scalingKPI.init(null);
-        Item item = new Item();
+        Item item = new Item("test", "a");
         item.setLabel(Label.scale, "1");
 
         List<StatusValue> statusValues = scalingKPI.getStatusValues(item);
@@ -32,7 +32,7 @@ class ScalingKPITest {
     public void testScale2() {
         ScalingKPI scalingKPI = new ScalingKPI();
         scalingKPI.init(null);
-        Item item = new Item();
+        Item item = new Item("test", "a");
         item.setLabel(Label.scale, "2");
 
         List<StatusValue> statusValues = scalingKPI.getStatusValues(item);
