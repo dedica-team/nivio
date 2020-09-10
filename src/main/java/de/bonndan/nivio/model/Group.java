@@ -98,7 +98,7 @@ public class Group implements GroupItem, Labeled, Assessable {
      * @return immutable copy
      */
     public Set<Item> getItems() {
-        return Set.copyOf(items);
+        return Collections.unmodifiableSet(items);
     }
 
     @Override
