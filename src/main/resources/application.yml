@@ -27,6 +27,7 @@ server:
 nivio:
   baseUrl: ${NIVIO_BASE_URL:}
   version: #project.version#
+  pollingMilliseconds: 30000 # 30 secs
 
 ---
 spring:

@@ -100,7 +100,7 @@ public class ObserverRegistry implements ApplicationListener<ProcessingFinishedE
     /**
      * Polls for changes in landscapes.
      */
-    @Scheduled(fixedDelay = 20000, initialDelay = 5000)
+    @Scheduled(fixedDelayString = "${nivio.pollingMilliseconds}", initialDelay = 5000)
     public void poll() {
         LOGGER.info("Polling {} landscapes for changes.", observerMap.size());
         observerMap.entrySet().parallelStream().forEach(e -> check(e.getValue()));
