@@ -19,5 +19,5 @@ it('should link to manual on button click', () => {
     </MemoryRouter>
   );
 
-  expect(getByTestId('ManualButton').closest('a')).toHaveAttribute('href', '/man/install');
+  expect(getByTestId('ManualButton').closest('a')).toHaveAttribute('href', '/man/install.html');
 });
