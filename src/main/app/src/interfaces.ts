@@ -169,3 +169,10 @@ export interface INotificationMessage {
   type: string;
   date: Date;
 }
+
+export interface ISnackbarMessage {
+  message: string;
+  key: number;
+  landscape: string;
+  level: 'success' | 'info' | 'warning' | 'error' | undefined;
+}
