@@ -9,7 +9,7 @@ import './LandscapeOverview.scss';
 import { ILandscape } from '../../../interfaces';
 import dateFormat from 'dateformat';
 import { CSSTransition } from 'react-transition-group';
-import {withBasePath} from "../../../utils/API/BasePath";
+import { withBasePath } from '../../../utils/API/BasePath';
 
 interface Props {
   sliderContent: string | ReactElement | ReactElement[] | null;

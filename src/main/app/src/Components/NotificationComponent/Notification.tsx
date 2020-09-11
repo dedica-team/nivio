@@ -10,7 +10,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import './Notification.scss';
 
 import { Link } from 'react-router-dom';
-import {withBasePath} from "../../utils/API/BasePath";
+import { withBasePath } from '../../utils/API/BasePath';
 
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant='filled' {...props} />;

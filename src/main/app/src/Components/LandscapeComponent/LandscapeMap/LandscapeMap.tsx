@@ -19,7 +19,7 @@ import LandscapeItem from '../LandscapeItem/LandscapeItem';
 import Slider from '../../SliderComponent/Slider';
 import MapRelation from './MapRelation/MapRelation';
 import Search from '../../SearchComponent/Search';
-import {withBasePath} from "../../../utils/API/BasePath";
+import { withBasePath } from '../../../utils/API/BasePath';
 
 interface Props {
   identifier: string;
