@@ -1,35 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { INotificationMessage } from '../../interfaces';
+import { INotificationMessage, ISnackbarMessage } from '../../interfaces';
 import { Client, StompSubscription } from '@stomp/stompjs';
-import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
-import Button from '@material-ui/core/Button';
-import Snackbar from '@material-ui/core/Snackbar';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 
 import './Notification.scss';
+import NotificationLayout from './NotificationLayout';
 
-import { Link } from 'react-router-dom';
 import { withBasePath } from '../../utils/API/BasePath';
 
-function Alert(props: AlertProps) {
-  return <MuiAlert elevation={6} variant='filled' {...props} />;
-}
-
-export interface SnackbarMessage {
-  message: string;
-  key: number;
-  landscape: string;
-  level: 'success' | 'info' | 'warning' | 'error' | undefined;
-}
-
 /**
- * Displays a notification if a file change is detected
+ * Logic component for notifications
  */
 const Notification: React.FC = () => {
   const snackPackCloseDelay = 20000;
-  const [snackPack, setSnackPack] = useState<SnackbarMessage[]>([]);
-  const [messageInfo, setMessageInfo] = useState<SnackbarMessage | undefined>(undefined);
+  const [snackPack, setSnackPack] = useState<ISnackbarMessage[]>([]);
+  const [messageInfo, setMessageInfo] = useState<ISnackbarMessage | undefined>(undefined);
   const [open, setOpen] = useState(false);
   const backendUrl = withBasePath('/subscribe');
   const protocol = window.location.protocol !== 'https:' ? 'ws' : 'wss';
@@ -43,11 +27,10 @@ const Notification: React.FC = () => {
         const eventSubscription = client.subscribe('/topic/events', (message) => {
           const notificationMessage: INotificationMessage = JSON.parse(message.body);
           if (notificationMessage.type !== 'ProcessingFinishedEvent') {
-            const formattedMessage = notificationMessage.message
-              ? `Message: ${notificationMessage.message}`
-              : '';
             const snackPackMessage = {
-              message: `Change in ${notificationMessage.landscape} ${formattedMessage}`,
+              message: notificationMessage.landscape
+                ? `Change in ${notificationMessage.landscape}, ${notificationMessage.message || ''}`
+                : `${notificationMessage.message || 'Event Error: No message received'}`,
               key: new Date().getTime(),
               landscape: notificationMessage.landscape,
               level: notificationMessage.level,
@@ -99,35 +82,14 @@ const Notification: React.FC = () => {
   };
 
   return (
-    <div className={'notification'}>
-      <Snackbar
-        key={messageInfo ? messageInfo.key : undefined}
+    <div className={'notification'} data-testid='notification'>
+      <NotificationLayout
+        handleClose={handleClose}
+        handleExited={handleExited}
+        messageInfo={messageInfo}
         open={open}
-        autoHideDuration={snackPackCloseDelay}
-        onClose={handleClose}
-        onExited={handleExited}
-      >
-        <Alert
-          onClose={handleClose}
-          severity={messageInfo?.level}
-          action={
-            <React.Fragment>
-              <Button
-                component={Link}
-                className={'mapButton'}
-                to={`/landscape/${messageInfo?.landscape}`}
-              >
-                Show Map
-              </Button>
-              <IconButton aria-label='close' color='inherit' onClick={handleClose}>
-                <CloseIcon />
-              </IconButton>
-            </React.Fragment>
-          }
-        >
-          {messageInfo ? messageInfo.message : undefined}
-        </Alert>
-      </Snackbar>
+        snackPackCloseDelay={snackPackCloseDelay}
+      />
     </div>
   );
 };
