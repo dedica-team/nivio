@@ -2,27 +2,16 @@ import React, { useState, useEffect, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import ReactHtmlParser from 'html-react-parser';
-import raw from 'raw.macro';
 
+import { get } from '../../utils/API/APIClient';
 import './Man.scss';
 import './pygments.scss';
-
-const topics: any = {
-  'install.html': raw('../../../../../../docs/build/install.html'),
-  'input.html': raw('../../../../../../docs/build/input.html'),
-  'output.html': raw('../../../../../../docs/build/output.html'),
-  'magic.html': raw('../../../../../../docs/build/magic.html'),
-  'model.html': raw('../../../../../../docs/build/model.html'),
-  'references.html': raw('../../../../../../docs/build/references.html'),
-  'index.html': raw('../../../../../../docs/build/index.html'),
-  'assessment.html': raw('../../../../../../docs/build/assessment.html'),
-};
 
 /**
  * Renders nivio manual, depending on which url param is given
  */
 const Man: React.FC = () => {
-  const [html, setHtml] = useState<string>('<p>OOPS SOMETHING WENT WRONG :(</p>');
+  const [html, setHtml] = useState<string>("<p>This manual page doesn't exist. :(</p>");
   let { usage } = useParams();
   if (usage == null || typeof usage == 'undefined') usage = 'index';
   const [topic, setTopic] = useState<string>(usage + '');
@@ -34,14 +23,15 @@ const Man: React.FC = () => {
   }, [usage]);
 
   useEffect(() => {
-    const rawHtml = topics[topic];
-    const parser = new DOMParser();
-    const parsedHtml = parser.parseFromString(rawHtml, 'text/html');
-    const body = parsedHtml.querySelector('body');
+    get(`/docs/${topic}`).then((response) => {
+      const parser = new DOMParser();
+      const parsedHtml = parser.parseFromString(response, 'text/html');
+      const body = parsedHtml.querySelector('body');
 
-    if (body) {
-      setHtml(body.innerHTML);
-    }
+      if (body) {
+        setHtml(body.innerHTML);
+      }
+    });
   }, [topic]);
 
   return (
