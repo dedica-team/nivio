@@ -1,6 +1,7 @@
 package de.bonndan.nivio.observation;
 
 import de.bonndan.nivio.IndexEvent;
+import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
@@ -12,12 +13,14 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Service to register landscapes to observe description source changes.
@@ -80,14 +83,21 @@ public class ObserverRegistry implements ApplicationListener<ProcessingFinishedE
     }
 
     private void check(LandscapeObserverPool observerPool) {
-        Optional<String> change = observerPool.hasChange();
-        change.ifPresent(s -> {
+        ObservedChange change = observerPool.getChange();
+        if (change.getErrors().size() > 0) {
+            String errors = change.getErrors().stream().map(ProcessingException::getMessage).collect(Collectors.joining(";"));
+            LOGGER.info("Errors occurred while scanning landscape {} for changes:  {}", observerPool.getLandscape(), errors);
+        }
+
+        if (change.getChanges().size() > 0) {
+            String s = StringUtils.collectionToDelimitedString(change.getChanges(), ";");
             Landscape stored = observerPool.getLandscape();
             LandscapeDescription updated = landscapeDescriptionFactory.from(stored);
             LOGGER.info("Detected change '{}' in landscape {}", s, stored.getIdentifier());
             if (updated != null) {
                 publisher.publishEvent(new IndexEvent(this, updated, "Source change: " + s));
             }
-        });
+        }
+
     }
 }

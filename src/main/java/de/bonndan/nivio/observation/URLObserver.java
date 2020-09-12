@@ -4,6 +4,7 @@ import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.FileFetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
@@ -21,7 +22,7 @@ public class URLObserver implements InputFormatObserver {
     private final URL url;
     private String content;
 
-    public URLObserver(FileFetcher fileFetcher, URL url) {
+    public URLObserver(@NonNull FileFetcher fileFetcher, @NonNull URL url) {
         this.fileFetcher = fileFetcher;
         this.url = url;
         this.content = getContent();

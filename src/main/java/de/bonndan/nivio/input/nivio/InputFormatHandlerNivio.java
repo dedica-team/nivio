@@ -7,6 +7,7 @@ import de.bonndan.nivio.input.ReadingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
+import de.bonndan.nivio.observation.FileSourceReferenceObserver;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import de.bonndan.nivio.observation.URLObserver;
 import de.bonndan.nivio.util.Mappers;
@@ -25,6 +26,11 @@ import java.util.List;
 
 import static io.swagger.v3.oas.integration.StringOpenApiConfigurationLoader.LOGGER;
 
+/**
+ * Handler for nivio's custom input format (yaml).
+ *
+ *
+ */
 @Service
 public class InputFormatHandlerNivio implements InputFormatHandler {
 
@@ -32,10 +38,6 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
     private static final ObjectMapper mapper = Mappers.gracefulYamlMapper;
 
     private final FileFetcher fileFetcher;
-
-    public static InputFormatHandler forTesting() {
-        return new InputFormatHandlerNivio(new FileFetcher(new HttpService()));
-    }
 
     public InputFormatHandlerNivio(FileFetcher fileFetcher) {
         this.fileFetcher = fileFetcher;
@@ -75,12 +77,6 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
     @Override
     @Nullable
     public InputFormatObserver getObserver(SourceReference reference, URL baseUrl) {
-        try {
-            URL url = new URL(URLHelper.combine(baseUrl, reference.getUrl()));
-            return new URLObserver(fileFetcher, url);
-        } catch (MalformedURLException e) {
-            LOGGER.error("Failed to create observer for url {}", reference.getUrl(), e);
-            return null;
-        }
+        return new FileSourceReferenceObserver(fileFetcher, reference, baseUrl);
     }
 }

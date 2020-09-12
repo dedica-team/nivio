@@ -10,7 +10,7 @@ import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Observer for source references which point to files.
+ * Observer for source references which point to files/urls.
  */
 public class FileSourceReferenceObserver implements InputFormatObserver {
 
@@ -25,10 +25,8 @@ public class FileSourceReferenceObserver implements InputFormatObserver {
         this.fileFetcher = fileFetcher;
         this.reference = reference;
         this.url = url;
-
         this.content = getContent();
     }
-
 
     /**
      * @return a future of the URL whether the URL had a content change

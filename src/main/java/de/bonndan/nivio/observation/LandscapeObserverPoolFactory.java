@@ -1,5 +1,6 @@
 package de.bonndan.nivio.observation;
 
+import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.InputFormatHandlerFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
@@ -27,19 +28,26 @@ public class LandscapeObserverPoolFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeObserverPoolFactory.class);
     private final InputFormatHandlerFactory inputFormatHandlerFactory;
+    private final FileFetcher fileFetcher;
 
-    public LandscapeObserverPoolFactory(InputFormatHandlerFactory inputFormatHandlerFactory) {
+    public LandscapeObserverPoolFactory(InputFormatHandlerFactory inputFormatHandlerFactory, FileFetcher fileFetcher) {
         this.inputFormatHandlerFactory = inputFormatHandlerFactory;
+        this.fileFetcher = fileFetcher;
     }
 
     public LandscapeObserverPool getPoolFor(Landscape landscape, @NonNull LandscapeDescription description) {
 
-        URL baseUrl = URLHelper.getURL(description.getSource());
+        List<InputFormatObserver> observers = new ArrayList<>();
+        URL baseUrl = URLHelper.getParentPath(description.getSource());
         if (baseUrl == null) {
             LOGGER.info("Landscape {} does not seem to have a valid source ('" + description.getSource() + "')", description.getIdentifier());
+        } else {
+            URL url = URLHelper.getURL(description.getSource());
+            if (url != null) {
+                observers.add(new URLObserver(fileFetcher, url));
+            }
         }
 
-        List<InputFormatObserver> observers = new ArrayList<>();
         for (SourceReference sourceReference : description.getSourceReferences()) {
             InputFormatHandler inputFormatHandler = inputFormatHandlerFactory.getInputFormatHandler(sourceReference, description);
             observers.add(inputFormatHandler.getObserver(sourceReference, baseUrl));

@@ -12,8 +12,6 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.observation.FileSourceReferenceObserver;
 import de.bonndan.nivio.observation.InputFormatObserver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +26,6 @@ import java.util.Optional;
 @Service
 public class InputFormatHandlerCSV implements InputFormatHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InputFormatHandlerCSV.class);
     public static final String IDENTIFIER_KEY = "identifier";
 
     private final FileFetcher fileFetcher;

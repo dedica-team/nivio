@@ -92,7 +92,8 @@ class RelationEndpointResolverTest {
     }
 
     private Map<ItemDescription, List<String>> getTemplates(LandscapeDescription landscapeDescription) {
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(InputFormatHandlerFactory.with(InputFormatHandlerNivio.forTesting()), log);
+        InputFormatHandlerNivio inputFormatHandlerNivio = new InputFormatHandlerNivio(new FileFetcher(new HttpService()));
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(InputFormatHandlerFactory.with(inputFormatHandlerNivio), log);
         Map<ItemDescription, List<String>> templateAndTargets = new HashMap<>();
         sourceReferencesResolver.resolve(landscapeDescription, templateAndTargets);
         return templateAndTargets;

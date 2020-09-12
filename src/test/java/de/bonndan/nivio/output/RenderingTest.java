@@ -38,7 +38,7 @@ public abstract class RenderingTest {
 
     public void setup() {
         landscapeRepository = new LandscapeRepository();
-        formatFactory = InputFormatHandlerFactory.with(InputFormatHandlerNivio.forTesting());
+        formatFactory = InputFormatHandlerFactory.with(new InputFormatHandlerNivio(new FileFetcher(new HttpService())));
         FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
         factory = new LandscapeDescriptionFactory(fileFetcher);
 

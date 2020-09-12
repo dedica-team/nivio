@@ -35,7 +35,10 @@ public class SourceReferencesResolverTest {
         log = new ProcessLog(LoggerFactory.getLogger(SourceReferencesResolver.class));
         sourceReferencesResolver = new SourceReferencesResolver(
                 new InputFormatHandlerFactory(
-                        new ArrayList<InputFormatHandler>(Arrays.asList(InputFormatHandlerNivio.forTesting(), InputFormatHandlerCompose2.forTesting()))
+                        new ArrayList<>(Arrays.asList(
+                                new InputFormatHandlerNivio(new FileFetcher(new HttpService())),
+                                InputFormatHandlerCompose2.forTesting())
+                        )
                 )
                 , log
         );

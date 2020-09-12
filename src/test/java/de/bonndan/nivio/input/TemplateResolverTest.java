@@ -116,7 +116,7 @@ class TemplateResolverTest {
 
     private Map<ItemDescription, List<String>> getTemplates(LandscapeDescription landscapeDescription) {
         InputFormatHandlerFactory ff = new InputFormatHandlerFactory(
-                new ArrayList<>(Arrays.asList(InputFormatHandlerNivio.forTesting(), InputFormatHandlerCompose2.forTesting()))
+                new ArrayList<>(Arrays.asList(new InputFormatHandlerNivio(new FileFetcher(new HttpService())), InputFormatHandlerCompose2.forTesting()))
         );
         SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(ff, log);
         Map<ItemDescription, List<String>> templateAndTargets = new HashMap<>();
