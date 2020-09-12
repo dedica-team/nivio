@@ -7,7 +7,6 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.URLHelper;
-import org.apache.http.entity.ContentType;
 import org.apache.lucene.facet.FacetResult;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -28,13 +27,13 @@ public class ApiController {
 
     private final LandscapeRepository landscapeRepository;
     private final LandscapeDescriptionFactory landscapeDescriptionFactory;
-    private final ItemDescriptionFormatFactory formatFactory;
+    private final InputFormatHandlerFactory formatFactory;
     private final Indexer indexer;
     private final LinkFactory linkFactory;
 
     public ApiController(LandscapeRepository landscapeRepository,
                          LandscapeDescriptionFactory landscapeDescriptionFactory,
-                         ItemDescriptionFormatFactory formatFactory,
+                         InputFormatHandlerFactory formatFactory,
                          Indexer indexer,
                          LinkFactory linkFactory
     ) {
@@ -142,7 +141,7 @@ public class ApiController {
         SourceReference sourceReference = new SourceReference(null, format);
         sourceReference.setContent(body);
 
-        ItemDescriptionFactory factory = formatFactory.getFactory(sourceReference, env);
+        InputFormatHandler factory = formatFactory.getInputFormatHandler(sourceReference, env);
         URL baseUrl = URLHelper.getParentPath(env.getSource());
 
         List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference, baseUrl);

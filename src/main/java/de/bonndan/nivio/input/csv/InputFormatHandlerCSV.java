@@ -6,12 +6,16 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.ItemDescriptionFactory;
+import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.LabelToFieldProcessor;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.observation.FileSourceReferenceObserver;
+import de.bonndan.nivio.observation.InputFormatObserver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.io.StringReader;
 import java.net.URL;
@@ -20,13 +24,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Service
-public class ItemDescriptionFactoryCSV implements ItemDescriptionFactory {
 
+@Service
+public class InputFormatHandlerCSV implements InputFormatHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(InputFormatHandlerCSV.class);
     public static final String IDENTIFIER_KEY = "identifier";
+
     private final FileFetcher fileFetcher;
 
-    public ItemDescriptionFactoryCSV(FileFetcher fileFetcher) {
+    public InputFormatHandlerCSV(FileFetcher fileFetcher) {
         this.fileFetcher = fileFetcher;
     }
 
@@ -77,6 +84,12 @@ public class ItemDescriptionFactoryCSV implements ItemDescriptionFactory {
         });
 
         return itemDescriptions;
+    }
+
+    @Override
+    @Nullable
+    public InputFormatObserver getObserver(SourceReference reference, URL baseUrl) {
+        return new FileSourceReferenceObserver(fileFetcher, reference, baseUrl);
     }
 
     private CSVReader getReader(SourceReference reference, String content) {

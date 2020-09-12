@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -10,15 +11,15 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class ItemDescriptionFormatFactory {
+public class InputFormatHandlerFactory {
 
-    private final Map<ItemDescriptionFactory, List<String>> factoryListMap = new ConcurrentHashMap<>();
+    private final Map<InputFormatHandler, List<String>> factoryListMap = new ConcurrentHashMap<>();
 
-    public static ItemDescriptionFormatFactory with(ItemDescriptionFactory factory) {
-        return new ItemDescriptionFormatFactory(new ArrayList<>(Collections.singletonList(factory)));
+    public static InputFormatHandlerFactory with(InputFormatHandler factory) {
+        return new InputFormatHandlerFactory(new ArrayList<>(Collections.singletonList(factory)));
     }
 
-    public ItemDescriptionFormatFactory(List<ItemDescriptionFactory> factories) {
+    public InputFormatHandlerFactory(List<InputFormatHandler> factories) {
         factories.forEach(itemDescriptionFactory -> factoryListMap.put(itemDescriptionFactory, itemDescriptionFactory.getFormats()));
     }
 
@@ -29,9 +30,10 @@ public class ItemDescriptionFormatFactory {
      * @param landscapeDescription landscape, may contain a base url
      * @return the factory
      */
-    public ItemDescriptionFactory getFactory(SourceReference reference, LandscapeDescription landscapeDescription) {
+    @NonNull
+    public InputFormatHandler getInputFormatHandler(SourceReference reference, LandscapeDescription landscapeDescription) {
 
-        List<ItemDescriptionFactory> factories = new ArrayList<>();
+        List<InputFormatHandler> factories = new ArrayList<>();
         factoryListMap.entrySet().stream()
                 .filter(entry -> entry.getValue().stream().map(s -> {
                     if (StringUtils.isEmpty(s))

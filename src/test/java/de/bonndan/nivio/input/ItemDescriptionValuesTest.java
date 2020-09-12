@@ -9,9 +9,9 @@ import de.bonndan.nivio.model.RelationBuilder;
 import de.bonndan.nivio.model.RelationType;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ItemDescriptionFactoryTest {
+class ItemDescriptionValuesTest {
 
     @Test
     public void incrementAddsDataflow() {
@@ -26,7 +26,7 @@ public class ItemDescriptionFactoryTest {
         RelationDescription another = RelationBuilder.createDataflowDescription(increment, "another");
         increment.addRelation(another);
 
-        ItemDescriptionFactory.assignNotNull(sd1, increment);
+        ItemDescriptionValues.assignNotNull(sd1, increment);
 
         assertEquals(2, sd1.getRelations().size());
     }
@@ -42,7 +42,7 @@ public class ItemDescriptionFactoryTest {
         increment.setIdentifier("sd1");
         increment.setPrefixed(Label.network, "net2");
 
-        ItemDescriptionFactory.assignNotNull(sd1, increment);
+        ItemDescriptionValues.assignNotNull(sd1, increment);
 
         assertEquals(2, sd1.getLabels(Label.network).size());
     }
@@ -61,7 +61,7 @@ public class ItemDescriptionFactoryTest {
         RelationDescription redisProvider = RelationBuilder.createProviderDescription(sd1, "redis");
         increment.addRelation(redisProvider);
 
-        ItemDescriptionFactory.assignNotNull(sd1, increment);
+        ItemDescriptionValues.assignNotNull(sd1, increment);
 
         assertEquals(2, RelationType.PROVIDER.filter(sd1.getRelations()).size());
     }
@@ -83,7 +83,7 @@ public class ItemDescriptionFactoryTest {
         increment.getInterfaces().add(if2);
 
 
-        ItemDescriptionFactory.assignNotNull(sd1, increment);
+        ItemDescriptionValues.assignNotNull(sd1, increment);
 
         assertEquals(2, sd1.getInterfaces().size());
     }
@@ -99,7 +99,7 @@ public class ItemDescriptionFactoryTest {
         increment.setLifecycle(Lifecycle.END_OF_LIFE.name());
 
 
-        ItemDescriptionFactory.assignNotNull(sd1, increment);
+        ItemDescriptionValues.assignNotNull(sd1, increment);
 
         assertEquals(Lifecycle.END_OF_LIFE.name(), sd1.getLabel(Label.lifecycle));
     }
@@ -117,7 +117,7 @@ public class ItemDescriptionFactoryTest {
         increment.getLabels().put("b", "3");
 
 
-        ItemDescriptionFactory.assignNotNull(sd1, increment);
+        ItemDescriptionValues.assignNotNull(sd1, increment);
 
         //a is overwritten
         assertEquals("2", sd1.getLabels().get("a"));

@@ -5,9 +5,12 @@ import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
+import de.bonndan.nivio.observation.InputFormatObserver;
+import de.bonndan.nivio.observation.URLObserver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -15,8 +18,10 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-class ItemDescriptionFactoryCSVTest {
+class InputFormatHandlerCSVTest {
 
     private FileFetcher fileFetcher;
 
@@ -38,7 +43,7 @@ class ItemDescriptionFactoryCSVTest {
         file.setProperty("skipLines", 1);
         file.setProperty("separator", ";");
 
-        ItemDescriptionFactoryCSV factoryCSV = new ItemDescriptionFactoryCSV(fileFetcher);
+        InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
         List<ItemDescription> services = factoryCSV.getDescriptions(file, null);
 
         assertEquals(3, services.size());
@@ -74,7 +79,7 @@ class ItemDescriptionFactoryCSVTest {
     public void failsWithoutMapping() {
 
         SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/test.csv");
-        ItemDescriptionFactoryCSV factoryCSV = new ItemDescriptionFactoryCSV(fileFetcher);
+        InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
 
         assertThrows(ProcessingException.class, () -> {
             factoryCSV.getDescriptions(file, null);
@@ -89,11 +94,27 @@ class ItemDescriptionFactoryCSVTest {
         mapping.put("name", "0");
         file.setProperty("mapping", mapping);
 
-        ItemDescriptionFactoryCSV factoryCSV = new ItemDescriptionFactoryCSV(fileFetcher);
+        InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
 
         assertThrows(ProcessingException.class, () -> {
             factoryCSV.getDescriptions(file, null);
         });
+    }
+
+    @Test
+    public void returnsUrlObserver() {
+        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/test.csv");
+        Map<String, String> mapping = new HashMap<>();
+        mapping.put("name", "0");
+        file.setProperty("mapping", mapping);
+
+        InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
+
+        //when
+        InputFormatObserver observer = factoryCSV.getObserver(file, null);
+
+        //then
+        assertNotNull(observer);
     }
 
     private String getRootPath() {

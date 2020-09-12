@@ -2,6 +2,7 @@ package de.bonndan.nivio.observation;
 
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.FileFetcher;
+import de.bonndan.nivio.input.dto.SourceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,23 +10,25 @@ import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Observer for URLs (downloadable files).
- *
- *
+ * Observer for source references which point to files.
  */
-public class URLObserver implements InputFormatObserver {
+public class FileSourceReferenceObserver implements InputFormatObserver {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(URLObserver.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileSourceReferenceObserver.class);
 
     private final FileFetcher fileFetcher;
+    private final SourceReference reference;
     private final URL url;
     private String content;
 
-    public URLObserver(FileFetcher fileFetcher, URL url) {
+    public FileSourceReferenceObserver(FileFetcher fileFetcher, SourceReference reference, URL url) {
         this.fileFetcher = fileFetcher;
+        this.reference = reference;
         this.url = url;
+
         this.content = getContent();
     }
+
 
     /**
      * @return a future of the URL whether the URL had a content change
@@ -46,11 +49,12 @@ public class URLObserver implements InputFormatObserver {
 
     private String getContent() {
         try {
-            String downloaded = fileFetcher.get(url);
+            String downloaded = fileFetcher.get(reference, url);
             LOGGER.debug("Downloaded {} bytes from {}", downloaded.length(), url);
             return downloaded;
         } catch (Exception e) {
             throw new ProcessingException("Failed to fetch " + url, e);
         }
     }
+
 }

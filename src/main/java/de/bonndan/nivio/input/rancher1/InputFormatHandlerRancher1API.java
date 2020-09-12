@@ -1,9 +1,10 @@
 package de.bonndan.nivio.input.rancher1;
 
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.input.ItemDescriptionFactory;
+import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.observation.InputFormatObserver;
 import io.rancher.Rancher;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -12,9 +13,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
-public class ItemDescriptionFactoryRancher1API implements ItemDescriptionFactory {
+public class InputFormatHandlerRancher1API implements InputFormatHandler {
 
     public static final String API_SECRET_KEY = "apiSecretKey";
     public static final String API_ACCESS_KEY = "apiAccessKey";
@@ -28,6 +30,13 @@ public class ItemDescriptionFactoryRancher1API implements ItemDescriptionFactory
     public List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl) {
         APIWalker apiWalker = new APIWalker(reference, getConfig(reference));
         return apiWalker.getDescriptions();
+    }
+
+    @Override
+    public InputFormatObserver getObserver(SourceReference reference, URL baseUrl) {
+        Rancher.Config config = getConfig(reference);
+        //TODO add observer
+        return null;
     }
 
     private Rancher.Config getConfig(SourceReference reference) {

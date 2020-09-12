@@ -15,7 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class ItemDescriptionFactoryCompose2Test {
+class InputFormatHandlerCompose2Test {
 
     private FileFetcher fileFetcher;
 
@@ -28,7 +28,7 @@ class ItemDescriptionFactoryCompose2Test {
     public void readCompose() {
         SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/docker-compose.yml");
         String yml = fileFetcher.get(file);
-        ItemDescriptionFactoryCompose2 factoryCompose2 = new ItemDescriptionFactoryCompose2(fileFetcher);
+        InputFormatHandlerCompose2 factoryCompose2 = new InputFormatHandlerCompose2(fileFetcher);
         List<ItemDescription> services = factoryCompose2.getDescriptions(file, null);
         assertEquals(3, services.size());
         ItemDescription service = services.get(0);

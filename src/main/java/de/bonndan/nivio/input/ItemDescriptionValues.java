@@ -1,32 +1,18 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
-
-import java.net.URL;
-import java.util.List;
 
 import static de.bonndan.nivio.util.SafeAssign.assignSafe;
 
-/**
- * Processors of input sources must implement this interface.
- *
- *
- */
-public interface ItemDescriptionFactory {
-
-    List<String> getFormats();
-
-    List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl);
-
+public class ItemDescriptionValues {
     /**
      * Overwrites and fields on the existing with values of the increment unless the increment value is null.
      *
-     * @param existing current description present in the landscape
+     * @param existing  current description present in the landscape
      * @param increment new values
      */
-    static void assignNotNull(ItemDescription existing, ItemDescription increment) {
-        
+    public static void assignNotNull(ItemDescription existing, ItemDescription increment) {
+
         if (increment.getName() != null)
             existing.setName(increment.getName());
         if (increment.getType() != null)
@@ -55,5 +41,4 @@ public interface ItemDescriptionFactory {
 
         assignSafe(increment.getInterfaces(), (set) -> set.forEach(intf -> existing.getInterfaces().add(intf)));
     }
-
 }

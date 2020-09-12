@@ -5,7 +5,7 @@ import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
+import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import de.bonndan.nivio.model.*;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,16 +21,16 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-class ItemDescriptionFactoryNivioTest {
+class InputFormatHandlerNivioTest {
 
     private FileFetcher fileFetcher;
 
-    private ItemDescriptionFactoryNivio descriptionFactory;
+    private InputFormatHandlerNivio descriptionFactory;
 
     @BeforeEach
     public void setup() {
         fileFetcher = new FileFetcher(new HttpService());
-        descriptionFactory = new ItemDescriptionFactoryNivio(fileFetcher);
+        descriptionFactory = new InputFormatHandlerNivio(fileFetcher);
     }
 
     @Test

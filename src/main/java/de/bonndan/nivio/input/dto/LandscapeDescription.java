@@ -3,7 +3,7 @@ package de.bonndan.nivio.input.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.LandscapeConfig;
-import de.bonndan.nivio.input.ItemDescriptionFactory;
+import de.bonndan.nivio.input.ItemDescriptionValues;
 import de.bonndan.nivio.input.ItemDescriptions;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.GroupItem;
@@ -177,7 +177,7 @@ public class LandscapeDescription implements Landscape {
 
             ItemDescription existing = itemDescriptions.find(desc.getIdentifier(), desc.getGroup()).orElse(null);
             if (existing != null) {
-                ItemDescriptionFactory.assignNotNull(existing, desc);
+                ItemDescriptionValues.assignNotNull(existing, desc);
             } else {
                 this.itemDescriptions.add(desc);
             }

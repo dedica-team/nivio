@@ -1,5 +1,6 @@
 package de.bonndan.nivio.observation;
 
+import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +24,9 @@ public class LandscapeObserverPool {
     public static final String DELIM = ";";
 
     private final Landscape landscape;
-    private final List<URLObserver> observers;
+    private final List<InputFormatObserver> observers;
 
-    public LandscapeObserverPool(Landscape landscape, List<URLObserver> observers) {
+    public LandscapeObserverPool(Landscape landscape, List<InputFormatObserver> observers) {
         this.landscape = landscape;
         this.observers = observers;
     }
@@ -36,7 +37,15 @@ public class LandscapeObserverPool {
     public Optional<String> hasChange() {
         LOGGER.info("Detecting changes in {} observers for landscape {}.", observers.size(), landscape.getIdentifier());
 
-        CompletableFuture<String>[] futures = observers.stream().map(URLObserver::hasChange).toArray(CompletableFuture[]::new);
+        CompletableFuture<String>[] futures = observers.stream().map(observer -> {
+            try {
+                return observer.hasChange();
+            } catch (ProcessingException e) {
+                return null;
+            }
+        })
+                .filter(Objects::nonNull)
+                .toArray(CompletableFuture[]::new);
         CompletableFuture<Void> allDoneFuture = CompletableFuture.allOf(futures);
 
         CompletableFuture<List<String>> listCompletableFuture = allDoneFuture.thenApply(
@@ -53,7 +62,11 @@ public class LandscapeObserverPool {
         return Optional.ofNullable(changes.isEmpty() ? null : StringUtils.collectionToDelimitedString(changes, DELIM));
     }
 
-    public Landscape getLandscape() {
+    Landscape getLandscape() {
         return landscape;
+    }
+
+    List<InputFormatObserver> getObservers() {
+        return observers;
     }
 }
