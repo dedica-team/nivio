@@ -3,6 +3,7 @@ package de.bonndan.nivio.observation;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,8 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Observer for source references which point to files/urls.
+ *
+ * This observer can handle relative paths.
  */
 public class FileSourceReferenceObserver implements InputFormatObserver {
 
@@ -32,26 +35,28 @@ public class FileSourceReferenceObserver implements InputFormatObserver {
      * @return a future of the URL whether the URL had a content change
      */
     public CompletableFuture<String> hasChange() {
-        LOGGER.debug("Looking for change in url {}", url);
+        final String combined = URLHelper.combine(url, reference.getUrl());
+
+        LOGGER.debug("Looking for change in url {}", combined);
         return CompletableFuture.supplyAsync(() -> {
             String downloaded = getContent();
             if (downloaded.equals(content)) {
-                LOGGER.debug("Found no change in url {}", url);
+                LOGGER.debug("Found no change in url {}", combined);
                 return null;
             }
             content = downloaded;
-            LOGGER.debug("Found change in url {}", url);
-            return url.toString();
+            LOGGER.debug("Found change in url {}", combined);
+            return combined;
         });
     }
 
     private String getContent() {
         try {
             String downloaded = fileFetcher.get(reference, url);
-            LOGGER.debug("Downloaded {} bytes from {}", downloaded.length(), url);
+            LOGGER.debug("Downloaded {} bytes from {}", downloaded.length(), reference.getUrl());
             return downloaded;
         } catch (Exception e) {
-            throw new ProcessingException("Failed to fetch " + url, e);
+            throw new ProcessingException("Failed to fetch source reference " + reference.getUrl(), e);
         }
     }
 

@@ -13,8 +13,6 @@ import java.util.stream.Stream;
 
 /**
  * A wrapper around observers to reduce the async results to a single boolean.
- *
- *
  */
 public class LandscapeObserverPool {
 
@@ -36,11 +34,12 @@ public class LandscapeObserverPool {
         LOGGER.info("Detecting changes in {} observers for landscape {}.", observers.size(), landscape.getIdentifier());
 
         ObservedChange change = new ObservedChange();
-        CompletableFuture<String>[] futures =  observers.stream().map(observer -> {
+        CompletableFuture<String>[] futures = observers.stream().map(observer -> {
             try {
                 return observer.hasChange();
             } catch (ProcessingException e) {
                 change.addError(e);
+                LOGGER.warn("Failed to get change: " + e.getMessage(), e);
                 return null;
             }
         })
@@ -57,9 +56,6 @@ public class LandscapeObserverPool {
 
         List<String> changes = listCompletableFuture.join();
         change.setChanges(changes);
-        if (!changes.isEmpty()) {
-            LOGGER.debug("Detected changes in {} : {}.",  landscape.getIdentifier(), changes);
-        }
         return change;
     }
 
