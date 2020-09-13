@@ -58,11 +58,11 @@ bind to the corresponding folder, e.g:
        ports:
          - 8080:8080
 
-Then you can point to a specific file or folder with the *SEED* environment variable:
+Then you can point to a specific file with the *SEED* environment variable:
 
 .. code-block:: bash
 
-    SEED=/my/files/here docker-compose up
+    SEED=/my/files/here/file.yml docker-compose up
 
 Or you provide an URL that serves the yml files to nivio:
 
