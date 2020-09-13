@@ -49,7 +49,7 @@ class FileSourceReferenceObserverTest {
         reference.setUrl("./services/wordpress.yml");
 
         FileFetcher mocked = mock(FileFetcher.class);
-        when(mocked.get(any(SourceReference.class), any(URL.class))).thenAnswer(invocationOnMock -> String.valueOf(Math.random()));
+        when(mocked.get(any(SourceReference.class), any(URL.class))).thenReturn("foo", "bar");
 
         FileSourceReferenceObserver observer = new FileSourceReferenceObserver(
                 mocked,
