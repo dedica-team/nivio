@@ -46,7 +46,6 @@ public class ApiController {
 
     /**
      * Overview on all landscapes.
-     *
      */
     @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -224,11 +223,9 @@ public class ApiController {
         }
 
         Optional<URL> url = URLHelper.getURL(landscape.getSource());
-        if (url.isPresent()) {
-            return process(landscapeDescriptionFactory.from(url.get()));
-        }
 
-        return process(LandscapeDescriptionFactory.fromString(landscape.getSource(), landscape.getIdentifier() + " source"));
+        return url.map(u -> process(landscapeDescriptionFactory.from(u)))
+                .orElseGet(() -> process(LandscapeDescriptionFactory.fromString(landscape.getSource(), landscape.getIdentifier() + " source")));
     }
 
 }
