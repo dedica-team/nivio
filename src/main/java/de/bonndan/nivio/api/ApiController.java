@@ -138,7 +138,8 @@ public class ApiController {
         dto.setIdentifier(identifier);
         dto.setIsPartial(true);
 
-        SourceReference sourceReference = new SourceReference(null, format);
+        SourceReference sourceReference = new SourceReference();
+        sourceReference.setFormat(format);
         sourceReference.setContent(body);
 
         InputFormatHandler factory = formatFactory.getInputFormatHandler(sourceReference);

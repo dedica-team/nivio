@@ -8,6 +8,7 @@ import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeImpl;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -38,6 +39,7 @@ class ObserverRegistryTest {
     }
 
     @Test
+    @DisplayName("Ensure that indexed landscape is registered for observation")
     public void onApplicationEvent() {
 
         String source = getRootPath() + "/src/test/resources/example/example_env.yml";

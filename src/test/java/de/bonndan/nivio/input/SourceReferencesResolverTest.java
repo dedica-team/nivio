@@ -29,21 +29,22 @@ public class SourceReferencesResolverTest {
 
     private SourceReferencesResolver sourceReferencesResolver;
     private LandscapeDescriptionFactory factory;
+    private FileFetcher fileFetcher;
 
     @BeforeEach
     public void setup() {
         log = new ProcessLog(LoggerFactory.getLogger(SourceReferencesResolver.class));
+        fileFetcher = new FileFetcher(mock(HttpService.class));
         sourceReferencesResolver = new SourceReferencesResolver(
                 new InputFormatHandlerFactory(
                         new ArrayList<>(Arrays.asList(
-                                new InputFormatHandlerNivio(new FileFetcher(new HttpService())),
+                                new InputFormatHandlerNivio(fileFetcher),
                                 InputFormatHandlerCompose2.forTesting())
                         )
                 )
                 , log
         );
 
-        FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
         factory = new LandscapeDescriptionFactory(fileFetcher);
     }
 
@@ -71,6 +72,16 @@ public class SourceReferencesResolverTest {
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
         assertFalse(landscapeDescription.isPartial());
+
+        sourceReferencesResolver = new SourceReferencesResolver(
+                new InputFormatHandlerFactory(
+                        new ArrayList<>(Arrays.asList(
+                                new InputFormatHandlerNivio(new FileFetcher(new HttpService())),
+                                InputFormatHandlerCompose2.forTesting())
+                        )
+                )
+                , log
+        );
 
         //when
         Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
