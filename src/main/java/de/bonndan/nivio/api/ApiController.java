@@ -134,21 +134,21 @@ public class ApiController {
             @RequestHeader(name = "format") String format,
             @RequestBody String body
     ) {
-        LandscapeDescription env = new LandscapeDescription();
-        env.setIdentifier(identifier);
-        env.setIsPartial(true);
+        LandscapeDescription dto = new LandscapeDescription();
+        dto.setIdentifier(identifier);
+        dto.setIsPartial(true);
 
         SourceReference sourceReference = new SourceReference(null, format);
         sourceReference.setContent(body);
 
         InputFormatHandler factory = formatFactory.getInputFormatHandler(sourceReference);
-        Optional<URL> baseUrl = URLHelper.getParentPath(env.getSource());
+        Optional<URL> baseUrl = URLHelper.getParentPath(dto.getSource());
 
         List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference, baseUrl.orElse(null));
 
-        env.setItemDescriptions(itemDescriptions);
+        dto.setItemDescriptions(itemDescriptions);
 
-        return indexer.reIndex(env);
+        return indexer.reIndex(dto);
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
