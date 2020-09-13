@@ -1,7 +1,6 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -10,28 +9,35 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * This service returns the correct the proper input format (nivio, k8s...) handler for a {@link SourceReference}.
+ */
 @Service
 public class InputFormatHandlerFactory {
 
     private final Map<InputFormatHandler, List<String>> factoryListMap = new ConcurrentHashMap<>();
 
-    public static InputFormatHandlerFactory with(InputFormatHandler factory) {
-        return new InputFormatHandlerFactory(new ArrayList<>(Collections.singletonList(factory)));
+    public static InputFormatHandlerFactory with(InputFormatHandler handler) {
+        return new InputFormatHandlerFactory(new ArrayList<>(Collections.singletonList(handler)));
     }
 
-    public InputFormatHandlerFactory(List<InputFormatHandler> factories) {
-        factories.forEach(itemDescriptionFactory -> factoryListMap.put(itemDescriptionFactory, itemDescriptionFactory.getFormats()));
+    /**
+     * The available handlers are injected here.
+     *
+     * @param inputFormatHandlers all available format handlers
+     */
+    public InputFormatHandlerFactory(List<InputFormatHandler> inputFormatHandlers) {
+        inputFormatHandlers.forEach(itemDescriptionFactory -> factoryListMap.put(itemDescriptionFactory, itemDescriptionFactory.getFormats()));
     }
 
     /**
      * Returns the proper factory to generate/parse service descriptions based on the input format.
      *
-     * @param reference            the reference pointing at a file or url
-     * @param landscapeDescription landscape, may contain a base url
+     * @param reference the reference pointing at a file or url
      * @return the factory
      */
     @NonNull
-    public InputFormatHandler getInputFormatHandler(SourceReference reference, LandscapeDescription landscapeDescription) {
+    public InputFormatHandler getInputFormatHandler(SourceReference reference) {
 
         List<InputFormatHandler> factories = new ArrayList<>();
         factoryListMap.entrySet().stream()
@@ -47,7 +53,11 @@ public class InputFormatHandlerFactory {
             factoryListMap.values().forEach(knownFormats::addAll);
             String msg = "Unknown source reference format: '" + reference.getFormat() + "', known formats are: "
                     + StringUtils.collectionToDelimitedString(knownFormats, ", ");
-            throw new ProcessingException(landscapeDescription, msg);
+            if (reference.getLandscapeDescription() != null) {
+                throw new ProcessingException(reference.getLandscapeDescription(), msg);
+            } else {
+                throw new RuntimeException(msg);
+            }
         }
 
         //last one wins

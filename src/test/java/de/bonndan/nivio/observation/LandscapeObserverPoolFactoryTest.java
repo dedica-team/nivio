@@ -52,7 +52,7 @@ class LandscapeObserverPoolFactoryTest {
         description.getSourceReferences().add(ref1);
 
         InputFormatHandler handler = mock(InputFormatHandler.class);
-        when(formatFactory.getInputFormatHandler(any(SourceReference.class), eq(description))).thenReturn(handler);
+        when(formatFactory.getInputFormatHandler(any(SourceReference.class))).thenReturn(handler);
 
         when(fileFetcher.get(any(URL.class))).thenReturn("");
 
@@ -65,7 +65,7 @@ class LandscapeObserverPoolFactoryTest {
         assertFalse(pool.getObservers().isEmpty());
         assertEquals(4, pool.getObservers().size());
 
-        verify(formatFactory).getInputFormatHandler(eq(ref1),eq(description));
+        verify(formatFactory).getInputFormatHandler(eq(ref1));
         verify(handler).getObserver(eq(ref1), eq(URLHelper.getURL(getRootPath() + "/src/test/resources/example/").get()));
     }
 
@@ -84,7 +84,7 @@ class LandscapeObserverPoolFactoryTest {
         description.getSourceReferences().add(ref1);
 
         InputFormatHandler handler = mock(InputFormatHandler.class);
-        when(formatFactory.getInputFormatHandler(any(SourceReference.class), eq(description))).thenReturn(handler);
+        when(formatFactory.getInputFormatHandler(any(SourceReference.class))).thenReturn(handler);
 
         //when
         LandscapeObserverPool pool = observerPoolFactory.getPoolFor(landscape, description);
@@ -95,7 +95,7 @@ class LandscapeObserverPoolFactoryTest {
         assertFalse(pool.getObservers().isEmpty());
         assertEquals(3, pool.getObservers().size());
 
-        verify(formatFactory).getInputFormatHandler(eq(ref1),eq(description));
+        verify(formatFactory).getInputFormatHandler(eq(ref1));
         verify(handler).getObserver(eq(ref1), eq(null));
     }
 

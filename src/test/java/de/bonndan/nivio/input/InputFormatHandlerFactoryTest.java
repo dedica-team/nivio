@@ -31,8 +31,7 @@ public class InputFormatHandlerFactoryTest {
     @Test
     public void defaultIfNull() {
         InputFormatHandler factory = formatFactory.getInputFormatHandler(
-                new SourceReference(),
-                new LandscapeDescription()
+                new SourceReference()
         );
 
         assertTrue(factory instanceof InputFormatHandler);
@@ -41,8 +40,8 @@ public class InputFormatHandlerFactoryTest {
 
     @Test
     public void defaultIfOther() {
-        assertThrows(ProcessingException.class,() -> {
-           formatFactory.getInputFormatHandler(new SourceReference(null, "abc"), new LandscapeDescription());
+        assertThrows(RuntimeException.class,() -> {
+           formatFactory.getInputFormatHandler(new SourceReference(null, "abc"));
         });
     }
 
@@ -50,8 +49,7 @@ public class InputFormatHandlerFactoryTest {
     public void compose2() {
 
         InputFormatHandler factory = formatFactory.getInputFormatHandler(
-                new SourceReference(null, "docker-compose-v2"),
-                new LandscapeDescription()
+                new SourceReference(null, "docker-compose-v2")
         );
 
         assertTrue(factory instanceof InputFormatHandler);

@@ -141,7 +141,7 @@ public class ApiController {
         SourceReference sourceReference = new SourceReference(null, format);
         sourceReference.setContent(body);
 
-        InputFormatHandler factory = formatFactory.getInputFormatHandler(sourceReference, env);
+        InputFormatHandler factory = formatFactory.getInputFormatHandler(sourceReference);
         Optional<URL> baseUrl = URLHelper.getParentPath(env.getSource());
 
         List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference, baseUrl.orElse(null));
