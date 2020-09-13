@@ -1,8 +1,8 @@
 package de.bonndan.nivio.input;
 
-
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
+import com.googlecode.cqengine.attribute.support.SimpleFunction;
 import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
 import de.bonndan.nivio.input.dto.ItemDescription;
@@ -11,6 +11,7 @@ import de.bonndan.nivio.model.ItemMatcher;
 import de.bonndan.nivio.model.LandscapeItem;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -19,8 +20,30 @@ import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
 
 public class ItemDescriptions {
 
-    private static final Attribute<ItemDescription, String> IDENTIFIER = attribute("identifier", ItemDescription::getIdentifier);
-    private static final Attribute<ItemDescription, String> NAME = attribute("name", ItemDescription::getName);
+    /**
+     * The {@link com.googlecode.cqengine.query.QueryFactory#attribute(String, SimpleFunction)})} relies on a method
+     * {@link net.jodah.typetools.TypeResolver#resolveRawArguments(Type, Class)}, which in Java 13 is not able to retrieve
+     * information about the generic types, if a lambda or anonymous method reference is provided. By providing an anonymous
+     * class of the {@link SimpleFunction}, the generic types can be resolved without running into exceptions.
+     */
+    @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef"})
+    private static final Attribute<ItemDescription, String> IDENTIFIER = attribute("identifier", new SimpleFunction<>() {
+        @Override
+        public String apply(ItemDescription itemDescription) {
+            return itemDescription.getIdentifier();
+        }
+    });
+
+    /**
+     * See {@link #IDENTIFIER}
+     */
+    @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef"})
+    private static final Attribute<ItemDescription, String> NAME = attribute("name", new SimpleFunction<>() {
+        @Override
+        public String apply(ItemDescription itemDescription) {
+            return itemDescription.getName();
+        }
+    });
 
     private ConcurrentIndexedCollection<ItemDescription> index = new ConcurrentIndexedCollection<>();
 

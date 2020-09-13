@@ -58,9 +58,12 @@ Clone nivio, build and run a Docker image:
       git clone https://github.com/dedica-team/nivio.git && cd nivio
       mvn clean package
       docker build -t nivio:latest .
-      docker run -e SEED=/tmp/nivio/inout.yml --mount type=bind,source=C:\<your>\<path>\<to>\nivio\src\test\resources\example,target=/tmp/nivio -p 8080:8080 nivio:latest
+      docker run -e SEED=//tmp/nivio/inout.yml --mount type=bind,source="C:\<your>\<path>\<to>\nivio\src\test\resources\example",target=/tmp/nivio -p 8080:8080 nivio:latest
       
    then open http://localhost:8080
+   
+   (Note: the double slashes at the beginning of the path for the SEED environment variable work as a fix to make MSYS/MinGW consoles
+   *not* translate the `/tmp` path to a local DOS path. This is safe to use with the PowerShell. Further reading: https://stackoverflow.com/a/14189687/10000398)
    
    ---
  
