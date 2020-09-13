@@ -15,8 +15,7 @@ class SearchDocumentFactoryTest {
     @Test
     public void generatesDocument() throws MalformedURLException {
         //given
-        Item item = new Item();
-        item.setIdentifier("foo");
+        Item item = new Item(null, "foo");
         item.setName("Hans");
         item.setDescription("Lorem ipsum");
         item.setContact("info@acme.com");
@@ -38,7 +37,7 @@ class SearchDocumentFactoryTest {
         assertEquals(item.getLabel("foo2"), document.get("foo2"));
 
         assertEquals(item.getLinks().get("wiki").getHref().toString(), document.get("wiki"));
-        String[] tag =  document.getValues("tag");
+        String[] tag = document.getValues("tag");
         List<String> tags = List.of(tag);
         assertTrue(tags.contains("one"));
         assertTrue(tags.contains("two"));

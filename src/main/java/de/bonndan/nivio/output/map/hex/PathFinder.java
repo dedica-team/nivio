@@ -125,7 +125,7 @@ public class PathFinder {
                     if (neighbour.equals(dst)) {
                         neighbour.setParent(currentStep);
                         currentStep = neighbour;
-                        LOGGER.info("reached  {}", currentStep.hex);
+                        LOGGER.debug("reached  {}", currentStep.hex);
                         break;
                     }
 

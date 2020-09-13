@@ -21,18 +21,31 @@ import java.nio.file.Paths;
 
 /**
  * Fetches files either from local file system or from remote http endpoint.
- *
- *
  */
 @Component
 public class FileFetcher {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileFetcher.class);
-
+    private static final String ERROR_MSG = "Failed to fetch file ";
     private final HttpService http;
 
     public FileFetcher(HttpService httpService) {
         this.http = httpService;
+    }
+
+    /**
+     * @param source
+     * @return the file content
+     * @throws ReadingException
+     */
+    @NonNull
+    public static String readFile(File source) {
+        try {
+            return Files.readString(Paths.get(source.toURI()), StandardCharsets.UTF_8);
+        } catch (IOException | OutOfMemoryError | SecurityException e) {
+            LOGGER.error("Failed to read file " + source.getAbsolutePath(), e);
+            throw new ReadingException("Failed to read file " + source.getAbsolutePath(), e);
+        }
     }
 
     /**
@@ -60,14 +73,14 @@ public class FileFetcher {
             }
             return http.get(url);
         } catch (IOException | URISyntaxException | RuntimeException e) {
-            LOGGER.error("Failed to fetch file " + url, e);
-            throw new ReadingException("Failed to fetch file "+ url, e);
+            LOGGER.error(ERROR_MSG + url, e);
+            throw new ReadingException(ERROR_MSG + url, e);
         }
     }
 
     /**
      * Reads the url of a reference.
-     *
+     * <p>
      * The given reference can also be a relative path. It then tries to concat the description source url.
      *
      * @param ref a {@link SourceReference} with a {@link de.bonndan.nivio.input.dto.LandscapeDescription}
@@ -85,8 +98,9 @@ public class FileFetcher {
             return fetchRemoteUrl(ref);
         } catch (MalformedURLException | URISyntaxException e) {
             String path = ref.getUrl();
-            if (path == null)
+            if (path == null) {
                 return null;
+            }
             if (ref.getLandscapeDescription() != null) {
                 File file = new File(ref.getLandscapeDescription().getSource());
                 path = file.getParent() + "/" + ref.getUrl();
@@ -96,25 +110,7 @@ public class FileFetcher {
         }
     }
 
-
     /**
-     *
-     * @param source
-     * @return the file content
-     * @throws ReadingException
-     */
-    @NonNull
-    public static String readFile(File source) {
-        try {
-            return Files.readString(Paths.get(source.toURI()), StandardCharsets.UTF_8);
-        } catch (IOException | OutOfMemoryError | SecurityException e) {
-            LOGGER.error("Failed to read file " + source.getAbsolutePath(), e);
-            throw new ReadingException("Failed to read file " + source.getAbsolutePath(), e);
-        }
-    }
-
-    /**
-     *
      * @param ref
      * @param baseUrl
      * @return
@@ -147,8 +143,8 @@ public class FileFetcher {
         try {
             return fetchRemoteUrl(ref, new URL(ref.getUrl()));
         } catch (IOException | RuntimeException e) {
-            LOGGER.error("Failed to fetch file " + ref.getUrl(), e);
-            throw new ReadingException(ref.getLandscapeDescription(), "Failed to fetch file "+ ref.getUrl(), e);
+            LOGGER.error(ERROR_MSG + ref.getUrl(), e);
+            throw new ReadingException(ref.getLandscapeDescription(), ERROR_MSG + ref.getUrl(), e);
         }
     }
 
@@ -163,10 +159,8 @@ public class FileFetcher {
             }
             return http.get(url);
         } catch (IOException | AuthenticationException | URISyntaxException | RuntimeException e) {
-            LOGGER.error("Failed to fetch file " + ref.getUrl(), e);
-            throw new ReadingException(ref.getLandscapeDescription(), "Failed to fetch file "+ ref.getUrl(), e);
+            LOGGER.error(ERROR_MSG + ref.getUrl(), e);
+            throw new ReadingException(ref.getLandscapeDescription(), ERROR_MSG + ref.getUrl(), e);
         }
     }
-
-
 }

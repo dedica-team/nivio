@@ -48,7 +48,7 @@ const Navigation: React.FC = () => {
           <Button component={Link} to={``}>
             Home
           </Button>
-          <Button data-testid='ManualButton' component={Link} to={`/man/install`}>
+          <Button data-testid='ManualButton' component={Link} to={`/man/install.html`}>
             Manual
           </Button>
           <Button data-testid='EventsButton' component={Link} to={`/events`}>

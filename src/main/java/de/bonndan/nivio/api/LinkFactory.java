@@ -5,7 +5,6 @@ import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.docs.DocsController;
 import de.bonndan.nivio.output.map.MapController;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.StreamSupport;
@@ -27,10 +25,8 @@ import static de.bonndan.nivio.model.Link.LinkBuilder.linkTo;
 @Component
 public class LinkFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LinkFactory.class);
-
     public static final String REL_SELF = "self";
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(LinkFactory.class);
     private final LocalServer localServer;
 
     public LinkFactory(LocalServer localServer) {
@@ -43,7 +39,7 @@ public class LinkFactory {
      * @param links string map
      */
     public static Map<String, Link> fromStringMap(Map<String, String> links) {
-        Map<String, Link> out = new HashMap<>();
+        Map<String, Link> out = new HashMap<>(links.size());
         links.forEach((s, s2) -> {
             try {
                 out.put(s, linkTo(new URL(s2)).build());
@@ -65,14 +61,8 @@ public class LinkFactory {
         );
 
         /*
-         * map out put
+         * map output
          */
-        links.put("png", linkTo(localServer.getUrl(MapController.PATH, landscape.getIdentifier(), MapController.MAP_PNG_ENDPOINT))
-                .withMedia(MediaType.IMAGE_PNG_VALUE)
-                .withTitle("Rendered Landscape")
-                .build()
-        );
-
         links.put("svg", linkTo(localServer.getUrl(MapController.PATH, landscape.getIdentifier(), MapController.MAP_SVG_ENDPOINT))
                 .withMedia("image/svg+xml")
                 .withTitle("SVG map")

@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Inspects item description labels for keys starting with "nivio" and tries to set the corresponding values to fields.
@@ -33,12 +35,19 @@ public class LabelToFieldProcessor {
 
     public void process(LandscapeDescription input, LandscapeImpl landscape) {
         input.getItemDescriptions().all().forEach(item -> {
-            item.getLabels().entrySet().stream()
+            List<Map.Entry<String, String>> nivioLabels = item.getLabels().entrySet().stream()
                     .filter(entry -> entry.getKey().toLowerCase().startsWith(NIVIO_LABEL_PREFIX))
-                    .forEach(entry -> {
-                        String field = entry.getKey().substring(LabelToFieldProcessor.NIVIO_LABEL_PREFIX.length());
-                        setValue(item, field, entry.getValue());
-                    });
+                    .collect(Collectors.toList());
+
+            nivioLabels.forEach(entry -> {
+                String field = entry.getKey().substring(LabelToFieldProcessor.NIVIO_LABEL_PREFIX.length());
+                setValue(item, field, entry.getValue());
+            });
+
+            nivioLabels.forEach(entry -> {
+                item.getLabels().remove(entry.getKey());
+            });
+
         });
     }
 
@@ -90,7 +99,8 @@ public class LabelToFieldProcessor {
                 myAccessor.setPropertyValue(name, value.trim());
             }
         } catch (NotWritablePropertyException e) {
-            logger.warn("Failed to write field '" + name + "' via label");
+            logger.debug("Failed to write field '" + name + "' via label");
+            item.getLabels().put(name, value);
         } catch (MalformedURLException e) {
             logger.warn("Failed to add link '" + name + "' via label because of malformed URL " + value);
         }

@@ -13,10 +13,10 @@ class InitialPlacementStrategyTest {
     @Test
     public void placesInCircle() {
         ArrayList<LayoutedComponent> layoutedComponents = new ArrayList<>();
-        layoutedComponents.add(new LayoutedComponent(new Item()));
-        layoutedComponents.add(new LayoutedComponent(new Item()));
-        layoutedComponents.add(new LayoutedComponent(new Item()));
-        layoutedComponents.add(new LayoutedComponent(new Item()));
+        layoutedComponents.add(new LayoutedComponent(new Item("test", "a")));
+        layoutedComponents.add(new LayoutedComponent(new Item("test", "b")));
+        layoutedComponents.add(new LayoutedComponent(new Item("test", "c")));
+        layoutedComponents.add(new LayoutedComponent(new Item("test", "d")));
 
         InitialPlacementStrategy initialPlacementStrategy = new InitialPlacementStrategy(layoutedComponents);
         Point2D.Double place1 = initialPlacementStrategy.place(0);

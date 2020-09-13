@@ -20,15 +20,13 @@ class SVGGroupAreaOutlineFactoryTest {
         Hex e2 = new Hex(0, 20, -20);
         Set<Hex> occupied = Set.of(e1, e2);
 
-        Item item1 = new Item();
-        item1.setIdentifier("bar");
-        Item item2 = new Item();
-        item2.setIdentifier("baz");
+        Item item1 = new Item("foo", "bar");
+        Item item2 = new Item("foo", "baz");
 
         Group foo = new Group("foo");
         foo.setColor("005500");
-        foo.getItems().add(item1);
-        foo.getItems().add(item2);
+        foo.addItem(item1);
+        foo.addItem(item2);
 
         Map<LandscapeItem, Hex> map = new HashMap<>();
         map.put(item1, e1);

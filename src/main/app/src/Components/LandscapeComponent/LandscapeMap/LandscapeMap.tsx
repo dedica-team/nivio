@@ -19,6 +19,7 @@ import LandscapeItem from '../LandscapeItem/LandscapeItem';
 import Slider from '../../SliderComponent/Slider';
 import MapRelation from './MapRelation/MapRelation';
 import Search from '../../SearchComponent/Search';
+import { withBasePath } from '../../../utils/API/BasePath';
 
 interface Props {
   identifier: string;
@@ -131,7 +132,7 @@ const Landscape: React.FC<Props> = () => {
   };
 
   useEffect(() => {
-    setData(`${process.env.REACT_APP_BACKEND_URL || ''}/render/${identifier}/map.svg`);
+    setData(withBasePath(`/render/${identifier}/map.svg`));
   }, [identifier]);
 
   useEffect(() => {

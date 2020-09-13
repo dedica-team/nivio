@@ -38,7 +38,7 @@ public class KPIFactory {
     public Map<String, KPI> getConfiguredKPIs(LandscapeImpl landscape) {
 
         Map<String, KPIConfig> config = landscape.getConfig().getKPIs();
-        Map<String, KPI> kpis = new HashMap<>();
+        Map<String, KPI> kpis = new HashMap<>(defaultKPIs.size() + config.size());
         defaultKPIs.forEach((s, kpiSupplier) -> kpis.put(s, kpiSupplier.get()));
 
         config.forEach((s, kpiConfig) -> {

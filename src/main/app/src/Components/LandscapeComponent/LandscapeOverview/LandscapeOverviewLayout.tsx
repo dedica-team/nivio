@@ -9,6 +9,7 @@ import './LandscapeOverview.scss';
 import { ILandscape } from '../../../interfaces';
 import dateFormat from 'dateformat';
 import { CSSTransition } from 'react-transition-group';
+import { withBasePath } from '../../../utils/API/BasePath';
 
 interface Props {
   sliderContent: string | ReactElement | ReactElement[] | null;
@@ -35,7 +36,6 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
     range         |   xs   |   sm   |   md   |   lg   |   xl
   */
   let content: string | ReactElement[] = 'Loading landscapes...';
-  const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
 
   if (Array.isArray(landscapes) && landscapes.length) {
     content = landscapes.map((landscape) => {
@@ -52,7 +52,7 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               <img
                 className={'preview'}
                 alt={'preview'}
-                src={`${backendUrl}/render/${landscape.identifier}/graph.png`}
+                src={withBasePath(`/render/${landscape.identifier}/map.svg`)}
                 style={{ maxWidth: 100, float: 'left' }}
               />
             </Button>
@@ -117,7 +117,7 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               variant='outlined'
               rel='noopener noreferrer'
               target={'_blank'}
-              href={`${backendUrl}/render/${landscape.identifier}/map.svg`}
+              href={withBasePath(`/render/${landscape.identifier}/map.svg`)}
             >
               Printable Graph
             </Button>
@@ -129,7 +129,7 @@ const LandscapeOverviewLayout: React.FC<Props> = ({
               variant='outlined'
               rel='noopener noreferrer'
               target={'_blank'}
-              href={`${backendUrl}/docs/${landscape.identifier}/report.html`}
+              href={withBasePath(`/docs/${landscape.identifier}/report.html`)}
             >
               Printable Report
             </Button>
