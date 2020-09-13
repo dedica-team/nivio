@@ -27,9 +27,10 @@ public class MapStyleSheetFactory {
      * Returns the content of the stylesheet referenced in the config.
      *
      * @param landscapeConfig config containing the stylesheet reference
-     * @param processLog current process log
+     * @param processLog      current process log
      * @return css or empty string
      */
+    @NonNull
     public String getMapStylesheet(LandscapeConfig landscapeConfig, @NonNull ProcessLog processLog) {
 
         String mapStylesheet = landscapeConfig.getBranding().getMapStylesheet();
@@ -37,13 +38,12 @@ public class MapStyleSheetFactory {
             return "";
         }
 
-        String mapCss = "";
-        processLog.debug("Loading customer stylesheet: " + mapStylesheet);
         try {
-            mapCss = fileFetcher.get(URLHelper.getURL(mapStylesheet));
-        } catch (ReadingException e ) {
+            processLog.debug("Loading customer stylesheet: " + mapStylesheet);
+            return URLHelper.getURL(mapStylesheet).map(url -> fileFetcher.get(url)).orElse("");
+        } catch (ReadingException e) {
             processLog.warn("Failed to load customer stylesheet " + mapStylesheet + ": " + e.getMessage());
+            return "";
         }
-        return mapCss;
     }
 }

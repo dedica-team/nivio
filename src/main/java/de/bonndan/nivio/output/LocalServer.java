@@ -17,6 +17,7 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.Optional;
 
 import static de.bonndan.nivio.output.icons.Icons.DEFAULT_ICON;
 
@@ -129,7 +130,7 @@ public class LocalServer implements EnvironmentAware {
      * Provides an URL for a locally served icon.
      */
     private URL getIconUrl(String icon) {
-        URL url = URLHelper.getURL(icon);
+        URL url = URLHelper.getURL(icon).orElse(null);
 
         //local icon urls are not supported
         if (url != null && URLHelper.isLocal(url)) {

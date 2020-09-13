@@ -36,6 +36,6 @@ public class SeedTest {
     @Test
     public void fails() {
         Seed seed = new Seed(" :xxx");
-        assertNull(URLHelper.getURL(seed.getLocations().get(0)));
+        assertTrue(URLHelper.getURL(seed.getLocations().get(0)).isEmpty());
     }
 }

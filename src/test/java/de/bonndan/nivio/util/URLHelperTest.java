@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,13 +21,14 @@ class URLHelperTest {
         String root = Paths.get("").toAbsolutePath().toString();
 
         //when
-        URL url = URLHelper.getURL(root + "/src/test/resources/example/example_templates.yml");
+        Optional<URL> url = URLHelper.getURL(root + "/src/test/resources/example/example_templates.yml");
         if (SystemUtils.IS_OS_WINDOWS) {
             root = "/" + root.replace(File.separator, "/");
         }
+
         //then
-        assert url != null;
-        assertEquals("file:" + root + "/src/test/resources/example/example_templates.yml", url.toString());
+        assertTrue(url.isPresent());
+        assertEquals("file:" + root + "/src/test/resources/example/example_templates.yml", url.get().toString());
     }
 
     @Test
@@ -37,10 +39,11 @@ class URLHelperTest {
             root = "/" + root.replace(File.separator, "/");
         }
         //when
-        URL url = URLHelper.getURL("src/test/resources/example/example_templates.yml");
+        Optional<URL> url = URLHelper.getURL("src/test/resources/example/example_templates.yml");
+
         //then
-        assert url != null;
-        assertEquals("file:" + root + "/src/test/resources/example/example_templates.yml", url.toString());
+        assertTrue(url.isPresent());
+        assertEquals("file:" + root + "/src/test/resources/example/example_templates.yml", url.get().toString());
     }
 
     @Test

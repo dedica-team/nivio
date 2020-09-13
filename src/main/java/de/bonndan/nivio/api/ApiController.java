@@ -142,9 +142,9 @@ public class ApiController {
         sourceReference.setContent(body);
 
         InputFormatHandler factory = formatFactory.getInputFormatHandler(sourceReference, env);
-        URL baseUrl = URLHelper.getParentPath(env.getSource());
+        Optional<URL> baseUrl = URLHelper.getParentPath(env.getSource());
 
-        List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference, baseUrl);
+        List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference, baseUrl.orElse(null));
 
         env.setItemDescriptions(itemDescriptions);
 
@@ -222,9 +222,9 @@ public class ApiController {
             return indexer.reIndex(Objects.requireNonNull(landscapeDescription));
         }
 
-        URL url = URLHelper.getURL(landscape.getSource());
-        if (url != null) {
-            return process(landscapeDescriptionFactory.from(url));
+        Optional<URL> url = URLHelper.getURL(landscape.getSource());
+        if (url.isPresent()) {
+            return process(landscapeDescriptionFactory.from(url.get()));
         }
 
         return process(LandscapeDescriptionFactory.fromString(landscape.getSource(), landscape.getIdentifier() + " source"));

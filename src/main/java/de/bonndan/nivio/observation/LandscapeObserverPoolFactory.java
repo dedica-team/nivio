@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -38,19 +39,16 @@ public class LandscapeObserverPoolFactory {
     public LandscapeObserverPool getPoolFor(Landscape landscape, @NonNull LandscapeDescription description) {
 
         List<InputFormatObserver> observers = new ArrayList<>();
-        URL baseUrl = URLHelper.getParentPath(description.getSource());
-        if (baseUrl == null) {
+        Optional<URL> baseUrl = URLHelper.getParentPath(description.getSource());
+        if (baseUrl.isEmpty()) {
             LOGGER.info("Landscape {} does not seem to have a valid source ('" + description.getSource() + "')", description.getIdentifier());
         } else {
-            URL url = URLHelper.getURL(description.getSource());
-            if (url != null) {
-                observers.add(new URLObserver(fileFetcher, url));
-            }
+            URLHelper.getURL(description.getSource()).ifPresent(url -> observers.add(new URLObserver(fileFetcher, url)));
         }
 
         for (SourceReference sourceReference : description.getSourceReferences()) {
             InputFormatHandler inputFormatHandler = inputFormatHandlerFactory.getInputFormatHandler(sourceReference, description);
-            observers.add(inputFormatHandler.getObserver(sourceReference, baseUrl));
+            observers.add(inputFormatHandler.getObserver(sourceReference, baseUrl.orElse(null)));
         }
 
         return new LandscapeObserverPool(landscape, observers);

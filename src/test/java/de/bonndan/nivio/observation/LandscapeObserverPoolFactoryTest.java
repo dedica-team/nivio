@@ -66,7 +66,7 @@ class LandscapeObserverPoolFactoryTest {
         assertEquals(4, pool.getObservers().size());
 
         verify(formatFactory).getInputFormatHandler(eq(ref1),eq(description));
-        verify(handler).getObserver(eq(ref1), eq(URLHelper.getURL(getRootPath() + "/src/test/resources/example/")));
+        verify(handler).getObserver(eq(ref1), eq(URLHelper.getURL(getRootPath() + "/src/test/resources/example/").get()));
     }
 
     @Test

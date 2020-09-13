@@ -8,6 +8,7 @@ import de.bonndan.nivio.util.URLHelper;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -27,7 +28,7 @@ public class SourceReferencesResolver {
 
     public void resolve(final LandscapeDescription landscapeDescription, Map<ItemDescription, List<String>> templatesAndTargets) {
 
-        URL baseUrl = URLHelper.getParentPath(landscapeDescription.getSource());
+        URL baseUrl = URLHelper.getParentPath(landscapeDescription.getSource()).orElse(null);
         landscapeDescription.getSourceReferences().forEach(ref -> {
             try {
                 InputFormatHandler factory = formatFactory.getInputFormatHandler(ref, landscapeDescription);

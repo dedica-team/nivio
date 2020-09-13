@@ -27,7 +27,7 @@ public interface InputFormatHandler {
      * @param baseUrl   parent config url
      * @return list of generated items (needs to be merged with existing items)
      */
-    List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl);
+    List<ItemDescription> getDescriptions(SourceReference reference, @Nullable URL baseUrl);
 
     /**
      * Returns an observer for the source reference.
