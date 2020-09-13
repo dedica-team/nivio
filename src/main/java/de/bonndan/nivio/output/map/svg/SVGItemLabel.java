@@ -34,16 +34,7 @@ class SVGItemLabel extends Component {
             this.width = 200;
         }
 
-        var rect = SvgTagCreator.rect()
-                .attr("x", -width / 2)
-                .attr("y", size + 4)
-                .attr("rx", CORNER_RADIUS)
-                .attr("ry", CORNER_RADIUS)
-                .attr("fill", "white")
-                .attr("width", width)
-                .attr("height", size / 2);
-
-        ContainerTag g = SvgTagCreator.g(rect, labelText).attr("class", "label");
+        ContainerTag g = SvgTagCreator.g(null, labelText).attr("class", "label");
         g.attr("id", getId());
         g.attr("data-identifier", item.getFullyQualifiedIdentifier().jsonValue());
         if (!StringUtils.isEmpty(item.getName()))
