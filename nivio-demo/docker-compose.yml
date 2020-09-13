@@ -1,4 +1,4 @@
-version: '3'
+version: '3.2'
 
 services:
 
@@ -12,12 +12,21 @@ services:
   nivio:
     image: dedica/nivio:latest
     environment:
+      # to provide the environment variables from the command line
       SEED: ${SEED}
       DEMO: ${DEMO}
+
       # enable DEMO to have a preloaded landscape
       # DEMO: 1
-      # SEED also loads data, but uses the sources from the webserver
-      # SEED: http://localhost:3000/example_env.yml
-    ports: 
-      - 8080:8080
 
+      # SEED also loads data, but uses the sources from the webserver
+      # SEED: http://webserver:80/example_env.yml
+
+      # SEED to load data from a local file, enable also volumes
+      # SEED: /demo/dedica.yml
+    # volumes:
+      # - type: bind
+        # source: ../src/test/resources/example
+        # target: /demo
+    ports:
+      - 8080:8080

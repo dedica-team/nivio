@@ -38,11 +38,33 @@ Adding your own content (seed config)
 
 
 Nivio expects a seed configuration at start time (unless you want to run the demo mode). You need to set an environment variable
-*SEED* to a path or URL nivio can read from.
+*SEED* to a path or URL nivio can read from. If you want to use files on the host, modify the `docker-compose.yml` to
+bind to the corresponding folder, e.g:
+
+.. code-block:: docker-compose
+
+   version: '3.2'
+
+   services:
+     nivio:
+       image: dedica/nivio:latest
+       environment:
+         SEED: ${SEED}
+         DEMO: ${DEMO}
+       volumes:
+         - type: bind
+           source: /onmyhost/my/files/here
+           target: /my/files/here
+       ports:
+         - 8080:8080
+
+Then you can point to a specific file or folder with the *SEED* environment variable:
 
 .. code-block:: bash
 
     SEED=/my/files/here docker-compose up
+
+Or you provide an URL that serves the yml files to nivio:
 
 .. code-block:: bash
 
