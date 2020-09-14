@@ -1,8 +1,9 @@
 package de.bonndan.nivio.input.rancher1;
 
-import de.bonndan.nivio.input.ItemDescriptionFactory;
+import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.observation.InputFormatObserver;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +16,9 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class ItemDescriptionFactoryRancher1 implements ItemDescriptionFactory {
+public class InputFormatHandlerRancher1 implements InputFormatHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(ItemDescriptionFactoryRancher1.class);
+    private static final Logger logger = LoggerFactory.getLogger(InputFormatHandlerRancher1.class);
 
     @Override
     public List<String> getFormats() {
@@ -38,5 +39,11 @@ public class ItemDescriptionFactoryRancher1 implements ItemDescriptionFactory {
             logger.error("Could not work on prometheus url {}", combine);
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public InputFormatObserver getObserver(SourceReference reference, URL baseUrl) {
+        //TODO add observer
+        return null;
     }
 }

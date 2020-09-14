@@ -21,12 +21,12 @@ public class Indexer {
     private static final Logger _logger = LoggerFactory.getLogger(Indexer.class);
 
     private final LandscapeRepository landscapeRepo;
-    private final ItemDescriptionFormatFactory formatFactory;
+    private final InputFormatHandlerFactory formatFactory;
     private final ApplicationEventPublisher eventPublisher;
     private final LocalServer localServer;
 
     public Indexer(LandscapeRepository landscapeRepository,
-                   ItemDescriptionFormatFactory formatFactory,
+                   InputFormatHandlerFactory formatFactory,
                    ApplicationEventPublisher eventPublisher,
                    LocalServer localServer
     ) {

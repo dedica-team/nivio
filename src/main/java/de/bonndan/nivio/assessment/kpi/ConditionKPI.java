@@ -2,6 +2,7 @@ package de.bonndan.nivio.assessment.kpi;
 
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Labeled;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Evaluates the "condition.*" labels, see {@link de.bonndan.nivio.input.kubernetes.ItemDescriptionFactoryKubernetes}
+ * Evaluates the "condition.*" labels, see {@link InputFormatHandlerKubernetes}
  *
  * TODO this is similiar to the {@link HealthKPI}, it only works on a different field.
  */

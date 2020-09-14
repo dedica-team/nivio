@@ -1,17 +1,16 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.compose2.ItemDescriptionFactoryCompose2;
+import de.bonndan.nivio.input.compose2.InputFormatHandlerCompose2;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
+import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -30,18 +29,22 @@ public class SourceReferencesResolverTest {
 
     private SourceReferencesResolver sourceReferencesResolver;
     private LandscapeDescriptionFactory factory;
+    private FileFetcher fileFetcher;
 
     @BeforeEach
     public void setup() {
         log = new ProcessLog(LoggerFactory.getLogger(SourceReferencesResolver.class));
+        fileFetcher = new FileFetcher(mock(HttpService.class));
         sourceReferencesResolver = new SourceReferencesResolver(
-                new ItemDescriptionFormatFactory(
-                        new ArrayList<ItemDescriptionFactory>(Arrays.asList(ItemDescriptionFactoryNivio.forTesting(), ItemDescriptionFactoryCompose2.forTesting()))
+                new InputFormatHandlerFactory(
+                        new ArrayList<>(Arrays.asList(
+                                new InputFormatHandlerNivio(fileFetcher),
+                                InputFormatHandlerCompose2.forTesting())
+                        )
                 )
                 , log
         );
 
-        FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
         factory = new LandscapeDescriptionFactory(fileFetcher);
     }
 
@@ -69,6 +72,16 @@ public class SourceReferencesResolverTest {
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
         assertFalse(landscapeDescription.isPartial());
+
+        sourceReferencesResolver = new SourceReferencesResolver(
+                new InputFormatHandlerFactory(
+                        new ArrayList<>(Arrays.asList(
+                                new InputFormatHandlerNivio(new FileFetcher(new HttpService())),
+                                InputFormatHandlerCompose2.forTesting())
+                        )
+                )
+                , log
+        );
 
         //when
         Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();

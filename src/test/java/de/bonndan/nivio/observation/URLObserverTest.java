@@ -1,5 +1,6 @@
 package de.bonndan.nivio.observation;
 
+import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.ReadingException;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +35,7 @@ class URLObserverTest {
     @Test
     public void hasChange() throws ExecutionException, InterruptedException {
         when(fileFetcher.get(any(URL.class))).thenReturn("foo", "bar");
-        urlObserver = new URLObserver(fileFetcher, publisher, url);
+        urlObserver = new URLObserver(fileFetcher, url);
 
         //call again (once in constructor)
         CompletableFuture<String> urlCompletableFuture  = urlObserver.hasChange();
@@ -48,7 +49,7 @@ class URLObserverTest {
     @Test
     public void hasSubsequentChange() throws ExecutionException, InterruptedException {
         when(fileFetcher.get(any(URL.class))).thenReturn("foo", "bar", "baz");
-        urlObserver = new URLObserver(fileFetcher, publisher, url);
+        urlObserver = new URLObserver(fileFetcher, url);
 
         //call again (once in constructor)
         urlObserver.hasChange();
@@ -64,7 +65,7 @@ class URLObserverTest {
     @Test
     public void hasNoChangeOnInit() throws ExecutionException, InterruptedException {
         when(fileFetcher.get(any(URL.class))).thenReturn("foo");
-        urlObserver = new URLObserver(fileFetcher, publisher, url);
+        urlObserver = new URLObserver(fileFetcher, url);
 
         CompletableFuture<String> urlCompletableFuture = urlObserver.hasChange();
         assertNull(urlCompletableFuture.get());
@@ -73,7 +74,7 @@ class URLObserverTest {
     @Test
     public void hasNoChange() throws ExecutionException, InterruptedException {
         when(fileFetcher.get(any(URL.class))).thenReturn("foo");
-        urlObserver = new URLObserver(fileFetcher, publisher, url);
+        urlObserver = new URLObserver(fileFetcher, url);
         urlObserver.hasChange();
 
         //when
@@ -83,12 +84,10 @@ class URLObserverTest {
 
     @Test
     public void hasError() throws ExecutionException, InterruptedException {
+        //given
         when(fileFetcher.get(any(URL.class))).thenThrow(new ReadingException("foo", new RuntimeException("bar")));
-        urlObserver = new URLObserver(fileFetcher, publisher, url);
-        urlObserver.hasChange();
 
         //when
-        CompletableFuture<String> urlCompletableFuture = urlObserver.hasChange();
-        assertNull(urlCompletableFuture.get());
+        assertThrows(ProcessingException.class, () -> new URLObserver(fileFetcher, url));
     }
 }

@@ -6,24 +6,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.ItemDescriptionFactory;
+import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
+import de.bonndan.nivio.observation.InputFormatObserver;
+import de.bonndan.nivio.observation.URLObserver;
+import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-@Service
-public class ItemDescriptionFactoryCompose2 implements ItemDescriptionFactory {
+import static io.swagger.v3.oas.integration.StringOpenApiConfigurationLoader.LOGGER;
 
-    private static final Logger logger = LoggerFactory.getLogger(ItemDescriptionFactory.class);
+@Service
+public class InputFormatHandlerCompose2 implements InputFormatHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(InputFormatHandler.class);
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
     static {
@@ -33,18 +40,18 @@ public class ItemDescriptionFactoryCompose2 implements ItemDescriptionFactory {
 
     private final FileFetcher fileFetcher;
 
-    public ItemDescriptionFactoryCompose2(FileFetcher fileFetcher) {
+    public InputFormatHandlerCompose2(FileFetcher fileFetcher) {
         this.fileFetcher = fileFetcher;
     }
 
-    public static ItemDescriptionFactory forTesting() {
-        return new ItemDescriptionFactoryCompose2(new FileFetcher(new HttpService()));
+    public static InputFormatHandler forTesting() {
+        return new InputFormatHandlerCompose2(new FileFetcher(new HttpService()));
     }
 
 
     @Override
     public List<String> getFormats() {
-        return Arrays.asList("docker-compose-v2");
+        return Collections.singletonList("docker-compose-v2");
     }
 
     public List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl) {
@@ -69,6 +76,18 @@ public class ItemDescriptionFactoryCompose2 implements ItemDescriptionFactory {
 
         return itemDescriptions;
 
+    }
+
+    @Override
+    @Nullable
+    public InputFormatObserver getObserver(SourceReference reference, URL baseUrl) {
+        try {
+            URL url = new URL(URLHelper.combine(baseUrl, reference.getUrl()));
+            return new URLObserver(fileFetcher, url);
+        } catch (MalformedURLException e) {
+            LOGGER.error("Failed to create observer for url {}", reference.getUrl(), e);
+            return null;
+        }
     }
 
 }

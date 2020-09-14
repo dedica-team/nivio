@@ -1,13 +1,14 @@
 package de.bonndan.nivio.input.kubernetes;
 
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.input.ItemDescriptionFactory;
+import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.ItemType;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.RelationType;
+import de.bonndan.nivio.observation.InputFormatObserver;
 import de.bonndan.nivio.util.URLHelper;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.Config;
@@ -26,9 +27,9 @@ import java.util.stream.Collectors;
  * Scans the k8s api for services, pods, volumes etc.
  */
 @org.springframework.stereotype.Service
-public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory {
+public class InputFormatHandlerKubernetes implements InputFormatHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ItemDescriptionFactoryKubernetes.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InputFormatHandlerKubernetes.class);
 
     public static final String NAMESPACE = "namespace";
     public static final String GROUP_LABEL_PARAM = "groupLabel";
@@ -43,12 +44,8 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
     private String groupLabel = null;
     private KubernetesClient client;
 
-    public ItemDescriptionFactoryKubernetes() {
-
-    }
-
-    public ItemDescriptionFactoryKubernetes(KubernetesClient client) {
-        this.client = client;
+    public InputFormatHandlerKubernetes(Optional<KubernetesClient> client) {
+        this.client = client.orElse(null);
     }
 
     @Override
@@ -96,6 +93,12 @@ public class ItemDescriptionFactoryKubernetes implements ItemDescriptionFactory 
                 .forEach(service -> descriptions.add(createDescriptionFromService(service, pods)));
 
         return descriptions;
+    }
+
+    @Override
+    public InputFormatObserver getObserver(SourceReference reference, URL baseUrl) {
+        //TODO add observer
+        return null;
     }
 
     /**

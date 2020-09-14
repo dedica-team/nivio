@@ -7,10 +7,11 @@ import java.util.concurrent.CompletableFuture;
  *
  * URL observer is implemented, but others like k8s observer to be done
  */
-interface Observer {
+public interface InputFormatObserver {
 
     /**
      * @return a future of the observed whether it had a change
+     * @throws de.bonndan.nivio.ProcessingException on error
      */
     CompletableFuture<String> hasChange();
 }

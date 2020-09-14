@@ -2,36 +2,45 @@ package de.bonndan.nivio.input.nivio;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.ItemDescriptionFactory;
+import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.ReadingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
+import de.bonndan.nivio.observation.FileSourceReferenceObserver;
+import de.bonndan.nivio.observation.InputFormatObserver;
+import de.bonndan.nivio.observation.URLObserver;
 import de.bonndan.nivio.util.Mappers;
+import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Service
-public class ItemDescriptionFactoryNivio implements ItemDescriptionFactory {
+import static io.swagger.v3.oas.integration.StringOpenApiConfigurationLoader.LOGGER;
 
-    private static final Logger logger = LoggerFactory.getLogger(ItemDescriptionFactoryNivio.class);
+/**
+ * Handler for nivio's custom input format (yaml).
+ *
+ *
+ */
+@Service
+public class InputFormatHandlerNivio implements InputFormatHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(InputFormatHandlerNivio.class);
     private static final ObjectMapper mapper = Mappers.gracefulYamlMapper;
 
-    private final FileFetcher fetcher;
+    private final FileFetcher fileFetcher;
 
-    public static ItemDescriptionFactory forTesting() {
-        return new ItemDescriptionFactoryNivio(new FileFetcher(new HttpService()));
-    }
-
-    public ItemDescriptionFactoryNivio(FileFetcher fetcher) {
-        this.fetcher = fetcher;
+    public InputFormatHandlerNivio(FileFetcher fileFetcher) {
+        this.fileFetcher = fileFetcher;
     }
 
     @Override
@@ -43,7 +52,7 @@ public class ItemDescriptionFactoryNivio implements ItemDescriptionFactory {
     public List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl) {
 
         List<ItemDescription> descriptions = new ArrayList<>();
-        String yml = fetcher.get(reference, baseUrl);
+        String yml = fileFetcher.get(reference, baseUrl);
         Source source;
         try {
             source = mapper.readValue(yml, Source.class);
@@ -63,5 +72,11 @@ public class ItemDescriptionFactoryNivio implements ItemDescriptionFactory {
 
         return descriptions;
 
+    }
+
+    @Override
+    @Nullable
+    public InputFormatObserver getObserver(SourceReference reference, URL baseUrl) {
+        return new FileSourceReferenceObserver(fileFetcher, reference, baseUrl);
     }
 }

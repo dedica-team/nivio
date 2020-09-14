@@ -1,5 +1,6 @@
 package de.bonndan.nivio.util;
 
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public class URLHelper {
     public static boolean isLocal(URL url) {
@@ -23,41 +25,38 @@ public class URLHelper {
      * Tries to create an URL if a path is given.
      *
      * @param url string url or local path to file
-     * @return an URL or null
+     * @return an Optional of URL (empty on malformed urls)
      */
-    @Nullable
-    public static URL getURL(String url) {
+    public static Optional<URL> getURL(String url) {
         if (url == null) {
-            return null;
+            return Optional.empty();
         }
         try {
-            return new URL(url);
+            return Optional.of(new URL(url));
         } catch (MalformedURLException e) {
             File file = new File(url);
             if (file.exists() && !url.startsWith("file:")) {
                 try {
-                    return file.toURI().toURL();
+                    return Optional.of(file.toURI().toURL());
                 } catch (MalformedURLException ignored) {
-                    return null;
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
-     * Returns the path of a file as URL or null
+     * Returns the path of a file as URL or null.
      */
-    public static URL getParentPath(String url) {
-        URL url1 = getURL(url);
-        if (url1 == null) {
-            return null;
-        }
-        try {
-            return url1.toURI().resolve(".").toURL();
-        } catch (URISyntaxException | MalformedURLException ignored) {
-            return null;
-        }
+    public static Optional<URL> getParentPath(String url) {
+
+        return getURL(url).map(u -> {
+            try {
+                return u.toURI().resolve(".").toURL();
+            } catch (MalformedURLException | URISyntaxException e) {
+                return null;
+            }
+        });
     }
 
     /**
@@ -65,9 +64,9 @@ public class URLHelper {
      * <p>
      * If one argument is null, the other is returned.
      *
-     * @param baseUrl
+     * @param baseUrl the base to be appended to
      * @param part    a relative path or full url/path or null
-     * @return combined url as string
+     * @return combined url as string or null if any of both is null
      */
     public static String combine(@Nullable URL baseUrl, @Nullable String part) {
         if (baseUrl == null && part == null) {
@@ -90,7 +89,7 @@ public class URLHelper {
     /**
      * https://stackoverflow.com/questions/13592236/parse-a-uri-string-into-name-value-collection,
      */
-    public static Map<String, String> splitQuery(URL url) {
+    public static Map<String, String> splitQuery(@NonNull URL url) {
         Map<String, String> queryPairs = new LinkedHashMap<>();
         String query = url.getQuery();
         if (query == null) {
