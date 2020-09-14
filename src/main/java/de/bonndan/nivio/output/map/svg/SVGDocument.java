@@ -1,9 +1,12 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.RelationItem;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.hex.Hex;
-import de.bonndan.nivio.output.map.hex.PathFinder;
+import de.bonndan.nivio.output.map.hex.HexMap;
 import j2html.tags.DomContent;
 import j2html.tags.UnescapedText;
 import org.slf4j.Logger;
@@ -13,7 +16,10 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -24,16 +30,18 @@ import static j2html.TagCreator.rawHtml;
 
 /**
  * Creates an SVG document based on pre-rendered map items.
+ *
+ *
  */
 public class SVGDocument extends Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGDocument.class);
 
-    private final Set<Hex> occupied = new HashSet<>();
     private final LayoutedComponent layouted;
     private final LandscapeImpl landscape;
     private final String cssStyles;
     private boolean debug = false;
+    private HexMap hexMap;
 
     public SVGDocument(@NonNull LayoutedComponent layouted, @Nullable String cssStyles) {
         this.layouted = Objects.requireNonNull(layouted);
@@ -47,26 +55,18 @@ public class SVGDocument extends Component {
 
     public DomContent render() {
 
-        Map<LandscapeItem, Hex> vertexHexes = new HashMap<>();
         List<DomContent> patterns = new ArrayList<>();
         List<DomContent> items = new ArrayList<>();
+        hexMap = new HexMap(this.debug);
 
         //transform all item positions to hex map positions
         layouted.getChildren().forEach(group -> {
             LOGGER.info("rendering group {} with items {}", group.getComponent().getIdentifier(), group.getChildren());
             group.getChildren().forEach(layoutedItem -> {
-                Hex hex = null;
-                int i = 0;
-                while (hex == null || occupied.contains(hex)) {
-                    hex = Hex.of(Math.round(layoutedItem.getX()) - i, Math.round(layoutedItem.getY()) - i);
-                    i++;
-                }
+
+                hexMap.add(layoutedItem);
 
                 Item item = (Item) layoutedItem.getComponent();
-                hex.id = item.getFullyQualifiedIdentifier().jsonValue();
-                vertexHexes.put(item, hex);
-                occupied.add(hex);
-
                 //collect patterns for icons
                 if (!StringUtils.isEmpty(layoutedItem.getFill())) {
                     SVGPattern SVGPattern = new SVGPattern(layoutedItem.getFill());
@@ -75,18 +75,14 @@ public class SVGDocument extends Component {
 
                 //render icons
                 SVGItemLabel label = new SVGItemLabel(item);
-                Point2D.Double pos = vertexHexes.get(item).toPixel();
+                Point2D.Double pos = hexMap.hexForItem(item).toPixel();
 
                 SVGItem SVGItem = new SVGItem(label.render(), layoutedItem, pos);
                 items.add(SVGItem.render());
             });
         });
 
-
-        // find and render relations
-        var pathFinder = new PathFinder(occupied);
-        pathFinder.debug = this.debug;
-        List<SVGRelation> relations = getRelations(layouted, vertexHexes, pathFinder);
+        List<SVGRelation> relations = getRelations(layouted);
 
         //generate group areas
         AtomicInteger width = new AtomicInteger(0);
@@ -95,7 +91,8 @@ public class SVGDocument extends Component {
         AtomicInteger minY = new AtomicInteger(Integer.MAX_VALUE);
 
         List<DomContent> groups = layouted.getChildren().stream().map(groupLayout -> {
-            SVGGroupArea area = SVGGroupAreaFactory.getGroup(occupied, (Group) groupLayout.getComponent(), vertexHexes, relations);
+            Set<Hex> groupArea = hexMap.getGroupArea((Group) groupLayout.getComponent());
+            SVGGroupArea area = SVGGroupAreaFactory.getGroup((Group) groupLayout.getComponent(), groupArea);
 
             //fix viewport, because xy and hex coordinate system have different offsets
             area.groupArea.forEach(hex -> {
@@ -158,7 +155,7 @@ public class SVGDocument extends Component {
     /**
      * Iterates over all items and invokes pathfinding for their relations.
      */
-    private List<SVGRelation> getRelations(LayoutedComponent layouted, Map<LandscapeItem, Hex> vertexHexes, PathFinder pathFinder) {
+    private List<SVGRelation> getRelations(LayoutedComponent layouted) {
         List<SVGRelation> relations = new ArrayList<>();
         layouted.getChildren().forEach(layoutedGroup -> {
             layoutedGroup.getChildren().forEach(layoutedItem -> {
@@ -166,7 +163,7 @@ public class SVGDocument extends Component {
                 LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
                 item.getRelations().stream()
                         .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
-                        .map(rel -> getSvgRelation(vertexHexes, pathFinder, layoutedItem, item, rel))
+                        .map(rel -> getSvgRelation(layoutedItem, item, rel))
                         .filter(Objects::nonNull)
                         .forEach(relations::add);
             });
@@ -175,10 +172,8 @@ public class SVGDocument extends Component {
         return relations;
     }
 
-    private SVGRelation getSvgRelation(Map<LandscapeItem, Hex> vertexHexes, PathFinder pathFinder, LayoutedComponent layoutedItem, Item item, RelationItem<Item> rel) {
-        Hex start = vertexHexes.get(item);
-        Hex target = vertexHexes.get(rel.getTarget());
-        HexPath bestPath = pathFinder.getPath(start, target);
+    private SVGRelation getSvgRelation(LayoutedComponent layoutedItem, Item item, RelationItem<Item> rel) {
+        HexPath bestPath = hexMap.getPath(item, rel.getTarget());
         if (bestPath != null) {
             SVGRelation svgRelation = new SVGRelation(bestPath, layoutedItem.getColor(), rel);
             LOGGER.debug("Added path for item {} relation {} -> {}", item, rel.getSource(), rel.getTarget());

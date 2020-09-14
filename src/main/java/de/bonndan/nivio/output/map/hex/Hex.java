@@ -1,5 +1,7 @@
 package de.bonndan.nivio.output.map.hex;
 
+import de.bonndan.nivio.model.Item;
+
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,7 @@ public class Hex {
     public final int r;
     public final int s;
     public String id;
+    public Item item;
 
     public Hex(int q, int r, int s) {
         if (q + r + s != 0) {

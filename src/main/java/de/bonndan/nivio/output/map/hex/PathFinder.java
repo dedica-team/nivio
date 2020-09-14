@@ -187,7 +187,7 @@ public class PathFinder {
             return null;
 
         List<Hex> collect = path.stream().map(tile -> tile.hex).collect(Collectors.toList());
-        return new HexPath(collect);
+        return new HexPath(startHex.item, destHex.item, collect);
     }
 
 

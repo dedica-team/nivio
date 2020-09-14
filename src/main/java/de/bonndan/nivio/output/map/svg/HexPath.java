@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.hex.Hex;
 
 import java.awt.geom.Point2D;
@@ -13,13 +14,19 @@ import java.util.List;
  */
 public class HexPath {
 
+    private final Item source;
+    private final Item target;
     private final List<Hex> hexes;
     private List<Hex> bends = null;
 
     /**
+     * @param source
+     * @param target
      * @param hexes the hex tile chain in correct order.
      */
-    public HexPath(List<Hex> hexes) {
+    public HexPath(Item source, Item target, List<Hex> hexes) {
+        this.source = source;
+        this.target = target;
         this.hexes = hexes;
     }
 
@@ -37,6 +44,14 @@ public class HexPath {
         }
         this.tiles = reduced;
          */
+    }
+
+    public Item getSource() {
+        return source;
+    }
+
+    public Item getTarget() {
+        return target;
     }
 
     /**
