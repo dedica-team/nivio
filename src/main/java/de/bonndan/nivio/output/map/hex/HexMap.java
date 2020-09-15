@@ -12,9 +12,6 @@ import java.util.stream.Collectors;
 
 /**
  * Representation of a hex map.
- *
- *
- *
  */
 public class HexMap {
 
@@ -49,10 +46,23 @@ public class HexMap {
         occupied.add(hex);
     }
 
+    /**
+     * Returns the hex tile of an {@link Item}
+     *
+     * @param item the item (must have been added before)
+     * @return the corresponding {@link Hex}
+     */
     public Hex hexForItem(Item item) {
         return vertexHexes.get(item);
     }
 
+    /**
+     * Uses the pathfinder to create a path between start and target.
+     *
+     * @param start  the relation source item
+     * @param target the relation target item
+     * @return a path if one could be found
+     */
     @Nullable
     public HexPath getPath(Item start, Item target) {
         HexPath path = pathFinder.getPath(hexForItem(start), hexForItem(target));
