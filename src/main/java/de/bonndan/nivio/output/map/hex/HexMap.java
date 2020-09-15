@@ -21,7 +21,7 @@ public class HexMap {
     private final boolean debug;
     private final Map<LandscapeItem, Hex> vertexHexes = new HashMap<>();
     private final PathFinder pathFinder;
-    private List<HexPath> paths = new ArrayList<>();
+    private final List<HexPath> paths = new ArrayList<>();
 
     public HexMap(boolean debug) {
         this.debug = debug;
@@ -57,7 +57,7 @@ public class HexMap {
     }
 
     /**
-     * Returns all hexes which from a group area.
+     * Returns all hexes which form a group area.
      *
      * @param group the group with items
      * @return a set of (adjacent) hexes

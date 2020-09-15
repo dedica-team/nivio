@@ -66,7 +66,7 @@ public class PathFinder {
      *
      * @param startHex The start hex of the path
      * @param destHex  The destination hex of the path
-     * @return A list containing all tiles of the found path
+     * @return A list containing all tiles along the path between start and dest
      */
     public HexPath getPath(Hex startHex, Hex destHex) {
         closed.clear();
@@ -186,8 +186,8 @@ public class PathFinder {
         if (path.isEmpty())
             return null;
 
-        List<Hex> collect = path.stream().map(tile -> tile.hex).collect(Collectors.toList());
-        return new HexPath(startHex.item, destHex.item, collect);
+        List<Hex> pathOfHexes = path.stream().map(tile -> tile.hex).collect(Collectors.toList());
+        return new HexPath(startHex.item, destHex.item, pathOfHexes);
     }
 
 

@@ -18,10 +18,11 @@ public class GroupAreaFactory {
 
     /**
      * Builds an areas of hex tiles belonging to a group.
-     *  @param occupied    tiles occupied by items
-     * @param group       the group
-     * @param vertexHexes a mapping from item to its hex
-     * @param relationPaths   existing paths
+     *
+     * @param occupied      tiles occupied by items
+     * @param group         the group
+     * @param vertexHexes   a mapping from item to its hex
+     * @param relationPaths existing paths
      * @return
      */
     public static Set<Hex> getGroup(Set<Hex> occupied, Group group, Map<LandscapeItem, Hex> vertexHexes, List<HexPath> relationPaths) {
@@ -56,8 +57,14 @@ public class GroupAreaFactory {
         return inArea;
     }
 
+    /**
+     * Finds neighbours of in-area tiles which have in-area neighbours at adjacent sides (gaps).
+     *
+     * @param inArea all hexes in area
+     * @return all hexes which fill gaps
+     */
     static Set<Hex> getBridges(Set<Hex> inArea) {
-        //find neighbours of in-area tiles which have in-area neighbours at adjacent sides
+
         Set<Hex> bridges = new HashSet<>();
         inArea.forEach(hex -> {
             hex.neighbours().forEach(neighbour -> {

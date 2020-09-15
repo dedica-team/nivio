@@ -37,9 +37,21 @@ public class Hex {
     //double DEFAULT_ICON_SIZE
     public static final int HEX_SIZE = 2 * DEFAULT_ICON_SIZE;
 
+    /**
+     * q coordinate
+     */
     public final int q;
+
+    /**
+     * r coordinate
+     */
     public final int r;
+
+    /**
+     * s coordinate (could be omitted here, since q + r + s = 0 is mandatory)
+     */
     public final int s;
+
     public String id;
     public Item item;
 
