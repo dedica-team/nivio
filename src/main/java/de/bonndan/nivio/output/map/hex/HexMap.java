@@ -62,19 +62,17 @@ public class HexMap {
      * @param target the relation target item
      * @return a path if one could be found
      */
-    @Nullable
-    public HexPath getPath(Item start, Item target) {
-        HexPath path = pathFinder.getPath(hexForItem(start), hexForItem(target));
-        if (path == null) {
-            return null;
-        }
+    public Optional<HexPath> getPath(Item start, Item target) {
+        Optional<HexPath> optional = Optional.ofNullable(pathFinder.getPath(hexForItem(start), hexForItem(target)));
 
-        if (start.getGroup() != null && start.getGroup().equals(target.getGroup())) {
-            path.setGroup(start.getGroup());
-        }
+        optional.ifPresent(hexPath -> {
+            if (start.getGroup() != null && start.getGroup().equals(target.getGroup())) {
+                hexPath.setGroup(start.getGroup());
+            }
+            paths.add(hexPath);
+        });
 
-        paths.add(path);
-        return path;
+        return optional;
     }
 
     /**

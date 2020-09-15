@@ -16,10 +16,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -173,9 +170,9 @@ public class SVGDocument extends Component {
     }
 
     private SVGRelation getSvgRelation(LayoutedComponent layoutedItem, Item item, RelationItem<Item> rel) {
-        HexPath bestPath = hexMap.getPath(item, rel.getTarget());
-        if (bestPath != null) {
-            SVGRelation svgRelation = new SVGRelation(bestPath, layoutedItem.getColor(), rel);
+        Optional<HexPath> bestPath = hexMap.getPath(item, rel.getTarget());
+        if (bestPath.isPresent()) {
+            SVGRelation svgRelation = new SVGRelation(bestPath.get(), layoutedItem.getColor(), rel);
             LOGGER.debug("Added path for item {} relation {} -> {}", item, rel.getSource(), rel.getTarget());
             return svgRelation;
         }

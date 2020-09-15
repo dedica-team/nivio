@@ -5,7 +5,9 @@ import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.svg.HexPath;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class HexMapTest {
 
@@ -26,11 +28,11 @@ class HexMapTest {
         hexMap.add(bazComponent);
 
         //when
-        HexPath path = hexMap.getPath(bar, baz);
+        Optional<HexPath> path = hexMap.getPath(bar, baz);
 
         //then
-        assertNotNull(path);
-        assertEquals("foo", path.getGroup());
+        assertThat(path).isNotEmpty();
+        assertThat(path.get().getGroup()).isEqualTo("foo");
     }
 
     @Test
@@ -50,10 +52,10 @@ class HexMapTest {
         hexMap.add(bazComponent);
 
         //when
-        HexPath path = hexMap.getPath(bar, baz);
+        Optional<HexPath> path = hexMap.getPath(bar, baz);
 
         //then
-        assertNotNull(path);
-        assertEquals("", path.getGroup());
+        assertThat(path).isNotEmpty();
+        assertThat(path.get().getGroup()).isEqualTo("");
     }
 }
