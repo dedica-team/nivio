@@ -41,7 +41,6 @@ public class HexMap {
 
         Item item = (Item) layoutedItem.getComponent();
         hex.id = item.getFullyQualifiedIdentifier().jsonValue();
-        hex.item = item;
         vertexHexes.put(item, hex); //this is obsolete
         occupied.add(hex);
     }

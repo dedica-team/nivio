@@ -55,7 +55,6 @@ public class Hex {
     public final int s;
 
     public String id;
-    public Item item;
 
     public Hex(int q, int r, int s) {
         if (q + r + s != 0) {
