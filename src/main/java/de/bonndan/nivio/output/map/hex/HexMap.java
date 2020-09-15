@@ -56,6 +56,10 @@ public class HexMap {
     @Nullable
     public HexPath getPath(Item start, Item target) {
         HexPath path = pathFinder.getPath(hexForItem(start), hexForItem(target));
+        if (path == null) {
+            return null;
+        }
+
         if (start.getGroup() != null && start.getGroup().equals(target.getGroup())) {
             path.setGroup(start.getGroup());
         }
