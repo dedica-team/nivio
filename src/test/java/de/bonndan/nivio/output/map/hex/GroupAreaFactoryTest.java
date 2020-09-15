@@ -6,10 +6,7 @@ import de.bonndan.nivio.output.map.svg.SVGGroupAreaFactory;
 import org.apache.commons.collections4.set.UnmodifiableSet;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +40,7 @@ class GroupAreaFactoryTest {
     }
 
     @Test
-    public void getGroup_addsItemToInnerRelationsIfItIsTheSourceItem() {
+    public void addHexAndPaths() {
         Set<Hex> occupied = new HashSet<>();
         occupied.add(new Hex(1, 1, -2));
         occupied.add(new Hex(3, 3, -6));
@@ -53,7 +50,8 @@ class GroupAreaFactoryTest {
 
         Map<LandscapeItem, Hex> vertexHexes = Map.of(landscapeItem, new Hex(1, 2, -3));
         Hex landscapeItemHex = new Hex(4, 5, -9);
-        HexPath hexPath = new HexPath(landscapeItem, target, List.of(landscapeItemHex));
+        HexPath hexPath = new HexPath(List.of(landscapeItemHex));
+        hexPath.setGroup("group");
 
         Group group = new Group("group");
         group.addItem(landscapeItem);
@@ -67,73 +65,23 @@ class GroupAreaFactoryTest {
     }
 
     @Test
-    public void getGroup_doesntAddItemToInnerRelationsIfTheTargetHasADifferentGroup() {
+    public void justAddsHexAndNeighbours() {
         Set<Hex> occupied = new HashSet<>();
         occupied.add(new Hex(1, 1, -2));
         occupied.add(new Hex(3, 3, -6));
 
         Item landscapeItem = new Item("group", "landscapeItem");
-        Item target = new Item("otherGroup", "target");
 
         Map<LandscapeItem, Hex> vertexHexes = Map.of(landscapeItem, new Hex(1, 2, -3));
-        Hex landscapeItemHex = new Hex(4, 5, -9);
-        HexPath hexPath = new HexPath(landscapeItem, target, List.of(landscapeItemHex));
 
         Group group = new Group("group");
         group.addItem(landscapeItem);
 
         //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(occupied, group, vertexHexes, List.of(hexPath));
+        Set<Hex> inArea = GroupAreaFactory.getGroup(occupied, group, vertexHexes, new ArrayList<>());
 
         //then
         assertThat(inArea).isEqualTo(expectedTerritory);
     }
 
-    @Test
-    public void getGroup_doesntAddItemToInnerRelationsIfTheTargetHasNoGroup() {
-        Set<Hex> occupied = new HashSet<>();
-        occupied.add(new Hex(1, 1, -2));
-        occupied.add(new Hex(3, 3, -6));
-
-        Item landscapeItem = new Item("group", "landscapeItem");
-        Item target = new Item(null, "target");
-
-        Map<LandscapeItem, Hex> vertexHexes = Map.of(landscapeItem, new Hex(1, 2, -3));
-        Hex landscapeItemHex = new Hex(4, 5, -9);
-        HexPath hexPath = new HexPath(landscapeItem, target, List.of(landscapeItemHex));
-
-        Group group = new Group("group");
-        group.addItem(landscapeItem);
-
-        //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(occupied, group, vertexHexes, List.of(hexPath));
-
-        //then
-        assertThat(inArea).isEqualTo(expectedTerritory);
-    }
-
-    @Test
-    public void getGroup_doesntAddItemToInnerRelationsIfItIsNotTheSourceItem() {
-
-        Set<Hex> occupied = new HashSet<>();
-        occupied.add(new Hex(1, 1, -2));
-        occupied.add(new Hex(3, 3, -6));
-
-        Item landscapeItem = new Item("group", "landscapeItem");
-        Item source = new Item(null, "source");
-        Item target = new Item(null, "target");
-
-        Map<LandscapeItem, Hex> vertexHexes = Map.of(landscapeItem, new Hex(1, 2, -3));
-        Hex landscapeItemHex = new Hex(4, 5, -9);
-        HexPath hexPath = new HexPath(source, target, List.of(landscapeItemHex));
-
-        Group group = new Group("group");
-        group.addItem(landscapeItem);
-
-        //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(occupied, group, vertexHexes, List.of(hexPath));
-
-        //then
-        assertThat(inArea).isEqualTo(expectedTerritory);
-    }
 }

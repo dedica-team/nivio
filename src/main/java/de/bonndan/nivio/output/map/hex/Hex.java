@@ -39,6 +39,8 @@ public class Hex {
 
     /**
      * q coordinate
+     *
+     * For coords see https://www.redblobgames.com/grids/hexagons/#coordinates
      */
     public final int q;
 

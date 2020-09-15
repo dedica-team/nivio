@@ -19,13 +19,19 @@ public class GroupAreaFactory {
     /**
      * Builds an areas of hex tiles belonging to a group.
      *
+     * It works as follows: first we circumnavigate all hexes of items and add their neighbours immediately. Then we
+     * iterate over all one-hex gaps and add them. This iteration is repeated, so that effectively a few two-hex gaps are
+     * filled.
+     *
+     * There is clearly much room for improvement here. It's only that I haven't found a better approach so far.
+     *
      * @param occupied      tiles occupied by items
      * @param group         the group
      * @param vertexHexes   a mapping from item to its hex
-     * @param relationPaths existing paths
-     * @return
+     * @param pathsWithinGroup existing paths
+     * @return all hexes the group consists of (an area)
      */
-    public static Set<Hex> getGroup(Set<Hex> occupied, Group group, Map<LandscapeItem, Hex> vertexHexes, List<HexPath> relationPaths) {
+    public static Set<Hex> getGroup(Set<Hex> occupied, Group group, Map<LandscapeItem, Hex> vertexHexes, List<HexPath> pathsWithinGroup) {
 
         Set<Item> items = group.getItems();
         Set<Hex> inArea = new HashSet<>();
@@ -40,11 +46,7 @@ public class GroupAreaFactory {
             });
 
             //add all "inner" relations (paths)
-            relationPaths.stream()
-                    .filter(rel -> rel.getSource().equals(item))
-                    .filter(rel -> rel.getTarget().getGroup() != null)
-                    .filter(rel -> rel.getTarget().getGroup().equals(group.getIdentifier()))
-                    .forEach(rel -> inArea.addAll(rel.getHexes()));
+            pathsWithinGroup.forEach(rel -> inArea.addAll(rel.getHexes()));
         });
 
         Set<Hex> bridges = getBridges(inArea);

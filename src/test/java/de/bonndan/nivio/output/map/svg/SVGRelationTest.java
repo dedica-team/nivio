@@ -25,7 +25,7 @@ class SVGRelationTest {
         bar.setLandscape(landscape);
 
         RelationItem<Item> itemRelationItem = new Relation(foo, bar);
-        SVGRelation svgRelation = new SVGRelation(new HexPath(foo, bar, new ArrayList<>()), "", itemRelationItem);
+        SVGRelation svgRelation = new SVGRelation(new HexPath(new ArrayList<>()), "", itemRelationItem);
         DomContent render = svgRelation.render();
         String render1 = render.render();
         assertTrue(render1.contains("l1/common/foo"));

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  *
  *
  */
-public class PathFinder {
+class PathFinder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PathFinder.class);
     private final Set<Hex> occupied;
@@ -183,11 +183,11 @@ public class PathFinder {
         /*
          * If no path is found return null.
          */
-        if (path.isEmpty())
+        if (path.isEmpty()) {
             return null;
+        }
 
-        List<Hex> pathOfHexes = path.stream().map(tile -> tile.hex).collect(Collectors.toList());
-        return new HexPath(startHex.item, destHex.item, pathOfHexes);
+        return new HexPath(path.stream().map(tile -> tile.hex).collect(Collectors.toList()));
     }
 
 

@@ -8,6 +8,7 @@ import de.bonndan.nivio.output.map.svg.HexPath;
 import org.springframework.lang.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Representation of a hex map.
@@ -18,18 +19,21 @@ import java.util.*;
 public class HexMap {
 
     private final Set<Hex> occupied = new HashSet<>();
-    private final boolean debug;
     private final Map<LandscapeItem, Hex> vertexHexes = new HashMap<>();
     private final PathFinder pathFinder;
     private final List<HexPath> paths = new ArrayList<>();
 
     public HexMap(boolean debug) {
-        this.debug = debug;
         // find and render relations
         pathFinder = new PathFinder(occupied);
-        pathFinder.debug = this.debug;
+        pathFinder.debug = debug;
     }
 
+    /**
+     * Add a previously layouted item to the map.
+     *
+     * @param layoutedItem landscape item plus coordinates
+     */
     public void add(LayoutedComponent layoutedItem) {
         Hex hex = null;
         int i = 0;
@@ -50,8 +54,12 @@ public class HexMap {
     }
 
     @Nullable
-    public HexPath getPath(Item item, Item target) {
-        HexPath path = pathFinder.getPath(hexForItem(item), hexForItem(target));
+    public HexPath getPath(Item start, Item target) {
+        HexPath path = pathFinder.getPath(hexForItem(start), hexForItem(target));
+        if (start.getGroup() != null && start.getGroup().equals(target.getGroup())) {
+            path.setGroup(start.getGroup());
+        }
+
         paths.add(path);
         return path;
     }
@@ -63,6 +71,9 @@ public class HexMap {
      * @return a set of (adjacent) hexes
      */
     public Set<Hex> getGroupArea(Group group) {
-        return GroupAreaFactory.getGroup(occupied, group, vertexHexes, paths);
+        List<HexPath> pathsWithinGroup = paths.stream()
+                .filter(hexPath -> hexPath.getGroup().equals(group.getIdentifier()))
+                .collect(Collectors.toList());
+        return GroupAreaFactory.getGroup(occupied, group, vertexHexes, pathsWithinGroup);
     }
 }
