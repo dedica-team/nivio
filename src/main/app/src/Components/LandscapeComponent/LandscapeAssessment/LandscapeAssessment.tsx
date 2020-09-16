@@ -1,0 +1,153 @@
+import React, { useEffect, useState, ReactElement } from 'react';
+import { get } from '../../../utils/API/APIClient';
+import './LandscapeAssessment.scss';
+
+import { IAssessmentProps, IAssessmentResults, IGroup, IItem } from '../../../interfaces';
+import {
+  getAssessmentColorAndMessage,
+  getAssessmentColor,
+} from '../../../utils/styling/style-helper';
+
+interface Props {
+  fullyQualifiedIdentifier: string;
+  findItem?: (fullyQualifiedItemIdentifier: string) => void;
+  findGroup?: (fullyQualifiedGroupIdentifier: string) => void;
+  isGroup: boolean;
+}
+
+/**
+ * Returns all assesments of a given group if informations are available
+ */
+const LandscapeAssessment: React.FC<Props> = ({
+  fullyQualifiedIdentifier,
+  findItem,
+  findGroup,
+  isGroup,
+}) => {
+  const [group, setGroup] = useState<IGroup | null>();
+  const [item, setItem] = useState<IItem | null>();
+
+  const [assessmentGroup, setAssessmentGroup] = useState<IAssessmentResults | null>(null);
+  const [assessmentItem, setAssessmentItem] = useState<IAssessmentProps[] | null>(null);
+
+  useEffect(() => {
+    get(`/api/${fullyQualifiedIdentifier}`).then((group) => {
+      if (isGroup) {
+        setGroup(group);
+      } else {
+        setItem(group);
+      }
+    });
+
+    const landscapeIdentifier = fullyQualifiedIdentifier.split('/');
+    if (landscapeIdentifier[0]) {
+      get(`/assessment/${landscapeIdentifier[0]}`).then((response) => {
+        if (isGroup) {
+          setAssessmentGroup(response.results);
+        } else {
+          setAssessmentItem(response.results[fullyQualifiedIdentifier]);
+        }
+      });
+    }
+  }, [fullyQualifiedIdentifier, isGroup]);
+  let items: ReactElement[] = [];
+
+  if (isGroup && group && assessmentGroup) {
+    if (group.items) {
+      let assessmentItemColor = 'grey';
+      items = group.items.map((item) => {
+        [assessmentItemColor] = getAssessmentColorAndMessage(
+          assessmentGroup[item.fullyQualifiedIdentifier],
+          item.identifier
+        );
+        return (
+          <div key={item.fullyQualifiedIdentifier} className='item'>
+            <span
+              className='itemTitle'
+              onClick={() => {
+                if (findItem) {
+                  findItem(item.fullyQualifiedIdentifier);
+                }
+              }}
+            >
+              {item.name || item.identifier}
+            </span>
+            <span className='status' style={{ backgroundColor: assessmentItemColor }}></span>
+          </div>
+        );
+      });
+    }
+    return (
+      <div className='assessmentContent'>
+        <div className='header'>
+          <span
+            className='title'
+            onClick={() => {
+              if (findGroup && group) {
+                findGroup(group.fullyQualifiedIdentifier);
+              }
+            }}
+          >
+            {group ? group.name || group.identifier : null}
+          </span>
+        </div>
+
+        {items.length ? (
+          <div className='itemsContent'>
+            <div className='items'>
+              <div className='item'>
+                <span className='itemLabel'>Item</span>
+                <span className='statusLabel'>Status</span>
+              </div>
+              {items}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+  if (!isGroup && item && assessmentItem) {
+    let assessmentItemColor = 'grey';
+    items = assessmentItem.map((item) => {
+      if (!item.field.includes('summary.')) {
+        assessmentItemColor = getAssessmentColor(item);
+        return (
+          <div key={item.field} className='item'>
+            <span className='assessmentTitle'>{item.field}</span>
+            <span className='itemMessage'>{item.message}</span>
+            <span className='status' style={{ backgroundColor: assessmentItemColor }}></span>
+          </div>
+        );
+      }
+      return <React.Fragment key={item.field} />;
+    });
+    return (
+      <div className='assessmentContent'>
+        <div className='header'>
+          <span className='title'>{item.name || item.identifier}</span>
+        </div>
+        {items.length ? (
+          <div className='itemsContent'>
+            <div className='items'>
+              <div className='item'>
+                <span className='itemLabel'>KPI</span>
+                <span className='itemLabel'>Message</span>
+                <span className='statusLabel'>Status</span>
+              </div>
+              {items}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
+  return (
+    <div className='assessmentError'>
+      <span className='errorMessage'>Error Loading Assessments!</span>
+      <span className='errorIdentifier'>{fullyQualifiedIdentifier} does not exist!</span>
+    </div>
+  );
+};
+
+export default LandscapeAssessment;

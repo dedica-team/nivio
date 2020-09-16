@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import LandscapeItem from './LandscapeItem';
 
-it('should render log component', () => {
+it('should render landscape item component', () => {
   const { getByText } = render(
     <LandscapeItem fullyQualifiedItemIdentifier={'nivio:example/test'} />
   );

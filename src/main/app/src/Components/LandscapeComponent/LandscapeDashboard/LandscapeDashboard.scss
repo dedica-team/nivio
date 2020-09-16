@@ -32,6 +32,9 @@ $smallDotSize: 30px;
         background-color: darken($header-color, 10%);
         border-radius: 25px;
       }
+      .groupLabel {
+        cursor: pointer;
+      }
 
       .smallDot {
         position: absolute;
@@ -42,6 +45,7 @@ $smallDotSize: 30px;
         display: inline-block;
         text-align: center;
         right: 12px;
+        cursor: pointer;
       }
 
       .items {
@@ -103,6 +107,7 @@ $smallDotSize: 30px;
               max-width: 300px;
               font-size: $normal-font-size;
               margin-left: 3.2px;
+              cursor: pointer;
             }
           }
         }

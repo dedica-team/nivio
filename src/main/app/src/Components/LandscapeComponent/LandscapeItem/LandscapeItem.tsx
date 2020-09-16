@@ -14,7 +14,6 @@ interface Props {
 
 /**
  * Returns a choosen Landscape Item if informations are available
- * @param element Choosen SVG Element from our Landscape Component
  */
 const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem }) => {
   const [item, setItem] = useState<IItem | null>();
@@ -36,13 +35,13 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
     }
   }, [fullyQualifiedItemIdentifier]);
 
-  let assesmentColor = 'grey';
+  let assessmentColor = 'grey';
   let labels: ReactElement[] = [];
   let links: ReactElement[] = [];
   let relations: ReactElement[] = [];
 
   if (item) {
-    [assesmentColor] = getAssessmentColorAndMessage(assessment, item.identifier);
+    [assessmentColor] = getAssessmentColorAndMessage(assessment, item.identifier);
 
     if (item.labels) {
       Object.keys(item.labels).forEach((key) => {
@@ -132,7 +131,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
           >
             {item ? item.name || item.identifier : null}
           </span>
-          <span className='status' style={{ backgroundColor: assesmentColor }}></span>
+          <span className='status' style={{ backgroundColor: assessmentColor }}></span>
         </div>
         <div className='information'>
           <span className='description item'>

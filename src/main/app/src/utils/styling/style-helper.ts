@@ -24,3 +24,13 @@ export const getAssessmentColorAndMessage = (
 
   return [assessmentColor, assessmentMessage];
 };
+
+export const getAssessmentColor = (assessmentResults: IAssessmentProps): string => {
+  let assessmentColor = 'grey';
+
+  if (assessmentResults.status !== 'UNKNOWN') {
+    assessmentColor = assessmentResults.status;
+  }
+
+  return assessmentColor;
+};

@@ -2,7 +2,7 @@ import React, { ReactElement, MouseEvent } from 'react';
 
 import Grid from '@material-ui/core/Grid';
 import './LandscapeDashboard.scss';
-import { ILandscape, IItem, IAssessment } from '../../../interfaces';
+import { ILandscape, IItem, IAssessment, IGroup } from '../../../interfaces';
 import { getAssessmentColorAndMessage } from '../../../utils/styling/style-helper';
 
 import Search from '../../SearchComponent/Search';
@@ -11,6 +11,9 @@ interface Props {
   landscape: ILandscape | null | undefined;
   assessments: IAssessment | null;
   onItemClick: (e: MouseEvent<HTMLSpanElement>, item: IItem) => void;
+  onGroupClick: (e: MouseEvent<HTMLSpanElement>, group: IGroup) => void;
+  onGroupAssessmentClick: (e: MouseEvent<HTMLSpanElement>, group: IGroup) => void;
+  onItemAssessmentClick: (e: MouseEvent<HTMLSpanElement>, item: IItem) => void;
   findItem: (fullyQualifiedItemIdentifier: string) => void;
 }
 
@@ -24,6 +27,9 @@ const LandscapeDashboardLayout: React.FC<Props> = ({
   landscape,
   assessments,
   onItemClick,
+  onGroupClick,
+  onGroupAssessmentClick,
+  onItemAssessmentClick,
   findItem,
 }) => {
   // Render
@@ -46,10 +52,10 @@ const LandscapeDashboardLayout: React.FC<Props> = ({
         }
         const items: ReactElement[] = group.items.map((item) => {
           let assessmentColor = defaultColor;
-          let assesmentMessage = '';
+          let assessmentMessage = '';
           if (assessments) {
             const assesmentResults = assessments.results[item.fullyQualifiedIdentifier];
-            [assessmentColor, assesmentMessage] = getAssessmentColorAndMessage(
+            [assessmentColor, assessmentMessage] = getAssessmentColorAndMessage(
               assesmentResults,
               item.identifier
             );
@@ -63,26 +69,37 @@ const LandscapeDashboardLayout: React.FC<Props> = ({
               >
                 <span
                   className='statusDot'
-                  onClick={(e: MouseEvent<HTMLSpanElement>) => onItemClick(e, item)}
+                  onClick={(e: MouseEvent<HTMLSpanElement>) => onItemAssessmentClick(e, item)}
                 >
-                  <span className='statusField'>{assesmentMessage}</span>
+                  <span className='statusField'>{assessmentMessage}</span>
                 </span>
               </span>
               <div className='itemDescription'>
                 <img src={item?.icon} className='icon' alt={'icon'} />
-                <span className='itemName'>{item.name || item.identifier}</span>
+                <span
+                  className='itemName'
+                  onClick={(e: MouseEvent<HTMLSpanElement>) => onItemClick(e, item)}
+                >
+                  {item.name || item.identifier}
+                </span>
               </div>
             </Grid>
           );
         });
         return (
-          <Grid item key={group.name} className='group'>
+          <Grid item key={group.name} className='group' id={group.fullyQualifiedIdentifier}>
             <Grid item className='groupName' style={{ backgroundColor: groupColor }}>
-              <span>{group.name || group.identifier || ''}</span>
+              <span
+                className='groupLabel'
+                onClick={(e: MouseEvent<HTMLSpanElement>) => onGroupClick(e, group)}
+              >
+                {group.name || group.identifier || ''}
+              </span>
               <span
                 className='smallDot'
                 id={group.fullyQualifiedIdentifier}
                 style={{ backgroundColor: groupAssessmentColor }}
+                onClick={(e: MouseEvent<HTMLSpanElement>) => onGroupAssessmentClick(e, group)}
               ></span>
             </Grid>
             <Grid item className={'items'}>
