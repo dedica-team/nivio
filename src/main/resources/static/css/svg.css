@@ -14,9 +14,10 @@
   cursor: pointer;
 }
 
-.map g.label rect {
+.map g.label {
   stroke-width: 0.1em;
-  stroke: #007F7F;
+  fill: white;
+  text-shadow: 1px 1px 2px black;
 }
 
 .map text.title {
@@ -31,7 +32,7 @@
   text-shadow: 1px 1px 1px black;
 }
 
-.map path {
+.map .relation path {
   fill: none;
   stroke-width: 0.2em;
   stroke-opacity: 0.8;
