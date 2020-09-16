@@ -12,7 +12,7 @@ import './pygments.scss';
  */
 const Man: React.FC = () => {
   const [html, setHtml] = useState<string>("<p>This manual page doesn't exist. :(</p>");
-  let { usage } = useParams();
+  let { usage } = useParams<{ usage: string | undefined }>();
   if (usage == null || typeof usage == 'undefined') usage = 'index';
   const [topic, setTopic] = useState<string>(usage + '');
 
