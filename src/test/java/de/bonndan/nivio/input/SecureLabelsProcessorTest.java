@@ -121,8 +121,16 @@ class SecureLabelsProcessorTest {
     public void secretUrl() {
         item.setLabel("foo", "http://very:secret@foobar.com:8080/a/path?foo=bar");
         secureLabelsProcessor.process(landscapeDescription);
-        assertEquals("http://*@foobar.com/a/path?foo=bar", item.getLabels().get("foo"));
+        assertEquals("http://*@foobar.com:8080/a/path?foo=bar", item.getLabels().get("foo"));
     }
+
+    @Test
+    public void simpleSecretUrl() {
+        item.setLabel("foo", "http://very:secret@foobar.com");
+        secureLabelsProcessor.process(landscapeDescription);
+        assertEquals("http://*@foobar.com", item.getLabels().get("foo"));
+    }
+
 
     @Test
     public void regularUrl() {
@@ -130,4 +138,5 @@ class SecureLabelsProcessorTest {
         secureLabelsProcessor.process(landscapeDescription);
         assertEquals("http://foobar.com", item.getLabels().get("foo"));
     }
+
 }

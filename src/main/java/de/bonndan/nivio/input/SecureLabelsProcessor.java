@@ -9,6 +9,8 @@ import java.util.*;
 
 /**
  * Masks all label values which might contain secrets.
+ *
+ * Replaces value completely unless it is an url containing userinfo.
  */
 public class SecureLabelsProcessor {
 
@@ -49,7 +51,20 @@ public class SecureLabelsProcessor {
     private String replaceIfSecret(URL url) {
         String userInfo = url.getUserInfo();
         if (!StringUtils.isEmpty(userInfo)) {
-            return url.getProtocol() + "://*@" + url.getHost() + url.getPath() + "?" + url.getQuery();
+            String s = url.getProtocol() + "://*@" + url.getHost();
+
+            if (url.getPort() != -1) {
+                s += ":" + url.getPort();
+            }
+
+            if (url.getPath() != null) {
+                s += url.getPath();
+            }
+
+            if (url.getQuery() != null) {
+                s += "?" + url.getQuery();
+            }
+            return s;
         }
         return url.toString();
     }

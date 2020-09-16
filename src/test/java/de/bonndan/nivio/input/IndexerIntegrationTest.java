@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -258,6 +259,17 @@ public class IndexerIntegrationTest {
         ItemIndex index = new ItemIndex(new HashSet<>(a.getItems()));
         assertNotNull(index.pick("blog-server", null));
         assertNotNull(index.pick("crappy_dockername-234234", null));
+    }
+
+    @Test
+    public void masksSecrets() {
+        LandscapeImpl landscape1 = index("/src/test/resources/example/example_secret.yml");
+        Optional<Item> abc = landscape1.getItems().find("abc", null);
+        assertThat(abc).isNotEmpty();
+        Item item = abc.get();
+        assertThat(item.getLabel("key")).isEqualTo(SecureLabelsProcessor.MASK);
+        assertThat(item.getLabel("password")).isEqualTo(SecureLabelsProcessor.MASK);
+        assertThat(item.getLabel("foo_url")).isEqualTo("https://*@foobar.com");
     }
 
     @Test
