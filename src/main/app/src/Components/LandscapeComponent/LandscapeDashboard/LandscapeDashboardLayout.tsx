@@ -39,6 +39,11 @@ const LandscapeDashboardLayout: React.FC<Props> = ({
     content = landscape.groups.map((group) => {
       if (group.items.length > 0) {
         const groupColor = `#${group.color}` || defaultColor;
+        let groupAssessmentColor = defaultColor;
+        if (assessments) {
+          const assesmentResults = assessments.results[group.fullyQualifiedIdentifier];
+          [groupAssessmentColor] = getAssessmentColorAndMessage(assesmentResults, group.identifier);
+        }
         const items: ReactElement[] = group.items.map((item) => {
           let assessmentColor = defaultColor;
           let assesmentMessage = '';
@@ -74,6 +79,11 @@ const LandscapeDashboardLayout: React.FC<Props> = ({
           <Grid item key={group.name} className='group'>
             <Grid item className='groupName' style={{ backgroundColor: groupColor }}>
               <span>{group.name || group.identifier || ''}</span>
+              <span
+                className='smallDot'
+                id={group.fullyQualifiedIdentifier}
+                style={{ backgroundColor: groupAssessmentColor }}
+              ></span>
             </Grid>
             <Grid item className={'items'}>
               {items}

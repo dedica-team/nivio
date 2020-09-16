@@ -57,7 +57,7 @@ const LandscapeDashboard: React.FC = () => {
     setShowSlider(false);
   };
 
-  const { identifier } = useParams();
+  const { identifier } = useParams<{ identifier: string }>();
 
   useEffect(() => {
     get(`/api/${identifier}`).then((response) => {

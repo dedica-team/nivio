@@ -2,6 +2,7 @@
 @import '../../../Ressources/styling/font.scss';
 
 $dotSize: 200px;
+$smallDotSize: 30px;
 
 .landscapeDashboardContainer {
   .titleContainer {
@@ -22,6 +23,7 @@ $dotSize: 200px;
     .group {
       background-color: $background-grey;
       .groupName {
+        position: relative;
         padding: 5px;
         font-size: $large-font-size;
         text-transform: uppercase;
@@ -29,6 +31,17 @@ $dotSize: 200px;
         text-shadow: 1px 1px 1px black;
         background-color: darken($header-color, 10%);
         border-radius: 25px;
+      }
+
+      .smallDot {
+        position: absolute;
+        height: $smallDotSize;
+        width: $smallDotSize;
+        background-color: $info-color;
+        border-radius: 50%;
+        display: inline-block;
+        text-align: center;
+        right: 12px;
       }
 
       .items {
