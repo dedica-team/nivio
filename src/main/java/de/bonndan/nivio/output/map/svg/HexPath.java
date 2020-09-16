@@ -1,6 +1,9 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.hex.Hex;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -13,6 +16,10 @@ import java.util.List;
  */
 public class HexPath {
 
+    /**
+     * Non-empty if the path is within a group
+     */
+    private String group = "";
     private final List<Hex> hexes;
     private List<Hex> bends = null;
 
@@ -37,6 +44,20 @@ public class HexPath {
         }
         this.tiles = reduced;
          */
+    }
+
+    /**
+     * The group the path runs in.
+     *
+     * @return non-empty if start and destination are within the same group
+     */
+    @NonNull
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group != null ? group : "";
     }
 
     /**

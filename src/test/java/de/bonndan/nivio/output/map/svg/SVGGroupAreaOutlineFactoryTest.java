@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeItem;
+import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
 import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,9 @@ class SVGGroupAreaOutlineFactoryTest {
         map.put(item1, e1);
         map.put(item2, e2);
 
-        SVGGroupArea group = SVGGroupAreaFactory.getGroup(occupied, foo, map, new ArrayList<>());
+        Set<Hex> area = GroupAreaFactory.getGroup(occupied, foo, map, new ArrayList<>());
+
+        SVGGroupArea group = SVGGroupAreaFactory.getGroup(foo, area);
         Set<Hex> groupArea = group.groupArea;
 
         //when

@@ -1,5 +1,7 @@
 package de.bonndan.nivio.output.map.hex;
 
+import de.bonndan.nivio.model.Item;
+
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +37,23 @@ public class Hex {
     //double DEFAULT_ICON_SIZE
     public static final int HEX_SIZE = 2 * DEFAULT_ICON_SIZE;
 
+    /**
+     * q coordinate
+     *
+     * For coords see https://www.redblobgames.com/grids/hexagons/#coordinates
+     */
     public final int q;
+
+    /**
+     * r coordinate
+     */
     public final int r;
+
+    /**
+     * s coordinate (could be omitted here, since q + r + s = 0 is mandatory)
+     */
     public final int s;
+
     public String id;
 
     public Hex(int q, int r, int s) {
