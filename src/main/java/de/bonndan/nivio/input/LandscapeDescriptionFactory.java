@@ -3,51 +3,89 @@ package de.bonndan.nivio.input;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.util.Mappers;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookupFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 
+/**
+ * A static factory to create LandscapeDescription instances from files or strings.
+ */
+@Component
 public class LandscapeDescriptionFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeDescriptionFactory.class);
     private static final ObjectMapper mapper = Mappers.gracefulYamlMapper;
 
-    public static LandscapeDescription fromYaml(File file) {
+    private final FileFetcher fileFetcher;
 
+    public LandscapeDescriptionFactory(FileFetcher fileFetcher) {
+        this.fileFetcher = fileFetcher;
+    }
+
+    /**
+     * Returns a {@link LandscapeDescription}s from config file url.
+     *
+     * @param old an outdated landscape / description
+     * @return the description or null if the source is no URL
+     */
+    @Nullable
+    public LandscapeDescription from(Landscape old) {
         try {
-            String content = new String(Files.readAllBytes(file.toPath()));
-            if (StringUtils.isEmpty(content)) {
-                LOGGER.warn("Got a seemingly empty file " + file + ". Skipping"); //TODO watcher issue
-                return null;
-            }
-            LandscapeDescription landscapeDescription = fromString(content, file.toString());
-            landscapeDescription.setSource(file.toString());
-            landscapeDescription.getSourceReferences().forEach(ref -> ref.setLandscapeDescription(landscapeDescription));
-            return landscapeDescription;
-        } catch (NoSuchFileException e) {
-            throw new ReadingException("Could not find file " + file.getAbsolutePath(), e);
-        } catch (IOException e) {
-            throw new ReadingException("Failed to create an environment from file " + file.getAbsolutePath(), e);
+            URL url = new URL(old.getSource());
+            return from(url);
+        } catch (MalformedURLException e) {
+            String msg = "Source in landscape " + old.getIdentifier() + " might be no url: " + old.getSource();
+            LOGGER.info(msg);
+            return null;
         }
+    }
+
+    @Nullable
+    public LandscapeDescription from(URL url) {
+        return fromString(fileFetcher.get(url), url);
+    }
+
+    /**
+     * @param file yaml file object
+     * @return the descriptions or throws
+     * @throws ReadingException on error
+     */
+    @NonNull
+    public LandscapeDescription fromYaml(File file) {
+
+        String content = fileFetcher.get(file);
+        LandscapeDescription landscapeDescription = fromString(content, file.toString());
+        landscapeDescription.setSource(file.toString());
+        landscapeDescription.getSourceReferences().forEach(ref -> ref.setLandscapeDescription(landscapeDescription));
+        return landscapeDescription;
     }
 
     /**
      * Creates a new environment description and sets the given yaml as source.
      *
-     * @param yaml source
+     * @param yaml   source
      * @param origin origin of the yaml for debugging
      * @return environment description
+     * @throws ReadingException on error
      */
+    @NonNull
     public static LandscapeDescription fromString(String yaml, String origin) {
+
+        if (StringUtils.isEmpty(yaml)) {
+            throw new ReadingException("Failed to create an environment from empty yaml input string.", new IllegalArgumentException("Got an empty string."));
+        }
 
         yaml = (new StringSubstitutor(StringLookupFactory.INSTANCE.environmentVariableStringLookup())).replace(yaml);
 
@@ -71,7 +109,9 @@ public class LandscapeDescriptionFactory {
      * @param yaml source
      * @param url  for updates
      * @return env description
+     * @throws ReadingException on error
      */
+    @NonNull
     public static LandscapeDescription fromString(String yaml, URL url) {
         LandscapeDescription env = fromString(yaml, url.toString());
         env.setSource(url.toString());
@@ -83,7 +123,6 @@ public class LandscapeDescriptionFactory {
         if (landscapeDescription.getTemplates() != null) {
             landscapeDescription.getTemplates().forEach((s, tpl) -> {
                 tpl.setName("");
-                tpl.setShortName("");
             });
         }
     }

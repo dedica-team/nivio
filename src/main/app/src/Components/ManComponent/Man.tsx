@@ -2,33 +2,18 @@ import React, { useState, useEffect, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import ReactHtmlParser from 'html-react-parser';
-import raw from 'raw.macro';
 
-import Command from '../CommandComponent/Command';
-
+import { get } from '../../utils/API/APIClient';
 import './Man.scss';
 import './pygments.scss';
-
-const topics: any = {
-  'install.html': raw('../../../../../../docs/build/install.html'),
-  // features: raw('../../../../../../docs/build/features.html'),
-  'input.html': raw('../../../../../../docs/build/input.html'),
-  'extra.html': raw('../../../../../../docs/build/extra.html'),
-  'api.html': raw('../../../../../../docs/build/api.html'),
-  'magic.html': raw('../../../../../../docs/build/magic.html'),
-  'model.html': raw('../../../../../../docs/build/model.html'),
-  'references.html': raw('../../../../../../docs/build/references.html'),
-  'index.html': raw('../../../../../../docs/build/index.html'),
-};
 
 /**
  * Renders nivio manual, depending on which url param is given
  */
 const Man: React.FC = () => {
-  const [html, setHtml] = useState<string>('<p>OOPS SOMETHING WENT WRONG :(</p>');
+  const [html, setHtml] = useState<string>("<p>This manual page doesn't exist. :(</p>");
   let { usage } = useParams();
-  if (usage == null || typeof usage == 'undefined')
-    usage = 'index';
+  if (usage == null || typeof usage == 'undefined') usage = 'index';
   const [topic, setTopic] = useState<string>(usage + '');
 
   useEffect(() => {
@@ -38,14 +23,15 @@ const Man: React.FC = () => {
   }, [usage]);
 
   useEffect(() => {
-    const rawHtml = topics[topic];
-    const parser = new DOMParser();
-    const parsedHtml = parser.parseFromString(rawHtml, 'text/html');
-    const body = parsedHtml.querySelector('body');
+    get(`/docs/${topic}`).then((response) => {
+      const parser = new DOMParser();
+      const parsedHtml = parser.parseFromString(response, 'text/html');
+      const body = parsedHtml.querySelector('body');
 
-    if (body) {
-      setHtml(body.innerHTML);
-    }
+      if (body) {
+        setHtml(body.innerHTML);
+      }
+    });
   }, [topic]);
 
   return (
@@ -63,17 +49,19 @@ const Man: React.FC = () => {
               ) {
                 let href = domNode.attribs['href'];
                 const linkText = domNode.children[0].data;
-                if (href.indexOf('http') !== -1) {
+                if (href.indexOf('http') !== -1 && href.indexOf('http-api') === -1) {
                   return;
                 }
 
                 // Remove anchors
                 if (href.indexOf('#') !== -1) {
                   if (
-                    (href.includes('#custom') || href.includes('#graph')) &&
-                    usage !== 'extra.html' // Have to handle extra.html abit different for our sidebar
+                    (href.includes('#custom-er-branding') ||
+                      href.includes('#graph') ||
+                      href.includes('#http-api')) &&
+                    usage !== 'output.html' // Have to handle output.html abit different for our sidebar
                   ) {
-                    href = 'extra.html';
+                    href = 'output.html';
                   } else {
                     return <span>{linkText}</span>; // Convert to span if page is opened
                   }
@@ -115,7 +103,6 @@ const Man: React.FC = () => {
           })}
         </div>
       </div>
-      <Command />
     </div>
   );
 };

@@ -1,83 +1,63 @@
-import React, { useState, ReactElement } from 'react';
-import Grid from '@material-ui/core/Grid';
-import { Button, Box } from '@material-ui/core';
+import React from 'react';
+// import Grid from '@material-ui/core/Grid';
+import { Button, Typography, AppBar, Theme, createStyles, ButtonGroup } from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import GenericModal from '../ModalComponent/GenericModal';
 
+import Toolbar from '@material-ui/core/Toolbar';
 import './Navigation.scss';
+
+import FavoriteIcon from '@material-ui/icons/Favorite';
+
+import makeStyles from '@material-ui/core/styles/makeStyles';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    grow: {
+      flexGrow: 1,
+    },
+    title: {
+      marginRight: '20px',
+      color: 'rgba(255, 255, 255, 0.75)',
+    },
+  })
+);
 
 /**
  * Header Component
  */
+/*
+    value         |0px     600px    960px    1280px   1920px
+    key           |xs      sm       md       lg       xl
+    screen width  |--------|--------|--------|--------|-------->
+    range         |   xs   |   sm   |   md   |   lg   |   xl
+     */
 const Navigation: React.FC = () => {
-  const [modalContent] = useState<string | ReactElement | ReactElement[] | null>(
-    null
-  );
+  const classes = useStyles();
 
   return (
-    <div className='navigationContainer'>
-      <GenericModal modalContent={modalContent} />
-      <Grid container spacing={2} className={'header'}>
-        <Grid item xs={8} sm={9} className={'first'}></Grid>
-        <Grid item xs={3} sm={2} className={'title'}>
+    <AppBar position='static' className={'appBar'}>
+      <Toolbar className={'toolBar'}>
+        <Typography variant='h6' className={classes.title}>
+          <FavoriteIcon
+            alignmentBaseline={'central'}
+            style={{ verticalAlign: 'top', paddingTop: '7px', paddingRight: '3px' }}
+          />
           Nivio
-        </Grid>
-        <Grid item xs={1} sm={1} className={'last'}></Grid>
-      </Grid>
-
-      <Grid
-        component={Box}
-        container
-        spacing={2}
-        className={'main'}
-        display={{ xs: 'none', sm: 'flex', lg: 'flex' }}
-      >
-        <Grid item xs={2} sm={1} className={'elbow1'}></Grid>
-        <Grid item xs={1} sm={11} className={'elbow2'}>
-          <div className={'elbow-outer'}>
-            <div className={'elbow-inner'}></div>
-          </div>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={2} className={'main'}>
-        <Grid
-          component={Box}
-          item
-          xs={3}
-          sm={1}
-          lg={1}
-          className={'sidebar'}
-          display={{ xs: 'none', sm: 'block', lg: 'block' }}
-        >
-          <div className={'spacer'}></div>
-
-          <Button component={Link} to={``} fullWidth className={'button stackedButton'}>
+        </Typography>
+        <ButtonGroup variant={'text'} aria-label='contained primary button group'>
+          <Button component={Link} to={``}>
             Home
           </Button>
-
-          <Button
-            data-testid='ManualButton'
-            component={Link}
-            to={`/man/install`}
-            fullWidth
-            className={'button stackedButton'}
-          >
+          <Button data-testid='ManualButton' component={Link} to={`/man/install.html`}>
             Manual
           </Button>
-
-          <Button
-            data-testid='EventsButton'
-            component={Link}
-            to={`/events`}
-            fullWidth
-            className={'button'}
-          >
+          <Button data-testid='EventsButton' component={Link} to={`/events`}>
             Events
           </Button>
-        </Grid>
-      </Grid>
-    </div>
+        </ButtonGroup>
+        <div className={classes.grow} />
+      </Toolbar>
+    </AppBar>
   );
 };
 

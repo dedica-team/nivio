@@ -1,43 +1,51 @@
 package de.bonndan.nivio.output.docs;
 
+import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.assessment.kpi.KPIFactory;
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.LocalServer;
-import de.bonndan.nivio.output.Color;
+import de.bonndan.nivio.output.map.MapController;
 import j2html.tags.ContainerTag;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.output.FormatUtils.ifPresent;
 import static de.bonndan.nivio.output.FormatUtils.nice;
 import static de.bonndan.nivio.output.map.MapController.MAP_SVG_ENDPOINT;
 import static j2html.TagCreator.*;
-import static j2html.TagCreator.a;
 import static org.springframework.util.StringUtils.isEmpty;
 
 public class ReportGenerator extends HtmlGenerator {
 
     private static final String GROUP_CIRCLE = "&#10687;";
+    private final KPIFactory factory;
+    private Assessment assessment;
 
-    public ReportGenerator(LocalServer localServer) {
+    public ReportGenerator(LocalServer localServer, KPIFactory factory) {
         super(localServer);
+        this.factory = factory;
     }
 
     public String toDocument(LandscapeImpl landscape) {
-
         return writeLandscape(landscape);
     }
 
     private String writeLandscape(LandscapeImpl landscape) {
 
+        assessment = new Assessment(landscape.applyKPIs(factory.getConfiguredKPIs(landscape)));
         return html(
                 getHead(landscape),
                 body(
                         h1(landscape.getName()),
-                        p("Contact: " + nice(landscape.getContact())),
-                        div(embed().attr("src", "/render/" + landscape.getIdentifier() + "/" + MAP_SVG_ENDPOINT).attr("class", "img-fluid img-thumbnail mx-auto d-block")),
+                        iff(!isEmpty(landscape.getContact()), p("Contact: " + nice(landscape.getContact()))),
+                        div(embed().attr("src", MapController.PATH + "/" + landscape.getIdentifier() + "/" + MAP_SVG_ENDPOINT).attr("class", "img-fluid img-thumbnail mx-auto d-block")),
                         br(), br(),
                         rawHtml(writeGroups(landscape))
                 )
@@ -63,17 +71,23 @@ public class ReportGenerator extends HtmlGenerator {
         return builder.toString();
     }
 
-    protected ContainerTag writeItem(LandscapeItem item) {
-        boolean hasRelations = item.getRelations() != null && item.getRelations().size() > 0;
-        boolean hasInterfaces = item.getInterfaces() != null && item.getInterfaces().size() > 0;
+    protected ContainerTag writeItem(Item item) {
+        boolean hasRelations = item.getRelations().isEmpty();
+        boolean hasInterfaces = item.getInterfaces().isEmpty();
         String groupColor = "#" + Color.nameToRGB(item.getGroup());
 
-        var links = item.getLinks().entrySet().stream()
+        List<ContainerTag> links = item.getLinks().entrySet().stream()
                 .map(stringURLEntry -> a(" " + stringURLEntry.getKey()).attr("href", stringURLEntry.getValue().toString()))
                 .collect(Collectors.toList());
+
+
+        List<ContainerTag> labelList = getLabelList(item);
+
+        List<StatusValue> statusValues = assessment.getResults().get(item.getFullyQualifiedIdentifier());
+
         return div(
                 div(
-                        iff(!isEmpty(item.getNote()), div(item.getNote()).attr("class", "alert alert-warning float float-right")),
+                        iff(!isEmpty(item.getLabel(Label.note)), div(item.getLabel(Label.note)).attr("class", "alert alert-warning float float-right")),
                         a().attr("id", item.getFullyQualifiedIdentifier().toString()),
                         h3(
                                 img().attr("src", localServer.getIconUrl(item)).attr("width", "30px").attr("class", "img-fluid"),
@@ -82,46 +96,41 @@ public class ReportGenerator extends HtmlGenerator {
                         ),
                         p(FormatUtils.nice(item.getDescription())),
 
+
                         ul().with(
-                                li("Name: " + FormatUtils.nice(item.getName()))
-                                , li("Full identifier: " + item.getFullyQualifiedIdentifier().toString())
-                                , li("Identifier: " + item.getIdentifier())
-                                , li("Short Name: " + FormatUtils.nice(item.getShortName()))
-                                , li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">" + GROUP_CIRCLE + "</span> " + FormatUtils.nice(item.getGroup())))
-                                , li("Contact: " + FormatUtils.nice(item.getContact()))
-                                , li("Team: " + FormatUtils.nice(item.getTeam()))
-                                , li("Owner: " + FormatUtils.nice(item.getOwner()))
-                                , li("Type: " + item.getType())
-                                , li("Capability: " + FormatUtils.nice(item.getCapability()))
-                                , li("Links: ").with(links)
-                                , li("Tags: " + FormatUtils.nice(item.getTags()))
-                                , li("Lifecycle: " + FormatUtils.nice(item.getLifecycle() != null ? item.getLifecycle().toString() : "-"))
-                                , li("Software: " + FormatUtils.nice(item.getSoftware()))
-                                , li("Version: " + FormatUtils.nice(item.getVersion()))
-                                , li("Machine: " + FormatUtils.nice(item.getMachine()))
-                                , li("Scale: " + FormatUtils.nice(item.getScale()))
-                                , li("Visibility: " + FormatUtils.nice(item.getVisibility()))
-                                , li("Networks: " + FormatUtils.nice(item.getNetworks()))
-                                , li("Costs: " + FormatUtils.nice(item.getCosts()))
-                        ),
+                                iff(!isEmpty(item.getName()), li("Name: " + FormatUtils.nice(item.getName())))
+                                , iff(!isEmpty(item.getFullyQualifiedIdentifier().toString()), li("Full identifier: " + item.getFullyQualifiedIdentifier().toString()))
+                                , iff(!isEmpty(item.getIdentifier()), li("Identifier: " + item.getIdentifier()))
+                                , iff(!isEmpty(item.getGroup()), li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">" + GROUP_CIRCLE + "</span> " + FormatUtils.nice(item.getGroup()))))
+                                , iff(!isEmpty(item.getContact()), li("Contact: " + FormatUtils.nice(item.getContact())))
+                                , iff(!isEmpty(item.getOwner()), li("Owner: " + FormatUtils.nice(item.getOwner())))
+                                , iff(!isEmpty(item.getType()), li("Type: " + item.getType()))
+                                , iff(links.size() > 1, li("Links: ").with(links))
+                        ).with(labelList),
 
 
                         //statuses
-                        iff(!item.getStatuses().isEmpty(), h4("Status information")),
+
+                        iff(!statusValues.isEmpty(), h4("Status information")),
                         dl().with(
-                                item.getStatuses().stream().map(statusItem ->
+                                statusValues.stream().map(statusItem ->
                                         join(
-                                                dt(FormatUtils.nice(statusItem.getLabel())),
-                                                dd(
-                                                        img().attr("src", localServer.getUrl("/icons/" + statusItem.getStatus().getSymbol() + ".png")).attr("width", "30px").attr("class", "img-fluid"),
-                                                        span(" " + statusItem.getStatus().toString() + " ")
-                                                                .attr("class", "badge")
-                                                                .attr("style", "background-color: " + statusItem.getStatus() + " !important"),
-                                                        span(" " + FormatUtils.nice(statusItem.getMessage())))
+                                                dt(FormatUtils.nice(
+                                                        statusItem.getField().endsWith("." + item.getIdentifier())
+                                                                ? statusItem.getField().replace("." + item.getIdentifier(), "")
+                                                                : statusItem.getField()
+                                                )),
+                                                span(" " + statusItem.getStatus().toString() + " ")
+                                                        .attr("class", "badge")
+                                                        .attr("style", "background-color: " + statusItem.getStatus() + " !important"),
+                                                iff(
+                                                        !isEmpty(statusItem.getMessage()) && !"summary".equals(statusItem.getMessage()),
+                                                        dd(span(" " + FormatUtils.nice(statusItem.getMessage())))
+                                                )
                                         )
                                 )
-
                         ),
+
 
                         //data flow
                         iff(hasRelations, h4("Relations")),
@@ -132,7 +141,7 @@ public class ReportGenerator extends HtmlGenerator {
                                             String direction = (df.getSource().equals(item)) ?
                                                     " &#10142; " : " incoming from ";
                                             Item end = (df.getSource().equals(item)) ?
-                                                    (Item) df.getTarget() : (Item) df.getSource();
+                                                    df.getTarget() : df.getSource();
 
                                             return li(rawHtml((df.getType() != null ? df.getType() : "") + " "
                                                             + ifPresent(df.getFormat()) + " "
@@ -153,12 +162,31 @@ public class ReportGenerator extends HtmlGenerator {
                                                 span(", ").with(a(interfaceItem.getUrl().toString()).attr("href", interfaceItem.getUrl().toString()))
                                         )
                                 ))
-                                )
-                        )
-
+                        ))
                 ).attr("class", "card-body")
 
         ).attr("class", "card");
+    }
+
+    protected List<ContainerTag> getLabelList(Item item) {
+        Function<Map.Entry<String, String>, Boolean> filter = s -> {
+            if ("type".equals(s.getKey()) || isEmpty(s.getValue())) {
+                return false;
+            }
+            //filter out statuses, they are part of the assessment
+            return !s.getKey().startsWith(Label.status.name());
+        };
+
+        return Labeled.groupedByPrefixes(item.getLabels()).entrySet().stream()
+                .filter(filter::apply)
+                .map(mapEntry -> {
+                    String key = StringUtils.capitalize(mapEntry.getKey());
+                    if (key.equals(StringUtils.capitalize(Label.shortname.name()))) {
+                        key = Label.shortname.meaning;
+                    }
+                    return li(key + ": " + nice(mapEntry.getValue()));
+                })
+                .collect(Collectors.toList());
     }
 
 }

@@ -1,6 +1,7 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -11,12 +12,13 @@ import java.util.Objects;
  * <p>
  * Outgoing flows having a target which matches a service identifier will cause a relation to be created.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Relation implements RelationItem<Item>, Serializable {
 
-    @JsonBackReference
+    @JsonIdentityReference(alwaysAsId = true)
     private Item source;
 
-    @JsonBackReference
+    @JsonIdentityReference(alwaysAsId = true)
     private Item target;
 
     private String description;

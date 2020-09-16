@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeItem;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,20 +21,15 @@ public class DiffResolverTest {
     @BeforeEach
     public void setup() {
 
-        landscape = new LandscapeImpl();
-        landscape.setIdentifier("l");
+        landscape = LandscapeFactory.create("l1");
 
         items = new ArrayList<>();
 
-        Item s1 = new Item();
-        s1.setIdentifier("s1");
-        s1.setGroup("g1");
+        Item s1 = new Item("g1","s1");
         s1.setLandscape(landscape);
         items.add(s1);
 
-        Item s2 = new Item();
-        s2.setIdentifier("s2");
-        s2.setGroup("g1");
+        Item s2 = new Item("g1","s2");
         s2.setLandscape(landscape);
         items.add(s2);
     }

@@ -1,60 +1,61 @@
-import React, { useState, useEffect, useContext, useCallback, ReactElement } from 'react';
+import React, { useState, useEffect, useCallback, ReactElement, MouseEvent } from 'react';
 
-import { ILandscape } from '../../../interfaces';
+import { ILandscape, ILandscapeLinks } from '../../../interfaces';
 import LandscapeLog from '../Log/LandscapeLog';
-import CommandContext from '../../../Context/Command.context';
-import LandscapeContext from '../../../Context/Landscape.context';
 import LandscapeOverviewLayout from './LandscapeOverviewLayout';
+import Slider from '../../SliderComponent/Slider';
+import { get } from '../../../utils/API/APIClient';
 
 /**
  * Logic Component to display all available landscapes
  */
 
 const LandscapeOverview: React.FC = () => {
-  const [modalContent, setModalContent] = useState<string | ReactElement | ReactElement[] | null>(
+  const [landscapes, setLandscapes] = useState<ILandscape[]>([]);
+  const [landscapeLinks, setLandscapeLinks] = useState<ILandscapeLinks | null>();
+  const [loadLandscapes, setLoadLandscapes] = useState<boolean>(true);
+  const [sliderContent, setSliderContent] = useState<string | ReactElement | ReactElement[] | null>(
     null
   );
-  const [landscapes, setLandscapes] = useState<ILandscape[]>();
-  const [loadLandscapes, setLoadLandscapes] = useState<boolean>(true);
+  const [showSlider, setShowSlider] = useState(false);
 
-  const commandContext = useContext(CommandContext);
-  const landscapeContext = useContext(LandscapeContext);
-
-  //Could be moved into useEffect but can be used for a reload button later on
   const getLandscapes = useCallback(async () => {
     if (loadLandscapes) {
-      await fetch(process.env.REACT_APP_BACKEND_URL + '/api/')
-        .then((response) => {
-          return response.json();
-        })
-        .then((json) => {
-          setLandscapes(json);
-          setLoadLandscapes(false);
-          landscapeContext.landscapes = json;
-          commandContext.message = 'Loaded landscapes.';
-        });
+      setLandscapeLinks(await get('/api/'));
+      if (landscapeLinks) {
+        for (const landscapeLink in landscapeLinks._links) {
+          const landscapeDescription: ILandscape | null = await get(
+            landscapeLinks._links[landscapeLink].href
+          );
+          if (landscapeDescription) {
+            setLandscapes((oldLandscapes) => [...oldLandscapes, landscapeDescription]);
+          }
+        }
+      }
+      setLoadLandscapes(false);
     }
-  }, [commandContext.message, landscapeContext.landscapes, loadLandscapes]);
+  }, [loadLandscapes, landscapeLinks]);
+
+  const closeSlider = () => {
+    setShowSlider(false);
+  };
+
+  const enterLog = (e: MouseEvent<HTMLButtonElement>, landscape: ILandscape) => {
+    const sliderContent = <LandscapeLog landscape={landscape} />;
+    setSliderContent(<Slider sliderContent={sliderContent} closeSlider={closeSlider} />);
+    setShowSlider(true);
+  };
 
   useEffect(() => {
     getLandscapes();
   }, [getLandscapes]);
 
-  const enterLog = (landscape: ILandscape) => {
-    setModalContent(<LandscapeLog landscape={landscape} />);
-    commandContext.message = 'Showing log: ' + landscape.identifier;
-  };
-
-  const enterLandscape = (landscape: ILandscape) => {
-    commandContext.message = 'Entering landscape: ' + landscape.identifier;
-  };
-
   return (
     <LandscapeOverviewLayout
-      modalContent={modalContent}
+      sliderContent={sliderContent}
       landscapes={landscapes}
       enterLog={enterLog}
-      enterLandscape={enterLandscape}
+      showSlider={showSlider}
     />
   );
 };

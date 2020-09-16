@@ -13,18 +13,21 @@ import java.util.stream.Collectors;
  *
  *
  */
-public class PathFinder {
+class PathFinder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PathFinder.class);
     private final Set<Hex> occupied;
 
     public boolean debug = false;
 
-    private ArrayList<Tile> closed;
-    private ArrayList<Tile> open;
+    private final ArrayList<Tile> closed;
+    private final ArrayList<Tile> open;
 
-    public PathFinder(List<Hex> occupied) {
-        this.occupied = new HashSet<>(occupied);
+    /**
+     * @param occupied the occupied tiles
+     */
+    public PathFinder(Set<Hex> occupied) {
+        this.occupied = occupied;
         this.closed = new ArrayList<>();
         this.open = new ArrayList<>();
     }
@@ -63,7 +66,7 @@ public class PathFinder {
      *
      * @param startHex The start hex of the path
      * @param destHex  The destination hex of the path
-     * @return A list containing all tiles of the found path
+     * @return A list containing all tiles along the path between start and dest
      */
     public HexPath getPath(Hex startHex, Hex destHex) {
         closed.clear();
@@ -75,7 +78,7 @@ public class PathFinder {
         Tile currentStep = start;
         open.add(0, currentStep);
 
-        float G = 0f;
+        float G;
 
         int depth = 0;
         int depthMax = 1000;
@@ -122,7 +125,7 @@ public class PathFinder {
                     if (neighbour.equals(dst)) {
                         neighbour.setParent(currentStep);
                         currentStep = neighbour;
-                        LOGGER.info("reached  {}", currentStep.hex);
+                        LOGGER.debug("reached  {}", currentStep.hex);
                         break;
                     }
 
@@ -180,22 +183,21 @@ public class PathFinder {
         /*
          * If no path is found return null.
          */
-        if (path.isEmpty())
+        if (path.isEmpty()) {
             return null;
+        }
 
-        List<Hex> collect = path.stream().map(tile -> tile.hex).collect(Collectors.toList());
-        return new HexPath(collect);
+        return new HexPath(path.stream().map(tile -> tile.hex).collect(Collectors.toList()));
     }
 
 
     private List<Tile> getNeighbours(Tile current) {
-        List<Tile> free = current.hex.neighbours().stream()
-                .map(hex -> new Tile(hex, this.isOccupied(hex)))
-                .collect(Collectors.toList());
 
         //LOGGER.debug("{} free tiles at {}", free.size(), current);
 
-        return free;
+        return current.hex.neighbours().stream()
+                .map(hex -> new Tile(hex, this.isOccupied(hex)))
+                .collect(Collectors.toList());
     }
 
     private boolean isOccupied(Hex hex) {

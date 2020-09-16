@@ -1,17 +1,17 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import LevelChip from "./LevelChip";
+import LevelChip from './LevelChip';
 
-jest.mock('react-console-emulator');
+import '@testing-library/jest-dom/extend-expect'; // TODO: Why do we need it here and doesnt work from setupTests.ts ????
 
 it('should render LevelChip component with avatar and given title', () => {
-  const { getByText } = render(
+  const { getByText, queryByText } = render(
     <MemoryRouter>
-      <LevelChip title={'foo'} level={'info'}/>
+      <LevelChip title={'foo'} level={'info'} />
     </MemoryRouter>
   );
   expect(getByText('foo')).toBeInTheDocument();
   expect(getByText('I')).toBeInTheDocument();
-  //expect(getByText('info')).not.toBeInTheDocument();  TODO getByText fails
+  expect(queryByText('info')).not.toBeInTheDocument();
 });

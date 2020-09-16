@@ -2,7 +2,6 @@ package de.bonndan.nivio.output.icons;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -29,7 +28,7 @@ public class VendorIcons {
         vendoricons.put("kubernetes", "https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png");
 
         //redis.io/topics/trademark
-        vendoricons.put("redis", "http://download.redis.io/logocontest/82.png");
+        vendoricons.put("redis", "https://redis.io/images/redis-white.png");
         vendoricons.put("prometheus", "https://raw.githubusercontent.com/prometheus/docs/master/static/prometheus_logo.png");
     }
 

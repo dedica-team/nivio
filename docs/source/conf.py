@@ -20,7 +20,7 @@
 # -- Project information -----------------------------------------------------
 
 project = u'Nivio'
-copyright = u'2019, Daniel Pozzi'
+copyright = u'2020, dedica GmbH'
 author = u'Daniel Pozzi'
 
 # The short X.Y version

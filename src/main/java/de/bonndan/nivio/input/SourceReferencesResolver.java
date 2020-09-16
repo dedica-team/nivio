@@ -17,20 +17,20 @@ import java.util.Map;
  */
 public class SourceReferencesResolver {
 
-    private final ItemDescriptionFormatFactory formatFactory;
+    private final InputFormatHandlerFactory formatFactory;
     private final ProcessLog log;
 
-    public SourceReferencesResolver(ItemDescriptionFormatFactory formatFactory, ProcessLog logger) {
+    public SourceReferencesResolver(InputFormatHandlerFactory formatFactory, ProcessLog logger) {
         this.formatFactory = formatFactory;
         this.log = logger;
     }
 
     public void resolve(final LandscapeDescription landscapeDescription, Map<ItemDescription, List<String>> templatesAndTargets) {
 
-        URL baseUrl = URLHelper.getParentPath(landscapeDescription.getSource());
+        URL baseUrl = URLHelper.getParentPath(landscapeDescription.getSource()).orElse(null);
         landscapeDescription.getSourceReferences().forEach(ref -> {
             try {
-                ItemDescriptionFactory factory = formatFactory.getFactory(ref, landscapeDescription);
+                InputFormatHandler factory = formatFactory.getInputFormatHandler(ref);
                 landscapeDescription.addItems(factory.getDescriptions(ref, baseUrl));
                 ref.getAssignTemplates().forEach((key, identifiers) -> templatesAndTargets.put(landscapeDescription.getTemplates().get(key), identifiers));
             } catch (ProcessingException ex) {

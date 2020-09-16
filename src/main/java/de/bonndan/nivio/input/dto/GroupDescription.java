@@ -1,23 +1,42 @@
 package de.bonndan.nivio.input.dto;
 
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.GroupItem;
+import de.bonndan.nivio.model.Link;
 
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GroupDescription implements GroupItem {
 
+    private final Map<String, Link> links = new HashMap<>();
+    private final Map<String, String> labels = new HashMap<>();
     private String identifier;
     private String owner;
-    private String team;
     private String description;
     private String contact;
     private String color;
     private List<String> contains = new ArrayList<>();
-    private Map<String, URL> links = new HashMap<>();
+    private String environment;
 
     @Override
     public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    @Override
+    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
+        return FullyQualifiedIdentifier.build(environment, identifier, null);
+    }
+
+    @Override
+    public String getName() {
         return identifier;
     }
 
@@ -26,9 +45,14 @@ public class GroupDescription implements GroupItem {
         return owner;
     }
 
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
     @Override
-    public String getTeam() {
-        return team;
+    public String getIcon() {
+        //TODO remove #212
+        return null;
     }
 
     @Override
@@ -36,9 +60,17 @@ public class GroupDescription implements GroupItem {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public String getContact() {
         return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 
     @Override
@@ -46,37 +78,13 @@ public class GroupDescription implements GroupItem {
         return color;
     }
 
-    @Override
-    public Map<String, URL> getLinks() {
-        return links;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    public void setTeam(String team) {
-        this.team = team;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setContact(String contact) {
-        this.contact = contact;
-    }
-
     public void setColor(String color) {
         this.color = color;
     }
 
-    public void setLinks(Map<String, URL> links) {
-        this.links = links;
+    @Override
+    public Map<String, Link> getLinks() {
+        return links;
     }
 
     @Override
@@ -84,9 +92,8 @@ public class GroupDescription implements GroupItem {
         if (obj instanceof GroupDescription) {
             return identifier != null && ((GroupDescription) obj).identifier != null &&
                     identifier.equals(((GroupDescription) obj).getIdentifier());
-        } else {
-            return false;
         }
+        return false;
     }
 
     public List<String> getContains() {
@@ -95,5 +102,24 @@ public class GroupDescription implements GroupItem {
 
     public void setContains(List<String> contains) {
         this.contains = contains;
+    }
+
+    @Override
+    public Map<String, String> getLabels() {
+        return labels;
+    }
+
+    @Override
+    public String getLabel(String key) {
+        return labels.get(key);
+    }
+
+    @Override
+    public void setLabel(String key, String value) {
+        labels.put(key, value);
+    }
+
+    public void setEnvironment(String environment) {
+        this.environment = environment;
     }
 }

@@ -1,48 +1,76 @@
 Getting Started
 ===============
 
-The easiest way to get started is run to Nivio using Docker. **Make sure to read about using templates before putting too much effort in item configuration.**
-
-
-Requirements
-------------
-
-Nivio can either be run using Docker or Java 11.
+The easiest way to get started is run to nivio using Docker (to compile it, you need Java 11).
 
 The Docker image is about 350MB and can be started with:
 
 .. code-block:: bash
 
-    docker run -e DEMO=1 dedica-team/nivio
-
-Set SERVER_CONTEXT_PATH env var to the path if nivio won't be runner under "/".
+    docker run dedica/nivio
 
 Demo mode
 ---------
 
-In the demo mode Nivio loads sample data for demonstration purposes. Run
+.. code-block:: bash
+
+    docker run -e DEMO=1 dedica/nivio
+
+In the demo mode Nivio loads sample data for demonstration purposes.
+
+
+There is a demo in the directory `./nivio-demo` which starts an nginx to serve all example configs from the project and
+starts nivio as docker container.
+
+From the directory, run
 
 .. code-block:: bash
 
-    DEMO=1 docker-compose up
+    docker-compose up
 
-then point your browser to http://localhost:8080/render/nivio:example/graph.png
-
-There is also a demo project "nivio-demo" in the repository, which starts an nginx to simulate a remote server.
+then point your browser to http://localhost:8080/
 
 
-Seed config
------------
+Adding your own content (seed config)
+--------------------------------------
 
-Nivio expects a seed configuration at start time. You can either set an landscapeDescription variable *SEED* to a path to read from,
-or you can omit the variable and place landscapeDescription files in /opt/nivio/environments.
+**Make sure to read about using templates before putting too much effort in item configuration.**
+
+
+Nivio expects a seed configuration at start time (unless you want to run the demo mode). You need to set an environment variable
+*SEED* to a path or URL nivio can read from. If you want to use files on the host, modify the `docker-compose.yml` to
+bind to the corresponding folder, e.g:
+
+.. code-block:: docker-compose
+
+   version: '3.2'
+
+   services:
+     nivio:
+       image: dedica/nivio:latest
+       environment:
+         SEED: ${SEED}
+         DEMO: ${DEMO}
+       volumes:
+         - type: bind
+           source: /onmyhost/my/files/here
+           target: /my/files/here
+       ports:
+         - 8080:8080
+
+Then you can point to a specific file with the *SEED* environment variable:
 
 .. code-block:: bash
 
-    SEED=/my/files/here docker-compose up
+    SEED=/my/files/here/file.yml docker-compose up
 
-then point your browser to http://localhost:8080/render/dld4e/{landscape} where landscape is the identifier of the landscape
-to be rendered. The seed can also be an URL.
+Or you provide an URL that serves the yml files to nivio:
+
+.. code-block:: bash
+
+    SEED=https://foo.com/bar.yml java -jar nivio
+
+then point your browser to the GUI at http://localhost:8080 or the API at http://localhost:8080/api/.
 
 
 Landscape configuration
@@ -55,7 +83,6 @@ Think of GitLab or GitHub and the related tokens.
 You can also add state providers which are used to gather live data and thereby provide state for the items.
 
 To finetune the visual appearance of rendered landscapes, the automatic color choice for groups can be overridden as well.
-For jgraphx output, some force directed graph params can be set. More configuration options will be added over time.
 
 .. code-block:: yaml
    :linenos:
@@ -112,3 +139,15 @@ Items not referenced anymore in the descriptions will be deleted automatically o
 If an error occurs fetching the source while indexing, the behaviour of the indexer changes to treat the available data as
  partial input. This means only upserts will happen, and no deletion.
 
+
+
+Behind a proxy
+--------------
+
+If you deploy nivio to run under a different path than root ("/"), make sure to set the environment variables
+SERVER_CONTEXT_PATH and NIVIO_BASEURL to the path.
+
+.. code-block:: bash
+
+   SERVER_SERVLET_CONTEXT_PATH: /my-landscape
+   NIVIO_BASEURL: https://foo.com/my-landscape/

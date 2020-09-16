@@ -14,18 +14,15 @@ public class GroupsTest {
     @Test
     public void testBy() {
         List<LandscapeItem> items = new ArrayList<>();
-        Item item1 = new Item();
-        item1.setIdentifier("1");
+        Item item1 = new Item(null,"1");
         item1.setOwner("A");
         items.add(item1);
 
-        Item item2 = new Item();
-        item2.setIdentifier("2");
+        Item item2 = new Item(null,"2");
         item2.setOwner("A");
         items.add(item2);
 
-        Item item3 = new Item();
-        item3.setIdentifier("3");
+        Item item3 = new Item(null,"3");
         item3.setOwner("B");
         items.add(item3);
 
@@ -44,17 +41,14 @@ public class GroupsTest {
     @Test
     public void testByDefault() {
         List<LandscapeItem> services = new ArrayList<>();
-        Item item1 = new Item();
-        item1.setIdentifier("1");
+        Item item1 = new Item(null,"1");
         services.add(item1);
 
-        Item item2 = new Item();
-        item2.setIdentifier("2");
+        Item item2 = new Item(null,"2");
         item2.setOwner("A");
         services.add(item2);
 
-        Item item3 = new Item();
-        item3.setIdentifier("3");
+        Item item3 = new Item(null,"3");
         item3.setOwner("B");
         services.add(item3);
 
@@ -76,20 +70,17 @@ public class GroupsTest {
     @Test
     public void testByNotUsingGroupField() {
         List<LandscapeItem> services = new ArrayList<>();
-        Item item1 = new Item();
-        item1.setIdentifier("1");
+        Item item1 = new Item(null,"1");
         item1.setOwner("A");
         item1.setGroup("content");
         services.add(item1);
 
-        Item item2 = new Item();
-        item2.setIdentifier("2");
+        Item item2 = new Item(null,"2");
         item2.setOwner("A");
         item2.setGroup("content");
         services.add(item2);
 
-        Item item3 = new Item();
-        item3.setIdentifier("3");
+        Item item3 = new Item(null,"3");
         item3.setOwner("B");
         services.add(item3);
 
@@ -102,12 +93,12 @@ public class GroupsTest {
 
     @Test
     public void testMerge() {
-        Group one = new Group();
+        Group one = new Group("a");
         one.setColor("#123123");
         one.setDescription("a");
         one.setOwner("Joe");
 
-        Group two = new Group();
+        Group two = new Group("a");
         two.setOwner("Matt");
         two.setContact("mail");
 

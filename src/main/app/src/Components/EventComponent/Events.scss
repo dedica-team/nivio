@@ -2,9 +2,27 @@
 @import '../../Ressources/styling/font.scss';
 
 .events {
-
   .itemContainer {
-    padding: 1rem;
-  }
+    padding: 16px;
+    .item {
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: row;
+      align-items: center;
+      border-bottom: 1px solid $border-color;
 
+      .levelChip {
+        margin-right: 8px;
+        min-width: 150px;
+        max-width: 15vw;
+      }
+
+      .type,
+      .date {
+        margin-right: 8px;
+      }
+    }
+  }
 }

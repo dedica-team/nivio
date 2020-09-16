@@ -2,8 +2,6 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import GenericModal from './GenericModal';
 
-jest.mock('react-console-emulator');
-
 it('should render log component', () => {
   const element = 'Test';
   const { getByText } = render(<GenericModal modalContent={element} />);

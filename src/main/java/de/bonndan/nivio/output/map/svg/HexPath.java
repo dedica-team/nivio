@@ -1,16 +1,31 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.hex.Hex;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Produces a point path along the centers of the given hexes.
+ *
+ *
+ */
 public class HexPath {
 
-    private List<Hex> hexes;
+    /**
+     * Non-empty if the path is within a group
+     */
+    private String group = "";
+    private final List<Hex> hexes;
     private List<Hex> bends = null;
 
+    /**
+     * @param hexes the hex tile chain in correct order.
+     */
     public HexPath(List<Hex> hexes) {
         this.hexes = hexes;
     }
@@ -31,6 +46,34 @@ public class HexPath {
          */
     }
 
+    /**
+     * The group the path runs in.
+     *
+     * @return non-empty if start and destination are within the same group
+     */
+    @NonNull
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group != null ? group : "";
+    }
+
+    /**
+     * Returns all hex tiles which are part of the path.
+     *
+     *
+     */
+    public List<Hex> getHexes() {
+        return hexes;
+    }
+
+    /**
+     * Returns the path as svg path description with bezier curves.
+     *
+     * @return M...L notation
+     */
     String getPoints() {
         calcBends();
         String points = "M";

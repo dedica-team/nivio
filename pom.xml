@@ -5,12 +5,12 @@
 
     <groupId>de.bonndan</groupId>
     <artifactId>nivio</artifactId>
-    <version>0.2.2</version>
+    <version>0.3.0</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.1.RELEASE</version>
+        <version>2.2.7.RELEASE</version>
     </parent>
 
     <packaging>jar</packaging>
@@ -21,10 +21,10 @@
         <junit-jupiter.version>5.4.0</junit-jupiter.version>
         <mockito.version>2.24.0</mockito.version>
         <frontend-src-dir>${project.basedir}/src/main/app</frontend-src-dir>
-        <node.version>v12.16.2</node.version>
-        <!--<node.version>v12.3.1</node.version>-->
-        <yarn.version>v1.16.0</yarn.version>
-        <frontend-maven-plugin.version>1.7.6</frontend-maven-plugin.version>
+        <node.version>v12.18.2</node.version>
+        <yarnVersion>v1.22.4</yarnVersion>
+        <frontend-maven-plugin.version>1.10.0</frontend-maven-plugin.version>
+        <lucene.version>8.6.0</lucene.version>
     </properties>
 
     <dependencies>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.10.4</version>
+            <version>[2.9.10.5,)</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>
@@ -64,6 +64,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+            <exclusions><!-- fix warning, also see https://github.com/spring-projects/spring-boot/issues/9630 -->
+                <exclusion>
+                    <groupId>com.vaadin.external.google</groupId>
+                    <artifactId>android-json</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -126,12 +132,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.jgraph</groupId>
-            <artifactId>jgraphx</artifactId>
-            <version>4.0.4</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.j2html</groupId>
             <artifactId>j2html</artifactId>
             <version>1.4.0</version>
@@ -146,19 +146,19 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-client</artifactId>
-            <version>4.2.0</version>
+            <version>4.11.0</version>
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-server-mock</artifactId>
-            <version>4.2.0</version>
+            <version>4.11.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.googlecode.cqengine</groupId>
             <artifactId>cqengine</artifactId>
-            <version>3.4.0</version>
+            <version>3.5.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.xerial</groupId>
@@ -167,11 +167,27 @@
             </exclusions>
         </dependency>
 
-        <!-- hateoas -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-hateoas</artifactId>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>${lucene.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queryparser</artifactId>
+            <version>${lucene.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-common</artifactId>
+            <version>${lucene.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-facet</artifactId>
+            <version>${lucene.version}</version>
+        </dependency>
+
 
         <!-- rancher api -->
         <!-- https://mvnrepository.com/artifact/br.com.basis/rancher-java-sdk -->
@@ -194,12 +210,11 @@
             <version>5.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-all -->
+        <!-- swagger documentation -->
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-all</artifactId>
-            <version>1.12</version>
-            <type>pom</type>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.4.1</version>
         </dependency>
 
     </dependencies>
@@ -270,21 +285,24 @@
 
                 <executions>
                     <execution>
-                        <id>Install node and npm locally to the project</id>
+                        <id>Install node and yarn locally to the project</id>
                         <goals>
-                            <goal>install-node-and-npm</goal>
+                            <goal>install-node-and-yarn</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>npm install</id>
+                        <id>yarn install</id>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>yarn</goal>
                         </goals>
+                        <configuration>
+                            <arguments>--network-timeout 500000</arguments>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>Run test</id>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>yarn</goal>
                         </goals>
                         <configuration>
                             <arguments>test</arguments>
@@ -296,10 +314,10 @@
                     <execution>
                         <id>Build frontend</id>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>yarn</goal>
                         </goals>
                         <configuration>
-                            <arguments>run build</arguments>
+                            <arguments>build</arguments>
                             <environmentVariables>
                                 <CI>true</CI>
                             </environmentVariables>
@@ -394,7 +412,7 @@
         <repository>
             <id>spring-releases</id>
             <name>Spring Releases</name>
-            <url>https://repo.spring.io/libs-release</url>
+            <url>https://repo.spring.io/release</url>
         </repository>
 
         <repository>

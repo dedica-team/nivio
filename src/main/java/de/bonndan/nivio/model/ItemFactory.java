@@ -2,6 +2,7 @@ package de.bonndan.nivio.model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.util.stream.Collectors;
 
@@ -16,9 +17,8 @@ public class ItemFactory {
             throw new RuntimeException("landscape item is null");
         }
 
-        Item landscapeItemImpl = new Item();
+        Item landscapeItemImpl = new Item(item.getGroup(), item.getIdentifier());
         landscapeItemImpl.setLandscape(landscape);
-        landscapeItemImpl.setIdentifier(item.getIdentifier());
         assignAll(landscapeItemImpl, item);
         return landscapeItemImpl;
     }
@@ -33,49 +33,24 @@ public class ItemFactory {
             return;
         }
         item.setName(description.getName());
-        item.setLayer(description.getLayer() != null ? description.getLayer() : LandscapeItem.LAYER_APPLICATION);
-        assignSafe(description.getType(), item::setType);
-
-        item.setNote(description.getNote());
-        item.setShort_name(description.getShortName());
-        item.setIcon(description.getIcon());
         item.setDescription(description.getDescription());
-        item.setTags(description.getTags());
         item.setOwner(description.getOwner());
+        item.setColor(description.getColor());
+        item.setIcon(description.getIcon());
+        item.setContact(description.getContact());
 
-        item.setSoftware(description.getSoftware());
-        item.setVersion(description.getVersion());
         item.setInterfaces(description.getInterfaces().stream()
                 .map(ServiceInterface::new)
                 .collect(Collectors.toSet()));
 
         item.getLinks().putAll(description.getLinks());
-        item.setContact(description.getContact());
-        item.setTeam(description.getTeam());
 
-        item.setVisibility(description.getVisibility());
-        item.setLifecycle(description.getLifecycle());
         assignSafe(description.getGroup(), item::setGroup);
 
-        item.setCosts(description.getCosts());
-        item.setCapability(description.getCapability());
-
-        if (description.getStatuses() != null)
-            description.getStatuses().forEach(statusItem -> {
-                try {
-                    item.setStatus(statusItem);
-                } catch (IllegalArgumentException ex) {
-                    logger.warn("Failed to set status", ex);
-                }
-            });
-
-        item.setHostType(description.getHostType());
-        item.setNetworks(description.getNetworks());
-        item.setMachine(description.getMachine());
-        item.setScale(description.getScale());
-
-        description.getLabels().forEach((s, s2) -> {
-            item.getLabels().putIfAbsent(s, s2);
+        description.getLabels().forEach((key, value) -> {
+            if (item.getLabel(key) == null || !StringUtils.isEmpty(value)) {
+                item.setLabel(key, value);
+            }
         });
     }
 }

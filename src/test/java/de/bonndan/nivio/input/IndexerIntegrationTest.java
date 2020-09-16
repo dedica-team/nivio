@@ -3,7 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.notification.NotificationService;
+import de.bonndan.nivio.output.LocalServer;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.Assertions;
@@ -14,9 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -38,13 +36,16 @@ public class IndexerIntegrationTest {
     LandscapeRepository landscapeRepository;
 
     @Autowired
-    ItemDescriptionFormatFactory formatFactory;
+    InputFormatHandlerFactory formatFactory;
+
+    @Autowired
+    LandscapeDescriptionFactory landscapeDescriptionFactory;
+
+    @Autowired
+    LocalServer localServer;
 
     @Mock
     ApplicationEventPublisher applicationEventPublisher;
-
-    @MockBean
-    JavaMailSender mailSender;
 
     private LandscapeImpl index() {
         return index("/src/test/resources/example/example_env.yml");
@@ -52,9 +53,9 @@ public class IndexerIntegrationTest {
 
     private LandscapeImpl index(String path) {
         File file = new File(getRootPath() + path);
-        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromYaml(file);
+        LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, localServer);
 
         ProcessLog processLog = indexer.reIndex(landscapeDescription);
         return (LandscapeImpl) processLog.getLandscape();
@@ -114,7 +115,7 @@ public class IndexerIntegrationTest {
         assertEquals(3, blog.getProvidedBy().size());
 
         ArrayList<Item> landscapeItems = new ArrayList<>(blog.getProvidedBy());
-        Item webserver = LandscapeItems.of(landscapeItems).pick("wordpress-web", null);
+        Item webserver = new ItemIndex(new HashSet<>(landscapeItems)).pick("wordpress-web", null);
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
 
@@ -162,7 +163,7 @@ public class IndexerIntegrationTest {
         exsistingWordPress.setName("Other name");
         landscapeDescription.getItemDescriptions().add(exsistingWordPress);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, localServer);
 
         //created
         landscape = (LandscapeImpl) indexer.reIndex(landscapeDescription).getLandscape();
@@ -191,7 +192,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(landscape1.getItems());
         Item blog1 = landscape1.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog1);
-        assertEquals("blog", blog1.getShortName());
+        assertEquals("blog", blog1.getLabel(Label.shortname));
 
         Assertions.assertNotNull(landscape2);
         assertEquals("nivio:other", landscape2.getIdentifier());
@@ -199,7 +200,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(landscape2.getItems());
         Item blog2 = landscape2.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog2);
-        assertEquals("blog1", blog2.getShortName());
+        assertEquals("blog1", blog2.getLabel(Label.shortname));
     }
 
     /**
@@ -254,21 +255,58 @@ public class IndexerIntegrationTest {
     public void readGroupsContains() {
         LandscapeImpl landscape1 = index("/src/test/resources/example/example_groups.yml");
         Group a = (Group) landscape1.getGroups().get("groupA");
-        LandscapeItems items = LandscapeItems.of(a.getItems());
-        assertNotNull(items.pick("blog-server", null));
-        assertNotNull(items.pick("crappy_dockername-234234", null));
+        ItemIndex index = new ItemIndex(new HashSet<>(a.getItems()));
+        assertNotNull(index.pick("blog-server", null));
+        assertNotNull(index.pick("crappy_dockername-234234", null));
     }
 
     @Test
     public void labelRelations() {
         LandscapeImpl landscape = index("/src/test/resources/example/example_label_relations.yml");
-        assertEquals(1, landscape.getGroups().size());
+        assertEquals(2, landscape.getGroups().size()); //common group is present by default
         assertEquals(2, landscape.getItems().all().size());
 
         Item foo = landscape.getItems().all().iterator().next();
         assertEquals("foo", foo.getIdentifier());
         assertEquals(1, foo.getRelations().size());
     }
+
+    @Test
+    public void triggersSearchIndexing() {
+
+        //when
+        LandscapeImpl landscape = index("/src/test/resources/example/example_env.yml");
+
+        //then
+        Set<Item> result = landscape.getItems().search("contact:alphateam@acme.io");
+        assertEquals(2, result.size());
+
+        result = landscape.getItems().search("contact:alphateam@acme.io AND name:\"Demo Blog\"");
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void searchForTags() {
+
+        //when
+        LandscapeImpl landscape = index("/src/test/resources/example/example_env.yml");
+
+        //then
+        Set<Item> result = landscape.getItems().search("tag:CMS");
+        assertEquals(1, result.size());
+        Item match = result.iterator().next();
+        assertEquals("nivio:example/content/blog-server", match.getFullyQualifiedIdentifier().toString());
+        assertTrue(List.of(match.getTags()).contains("cms"));
+        assertTrue(List.of(match.getTags()).contains("ui"));
+
+        result = landscape.getItems().search("tag:UI");
+        assertEquals(1, result.size());
+        match = result.iterator().next();
+        assertEquals("nivio:example/content/blog-server", match.getFullyQualifiedIdentifier().toString());
+        assertTrue(List.of(match.getTags()).contains("cms"));
+        assertTrue(List.of(match.getTags()).contains("ui"));
+    }
+
 
     private String getRootPath() {
         Path currentRelativePath = Paths.get("");

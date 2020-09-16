@@ -7,7 +7,7 @@ import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.notification.NotificationService;
+import de.bonndan.nivio.output.LocalServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -21,16 +21,19 @@ public class Indexer {
     private static final Logger _logger = LoggerFactory.getLogger(Indexer.class);
 
     private final LandscapeRepository landscapeRepo;
-    private final ItemDescriptionFormatFactory formatFactory;
+    private final InputFormatHandlerFactory formatFactory;
     private final ApplicationEventPublisher eventPublisher;
+    private final LocalServer localServer;
 
     public Indexer(LandscapeRepository landscapeRepository,
-                   ItemDescriptionFormatFactory formatFactory,
-                   ApplicationEventPublisher eventPublisher
+                   InputFormatHandlerFactory formatFactory,
+                   ApplicationEventPublisher eventPublisher,
+                   LocalServer localServer
     ) {
         this.landscapeRepo = landscapeRepository;
         this.formatFactory = formatFactory;
         this.eventPublisher = eventPublisher;
+        this.localServer = localServer;
     }
 
     public ProcessLog reIndex(final LandscapeDescription input) {
@@ -39,15 +42,11 @@ public class Indexer {
 
         LandscapeImpl landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier()).orElseGet(() -> {
             logger.info("Creating new landscape " + input.getIdentifier());
-            LandscapeImpl landscape1 = input.toLandscape();
+            LandscapeImpl landscape1 = LandscapeFactory.create(input);
             landscapeRepo.save(landscape1);
             return landscape1;
         });
-
-        landscape.setName(input.getName());
-        landscape.setContact(input.getContact());
-        landscape.setConfig(input.getConfig());
-        landscape.setDescription(input.getDescription());
+        LandscapeFactory.assignAll(input, landscape);
         logger.setLandscape(landscape);
 
         try {
@@ -59,7 +58,7 @@ public class Indexer {
             eventPublisher.publishEvent(new ProcessingErrorEvent(this, e));
         }
 
-        eventPublisher.publishEvent(new ProcessingFinishedEvent(this, landscape));
+        eventPublisher.publishEvent(new ProcessingFinishedEvent(input, landscape));
         logger.info("Reindexed landscape " + input.getIdentifier());
         landscape.setProcessLog(logger);
         return logger;
@@ -97,6 +96,11 @@ public class Indexer {
 
         // 10. create relations between items
         new ItemRelationResolver(logger).process(input, landscape);
+
+        new AppearanceResolver(logger, localServer).process(input, landscape);
+
+        // this step must be final or very late to include all item modifications
+        landscape.getItems().indexForSearch();
     }
 
 }

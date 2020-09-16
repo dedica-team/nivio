@@ -19,13 +19,15 @@ logging:
     de:
       bonndan:
         nivio:
-          output: TRACE
+          output: INFO
 
 server:
   port: ${PORT:8080}
 
 nivio:
   baseUrl: ${NIVIO_BASE_URL:}
+  version: #project.version#
+  pollingMilliseconds: 30000 # 30 secs
 
 ---
 spring:

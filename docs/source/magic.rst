@@ -87,9 +87,10 @@ For instance
         labels:
           nivio.name: A nice name
           nivio.providedBy: ["foo", "bar"]
+          nivio.link.wiki: http://mywiki.acme.com
 
 
-will set the related values (here: name and relations). Remember to scape URLs with double quotes.
+will set the related values (here: name and relations). Remember to escape URLs with double quotes.
 
 Labels can be set using docker-compose files, too. However, docker labels not not allow arrays, so use comma separated strings:
 
@@ -101,6 +102,7 @@ Labels can be set using docker-compose files, too. However, docker labels not no
         labels:
           nivio.name: A nice name
           nivio.providedBy: "bar, baz"
+          nivio.link.repo: https://github.com/foo/bar
 
 
 Relations between landscape items
@@ -116,7 +118,7 @@ are read and assigned as item labels, then examined:
 
 Then the label is examined:
 
-* If the value matches a landscape item identifier, the correspondig item is used as target and detection ends
+* If the value matches a landscape item identifier, the corresponding item is used as target and detection ends
 * In the case of being an URL, the host and name path components are extracted and used as names or identifiers.
 * Otherwise, the **key** of the label is split using the underscore "_" characters and the resulting parts are used as names
 or identifier. For instance FOO_API_URL would look for landscape items like "foo" and "api".

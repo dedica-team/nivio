@@ -1,23 +1,33 @@
 package de.bonndan.nivio.model;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import de.bonndan.nivio.LandscapeConfig;
+import de.bonndan.nivio.assessment.Assessable;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ProcessLog;
-import de.bonndan.nivio.output.Rendered;
+import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
 
 /**
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
-public class LandscapeImpl implements Landscape, Rendered {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class LandscapeImpl implements Landscape, Labeled, Assessable {
 
     /**
      * Immutable unique identifier. Maybe use an URN.
      */
-    @Pattern(regexp = LandscapeItem.IDENTIFIER_VALIDATION)
+    @Pattern(regexp = IDENTIFIER_VALIDATION)
     private String identifier;
 
     /**
@@ -34,22 +44,38 @@ public class LandscapeImpl implements Landscape, Rendered {
 
     private String source;
 
-    @JsonManagedReference
-    private LandscapeItems items = new LandscapeItems();
+    @JsonIgnore
+    private final ItemIndex items = new ItemIndex();
 
     private LandscapeConfig config;
 
-    private Map<String, GroupItem> groups = new HashMap<>();
+    private final Map<String, GroupItem> groups = new HashMap<>();
 
     private ProcessLog processLog;
 
-    private Map<String, String> labels = new HashMap<>();
+    private final Map<String, String> labels = new HashMap<>();
+    private final Map<String, Link> links = new HashMap<>();
+    private String owner;
+
+    public LandscapeImpl(@NonNull String identifier, @NonNull Group defaultGroup) {
+        setIdentifier(identifier);
+        this.addGroup(defaultGroup);
+    }
 
     public String getIdentifier() {
         return identifier;
     }
 
+    @Override
+    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
+        return FullyQualifiedIdentifier.build(identifier, null, null);
+    }
+
     public void setIdentifier(String identifier) {
+
+        if (StringUtils.isEmpty(identifier) || !identifier.matches(IDENTIFIER_VALIDATION)) {
+            throw new IllegalArgumentException("Invalid landscape identifier given: '" + identifier + "', it must match " + IDENTIFIER_VALIDATION);
+        }
         this.identifier = StringUtils.trimAllWhitespace(identifier);
     }
 
@@ -61,7 +87,8 @@ public class LandscapeImpl implements Landscape, Rendered {
         this.name = name;
     }
 
-    public LandscapeItems getItems() {
+    @JsonIgnore
+    public ItemIndex getItems() {
         return items;
     }
 
@@ -90,19 +117,21 @@ public class LandscapeImpl implements Landscape, Rendered {
         return config;
     }
 
+    @JsonIgnore
     @Override
     public Map<String, GroupItem> getGroups() {
         return groups;
     }
 
-    public void setContact(String contact) {
-        this.contact = contact;
+    @JsonGetter("groups")
+    public Collection<Group> getGroupItems() {
+        return groups.values().stream()
+                .map(groupItem -> (Group)groupItem)
+                .collect(Collectors.toList());
     }
 
-    public void addItem(Item item) {
-        item.setLandscape(this);
-        item.getProvidedBy().forEach(s -> s.setLandscape(this));
-        items.add(item);
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 
     @Override
@@ -123,19 +152,27 @@ public class LandscapeImpl implements Landscape, Rendered {
         this.config = config;
     }
 
-    public void addGroup(Group g) {
-        if (groups.containsKey(g.getIdentifier())) {
-            Groups.merge((Group) groups.get(g.getIdentifier()), g);
-            return;
+    public void addGroup(@NonNull Group g) {
+        if (g == null) {
+            throw new IllegalArgumentException("Trying to add null group");
         }
 
-        groups.put(g.getIdentifier(), g);
+        g.setLandscape(this.identifier);
+        if (groups.containsKey(g.getIdentifier())) {
+            Groups.merge((Group) groups.get(g.getIdentifier()), g);
+        } else {
+            groups.put(g.getIdentifier(), g);
+        }
     }
 
-    public Group getGroup(String group) {
-        if (StringUtils.isEmpty(group))
-            group = Group.COMMON;
-        return (Group) groups.get(group);
+    /**
+     * Returns the group with the given name.
+     *
+     * @param group name
+     * @return group or null if the group cannot be found as optional
+     */
+    public Optional<Group> getGroup(String group) {
+        return Optional.ofNullable((Group) groups.get(group));
     }
 
     public void setProcessLog(ProcessLog processLog) {
@@ -157,6 +194,20 @@ public class LandscapeImpl implements Landscape, Rendered {
     }
 
     @Override
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    @Override
+    public Map<String, String> getLabels() {
+        return labels;
+    }
+
+    @Override
     public String getLabel(String key) {
         return labels.get(key);
     }
@@ -164,5 +215,36 @@ public class LandscapeImpl implements Landscape, Rendered {
     @Override
     public void setLabel(String key, String value) {
         labels.put(key, value);
+    }
+
+    @Override
+    public Set<StatusValue> getAdditionalStatusValues() {
+        return StatusValue.fromMapping(indexedByPrefix(Label.status));
+    }
+
+    @Override
+    public List<? extends Assessable> getChildren() {
+        return getGroups().values().stream().map(groupItem -> (Assessable)groupItem).collect(Collectors.toList());
+    }
+
+    @Override
+    @Schema(name = "_links")
+    public Map<String, Link> getLinks() {
+        return links;
+    }
+
+    @JsonGetter("lastUpdate")
+    public LocalDateTime getLastUpdate() {
+        return this.processLog == null ? null : this.processLog.getLastUpdate();
+    }
+
+    @Override
+    public String getColor() {
+        return null;
+    }
+
+    @Override
+    public String getIcon() {
+        return null;
     }
 }

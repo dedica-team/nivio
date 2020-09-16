@@ -1,8 +1,7 @@
 package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.api.NotFoundException;
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.assessment.kpi.KPIFactory;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.LocalServer;
@@ -16,31 +15,32 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
-
 @Controller
-@RequestMapping(path = "/docs")
+@RequestMapping(path = DocsController.PATH)
 public class DocsController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DocsController.class);
+    public static final String PATH = "/docs";
+    public static final String REPORT_HTML = "report.html";
 
     private final LandscapeRepository landscapeRepository;
     private final LocalServer localServer;
+    private final KPIFactory factory;
 
-    public DocsController(LandscapeRepository landscapeRepository, LocalServer localServer) {
+    public DocsController(LandscapeRepository landscapeRepository, LocalServer localServer, KPIFactory factory) {
         this.landscapeRepository = landscapeRepository;
         this.localServer = localServer;
+        this.factory = factory;
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/report.html")
+    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/" + REPORT_HTML)
     public ResponseEntity<String> htmlResource(@PathVariable(name = "landscape") final String landscapeIdentifier) {
 
         LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
                 () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
         );
 
-        ReportGenerator generator = new ReportGenerator(localServer);
+        ReportGenerator generator = new ReportGenerator(localServer, factory);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
@@ -50,44 +50,6 @@ public class DocsController {
                 HttpStatus.OK
         );
 
-    }
-
-    /**
-     * Renders only a single item as html.
-     *
-     *
-     */
-    @Deprecated //item renderings should be generated within the GUI
-    @RequestMapping(method = RequestMethod.GET, path = "/item/**")
-    public ResponseEntity<String> itemHtmlResource(HttpServletRequest request) {
-
-        String requestURL = request.getRequestURL().toString();
-        String fqiString = requestURL.split("/item/")[1];
-        FullyQualifiedIdentifier fqi;
-        try {
-            fqi = FullyQualifiedIdentifier.from(fqiString);
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        }
-
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(fqi.getLandscape()).orElseThrow(
-                () -> new NotFoundException("Landscape " + fqi.getLandscape() + " not found")
-        );
-        Optional<Item> item = landscape.getItems().find(fqi);
-        if (item.isEmpty()) {
-            LOGGER.warn("Could not find item {}", fqiString);
-            return ResponseEntity.notFound().build();
-        }
-
-        ItemReportGenerator generator = new ItemReportGenerator(localServer);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
-        return new ResponseEntity<>(
-                generator.toDocument(item.get()),
-                headers,
-                HttpStatus.OK
-        );
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/owners.html")

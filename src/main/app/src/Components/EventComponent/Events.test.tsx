@@ -9,5 +9,5 @@ it('should render Events component', () => {
       <Events />
     </MemoryRouter>
   );
-  expect(getByText('loading...')).toBeInTheDocument();
+  expect(getByText('Processing Event Log')).toBeInTheDocument();
 });

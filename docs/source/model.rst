@@ -1,10 +1,11 @@
 Model and Syntax
 ================
 
+
 Landscape
 ---------
 
-A landscape is defined as a collection of items and applications which somehow belong together, be it for technical
+A landscape is defined as a collection of items which somehow belong together, be it for technical
 or business reasons. For example, a company department might model ALL its applications in production as one landscape and use grouping
 or tagging to further separate the applications. A second landscape could be used to model a future layout with a different
 infrastructure. Both landscapes could have items in common (like a database, load balancer etc.), so their configuration can be reused.
@@ -19,33 +20,21 @@ A landscape can/must have the following attributes:
 Landscape Items
 ---------------
 
-A landscape consists of several groups (think of bounded contexts) and the three layers ingress, items, and infrastructure
-for technical separation. Any item can only be part of one group and layer.
+An item represents anything that has a meaning in the landscape. It can be a server, a service, some hardware or a person.
 
-A item can have the following attributes:
+A item should have the following attributes:
 
 * **identifier**: a unique identifier in the landscape. Use a name or an URN, validated against ^[a-z0-9\\.\\:_-]{3,256}$
-* **group** name of the group (optional). If a group is given it becomes part of the global identifier
+* **group** name of the group (optional). If a group is given it becomes part of the global identifier.Any item can only be part of one group.
 * **name** human readable, displayed name
-* **type** e.g. item, database, proxy, loadbalancer, ...
-* **layer** ingress, applications, or infrastructure
-* **shortName** abbreviation
-* **capability** the capability the item provides for the business, or in case of infrastructure the technical purpose like enabling item discovery, configuration, secrets or persistence.
-* **version** any string describing a item version (e.g. 1.2.5)
-* **software** optional name of the used software/product
-* **owner** owning party (e.g. Marketing)
-* **description** a short description
-* **team** technical owner
 * **contact** support/notification contact (email) may be addressed in case of errors
+* **description** a short description
+* **icon** an icon url
+* **color** a html color
+
+Other fields:
+
 * **links** a map/dictionary of urls to more information
-* **visibility** whether the item is publicly exposed
-* **tags** list of strings used as tag
-* **networks** list of network names (can be defined somewhere else)
-* **machine** description of the underlying virtual or physical machine
-* **scale** number of instances (or other description)
-* **hostType** e.g. docker, VM, bare metal
-* **note** any note attached to the item
-* **costs** running costs of the item. Stored as string
 * **lifecycle** life cycle phase. One of "planned", "integration", "production", "end of life" (abbrevs work)
 * **statuses** status objects, represented in colors
     * label: stability, capability, health, security ....)
@@ -63,6 +52,40 @@ A item can have the following attributes:
 * **providedBy** array of references to other items (identifiers)
 
 
+Plus, there are labels having a special meaning:
+
+.. include:: labels.rst
+
+
+You can also store **custom properties** as labels, but keep in mind that
+
+* label keys are converted to lowercase
+* label values are stored as string
+
+**Item configuration**
+
+.. code-block:: yaml
+   :linenos:
+
+    items:
+      - identifier: blog-server
+        shortName: blog1
+        group: content
+        mycustomlabel1: foo
+        mycustomlabel_2: bar
+        any: entry is stored as label
+
+      - identifier: auth-gateway
+        shortName: blog1
+        layer: ingress
+        group: content
+
+      - identifier: DB1
+        software: MariaDB
+        version: 10.3.11
+        type: database
+        layer: infrastructure
+
 Item Groups
 -----------
 Groups can have the following attributes:
@@ -76,26 +99,10 @@ Groups can have the following attributes:
 * **color** a hex color code for rendering
 * **links** a map/dictionary of urls to more information
 
-**Item configuration **
+**Group configuration**
 
 .. code-block:: yaml
    :linenos:
-
-    items:
-      - identifier: blog-server
-        shortName: blog1
-        group: content
-
-      - identifier: auth-gateway
-        shortName: blog1
-        layer: ingress
-        group: content
-
-      - identifier: DB1
-        software: MariaDB
-        version: 10.3.11
-        type: database
-        layer: infrastructure
 
     groups:
       content:

@@ -11,5 +11,5 @@ public class DockerComposeFile {
 
     public String version;
 
-    public Map<String, ComposeService> services = new HashMap<>();
+    public final Map<String, ComposeService> services = new HashMap<>();
 }

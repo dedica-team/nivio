@@ -25,8 +25,8 @@ public class ItemRelationResolver extends Resolver {
             Item origin = landscape.getItems().pick(serviceDescription);
             serviceDescription.getRelations().forEach(relationDescription -> {
 
-                var fqiSource = FullyQualifiedIdentifier.from(relationDescription.getSource());
-                var fqiTarget = FullyQualifiedIdentifier.from(relationDescription.getTarget());
+                var fqiSource = ItemMatcher.forTarget(relationDescription.getSource());
+                var fqiTarget = ItemMatcher.forTarget(relationDescription.getTarget());
                 Item source = landscape.getItems().find(fqiSource).orElse(null);
                 if (source == null) {
                     processLog.warn("Relation source " + relationDescription.getSource() + " not found");

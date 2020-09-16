@@ -6,7 +6,6 @@ import de.bonndan.nivio.model.*;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 import static de.bonndan.nivio.util.SafeAssign.assignSafeIfAbsent;
 
@@ -52,41 +51,10 @@ public class TemplateResolver {
     static void assignTemplateValues(ItemDescription item, ItemDescription template) {
 
         assignSafeIfAbsent(template.getType(), item.getType(), item::setType);
-
-        assignSafeIfAbsent(template.getLayer(), item.getLayer(), item::setLayer);
-
         assignSafeIfAbsent(template.getDescription(), item.getDescription(), item::setDescription);
-
-        assignSafeIfAbsent(template.getIcon(), item.getIcon(), item::setIcon);
-
-        assignSafeIfAbsent(template.getNote(), item.getNote(), item::setNote);
-
         assignSafeIfAbsent(template.getContact(), item.getContact(), item::setContact);
-
         assignSafeIfAbsent(template.getOwner(), item.getOwner(), item::setOwner);
-
-        assignSafeIfAbsent(template.getTeam(), item.getTeam(), item::setTeam);
-
         assignSafeIfAbsent(template.getGroup(), item.getGroup(), item::setGroup);
-
-        assignSafeIfAbsent(template.getMachine(), item.getMachine(), item::setMachine);
-
-        assignSafeIfAbsent(template.getSoftware(), item.getSoftware(), item::setSoftware);
-
-        assignSafeIfAbsent(template.getVersion(), item.getVersion(), item::setVersion);
-
-        assignSafeIfAbsent(template.getVisibility(), item.getVisibility(), item::setVisibility);
-
-        assignLifecycleIfAbsent(template.getLifecycle(), item.getLifecycle(), item::setLifecycle);
-
-        assignSafeIfAbsent(template.getScale(), item.getScale(), item::setScale);
-
-        assignSafeIfAbsent(template.getHostType(), item.getHostType(), item::setHostType);
-
-        if (template.getTags() != null && item.getTags() == null)
-            item.setTags(template.getTags());
-
-        template.getLabels().forEach((s, s2) -> item.getLabels().putIfAbsent(s, s2));
 
         if (template.getProvidedBy() != null) {
             template.getProvidedBy().stream()
@@ -96,28 +64,11 @@ public class TemplateResolver {
 
         template.getRelations().forEach(item::addRelation);
 
-        if (template.getStatuses() != null) {
-            template.getStatuses().forEach(statusItem -> {
-                if (!item.getStatuses().contains(statusItem))
-                    item.getStatuses().add(statusItem);
-            });
-        }
+        Labeled.merge(template, item);
 
-        if (template.getInterfaces() != null) {
-            template.getInterfaces().forEach(interfaceItem -> {
-                if (!item.getInterfaces().contains(interfaceItem))
-                    item.getInterfaces().add(interfaceItem);
-            });
-        }
-
-        if (template.getNetworks() != null) {
-            template.getNetworks().forEach(net -> item.getNetworks().add(net));
-        }
+        template.getInterfaces().forEach(interfaceItem -> {
+            if (!item.getInterfaces().contains(interfaceItem))
+                item.getInterfaces().add(interfaceItem);
+        });
     }
-
-
-    private static void assignLifecycleIfAbsent(Lifecycle s, Lifecycle absent, Consumer<Lifecycle> c) {
-        if (s != null && absent == null) c.accept(s);
-    }
-
 }

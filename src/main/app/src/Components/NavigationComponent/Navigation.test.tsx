@@ -3,8 +3,6 @@ import { render } from '@testing-library/react';
 import Navigation from './Navigation';
 import { MemoryRouter } from 'react-router-dom';
 
-jest.mock('react-console-emulator');
-
 it('should render Navigation component', () => {
   const { getByText } = render(
     <MemoryRouter>
@@ -21,5 +19,5 @@ it('should link to manual on button click', () => {
     </MemoryRouter>
   );
 
-  expect(getByTestId('ManualButton').closest('a')).toHaveAttribute('href', '/man/install');
+  expect(getByTestId('ManualButton').closest('a')).toHaveAttribute('href', '/man/install.html');
 });

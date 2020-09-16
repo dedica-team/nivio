@@ -1,12 +1,16 @@
 $background-grey: #161618;
 $highlight-grey: #222222;
-$header-color: rgba(0, 127, 127, 0.682);
+$header-color: rgb(0, 104, 104);
 
 $font-color: rgba(255, 255, 255, 0.75);
 $text-shadow-color: rgba(0, 255, 255, 0.95);
 $box-shadow-color: rgba(0, 255, 255, 0.5);
 $link-color: #ffffff;
 $border-color: rgba(127, 255, 255, 0.25);
+
+$warn-color: #ffcf03;
+$error-color: red;
+$info-color: lightgray;
 
 $svg-shortname-color: #000000;
 $svg-border-color: #3f51b5;

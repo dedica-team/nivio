@@ -24,6 +24,11 @@ public class HttpService {
         return executeRequest(client, new HttpGet(url.toURI()));
     }
 
+    /**
+     * @param url
+     * @return
+     * @throws URISyntaxException
+     */
     public CachedResponse getResponse(URL url) throws URISyntaxException {
 
         HttpGet request = new HttpGet(url.toURI());
@@ -31,10 +36,16 @@ public class HttpService {
         request.setHeader(new BasicHeader("Cache-Control", "no-cache"));
 
         try (CloseableHttpClient client = HttpClients.createDefault(); CloseableHttpResponse response = client.execute(request)) {
-            return new CachedResponse(response.getAllHeaders(), response.getEntity());
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode < 400) {
+                return new CachedResponse(response.getAllHeaders(), response.getEntity());
+            } else {
+                throw new RuntimeException("Failed to fetch " + request.getURI() + ", status: " + statusCode);
+            }
         } catch (IOException ex) {
             throw new RuntimeException("Failed to fetch " + request.getURI(), ex);
         }
+
     }
 
     public String getWithBasicAuth(URL url, String username, String password) throws IOException, AuthenticationException, URISyntaxException {
@@ -58,7 +69,7 @@ public class HttpService {
     private String executeRequest(CloseableHttpClient client, HttpGet request) throws IOException {
         try (CloseableHttpResponse response = client.execute(request)) {
             if (response.getStatusLine().getStatusCode() == 200) {
-                return  EntityUtils.toString(response.getEntity());
+                return EntityUtils.toString(response.getEntity());
             } else {
                 throw new RuntimeException("Got " + response.getStatusLine().getStatusCode() + " while reading");
             }

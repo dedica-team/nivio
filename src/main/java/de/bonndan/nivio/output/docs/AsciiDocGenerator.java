@@ -1,8 +1,7 @@
 package de.bonndan.nivio.output.docs;
 
-import de.bonndan.nivio.model.Groups;
-import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.model.LandscapeItem;
+import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.output.FormatUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Collection;
@@ -46,43 +45,38 @@ public class AsciiDocGenerator {
         final StringBuilder builder = new StringBuilder();
         groups.getAll().forEach((s, landscapeItems) -> {
             builder.append(NL + "== Group: " + s + NL);
-            landscapeItems.forEach(item -> builder.append(writeItem(item)));
+            landscapeItems.forEach(item -> builder.append(writeItem((Item) item)));
         });
 
         return builder.toString();
     }
 
-    private String writeItem(LandscapeItem item) {
+    private String writeItem(Item item) {
         final StringBuilder builder = new StringBuilder();
 
         builder.append(NL + "=== " + (isEmpty(item.getName()) ? item.getIdentifier() : item.getName()) + NL);
         builder.append(nice(item.getDescription()) + NL);
-        if (!isEmpty(item.getNote())) {
-            builder.append(item.getNote() + NL);
+        if (!isEmpty(item.getLabel(Label.note))) {
+            builder.append(item.getLabel(Label.note) + NL);
         }
 
         builder.append("[horizontal]" + NL);
         builder.append("FQI:: " + item.getFullyQualifiedIdentifier() + NL);
         builder.append("Name:: " + nice(item.getName()) + NL);
-        builder.append("Short Name:: " + nice(item.getShortName()) + NL);
+        builder.append("Short Name:: " + nice(item.getLabel(Label.shortname)) + NL);
         builder.append("Type:: " + item.getType() + NL);
         builder.append("Links:: " + item.getLinks().entrySet().stream()
                 .map(stringURLEntry -> stringURLEntry.getValue().toString() + "[" + stringURLEntry.getKey() + "]")
                 .collect(Collectors.joining(" ")) + NL);
-        builder.append("Tags:: " + nice(item.getTags()) + NL);
+        builder.append("Tags:: " + FormatUtils.nice(item.getLabels(Tagged.LABEL_PREFIX_TAG)) + NL);
         builder.append("Contact:: " + nice(item.getContact()) + NL);
-        builder.append("Team:: " + nice(item.getTeam()) + NL);
+        builder.append("Team:: " + nice(item.getLabel(Label.team)) + NL);
         builder.append("Owner:: " + nice(item.getOwner()) + NL);
-        builder.append("Software:: " + nice(item.getSoftware()) + NL);
-        builder.append("Version:: " + nice(item.getVersion()) + NL);
-        builder.append("Machine:: " + nice(item.getMachine()) + NL);
-        builder.append("Scale:: " + nice(item.getScale()) + NL);
-        builder.append("Visibility:: " + nice(item.getVisibility()) + NL);
-        builder.append("Networks:: " + nice(item.getNetworks()) + NL);
-
-        item.getStatuses().forEach(statusItem -> {
-            builder.append(nice(statusItem.getLabel()) + ":: [" + statusItem.getStatus() + "]*" + statusItem.getStatus() + "* " + nice(statusItem.getMessage()) + NL);
-        });
+        builder.append("Software:: " + nice(item.getLabel(Label.software)) + NL);
+        builder.append("Version:: " + nice(item.getLabel(Label.version)) + NL);
+        builder.append("Scale:: " + nice(item.getLabel(Label.scale)) + NL);
+        builder.append("Visibility:: " + nice(item.getLabel(Label.visibility)) + NL);
+        builder.append("Networks:: " + FormatUtils.nice(item.getLabels(Label.network)) + NL);
 
         builder.append(NL);
 

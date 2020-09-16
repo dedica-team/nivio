@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.api.LandscapeDTOFactory;
-import de.bonndan.nivio.api.dto.LandscapeDTO;
 import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 
@@ -18,26 +16,17 @@ import java.util.List;
  * This is a decorator for {@link Logger} used during landscape processing in order to grab all landscape relevant
  * processing events.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProcessLog {
 
     private final Logger logger;
 
     private final List<Entry> messages = new ArrayList<>();
 
-    @JsonIgnore
     private Landscape landscape;
-
-    @JsonIgnore
-    private ProcessingException exception;
 
     public ProcessLog(Logger logger) {
         this.logger = logger;
-    }
-
-    public ProcessLog(ProcessingException e) {
-        this.logger = null;
-        exception = e;
-        landscape = e.getLandscape();
     }
 
     public void debug(String message) {
@@ -57,7 +46,6 @@ public class ProcessLog {
     public void warn(String msg, ProcessingException e) {
         messages.add(new Entry("WARN", msg));
         logger.warn(msg, e);
-        this.exception = e;
     }
 
     public void warn(String msg) {
@@ -65,33 +53,23 @@ public class ProcessLog {
         messages.add(new Entry("WARN", msg));
     }
 
+    public void error(ProcessingException e) {
+        messages.add(new Entry("ERROR", e));
+        logger.error(e.getMessage(), e);
+    }
+
+    @JsonProperty("landscape")
+    public String getLandscapeIdentifier() {
+        return landscape != null ? landscape.getFullyQualifiedIdentifier().jsonValue() : null;
+    }
+
     @JsonIgnore
     public Landscape getLandscape() {
         return landscape;
     }
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonProperty("landscape")
-    public Landscape getLandscapeDTO() {
-        if (landscape == null)
-            return null;
-
-        LandscapeDTO dto = LandscapeDTOFactory.from(landscape);
-        dto.groups = landscape.getGroups();
-        return dto;
-    }
-
     public List<Entry> getMessages() {
         return messages;
-    }
-
-    @JsonProperty
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public String getError() {
-        if (exception == null)
-            return null;
-
-        return exception.getMessage();
     }
 
     @JsonIgnore
@@ -115,6 +93,12 @@ public class ProcessLog {
         public Entry(String level, String message) {
             this.level = level;
             this.message = message;
+            this.date = LocalDateTime.now();
+        }
+
+        public Entry(String level, ProcessingException e) {
+            this.level = level;
+            this.message = e.getMessage();
             this.date = LocalDateTime.now();
         }
     }

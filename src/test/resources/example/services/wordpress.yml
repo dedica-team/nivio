@@ -17,6 +17,7 @@ items:
   visibility: public
   tags:
   - CMS
+  - UI
   networks:
   - content
   machine: s
@@ -30,7 +31,7 @@ items:
       message: uses outdated version
     - label: stability
       status: green
-    - label: business_capability
+    - label: capability
       status: yellow
       message: needs finer control of content publishing like ACLs
   interfaces:
@@ -53,7 +54,7 @@ items:
     type: dataflow
   - description: reminder
     target: emailer
-    type: dataflow
+    type: provider
   providedBy:
   - wordpress-web
   - wordpress-mariadb

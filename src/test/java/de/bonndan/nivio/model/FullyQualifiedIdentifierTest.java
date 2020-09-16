@@ -4,10 +4,43 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import org.junit.jupiter.api.Test;
 
 import static junit.framework.TestCase.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FullyQualifiedIdentifierTest {
+
+    @Test
+    public void testToString() {
+        var fqi1 = FullyQualifiedIdentifier.build(null, "g1", "d1");
+        assertEquals("/g1/d1", fqi1.toString());
+
+        var fqi2 = FullyQualifiedIdentifier.build("l1", "g1", "d1");
+        assertEquals("l1/g1/d1", fqi2.toString());
+
+        var fqi3 = FullyQualifiedIdentifier.build("l1", "g1", null);
+        assertEquals("l1/g1", fqi3.toString());
+
+        var fqi4 = FullyQualifiedIdentifier.build("l1", null, null);
+        assertEquals("l1", fqi4.toString());
+    }
+
+    @Test
+    public void testJsonValue() {
+        var fqi1 = FullyQualifiedIdentifier.build(null, "g1", "d1");
+        assertEquals("", fqi1.jsonValue());
+
+        var fqi2 = FullyQualifiedIdentifier.build("l1", "g1", "d1");
+        assertEquals("l1/g1/d1", fqi2.jsonValue());
+
+        var fqi3 = FullyQualifiedIdentifier.build("l1", "g1", null);
+        assertEquals("l1/g1", fqi3.jsonValue());
+
+        var fqi4 = FullyQualifiedIdentifier.build("l1", null, null);
+        assertEquals("l1", fqi4.jsonValue());
+
+        var fqi5 = FullyQualifiedIdentifier.build("l1", null, "d1");
+        assertEquals("l1/" + Group.COMMON + "/d1", fqi5.jsonValue());
+
+    }
 
     @Test
     public void testEqualsWithGroup() {
@@ -49,24 +82,29 @@ public class FullyQualifiedIdentifierTest {
     }
 
     @Test
-    public void testFrom() {
+    public void fromComplete() {
 
         String three = "a/b/c";
         FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(three);
         assertEquals("a", fqi.getLandscape());
         assertEquals("b", fqi.getGroup());
-        assertEquals("c", fqi.getIdentifier());
+        assertEquals("c", fqi.getItem());
+    }
 
+    @Test
+    public void fromLandscapeAndGroup() {
         String two = "b/c";
-        fqi = FullyQualifiedIdentifier.from(two);
-        assertEquals("", fqi.getLandscape());
-        assertEquals("b", fqi.getGroup());
-        assertEquals("c", fqi.getIdentifier());
-
+        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(two);
+        assertEquals("b", fqi.getLandscape());
+        assertEquals("c", fqi.getGroup());
+        assertNull(fqi.getItem());
+    }
+    @Test
+    public void fromLandscape() {
         String one = "c";
-        fqi = FullyQualifiedIdentifier.from(one);
-        assertEquals("", fqi.getLandscape());
-        assertEquals(null, fqi.getGroup());
-        assertEquals("c", fqi.getIdentifier());
+        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(one);
+        assertEquals("c", fqi.getLandscape());
+        assertNull(fqi.getGroup());
+        assertNull(fqi.getItem());
     }
 }

@@ -4,17 +4,21 @@
 div.levelChip {
   background-color: $header-color;
   text-shadow: none;
+  justify-content: flex-start;
+
+  .MuiChip-label {
+    color: $font-color;
+  }
 
   .MuiAvatar-root.info {
-    background-color: lightgray
+    background-color: $info-color;
   }
 
   .MuiAvatar-root.warn {
-    background-color: #ffcf03;
+    background-color: $warn-color;
   }
 
   .MuiAvatar-root.error {
-    background-color: red;
+    background-color: $error-color;
   }
 }
-

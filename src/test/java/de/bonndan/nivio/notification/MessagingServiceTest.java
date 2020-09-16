@@ -2,6 +2,8 @@ package de.bonndan.nivio.notification;
 
 import de.bonndan.nivio.ProcessingEvent;
 import de.bonndan.nivio.ProcessingFinishedEvent;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeImpl;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +29,7 @@ class MessagingServiceTest {
 
     @Test
     void onApplicationEvent() {
-        ProcessingFinishedEvent processingFinishedEvent = new ProcessingFinishedEvent(this, new LandscapeImpl());
+        ProcessingFinishedEvent processingFinishedEvent = new ProcessingFinishedEvent(new LandscapeDescription(), LandscapeFactory.create("test"));
         messagingService.onApplicationEvent(processingFinishedEvent);
 
         verify(tpl).convertAndSend(eq(WebSocketConfig.TOPIC + WebSocketConfig.EVENTS), any(ProcessingFinishedEvent.class));
@@ -36,7 +38,7 @@ class MessagingServiceTest {
     @Test
     void getLast() {
 
-        ProcessingFinishedEvent processingFinishedEvent = new ProcessingFinishedEvent(this, new LandscapeImpl());
+        ProcessingFinishedEvent processingFinishedEvent = new ProcessingFinishedEvent(new LandscapeDescription(), LandscapeFactory.create("test"));
         messagingService.onApplicationEvent(processingFinishedEvent);
 
         ProcessingEvent[] last = messagingService.getLast();

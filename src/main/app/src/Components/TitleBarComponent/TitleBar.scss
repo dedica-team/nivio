@@ -1,31 +1,26 @@
 @import '../../Ressources/styling/colors.scss';
 @import '../../Ressources/styling/font.scss';
 
-
-div.bar {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  height: 1rem;
+.titleBar {
+  margin-top: 16px;
+  margin-bottom: 16px;
 
   .first {
     background-color: $header-color;
     border-top-left-radius: 25px;
     border-bottom-left-radius: 25px;
-    padding: 0;
+  }
+
+  .last {
+    background-color: $header-color;
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
   }
 
   .title {
     font-size: $large-font-size;
-    flex-grow: 1;
     text-transform: uppercase;
     text-align: center;
-    padding: 0;
-    padding-left: 0.3rem;
-    //background-color: darken($header-color, 10%);
-  }
-
-  .item {
-    background-color: $header-color;
-    padding: 0;
+    background-color: darken($header-color, 10%);
   }
 }

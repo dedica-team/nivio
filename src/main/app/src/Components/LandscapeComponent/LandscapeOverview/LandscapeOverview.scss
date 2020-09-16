@@ -7,50 +7,27 @@
       border-bottom: 1px solid $border-color;
     }
 
-    .floatButton {
-      float: right;
+    .noShadow {
+      text-shadow: none;
     }
 
-    .control {
-      background-color: $header-color;
-      color: $font-color;
-      text-transform: uppercase;
-      text-shadow: 0 0 10px $text-shadow-color;
-      box-shadow: 0px 0px 12px $box-shadow-color;
-      border: 1px solid $border-color;
-      cursor: pointer;
+    .previewItem {
+      .preview {
+        border: 1px solid $border-color;
+        padding: 16px;
+      }
     }
 
-    .bar {
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-      height: 1rem;
-
-      .first {
-        background-color: $header-color;
-        border-top-left-radius: 25px;
-        border-bottom-left-radius: 25px;
-        padding: 0;
-      }
-
-      .title {
-        font-size: $large-font-size;
-        flex-grow: 1;
-        text-transform: uppercase;
-        text-align: center;
-        padding: 0;
-        padding-left: 0.3rem;
-        //background-color: darken($header-color, 10%);
-      }
-
-      .item {
-        background-color: $header-color;
-        padding: 0;
-      }
-
-      .no-item {
-        padding: 0;
-        border-left: 1px solid black;
+    .infoContainer {
+      .infoContent {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-top: 11px;
+        .identifier,
+        .teams {
+          padding-top: 11px;
+        }
       }
     }
   }

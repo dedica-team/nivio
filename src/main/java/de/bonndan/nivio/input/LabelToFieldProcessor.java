@@ -3,6 +3,8 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Link;
+import de.bonndan.nivio.model.Linked;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -14,6 +16,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Inspects item description labels for keys starting with "nivio" and tries to set the corresponding values to fields.
@@ -31,12 +35,19 @@ public class LabelToFieldProcessor {
 
     public void process(LandscapeDescription input, LandscapeImpl landscape) {
         input.getItemDescriptions().all().forEach(item -> {
-            item.getLabels().entrySet().stream()
+            List<Map.Entry<String, String>> nivioLabels = item.getLabels().entrySet().stream()
                     .filter(entry -> entry.getKey().toLowerCase().startsWith(NIVIO_LABEL_PREFIX))
-                    .forEach(entry -> {
-                        String field = entry.getKey().substring(LabelToFieldProcessor.NIVIO_LABEL_PREFIX.length());
-                        setValue(item, field, entry.getValue());
-                    });
+                    .collect(Collectors.toList());
+
+            nivioLabels.forEach(entry -> {
+                String field = entry.getKey().substring(LabelToFieldProcessor.NIVIO_LABEL_PREFIX.length());
+                setValue(item, field, entry.getValue());
+            });
+
+            nivioLabels.forEach(entry -> {
+                item.getLabels().remove(entry.getKey());
+            });
+
         });
     }
 
@@ -63,25 +74,35 @@ public class LabelToFieldProcessor {
             }
 
             if (propertyType != null && propertyType.isAssignableFrom(Map.class)) {
-                String[] o = getParts(value);
-                Map propertyValue = (Map) myAccessor.getPropertyValue(name);
-                for (int i = 0; i < o.length; i++) {
-                    if (ItemDescription.LINKS_FIELD.equals(name)) {
-                        try {
-                            propertyValue.put(String.valueOf(i + 1), new URL(o[i]));
-                        } catch (MalformedURLException e) {
-                            logger.warn("Failed to parse link " + o[i]);
+                String[] o = getParts(value); // value is only a list of strings
+                Map<String, Object> propertyValue = (Map<String, Object>) myAccessor.getPropertyValue(name);
+                if (propertyValue != null) {
+                    for (int i = 0; i < o.length; i++) {
+                        if ("links".equals(name)) {
+                            logger.warn("Found deprecated label named links.");
+                            try {
+                                propertyValue.put(String.valueOf(i + 1), new Link(new URL(o[i])));
+                            } catch (MalformedURLException e) {
+                                logger.warn("Failed to parse link " + o[i]);
+                            }
+                        } else {
+                            propertyValue.put(String.valueOf(i + 1), o[i]);
                         }
-                    } else {
-                        propertyValue.put(String.valueOf(i + 1), o[i]);
                     }
                 }
                 return;
             }
 
-            myAccessor.setPropertyValue(name, value.trim());
+            if (name.startsWith(Linked.LINK_LABEL_PREFIX)) {
+                item.setLink(name.replace(Linked.LINK_LABEL_PREFIX, ""), new URL(value));
+            } else {
+                myAccessor.setPropertyValue(name, value.trim());
+            }
         } catch (NotWritablePropertyException e) {
-            logger.warn("Failed to write field '" + name + "' via label");
+            logger.debug("Failed to write field '" + name + "' via label");
+            item.getLabels().put(name, value);
+        } catch (MalformedURLException e) {
+            logger.warn("Failed to add link '" + name + "' via label because of malformed URL " + value);
         }
     }
 

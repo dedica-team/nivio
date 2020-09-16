@@ -13,8 +13,8 @@ import java.util.Optional;
 public class Color {
 
     public static String DARK = "111111";
-    public static String DARKGRAY = "333333";
-    public static String GRAY = "aaaaaa";
+    public static final String DARKGRAY = "333333";
+    public static final String GRAY = "aaaaaa";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Color.class);
 
@@ -53,7 +53,8 @@ public class Color {
     }
 
     public static String getGroupColor(String name, LandscapeImpl landscape) {
-        return getGroupColor(landscape.getGroups().getOrDefault(name, Group.DEFAULT_GROUP));
+        Group g = landscape.getGroup(name).orElse(landscape.getGroup(Group.COMMON).get());
+        return getGroupColor(g);
     }
 
     public static String getGroupColor(GroupItem group) {

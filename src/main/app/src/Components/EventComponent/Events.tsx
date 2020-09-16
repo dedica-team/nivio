@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Divider } from '@material-ui/core';
+import React, { useState, useEffect, useCallback } from 'react';
 import './Events.scss';
-import TitleBar from "../TitleBarComponent/TitleBar";
-import LevelChip from "../LevelChipComponent/LevelChip";
-interface Data {
-  messages: Entry[];
-}
+import TitleBar from '../TitleBarComponent/TitleBar';
+import LevelChip from '../LevelChipComponent/LevelChip';
+import { get } from '../../utils/API/APIClient';
 
 interface Entry {
   type: string;
@@ -21,31 +18,28 @@ interface Entry {
  *
  */
 const Events: React.FC<{}> = () => {
-  const [data, setData] = useState<Data | null>(null);
+  const [data, setData] = useState<Entry[] | null>(null);
+  const [loadData, setLoadData] = useState<boolean>(true);
+
+  const loadEvents = useCallback(async () => {
+    if (loadData) {
+      setData(await get('/events'));
+      setLoadData(false);
+    }
+  }, [loadData]);
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_BACKEND_URL + '/events')
-      .then((response) => {
-        return response.json();
-      })
-      .then((json) => {
-        setData({ messages: json });
-      });
-  }, []);
+    loadEvents();
+  }, [loadEvents]);
 
-  let content;
-  if (!data) {
-    content = 'loading...';
-  } else {
-    content = data.messages.map((m, i) => {
-      return (
-        <div className={'item'} key={i}>
-          <span className={'date'}>{m.date}</span> <LevelChip level={m.level} title={m.landscape}/> <span className={'tyoe'}>{m.type}</span> {m.message}
-          <Divider />
-        </div>
-      );
-    });
-  }
+  const content = data?.map((m, i) => {
+    return (
+      <div className='item' key={i}>
+        <span className='date'>{m.date}</span> <LevelChip level={m.level} title={m.landscape} />
+        <span className='type'>{m.type}</span> <span className='message'> {m.message}</span>
+      </div>
+    );
+  });
 
   return (
     <div className='events'>

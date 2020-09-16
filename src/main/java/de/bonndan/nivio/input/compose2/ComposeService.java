@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.compose2;
 
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.RelationBuilder;
 
 import java.util.HashSet;
@@ -24,11 +25,14 @@ public class ComposeService {
     /**
      * Transforms into a dto.
      */
-    public ItemDescription toDto() {
+    public ItemDescription getDescription() {
         ItemDescription description = new ItemDescription(identifier);
         if (networks != null) {
-            List<String> nets = networks.stream().map(Network::getName).collect(Collectors.toList());
-            description.setNetworks(new HashSet<>(nets));
+            networks.forEach(network -> description.setLabel(
+                    Label.key(Label.network, network.toString()),
+                    network.getName()
+                    )
+            );
         }
 
         /*
@@ -37,7 +41,7 @@ public class ComposeService {
         if (ports != null) {
             description.setInterfaces(
                     new HashSet<>(
-                        ports.stream().map(InterfaceDescription::new).collect(Collectors.toList())
+                            ports.stream().map(InterfaceDescription::new).collect(Collectors.toList())
                     )
             );
         }
@@ -46,7 +50,6 @@ public class ComposeService {
           link targets become providers
          */
         if (links != null) {
-
             links.forEach(s -> description.addRelation(RelationBuilder.provides(s, description)));
         }
 

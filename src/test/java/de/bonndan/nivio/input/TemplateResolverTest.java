@@ -1,9 +1,12 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.compose2.ItemDescriptionFactoryCompose2;
+import de.bonndan.nivio.input.compose2.InputFormatHandlerCompose2;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
+import de.bonndan.nivio.input.http.HttpService;
+import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
+import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.Tagged;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,10 +19,12 @@ import java.util.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
 
 class TemplateResolverTest {
 
     private TemplateResolver templateResolver;
+    private LandscapeDescriptionFactory factory;
 
     @Mock
     ProcessLog log;
@@ -28,6 +33,8 @@ class TemplateResolverTest {
     public void setup() {
         log = new ProcessLog(LoggerFactory.getLogger(TemplateResolver.class));
         templateResolver = new TemplateResolver();
+        FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
+        factory = new LandscapeDescriptionFactory(fileFetcher);
     }
 
 
@@ -89,11 +96,10 @@ class TemplateResolverTest {
 
         //other values from template
         assertNull(web.getName());
-        assertNull(web.getShortName());
-        assertEquals("Wordpress", web.getSoftware());
-        assertEquals("alphateam", web.getTeam());
+        assertEquals("Wordpress", web.getLabel(Label.software));
+        assertEquals("alphateam", web.getLabel(Label.team));
         assertEquals("alphateam@acme.io", web.getContact());
-        assertEquals(1, web.getTags().length);
+        assertEquals(1, web.getLabels(Tagged.LABEL_PREFIX_TAG).size());
     }
 
     @Test
@@ -105,12 +111,12 @@ class TemplateResolverTest {
 
         ItemDescription redis = landscapeDescription.getItemDescriptions().pick("redis", null);
         assertNotNull(redis);
-        assertNull(redis.getSoftware());
+        assertNull(redis.getLabel(Label.software));
     }
 
     private Map<ItemDescription, List<String>> getTemplates(LandscapeDescription landscapeDescription) {
-        ItemDescriptionFormatFactory ff = new ItemDescriptionFormatFactory(
-                new ArrayList<>(Arrays.asList(ItemDescriptionFactoryNivio.forTesting(), ItemDescriptionFactoryCompose2.forTesting()))
+        InputFormatHandlerFactory ff = new InputFormatHandlerFactory(
+                new ArrayList<>(Arrays.asList(new InputFormatHandlerNivio(new FileFetcher(new HttpService())), InputFormatHandlerCompose2.forTesting()))
         );
         SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(ff, log);
         Map<ItemDescription, List<String>> templateAndTargets = new HashMap<>();
@@ -120,7 +126,9 @@ class TemplateResolverTest {
 
     private LandscapeDescription getLandscapeDescription(String s) {
         File file = new File(RootPath.get() + s);
-        return LandscapeDescriptionFactory.fromYaml(file);
+
+
+        return factory.fromYaml(file);
     }
 
 }

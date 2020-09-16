@@ -1,19 +1,22 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Lifecycle;
-import de.bonndan.nivio.model.RelationItem;
-import de.bonndan.nivio.model.RelationType;
+import de.bonndan.nivio.model.*;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
+import org.springframework.lang.NonNull;
+import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static de.bonndan.nivio.output.map.svg.SvgTagCreator.g;
 
+/**
+ * SVG representation of a relation between items.
+ */
 class SVGRelation extends Component {
 
     public static final String MARKER = "▸";
@@ -21,17 +24,25 @@ class SVGRelation extends Component {
     private final String fill;
     private final RelationItem<Item> relation;
 
-    SVGRelation(HexPath hexPath, String fill, RelationItem<Item> relation) {
+    /**
+     * @param hexPath the calculated best path
+     * @param fill color
+     * @param relation graph edge, source is the item this relation belongs to
+     */
+    SVGRelation(@NonNull HexPath hexPath, @NonNull String fill, @NonNull RelationItem<Item> relation) {
         this.hexPath = hexPath;
+        Objects.requireNonNull(fill);
         this.fill = fill;
         this.relation = relation;
     }
 
     public DomContent render() {
 
-        var fillId = (fill) != null ? "#" + fill : "";
+        var fillId = "#" + fill;
         var stringPath = hexPath.getPoints();
+        boolean isPlanned = Lifecycle.isPlanned(relation.getSource()) || Lifecycle.isPlanned(relation.getTarget());
 
+        //the bezier path is only used to interpolate the "stringPath"
         BezierPath bezierPath = new BezierPath();
         bezierPath.parsePathString(stringPath);
 
@@ -39,13 +50,11 @@ class SVGRelation extends Component {
             ContainerTag path = SvgTagCreator.path()
                     .attr("d", stringPath)
                     .attr("stroke", fillId);
-            if (Lifecycle.PLANNED.equals(relation.getSource().getLifecycle()) || Lifecycle.PLANNED.equals(relation.getTarget().getLifecycle())) {
+            if (isPlanned) {
                 path.attr("stroke-dasharray", 10);
                 path.attr("opacity", 0.7);
             }
-            return g(path, label(bezierPath, fillId))
-                    .attr("data-source", relation.getSource().getFullyQualifiedIdentifier())
-                    .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier());
+            return addAttributes(g(path, label(bezierPath, fillId)), relation);
         }
 
         List<ContainerTag> markers = new ArrayList<>();
@@ -57,7 +66,20 @@ class SVGRelation extends Component {
             markers.add(this.marker(point1, point2, fillId));
         }
 
-        return g(markers.toArray(DomContent[]::new));
+        return addAttributes(
+                g(markers.toArray(DomContent[]::new)),
+                relation
+        );
+    }
+
+    private ContainerTag addAttributes(ContainerTag g, RelationItem<Item> relation) {
+        String type = !StringUtils.isEmpty(relation.getType()) ? relation.getType().name() : "-";
+        g.attr("data-type", type)
+                .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().jsonValue())
+                .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().jsonValue())
+                .attr("class", "relation");
+
+        return g;
     }
 
     private ContainerTag marker(Point2D.Float point, Point2D.Float point2, String fillId) {
@@ -88,8 +110,16 @@ class SVGRelation extends Component {
         return SvgTagCreator.text(text)
                 .attr("x", xOffset)
                 .attr("y", 0)
-                .attr("fill", fillId)
+                .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
                 .attr("transform", transform);
+    }
+
+    public RelationItem<Item> getRelationItem() {
+        return relation;
+    }
+
+    public HexPath getHexPath() {
+        return hexPath;
     }
 }
 

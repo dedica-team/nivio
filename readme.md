@@ -4,7 +4,7 @@
 [![Documentation Status](https://readthedocs.org/projects/nivio/badge/?version=master)](https://nivio.readthedocs.io/en/master/?badge=master)
 
 
- ![renderedArtifact graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/gui.png)
+ ![layoutedArtifact graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/gui.png)
  
 Nivio is application landscape management for teams (developers, operators, managers). It follows a bottom-up no-op 
 approach, i.e. there is no interface for manual data maintenance. It is designed to gather the application landscape
@@ -17,7 +17,7 @@ approach, i.e. there is no interface for manual data maintenance. It is designed
 
 ## Example Graph, Input and Output
 
- ![renderedArtifact graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/graph.png)
+ ![layoutedArtifact graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/graph.png)
 
 ![input output_graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/inout.png)
 
@@ -31,21 +31,54 @@ approach, i.e. there is no interface for manual data maintenance. It is designed
 
 ## Development Setup
 
+**Requirements**
+
+To run nivio you need the following software installed:
+- [nodejs v12.6.2 or higher](https://nodejs.org/en/), [How to update node?](https://www.hostingadvice.com/how-to/update-node-js-latest-version/)
+- [Maven](https://maven.apache.org/install.html)
+- Java 11
+
+---
+
+**Docker Setup (Linux)**
+
 Clone nivio, build and run a Docker image:
 
     git clone https://github.com/dedica-team/nivio.git && cd nivio
     mvn clean package
     docker build -t nivio:latest .
-    docker run -e SEED=/tmp/inout.yml --mount type=bind,source="$(pwd)"/src/test/resources/example,target=/tmp -p 8080:8080 nivio:latest
+    docker run -e SEED=/tmp/nivio/inout.yml --mount type=bind,source="$(pwd)"/src/test/resources/example,target=/tmp/nivio -p 8080:8080 nivio:latest
     
   then open http://localhost:8080
   
-https://medium.com/@itzgeoff/including-react-in-your-spring-boot-maven-build-ae3b8f8826e
-   * install nvm oder node > 5
+**Docker Setup (Windows)**
  
-https://www.hostingadvice.com/how-to/update-node-js-latest-version/
-
-   nvm install v10.16.3
-   cd src/main/app
-   npm install -g yarn
+  Clone nivio, build and run a Docker image:
+  
+      git clone https://github.com/dedica-team/nivio.git && cd nivio
+      mvn clean package
+      docker build -t nivio:latest .
+      docker run -e SEED=//tmp/nivio/inout.yml --mount type=bind,source="C:\<your>\<path>\<to>\nivio\src\test\resources\example",target=/tmp/nivio -p 8080:8080 nivio:latest
+      
+   then open http://localhost:8080
+   
+   (Note: the double slashes at the beginning of the path for the SEED environment variable work as a fix to make MSYS/MinGW consoles
+   *not* translate the `/tmp` path to a local DOS path. This is safe to use with the PowerShell. Further reading: https://stackoverflow.com/a/14189687/10000398)
+   
+   ---
  
+**Development Setup (IntelliJ)**
+ 
+ Create a Spring Boot Configuration in IntelliJ that looks like this:
+ 
+  ![Spring Boot Config](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/SpringConfig.png)
+  
+  If you need a clean build you can run 
+  
+    mvn clean package
+  
+  You can use your own configuration files, if you add SEED=/path/to/config as an environment variable.
+  
+  Open http://localhost:8080
+  
+  If you want to contribute to our frontend, read further into our [Frontend Readme](https://github.com/dedica-team/nivio/tree/develop/src/main/app)
