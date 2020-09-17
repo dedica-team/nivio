@@ -26,12 +26,12 @@ public interface Assessable extends Component {
         List<StatusValue> statusValues = new ArrayList<>(getAdditionalStatusValues());
         getChildren().forEach(o -> statusValues.add(o.getOverallStatus()));
 
-        StatusValue summary = statusValues.stream()
+        StatusValue max = statusValues.stream()
                 .filter(Objects::nonNull)
                 .max(new StatusValue.Comparator())
                 .orElse(new StatusValue(SUMMARY_LABEL, Status.UNKNOWN));
 
-        return new StatusValue(SUMMARY_LABEL + "." + getIdentifier(), summary.getStatus(), summary.getField());
+        return StatusValue.summary(SUMMARY_LABEL + "." + getIdentifier(), max);
     }
 
     /**

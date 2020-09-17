@@ -39,4 +39,22 @@ class StatusValueTest {
         assertEquals(0, new StatusValue.Comparator().compare(green, green));
         assertEquals(1, new StatusValue.Comparator().compare(red, green));
     }
+
+    @Test
+    void isNotSummary() {
+        StatusValue statusValue = new StatusValue("security", Status.BROWN, "epically broken");
+        assertFalse(statusValue.isSummary());
+    }
+
+
+    @Test
+    void summary() {
+        StatusValue summary = StatusValue.summary("foo.bar", new StatusValue("security", Status.BROWN, "epically broken"));
+        assertNotNull(summary);
+        assertEquals("foo.bar", summary.getField());
+        assertEquals("epically broken", summary.getMessage());
+        assertEquals(Status.BROWN, summary.getStatus());
+        assertEquals("security", summary.getMaxField());
+        assertTrue(summary.isSummary());
+    }
 }

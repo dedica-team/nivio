@@ -22,6 +22,8 @@ public class StatusValue {
     private final String field;
     private final Status status;
     private final String message;
+    private final boolean summary;
+    private final String maxField;
 
     /**
      * Turns a map of strings indexed by (KPI-)field into StatusValue objects.
@@ -49,6 +51,21 @@ public class StatusValue {
         return statusValues;
     }
 
+    /**
+     * Creates a summary status value.
+     *
+     * @param field composed field name
+     * @param max max/highest status value
+     * @return summary
+     */
+    public static StatusValue summary(@NonNull String field, @NonNull StatusValue max) {
+
+        if (StringUtils.isEmpty(field)) {
+            throw new IllegalArgumentException("Status value has no field");
+        }
+        return new StatusValue(field, max.getStatus(), max.getMessage(), max.getField());
+    }
+
     public StatusValue(@NonNull String field, @Nullable Status status, @Nullable String message) {
         if (StringUtils.isEmpty(field)) {
             throw new IllegalArgumentException("Status value has no field");
@@ -60,6 +77,23 @@ public class StatusValue {
         }
         this.status = status;
         this.message = message;
+        this.summary = false;
+        this.maxField = null;
+    }
+
+    private StatusValue(String field, Status status, String message, String maxField) {
+        if (StringUtils.isEmpty(field)) {
+            throw new IllegalArgumentException("Status value has no field");
+        }
+        this.field = field;
+
+        if (status == null) {
+            status = Status.UNKNOWN;
+        }
+        this.status = status;
+        this.message = message;
+        this.summary = true;
+        this.maxField = maxField;
     }
 
     public StatusValue(@NonNull String field, Status status) {
@@ -76,6 +110,10 @@ public class StatusValue {
 
     public String getMessage() {
         return message;
+    }
+
+    public boolean isSummary() {
+        return summary;
     }
 
     /**
@@ -109,6 +147,10 @@ public class StatusValue {
             return field.equals(((StatusValue) obj).field);
         }
         return false;
+    }
+
+    public String getMaxField() {
+        return maxField;
     }
 
     public static class Comparator implements java.util.Comparator<StatusValue> {
