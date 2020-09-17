@@ -34,8 +34,10 @@ const LandscapeAssessment: React.FC<Props> = ({
     get(`/api/${fullyQualifiedIdentifier}`).then((group) => {
       if (isGroup) {
         setGroup(group);
+        setItem(null);
       } else {
         setItem(group);
+        setGroup(null);
       }
     });
 
@@ -55,7 +57,7 @@ const LandscapeAssessment: React.FC<Props> = ({
     if (group && assessmentGroup) {
       if (group.items) {
         let assessmentItemColor = 'grey';
-        return (items = group.items.map((item) => {
+        return group.items.map((item) => {
           [assessmentItemColor] = getAssessmentColorAndMessage(
             assessmentGroup[item.fullyQualifiedIdentifier],
             item.identifier
@@ -75,7 +77,7 @@ const LandscapeAssessment: React.FC<Props> = ({
               <span className='status' style={{ backgroundColor: assessmentItemColor }}></span>
             </div>
           );
-        }));
+        });
       }
     }
     return [];
@@ -84,7 +86,7 @@ const LandscapeAssessment: React.FC<Props> = ({
   const getItemAssessments = () => {
     if (item && assessmentItem) {
       let assessmentItemColor = 'grey';
-      return (items = assessmentItem.map((item) => {
+      return assessmentItem.map((item) => {
         if (!item.field.includes('summary.')) {
           assessmentItemColor = getAssessmentColor(item);
           return (
@@ -96,7 +98,7 @@ const LandscapeAssessment: React.FC<Props> = ({
           );
         }
         return <React.Fragment key={item.field} />;
-      }));
+      });
     }
     return [];
   };
