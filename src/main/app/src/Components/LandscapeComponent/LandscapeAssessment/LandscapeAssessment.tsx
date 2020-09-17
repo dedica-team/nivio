@@ -4,7 +4,7 @@ import './LandscapeAssessment.scss';
 
 import { IAssessmentProps, IAssessmentResults, IGroup, IItem } from '../../../interfaces';
 import {
-  getAssessmentColorAndMessage,
+  getAssessmentSummaryColorAndMessage,
   getAssessmentColor,
 } from '../../../utils/styling/style-helper';
 
@@ -58,7 +58,7 @@ const LandscapeAssessment: React.FC<Props> = ({
       if (group.items) {
         let assessmentItemColor = 'grey';
         return group.items.map((item) => {
-          [assessmentItemColor] = getAssessmentColorAndMessage(
+          [assessmentItemColor] = getAssessmentSummaryColorAndMessage(
             assessmentGroup[item.fullyQualifiedIdentifier],
             item.identifier
           );

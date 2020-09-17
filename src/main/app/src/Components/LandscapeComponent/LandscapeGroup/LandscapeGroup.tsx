@@ -3,7 +3,7 @@ import { get } from '../../../utils/API/APIClient';
 import './LandscapeGroup.scss';
 
 import { IAssessmentProps, IGroup } from '../../../interfaces';
-import { getAssessmentColorAndMessage } from '../../../utils/styling/style-helper';
+import { getAssessmentSummaryColorAndMessage } from '../../../utils/styling/style-helper';
 
 interface Props {
   fullyQualifiedGroupIdentifier: string;
@@ -40,15 +40,9 @@ const LandscapeGroup: React.FC<Props> = ({
     }
   }, [fullyQualifiedGroupIdentifier]);
 
-  let assessmentColor = 'grey';
-  let labels: ReactElement[] = [];
-  let links: ReactElement[] = [];
-  let items: ReactElement[] = [];
-
-  if (group) {
-    [assessmentColor] = getAssessmentColorAndMessage(assessment, group.identifier);
-
-    if (group.labels) {
+  const getGroupLabels = () => {
+    let labels: ReactElement[] = [];
+    if (group?.labels) {
       Object.keys(group.labels).forEach((key) => {
         if (group && group.labels && group.labels[key]) {
           if (!key.startsWith('icon') && !key.startsWith('status')) {
@@ -63,8 +57,12 @@ const LandscapeGroup: React.FC<Props> = ({
         }
       });
     }
+    return labels;
+  };
 
-    if (group._links) {
+  const getGroupLinks = () => {
+    let links: ReactElement[] = [];
+    if (group?._links) {
       Object.keys(group._links).forEach((key) => {
         if (group && group._links && !key.startsWith('self')) {
           const linkContent = (
@@ -82,9 +80,12 @@ const LandscapeGroup: React.FC<Props> = ({
         }
       });
     }
+    return links;
+  };
 
-    if (group.items) {
-      items = group.items.map((item) => {
+  const getGroupItems = () => {
+    if (group?.items) {
+      return group.items.map((item) => {
         return (
           <span
             className='item'
@@ -100,6 +101,14 @@ const LandscapeGroup: React.FC<Props> = ({
         );
       });
     }
+    return [];
+  };
+
+  if (group) {
+    const [assessmentColor] = getAssessmentSummaryColorAndMessage(assessment, group.identifier);
+    const labels = getGroupLabels();
+    const links = getGroupLinks();
+    const items = getGroupItems();
 
     return (
       <div className='groupContent'>
@@ -148,6 +157,7 @@ const LandscapeGroup: React.FC<Props> = ({
       </div>
     );
   }
+
   return (
     <div className='groupError'>
       <span className='errorMessage'>Error Loading Group</span>

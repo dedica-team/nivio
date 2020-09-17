@@ -4,7 +4,7 @@ import { get } from '../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import { IAssessmentProps, IItem } from '../../interfaces';
-import { getAssessmentColorAndMessage } from '../../utils/styling/style-helper';
+import { getAssessmentSummaryColorAndMessage } from '../../utils/styling/style-helper';
 import Button from '@material-ui/core/Button';
 
 import './Search.scss';
@@ -36,7 +36,7 @@ const SearchResult: React.FC<Props> = ({ item, findItem }) => {
   }, [item]);
 
   if (item) {
-    [assesmentColor] = getAssessmentColorAndMessage(assessment, item.identifier);
+    [assesmentColor] = getAssessmentSummaryColorAndMessage(assessment, item.identifier);
   }
 
   if (item?.relations && item.relations.length) {

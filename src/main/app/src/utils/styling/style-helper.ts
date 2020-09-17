@@ -1,6 +1,6 @@
 import { IAssessmentProps } from '../../interfaces';
 
-export const getAssessmentColorAndMessage = (
+export const getAssessmentSummaryColorAndMessage = (
   assessmentResults: IAssessmentProps[] | null,
   itemIdentifier: string
 ): string[] => {

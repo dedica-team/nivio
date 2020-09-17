@@ -3,7 +3,7 @@ import { get } from '../../../utils/API/APIClient';
 import './LandscapeItem.scss';
 
 import { IItem, IAssessmentProps } from '../../../interfaces';
-import { getAssessmentColorAndMessage } from '../../../utils/styling/style-helper';
+import { getAssessmentSummaryColorAndMessage } from '../../../utils/styling/style-helper';
 
 interface Props {
   fullyQualifiedItemIdentifier: string;
@@ -41,7 +41,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
   let relations: ReactElement[] = [];
 
   if (item) {
-    [assessmentColor] = getAssessmentColorAndMessage(assessment, item.identifier);
+    [assessmentColor] = getAssessmentSummaryColorAndMessage(assessment, item.identifier);
 
     if (item.labels) {
       Object.keys(item.labels).forEach((key) => {

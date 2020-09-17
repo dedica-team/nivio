@@ -3,7 +3,7 @@ import React, { ReactElement, MouseEvent } from 'react';
 import Grid from '@material-ui/core/Grid';
 import './LandscapeDashboard.scss';
 import { ILandscape, IItem, IAssessment, IGroup } from '../../../interfaces';
-import { getAssessmentColorAndMessage } from '../../../utils/styling/style-helper';
+import { getAssessmentSummaryColorAndMessage } from '../../../utils/styling/style-helper';
 
 import Search from '../../SearchComponent/Search';
 
@@ -48,14 +48,17 @@ const LandscapeDashboardLayout: React.FC<Props> = ({
         let groupAssessmentColor = defaultColor;
         if (assessments) {
           const assesmentResults = assessments.results[group.fullyQualifiedIdentifier];
-          [groupAssessmentColor] = getAssessmentColorAndMessage(assesmentResults, group.identifier);
+          [groupAssessmentColor] = getAssessmentSummaryColorAndMessage(
+            assesmentResults,
+            group.identifier
+          );
         }
         const items: ReactElement[] = group.items.map((item) => {
           let assessmentColor = defaultColor;
           let assessmentMessage = '';
           if (assessments) {
             const assesmentResults = assessments.results[item.fullyQualifiedIdentifier];
-            [assessmentColor, assessmentMessage] = getAssessmentColorAndMessage(
+            [assessmentColor, assessmentMessage] = getAssessmentSummaryColorAndMessage(
               assesmentResults,
               item.identifier
             );
