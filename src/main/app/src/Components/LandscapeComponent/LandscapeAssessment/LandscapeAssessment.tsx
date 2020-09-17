@@ -16,7 +16,7 @@ interface Props {
 }
 
 /**
- * Returns all assesments of a given group if informations are available
+ * Returns all assesments of a given group or item if informations are available
  */
 const LandscapeAssessment: React.FC<Props> = ({
   fullyQualifiedIdentifier,
@@ -50,33 +50,60 @@ const LandscapeAssessment: React.FC<Props> = ({
       });
     }
   }, [fullyQualifiedIdentifier, isGroup]);
-  let items: ReactElement[] = [];
 
-  if (isGroup && group && assessmentGroup) {
-    if (group.items) {
-      let assessmentItemColor = 'grey';
-      items = group.items.map((item) => {
-        [assessmentItemColor] = getAssessmentColorAndMessage(
-          assessmentGroup[item.fullyQualifiedIdentifier],
-          item.identifier
-        );
-        return (
-          <div key={item.fullyQualifiedIdentifier} className='item'>
-            <span
-              className='itemTitle'
-              onClick={() => {
-                if (findItem) {
-                  findItem(item.fullyQualifiedIdentifier);
-                }
-              }}
-            >
-              {item.name || item.identifier}
-            </span>
-            <span className='status' style={{ backgroundColor: assessmentItemColor }}></span>
-          </div>
-        );
-      });
+  const getGroupAssessments = () => {
+    if (group && assessmentGroup) {
+      if (group.items) {
+        let assessmentItemColor = 'grey';
+        return (items = group.items.map((item) => {
+          [assessmentItemColor] = getAssessmentColorAndMessage(
+            assessmentGroup[item.fullyQualifiedIdentifier],
+            item.identifier
+          );
+          return (
+            <div key={item.fullyQualifiedIdentifier} className='item'>
+              <span
+                className='itemTitle'
+                onClick={() => {
+                  if (findItem) {
+                    findItem(item.fullyQualifiedIdentifier);
+                  }
+                }}
+              >
+                {item.name || item.identifier}
+              </span>
+              <span className='status' style={{ backgroundColor: assessmentItemColor }}></span>
+            </div>
+          );
+        }));
+      }
     }
+    return [];
+  };
+
+  const getItemAssessments = () => {
+    if (item && assessmentItem) {
+      let assessmentItemColor = 'grey';
+      return (items = assessmentItem.map((item) => {
+        if (!item.field.includes('summary.')) {
+          assessmentItemColor = getAssessmentColor(item);
+          return (
+            <div key={item.field} className='item'>
+              <span className='assessmentTitle'>{item.field}</span>
+              <span className='itemMessage'>{item.message}</span>
+              <span className='status' style={{ backgroundColor: assessmentItemColor }}></span>
+            </div>
+          );
+        }
+        return <React.Fragment key={item.field} />;
+      }));
+    }
+    return [];
+  };
+
+  let items: ReactElement[] = isGroup ? getGroupAssessments() : getItemAssessments();
+
+  if (items.length) {
     return (
       <div className='assessmentContent'>
         <div className='header'>
@@ -88,56 +115,20 @@ const LandscapeAssessment: React.FC<Props> = ({
               }
             }}
           >
+            {item ? item.name || item.identifier : null}
             {group ? group.name || group.identifier : null}
           </span>
         </div>
-
-        {items.length ? (
-          <div className='itemsContent'>
-            <div className='items'>
-              <div className='item'>
-                <span className='itemLabel'>Item</span>
-                <span className='statusLabel'>Status</span>
-              </div>
-              {items}
+        <div className='itemsContent'>
+          <div className='items'>
+            <div className='item'>
+              <span className='itemLabel'>KPI</span>
+              {item ? <span className='itemLabel'>Message</span> : null}
+              <span className='statusLabel'>Status</span>
             </div>
+            {items}
           </div>
-        ) : null}
-      </div>
-    );
-  }
-  if (!isGroup && item && assessmentItem) {
-    let assessmentItemColor = 'grey';
-    items = assessmentItem.map((item) => {
-      if (!item.field.includes('summary.')) {
-        assessmentItemColor = getAssessmentColor(item);
-        return (
-          <div key={item.field} className='item'>
-            <span className='assessmentTitle'>{item.field}</span>
-            <span className='itemMessage'>{item.message}</span>
-            <span className='status' style={{ backgroundColor: assessmentItemColor }}></span>
-          </div>
-        );
-      }
-      return <React.Fragment key={item.field} />;
-    });
-    return (
-      <div className='assessmentContent'>
-        <div className='header'>
-          <span className='title'>{item.name || item.identifier}</span>
         </div>
-        {items.length ? (
-          <div className='itemsContent'>
-            <div className='items'>
-              <div className='item'>
-                <span className='itemLabel'>KPI</span>
-                <span className='itemLabel'>Message</span>
-                <span className='statusLabel'>Status</span>
-              </div>
-              {items}
-            </div>
-          </div>
-        ) : null}
       </div>
     );
   }
