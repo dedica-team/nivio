@@ -3,7 +3,12 @@ import { get } from '../../../utils/API/APIClient';
 import './LandscapeItem.scss';
 
 import { IItem, IAssessmentProps } from '../../../interfaces';
-import { getAssessmentSummaryColorAndMessage } from '../../../utils/styling/style-helper';
+import {
+  getLabels,
+  getLinks,
+  getRelations,
+  getAssessmentSummaryColorAndMessage,
+} from '../LandscapeUtils/utils';
 
 interface Props {
   fullyQualifiedItemIdentifier: string;
@@ -17,7 +22,6 @@ interface Props {
  */
 const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem }) => {
   const [item, setItem] = useState<IItem | undefined>();
-
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
 
   useEffect(() => {
@@ -35,87 +39,11 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
     }
   }, [fullyQualifiedItemIdentifier]);
 
-  let assessmentColor = 'grey';
-  let labels: ReactElement[] = [];
-  let links: ReactElement[] = [];
-  let relations: ReactElement[] = [];
-
   if (item) {
-    [assessmentColor] = getAssessmentSummaryColorAndMessage(assessment, item.identifier);
-
-    if (item.labels) {
-      Object.keys(item.labels).forEach((key) => {
-        if (item && item.labels && item.labels[key]) {
-          if (!key.startsWith('icon') && !key.startsWith('status')) {
-            const labelContent = (
-              <span className='labelContent item' key={key}>
-                <span className='label'>{key}: </span>
-                {item.labels[key]}
-              </span>
-            );
-            labels.push(labelContent);
-          }
-        }
-      });
-    }
-
-    if (item._links) {
-      Object.keys(item._links).forEach((key) => {
-        if (item && item._links && !key.startsWith('self')) {
-          const linkContent = (
-            <a
-              href={item._links[key].href}
-              target='_blank'
-              rel='noopener noreferrer'
-              className='link'
-              key={key}
-            >
-              {key}
-            </a>
-          );
-          links.push(linkContent);
-        }
-      });
-    }
-
-    if (item.relations && item.relations.length) {
-      relations = item.relations.map((relation) => {
-        let relationName: string;
-        let groupNameStart: number;
-        if (relation.target.endsWith(item.identifier)) {
-          groupNameStart = relation.source.indexOf('/') + 1;
-          relationName = relation.source.substr(groupNameStart);
-          return (
-            <span
-              className='relation'
-              key={relation.source}
-              onClick={() => {
-                if (findItem) {
-                  findItem(relation.source);
-                }
-              }}
-            >
-              {relationName}
-            </span>
-          );
-        }
-        groupNameStart = relation.target.indexOf('/') + 1;
-        relationName = relation.target.substr(groupNameStart);
-        return (
-          <span
-            className='relation'
-            key={relation.target}
-            onClick={() => {
-              if (findItem) {
-                findItem(relation.target);
-              }
-            }}
-          >
-            {relationName}
-          </span>
-        );
-      });
-    }
+    const [assessmentColor] = getAssessmentSummaryColorAndMessage(assessment, item.identifier);
+    const labels: ReactElement[] = getLabels(item);
+    const links: ReactElement[] = getLinks(item);
+    const relations: ReactElement[] = getRelations(item, findItem);
 
     return (
       <div className='itemContent'>

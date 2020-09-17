@@ -3,10 +3,7 @@ import { get } from '../../../utils/API/APIClient';
 import './LandscapeAssessment.scss';
 
 import { IAssessmentProps, IAssessmentResults, IGroup, IItem } from '../../../interfaces';
-import {
-  getAssessmentSummaryColorAndMessage,
-  getAssessmentColor,
-} from '../../../utils/styling/style-helper';
+import { getAssessmentSummaryColorAndMessage, getAssessmentColor } from '../LandscapeUtils/utils';
 
 interface Props {
   fullyQualifiedIdentifier: string;
@@ -103,7 +100,7 @@ const LandscapeAssessment: React.FC<Props> = ({
     return [];
   };
 
-  let items: ReactElement[] = isGroup ? getGroupAssessments() : getItemAssessments();
+  const items: ReactElement[] = isGroup ? getGroupAssessments() : getItemAssessments();
 
   if (items.length) {
     return (

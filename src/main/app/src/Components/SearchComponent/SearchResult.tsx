@@ -4,7 +4,7 @@ import { get } from '../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import { IAssessmentProps, IItem } from '../../interfaces';
-import { getAssessmentSummaryColorAndMessage } from '../../utils/styling/style-helper';
+import { getAssessmentSummaryColorAndMessage } from '../LandscapeComponent/LandscapeUtils/utils';
 import Button from '@material-ui/core/Button';
 
 import './Search.scss';

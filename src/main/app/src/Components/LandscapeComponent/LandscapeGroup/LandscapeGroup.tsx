@@ -1,9 +1,14 @@
-import React, { useEffect, useState, ReactElement } from 'react';
+import React, { useEffect, useState } from 'react';
 import { get } from '../../../utils/API/APIClient';
 import './LandscapeGroup.scss';
 
 import { IAssessmentProps, IGroup } from '../../../interfaces';
-import { getAssessmentSummaryColorAndMessage } from '../../../utils/styling/style-helper';
+import {
+  getLabels,
+  getLinks,
+  getGroupItems,
+  getAssessmentSummaryColorAndMessage,
+} from '../LandscapeUtils/utils';
 
 interface Props {
   fullyQualifiedGroupIdentifier: string;
@@ -22,7 +27,6 @@ const LandscapeGroup: React.FC<Props> = ({
   findGroup,
 }) => {
   const [group, setGroup] = useState<IGroup | undefined>();
-
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
 
   useEffect(() => {
@@ -40,75 +44,11 @@ const LandscapeGroup: React.FC<Props> = ({
     }
   }, [fullyQualifiedGroupIdentifier]);
 
-  const getGroupLabels = () => {
-    let labels: ReactElement[] = [];
-    if (group?.labels) {
-      Object.keys(group.labels).forEach((key) => {
-        if (group && group.labels && group.labels[key]) {
-          if (!key.startsWith('icon') && !key.startsWith('status')) {
-            const labelContent = (
-              <span className='labelContent group' key={key}>
-                <span className='label'>{key}: </span>
-                {group.labels[key]}
-              </span>
-            );
-            labels.push(labelContent);
-          }
-        }
-      });
-    }
-    return labels;
-  };
-
-  const getGroupLinks = () => {
-    let links: ReactElement[] = [];
-    if (group?._links) {
-      Object.keys(group._links).forEach((key) => {
-        if (group && group._links && !key.startsWith('self')) {
-          const linkContent = (
-            <a
-              href={group._links[key].href}
-              target='_blank'
-              rel='noopener noreferrer'
-              className='link'
-              key={key}
-            >
-              {key}
-            </a>
-          );
-          links.push(linkContent);
-        }
-      });
-    }
-    return links;
-  };
-
-  const getGroupItems = () => {
-    if (group?.items) {
-      return group.items.map((item) => {
-        return (
-          <span
-            className='item'
-            key={item.fullyQualifiedIdentifier}
-            onClick={() => {
-              if (findItem) {
-                findItem(item.fullyQualifiedIdentifier);
-              }
-            }}
-          >
-            {item.identifier}
-          </span>
-        );
-      });
-    }
-    return [];
-  };
-
   if (group) {
     const [assessmentColor] = getAssessmentSummaryColorAndMessage(assessment, group.identifier);
-    const labels = getGroupLabels();
-    const links = getGroupLinks();
-    const items = getGroupItems();
+    const labels = getLabels(group);
+    const links = getLinks(group);
+    const items = getGroupItems(group, findItem);
 
     return (
       <div className='groupContent'>

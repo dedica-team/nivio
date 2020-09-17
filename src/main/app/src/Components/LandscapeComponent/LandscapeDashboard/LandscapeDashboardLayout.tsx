@@ -3,7 +3,7 @@ import React, { MouseEvent } from 'react';
 import Grid from '@material-ui/core/Grid';
 import './LandscapeDashboard.scss';
 import { ILandscape, IItem, IAssessment, IGroup } from '../../../interfaces';
-import { getAssessmentSummaryColorAndMessage } from '../../../utils/styling/style-helper';
+import { getAssessmentSummaryColorAndMessage } from '../LandscapeUtils/utils';
 
 import Search from '../../SearchComponent/Search';
 
