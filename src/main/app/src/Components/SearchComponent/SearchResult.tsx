@@ -19,7 +19,7 @@ interface Props {
  * @param element Choosen SVG Element from our Landscape Component
  */
 const SearchResult: React.FC<Props> = ({ item, findItem }) => {
-  const [assessment, setAssessment] = useState<IAssessmentProps[] | null>(null);
+  const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
 
   let assesmentColor = 'grey';
   let relations: ReactElement[] = [];

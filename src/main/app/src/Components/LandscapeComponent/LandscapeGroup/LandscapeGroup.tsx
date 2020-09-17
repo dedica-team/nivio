@@ -21,9 +21,9 @@ const LandscapeGroup: React.FC<Props> = ({
   findItem,
   findGroup,
 }) => {
-  const [group, setGroup] = useState<IGroup | null>();
+  const [group, setGroup] = useState<IGroup | undefined>();
 
-  const [assessment, setAssessment] = useState<IAssessmentProps[] | null>(null);
+  const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
 
   useEffect(() => {
     get(`/api/${fullyQualifiedGroupIdentifier}`).then((group) => {

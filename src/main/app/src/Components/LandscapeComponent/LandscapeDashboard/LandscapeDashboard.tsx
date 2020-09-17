@@ -18,7 +18,7 @@ const LandscapeDashboard: React.FC = () => {
   const [landscape, setLandscape] = useState<ILandscape | null>();
   const [sliderContent, setSliderContent] = useState<string | ReactElement | null>(null);
   const [showSlider, setShowSlider] = useState(false);
-  const [assessments, setAssessments] = useState<IAssessment | null>(null);
+  const [assessments, setAssessments] = useState<IAssessment | undefined>(undefined);
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
 
   const findItem = (fullyQualifiedItemIdentifier: string) => {

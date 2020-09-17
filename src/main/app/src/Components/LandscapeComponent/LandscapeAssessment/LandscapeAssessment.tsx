@@ -16,7 +16,7 @@ interface Props {
 }
 
 /**
- * Returns all assesments of a given group or item if informations are available
+ * Returns all assessments of a given group or item if informations are available
  */
 const LandscapeAssessment: React.FC<Props> = ({
   fullyQualifiedIdentifier,

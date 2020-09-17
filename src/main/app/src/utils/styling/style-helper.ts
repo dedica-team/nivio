@@ -1,7 +1,7 @@
 import { IAssessmentProps } from '../../interfaces';
 
 export const getAssessmentSummaryColorAndMessage = (
-  assessmentResults: IAssessmentProps[] | null,
+  assessmentResults: IAssessmentProps[] | undefined,
   itemIdentifier: string
 ): string[] => {
   let assessmentColor = 'grey';

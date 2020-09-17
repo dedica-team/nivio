@@ -16,9 +16,9 @@ interface Props {
  * Returns a choosen Landscape Item if informations are available
  */
 const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem }) => {
-  const [item, setItem] = useState<IItem | null>();
+  const [item, setItem] = useState<IItem | undefined>();
 
-  const [assessment, setAssessment] = useState<IAssessmentProps[] | null>(null);
+  const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
 
   useEffect(() => {
     get(`/api/${fullyQualifiedItemIdentifier}`).then((item) => {
