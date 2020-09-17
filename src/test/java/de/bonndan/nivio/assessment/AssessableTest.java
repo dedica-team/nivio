@@ -4,6 +4,8 @@ import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;
 
@@ -20,12 +22,13 @@ class AssessableTest {
         var child2 = new TestAssessable(null);
         child2.setStatusValue(new StatusValue("test2", Status.GREEN));
         var parent = new TestAssessable(List.of(child1, child2));
-        parent.setStatusValue(new StatusValue("test3", Status.RED));
+        parent.setStatusValue(new StatusValue("test3", Status.RED, "worst"));
 
         StatusValue summary = parent.getOverallStatus();
         assertNotNull(summary);
         assertEquals(Status.RED, summary.getStatus());
-        assertEquals("test3", summary.getMessage());
+        assertEquals("worst", summary.getMessage());
+        assertEquals("test3", summary.getMaxField());
     }
 
     @Test
@@ -52,7 +55,7 @@ class AssessableTest {
 
         StatusValue summary = parent.getOverallStatus();
         assertNotNull(summary);
-        assertEquals("summary.test", summary.getMessage());
+        assertEquals("summary.test", summary.getMaxField());
         assertEquals(Status.YELLOW, summary.getStatus());
     }
 
@@ -83,6 +86,39 @@ class AssessableTest {
 
         assertDoesNotThrow(() -> parent.applyKPIs(kpis));
     }
+
+    @Test
+    public void withItem() {
+        Item item = new Item("foo", "bar");
+        item.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
+        item.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
+
+        Map<String, KPI> kpis = new HashMap<>();
+        kpis.put("on", new AbstractKPI(component -> null, null) {
+            @Override
+            protected List<StatusValue> getStatusValues(String value, String message) {
+                return new ArrayList<>();
+            }
+        });
+
+        //when
+        Map<FullyQualifiedIdentifier, List<StatusValue>> assessmentMap = item.applyKPIs(kpis);
+
+        //then
+        assertNotNull(assessmentMap);
+        List<StatusValue> itemStatuses = assessmentMap.get(item.getFullyQualifiedIdentifier());
+        assertNotNull(itemStatuses);
+        StatusValue statusValue = itemStatuses.stream().filter(statusValue1 -> statusValue1.getField().equals("summary.bar")).findFirst().orElse(null);
+        assertNotNull(statusValue);
+        assertEquals("summary.bar", statusValue.getField());
+
+        StatusValue something = itemStatuses.stream().filter(statusValue1 -> statusValue1.getField().equals("something")).findFirst().orElse(null);
+        assertNotNull(something);
+        assertEquals("something", something.getField());
+        assertEquals(Status.BROWN, something.getStatus());
+        assertEquals("very bad", something.getMessage());
+    }
+
 
     class TestAssessable implements Assessable {
 
