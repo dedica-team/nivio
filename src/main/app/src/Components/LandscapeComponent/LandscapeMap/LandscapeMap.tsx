@@ -43,7 +43,7 @@ const Landscape: React.FC<Props> = () => {
   const [data, setData] = useState('');
   const [renderWithTransition, setRenderWithTransition] = useState(false);
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
-  const { identifier } = useParams();
+  const { identifier } = useParams<{ identifier: string }>();
 
   const findItem = (fullyQualifiedItemIdentifier: string) => {
     const element = document.getElementById(fullyQualifiedItemIdentifier);

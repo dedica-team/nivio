@@ -4,7 +4,7 @@ import { get } from '../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import { IAssessmentProps, IItem } from '../../interfaces';
-import { getAssessmentColorAndMessage } from '../../utils/styling/style-helper';
+import { getAssessmentSummaryColorAndMessage } from '../LandscapeComponent/LandscapeUtils/utils';
 import Button from '@material-ui/core/Button';
 
 import './Search.scss';
@@ -19,7 +19,7 @@ interface Props {
  * @param element Choosen SVG Element from our Landscape Component
  */
 const SearchResult: React.FC<Props> = ({ item, findItem }) => {
-  const [assessment, setAssessment] = useState<IAssessmentProps[] | null>(null);
+  const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
 
   let assesmentColor = 'grey';
   let relations: ReactElement[] = [];
@@ -36,7 +36,7 @@ const SearchResult: React.FC<Props> = ({ item, findItem }) => {
   }, [item]);
 
   if (item) {
-    [assesmentColor] = getAssessmentColorAndMessage(assessment, item.identifier);
+    [assesmentColor] = getAssessmentSummaryColorAndMessage(assessment, item.identifier);
   }
 
   if (item?.relations && item.relations.length) {

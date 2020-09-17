@@ -3,7 +3,7 @@
 
 $dotSize: 50px;
 
-.itemContent {
+.groupContent {
   padding: 16px;
   position: relative;
   overflow: auto;
@@ -36,11 +36,6 @@ $dotSize: 50px;
       right: 50px;
     }
 
-    .icon {
-      max-width: 64px;
-      max-height: 64px;
-    }
-
     .title {
       max-width: 316px;
       text-align: center;
@@ -60,8 +55,7 @@ $dotSize: 50px;
     padding-bottom: 16px;
     border-bottom: 1px solid $border-color;
 
-    .labelContent,
-    .item {
+    .group {
       margin-top: 16px;
     }
 
@@ -82,16 +76,16 @@ $dotSize: 50px;
   }
 
   .linkContent,
-  .relationsContent {
+  .itemsContent {
     margin-top: 16px;
     width: 100%;
     .linkLabel,
-    .relationsLabel {
+    .itemsLabel {
       font-weight: bold;
       font-size: $normal-font-size;
     }
     .links,
-    .relations {
+    .items {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
@@ -101,7 +95,7 @@ $dotSize: 50px;
       border-bottom: 1px solid $border-color;
 
       .link,
-      .relation {
+      .item {
         font-weight: normal;
         color: $font-color;
         text-align: center;
@@ -116,7 +110,7 @@ $dotSize: 50px;
   }
 }
 
-.itemError {
+.groupError {
   margin: 32px;
   display: flex;
   flex-direction: column;
