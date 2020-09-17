@@ -54,8 +54,9 @@ const LandscapeAssessment: React.FC<Props> = ({
     if (group && assessmentGroup) {
       if (group.items) {
         let assessmentItemColor = 'grey';
+        let assessmentMessage = '';
         return group.items.map((item) => {
-          [assessmentItemColor] = getAssessmentSummaryColorAndMessage(
+          [assessmentItemColor, assessmentMessage] = getAssessmentSummaryColorAndMessage(
             assessmentGroup[item.fullyQualifiedIdentifier],
             item.identifier
           );
@@ -71,6 +72,7 @@ const LandscapeAssessment: React.FC<Props> = ({
               >
                 {item.name || item.identifier}
               </span>
+              <span className='itemMessage'>{assessmentMessage}</span>
               <span className='status' style={{ backgroundColor: assessmentItemColor }}></span>
             </div>
           );
@@ -121,8 +123,8 @@ const LandscapeAssessment: React.FC<Props> = ({
         <div className='itemsContent'>
           <div className='items'>
             <div className='item'>
-              <span className='itemLabel'>KPI</span>
-              {item ? <span className='itemLabel'>Message</span> : null}
+              <span className='itemLabel'>{item ? 'KPI' : 'Item'}</span>
+              <span className='itemLabel'>Message</span>
               <span className='statusLabel'>Status</span>
             </div>
             {items}
