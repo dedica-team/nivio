@@ -3,16 +3,12 @@ import { get } from '../../../utils/API/APIClient';
 import './LandscapeItem.scss';
 
 import { IItem, IAssessmentProps } from '../../../interfaces';
-import {
-  getLabels,
-  getLinks,
-  getRelations,
-  getAssessmentSummaryColorAndMessage,
-} from '../LandscapeUtils/utils';
+import { getLabels, getLinks, getRelations, getAssessmentSummary } from '../LandscapeUtils/utils';
 
 interface Props {
   fullyQualifiedItemIdentifier: string;
   findItem?: (fullyQualifiedItemIdentifier: string) => void;
+  onAssessmentClick?: (fullyQualifiedItemIdentifier: string) => void;
   item?: IItem;
   small?: boolean;
 }
@@ -20,7 +16,11 @@ interface Props {
 /**
  * Returns a choosen Landscape Item if informations are available
  */
-const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem }) => {
+const LandscapeItem: React.FC<Props> = ({
+  fullyQualifiedItemIdentifier,
+  findItem,
+  onAssessmentClick,
+}) => {
   const [item, setItem] = useState<IItem | undefined>();
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
 
@@ -40,7 +40,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
   }, [fullyQualifiedItemIdentifier]);
 
   if (item) {
-    const [assessmentColor] = getAssessmentSummaryColorAndMessage(assessment, item.identifier);
+    const [assessmentColor] = getAssessmentSummary(assessment);
     const labels: ReactElement[] = getLabels(item);
     const links: ReactElement[] = getLinks(item);
     const relations: ReactElement[] = getRelations(item, findItem);
@@ -59,7 +59,15 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
           >
             {item ? item.name || item.identifier : null}
           </span>
-          <span className='status' style={{ backgroundColor: assessmentColor }}></span>
+          <span
+            className='status'
+            style={{ backgroundColor: assessmentColor }}
+            onClick={() => {
+              if (onAssessmentClick) {
+                onAssessmentClick(item.fullyQualifiedIdentifier);
+              }
+            }}
+          ></span>
         </div>
         <div className='information'>
           <span className='description item'>

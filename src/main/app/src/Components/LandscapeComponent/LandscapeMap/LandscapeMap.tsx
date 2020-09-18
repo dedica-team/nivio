@@ -20,6 +20,7 @@ import Slider from '../../SliderComponent/Slider';
 import MapRelation from './MapRelation/MapRelation';
 import Search from '../../SearchComponent/Search';
 import { withBasePath } from '../../../utils/API/BasePath';
+import LandscapeAssessment from '../LandscapeAssessment/LandscapeAssessment';
 
 interface Props {
   identifier: string;
@@ -68,10 +69,33 @@ const Landscape: React.FC<Props> = () => {
         <LandscapeItem
           fullyQualifiedItemIdentifier={fullyQualifiedItemIdentifier}
           findItem={findItem}
+          onAssessmentClick={onAssessmentClick}
         />
       );
       setShowSlider(true);
     }
+  };
+
+  const onAssessmentHeaderClick = (fullyQualifiedItemIdentifier: string) => {
+    setSliderContent(
+      <LandscapeItem
+        fullyQualifiedItemIdentifier={fullyQualifiedItemIdentifier}
+        findItem={findItem}
+        onAssessmentClick={onAssessmentClick}
+      />
+    );
+    setShowSlider(true);
+  };
+
+  const onAssessmentClick = (fullyQualifiedItemIdentifier: string) => {
+    setSliderContent(
+      <LandscapeAssessment
+        fullyQualifiedIdentifier={fullyQualifiedItemIdentifier}
+        findItem={onAssessmentHeaderClick}
+        isGroup={false}
+      />
+    );
+    setShowSlider(true);
   };
 
   const onRelationClick = (e: MouseEvent<HTMLElement>) => {

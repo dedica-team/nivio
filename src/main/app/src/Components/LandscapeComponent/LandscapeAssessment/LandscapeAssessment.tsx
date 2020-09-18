@@ -3,7 +3,7 @@ import { get } from '../../../utils/API/APIClient';
 import './LandscapeAssessment.scss';
 
 import { IAssessmentProps, IAssessmentResults, IGroup, IItem } from '../../../interfaces';
-import { getAssessmentSummaryColorAndMessage, getAssessmentColor } from '../LandscapeUtils/utils';
+import { getAssessmentSummary, getAssessmentColor } from '../LandscapeUtils/utils';
 
 interface Props {
   fullyQualifiedIdentifier: string;
@@ -53,12 +53,9 @@ const LandscapeAssessment: React.FC<Props> = ({
   const getGroupAssessments = () => {
     if (group && assessmentGroup) {
       if (group.items) {
-        let assessmentItemColor = 'grey';
-        let assessmentMessage = '';
         return group.items.map((item) => {
-          [assessmentItemColor, assessmentMessage] = getAssessmentSummaryColorAndMessage(
-            assessmentGroup[item.fullyQualifiedIdentifier],
-            item.identifier
+          const [assessmentItemColor, assessmentMessage] = getAssessmentSummary(
+            assessmentGroup[item.fullyQualifiedIdentifier]
           );
           return (
             <div key={item.fullyQualifiedIdentifier} className='item'>
@@ -104,7 +101,7 @@ const LandscapeAssessment: React.FC<Props> = ({
 
   const items: ReactElement[] = isGroup ? getGroupAssessments() : getItemAssessments();
 
-  if (items.length) {
+  if (items.length > 1) {
     return (
       <div className='assessmentContent'>
         <div className='header'>
@@ -113,6 +110,8 @@ const LandscapeAssessment: React.FC<Props> = ({
             onClick={() => {
               if (findGroup && group) {
                 findGroup(group.fullyQualifiedIdentifier);
+              } else if (findItem && item) {
+                findItem(item.fullyQualifiedIdentifier);
               }
             }}
           >
@@ -135,9 +134,23 @@ const LandscapeAssessment: React.FC<Props> = ({
   }
 
   return (
-    <div className='assessmentError'>
-      <span className='errorMessage'>Error Loading Assessments!</span>
-      <span className='errorIdentifier'>{fullyQualifiedIdentifier} does not exist!</span>
+    <div className='assessmentContent'>
+      <div className='header'>
+        <span
+          className='title'
+          onClick={() => {
+            if (findGroup && group) {
+              findGroup(group.fullyQualifiedIdentifier);
+            } else if (findItem && item) {
+              findItem(item.fullyQualifiedIdentifier);
+            }
+          }}
+        >
+          {item ? item.name || item.identifier : null}
+          {group ? group.name || group.identifier : null}
+        </span>
+      </div>
+      <span className='errorMessage'>No Assessments defined or found</span>
     </div>
   );
 };

@@ -113,21 +113,20 @@ export const getGroupItems = (
   return [];
 };
 
-export const getAssessmentSummaryColorAndMessage = (
-  assessmentResults: IAssessmentProps[] | undefined,
-  itemIdentifier: string
+export const getAssessmentSummary = (
+  assessmentResults: IAssessmentProps[] | undefined
 ): string[] => {
   let assessmentColor = 'grey';
   let assessmentMessage = '';
+  let assessmentField = '';
 
   if (assessmentResults) {
-    const result = assessmentResults.find(
-      (assessmentResult) => assessmentResult.field === `summary.${itemIdentifier}`
-    );
+    const result = assessmentResults.find((assessmentResult) => assessmentResult.summary === true);
 
     if (result) {
       if (result.status !== 'UNKNOWN') {
         assessmentColor = result.status;
+        assessmentField = result.maxField || '';
         assessmentMessage = result.message;
       } else {
         assessmentMessage = 'unknown status';
@@ -135,7 +134,7 @@ export const getAssessmentSummaryColorAndMessage = (
     }
   }
 
-  return [assessmentColor, assessmentMessage];
+  return [assessmentColor, assessmentMessage, assessmentField];
 };
 
 export const getAssessmentColor = (assessmentResults: IAssessmentProps): string => {

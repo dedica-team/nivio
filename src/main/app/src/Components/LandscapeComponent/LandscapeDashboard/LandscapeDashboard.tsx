@@ -1,9 +1,9 @@
-import React, { useState, useEffect, ReactElement, MouseEvent } from 'react';
+import React, { useState, useEffect, ReactElement } from 'react';
 import { useParams } from 'react-router-dom';
 
 import LandscapeDashboardLayout from './LandscapeDashboardLayout';
 import Slider from '../../SliderComponent/Slider';
-import { ILandscape, IItem, IAssessment, IGroup } from '../../../interfaces';
+import { ILandscape, IAssessment } from '../../../interfaces';
 import { get } from '../../../utils/API/APIClient';
 import LandscapeItem from '../LandscapeItem/LandscapeItem';
 import LandscapeGroup from '../LandscapeGroup/LandscapeGroup';
@@ -50,31 +50,33 @@ const LandscapeDashboard: React.FC = () => {
     return () => clearTimeout(timeout);
   }, [highlightElement]);
 
-  const onItemClick = (e: MouseEvent<HTMLSpanElement>, item: IItem) => {
+  const onItemClick = (fullyQualifiedItemIdentifier: string) => {
     setSliderContent(
       <LandscapeItem
-        fullyQualifiedItemIdentifier={item.fullyQualifiedIdentifier}
+        fullyQualifiedItemIdentifier={fullyQualifiedItemIdentifier}
         findItem={findItem}
+        onAssessmentClick={onItemAssessmentClick}
       />
     );
     setShowSlider(true);
   };
 
-  const onGroupClick = (e: MouseEvent<HTMLSpanElement>, group: IGroup) => {
+  const onGroupClick = (fullyQualifiedGroupIdentifier: string) => {
     setSliderContent(
       <LandscapeGroup
-        fullyQualifiedGroupIdentifier={group.fullyQualifiedIdentifier}
+        fullyQualifiedGroupIdentifier={fullyQualifiedGroupIdentifier}
         findItem={findItem}
         findGroup={findGroup}
+        onAssessmentClick={onGroupAssessmentClick}
       />
     );
     setShowSlider(true);
   };
 
-  const onGroupAssessmentClick = (e: MouseEvent<HTMLSpanElement>, group: IGroup) => {
+  const onGroupAssessmentClick = (fullyQualifiedGroupIdentifier: string) => {
     setSliderContent(
       <LandscapeAssessment
-        fullyQualifiedIdentifier={group.fullyQualifiedIdentifier}
+        fullyQualifiedIdentifier={fullyQualifiedGroupIdentifier}
         findItem={findItem}
         findGroup={findGroup}
         isGroup={true}
@@ -83,11 +85,11 @@ const LandscapeDashboard: React.FC = () => {
     setShowSlider(true);
   };
 
-  const onItemAssessmentClick = (e: MouseEvent<HTMLSpanElement>, item: IItem) => {
+  const onItemAssessmentClick = (fullyQualifiedItemIdentifier: string) => {
     setSliderContent(
       <LandscapeAssessment
-        fullyQualifiedIdentifier={item.fullyQualifiedIdentifier}
-        findGroup={findGroup}
+        fullyQualifiedIdentifier={fullyQualifiedItemIdentifier}
+        findItem={findItem}
         isGroup={false}
       />
     );

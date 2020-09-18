@@ -3,19 +3,13 @@ import { get } from '../../../utils/API/APIClient';
 import './LandscapeGroup.scss';
 
 import { IAssessmentProps, IGroup } from '../../../interfaces';
-import {
-  getLabels,
-  getLinks,
-  getGroupItems,
-  getAssessmentSummaryColorAndMessage,
-} from '../LandscapeUtils/utils';
+import { getLabels, getLinks, getGroupItems, getAssessmentSummary } from '../LandscapeUtils/utils';
 
 interface Props {
   fullyQualifiedGroupIdentifier: string;
   findItem?: (fullyQualifiedGroupIdentifier: string) => void;
   findGroup?: (fullyQualifiedGroupIdentifier: string) => void;
-  group?: IGroup;
-  small?: boolean;
+  onAssessmentClick?: (fullyQualifiedItemIdentifier: string) => void;
 }
 
 /**
@@ -25,6 +19,7 @@ const LandscapeGroup: React.FC<Props> = ({
   fullyQualifiedGroupIdentifier,
   findItem,
   findGroup,
+  onAssessmentClick,
 }) => {
   const [group, setGroup] = useState<IGroup | undefined>();
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
@@ -45,7 +40,7 @@ const LandscapeGroup: React.FC<Props> = ({
   }, [fullyQualifiedGroupIdentifier]);
 
   if (group) {
-    const [assessmentColor] = getAssessmentSummaryColorAndMessage(assessment, group.identifier);
+    const [assessmentColor] = getAssessmentSummary(assessment);
     const labels = getLabels(group);
     const links = getLinks(group);
     const items = getGroupItems(group, findItem);
@@ -63,7 +58,15 @@ const LandscapeGroup: React.FC<Props> = ({
           >
             {group ? group.name || group.identifier : null}
           </span>
-          <span className='status' style={{ backgroundColor: assessmentColor }}></span>
+          <span
+            className='status'
+            style={{ backgroundColor: assessmentColor }}
+            onClick={() => {
+              if (onAssessmentClick) {
+                onAssessmentClick(group.fullyQualifiedIdentifier);
+              }
+            }}
+          ></span>
         </div>
         <div className='information'>
           <span className='description group'>
