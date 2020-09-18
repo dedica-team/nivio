@@ -27,7 +27,7 @@ public class StatusValue {
 
     /**
      * Turns a map of strings indexed by (KPI-)field into StatusValue objects.
-     *
+     * <p>
      * Example:
      * status.foo.status
      * status.foo.message
@@ -55,7 +55,7 @@ public class StatusValue {
      * Creates a summary status value.
      *
      * @param field composed field name
-     * @param max max/highest status value
+     * @param max   max/highest status value
      * @return summary
      */
     public static StatusValue summary(@NonNull String field, @NonNull StatusValue max) {
@@ -93,7 +93,7 @@ public class StatusValue {
         this.status = status;
         this.message = message;
         this.summary = true;
-        this.maxField = maxField;
+        this.maxField = status != Status.UNKNOWN ? maxField : null;
     }
 
     public StatusValue(@NonNull String field, Status status) {
@@ -114,31 +114,6 @@ public class StatusValue {
 
     public boolean isSummary() {
         return summary;
-    }
-
-    /**
-     * Returns a list of status items with highest status.
-     */
-    static List<StatusValue> highestOf(Collection<StatusValue> statuses) {
-
-        final List<StatusValue> highest = new ArrayList<>();
-        statuses.forEach(statusItem -> {
-            if (statusItem == null) {
-                return;
-            }
-
-            if (highest.size() == 0 || highest.get(0).getStatus().equals(statusItem.getStatus())) {
-                highest.add(statusItem);
-                return;
-            }
-
-            if (statusItem.getStatus().isHigherThan(highest.get(0).getStatus())) {
-                highest.clear();
-                highest.add(statusItem);
-            }
-        });
-
-        return highest;
     }
 
     @Override

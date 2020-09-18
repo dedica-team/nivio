@@ -16,25 +16,6 @@ import static de.bonndan.nivio.assessment.StatusValue.SUMMARY_LABEL;
 public interface Assessable extends Component {
 
     /**
-     * Returns the highest status as summary of all {@link StatusValue} and children summaries.
-     *
-     * @return status value, field contains the component identifier, message is the identifier of the highest status value
-     */
-    @JsonIgnore
-    default StatusValue getOverallStatus() {
-
-        List<StatusValue> statusValues = new ArrayList<>(getAdditionalStatusValues());
-        getChildren().forEach(o -> statusValues.add(o.getOverallStatus()));
-
-        StatusValue max = statusValues.stream()
-                .filter(Objects::nonNull)
-                .max(new StatusValue.Comparator())
-                .orElse(new StatusValue(SUMMARY_LABEL, Status.UNKNOWN));
-
-        return StatusValue.summary(SUMMARY_LABEL + "." + getIdentifier(), max);
-    }
-
-    /**
      * Returns pre-set status values not computed by {@link KPI}s.
      * <p>
      * This is only for {@link Assessment} and not for public use, since it only contains static data.
@@ -61,11 +42,16 @@ public interface Assessable extends Component {
     default Map<FullyQualifiedIdentifier, List<StatusValue>> applyKPIs(final Map<String, KPI> kpis) {
         final Map<FullyQualifiedIdentifier, List<StatusValue>> map = new HashMap<>();
 
+        List<StatusValue> childrenValues = new ArrayList<>();
         //apply to children
-        getChildren().stream().map(assessable -> assessable.applyKPIs(kpis)).forEach(map::putAll);
+        getChildren().stream().map(assessable -> assessable.applyKPIs(kpis)).forEach(fullyQualifiedIdentifierListMap -> {
+            map.putAll(fullyQualifiedIdentifierListMap);
+            fullyQualifiedIdentifierListMap.forEach((key, value) -> childrenValues.addAll(value));
+        });
 
         //apply each kpi to his
         FullyQualifiedIdentifier fqi = this.getFullyQualifiedIdentifier();
+        map.putIfAbsent(fqi, new ArrayList<>());
         kpis.forEach((s, kpi) -> {
             if (!kpi.isEnabled()) {
                 return;
@@ -81,12 +67,19 @@ public interface Assessable extends Component {
 
         });
 
-        Set<StatusValue> additionalStatusValues = getAdditionalStatusValues();
-        additionalStatusValues.add(getOverallStatus());
-        if (!map.containsKey(fqi)) {
-            map.put(fqi, new ArrayList<>());
-        }
-        map.get(fqi).addAll(additionalStatusValues);
+        //add preset status values
+        map.get(fqi).addAll(getAdditionalStatusValues());
+
+        childrenValues.addAll(map.get(fqi));
+        map.get(fqi).add(StatusValue.summary(SUMMARY_LABEL + "." + getIdentifier(), getWorst(childrenValues)));
+
         return map;
+    }
+
+    private StatusValue getWorst(List<StatusValue> values) {
+        return values.stream()
+                .filter(Objects::nonNull)
+                .max(new StatusValue.Comparator())
+                .orElse(new StatusValue(SUMMARY_LABEL, Status.UNKNOWN));
     }
 }
