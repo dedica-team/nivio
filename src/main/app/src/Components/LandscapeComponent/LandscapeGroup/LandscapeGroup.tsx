@@ -3,12 +3,7 @@ import { get } from '../../../utils/API/APIClient';
 import './LandscapeGroup.scss';
 
 import { IAssessmentProps, IGroup } from '../../../interfaces';
-import {
-  getLabels,
-  getLinks,
-  getGroupItems,
-  getAssessmentSummaryColorAndMessage,
-} from '../LandscapeUtils/utils';
+import { getLabels, getLinks, getGroupItems, getAssessmentSummary } from '../LandscapeUtils/utils';
 
 interface Props {
   fullyQualifiedGroupIdentifier: string;
@@ -45,7 +40,7 @@ const LandscapeGroup: React.FC<Props> = ({
   }, [fullyQualifiedGroupIdentifier]);
 
   if (group) {
-    const [assessmentColor] = getAssessmentSummaryColorAndMessage(assessment, group.identifier);
+    const [assessmentColor] = getAssessmentSummary(assessment);
     const labels = getLabels(group);
     const links = getLinks(group);
     const items = getGroupItems(group, findItem);

@@ -159,6 +159,8 @@ export interface IAssessmentProps {
   field: string;
   status: string;
   message: string;
+  maxField?: string;
+  summary: boolean;
 }
 
 export interface INotificationMessage {

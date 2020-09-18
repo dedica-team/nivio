@@ -3,7 +3,7 @@ import React, { MouseEvent } from 'react';
 import Grid from '@material-ui/core/Grid';
 import './LandscapeDashboard.scss';
 import { ILandscape, IItem, IAssessment, IGroup } from '../../../interfaces';
-import { getAssessmentSummaryColorAndMessage } from '../LandscapeUtils/utils';
+import { getAssessmentSummary } from '../LandscapeUtils/utils';
 
 import Search from '../../SearchComponent/Search';
 
@@ -40,9 +40,8 @@ const LandscapeDashboardLayout: React.FC<Props> = ({
 
   const getItems = (group: IGroup) => {
     return group.items.map((item) => {
-      const [assessmentColor, assessmentMessage] = getAssessmentSummaryColorAndMessage(
-        assessments?.results[item.fullyQualifiedIdentifier],
-        item.identifier
+      const [assessmentColor, , assessmentMessage] = getAssessmentSummary(
+        assessments?.results[item.fullyQualifiedIdentifier]
       );
 
       return (
@@ -78,9 +77,8 @@ const LandscapeDashboardLayout: React.FC<Props> = ({
       return landscape.groups.map((group) => {
         if (group.items.length > 0) {
           const groupColor = `#${group.color}` || 'grey';
-          const [groupAssessmentColor] = getAssessmentSummaryColorAndMessage(
-            assessments?.results[group.fullyQualifiedIdentifier],
-            group.identifier
+          const [groupAssessmentColor] = getAssessmentSummary(
+            assessments?.results[group.fullyQualifiedIdentifier]
           );
 
           const items = getItems(group);

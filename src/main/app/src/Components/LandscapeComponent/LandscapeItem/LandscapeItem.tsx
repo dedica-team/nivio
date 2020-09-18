@@ -3,12 +3,7 @@ import { get } from '../../../utils/API/APIClient';
 import './LandscapeItem.scss';
 
 import { IItem, IAssessmentProps } from '../../../interfaces';
-import {
-  getLabels,
-  getLinks,
-  getRelations,
-  getAssessmentSummaryColorAndMessage,
-} from '../LandscapeUtils/utils';
+import { getLabels, getLinks, getRelations, getAssessmentSummary } from '../LandscapeUtils/utils';
 
 interface Props {
   fullyQualifiedItemIdentifier: string;
@@ -40,7 +35,7 @@ const LandscapeItem: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem
   }, [fullyQualifiedItemIdentifier]);
 
   if (item) {
-    const [assessmentColor] = getAssessmentSummaryColorAndMessage(assessment, item.identifier);
+    const [assessmentColor] = getAssessmentSummary(assessment);
     const labels: ReactElement[] = getLabels(item);
     const links: ReactElement[] = getLinks(item);
     const relations: ReactElement[] = getRelations(item, findItem);
