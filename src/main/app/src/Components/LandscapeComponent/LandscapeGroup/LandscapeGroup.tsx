@@ -9,8 +9,7 @@ interface Props {
   fullyQualifiedGroupIdentifier: string;
   findItem?: (fullyQualifiedGroupIdentifier: string) => void;
   findGroup?: (fullyQualifiedGroupIdentifier: string) => void;
-  group?: IGroup;
-  small?: boolean;
+  onAssessmentClick?: (fullyQualifiedItemIdentifier: string) => void;
 }
 
 /**
@@ -20,6 +19,7 @@ const LandscapeGroup: React.FC<Props> = ({
   fullyQualifiedGroupIdentifier,
   findItem,
   findGroup,
+  onAssessmentClick,
 }) => {
   const [group, setGroup] = useState<IGroup | undefined>();
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
@@ -58,7 +58,15 @@ const LandscapeGroup: React.FC<Props> = ({
           >
             {group ? group.name || group.identifier : null}
           </span>
-          <span className='status' style={{ backgroundColor: assessmentColor }}></span>
+          <span
+            className='status'
+            style={{ backgroundColor: assessmentColor }}
+            onClick={() => {
+              if (onAssessmentClick) {
+                onAssessmentClick(group.fullyQualifiedIdentifier);
+              }
+            }}
+          ></span>
         </div>
         <div className='information'>
           <span className='description group'>

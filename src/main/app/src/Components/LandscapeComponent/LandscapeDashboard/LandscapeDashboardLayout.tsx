@@ -1,8 +1,8 @@
-import React, { MouseEvent } from 'react';
+import React from 'react';
 
 import Grid from '@material-ui/core/Grid';
 import './LandscapeDashboard.scss';
-import { ILandscape, IItem, IAssessment, IGroup } from '../../../interfaces';
+import { ILandscape, IAssessment, IGroup } from '../../../interfaces';
 import { getAssessmentSummary } from '../LandscapeUtils/utils';
 
 import Search from '../../SearchComponent/Search';
@@ -10,10 +10,10 @@ import Search from '../../SearchComponent/Search';
 interface Props {
   landscape: ILandscape | null | undefined;
   assessments: IAssessment | undefined;
-  onItemClick: (e: MouseEvent<HTMLSpanElement>, item: IItem) => void;
-  onGroupClick: (e: MouseEvent<HTMLSpanElement>, group: IGroup) => void;
-  onGroupAssessmentClick: (e: MouseEvent<HTMLSpanElement>, group: IGroup) => void;
-  onItemAssessmentClick: (e: MouseEvent<HTMLSpanElement>, item: IItem) => void;
+  onItemClick: (fullyQualifiedItemIdentifier: string) => void;
+  onGroupClick: (fullyQualifiedGroupIdentifier: string) => void;
+  onGroupAssessmentClick: (fullyQualifiedGroupIdentifier: string) => void;
+  onItemAssessmentClick: (fullyQualifiedItemIdentifier: string) => void;
   findItem: (fullyQualifiedItemIdentifier: string) => void;
 }
 
@@ -53,17 +53,14 @@ const LandscapeDashboardLayout: React.FC<Props> = ({
           >
             <span
               className='statusDot'
-              onClick={(e: MouseEvent<HTMLSpanElement>) => onItemAssessmentClick(e, item)}
+              onClick={() => onItemAssessmentClick(item.fullyQualifiedIdentifier)}
             >
               <span className='statusField'>{assessmentMessage}</span>
             </span>
           </span>
           <div className='itemDescription'>
             <img src={item?.icon} className='icon' alt={'icon'} />
-            <span
-              className='itemName'
-              onClick={(e: MouseEvent<HTMLSpanElement>) => onItemClick(e, item)}
-            >
+            <span className='itemName' onClick={() => onItemClick(item.fullyQualifiedIdentifier)}>
               {item.name || item.identifier}
             </span>
           </div>
@@ -88,7 +85,7 @@ const LandscapeDashboardLayout: React.FC<Props> = ({
               <Grid item className='groupName' style={{ backgroundColor: groupColor }}>
                 <span
                   className='groupLabel'
-                  onClick={(e: MouseEvent<HTMLSpanElement>) => onGroupClick(e, group)}
+                  onClick={() => onGroupClick(group.fullyQualifiedIdentifier)}
                 >
                   {group.name || group.identifier || ''}
                 </span>
@@ -96,7 +93,7 @@ const LandscapeDashboardLayout: React.FC<Props> = ({
                   className='smallDot'
                   id={group.fullyQualifiedIdentifier}
                   style={{ backgroundColor: groupAssessmentColor }}
-                  onClick={(e: MouseEvent<HTMLSpanElement>) => onGroupAssessmentClick(e, group)}
+                  onClick={() => onGroupAssessmentClick(group.fullyQualifiedIdentifier)}
                 ></span>
               </Grid>
               <Grid item className={'items'}>

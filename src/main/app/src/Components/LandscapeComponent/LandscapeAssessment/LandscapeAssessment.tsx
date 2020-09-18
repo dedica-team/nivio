@@ -110,6 +110,8 @@ const LandscapeAssessment: React.FC<Props> = ({
             onClick={() => {
               if (findGroup && group) {
                 findGroup(group.fullyQualifiedIdentifier);
+              } else if (findItem && item) {
+                findItem(item.fullyQualifiedIdentifier);
               }
             }}
           >
