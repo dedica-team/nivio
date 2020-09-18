@@ -54,7 +54,7 @@ const LandscapeAssessment: React.FC<Props> = ({
     if (group && assessmentGroup) {
       if (group.items) {
         return group.items.map((item) => {
-          const [assessmentItemColor, , assessmentMessage] = getAssessmentSummary(
+          const [assessmentItemColor, assessmentMessage] = getAssessmentSummary(
             assessmentGroup[item.fullyQualifiedIdentifier]
           );
           return (
@@ -101,7 +101,7 @@ const LandscapeAssessment: React.FC<Props> = ({
 
   const items: ReactElement[] = isGroup ? getGroupAssessments() : getItemAssessments();
 
-  if (items.length) {
+  if (items.length > 1) {
     return (
       <div className='assessmentContent'>
         <div className='header'>
@@ -134,9 +134,23 @@ const LandscapeAssessment: React.FC<Props> = ({
   }
 
   return (
-    <div className='assessmentError'>
-      <span className='errorMessage'>Error Loading Assessments!</span>
-      <span className='errorIdentifier'>{fullyQualifiedIdentifier} does not exist!</span>
+    <div className='assessmentContent'>
+      <div className='header'>
+        <span
+          className='title'
+          onClick={() => {
+            if (findGroup && group) {
+              findGroup(group.fullyQualifiedIdentifier);
+            } else if (findItem && item) {
+              findItem(item.fullyQualifiedIdentifier);
+            }
+          }}
+        >
+          {item ? item.name || item.identifier : null}
+          {group ? group.name || group.identifier : null}
+        </span>
+      </div>
+      <span className='errorMessage'>No Assessments defined or found</span>
     </div>
   );
 };

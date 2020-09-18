@@ -75,21 +75,8 @@ $smallDotSize: 25px;
       }
     }
   }
-}
-
-.assessmentError {
-  margin: 32px;
-  display: flex;
-  flex-direction: column;
-  width: 400px;
-  height: 200px;
   .errorMessage {
-    color: red;
+    margin: 32px 0px 10px 0px;
     font-size: $large-font-size;
-    text-transform: uppercase;
-  }
-  .errorIdentifier {
-    margin-top: 20px;
-    font-size: $normal-font-size;
   }
 }

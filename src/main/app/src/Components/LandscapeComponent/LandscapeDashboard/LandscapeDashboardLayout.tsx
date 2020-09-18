@@ -40,7 +40,7 @@ const LandscapeDashboardLayout: React.FC<Props> = ({
 
   const getItems = (group: IGroup) => {
     return group.items.map((item) => {
-      const [assessmentColor, , assessmentMessage] = getAssessmentSummary(
+      const [assessmentColor, , assessmentField] = getAssessmentSummary(
         assessments?.results[item.fullyQualifiedIdentifier]
       );
 
@@ -55,7 +55,7 @@ const LandscapeDashboardLayout: React.FC<Props> = ({
               className='statusDot'
               onClick={() => onItemAssessmentClick(item.fullyQualifiedIdentifier)}
             >
-              <span className='statusField'>{assessmentMessage}</span>
+              <span className='statusField'>{assessmentField}</span>
             </span>
           </span>
           <div className='itemDescription'>

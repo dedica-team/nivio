@@ -134,7 +134,7 @@ export const getAssessmentSummary = (
     }
   }
 
-  return [assessmentColor, assessmentField, assessmentMessage];
+  return [assessmentColor, assessmentMessage, assessmentField];
 };
 
 export const getAssessmentColor = (assessmentResults: IAssessmentProps): string => {
