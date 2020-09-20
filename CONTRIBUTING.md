@@ -14,7 +14,7 @@ Here are some important resources:
 ## Testing
 
   * For the backend code we test using Jupiter and sometimes using SpringBootTest or WireMock. Use of AssertJ is encouraged.
-  * The frontend is tested using Jest.
+  * The frontend is tested using Jest and React Testing library.
 
 ## Submitting changes
 
