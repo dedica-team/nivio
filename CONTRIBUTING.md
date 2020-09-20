@@ -10,7 +10,7 @@ Here are some important resources:
   * [Our project roadmap](https://github.com/dedica-team/nivio/projects/1)
   * [Issues](https://github.com/dedica-team/nivio/issues)
   * [Chat](https://dedica-hacktoberfest.slack.com/)
-  * [Readme] both frontend and backend contain readme files (see ./src/main/...)
+  * *Readme* both frontend and backend contain readme files (see ./src/main/...)
 
 ## Testing
 
