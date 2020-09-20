@@ -9,7 +9,8 @@ Here are some important resources:
   * [Contributors](https://github.com/dedica-team/nivio/graphs/contributors) tells you where we are,
   * [Our project roadmap](https://github.com/dedica-team/nivio/projects/1)
   * [Issues](https://github.com/dedica-team/nivio/issues)
-  * [Chat](irc://chat.freenode.net/opengovernment). tbd
+  * [Chat](https://dedica-hacktoberfest.slack.com/)
+  * [Readme] both frontend and backend contain readme files (see ./src/main/...)
 
 ## Testing
 
@@ -20,6 +21,7 @@ Here are some important resources:
 
 Please send a [GitHub Pull Request](https://github.com/opengovernment/opengovernment/pull/new/master) with a clear list of what you've done (read more about [pull requests](http://help.github.com/pull-requests/)). 
 
+  * The *develop* branch is the base for all new features.
   * Always write a clear log message for your commits.
   * Please include the ticket id in commit messages, if possible.
   * Make sure that your contribution is well tested.
