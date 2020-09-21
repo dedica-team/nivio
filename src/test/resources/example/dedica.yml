@@ -40,7 +40,7 @@ items:
       - dedica
 
   - identifier: michelle
-    name: Michelle Fernandez-Bieber
+    name: Michelle Fernandez Bieber
     group: dedica
     fill: https://dedica.team/images/michellefernandezbieber.jpg
     providedBy:
