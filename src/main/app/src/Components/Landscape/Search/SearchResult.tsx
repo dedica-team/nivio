@@ -4,7 +4,7 @@ import { get } from '../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import { IAssessmentProps, IItem } from '../../../interfaces';
-import { getAssessmentSummary } from '../Utils/utils';
+import { getAssessmentSummary, getItemIcon } from '../Utils/utils';
 import Button from '@material-ui/core/Button';
 
 import './Search.scss';
@@ -86,7 +86,7 @@ const SearchResult: React.FC<Props> = ({ item, findItem }) => {
     <Card className={'searchResult'} square={true}>
       <CardContent>
         <div className='header'>
-          <img src={item?.icon} alt='Icon' className='icon' />
+          <img src={getItemIcon(item)} alt='Icon' className='icon' />
           <span
             className='title'
             onClick={() => {

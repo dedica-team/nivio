@@ -3,7 +3,7 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import './Dashboard.scss';
 import { ILandscape, IAssessment, IGroup } from '../../../interfaces';
-import { getAssessmentSummary } from '../Utils/utils';
+import { getAssessmentSummary, getItemIcon } from '../Utils/utils';
 
 import Search from '../Search/Search';
 
@@ -59,7 +59,7 @@ const DashboardLayout: React.FC<Props> = ({
             </span>
           </span>
           <div className='itemDescription'>
-            <img src={item?.icon} className='icon' alt={'icon'} />
+            <img src={getItemIcon(item)} className='icon' alt={'icon'} />
             <span className='itemName' onClick={() => onItemClick(item.fullyQualifiedIdentifier)}>
               {item.name || item.identifier}
             </span>

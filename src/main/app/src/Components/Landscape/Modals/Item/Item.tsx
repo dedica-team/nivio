@@ -3,7 +3,13 @@ import { get } from '../../../../utils/API/APIClient';
 import './Item.scss';
 
 import { IItem, IAssessmentProps } from '../../../../interfaces';
-import { getLabels, getLinks, getRelations, getAssessmentSummary } from '../../Utils/utils';
+import {
+  getLabels,
+  getLinks,
+  getRelations,
+  getAssessmentSummary,
+  getItemIcon,
+} from '../../Utils/utils';
 
 interface Props {
   fullyQualifiedItemIdentifier: string;
@@ -44,7 +50,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem, onAsses
     return (
       <div className='itemContent'>
         <div className='header'>
-          <img src={item?.icon} alt='Icon' className='icon' />
+          <img src={getItemIcon(item)} alt='Icon' className='icon' />
           <span
             className='title'
             onClick={() => {
