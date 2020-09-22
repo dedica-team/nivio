@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
 import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
@@ -85,7 +86,7 @@ public class LayoutedComponent {
 
     public String getFill() {
         if (component instanceof Item) {
-            return ((Item) component).getLabel("fill");
+            return ((Item) component).getLabel(Label.fill);
         }
 
         return null;
