@@ -29,7 +29,7 @@ export const getLabels = (element: IGroup | IItem) => {
   if (element?.labels) {
     Object.keys(element.labels).forEach((key) => {
       if (element && element.labels && element.labels[key]) {
-        if (!key.startsWith('icon') && !key.startsWith('status')) {
+        if (!key.startsWith('icon') && !key.startsWith('status') && !key.startsWith('fill')) {
           const labelContent = (
             <span className='labelContent' key={key}>
               <span className='label'>{key}: </span>
@@ -145,4 +145,8 @@ export const getAssessmentColor = (assessmentResults: IAssessmentProps): string 
   }
 
   return assessmentColor;
+};
+
+export const getItemIcon = (item: IItem) => {
+  return item.labels['fill'] ? item.labels['fill'] : item?.icon;
 };

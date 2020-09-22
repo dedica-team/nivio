@@ -49,6 +49,6 @@ items:
   - identifier: marvin
     name: Marvin Schöning
     group: dedica
-    fill: http://localhost:8080/icons/pp.jpeg
+    fill: http://dedica.team/images/marvinschoening.jpeg
     providedBy:
       - dedica
