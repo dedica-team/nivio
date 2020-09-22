@@ -1,12 +1,12 @@
 import React from 'react';
 import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 
-import LandscapeOverview from './Components/LandscapeComponent/LandscapeOverview/LandscapeOverview';
-import LandscapeMap from './Components/LandscapeComponent/LandscapeMap/LandscapeMap';
-import Man from './Components/ManComponent/Man';
-import Layout from './Components/LayoutComponent/Layout';
-import Events from './Components/EventComponent/Events';
-import LandscapeDashboard from './Components/LandscapeComponent/LandscapeDashboard/LandscapeDashboard';
+import LandscapeOverview from './Components/Landscape/Overview/Overview';
+import LandscapeMap from './Components/Landscape/Map/Map';
+import Man from './Components/Manual/Man';
+import Layout from './Components/Layout/Layout';
+import Events from './Components/Events/Events';
+import LandscapeDashboard from './Components/Landscape/Dashboard/Dashboard';
 import { Routes } from './interfaces';
 
 import './App.scss';
