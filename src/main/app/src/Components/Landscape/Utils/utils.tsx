@@ -148,5 +148,8 @@ export const getAssessmentColor = (assessmentResults: IAssessmentProps): string 
 };
 
 export const getItemIcon = (item: IItem) => {
-  return item.labels['fill'] ? item.labels['fill'] : item?.icon;
+  if (item.labels) {
+    return item.labels['fill'] ? item.labels['fill'] : item.icon;
+  }
+  return item.icon;
 };
