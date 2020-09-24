@@ -54,6 +54,9 @@ const Navigation: React.FC = () => {
           <Button data-testid='EventsButton' component={Link} to={`/events`}>
             Events
           </Button>
+          <Button data-testid='EventsButton' component={Link} to={`/editor`}>
+            Editor
+          </Button>
         </ButtonGroup>
         <div className={classes.grow} />
       </Toolbar>

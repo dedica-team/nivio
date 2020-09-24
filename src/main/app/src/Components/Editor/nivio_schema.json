@@ -1,0 +1,47 @@
+{
+  "$id": "https://dedica.team/nivio.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Nivio DSL",
+  "description": "A landscape configuration",
+  "definitions": {
+    "Item": {
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "string",
+          "description": "Identifier (must be unique in a group)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Common name"
+        },
+        "group": {
+          "type": "string",
+          "description": "The name of the group the item belongs to."
+        }
+      }
+    }
+  },
+  "required": [ "identifier", "items" ],
+  "type": "object",
+  "properties": {
+    "identifier": {
+      "type": "string",
+      "description": "A unique identifier of the landscape"
+    },
+    "description": {
+      "type": "string",
+      "description": "A short description of the landscape"
+    },
+    "contact": {
+      "type": "string",
+      "description": "A contact address, preferably email."
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Item"
+      }
+    }
+  }
+}

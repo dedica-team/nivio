@@ -12,6 +12,7 @@ import { Routes } from './interfaces';
 import './App.scss';
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './Ressources/styling/theme';
+import NivioEditor from "./Components/Editor/NivioEditor";
 
 const App: React.FC = () => {
   return (
@@ -21,6 +22,7 @@ const App: React.FC = () => {
           <Layout>
             <Route exact path='/' component={LandscapeOverview} />
             <Route exact path='/events' component={Events} />
+            <Route exact path='/editor' component={NivioEditor} />
             <Route exact path={Routes.MAP_ROUTE} component={LandscapeMap} />
             <Route exact path='/man/:usage' component={Man} />
             <Route exact path={Routes.DASHBOARD_ROUTE} component={LandscapeDashboard} />
