@@ -83,42 +83,8 @@
         "group": {
           "type": "string",
           "description": "The name of the group the item belongs to."
-        },
-        "icon": {
-          "type": "string",
-          "description": "A URL to "
-        },
-        "color": {
-          "type": "string",
-          "description": "Hex color"
-        },
-        "scale": {
-          "type": "string",
-          "description": "A number representing instances (stored as label)"
-        },
-        "hostType": {
-          "type": "string",
-          "description": "Type of hosting (e.g. docker, stored as label)"
-        },
-        "lifecycle": {
-          "type": "string",
-          "enum": ["planned", "integration", "production", "end_of_life"],
-          "description": "Type of hosting (e.g. docker, stored as label)"
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "A list of strings to be used as tags."
-        },
-        "relations": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Relation"
-          },
-          "description": "A list of strings to be used as tags."
         }
+      }
       },
       "required": ["identifier"]
     }
