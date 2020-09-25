@@ -2,7 +2,7 @@
 
 We are really glad you're reading this, because we need volunteer developers to help this project come to fruition.
 
-If you haven't already, come find us on Slack (tbd). We want you working on things you're excited about.
+If you haven't already, come find us on [Slack](https://dedica-hacktoberfest.slack.com/). We want you working on things you're excited about.
 
 Here are some important resources:
 
