@@ -15,7 +15,7 @@ class ApiController {
 
 ApiController o-- LandscapeRepository
 ApiController o-- LandscapeDescriptionFactory
-ApiController o-- ItemDescriptionFormatFactory
+ApiController o-- InputFormatHandlerFactory
 ApiController o-- Indexer
 
 class LandscapeImpl {
@@ -89,8 +89,10 @@ class LandscapeDescription{
 
 }
 
-class ItemDescriptionFormatFactory {
-    +ItemDescriptionFactory getFactory()
+class InputFormatHandlerFactory {
+This service returns the correct input format (nivio, k8s...) handler for a SourceReference
+--
+    +InputFormatHandler getInputFormatHandler(SourceReference reference)
 }
 
 class Indexer {
@@ -147,16 +149,16 @@ class FileFetcher {
 
 LandscapeDescriptionFactory o-- FileFetcher
 
-interface ItemDescriptionFactory {
+interface InputFormatHandler {
     Processors of input sources must implement this interface
     +List<String> getFormats()
     +List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl)
     {static} void assignNotNull(ItemDescription existing, ItemDescription increment)
 }
 
-ItemDescriptionFormatFactory o-- ItemDescriptionFactory
+InputFormatHandlerFactory o-- InputFormatHandler
 
-class ItemDescriptionFactoryKubernetes {
+class InputFormatHandlerKubernetes {
 (one implementation shown as an example)
 --
     +List<String> getFormats()
@@ -172,7 +174,7 @@ class ItemDescriptionFactoryKubernetes {
     -KubernetesClient getClient(String context)
 }
 
-ItemDescriptionFactory <|--  ItemDescriptionFactoryKubernetes
+InputFormatHandler <|--  InputFormatHandlerKubernetes
 
 
 @enduml
