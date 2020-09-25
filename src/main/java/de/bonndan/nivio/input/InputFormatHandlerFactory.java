@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * This service returns the correct the proper input format (nivio, k8s...) handler for a {@link SourceReference}.
+ * This service returns the correct input format (nivio, k8s...) handler for a {@link SourceReference}.
  */
 @Service
 public class InputFormatHandlerFactory {
