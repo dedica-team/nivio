@@ -131,7 +131,8 @@ public interface Labeled {
             if(labelValue == null) {
                 labelValue = "";
             }
-            byValue.put(key, Map.of(statusOrMessage, labelValue));
+            byValue.putIfAbsent(key, new HashMap<>());
+            byValue.get(key).put(statusOrMessage, labelValue);
         });
         return byValue;
     }

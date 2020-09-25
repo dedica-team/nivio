@@ -1,0 +1,180 @@
+@startuml
+
+class ApiController {
+    +Index index()
+    +ResponseEntity<LandscapeImpl> landscape(String landscapeIdentifier)
+    +ResponseEntity<Group> group(String landscapeIdentifier, String groupIdentifier)
+    +ResponseEntity<Item> item(String landscapeIdentifier, String groupIdentifier, String itemIdentifier)
+    +ProcessLog create(@RequestBody String body)
+    +ProcessLog indexLandscape(String identifier, String format, String body)
+    +ResponseEntity<ProcessLog> log(String identifier)
+    +ResponseEntity<Set<Item>> search(String identifier, String query)
+    +ResponseEntity<List<FacetResult>> facets(String identifier)
+    +ProcessLog reindex(String landscape)
+}
+
+ApiController o-- LandscapeRepository
+ApiController o-- LandscapeDescriptionFactory
+ApiController o-- InputFormatHandlerFactory
+ApiController o-- Indexer
+
+class LandscapeImpl {
+    -String identifier
+    -String name
+    -String contact
+    -String description
+    -String source
+    -ItemIndex items
+    -LandscapeConfig config
+    -Map<String, GroupItem> groups
+    -ProcessLog processLog
+    -Map<String, String> labels
+    -Map<String, Link> links
+    -String owner
+}
+
+class LandscapeConfig {
+    -boolean greedy = true;
+    -LayoutConfig groupLayoutConfig
+    -LayoutConfig itemLayoutConfig
+    -List<String> groupBlacklist
+    -List<String> labelBlacklist
+    -Branding branding
+    -Map<String, KPIConfig> kpis
+}
+
+class LayoutConfig {
+    -Integer maxIterations
+    -Float forceConstantFactor
+    -Float maxDistanceLimitFactor
+    -Float minDistanceLimitFactor
+}
+
+LandscapeImpl o-- LandscapeConfig
+LandscapeConfig o-- LayoutConfig
+
+class LandscapeRepository {
+    +Optional<LandscapeImpl> findDistinctByIdentifier(String identifier)
+    +void save(LandscapeImpl landscape)
+    +Iterable<LandscapeImpl> findAll()
+}
+
+LandscapeRepository o-- LandscapeImpl
+
+class LandscapeDescriptionFactory {
+    +LandscapeDescription from(Landscape landscape)
+    +LandscapeDescription from(URL url)
+    +LandscapeDescription fromYaml(File file)
+    +LandscapeDescription fromString(String yaml, String origin)
+    +LandscapeDescription fromString(String yaml, URL url)
+}
+
+LandscapeDescriptionFactory -- LandscapeDescription
+
+class LandscapeDescription{
+    -String identifier
+    -String name
+    -String contact
+    -String description
+    -String owner
+    -Map<String, ItemDescription> templates
+    -String source
+    -List<SourceReference> sources
+    -ItemDescriptions itemDescriptions
+    -LandscapeConfig config
+    -boolean isPartial
+    -Map<String, GroupItem> groups;
+    -Map<String, Link> links
+    -Map<String, String> labels
+
+}
+
+class InputFormatHandlerFactory {
+This service returns the correct input format (nivio, k8s...) handler for a SourceReference
+--
+    +InputFormatHandler getInputFormatHandler(SourceReference reference)
+}
+
+class Indexer {
+Triggered by ApplicationEvents fired by observing changes in files through the
+FileSourceReferenceObserver
+--
+    -LandscapeRepository landscapeRepo
+    -InputFormatHandlerFactory formatFactory
+    -ApplicationEventPublisher eventPublisher
+    -LocalServer localServer
+    +ProcessLog reIndex(final LandscapeDescription input)
+    -void runResolvers(LandscapeDescription input, ProcessLog logger, LandscapeImpl landscape)
+}
+
+abstract class Resolver {
+    + {abstract} void process(LandscapeDescription input, LandscapeImpl landscape)
+}
+
+Indexer o-- Resolver
+
+class GroupResolver {
+Resolves the groups in the landscape by examining
+item.group names and adds missing (not pre-configured) groups
+--
+    +process(LandscapeDescription input, LandscapeImpl landscape)
+}
+
+class AppearanceResolver {
+Resolves color and icons for Component, the base for
+landscapes, groups and items.
+--
+    +process(LandscapeDescription input, LandscapeImpl landscape)
+}
+
+class AnotherResolver {
+    some more resolvers are:
+    DiffResolver
+    GroupQueryResolver
+    ItemRelationResolver
+    MagicLabelRelations
+}
+
+Resolver <|-- GroupResolver
+Resolver <|-- AppearanceResolver
+Resolver <|-- AnotherResolver
+
+class FileFetcher {
+    +String readFile(File source)
+    +String get(File file)
+    +String get(URL url)
+    +String get(SourceReference ref)
+    +String get(SourceReference ref, URL baseUrl)
+}
+
+LandscapeDescriptionFactory o-- FileFetcher
+
+interface InputFormatHandler {
+    Processors of input sources must implement this interface
+    +List<String> getFormats()
+    +List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl)
+    {static} void assignNotNull(ItemDescription existing, ItemDescription increment)
+}
+
+InputFormatHandlerFactory o-- InputFormatHandler
+
+class InputFormatHandlerKubernetes {
+(one implementation shown as an example)
+--
+    +List<String> getFormats()
+    +List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl)
+    ..
+    -ItemDescription createPodItemDescription(Pod pod)
+    -List<Pod> getPods()
+    -ItemDescription createDescriptionFromService(Service kubernetesService, List<ItemDescription> pods)
+    -List<ItemDescription> createDescriptionsFromPod(Pod pod, ItemDescription podItem)
+    -ItemDescription createVolumeDescription(String group, Volume volume, Pod pod, ItemDescription podItem)
+    -void setConditionsAndHealth(PodStatus status, ItemDescription podItem)
+    -String getGroup(HasMetadata hasMetadata)
+    -KubernetesClient getClient(String context)
+}
+
+InputFormatHandler <|--  InputFormatHandlerKubernetes
+
+
+@enduml

@@ -1,6 +1,8 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.Component;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
 import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
@@ -22,7 +24,6 @@ public class LayoutedComponent {
     public double height = 50;
     private final List<Component> opposites;
     private List<LayoutedComponent> children;
-    private String fill;
 
     public LayoutedComponent(@NonNull Component component, List<Component> opposites) {
         Objects.requireNonNull(component);
@@ -84,11 +85,11 @@ public class LayoutedComponent {
     }
 
     public String getFill() {
-        return fill;
-    }
+        if (component instanceof Item) {
+            return ((Item) component).getLabel(Label.fill);
+        }
 
-    public void setFill(String fill) {
-        this.fill = fill;
+        return null;
     }
 
     @Override

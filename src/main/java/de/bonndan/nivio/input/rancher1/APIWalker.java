@@ -1,7 +1,6 @@
 package de.bonndan.nivio.input.rancher1;
 
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.input.LabelProcessor;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
@@ -9,7 +8,6 @@ import de.bonndan.nivio.model.Label;
 import io.rancher.Rancher;
 import io.rancher.base.TypeCollection;
 import io.rancher.service.ProjectService;
-import io.rancher.service.StackService;
 import io.rancher.type.Project;
 import io.rancher.type.Service;
 import io.rancher.type.Stack;
@@ -158,10 +156,10 @@ class APIWalker {
             //copy all labels
             if (service.getLaunchConfig() != null) {
                 if (service.getLaunchConfig().getLabels() != null) {
-                    service.getLaunchConfig().getLabels().forEach((s, o) -> LabelProcessor.applyLabel(item, s, o));
+                    service.getLaunchConfig().getLabels().forEach(item::setLabel);
                 }
                 if (service.getLaunchConfig().getEnvironment() != null) {
-                    service.getLaunchConfig().getEnvironment().forEach((s, o) -> LabelProcessor.applyLabel(item, s, o));
+                    service.getLaunchConfig().getEnvironment().forEach(item::setLabel);
                 }
             }
 
