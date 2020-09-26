@@ -26,7 +26,7 @@ class SVGDocumentTest  extends RenderingTest {
         assertTrue(svg.contains("<image xlink:href=\"https://dedica.team/images/logo_orange_weiss.png\""));
         assertTrue(svg.contains("class=\"title\">Input and Output</text>"));
         assertTrue(svg.contains("<g class=\"hexagon-group\""));
-        assertTrue(svg.contains("alignment-baseline=\"middle\" text-anchor=\"middle\">Docker Compose files</text>"));
+        assertTrue(svg.contains(">Docker Compose files</text>"));
 
     }
 

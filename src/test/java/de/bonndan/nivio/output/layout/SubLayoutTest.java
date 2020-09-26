@@ -41,13 +41,13 @@ class SubLayoutTest {
         LayoutedComponent one = outerBounds.getChildren().get(0);
         assertNotNull(one);
         assertEquals(bar, one.getComponent());
-        assertEquals(63, Math.round(one.getX()));
-        assertEquals(63, Math.round(one.getY()));
+        assertEquals(75, Math.round(one.getX()));
+        assertEquals(75, Math.round(one.getY()));
 
         LayoutedComponent two = outerBounds.getChildren().get(1);
         assertNotNull(two);
         assertEquals(baz, two.getComponent());
-        assertEquals(-13, Math.round(two.getX()));
-        assertEquals(-13, Math.round(two.getY()));
+        assertEquals(-25, Math.round(two.getX()));
+        assertEquals(-25, Math.round(two.getY()));
     }
 }
