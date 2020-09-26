@@ -68,6 +68,10 @@ public class Hex {
         this.s = s;
     }
 
+    public Hex(int q, int r) {
+        this(q, r, (r + q) * -1);
+    }
+
     /**
      * Creates a hexmap coord representation of the given coordinates.
      *

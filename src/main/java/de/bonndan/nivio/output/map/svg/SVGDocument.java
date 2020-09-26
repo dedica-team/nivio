@@ -27,8 +27,6 @@ import static j2html.TagCreator.rawHtml;
 
 /**
  * Creates an SVG document based on pre-rendered map items.
- *
- *
  */
 public class SVGDocument extends Component {
 
@@ -54,6 +52,7 @@ public class SVGDocument extends Component {
 
         List<DomContent> patterns = new ArrayList<>();
         List<DomContent> items = new ArrayList<>();
+        List<DomContent> background = new ArrayList<>();
         hexMap = new HexMap(this.debug);
 
         //transform all item positions to hex map positions
@@ -86,6 +85,10 @@ public class SVGDocument extends Component {
         AtomicInteger height = new AtomicInteger(0);
         AtomicInteger minX = new AtomicInteger(Integer.MAX_VALUE);
         AtomicInteger minY = new AtomicInteger(Integer.MAX_VALUE);
+        AtomicInteger minQ = new AtomicInteger(Integer.MAX_VALUE);
+        AtomicInteger minR = new AtomicInteger(Integer.MAX_VALUE);
+        AtomicInteger maxQ = new AtomicInteger(Integer.MIN_VALUE);
+        AtomicInteger maxR = new AtomicInteger(Integer.MIN_VALUE);
 
         List<DomContent> groups = layouted.getChildren().stream().map(groupLayout -> {
             Set<Hex> groupArea = hexMap.getGroupArea((Group) groupLayout.getComponent());
@@ -94,22 +97,39 @@ public class SVGDocument extends Component {
             //fix viewport, because xy and hex coordinate system have different offsets
             area.groupArea.forEach(hex -> {
                 var pos = hex.toPixel();
-                if (pos.x < minX.get())
+                if (pos.x < minX.get()) {
                     minX.set((int) pos.x);
+                    minQ.set(hex.q);
+                }
 
-                if (pos.y < minY.get())
+                if (pos.y < minY.get()) {
                     minY.set((int) pos.y);
+                    minR.set(hex.r);
+                }
 
                 //iterate all items to render them and collect max svg dimension
                 // add extra margins size group area is larger than max item positions
-                if (pos.x > width.get())
+                if (pos.x > width.get()) {
                     width.set((int) pos.x);
-                if (pos.y > height.get())
+                    maxQ.set(hex.q);
+                }
+                if (pos.y > height.get()) {
                     height.set((int) pos.y);
+                    maxR.set(hex.r);
+                }
             });
 
             return area.render();
         }).collect(Collectors.toList());
+
+        //render background hexes
+        var i = 0;
+        for (int q = minQ.get(); q <= maxQ.get(); q++) {
+            for (int r = minR.get() - i; r <= (maxR.get() + (maxQ.get())); r++) {
+                background.add(new SVGHex(new Hex(q, r), "none", "#cccccc").render());
+            }
+            i++;
+        }
 
         int paddingTopLeft = 2 * Hex.HEX_SIZE;
 
@@ -143,6 +163,7 @@ public class SVGDocument extends Component {
                 .attr("class", "map")
 
                 .with(logo, title)
+                .with(background)
                 .with(groups)
                 .with(relations.stream().map(SVGRelation::render))
                 .with(items)

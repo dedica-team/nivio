@@ -78,7 +78,7 @@ public class SVGGroupAreaOutlineFactory {
         if (debug) {
             /* old style of multiple hexes*/
             List<DomContent> territoryHexes = groupArea.stream()
-                    .map(hex -> new SVGHex(hex, fillId).render())
+                    .map(hex -> new SVGHex(hex, fillId, fillId).render())
                     .collect(Collectors.toList());
             containerTags.addAll(territoryHexes);
         }
