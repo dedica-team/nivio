@@ -18,11 +18,11 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 class SVGGroupArea extends Component {
 
-    final Group group;
+    private final Group group;
     final Set<Hex> groupArea;
-    private final List<ContainerTag> outlines;
+    private final List<DomContent> outlines;
 
-    SVGGroupArea(Group group, Set<Hex> groupArea, List<ContainerTag> outlines) {
+    SVGGroupArea(Group group, Set<Hex> groupArea, List<DomContent> outlines) {
         this.group = group;
         this.groupArea = groupArea;
         this.outlines = outlines;

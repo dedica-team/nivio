@@ -1,8 +1,13 @@
 package de.bonndan.nivio.output.map.hex;
 
+import org.springframework.lang.NonNull;
+
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 
@@ -37,7 +42,7 @@ public class Hex {
 
     /**
      * q coordinate
-     *
+     * <p>
      * For coords see https://www.redblobgames.com/grids/hexagons/#coordinates
      */
     public final int q;
@@ -113,12 +118,36 @@ public class Hex {
         return (int) Math.round(l);
     }
 
+    @NonNull
     public List<Hex> neighbours() {
         List<Hex> n = new ArrayList<>();
         for (var i = 0; i < DIRECTIONS.size(); i += 1) {
             n.add(neighbour(this, i));
         }
         return n;
+    }
+
+    /**
+     * Return the leftmost (q coord) of the highest (r coord) hexes.
+     *
+     * @param area all hexes in the area
+     * @return
+     */
+    public static Hex topLeft(Collection<Hex> area) {
+        AtomicInteger q = new AtomicInteger(Integer.MAX_VALUE);
+        AtomicInteger r = new AtomicInteger(Integer.MAX_VALUE);
+        AtomicReference<Hex> topLeft = new AtomicReference<>(null);
+        area.forEach(hex -> {
+            if (hex.r < r.get()) {
+                r.set(hex.r);
+                if (topLeft.get() == null || hex.q <= q.get()) {
+                    q.set(hex.q);
+                    topLeft.set(hex);
+                }
+            }
+        });
+
+        return topLeft.get();
     }
 
 

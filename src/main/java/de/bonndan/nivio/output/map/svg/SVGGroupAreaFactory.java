@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
+import j2html.tags.DomContent;
 
 import java.util.List;
 import java.util.Set;
@@ -23,8 +24,9 @@ public class SVGGroupAreaFactory {
         var fill = group.getColor();
         var fillId = fill != null ? "#" + fill : "";
 
-        SVGGroupAreaOutlineFactory svgGroupAreaOutlineFactory = new SVGGroupAreaOutlineFactory(inArea);
-        List<ContainerTag> outlines = svgGroupAreaOutlineFactory.getOutline(fillId);
+        SVGGroupAreaOutlineFactory outlineFactory = new SVGGroupAreaOutlineFactory();
+        outlineFactory.setDebug(true);
+        List<DomContent> outlines = outlineFactory.getOutline(inArea, fillId);
 
         return new SVGGroupArea(group, inArea, outlines);
     }

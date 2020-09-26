@@ -2,163 +2,148 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
+import j2html.tags.DomContent;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Collects all hexes close to group item hexes to create an outline around an area
  */
 public class SVGGroupAreaOutlineFactory {
 
-    private final Set<Hex> processed = new HashSet<>();
-    private final Set<Hex> groupArea;
+    private boolean debug = false;
 
-
-    public SVGGroupAreaOutlineFactory(@NonNull Set<Hex> groupArea) {
-        this.groupArea = Objects.requireNonNull(groupArea);
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 
     @Nullable
-    public List<ContainerTag> getOutline(String fillId) {
+    public List<DomContent> getOutline(@NonNull Set<Hex> groupArea, String fillId) {
 
         if (!groupArea.iterator().hasNext()) {
             return null;
         }
 
-        //filter all which cannot have an outline
-        groupArea.stream().filter(this::completelySurrounded).forEach(processed::add);
+        //find left top
+        //start with left top
+        Hex start = Hex.topLeft(groupArea);
+        List<DomContent> outlines = new ArrayList<>();
+        List<DomContent> pointsPath = getOutline(start, groupArea, fillId);
+        outlines.addAll(pointsPath);
 
-        List<ContainerTag> outlines = new ArrayList<>();
-        while (processed.size() < groupArea.size()) {
-            ContainerTag pointsPath = getContainer(fillId);
-            if (pointsPath != null) {
-                outlines.add(pointsPath);
-            }
-        }
-
-        /* DEBUG path point order
-        List<ContainerTag> markers = new ArrayList<>();
-        int i = 0;
-        for (Point2D.Double aDouble : path) {
-            markers.add(SvgTagCreator.text(i + "")
-                    .attr("x", aDouble.x)
-                    .attr("y", aDouble.y));
-            i++;
-        }
-        territoryHexes.addAll(markers);
-         */
         return outlines;
     }
 
-    private ContainerTag getContainer(String fillId) {
-        LinkedHashSet<Point2D.Double> path = new LinkedHashSet<>();
-        Hex next = findUnprocessed(groupArea);
-        if (next == null)
-            return null;
-        Position start = new Position(next, 0);
+    private List<DomContent> getOutline(@NonNull Hex start, @NonNull Set<Hex> groupArea, String fillId) {
+
+        if (groupArea.containsAll(start.neighbours())) {
+            throw new IllegalArgumentException("Starting point " + start + " for outline is not on border.");
+        }
+        LinkedHashSet<Hex> borderHexes = new LinkedHashSet<>();
+        Position next = new Position(start,0);
         while (next != null) {
-            Position newPos = getPathPointsFor(start, path);
-            start = newPos;
-            if (newPos != null) {
-                next = newPos.hex;
-                if (next != null && !groupArea.contains(next)) {
-                    throw new RuntimeException("Outline algorithm returned a new start hex which is not in group area: " + next);
-                }
-            } else {
-                next = null;
+            //end
+            if (borderHexes.contains(next.hex)) {
+                break;
+            }
+            borderHexes.add(next.hex);
+            next = getNext(next, groupArea);
+        }
+
+        List<Point2D.Double> centers = borderHexes.stream()
+                .map(hex -> hex.toPixel())
+                .collect(Collectors.toList());
+
+        //String pointsPath =WobblyGroupOutline.getPath(corners);
+        String pointsPath = SharpCornersGroupOutline.getPath(centers);
+        //String pointsPath = SmoothCornersGroupOutline.getPath(corners);
+
+        /* DEBUG path point order */
+        List<DomContent> containerTags = new ArrayList<>();
+        if (debug) {
+            int i = 0;
+            for (Point2D.Double aDouble : centers) {
+                containerTags.add(SvgTagCreator.text(i + "")
+                        .attr("x", aDouble.x)
+                        .attr("y", aDouble.y));
+                i++;
             }
         }
 
-        /* old style of multiple hexes
-        List<DomContent> territoryHexes = groupArea.stream()
-                .map(hex -> new SVGHex(hex, fillId).render())
-                .collect(Collectors.toList());
-         */
+        if (debug) {
+            /* old style of multiple hexes*/
+            List<DomContent> territoryHexes = groupArea.stream()
+                    .map(hex -> new SVGHex(hex, fillId).render())
+                    .collect(Collectors.toList());
+            containerTags.addAll(territoryHexes);
+        }
 
-        ArrayList<Point2D.Double> corners = new ArrayList<>(path);
-        //String pointsPath =WobblyGroupOutline.getPath(corners);
-        //String pointsPath = SharpCornersGroupOutline.getPath(corners);
-        String pointsPath = SmoothCornersGroupOutline.getPath(corners);
-        return SvgTagCreator.path()
+
+        ContainerTag svgPath = SvgTagCreator.path()
                 .attr("d", pointsPath)
                 .condAttr(!StringUtils.isEmpty(fillId), "stroke", fillId)
                 .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
                 .condAttr(!StringUtils.isEmpty(fillId), "fill-opacity", String.valueOf(0.1));
-    }
 
-    @Nullable
-    private Hex findUnprocessed(Set<Hex> groupArea) {
-        for (Hex hex : groupArea) {
-            if (!processed.contains(hex))
-                return hex;
-        }
-        return null;
-    }
-
-    private boolean completelySurrounded(Hex hex) {
-        return groupArea.containsAll(hex.neighbours());
+        containerTags.add(svgPath);
+        return containerTags;
     }
 
     /**
-     * @param start hex to find path around and point to start from on circumference of hex
-     * @param path  all group outline segments found so far
+     * @param startPosition hex to find path around and point to start from on circumference of hex
+     * @param allInGroup    all hexes in the group area
      * @return the position to continue with
      */
-    private Position getPathPointsFor(@NonNull Position start, @NonNull LinkedHashSet<Point2D.Double> path) {
+    private Position getNext(@NonNull Position startPosition, Set<Hex> allInGroup) {
 
-        if (processed.contains(start.hex)) {
-            return null;
+        Hex start = startPosition.hex;
+        final List<Hex> neighbours = start.neighbours();
+        if (allInGroup.containsAll(neighbours)) {
+            throw new IllegalArgumentException(String.format("Fully enclosed hex %s passed as starting point.", start));
         }
 
-        final List<Point2D.Double> ownSegments = new ArrayList<>();
-        final List<Point2D.Double> points = start.hex.asPoints(Hex.HEX_SIZE - 1); //-1 prevents overlapping
-        final List<Hex> neighbours = start.hex.neighbours();
-
-        Hex neighbour = null;
-        Point2D.Double currentPoint = null;
-        int i = start.rotationOffset;
         int repeats = 0;
-        for (int neighboursSize = neighbours.size(); i < neighboursSize; i++) {
+        boolean foundFreeSide = false;
+        int neighboursSize = neighbours.size();
 
-            neighbour = neighbours.get(i);
-            currentPoint = points.get(i);
+        for (int i = startPosition.rotationOffset; i < neighboursSize; i++) {
 
-            //not found any segment yet, then continue
-            if (ownSegments.size() == 0 && groupArea.contains(neighbour))
-                continue;
+            Hex neighbour = neighbours.get(i);
 
-            //found a segment because neighbour is free tile
-            if (!groupArea.contains(neighbour)) {
-                ownSegments.add(currentPoint);
-
-                //5 is end, but if the neighbour is free we need to continue
-                if (i == 5 && repeats < 1) {
-                    i = -1; //continue at zero in next cycle
-                    repeats++;
+            //circulate around until we find first free side
+            /*
+            if (!foundFreeSide) {
+                if (!allInGroup.contains(neighbour)) {
+                    foundFreeSide = true;
+                    if (i == 5) i = -1; //took us the whole cycle
                 }
                 continue;
+            }*/
+
+            //return the first group item in rotation direction
+            if (allInGroup.contains(neighbour)) {
+                //Since we rotate clockwise we know that we hex adjacent to both start and neighbour must be free (otherwise
+                //that one would have been returned). Hence the next search should start there.
+                return new Position(neighbour, i - 1);
             }
 
-            // neighbour is in territory, so follow it
-            ownSegments.add(currentPoint);
-            break;
+            //5 is end, but if we're still here we need to do one more round
+            if (i == neighboursSize - 1) {
+                if (repeats < 1) {
+                    i = -1; //continue at zero in next cycle
+                    repeats++;
+                } else {
+                    throw new RuntimeException("Could not pick non-empty neighbor");
+                }
+            }
         }
 
-
-        //have some segments and next
-        path.addAll(ownSegments);
-
-        //add to processed --after a full iteration
-        processed.add(start.hex);
-
-        i = i - 2;
-        if (i < 0)
-            i = 5 + i;
-        return new Position(groupArea.contains(neighbour) ? neighbour : null, i);
+        throw new RuntimeException("getNext starting at " + start + " could not find neighbour to follow " + neighbours);
     }
 
     static class Position {
@@ -166,8 +151,10 @@ public class SVGGroupAreaOutlineFactory {
         final Hex hex;
         private final int rotationOffset;
 
-        Position(@Nullable Hex hex, int rotationOffset) {
+        Position(@NonNull Hex hex, int rotationOffset) {
             this.hex = hex;
+            if (rotationOffset == -1)
+                rotationOffset = 5;
             this.rotationOffset = rotationOffset;
         }
     }

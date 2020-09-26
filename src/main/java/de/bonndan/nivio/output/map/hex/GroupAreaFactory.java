@@ -26,9 +26,9 @@ public class GroupAreaFactory {
      * <p>
      * There is clearly much room for improvement here. It's only that I haven't found a better approach so far.
      *
-     * @param occupied         tiles occupied by items
-     * @param group            the group
-     * @param allVertexHexes   a mapping from item to its hex (all, unfiltered)
+     * @param occupied       tiles occupied by items
+     * @param group          the group
+     * @param allVertexHexes a mapping from item to its hex (all, unfiltered)
      * @return all hexes the group consists of (an area)
      */
     public static Set<Hex> getGroup(Set<Hex> occupied, Group group, Map<LandscapeItem, Hex> allVertexHexes) {
@@ -46,12 +46,15 @@ public class GroupAreaFactory {
             });
 
             Set<Hex> closestNeighbours = getClosestItemsHexes(item, items, allVertexHexes);
+            PathFinder pathFinder = new PathFinder(Set.of()); //we dont care for occupied tiles here
             closestNeighbours.forEach(neighbour -> {
-                PathFinder pathFinder = new PathFinder(Set.of());
                 HexPath path = pathFinder.getPath(hex, neighbour);
-                path.getHexes().stream()
-                        .filter(pathTile -> !occupied.contains(pathTile))
-                        .forEach(inArea::add);
+                Set<Hex> padded = new HashSet<>(); //pad to avoid thin bridges, also workaround for svh outline issue
+                path.getHexes().forEach(pathTile -> {
+                    padded.add(pathTile);
+                    padded.addAll(pathTile.neighbours());
+                });
+                padded.stream().filter(hex1 -> !occupied.contains(hex1)).forEach(hex1 -> inArea.add(hex1));
             });
 
         });
@@ -65,8 +68,8 @@ public class GroupAreaFactory {
     /**
      * Returns all neighbours in group which are the have same (minimum) distance.
      *
-     * @param item the current group item
-     * @param items all group items
+     * @param item           the current group item
+     * @param items          all group items
      * @param allVertexHexes item hex mapping
      * @return the closest neighbours
      */
