@@ -23,7 +23,7 @@ class SVGGroupAreaTest {
         Group group = new Group("group");
         group.addItem(landscapeItem);
 
-        Set<Hex> area = GroupAreaFactory.getGroup(occupied, group, vertexHexes, new ArrayList<>());
+        Set<Hex> area = GroupAreaFactory.getGroup(occupied, group, vertexHexes);
         SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(group, area);
 
         assertTrue(svgGroupArea.render().render().contains("<text x=\"350.0\" y=\"916.217782649107\" font-size=\"24\" text-anchor=\"middle\" class=\"groupLabel\">group</text>"));

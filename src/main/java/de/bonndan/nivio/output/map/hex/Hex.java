@@ -1,7 +1,5 @@
 package de.bonndan.nivio.output.map.hex;
 
-import de.bonndan.nivio.model.Item;
-
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,9 +101,16 @@ public class Hex {
         return new Hex(qi, ri, si);
     }
 
-
+    /**
+     * Returns the distance to the target hex in number of tiles.
+     *
+     * @param target target hex
+     * @return number of tiles
+     */
     public int distance(Hex target) {
-        return lengths(this.subtract(target));
+        Hex hex = this.subtract(target);
+        double l = (Math.abs(hex.q) + Math.abs(hex.r) + Math.abs(hex.s)) / 2.0;
+        return (int) Math.round(l);
     }
 
     public List<Hex> neighbours() {
@@ -143,11 +148,6 @@ public class Hex {
 
     private Hex neighbour(Hex hex, int direction) {
         return add(hex, this.direction(direction));
-    }
-
-    private static Integer lengths(Hex hex) {
-        double l = (Math.abs(hex.q) + Math.abs(hex.r) + Math.abs(hex.s)) / 2.0;
-        return (int) Math.round(l);
     }
 
     private Hex direction(int _direction) {

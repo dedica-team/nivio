@@ -5,7 +5,6 @@ import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.svg.HexPath;
-import org.springframework.lang.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,7 +17,6 @@ public class HexMap {
     private final Set<Hex> occupied = new HashSet<>();
     private final Map<LandscapeItem, Hex> vertexHexes = new HashMap<>();
     private final PathFinder pathFinder;
-    private final List<HexPath> paths = new ArrayList<>();
 
     public HexMap(boolean debug) {
         // find and render relations
@@ -41,7 +39,7 @@ public class HexMap {
 
         Item item = (Item) layoutedItem.getComponent();
         hex.id = item.getFullyQualifiedIdentifier().jsonValue();
-        vertexHexes.put(item, hex); //this is obsolete
+        vertexHexes.put(item, hex);
         occupied.add(hex);
     }
 
@@ -63,16 +61,7 @@ public class HexMap {
      * @return a path if one could be found
      */
     public Optional<HexPath> getPath(Item start, Item target) {
-        Optional<HexPath> optional = Optional.ofNullable(pathFinder.getPath(hexForItem(start), hexForItem(target)));
-
-        optional.ifPresent(hexPath -> {
-            if (start.getGroup() != null && start.getGroup().equals(target.getGroup())) {
-                hexPath.setGroup(start.getGroup());
-            }
-            paths.add(hexPath);
-        });
-
-        return optional;
+        return Optional.ofNullable(pathFinder.getPath(hexForItem(start), hexForItem(target)));
     }
 
     /**
@@ -82,9 +71,6 @@ public class HexMap {
      * @return a set of (adjacent) hexes
      */
     public Set<Hex> getGroupArea(Group group) {
-        List<HexPath> pathsWithinGroup = paths.stream()
-                .filter(hexPath -> hexPath.getGroup().equals(group.getIdentifier()))
-                .collect(Collectors.toList());
-        return GroupAreaFactory.getGroup(occupied, group, vertexHexes, pathsWithinGroup);
+        return GroupAreaFactory.getGroup(occupied, group, vertexHexes);
     }
 }

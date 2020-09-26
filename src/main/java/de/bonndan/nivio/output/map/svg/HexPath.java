@@ -16,10 +16,6 @@ import java.util.List;
  */
 public class HexPath {
 
-    /**
-     * Non-empty if the path is within a group
-     */
-    private String group = "";
     private final List<Hex> hexes;
     private List<Hex> bends = null;
 
@@ -44,20 +40,6 @@ public class HexPath {
         }
         this.tiles = reduced;
          */
-    }
-
-    /**
-     * The group the path runs in.
-     *
-     * @return non-empty if start and destination are within the same group
-     */
-    @NonNull
-    public String getGroup() {
-        return group;
-    }
-
-    public void setGroup(String group) {
-        this.group = group != null ? group : "";
     }
 
     /**
