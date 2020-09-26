@@ -130,7 +130,7 @@ public class Hex {
     /**
      * Return the leftmost (q coord) of the highest (r coord) hexes.
      *
-     * @param area all hexes in the area
+     * @param area all hexes in the area (unsorted)
      * @return
      */
     public static Hex topLeft(Collection<Hex> area) {
@@ -138,9 +138,14 @@ public class Hex {
         AtomicInteger r = new AtomicInteger(Integer.MAX_VALUE);
         AtomicReference<Hex> topLeft = new AtomicReference<>(null);
         area.forEach(hex -> {
+            //higher
             if (hex.r < r.get()) {
                 r.set(hex.r);
-                if (topLeft.get() == null || hex.q <= q.get()) {
+                topLeft.set(hex);
+            }
+
+            if (hex.r == r.get()) {
+                if (topLeft.get() == null || hex.q < q.get()) {
                     q.set(hex.q);
                     topLeft.set(hex);
                 }

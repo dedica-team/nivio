@@ -54,7 +54,7 @@ public class GroupAreaFactory {
                     padded.add(pathTile);
                     padded.addAll(pathTile.neighbours());
                 });
-                padded.stream().filter(hex1 -> !occupied.contains(hex1)).forEach(hex1 -> inArea.add(hex1));
+                padded.stream().filter(hex1 -> !occupied.contains(hex1)).forEach(inArea::add);
             });
 
         });
