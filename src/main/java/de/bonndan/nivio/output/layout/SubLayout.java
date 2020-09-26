@@ -17,7 +17,9 @@ import java.util.Set;
 public class SubLayout {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubLayout.class);
-    public static final int FORCE_CONSTANT = 50;
+
+    //higher means more space between items
+    public static final int FORCE_CONSTANT = 100;
     public static final int MAX_DISTANCE_LIMIT = 200;
 
     private final FastOrganicLayout layout;
