@@ -45,7 +45,7 @@ public class SVGGroupAreaOutlineFactory {
             throw new IllegalArgumentException("Starting point " + start + " for outline is not on border.");
         }
         LinkedHashSet<Hex> borderHexes = new LinkedHashSet<>();
-        Position next = new Position(start,0);
+        Position next = new Position(start, 0);
         while (next != null) {
             //end
             if (borderHexes.contains(next.hex)) {
@@ -56,11 +56,11 @@ public class SVGGroupAreaOutlineFactory {
         }
 
         List<Point2D.Double> centers = borderHexes.stream()
-                .map(hex -> hex.toPixel())
+                .map(Hex::toPixel)
                 .collect(Collectors.toList());
 
-        //String pointsPath =WobblyGroupOutline.getPath(corners);
-        String pointsPath = SharpCornersGroupOutline.getPath(centers);
+        String pointsPath = WobblyGroupOutline.getPath(centers);
+        //String pointsPath = SharpCornersGroupOutline.getPath(centers);
         //String pointsPath = SmoothCornersGroupOutline.getPath(corners);
 
         /* DEBUG path point order */
