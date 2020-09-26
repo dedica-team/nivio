@@ -43,7 +43,8 @@ class SVGItem extends Component {
         Item item = (Item) layoutedComponent.getComponent();
         //use the shortname as text instead
         if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(item.getLabel(Label.shortname))) {
-            content = new SVGLabelText(item.getLabel(Label.shortname), "0", "3", "itemLabel").render();
+            content = new SVGLabelText(item.getLabel(Label.shortname), "0", "3", "itemLabel")
+                    .render().attr("text-anchor", "middle");
             fillId = "white";
             hasText = true;
         }
