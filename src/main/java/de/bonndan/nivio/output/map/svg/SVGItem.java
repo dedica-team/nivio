@@ -43,18 +43,20 @@ class SVGItem extends Component {
         Item item = (Item) layoutedComponent.getComponent();
         //use the shortname as text instead
         if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(item.getLabel(Label.shortname))) {
-            content = new SVGLabelText(item.getLabel(Label.shortname), "0", "3", "item_shortName").render();
+            content = new SVGLabelText(item.getLabel(Label.shortname), "0", "3", "itemLabel").render();
             fillId = "white";
             hasText = true;
         }
 
         DomContent icon = null;
         if (!hasFill && !hasText && !StringUtils.isEmpty(layoutedComponent.getIcon())) {
+            final int size = DEFAULT_ICON_SIZE * 3;
+            final int trans = Math.round(size/2);
             icon = SvgTagCreator.image()
                     .attr("xlink:href", layoutedComponent.getIcon())
-                    .attr("width", DEFAULT_ICON_SIZE * 2)
-                    .attr("height", DEFAULT_ICON_SIZE * 2)
-                    .attr("transform", "translate(-" + DEFAULT_ICON_SIZE  + ",-" + DEFAULT_ICON_SIZE  + ")")
+                    .attr("width", size)
+                    .attr("height", size)
+                    .attr("transform", "translate(-" + trans + ",-" + trans + ")")
             ;
         }
 
