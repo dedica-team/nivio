@@ -59,6 +59,9 @@ public class Hex {
 
     public String id;
 
+    /**
+     * Using this constructor is discouraged, since only q and r are needed.
+     */
     public Hex(int q, int r, int s) {
         if (q + r + s != 0) {
             throw new RuntimeException("q + r + s must be 0");
@@ -68,6 +71,13 @@ public class Hex {
         this.s = s;
     }
 
+    /**
+     * https://www.redblobgames.com/grids/hexagons/implementation.html
+     *
+     * TLDR: q and r and like x and y and sufficient to describe a hex position. s is a third axis orthogonal to q and r.
+     * @param q coordinate
+     * @param r coordinate
+     */
     public Hex(int q, int r) {
         this(q, r, (r + q) * -1);
     }
