@@ -89,4 +89,24 @@ class GroupAreaFactoryTest {
         assertThat(inArea).isEqualTo(expectedTerritory);
     }
 
+    @Test
+    public void doesNotAddUnnecessaryTiles() {
+        Item one = new Item("group", "one");
+        Item two = new Item("group", "two");
+
+        Map<LandscapeItem, Hex> vertexHexes = Map.of(
+                one, new Hex(4, 4),
+                two, new Hex(6, 4)
+        );
+
+        Group group = new Group("group");
+        group.addItem(one);
+        group.addItem(two);
+
+        //when
+        Set<Hex> inArea = GroupAreaFactory.getGroup(Set.of(), group, vertexHexes);
+        assertThat(inArea).doesNotContain(new Hex(5,2));
+        assertThat(inArea).doesNotContain(new Hex(6,2));
+        assertThat(inArea).doesNotContain(new Hex(7,2));
+    }
 }

@@ -25,7 +25,7 @@ public class SVGGroupAreaFactory {
         var fillId = fill != null ? "#" + fill : "";
 
         SVGGroupAreaOutlineFactory outlineFactory = new SVGGroupAreaOutlineFactory();
-        //outlineFactory.setDebug(true);
+        outlineFactory.setDebug(true);
         List<DomContent> outlines = outlineFactory.getOutline(inArea, fillId);
 
         return new SVGGroupArea(group, inArea, outlines);
