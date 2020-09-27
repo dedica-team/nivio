@@ -46,7 +46,9 @@ public class GroupAreaFactory {
             });
 
             Set<Hex> closestNeighbours = getClosestItemsHexes(item, items, allVertexHexes);
-            PathFinder pathFinder = new PathFinder(Set.of()); //we dont care for occupied tiles here
+            // we dont care for occupied tiles here, since we just want the closest item within group, and non-group
+            // items cannot be anywhere nearby (other types of obstacles do not exist yet)
+            PathFinder pathFinder = new PathFinder(Set.of());
             closestNeighbours.forEach(neighbour -> {
                 HexPath path = pathFinder.getPath(hex, neighbour);
                 Set<Hex> padded = new HashSet<>(); //pad to avoid thin bridges, also workaround for svh outline issue

@@ -109,4 +109,24 @@ class GroupAreaFactoryTest {
         assertThat(inArea).doesNotContain(new Hex(6,2));
         assertThat(inArea).doesNotContain(new Hex(7,2));
     }
+
+    @Test
+    public void pathToClosestItemIsPaddedByOneHex() {
+        Item one = new Item("group", "one");
+        Item two = new Item("group", "two");
+
+        Map<LandscapeItem, Hex> vertexHexes = Map.of(
+                one, new Hex(4, 4),
+                two, new Hex(7, 4)
+        );
+
+        Group group = new Group("group");
+        group.addItem(one);
+        group.addItem(two);
+
+        //when
+        Set<Hex> inArea = GroupAreaFactory.getGroup(Set.of(), group, vertexHexes);
+        assertThat(inArea).contains(new Hex(6,3));
+        assertThat(inArea).contains(new Hex(5,5));
+    }
 }
