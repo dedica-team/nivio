@@ -50,9 +50,12 @@ public class GroupAreaFactory {
             // items cannot be anywhere nearby (other types of obstacles do not exist yet)
             PathFinder pathFinder = new PathFinder(Set.of());
             closestNeighbours.forEach(neighbour -> {
-                HexPath path = pathFinder.getPath(hex, neighbour);
+                Optional<HexPath> path = pathFinder.getPath(hex, neighbour);
+                if (path.isEmpty()) {
+                    return;
+                }
                 Set<Hex> padded = new HashSet<>(); //pad to avoid thin bridges, also workaround for svh outline issue
-                path.getHexes().forEach(pathTile -> {
+                path.get().getHexes().forEach(pathTile -> {
                     padded.add(pathTile);
                     padded.addAll(pathTile.neighbours());
                 });

@@ -66,9 +66,9 @@ class PathFinder {
      *
      * @param startHex The start hex of the path
      * @param destHex  The destination hex of the path
-     * @return A list containing all tiles along the path between start and dest
+     * @return A list containing all tiles along the path between start and dest or nothing if no path was found
      */
-    public HexPath getPath(Hex startHex, Hex destHex) {
+    public Optional<HexPath> getPath(Hex startHex, Hex destHex) {
         closed.clear();
         open.clear();
         var start = new Tile(startHex, false);
@@ -183,10 +183,10 @@ class PathFinder {
          * If no path is found return null.
          */
         if (path.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
-        return new HexPath(path.stream().map(tile -> tile.hex).collect(Collectors.toList()));
+        return Optional.of(new HexPath(path.stream().map(tile -> tile.hex).collect(Collectors.toList())));
     }
 
 

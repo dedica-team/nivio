@@ -63,7 +63,7 @@ public class HexMap {
      * @return a path if one could be found
      */
     public Optional<HexPath> getPath(Item start, Item target) {
-        return Optional.ofNullable(pathFinder.getPath(hexForItem(start), hexForItem(target)));
+        return pathFinder.getPath(hexForItem(start), hexForItem(target));
     }
 
     /**
