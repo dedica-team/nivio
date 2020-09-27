@@ -123,6 +123,8 @@ public class Hex {
     /**
      * Returns the distance to the target hex in number of tiles.
      *
+     * https://www.redblobgames.com/grids/hexagons/#distances
+     *
      * @param target target hex
      * @return number of tiles
      */
