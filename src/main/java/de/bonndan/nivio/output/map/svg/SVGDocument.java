@@ -162,8 +162,8 @@ public class SVGDocument extends Component {
                 .attr("viewBox", (minX.get() - paddingTopLeft) + " " + (minY.get() - paddingTopLeft) + " " + (width.get() + viewBoxPadding2) + " " + (height.get() + viewBoxPadding2))
                 .attr("class", "map")
 
-                .with(logo, title)
                 .with(background)
+                .with(logo, title)
                 .with(groups)
                 .with(relations.stream().map(SVGRelation::render))
                 .with(items)
