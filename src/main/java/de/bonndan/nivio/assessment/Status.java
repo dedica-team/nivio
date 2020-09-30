@@ -10,7 +10,7 @@ public enum Status {
     GREEN("green", 1),
     YELLOW("yellow", 2),
     ORANGE("orange", 3),
-    RED("red", 4"),
+    RED("red", 4),
     BROWN("brown", 5);
 
     private final String status;
