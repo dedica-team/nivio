@@ -6,23 +6,19 @@ import org.springframework.util.StringUtils;
 
 public enum Status {
 
-    UNKNOWN("grey", 0, ""),
-    GREEN("green", 1, "checked"),
-    YELLOW("yellow", 2, "warning"),
-    ORANGE("orange", 3, "warning"),
-    RED("red", 4, "flame"),
-    BROWN("brown", 5, "danger");
+    UNKNOWN("grey", 0),
+    GREEN("green", 1),
+    YELLOW("yellow", 2),
+    ORANGE("orange", 3),
+    RED("red", 4"),
+    BROWN("brown", 5);
 
     private final String status;
     private final int order;
 
-    @Deprecated
-    private final String symbol;
-
-    Status(String status, int order, String symbol) {
+    Status(String status, int order) {
         this.status = status;
         this.order = order;
-        this.symbol = symbol;
     }
 
     @JsonCreator
@@ -60,8 +56,4 @@ public enum Status {
         return order > current.order;
     }
 
-    @Deprecated
-    public String getSymbol() {
-        return symbol;
-    }
 }
