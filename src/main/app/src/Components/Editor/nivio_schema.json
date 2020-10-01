@@ -4,6 +4,29 @@
   "title": "Nivio DSL",
   "description": "A landscape configuration",
   "definitions": {
+    "Relation": {
+      "type": "object",
+      "properties": {
+        "target":{
+          "type": "string",
+          "description": "A fully qualified identifier or parts of it (e.g. myservice or mygroup/myservice)"
+        },
+        "format":{
+          "type": "string",
+          "description": "Format of transferred data"
+        },
+        "type":{
+          "type": "string",
+          "enum": ["dataflow", "provider"],
+          "description": "relation type"
+        },
+        "description":{
+          "type": "string",
+          "description": "A brief description"
+        }
+      },
+      "required": ["target"]
+    },
     "Item": {
       "type": "object",
       "properties": {
@@ -15,11 +38,46 @@
           "type": "string",
           "description": "Common name"
         },
+        "contact": {
+          "type": "string",
+          "description": "Contact (preferably email)"
+        },
+        "owner": {
+          "type": "string",
+          "description": "Who is responsible for this item?"
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description"
+        },
         "group": {
           "type": "string",
           "description": "The name of the group the item belongs to."
+        },
+        "icon": {
+          "type": "string",
+          "description": "A URL to "
+        },
+        "color": {
+          "type": "string",
+          "description": "Hex color"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of strings to be used as tags."
+        },
+        "relations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Relation"
+          },
+          "description": "A list of strings to be used as tags."
         }
-      }
+      },
+      "required": ["identifier"]
     }
   },
   "required": [ "identifier", "items" ],
