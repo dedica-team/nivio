@@ -17,7 +17,7 @@ groups:
 items:
   - identifier: seed
     name: SEED
-    description: An environment variable containing a list of urls.
+    description: \"SEED\" is an environment variable containing a list of urls.
     group: start
     relations:
       - target: config
@@ -117,7 +117,10 @@ items:
   - identifier: enrich
     name: enrich data
     group: indexing
+    lifecycle: PLAN
     description: Adds data to item fields from external sources (links)
+    links:
+      issue: https://github.com/dedica-team/nivio/issues/97
     relations:
       - target: graph/graph
 
