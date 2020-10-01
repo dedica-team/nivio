@@ -4,6 +4,7 @@
   "title": "Nivio DSL",
   "description": "A landscape configuration",
   "definitions": {
+
     "Group": {
       "type": "object",
       "properties": {
@@ -76,15 +77,36 @@
           "type": "string",
           "description": "A brief description"
         },
+        "group": {
+          "type": "string",
+          "description": "The name of the group the item belongs to."
+        },
         "note": {
           "type": "string",
           "description": "A note (anything not belonging into the description, like a to-do)"
         },
-        "group": {
+        "icon": {
           "type": "string",
-          "description": "The name of the group the item belongs to."
+          "description": "A URL to "
+        },
+        "color": {
+          "type": "string",
+          "description": "Hex color"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of strings to be used as tags."
+        },
+        "relations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Relation"
+          },
+          "description": "A list of strings to be used as tags."
         }
-      }
       },
       "required": ["identifier"]
     }
