@@ -3,7 +3,6 @@ package de.bonndan.nivio.model;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import org.junit.jupiter.api.Test;
 
-import static junit.framework.TestCase.assertFalse;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FullyQualifiedIdentifierTest {

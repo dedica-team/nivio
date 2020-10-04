@@ -4,7 +4,6 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.LocalServer;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -229,7 +228,7 @@ public class IndexerIntegrationTest {
         LandscapeImpl landscape = index("/src/test/resources/example/example_templates.yml");
 
         LandscapeItem web = landscape.getItems().pick("web", null);
-        Assert.assertNotNull(web);
+        assertNotNull(web);
         assertEquals("web", web.getIdentifier());
         assertEquals("webservice", web.getType());
     }
