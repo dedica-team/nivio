@@ -52,9 +52,9 @@ class AllGroupsLayoutTest {
         assertEquals(landscape, layoutedLandscape.getComponent());
         assertEquals(3, layoutedLandscape.getChildren().size());
 
-        //assert postition is always the game
+        //assert postition is always the same
         assertEquals(240, Math.round(layoutedLandscape.getChildren().get(0).getX()));
-        assertEquals(271, Math.round(layoutedLandscape.getChildren().get(0).getY()));
+        assertEquals(496, Math.round(layoutedLandscape.getChildren().get(0).getY()));
     }
 
     private SubLayout getSubLayout(Group group) {

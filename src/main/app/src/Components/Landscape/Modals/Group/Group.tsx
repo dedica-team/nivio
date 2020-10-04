@@ -72,10 +72,10 @@ const Group: React.FC<Props> = ({
           <span className='description group'>
             {group?.description ? `${group?.description}` : ''}
           </span>
-          <span className='contact group'>
+          { group?.contact ? (<span className='contact group'>
             <span className='label'>Contact: </span>
             {group?.contact || 'No Contact provided'}
-          </span>
+          </span>) : null}
           <span className='owner group'>
             <span className='label'>Owner: </span>
             {group?.owner || 'No Owner provided'}

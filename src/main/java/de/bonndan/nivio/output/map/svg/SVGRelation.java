@@ -58,7 +58,7 @@ class SVGRelation extends Component {
         }
 
         List<ContainerTag> markers = new ArrayList<>();
-        float pieces = bezierPath.path.curveLength / 20;
+        float pieces = bezierPath.path.curveLength / 30;
         float pct = 100 / pieces;
         for (float i = 0; i < 1; i += pct / 100) {
             Point2D.Float point1 = bezierPath.eval(i);
@@ -110,6 +110,7 @@ class SVGRelation extends Component {
         return SvgTagCreator.text(text)
                 .attr("x", xOffset)
                 .attr("y", 0)
+                .attr("font-size", "3em")
                 .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
                 .attr("transform", transform);
     }

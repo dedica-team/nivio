@@ -42,7 +42,7 @@ class PathFinder {
     private Tile getBest() {
 
         Tile tmp = open.get(open.size() - 1);
-        for (int i = open.size() - 1; i >= 1; i--) {
+        for (int i = open.size() - 1; i >= 0; i--) {
 
             // pick the lowest sum of move and heuristic
             if (open.get(i).sumCosts < tmp.sumCosts) {
@@ -56,7 +56,7 @@ class PathFinder {
         }
 
         open.remove(tmp);
-        //LOGGER.debug("returning best tile {} with sumCosts {} and heuristic {}", tmp, tmp.sumCosts, tmp.heuristicCosts);
+        LOGGER.debug("returning best tile {} with sumCosts {} and heuristic {}", tmp, tmp.sumCosts, tmp.heuristicCosts);
 
         return tmp;
     }
@@ -66,9 +66,9 @@ class PathFinder {
      *
      * @param startHex The start hex of the path
      * @param destHex  The destination hex of the path
-     * @return A list containing all tiles along the path between start and dest
+     * @return A list containing all tiles along the path between start and dest or nothing if no path was found
      */
-    public HexPath getPath(Hex startHex, Hex destHex) {
+    public Optional<HexPath> getPath(Hex startHex, Hex destHex) {
         closed.clear();
         open.clear();
         var start = new Tile(startHex, false);
@@ -102,57 +102,56 @@ class PathFinder {
                 break;
             } else if (open.isEmpty()) {
                 break;
-            } else {
+            }
 
-                /*
-                 * Get tile with lowest F cost from openlist.
-                 */
-                currentStep = getBest();
+            /*
+             * Get tile with lowest F cost from openlist.
+             */
+            currentStep = getBest();
 
-                /*
-                 * Add to closed list (tile already part of path).
-                 */
-                closed.add(currentStep);
+            /*
+             * Add to closed list (tile already part of path).
+             */
+            closed.add(currentStep);
 
-                /*
-                 * Check all neighbors of the currentstep.
-                 */
-                var neighbours = getNeighbours(currentStep);
-                for (int i = 0; i < neighbours.size(); i++) {
+            /*
+             * Check all neighbors of the currentstep.
+             */
+            var neighbours = getNeighbours(currentStep);
+            for (int i = 0; i < neighbours.size(); i++) {
 
-                    Tile neighbour = neighbours.get(i);
+                Tile neighbour = neighbours.get(i);
 
-                    if (neighbour.equals(dst)) {
-                        neighbour.setParent(currentStep);
-                        currentStep = neighbour;
-                        LOGGER.debug("reached  {}", currentStep.hex);
-                        break;
-                    }
-
-                    if (closed.contains(neighbour)) {
-                        //LOGGER.info("Already visited {}", neighbour.hex);
-                        continue;
-                    }
-
-                    /*
-                     * Get the moving costs from the currentstep to the
-                     * neighbor.
-                     */
-                    G = neighbour.calcMoveCostsFrom(currentStep);
-
-                    if (!open.contains(neighbour)) {
-                        open.add(neighbour);
-                    } else if (G >= neighbour.moveCosts) {
-                        continue;
-                    }
-
-                    neighbour.parent = currentStep;
-                    neighbour.moveCosts = G;
-                    neighbour.calcHeuristic(dst);
-                    neighbour.sumHeuristicAndMoveCosts();
+                if (neighbour.equals(dst)) {
+                    neighbour.setParent(currentStep);
+                    currentStep = neighbour;
+                    LOGGER.debug("reached  {}", currentStep.hex);
+                    break;
                 }
 
+                if (closed.contains(neighbour)) {
+                    //LOGGER.info("Already visited {}", neighbour.hex);
+                    continue;
+                }
+
+                /*
+                 * Get the moving costs from the currentstep to the
+                 * neighbor.
+                 */
+                G = neighbour.calcMoveCostsFrom(currentStep);
+
+                if (!open.contains(neighbour)) {
+                    open.add(neighbour);
+                } else if (G >= neighbour.moveCosts) {
+                    continue;
+                }
+
+                neighbour.parent = currentStep;
+                neighbour.moveCosts = G;
+                neighbour.calcHeuristic(dst);
+                neighbour.sumHeuristicAndMoveCosts();
             }
+
             depth += 1;
         }
 
@@ -184,10 +183,10 @@ class PathFinder {
          * If no path is found return null.
          */
         if (path.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
-        return new HexPath(path.stream().map(tile -> tile.hex).collect(Collectors.toList()));
+        return Optional.of(new HexPath(path.stream().map(tile -> tile.hex).collect(Collectors.toList())));
     }
 
 

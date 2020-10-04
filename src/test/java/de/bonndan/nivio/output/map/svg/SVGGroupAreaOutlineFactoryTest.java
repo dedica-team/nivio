@@ -6,6 +6,8 @@ import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
 import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
+import j2html.tags.DomContent;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -14,9 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SVGGroupAreaOutlineFactoryTest {
 
-
     @Test
-    public void twoSeparateIslands() {
+    @DisplayName("Ensure that items far apart have one outline")
+    public void twoSeparateHexe() {
         Hex e1 = new Hex(0, 10, -10);
         Hex e2 = new Hex(0, 20, -20);
         Set<Hex> occupied = Set.of(e1, e2);
@@ -33,18 +35,18 @@ class SVGGroupAreaOutlineFactoryTest {
         map.put(item1, e1);
         map.put(item2, e2);
 
-        Set<Hex> area = GroupAreaFactory.getGroup(occupied, foo, map, new ArrayList<>());
+        Set<Hex> area = GroupAreaFactory.getGroup(occupied, foo, map);
 
         SVGGroupArea group = SVGGroupAreaFactory.getGroup(foo, area);
         Set<Hex> groupArea = group.groupArea;
 
         //when
-        SVGGroupAreaOutlineFactory svgGroupAreaOutlineFactory = new SVGGroupAreaOutlineFactory(groupArea);
-        List<ContainerTag> outline = svgGroupAreaOutlineFactory.getOutline("005500");
+        SVGGroupAreaOutlineFactory svgGroupAreaOutlineFactory = new SVGGroupAreaOutlineFactory();
+        List<DomContent> outline = svgGroupAreaOutlineFactory.getOutline(groupArea, "005500");
 
         //then
         assertNotNull(outline);
-        assertEquals(2, outline.size());
+        assertEquals(1, outline.size());
     }
 
 }
