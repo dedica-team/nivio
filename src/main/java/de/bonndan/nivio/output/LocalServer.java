@@ -26,16 +26,25 @@ import java.util.Optional;
 
 import static de.bonndan.nivio.output.icons.Icons.DEFAULT_ICON;
 
+/**
+ * Representation of the running service and its capability to serve icons and proxy vendor icons.
+ *
+ * TODO add caching of base64 encoding of icons and vendor icons
+ * TODO remove proxying #262
+ */
 @Service
 public class LocalServer implements EnvironmentAware {
 
     public static final String VENDORICONS_PATH = "/vendoricons";
     public static final String VENDOR_PREFIX = "vendor://";
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalServer.class);
     public static final String DATA_IMAGE_SVG_XML_BASE_64 = "data:image/svg+xml;base64,";
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalServer.class);
+
     private static Environment env;
+
     private final VendorIcons vendorIcons;
     private final URL defaultIcon;
+
     /**
      * without slash
      */
