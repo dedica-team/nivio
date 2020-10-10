@@ -19,16 +19,16 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.util.Base64;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static de.bonndan.nivio.output.icons.Icons.DEFAULT_ICON;
 
 /**
  * Representation of the running service and its capability to serve icons and proxy vendor icons.
- *
+ * <p>
  * TODO add caching of base64 encoding of icons and vendor icons
  * TODO remove proxying #262
  */
@@ -44,6 +44,8 @@ public class LocalServer implements EnvironmentAware {
 
     private final VendorIcons vendorIcons;
     private final URL defaultIcon;
+
+    private final Map<String, String> iconDataUrls = new ConcurrentHashMap<>();
 
     /**
      * without slash
@@ -119,6 +121,7 @@ public class LocalServer implements EnvironmentAware {
 
     public String getIconUrl(Item item) {
 
+        //icon label based
         String icon = item.getIcon();
         if (!StringUtils.isEmpty(icon)) {
 
@@ -131,6 +134,7 @@ public class LocalServer implements EnvironmentAware {
             return iconUrl != null ? iconUrl : getUrl(icon).toString();
         }
 
+        //type based
         String type = item.getLabel(Label.type);
         if (StringUtils.isEmpty(type)) {
             return getIconUrl(DEFAULT_ICON.getName(), false);
@@ -156,19 +160,51 @@ public class LocalServer implements EnvironmentAware {
 
         if (url == null) {
             String iconFile = "/static/icons/svg/" + icon + ".svg";
-            try (InputStream resourceAsStream = getClass().getResourceAsStream(iconFile)) {
-                String xml = new String(StreamUtils.copyToByteArray(resourceAsStream));
-                if (StringUtils.isEmpty(xml)) throw new RuntimeException();
-                return DATA_IMAGE_SVG_XML_BASE_64 + Base64.getEncoder().encodeToString(xml.getBytes());
-            } catch (IOException|RuntimeException e) {
-                LOGGER.warn("Failed to load svg icon {}", iconFile, e);
-                if (fallback) {
-                    return getIconUrl(DEFAULT_ICON.getName(), false);
-                }
-            }
+            return asSVGDataUrl(iconFile).orElse(fallback ? getIconUrl(DEFAULT_ICON.getName(), false) : null);
         }
 
         return proxiedUrl(url).toString();
+
+    }
+
+    /**
+     * Creates a SVG data url from the given resource path. Is cached.
+     *
+     * @param path local svg icon
+     * @return data url
+     */
+    private Optional<String> asSVGDataUrl(String path) {
+        if (iconDataUrls.containsKey(path)) {
+            LOGGER.debug("Using cached icon {}", path);
+            return Optional.ofNullable(iconDataUrls.get(path));
+        }
+
+        Optional<String> dataUrl = asBase64(path).map(s -> DATA_IMAGE_SVG_XML_BASE_64 + s);
+        dataUrl.ifPresentOrElse(
+                s -> iconDataUrls.put(path, s),
+                () -> LOGGER.warn("Failed to load svg icon {}", path)
+        );
+        return dataUrl;
+    }
+
+    /**
+     * Returns the base64 encoded content of the resource behind the path
+     *
+     * @param path filesystem location
+     * @return base64 encoded bytes
+     */
+    private Optional<String> asBase64(String path) {
+
+        try (InputStream resourceAsStream = getClass().getResourceAsStream(path)) {
+            byte[] bytes = StreamUtils.copyToByteArray(resourceAsStream);
+            if (bytes.length == 0) {
+                throw new RuntimeException();
+            }
+            return Optional.of(Base64.getEncoder().encodeToString(bytes));
+        } catch (IOException | RuntimeException e) {
+            LOGGER.warn("Failed to load icon {}", path, e);
+            return Optional.empty();
+        }
     }
 
     private URL proxiedUrl(URL url) {
