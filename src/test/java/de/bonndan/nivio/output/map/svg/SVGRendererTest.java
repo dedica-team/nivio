@@ -21,7 +21,7 @@ class SVGRendererTest {
 
         //given
         LocalServer localServer = mock(LocalServer.class);
-        when(localServer.getIconUrl(any(Item.class))).thenReturn(new URL("https://foo.bar/icon.png"));
+        when(localServer.getIconUrl(any(Item.class))).thenReturn("https://foo.bar/icon.png");
         MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
         SVGRenderer svgRenderer = new SVGRenderer(mapStyleSheetFactory);
 

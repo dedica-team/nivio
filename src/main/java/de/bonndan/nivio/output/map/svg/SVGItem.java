@@ -41,10 +41,15 @@ class SVGItem extends Component {
         var fillId = hasFill ? "url(#" + SVGPattern.idForLink(layoutedComponent.getFill()) + ")" : "white";
         DomContent content = null;
         Item item = (Item) layoutedComponent.getComponent();
-        //use the shortname as text instead
-        if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(item.getLabel(Label.shortname))) {
-            content = new SVGLabelText(item.getLabel(Label.shortname), "0", "3", "itemLabel")
-                    .render().attr("text-anchor", "middle");
+
+        /*
+         * use the shortname as text instead, if it is shorter than 3 chars (utf8: one "symbol"), font size is increased
+         */
+        String shortName = item.getLabel(Label.shortname);
+        if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(shortName)) {
+            String className = shortName.length() < 3 ? "itemShortnameIcon" : "itemShortname";
+            content = new SVGLabelText(shortName, "0", "3", className).render()
+                    .attr("text-anchor", "middle");
             fillId = "white";
             hasText = true;
         }
@@ -52,7 +57,7 @@ class SVGItem extends Component {
         DomContent icon = null;
         if (!hasFill && !hasText && !StringUtils.isEmpty(layoutedComponent.getIcon())) {
             final int size = DEFAULT_ICON_SIZE * 3;
-            final int trans = Math.round(size/2);
+            final int trans = Math.round(size / 2);
             icon = SvgTagCreator.image()
                     .attr("xlink:href", layoutedComponent.getIcon())
                     .attr("width", size)
