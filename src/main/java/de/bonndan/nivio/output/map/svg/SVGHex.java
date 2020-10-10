@@ -33,8 +33,8 @@ public class SVGHex extends Component {
     }
 
     private String asPoints(Hex hex) {
-        return hex.asPoints(Hex.HEX_SIZE - 1).stream()
-                .map(aDouble -> aDouble.x + " " + aDouble.y)
+        return hex.asPoints(Hex.HEX_SIZE).stream()
+                .map(aDouble -> (int)aDouble.x + " " + (int)aDouble.y)
                 .collect(Collectors.joining(","));
     }
 }
