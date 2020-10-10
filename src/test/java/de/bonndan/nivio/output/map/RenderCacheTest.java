@@ -37,27 +37,13 @@ class RenderCacheTest {
     private MapStyleSheetFactory stylesheetFactory;
     private SVGRenderer svgRenderer;
 
-    private WireMockServer wireMockServer;
-
     @BeforeEach
-    public void setup() throws IOException {
-        wireMockServer = new WireMockServer(options().port(8080));
-        wireMockServer.start();
-        WireMock.configureFor("localhost", wireMockServer.port());
-        wireMockServer.stubFor(get("/icons/service.png")
-                .willReturn(ok().withBody(
-                        Files.readAllBytes(Paths.get("src/main/resources/static/icons/service.png")))
-                ));
+    public void setup() {
 
         stylesheetFactory = mock(MapStyleSheetFactory.class);
         svgRenderer = new SVGRenderer(stylesheetFactory);
         renderCache = new RenderCache(svgRenderer);
         when(stylesheetFactory.getMapStylesheet(any(), any())).thenReturn("");
-    }
-
-    @AfterEach
-    void stopWireMockServer() {
-        wireMockServer.stop();
     }
 
     @Test
