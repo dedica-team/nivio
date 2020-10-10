@@ -4,16 +4,19 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.output.icons.Icons;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
+import java.util.Base64;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static de.bonndan.nivio.output.LocalServer.VENDOR_PREFIX;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LocalServerTest {
@@ -38,29 +41,48 @@ class LocalServerTest {
     }
 
     @Test
+    public void encodesBase64DataUrls() {
+        String icon = localServer.getIconUrl(Icons.DEFAULT_ICON.getName(), false);
+        assertThat(icon).isNotBlank();
+
+        String payload = icon.replace(LocalServer.DATA_IMAGE_SVG_XML_BASE_64, "");
+        String decoded = new String(Base64.getDecoder().decode(payload));
+        assertThat(decoded).contains("xml");
+    }
+
+    @Test
     public void returnsServiceAsDefault() {
-        assertTrue(iconUrlContains("service", localServer.getIconUrl(new Item("test", "a"))));
+        String icon = localServer.getIconUrl(Icons.DEFAULT_ICON.getName(), false);
+        assertThat(icon).isNotBlank();
+        assertThat(localServer.getIconUrl(new Item("test", "a"))).isEqualTo(icon);
     }
 
     @Test
     public void returnsServiceWithUnknownType() {
         Item item = new Item("test", "a");
         item.setType("asb");
-        assertTrue(iconUrlContains("service", localServer.getIconUrl(item)));
+
+        String icon = localServer.getIconUrl(Icons.DEFAULT_ICON.getName(), false);
+        assertThat(localServer.getIconUrl(new Item("test", "a"))).isEqualTo(icon);
+
     }
 
     @Test
     public void returnsType() {
         Item item = new Item("test", "a");
-        item.setType("firewall");
-        assertTrue(iconUrlContains("firewall", localServer.getIconUrl(item)));
+        item.setType("account");
+
+        String icon = localServer.getIconUrl("account", false);
+        assertThat(localServer.getIconUrl(item)).isEqualTo(icon);
     }
 
     @Test
     public void returnsTypeIgnoreCase() {
         Item item = new Item("test", "a");
-        item.setType("FireWall");
-        assertTrue(iconUrlContains("firewall", localServer.getIconUrl(item)));
+        item.setType("AccOunT");
+
+        String icon = localServer.getIconUrl("account", false);
+        assertThat(localServer.getIconUrl(item)).isEqualTo(icon);
     }
 
     @Test

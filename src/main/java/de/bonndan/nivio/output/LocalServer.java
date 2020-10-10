@@ -11,11 +11,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -27,6 +32,7 @@ public class LocalServer implements EnvironmentAware {
     public static final String VENDORICONS_PATH = "/vendoricons";
     public static final String VENDOR_PREFIX = "vendor://";
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalServer.class);
+    public static final String DATA_IMAGE_SVG_XML_BASE_64 = "data:image/svg+xml;base64,";
     private static Environment env;
     private final VendorIcons vendorIcons;
     private final URL defaultIcon;
@@ -102,34 +108,36 @@ public class LocalServer implements EnvironmentAware {
         return getUrl(StringUtils.arrayToDelimitedString(parts, "/"));
     }
 
-    public URL getIconUrl(Item item) {
+    public String getIconUrl(Item item) {
 
         String icon = item.getIcon();
         if (!StringUtils.isEmpty(icon)) {
 
             if (icon.startsWith(VENDOR_PREFIX)) {
                 String key = icon.replace(VENDOR_PREFIX, "").toLowerCase();
-                return vendorIcons.getUrl(key).map(this::proxiedUrl).orElse(defaultIcon);
+                return vendorIcons.getUrl(key).map(this::proxiedUrl).orElse(defaultIcon).toString();
             }
 
-            URL iconUrl = getIconUrl(icon);
-            return iconUrl != null ? iconUrl : getUrl(icon);
+            String iconUrl = getIconUrl(icon, true);
+            return iconUrl != null ? iconUrl : getUrl(icon).toString();
         }
 
         String type = item.getLabel(Label.type);
         if (StringUtils.isEmpty(type)) {
-            return getIconUrl(DEFAULT_ICON.getName());
+            return getIconUrl(DEFAULT_ICON.getName(), false);
         }
 
         //fallback to item.type
-        Icons ic = Icons.of(type.toLowerCase()).orElse(DEFAULT_ICON);
-        return getIconUrl(ic.getName());
+        String iconName = Icons.of(type.toLowerCase()).map(Icons::getName).orElse(type.toLowerCase());
+        return getIconUrl(iconName, true);
     }
 
     /**
      * Provides an URL for a locally served icon.
+     *
+     * @return an url pointing to a file or a data url
      */
-    private URL getIconUrl(String icon) {
+    String getIconUrl(String icon, boolean fallback) {
         URL url = URLHelper.getURL(icon).orElse(null);
 
         //local icon urls are not supported
@@ -138,10 +146,20 @@ public class LocalServer implements EnvironmentAware {
         }
 
         if (url == null) {
-            return getUrl("/icons/" + icon + ".png");
+            String iconFile = "/static/icons/svg/" + icon + ".svg";
+            try (InputStream resourceAsStream = getClass().getResourceAsStream(iconFile)) {
+                String xml = new String(StreamUtils.copyToByteArray(resourceAsStream));
+                if (StringUtils.isEmpty(xml)) throw new RuntimeException();
+                return DATA_IMAGE_SVG_XML_BASE_64 + Base64.getEncoder().encodeToString(xml.getBytes());
+            } catch (IOException|RuntimeException e) {
+                LOGGER.warn("Failed to load svg icon {}", iconFile, e);
+                if (fallback) {
+                    return getIconUrl(DEFAULT_ICON.getName(), false);
+                }
+            }
         }
 
-        return proxiedUrl(url);
+        return proxiedUrl(url).toString();
     }
 
     private URL proxiedUrl(URL url) {
