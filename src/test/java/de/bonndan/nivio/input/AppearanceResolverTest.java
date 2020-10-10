@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AppearanceResolverTest {
@@ -57,6 +58,6 @@ class AppearanceResolverTest {
 
         pick = landscape.getItems().pick("s1", "g1");
         //check icon is set
-        assertEquals("http://localhost:8080/icons/loadbalancer.png", pick.getIcon());
+        assertThat( pick.getIcon()).contains(LocalServer.DATA_IMAGE_SVG_XML_BASE_64);
     }
 }
