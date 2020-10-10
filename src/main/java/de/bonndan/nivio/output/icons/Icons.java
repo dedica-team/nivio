@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public enum Icons {
 
-    DEFAULT_ICON("service"),
+    DEFAULT_ICON("cog"),
     API("api"),
     CACHE("cache"),
     CONTAINER("container"),
