@@ -7,7 +7,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeImpl;
 import org.springframework.context.ApplicationEvent;
 
 import java.io.IOException;
@@ -17,8 +19,6 @@ import java.time.ZoneId;
 
 /**
  * Event that is emitted to the frontend in near-realtime during processing of landscapes.
- *
- *
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class ProcessingEvent extends ApplicationEvent {
@@ -29,9 +29,6 @@ public abstract class ProcessingEvent extends ApplicationEvent {
     public ProcessingEvent(Object source) {
         super(source);
     }
-
-    @JsonSerialize(using = PLS.class)
-    public abstract Landscape getLandscape();
 
     /**
      * Returns the log level / severity.
@@ -52,13 +49,6 @@ public abstract class ProcessingEvent extends ApplicationEvent {
     public LocalDateTime getDate() {
         Instant instant = Instant.ofEpochMilli(getTimestamp());
         return instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
-    }
-
-    private static class PLS extends JsonSerializer<Landscape> {
-        @Override
-        public void serialize(Landscape value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            gen.writeString(value.getIdentifier());
-        }
     }
 
     @SuppressWarnings("EmptyMethod")

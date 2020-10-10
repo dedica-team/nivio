@@ -49,7 +49,7 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
 
     private LandscapeConfig config;
 
-    private final Map<String, GroupItem> groups = new HashMap<>();
+    private final Map<String, Group> groups = new HashMap<>();
 
     private ProcessLog processLog;
 
@@ -119,7 +119,7 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
 
     @JsonIgnore
     @Override
-    public Map<String, GroupItem> getGroups() {
+    public Map<String, Group> getGroups() {
         return groups;
     }
 
@@ -152,16 +152,16 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
         this.config = config;
     }
 
-    public void addGroup(@NonNull Group g) {
-        if (g == null) {
+    public void addGroup(@NonNull Group group) {
+        if (group == null) {
             throw new IllegalArgumentException("Trying to add null group");
         }
 
-        g.setLandscape(this.identifier);
-        if (groups.containsKey(g.getIdentifier())) {
-            Groups.merge((Group) groups.get(g.getIdentifier()), g);
+        group.setLandscape(this.identifier);
+        if (groups.containsKey(group.getIdentifier())) {
+            Groups.merge((Group) groups.get(group.getIdentifier()), group);
         } else {
-            groups.put(g.getIdentifier(), g);
+            groups.put(group.getIdentifier(), group);
         }
     }
 

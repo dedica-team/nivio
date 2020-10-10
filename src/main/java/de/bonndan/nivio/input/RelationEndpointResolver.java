@@ -30,7 +30,7 @@ public class RelationEndpointResolver {
         //providers
         description.getProvidedBy().forEach(term -> {
             allItems.query(term).stream().findFirst().ifPresentOrElse(o -> {
-                RelationDescription rel = RelationBuilder.createProviderDescription((ItemDescription) o, description.getIdentifier());
+                RelationDescription rel = RelationBuilder.createProviderDescription(o, description.getIdentifier());
                 description.addRelation(rel);
             }, () -> log.warn(description.getIdentifier() + ": no provider target found for term " + term));
         });
@@ -39,11 +39,11 @@ public class RelationEndpointResolver {
         description.getRelations().forEach(rel -> {
 
             resolveOne(description, rel.getSource(), allItems).ifPresent(resolvedSource -> {
-                ((RelationDescription) rel).setSource(resolvedSource.getFullyQualifiedIdentifier().toString());
+                rel.setSource(resolvedSource.getFullyQualifiedIdentifier().toString());
             });
 
             resolveOne(description, rel.getTarget(), allItems).ifPresent(resolvedTarget -> {
-                ((RelationDescription) rel).setTarget(resolvedTarget.getFullyQualifiedIdentifier().toString());
+                rel.setTarget(resolvedTarget.getFullyQualifiedIdentifier().toString());
             });
         });
 
@@ -55,7 +55,7 @@ public class RelationEndpointResolver {
             return Optional.of(description);
         }
 
-        Collection<? extends LandscapeItem> result = allItems.query(term);
+        Collection<? extends ItemDescription> result = allItems.query(term);
         if (result.size() > 1) {
             log.warn(description.getIdentifier() + ": Found ambiguous sources matching " + term);
             return Optional.empty();
@@ -64,6 +64,6 @@ public class RelationEndpointResolver {
             return Optional.empty();
         }
 
-        return Optional.of((ItemDescription)result.iterator().next());
+        return Optional.of(result.iterator().next());
     }
 }

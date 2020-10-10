@@ -2,7 +2,6 @@ package de.bonndan.nivio.output.map;
 
 import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.ProcessLog;
-import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.layout.Layouter;
@@ -66,10 +65,10 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
 
     @Override
     public void onApplicationEvent(ProcessingFinishedEvent processingFinishedEvent) {
-        Landscape landscape = processingFinishedEvent.getLandscape();
-        if (landscape instanceof LandscapeImpl) {
+        LandscapeImpl landscape = processingFinishedEvent.getLandscapeDescription();
+        if (landscape != null) {
             LOGGER.info("Generating SVG rendering of landscape {}", landscape.getIdentifier());
-            createCacheEntry((LandscapeImpl) landscape);
+            createCacheEntry(landscape);
         }
     }
 }

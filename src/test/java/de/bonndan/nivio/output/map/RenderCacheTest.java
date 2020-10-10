@@ -90,7 +90,7 @@ class RenderCacheTest {
 
     @Test
     void onProcessingFinishedEvent() {
-        renderCache.onApplicationEvent(new ProcessingFinishedEvent(new LandscapeDescription(), getLandscape("test")));
+        renderCache.onApplicationEvent(new ProcessingFinishedEvent(new LandscapeDescription()));
 
         verify(stylesheetFactory, times(1)).getMapStylesheet(any(), any());
     }

@@ -21,7 +21,7 @@ import java.util.*;
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
 @JsonIgnoreType
-public class LandscapeDescription implements Landscape {
+public class LandscapeDescription {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeDescription.class);
 
@@ -67,7 +67,7 @@ public class LandscapeDescription implements Landscape {
 
     private boolean isPartial = false;
 
-    private Map<String, GroupItem> groups = new HashMap<>();
+    private Map<String, GroupDescription> groups = new HashMap<>();
     private final Map<String, Link> links = new HashMap<>();
     private Map<String, String> labels = new HashMap<>();
 
@@ -86,7 +86,6 @@ public class LandscapeDescription implements Landscape {
         return identifier;
     }
 
-    @Override
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(identifier, null, null);
     }
@@ -111,22 +110,18 @@ public class LandscapeDescription implements Landscape {
         this.contact = contact;
     }
 
-    @Override
     public String getDescription() {
         return description;
     }
 
-    @Override
     public String getOwner() {
         return owner;
     }
 
-    @Override
     public String getIcon() {
         return null;
     }
 
-    @Override
     public String getColor() {
         return null;
     }
@@ -196,13 +191,11 @@ public class LandscapeDescription implements Landscape {
         return identifier;
     }
 
-    @Override
     public LandscapeConfig getConfig() {
         return config;
     }
 
-    @Override
-    public Map<String, GroupItem> getGroups() {
+    public Map<String, GroupDescription> getGroups() {
         return groups;
     }
 
@@ -212,14 +205,14 @@ public class LandscapeDescription implements Landscape {
      * @param groups the configured groups
      */
     @JsonDeserialize(contentAs = GroupDescription.class)
-    public void setGroups(Map<String, GroupItem> groups) {
+    public void setGroups(Map<String, GroupDescription> groups) {
 
         groups.forEach((s, groupItem) -> {
             if (!s.equals(groupItem.getIdentifier()) && !StringUtils.isEmpty(groupItem.getIdentifier())) {
                 LOGGER.warn("Group map key {} and identifier {} are both set and differ. Overriding with map key.", s, groupItem.getIdentifier());
             }
-            ((GroupDescription) groupItem).setIdentifier(s);
-            ((GroupDescription) groupItem).setEnvironment(identifier);
+            groupItem.setIdentifier(s);
+            groupItem.setEnvironment(identifier);
         });
         this.groups = groups;
     }
@@ -228,7 +221,6 @@ public class LandscapeDescription implements Landscape {
         this.description = description;
     }
 
-    @Override
     public Map<String, Link> getLinks() {
         return links;
     }

@@ -85,7 +85,7 @@ public class MagicLabelRelations extends Resolver {
         return labelParts.stream().anyMatch(PROVIDER_INDICATORS::contains);
     }
 
-    private boolean hasRelation(String source, String target, RelationItem<String> r) {
+    private boolean hasRelation(String source, String target, RelationDescription r) {
         return r.getSource().equals(source) && r.getTarget().equals(target) ||
                 r.getSource().equals(target) && r.getTarget().equals(source);
     }

@@ -6,6 +6,7 @@ import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.support.SimpleFunction;
 import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.facet.FacetResult;
@@ -161,7 +162,7 @@ public class ItemIndex {
      * @param item item to search for
      * @return the sibling from the list
      */
-    public Item pick(final LandscapeItem item) {
+    public Item pick(final ItemDescription item) {
         return pick(item.getIdentifier(), item.getGroup());
     }
 

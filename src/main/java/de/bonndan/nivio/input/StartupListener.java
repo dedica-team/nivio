@@ -3,6 +3,8 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.IndexEvent;
 import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -47,7 +50,9 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
 
         getUrls(seed).stream()
                 .map(landscapeDescriptionFactory::from)
-                .forEach(description -> publisher.publishEvent(new IndexEvent(this, description, "Initialising from SEED")));
+                .forEach(description -> {
+                    publisher.publishEvent(new IndexEvent(this, description, "Initialising from SEED"));
+                });
     }
 
     private List<URL> getUrls(Seed seed) {

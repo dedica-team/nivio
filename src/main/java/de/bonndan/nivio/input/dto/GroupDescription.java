@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.dto;
 
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.GroupItem;
+import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.model.Link;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GroupDescription implements GroupItem {
+public class GroupDescription implements Labeled {
 
     private final Map<String, Link> links = new HashMap<>();
     private final Map<String, String> labels = new HashMap<>();
@@ -21,7 +22,6 @@ public class GroupDescription implements GroupItem {
     private List<String> contains = new ArrayList<>();
     private String environment;
 
-    @Override
     public String getIdentifier() {
         return identifier;
     }
@@ -30,17 +30,14 @@ public class GroupDescription implements GroupItem {
         this.identifier = identifier;
     }
 
-    @Override
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(environment, identifier, null);
     }
 
-    @Override
     public String getName() {
         return identifier;
     }
 
-    @Override
     public String getOwner() {
         return owner;
     }
@@ -49,13 +46,6 @@ public class GroupDescription implements GroupItem {
         this.owner = owner;
     }
 
-    @Override
-    public String getIcon() {
-        //TODO remove #212
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return description;
     }
@@ -64,7 +54,6 @@ public class GroupDescription implements GroupItem {
         this.description = description;
     }
 
-    @Override
     public String getContact() {
         return contact;
     }
@@ -73,7 +62,6 @@ public class GroupDescription implements GroupItem {
         this.contact = contact;
     }
 
-    @Override
     public String getColor() {
         return color;
     }
@@ -82,7 +70,6 @@ public class GroupDescription implements GroupItem {
         this.color = color;
     }
 
-    @Override
     public Map<String, Link> getLinks() {
         return links;
     }
@@ -104,17 +91,14 @@ public class GroupDescription implements GroupItem {
         this.contains = contains;
     }
 
-    @Override
     public Map<String, String> getLabels() {
         return labels;
     }
 
-    @Override
     public String getLabel(String key) {
         return labels.get(key);
     }
 
-    @Override
     public void setLabel(String key, String value) {
         labels.put(key, value);
     }

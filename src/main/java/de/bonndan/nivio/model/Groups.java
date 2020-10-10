@@ -1,5 +1,7 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.input.dto.GroupDescription;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +30,7 @@ public class Groups {
     /**
      * Merges all absent values from the second param into the first.
      */
-    public static void merge(final Group group, GroupItem groupItem) {
+    public static void merge(final Group group, Group groupItem) {
         if (groupItem == null)
             return;
 
@@ -38,6 +40,18 @@ public class Groups {
         assignSafeIfAbsent(groupItem.getOwner(), group.getOwner(), group::setOwner);
         groupItem.getLinks().forEach((s, url) -> group.getLinks().putIfAbsent(s, url));
         Labeled.merge(groupItem, group);
+    }
+
+    public static void mergeWithGroupDescription(final Group group, GroupDescription groupDescription) {
+        if (groupDescription == null)
+            return;
+
+        assignSafeIfAbsent(groupDescription.getColor(), group.getColor(), group::setColor);
+        assignSafeIfAbsent(groupDescription.getContact(), group.getContact(), group::setContact);
+        assignSafeIfAbsent(groupDescription.getDescription(), group.getDescription(), group::setDescription);
+        assignSafeIfAbsent(groupDescription.getOwner(), group.getOwner(), group::setOwner);
+        groupDescription.getLinks().forEach((s, url) -> group.getLinks().putIfAbsent(s, url));
+        Labeled.merge(groupDescription, group);
     }
 
     /**

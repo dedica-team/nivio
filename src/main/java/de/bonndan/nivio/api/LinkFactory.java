@@ -138,7 +138,7 @@ public class LinkFactory {
         setGroupSelfLinksRecursive(landscape.getGroups());
     }
 
-    void setGroupSelfLinksRecursive(Map<String, GroupItem> groups) {
+    void setGroupSelfLinksRecursive(Map<String, Group> groups) {
         groups.forEach((s, groupItem) -> setGroupLinksRecursive((Group) groupItem));
     }
 

@@ -206,10 +206,13 @@ public class ApiController {
             return p;
         }
 
-        return process(distinctByIdentifier);
+        return process(LandscapeDescriptionFactory.fromString(
+                distinctByIdentifier.getSource(),
+                distinctByIdentifier.getIdentifier() + " source"
+        ));
     }
 
-    private ProcessLog process(Landscape landscape) {
+    private ProcessLog process(LandscapeDescription landscape) {
         if (landscape == null || StringUtils.isEmpty(landscape.getSource())) {
             ProcessLog p = new ProcessLog(LoggerFactory.getLogger("nivio"));
             p.error(new ProcessingException(landscape, "Cannot process empty source."));

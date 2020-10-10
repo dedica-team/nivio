@@ -15,6 +15,7 @@ public interface Landscape extends Component, Linked {
 
     /**
      * Return the groups by their identifier.
+     * @return
      */
-    Map<String, GroupItem> getGroups();
+    Map<String, Group> getGroups();
 }

@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.net.URL;
 
 
-public class InterfaceDescription implements InterfaceItem, Serializable {
+public class InterfaceDescription implements Serializable {
 
     private String description;
     private String format;
@@ -37,12 +37,10 @@ public class InterfaceDescription implements InterfaceItem, Serializable {
         this.format = format;
     }
 
-    @Override
     public URL getUrl() {
         return url;
     }
 
-    @Override
     public String getProtection() {
         return protection;
     }

@@ -2,7 +2,10 @@ package de.bonndan.nivio;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeImpl;
+import org.springframework.lang.Nullable;
+
+import java.util.Optional;
 
 /**
  * Generic exception tied to a landscape.
@@ -12,24 +15,24 @@ import de.bonndan.nivio.model.Landscape;
  */
 public class ProcessingException extends RuntimeException {
 
-    private final Landscape landscape;
+    private final LandscapeDescription landscapeDescription;
 
-    public ProcessingException(Landscape landscape, String message) {
+    public ProcessingException(LandscapeDescription landscapeDescription, String message) {
         super(message);
-        this.landscape = landscape;
+        this.landscapeDescription = landscapeDescription;
     }
 
     public ProcessingException(String message, Throwable throwable) {
         super(message, throwable);
-        this.landscape = LandscapeDescription.NONE;
+        this.landscapeDescription = LandscapeDescription.NONE;
     }
 
-    public ProcessingException(Landscape landscape, String message, Throwable throwable) {
+    public ProcessingException(LandscapeDescription landscape, String message, Throwable throwable) {
         super(message, throwable);
-        this.landscape = landscape;
+        this.landscapeDescription = landscape;
     }
 
-    public static ProcessingException of(Landscape landscape, Throwable throwable) {
+    public static ProcessingException of(LandscapeDescription landscape, Throwable throwable) {
         if (throwable instanceof ProcessingException)
             return (ProcessingException) throwable;
 
@@ -39,8 +42,8 @@ public class ProcessingException extends RuntimeException {
         return new ProcessingException(landscape, throwable.getMessage(), throwable);
     }
 
-    public Landscape getLandscape() {
-        return landscape;
+    public LandscapeDescription getLandscapeDescription() {
+        return landscapeDescription;
     }
 
     @JsonValue

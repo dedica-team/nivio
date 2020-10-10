@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.input.dto.ItemDescription;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
@@ -69,7 +70,11 @@ public class ItemMatcher {
         throw new IllegalArgumentException("Given string '" + string + "' contains too many parts to build an item matcher.");
     }
 
-    public static ItemMatcher forTarget(LandscapeItem item) {
+    public static ItemMatcher forTarget(ItemDescription item) {
+        return build("", item.getGroup(), item.getIdentifier());
+    }
+
+    public static ItemMatcher forTarget(Item item) {
         return build("", item.getGroup(), item.getIdentifier());
     }
 
@@ -110,8 +115,32 @@ public class ItemMatcher {
      * @param item other item
      * @return true if group and identifier match (if group is null, it is not taken into account)
      */
-    public boolean isSimilarTo(LandscapeItem item) {
+    public boolean isSimilarTo(Item item) {
         FullyQualifiedIdentifier otherItemFQI = item.getFullyQualifiedIdentifier();
+
+        boolean equalsLandscape;
+        if (StringUtils.isEmpty(landscape) || StringUtils.isEmpty(otherItemFQI.getLandscape()))
+            equalsLandscape = true; //ignoring landscape because not set
+        else
+            equalsLandscape = landscape.equalsIgnoreCase(otherItemFQI.getLandscape());
+
+        boolean equalsGroup;
+        if (StringUtils.isEmpty(group) || StringUtils.isEmpty(otherItemFQI.getGroup()))
+            equalsGroup = true;
+        else
+            equalsGroup = this.group.equalsIgnoreCase(otherItemFQI.getGroup());
+
+        boolean equalsItem;
+        if (StringUtils.isEmpty(this.item) || StringUtils.isEmpty(otherItemFQI.getItem()))
+            equalsItem = true;
+        else
+            equalsItem = this.item.equalsIgnoreCase(otherItemFQI.getItem());
+
+        return equalsLandscape && equalsGroup && equalsItem;
+    }
+
+    public boolean isSimilarTo(ItemDescription itemDescription) {
+        FullyQualifiedIdentifier otherItemFQI = itemDescription.getFullyQualifiedIdentifier();
 
         boolean equalsLandscape;
         if (StringUtils.isEmpty(landscape) || StringUtils.isEmpty(otherItemFQI.getLandscape()))
