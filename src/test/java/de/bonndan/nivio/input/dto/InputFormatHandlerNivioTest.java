@@ -88,7 +88,7 @@ class InputFormatHandlerNivioTest {
         });
 
         ItemDescription web = services.get(2);
-        assertEquals(LandscapeItem.LAYER_INGRESS, web.getLabel("layer"));
+        assertEquals(Item.LAYER_INGRESS, web.getLabel("layer"));
         assertEquals("wordpress-web", web.getIdentifier());
         assertEquals("Webserver", web.getDescription());
         assertEquals("Apache", web.getLabel(Label.software));
@@ -106,7 +106,7 @@ class InputFormatHandlerNivioTest {
 
         List<ItemDescription> services = descriptionFactory.getDescriptions(file, null);
         ItemDescription service = services.get(0);
-        assertEquals(LandscapeItem.LAYER_INGRESS, service.getGroup());
+        assertEquals(Item.LAYER_INGRESS, service.getGroup());
         assertEquals("Keycloak SSO", service.getName());
         assertEquals("keycloak", service.getIdentifier());
     }

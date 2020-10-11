@@ -7,9 +7,7 @@ import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.ItemMatcher;
-import de.bonndan.nivio.model.LandscapeItem;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Type;
@@ -17,7 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.googlecode.cqengine.query.QueryFactory.attribute;
-import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
+import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
 
 public class ItemDescriptions {
 

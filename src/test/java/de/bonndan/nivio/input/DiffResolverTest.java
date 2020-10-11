@@ -4,7 +4,6 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.model.LandscapeItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

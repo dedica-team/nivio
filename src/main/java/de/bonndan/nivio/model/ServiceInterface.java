@@ -1,6 +1,7 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import de.bonndan.nivio.input.dto.InterfaceDescription;
 
 import java.net.URL;
 
@@ -15,10 +16,10 @@ public class ServiceInterface {
     private String protection;
 
     public ServiceInterface() {
-
     }
 
-    public ServiceInterface(InterfaceItem interfaceItem) {
+    //TODO: who uses these constructors?
+    public ServiceInterface(InterfaceDescription interfaceItem) {
         this.description = interfaceItem.getDescription();
         this.format = interfaceItem.getFormat();
         this.url = interfaceItem.getUrl();

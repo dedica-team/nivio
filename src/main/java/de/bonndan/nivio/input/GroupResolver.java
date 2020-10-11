@@ -4,7 +4,6 @@ import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.GroupItem;
 import de.bonndan.nivio.model.Groups;
 import de.bonndan.nivio.model.LandscapeImpl;
 import org.springframework.util.StringUtils;

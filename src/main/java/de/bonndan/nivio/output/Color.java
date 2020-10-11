@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output;
 
 import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.GroupItem;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeImpl;
 import org.slf4j.Logger;

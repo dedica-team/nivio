@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
+import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
 
 /**
  * Think of a group of servers and apps, like a "project", "workspace" or stage.

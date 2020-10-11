@@ -5,7 +5,6 @@ import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.InputFormatHandlerFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;

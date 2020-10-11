@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Item implements Linked, Tagged, Labeled, Assessable {
 
-    static final String LAYER_INFRASTRUCTURE = "infrastructure";
-    static final String LAYER_APPLICATION = "applications";
-    static final String LAYER_INGRESS = "ingress";
+    public static final String LAYER_INFRASTRUCTURE = "infrastructure";
+    public static final String LAYER_APPLICATION = "applications";
+    public static final String LAYER_INGRESS = "ingress";
 
-    static final String IDENTIFIER_VALIDATION = "^[a-zA-Z0-9\\.\\:_-]{2,256}$";
+    public static final String IDENTIFIER_VALIDATION = "^[a-zA-Z0-9\\.\\:_-]{2,256}$";
 
     @NotNull
     @Pattern(regexp = IDENTIFIER_VALIDATION)

@@ -1,7 +1,6 @@
 package de.bonndan.nivio.input.dto;
 
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.GroupItem;
 import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.model.Link;
 

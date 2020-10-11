@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.googlecode.cqengine.query.QueryFactory.attribute;
-import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
+import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
 import static de.bonndan.nivio.model.SearchDocumentFactory.*;
 
 /**
