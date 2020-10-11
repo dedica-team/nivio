@@ -3,8 +3,7 @@ package de.bonndan.nivio.output;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.output.icons.Icons;
+import de.bonndan.nivio.output.icons.IconMapping;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +41,7 @@ class LocalServerTest {
 
     @Test
     public void encodesBase64DataUrls() {
-        String icon = localServer.getIconUrl(Icons.DEFAULT_ICON.getName(), false);
+        String icon = localServer.getIconUrl(IconMapping.DEFAULT_ICON.getIcon(), false);
         assertThat(icon).isNotBlank();
 
         String payload = icon.replace(LocalServer.DATA_IMAGE_SVG_XML_BASE_64, "");
@@ -52,7 +51,7 @@ class LocalServerTest {
 
     @Test
     public void returnsServiceAsDefault() {
-        String icon = localServer.getIconUrl(Icons.DEFAULT_ICON.getName(), false);
+        String icon = localServer.getIconUrl(IconMapping.DEFAULT_ICON.getIcon(), false);
         assertThat(icon).isNotBlank();
         assertThat(localServer.getIconUrl(new Item("test", "a"))).isEqualTo(icon);
     }
@@ -62,7 +61,7 @@ class LocalServerTest {
         Item item = new Item("test", "a");
         item.setType("asb");
 
-        String icon = localServer.getIconUrl(Icons.DEFAULT_ICON.getName(), false);
+        String icon = localServer.getIconUrl(IconMapping.DEFAULT_ICON.getIcon(), false);
         assertThat(localServer.getIconUrl(new Item("test", "a"))).isEqualTo(icon);
 
     }

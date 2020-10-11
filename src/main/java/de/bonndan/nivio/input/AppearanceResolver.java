@@ -41,7 +41,7 @@ public class AppearanceResolver extends Resolver {
         if (StringUtils.isEmpty(item.getColor())) {
             item.setColor(group.getColor());
         }
-        item.setIcon(localServer.getIconUrl(item).toString());
+        item.setIcon(localServer.getIconUrl(item));
     }
 
 }
