@@ -13,6 +13,7 @@ import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.RenderingTest;
+import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -166,8 +167,9 @@ class OrganicLayouterTest extends RenderingTest {
     @Test
     public void renderCSV() throws IOException {
 
-        formatFactory = InputFormatHandlerFactory.with(new InputFormatHandlerCSV(new FileFetcher(new HttpService())));
-        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class), new LocalServer("", new VendorIcons()));
+        HttpService httpService = new HttpService();
+        formatFactory = InputFormatHandlerFactory.with(new InputFormatHandlerCSV(new FileFetcher(httpService)));
+        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class), new LocalIcons(new VendorIcons(httpService)));
 
         debugRender("/src/test/resources/example/example_csv", false);
     }
