@@ -16,7 +16,7 @@ public class ItemRelationResolver extends Resolver {
         input.getItemDescriptions().all().forEach(serviceDescription -> {
             Item origin = landscape.getItems().pick(serviceDescription);
             if (!input.isPartial()) {
-                processLog.info("Clearing relations of " + origin);
+                processLog.debug(String.format("Clearing relations of %s", origin));
                 origin.getRelations().clear(); //delete all relations on full update
             }
         });
@@ -29,13 +29,13 @@ public class ItemRelationResolver extends Resolver {
                 var fqiTarget = ItemMatcher.forTarget(relationDescription.getTarget());
                 Item source = landscape.getItems().find(fqiSource).orElse(null);
                 if (source == null) {
-                    processLog.warn("Relation source " + relationDescription.getSource() + " not found");
+                    processLog.warn(String.format("Relation source %s not found", relationDescription.getSource()));
                     return;
                 }
                 Item target = landscape.getItems().find(fqiTarget).orElse(null);
 
                 if (target == null) {
-                    processLog.warn("Relation target " + relationDescription.getTarget() + " not found");
+                    processLog.warn(String.format("Relation target %s not found", relationDescription.getTarget()));
                     return;
                 }
 
