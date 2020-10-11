@@ -2,7 +2,7 @@ package de.bonndan.nivio.output;
 
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.output.icons.Icons;
+import de.bonndan.nivio.output.icons.IconMapping;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static de.bonndan.nivio.output.icons.Icons.DEFAULT_ICON;
+import static de.bonndan.nivio.output.icons.IconMapping.DEFAULT_ICON;
 
 /**
  * Representation of the running service and its capability to serve icons and proxy vendor icons.
@@ -60,7 +60,7 @@ public class LocalServer implements EnvironmentAware {
             this.baseUrl = "http://" + host() + ":" + port();
         }
         this.vendorIcons = vendorIcons;
-        defaultIcon = getUrl(DEFAULT_ICON.getName());
+        defaultIcon = getUrl(DEFAULT_ICON.getIcon());
     }
 
     /**
@@ -137,11 +137,11 @@ public class LocalServer implements EnvironmentAware {
         //type based
         String type = item.getLabel(Label.type);
         if (StringUtils.isEmpty(type)) {
-            return getIconUrl(DEFAULT_ICON.getName(), false);
+            return getIconUrl(DEFAULT_ICON.getIcon(), false);
         }
 
         //fallback to item.type
-        String iconName = Icons.of(type.toLowerCase()).map(Icons::getName).orElse(type.toLowerCase());
+        String iconName = IconMapping.of(type.toLowerCase()).map(IconMapping::getIcon).orElseGet(type::toLowerCase);
         return getIconUrl(iconName, true);
     }
 
@@ -160,7 +160,7 @@ public class LocalServer implements EnvironmentAware {
 
         if (url == null) {
             String iconFile = "/static/icons/svg/" + icon + ".svg";
-            return asSVGDataUrl(iconFile).orElse(fallback ? getIconUrl(DEFAULT_ICON.getName(), false) : null);
+            return asSVGDataUrl(iconFile).orElse(fallback ? getIconUrl(DEFAULT_ICON.getIcon(), false) : null);
         }
 
         return proxiedUrl(url).toString();
