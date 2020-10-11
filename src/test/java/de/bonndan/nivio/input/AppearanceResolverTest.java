@@ -1,10 +1,13 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.output.icons.DataUrlHelper;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class AppearanceResolverTest {
 
@@ -24,7 +28,9 @@ class AppearanceResolverTest {
 
     @BeforeEach
     public void setup() {
-        resolver = new AppearanceResolver(new ProcessLog(LoggerFactory.getLogger(AppearanceResolverTest.class)), new LocalServer("", new VendorIcons()));
+
+        HttpService mock = mock(HttpService.class);
+        resolver = new AppearanceResolver(new ProcessLog(LoggerFactory.getLogger(AppearanceResolverTest.class)), new LocalIcons(new VendorIcons(mock)));
 
         landscape = new LandscapeImpl("l1", new Group(Group.COMMON));
 
@@ -54,10 +60,10 @@ class AppearanceResolverTest {
 
         Item pick = landscape.getItems().pick("s2", "g1");
         //check icon is set
-        assertEquals("http://localhost:8080/vendoricons/aHR0cHM6Ly9mb28uYmFyL2ljb24ucG5n", pick.getIcon());
+        assertEquals("https://foo.bar/icon.png", pick.getIcon());
 
         pick = landscape.getItems().pick("s1", "g1");
         //check icon is set
-        assertThat( pick.getIcon()).contains(LocalServer.DATA_IMAGE_SVG_XML_BASE_64);
+        assertThat(pick.getIcon()).contains(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64);
     }
 }
