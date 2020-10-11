@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import de.bonndan.nivio.model.RelationItem;
@@ -69,10 +70,10 @@ class RelationEndpointResolverTest {
         //the provider has been resolved using a query instead of naming a service
         ItemDescription providedbyBar = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
         assertNotNull(providedbyBar);
-        List<RelationItem> relations = RelationType.PROVIDER.filter(providedbyBar.getRelations());
+        List<RelationDescription> relations = RelationType.PROVIDER.filterRelationDescription(providedbyBar.getRelations());
         assertNotNull(relations);
         assertEquals(1, relations.size());
-        RelationItem s = relations.iterator().next();
+        RelationDescription s = relations.iterator().next();
         assertEquals("nivio:templates2/alpha/crappy_dockername-2343a", s.getSource());
     }
 
@@ -85,9 +86,9 @@ class RelationEndpointResolverTest {
         ItemDescription hasdataFlow = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
         assertNotNull(hasdataFlow);
         assertNotNull(hasdataFlow.getRelations());
-        List<RelationItem> relations = RelationType.DATAFLOW.filter(hasdataFlow.getRelations());
+        List<RelationDescription> relations = RelationType.DATAFLOW.filterRelationDescription(hasdataFlow.getRelations());
         assertFalse(relations.isEmpty());
-        RelationItem next = relations.iterator().next();
+        RelationDescription next = relations.iterator().next();
         assertEquals("nivio:templates2/beta/other_crappy_name-2343a", next.getTarget());
     }
 

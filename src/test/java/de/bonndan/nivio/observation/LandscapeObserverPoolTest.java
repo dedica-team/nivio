@@ -1,6 +1,8 @@
 package de.bonndan.nivio.observation;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.LandscapeImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.StringUtils;
 
@@ -20,9 +22,8 @@ class LandscapeObserverPoolTest {
         URLObserver urlObserver2 = mock(URLObserver.class);
         when(urlObserver1.hasChange()).thenReturn(CompletableFuture.completedFuture("hello"));
         when(urlObserver2.hasChange()).thenReturn(CompletableFuture.completedFuture("world"));
-        LandscapeDescription description = new LandscapeDescription();
-        description.setIdentifier("test");
-        LandscapeObserverPool landscapeObserverPool = new LandscapeObserverPool(description, List.of(urlObserver1, urlObserver2));
+        LandscapeImpl landscape = new LandscapeImpl("test", new Group(Group.COMMON));
+        LandscapeObserverPool landscapeObserverPool = new LandscapeObserverPool(landscape, List.of(urlObserver1, urlObserver2));
 
         //when
         ObservedChange change = landscapeObserverPool.getChange();

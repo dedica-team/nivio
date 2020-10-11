@@ -31,7 +31,7 @@ class SVGGroupAreaOutlineFactoryTest {
         foo.addItem(item1);
         foo.addItem(item2);
 
-        Map<LandscapeItem, Hex> map = new HashMap<>();
+        Map<Item, Hex> map = new HashMap<>();
         map.put(item1, e1);
         map.put(item2, e2);
 

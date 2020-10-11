@@ -54,7 +54,7 @@ public class ReportGenerator extends HtmlGenerator {
 
     private String writeGroups(LandscapeImpl landscape) {
         final StringBuilder builder = new StringBuilder();
-        Map<String, GroupItem> groups = landscape.getGroups();
+        Map<String, Group> groups = landscape.getGroups();
         groups.forEach((s, groupItem) -> {
             String color = "#" + Color.getGroupColor(s, landscape);
             builder.append(

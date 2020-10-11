@@ -162,8 +162,18 @@ public class ItemIndex {
      * @param item item to search for
      * @return the sibling from the list
      */
-    public Item pick(final ItemDescription item) {
+    public Item pick(final Item item) {
         return pick(item.getIdentifier(), item.getGroup());
+    }
+
+    /**
+     * Ensures that the given item has a sibling in the list, returns the item from the list.
+     *
+     * @param itemDescription item to search for
+     * @return the sibling from the list
+     */
+    public Item pick(final ItemDescription itemDescription) {
+        return pick(itemDescription.getIdentifier(), itemDescription.getGroup());
     }
 
     /**

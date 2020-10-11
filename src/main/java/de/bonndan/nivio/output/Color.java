@@ -53,11 +53,11 @@ public class Color {
     }
 
     public static String getGroupColor(String name, LandscapeImpl landscape) {
-        Group g = landscape.getGroup(name).orElse(landscape.getGroup(Group.COMMON).get());
+        Group g = landscape.getGroup(name).orElse(landscape.getGroup(Group.COMMON).get()); //TODO: optional.get() without ifPresent check
         return getGroupColor(g);
     }
 
-    public static String getGroupColor(GroupItem group) {
+    public static String getGroupColor(Group group) {
         return Optional.ofNullable(group.getColor())
                 .orElse(Color.nameToRGB(group.getIdentifier(), Color.DARKGRAY));
     }

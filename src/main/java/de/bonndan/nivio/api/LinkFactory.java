@@ -139,7 +139,7 @@ public class LinkFactory {
     }
 
     void setGroupSelfLinksRecursive(Map<String, Group> groups) {
-        groups.forEach((s, groupItem) -> setGroupLinksRecursive((Group) groupItem));
+        groups.forEach((s, groupItem) -> setGroupLinksRecursive(groupItem));
     }
 
     void setGroupLinksRecursive(Group groupItem) {

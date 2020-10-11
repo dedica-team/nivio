@@ -59,7 +59,7 @@ class PrometheusExporterTest {
                 .filter(itemDescription -> itemDescription.getIdentifier().equals("rocketchat"))
                 .findFirst();
         assertNotNull(op.get());
-        LandscapeItem rocketchat = op.get();
+        ItemDescription rocketchat = op.get();
         assertEquals("rocket-chat", rocketchat.getFullyQualifiedIdentifier().getGroup());
         assertEquals("unhealthy", rocketchat.getLabel(Label.health));
     }

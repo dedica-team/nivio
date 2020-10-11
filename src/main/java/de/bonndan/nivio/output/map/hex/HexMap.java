@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class HexMap {
 
     private final Set<Hex> occupied = new HashSet<>();
-    private final Map<LandscapeItem, Hex> vertexHexes = new HashMap<>();
+    private final Map<Item, Hex> vertexHexes = new HashMap<>();
     private final PathFinder pathFinder;
 
     public HexMap(boolean debug) {

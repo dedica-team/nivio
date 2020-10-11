@@ -1,7 +1,9 @@
 package de.bonndan.nivio.observation;
 
 import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,10 +20,10 @@ public class LandscapeObserverPool {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeObserverPool.class);
 
-    private final Landscape landscape;
+    private final LandscapeImpl landscape;
     private final List<InputFormatObserver> observers;
 
-    public LandscapeObserverPool(Landscape landscape, List<InputFormatObserver> observers) {
+    public LandscapeObserverPool(LandscapeImpl landscape, List<InputFormatObserver> observers) {
         this.landscape = landscape;
         this.observers = observers;
     }
@@ -34,7 +36,7 @@ public class LandscapeObserverPool {
         LOGGER.info("Detecting changes in {} observers for landscape {}.", observers.size(), landscape.getIdentifier());
 
         ObservedChange change = new ObservedChange();
-        CompletableFuture<String>[] futures = observers.stream().map(observer -> {
+        CompletableFuture<String>[] futures = observers.stream().map(observer -> { //TODO: resolve unchecked assignment
             try {
                 return observer.hasChange();
             } catch (ProcessingException e) {
@@ -59,7 +61,7 @@ public class LandscapeObserverPool {
         return change;
     }
 
-    Landscape getLandscape() {
+    LandscapeImpl getLandscape() {
         return landscape;
     }
 

@@ -6,6 +6,7 @@ import de.bonndan.nivio.input.InputFormatHandlerFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ public class LandscapeObserverPoolFactory {
         this.fileFetcher = fileFetcher;
     }
 
-    public LandscapeObserverPool getPoolFor(Landscape landscape, @NonNull LandscapeDescription description) {
+    public LandscapeObserverPool getPoolFor(LandscapeImpl landscape, @NonNull LandscapeDescription description) {
 
         List<InputFormatObserver> observers = new ArrayList<>();
         Optional<URL> baseUrl = URLHelper.getParentPath(description.getSource());

@@ -65,7 +65,7 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
 
     @Override
     public void onApplicationEvent(ProcessingFinishedEvent processingFinishedEvent) {
-        LandscapeImpl landscape = processingFinishedEvent.getLandscapeDescription();
+        LandscapeImpl landscape = processingFinishedEvent.getLandscape();
         if (landscape != null) {
             LOGGER.info("Generating SVG rendering of landscape {}", landscape.getIdentifier());
             createCacheEntry(landscape);

@@ -39,7 +39,7 @@ public class ItemRelationResolver extends Resolver {
                     return;
                 }
 
-                Iterator<RelationItem<Item>> iterator = origin.getRelations().iterator();
+                Iterator<Relation> iterator = origin.getRelations().iterator();
                 Relation existing = null;
                 Relation created = new Relation(source, target);
                 while (iterator.hasNext()) {

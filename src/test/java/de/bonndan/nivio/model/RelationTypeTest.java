@@ -12,14 +12,14 @@ class RelationTypeTest {
     @Test
     void filter() {
 
-        List<RelationItem> relationList = new ArrayList<>();
+        List<Relation> relationList = new ArrayList<>();
         relationList.add(new Relation());
 
         Relation relation = new Relation();
         relation.setType(RelationType.PROVIDER);
         relationList.add(relation);
 
-        List<RelationItem> filter = RelationType.PROVIDER.filter(relationList);
+        List<Relation> filter = RelationType.PROVIDER.filter(relationList);
         assertNotNull(filter);
         assertEquals(1, filter.size());
         assertEquals(relation, filter.get(0));

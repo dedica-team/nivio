@@ -51,7 +51,7 @@ class StartupListenerTest {
 
         IndexEvent first = captor.getValue();
         assertNotNull(first);
-        assertEquals("foo", first.getLandscapeDescription().getIdentifier());
+        assertEquals("foo", first.getLandscape().getIdentifier());
 
     }
 }

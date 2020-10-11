@@ -13,7 +13,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 public class Groups {
 
-    private final Map<String, List<LandscapeItem>> groups = new HashMap<>();
+    private final Map<String, List<Item>> groups = new HashMap<>();
 
     /**
      * Default grouping by group field.
@@ -61,7 +61,7 @@ public class Groups {
      * @param service  service to add
      */
     @Deprecated
-    public void add(String groupKey, LandscapeItem service) {
+    public void add(String groupKey, Item service) {
 
         String key = isEmpty(groupKey) ? Group.COMMON : groupKey;
 
@@ -76,7 +76,7 @@ public class Groups {
      *
      * @return map with keys naming the groups
      */
-    public Map<String, List<LandscapeItem>> getAll() {
+    public Map<String, List<Item>> getAll() {
         return groups;
     }
 
@@ -87,7 +87,7 @@ public class Groups {
      * @param items    services
      * @return grouped services
      */
-    public static Groups by(Function<LandscapeItem, String> supplier, List<LandscapeItem> items) {
+    public static Groups by(Function<Item, String> supplier, List<Item> items) {
         var groups = new Groups();
         items.forEach(serviceItem -> {
             String key = supplier.apply(serviceItem);
@@ -97,7 +97,7 @@ public class Groups {
         return groups;
     }
 
-    private void add(LandscapeItem service) {
+    private void add(Item service) {
         add(service.getGroup(), service);
     }
 

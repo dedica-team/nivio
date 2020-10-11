@@ -75,10 +75,10 @@ class InputFormatHandlerNivioTest {
             }
         });
 
-        assertNotNull(RelationType.PROVIDER.filter(service.getRelations()));
+        assertNotNull(RelationType.PROVIDER.filterRelationDescription(service.getRelations()));
         assertEquals(3, service.getProvidedBy().size());
 
-        List<RelationItem> dataflows = RelationType.DATAFLOW.filter(service.getRelations());
+        List<RelationDescription> dataflows = RelationType.DATAFLOW.filterRelationDescription(service.getRelations());
         assertNotNull(dataflows);
         assertEquals(2, dataflows.size());
         dataflows.forEach(dataFlow -> {

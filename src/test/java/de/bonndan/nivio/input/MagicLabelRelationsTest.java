@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,7 +47,7 @@ class MagicLabelRelationsTest {
 
         //then
         assertEquals(1, item.getRelations().size());
-        RelationItem<String> rel = item.getRelations().iterator().next();
+        RelationDescription rel = item.getRelations().iterator().next();
         assertEquals("elastic-server-as89", rel.getTarget());
     }
 
@@ -62,7 +63,7 @@ class MagicLabelRelationsTest {
 
         //then
         assertEquals(1, item.getRelations().size());
-        RelationItem<String> rel = item.getRelations().iterator().next();
+        RelationDescription rel = item.getRelations().iterator().next();
         assertEquals("elastic", rel.getTarget());
     }
 
@@ -78,7 +79,7 @@ class MagicLabelRelationsTest {
 
         //then
         assertEquals(1, item.getRelations().size());
-        RelationItem<String> rel = item.getRelations().iterator().next();
+        RelationDescription rel = item.getRelations().iterator().next();
         assertEquals("api-foo", rel.getTarget());
     }
 
@@ -96,7 +97,7 @@ class MagicLabelRelationsTest {
 
         //then
         assertEquals(1, item.getRelations().size());
-        RelationItem<String> rel = item.getRelations().iterator().next();
+        RelationDescription rel = item.getRelations().iterator().next();
         assertEquals("api.foo.123", rel.getTarget());
     }
 
@@ -152,7 +153,7 @@ class MagicLabelRelationsTest {
 
         //then
         assertEquals(1, item.getRelations().size());
-        RelationItem<String> rel = item.getRelations().iterator().next();
+        RelationDescription rel = item.getRelations().iterator().next();
         assertEquals("baz", rel.getTarget());
     }
 
@@ -213,7 +214,7 @@ class MagicLabelRelationsTest {
 
         //then
         assertEquals(1, item.getRelations().size());
-        RelationItem<String> rel = item.getRelations().iterator().next();
+        RelationDescription rel = item.getRelations().iterator().next();
         assertEquals("x.y.z", rel.getSource());
         assertEquals("x.y.z", rel.getSource());
         assertEquals(RelationType.PROVIDER, rel.getType());

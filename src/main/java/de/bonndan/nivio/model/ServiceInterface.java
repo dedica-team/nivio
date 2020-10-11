@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.net.URL;
 
-public class ServiceInterface implements InterfaceItem {
+public class ServiceInterface {
 
     @JsonBackReference
     private Item item;
@@ -24,22 +24,18 @@ public class ServiceInterface implements InterfaceItem {
         this.url = interfaceItem.getUrl();
     }
 
-    @Override
     public String getDescription() {
         return description;
     }
 
-    @Override
     public String getFormat() {
         return format;
     }
 
-    @Override
     public URL getUrl() {
         return url;
     }
 
-    @Override
     public String getProtection() {
         return protection;
     }

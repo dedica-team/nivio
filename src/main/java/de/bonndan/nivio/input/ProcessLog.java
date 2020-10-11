@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeImpl;
 import org.slf4j.Logger;
 
 import java.time.LocalDateTime;
@@ -23,7 +24,7 @@ public class ProcessLog {
 
     private final List<Entry> messages = new ArrayList<>();
 
-    private Landscape landscape;
+    private LandscapeImpl landscape;
 
     public ProcessLog(Logger logger) {
         this.logger = logger;
@@ -39,7 +40,7 @@ public class ProcessLog {
         logger.info(message);
     }
 
-    public void setLandscape(Landscape landscape) {
+    public void setLandscape(LandscapeImpl landscape) {
         this.landscape = landscape;
     }
 
@@ -64,7 +65,7 @@ public class ProcessLog {
     }
 
     @JsonIgnore
-    public Landscape getLandscape() {
+    public LandscapeImpl getLandscape() {
         return landscape;
     }
 

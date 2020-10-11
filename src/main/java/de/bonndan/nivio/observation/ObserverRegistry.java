@@ -88,7 +88,7 @@ public class ObserverRegistry implements ApplicationListener<ProcessingFinishedE
             LOGGER.info("Errors occurred while scanning landscape {} for changes:  {}", observerPool.getLandscape(), errors);
         }
 
-        Landscape stored = observerPool.getLandscape();
+        LandscapeImpl stored = observerPool.getLandscape();
         LOGGER.debug("Detected {} changes in landscape {}", change.getChanges().size(), stored.getIdentifier());
 
         if (change.getChanges().size() > 0) {

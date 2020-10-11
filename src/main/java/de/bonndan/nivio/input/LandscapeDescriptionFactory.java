@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.util.Mappers;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookupFactory;
@@ -37,16 +38,34 @@ public class LandscapeDescriptionFactory {
     /**
      * Returns a {@link LandscapeDescription}s from config file url.
      *
-     * @param old an outdated landscape / description
+     * @param outdatedLandscape an outdated landscape
      * @return the description or null if the source is no URL
      */
     @Nullable
-    public LandscapeDescription from(Landscape old) {
+    public LandscapeDescription from(LandscapeImpl outdatedLandscape) {
         try {
-            URL url = new URL(old.getSource());
+            URL url = new URL(outdatedLandscape.getSource());
             return from(url);
         } catch (MalformedURLException e) {
-            String msg = "Source in landscape " + old.getIdentifier() + " might be no url: " + old.getSource();
+            String msg = "Source in landscape " + outdatedLandscape.getIdentifier() + " might be no url: " + outdatedLandscape.getSource();
+            LOGGER.info(msg);
+            return null;
+        }
+    }
+
+    /**
+     * Returns a {@link LandscapeDescription}s from config file url.
+     *
+     * @param outdatedDescription an outdated description
+     * @return the description or null if the source is no URL
+     */
+    @Nullable
+    public LandscapeDescription from(LandscapeDescription outdatedDescription) {
+        try {
+            URL url = new URL(outdatedDescription.getSource());
+            return from(url);
+        } catch (MalformedURLException e) {
+            String msg = "Source in landscape " + outdatedDescription.getIdentifier() + " might be no url: " + outdatedDescription.getSource();
             LOGGER.info(msg);
             return null;
         }

@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.*;
@@ -89,9 +90,9 @@ public class IndexerIntegrationTest {
         assertEquals(blog.getIdentifier(), push.getSource().getIdentifier());
         assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget().getFullyQualifiedIdentifier().toString());
 
-        Set<InterfaceItem> interfaces = blog.getInterfaces();
+        Set<ServiceInterface> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());
-        InterfaceItem i = blog.getInterfaces().stream()
+        ServiceInterface i = blog.getInterfaces().stream()
                 .filter(d -> d.getDescription().equals("posts"))
                 .findFirst()
                 .orElseThrow();
@@ -116,7 +117,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
 
-        Relation push = (Relation) blog.getRelations().stream()
+        Relation push = blog.getRelations().stream()
                 .filter(d -> "push".equals(d.getDescription()))
                 .findFirst()
                 .orElse(null);
@@ -128,9 +129,9 @@ public class IndexerIntegrationTest {
         assertEquals("nivio:example/content/blog-server", push.getSource().getFullyQualifiedIdentifier().toString());
         assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget().getFullyQualifiedIdentifier().toString());
 
-        Set<InterfaceItem> interfaces = blog.getInterfaces();
+        Set<ServiceInterface> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());
-        InterfaceItem i = blog.getInterfaces().stream()
+        ServiceInterface i = blog.getInterfaces().stream()
                 .filter(d -> d.getDescription().equals("posts"))
                 .findFirst()
                 .orElseThrow();
@@ -227,7 +228,7 @@ public class IndexerIntegrationTest {
     public void environmentTemplatesApplied() {
         LandscapeImpl landscape = index("/src/test/resources/example/example_templates.yml");
 
-        LandscapeItem web = landscape.getItems().pick("web", null);
+        Item web = landscape.getItems().pick("web", null);
         assertNotNull(web);
         assertEquals("web", web.getIdentifier());
         assertEquals("webservice", web.getType());
@@ -236,14 +237,14 @@ public class IndexerIntegrationTest {
     @Test
     public void readGroups() {
         LandscapeImpl landscape1 = index("/src/test/resources/example/example_env.yml");
-        Map<String, GroupItem> groups = landscape1.getGroups();
+        Map<String, Group> groups = landscape1.getGroups();
         assertTrue(groups.containsKey("content"));
-        Group content = (Group) groups.get("content");
+        Group content = groups.get("content");
         assertFalse(content.getItems().isEmpty());
         assertEquals(3, content.getItems().size());
 
         assertTrue(groups.containsKey("ingress"));
-        Group ingress = (Group) groups.get("ingress");
+        Group ingress = groups.get("ingress");
         assertFalse(ingress.getItems().isEmpty());
         assertEquals(1, ingress.getItems().size());
     }
@@ -251,7 +252,7 @@ public class IndexerIntegrationTest {
     @Test
     public void readGroupsContains() {
         LandscapeImpl landscape1 = index("/src/test/resources/example/example_groups.yml");
-        Group a = (Group) landscape1.getGroups().get("groupA");
+        Group a = landscape1.getGroups().get("groupA");
         ItemIndex index = new ItemIndex(new HashSet<>(a.getItems()));
         assertNotNull(index.pick("blog-server", null));
         assertNotNull(index.pick("crappy_dockername-234234", null));

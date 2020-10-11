@@ -1,7 +1,5 @@
 package de.bonndan.nivio.input.dto;
 
-import de.bonndan.nivio.model.InterfaceItem;
-
 import java.io.Serializable;
 import java.net.URL;
 

@@ -50,7 +50,7 @@ class ObserverRegistryTest {
         landscape = LandscapeFactory.create(description.getIdentifier());
         landscape.setSource(source);
 
-        ProcessingFinishedEvent event = new ProcessingFinishedEvent(description);
+        ProcessingFinishedEvent event = new ProcessingFinishedEvent(description, landscape);
 
         when(this.landscapeDescriptionFactory.from(landscape)).thenReturn(description);
         when(observerPoolFactory.getPoolFor(eq(landscape), eq(description))).thenReturn(new LandscapeObserverPool(landscape, new ArrayList<>()));

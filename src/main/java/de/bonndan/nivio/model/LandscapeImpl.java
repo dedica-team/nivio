@@ -22,7 +22,7 @@ import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LandscapeImpl implements Landscape, Labeled, Assessable {
+public class LandscapeImpl implements Linked, Component, Labeled, Assessable {
 
     /**
      * Immutable unique identifier. Maybe use an URN.
@@ -109,7 +109,6 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
         return contact;
     }
 
-    @Override
     public LandscapeConfig getConfig() {
         if (config == null) {
             config = new LandscapeConfig();
@@ -118,7 +117,6 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
     }
 
     @JsonIgnore
-    @Override
     public Map<String, Group> getGroups() {
         return groups;
     }
@@ -227,7 +225,6 @@ public class LandscapeImpl implements Landscape, Labeled, Assessable {
         return getGroups().values().stream().map(groupItem -> (Assessable)groupItem).collect(Collectors.toList());
     }
 
-    @Override
     @Schema(name = "_links")
     public Map<String, Link> getLinks() {
         return links;

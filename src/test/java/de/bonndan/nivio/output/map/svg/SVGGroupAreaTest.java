@@ -19,7 +19,7 @@ class SVGGroupAreaTest {
         occupied.add(new Hex(3, 3, -6));
 
         Item landscapeItem = new Item("group", "landscapeItem");
-        Map<LandscapeItem, Hex> vertexHexes = Map.of(landscapeItem, new Hex(1, 2, -3));
+        Map<Item, Hex> vertexHexes = Map.of(landscapeItem, new Hex(1, 2, -3));
 
         Group group = new Group("group");
         group.addItem(landscapeItem);

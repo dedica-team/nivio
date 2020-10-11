@@ -22,14 +22,14 @@ class SVGRelation extends Component {
     public static final String MARKER = "▸";
     private final HexPath hexPath;
     private final String fill;
-    private final RelationItem<Item> relation;
+    private final Relation relation;
 
     /**
      * @param hexPath the calculated best path
      * @param fill color
      * @param relation graph edge, source is the item this relation belongs to
      */
-    SVGRelation(@NonNull HexPath hexPath, @NonNull String fill, @NonNull RelationItem<Item> relation) {
+    SVGRelation(@NonNull HexPath hexPath, @NonNull String fill, @NonNull Relation relation) {
         this.hexPath = hexPath;
         Objects.requireNonNull(fill);
         this.fill = fill;
@@ -72,7 +72,7 @@ class SVGRelation extends Component {
         );
     }
 
-    private ContainerTag addAttributes(ContainerTag g, RelationItem<Item> relation) {
+    private ContainerTag addAttributes(ContainerTag g, Relation relation) {
         String type = !StringUtils.isEmpty(relation.getType()) ? relation.getType().name() : "-";
         g.attr("data-type", type)
                 .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().jsonValue())
@@ -115,7 +115,7 @@ class SVGRelation extends Component {
                 .attr("transform", transform);
     }
 
-    public RelationItem<Item> getRelationItem() {
+    public Relation getRelationItem() {
         return relation;
     }
 

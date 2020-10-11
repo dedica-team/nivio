@@ -63,7 +63,7 @@ class ItemDescriptionValuesTest {
 
         ItemDescriptionValues.assignNotNull(sd1, increment);
 
-        assertEquals(2, RelationType.PROVIDER.filter(sd1.getRelations()).size());
+        assertEquals(2, RelationType.PROVIDER.filterRelationDescription(sd1.getRelations()).size());
     }
 
     @Test
