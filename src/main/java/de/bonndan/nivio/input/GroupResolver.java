@@ -5,7 +5,7 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Groups;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class GroupResolver extends Resolver {
         super(processLog);
     }
 
-    public void process(LandscapeDescription input, LandscapeImpl landscape) {
+    public void process(LandscapeDescription input, Landscape landscape) {
 
         List<Function<String, Boolean>> specs = getSpecs(input.getConfig().getGroupBlacklist());
 

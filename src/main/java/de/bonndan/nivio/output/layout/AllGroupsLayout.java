@@ -18,9 +18,9 @@ public class AllGroupsLayout {
 
     private final Map<Group, LayoutedComponent> groupNodes = new LinkedHashMap<>();
     private final FastOrganicLayout layout;
-    private final LandscapeImpl landscape;
+    private final Landscape landscape;
 
-    public AllGroupsLayout(LandscapeImpl landscape, Map<String, Group> groups, Map<String, SubLayout> subgraphs) {
+    public AllGroupsLayout(Landscape landscape, Map<String, Group> groups, Map<String, SubLayout> subgraphs) {
         this.landscape = landscape;
 
         LOGGER.debug("Subgraphs sequence: {}", subgraphs);

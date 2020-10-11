@@ -21,7 +21,7 @@ public class Groups {
      * @param landscape landscape containing the item
      * @return groups
      */
-    public static Groups from(LandscapeImpl landscape) {
+    public static Groups from(Landscape landscape) {
         Groups groups = new Groups();
         landscape.getItems().stream().forEach(groups::add);
         return groups;

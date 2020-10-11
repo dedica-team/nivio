@@ -9,8 +9,8 @@ public class LandscapeFactory {
      *
      * @param input the description
      */
-    public static LandscapeImpl create(LandscapeDescription input) {
-        LandscapeImpl landscape = create(input.getIdentifier());
+    public static Landscape create(LandscapeDescription input) {
+        Landscape landscape = create(input.getIdentifier());
         landscape.setSource(input.getSource());
         return landscape;
     }
@@ -21,11 +21,11 @@ public class LandscapeFactory {
      * @param identifier landscape identifier
      * @return new landscape
      */
-    public static LandscapeImpl create(String identifier) {
-        return new LandscapeImpl(identifier, new Group(Group.COMMON));
+    public static Landscape create(String identifier) {
+        return new Landscape(identifier, new Group(Group.COMMON));
     }
 
-    public static void assignAll(LandscapeDescription input, LandscapeImpl landscape) {
+    public static void assignAll(LandscapeDescription input, Landscape landscape) {
         landscape.setName(input.getName());
         landscape.setContact(input.getContact());
         landscape.setConfig(input.getConfig());

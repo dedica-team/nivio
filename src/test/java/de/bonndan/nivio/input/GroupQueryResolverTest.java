@@ -5,9 +5,8 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeFactory;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -33,7 +32,7 @@ class GroupQueryResolverTest {
 
     @Test
     void process_doesNotContainDuplicatedItemsInGroups() {
-        LandscapeImpl landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.create("test");
         landscape.setProcessLog(processLog);
         Item item = new Item("groupIdentifier", "itemIdentifier");
         landscape.setItems(Set.of(item));
@@ -53,7 +52,7 @@ class GroupQueryResolverTest {
 
     @Test
     void process_findsItemsIfQueryConditionIsNotLowercase() {
-        LandscapeImpl landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.create("test");
         landscape.setProcessLog(processLog);
         Item item = new Item("groupIdentifier", "itemIdentifier");
         landscape.setItems(Set.of(item));
@@ -78,7 +77,7 @@ class GroupQueryResolverTest {
          * I have removed the magic from landscape.getGroup() and made that LandscapeFactory creates the COMMON group
          * as default. I've also added a test, so this test is obsolete.
          */
-        LandscapeImpl landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.create("test");
         landscape.setProcessLog(processLog);
         Item item = new Item(null, "itemIdentifier");
 
@@ -98,7 +97,7 @@ class GroupQueryResolverTest {
 
     @Test
     void process_withLandscapeFromLandscapeFactory_containsCommonGroupIfNoGroupWasSet() {
-        LandscapeImpl landscape = LandscapeFactory.create("landscapeIdentifier");
+        Landscape landscape = LandscapeFactory.create("landscapeIdentifier");
         Item item = new Item(null, "itemIdentifier");
 
         landscape.setItems(Set.of(item));

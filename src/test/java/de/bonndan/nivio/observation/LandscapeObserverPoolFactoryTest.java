@@ -8,7 +8,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.LandscapeFactory;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.util.URLHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 
 class LandscapeObserverPoolFactoryTest {
 
-    private LandscapeImpl landscape;
+    private Landscape landscape;
     private InputFormatHandlerFactory formatFactory;
     private LandscapeObserverPoolFactory observerPoolFactory;
     private FileFetcher fileFetcher;

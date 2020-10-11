@@ -3,7 +3,7 @@ package de.bonndan.nivio.input;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.util.Mappers;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookupFactory;
@@ -41,7 +41,7 @@ public class LandscapeDescriptionFactory {
      * @return the description or null if the source is no URL
      */
     @Nullable
-    public LandscapeDescription from(LandscapeImpl outdatedLandscape) {
+    public LandscapeDescription from(Landscape outdatedLandscape) {
         try {
             URL url = new URL(outdatedLandscape.getSource());
             return from(url);

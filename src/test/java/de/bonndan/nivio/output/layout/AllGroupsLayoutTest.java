@@ -5,7 +5,6 @@ import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,7 +20,7 @@ class AllGroupsLayoutTest {
         Group b = new Group("b");
         Group c = new Group("c");
 
-        LandscapeImpl landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.create("test");
 
         landscape.getGroups().put("a", a);
         landscape.getGroups().put("b", b);

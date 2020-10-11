@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 
 import java.io.IOException;
 
@@ -17,25 +17,25 @@ import java.io.IOException;
  */
 public class ProcessingFinishedEvent extends ProcessingEvent {
 
-    private final LandscapeImpl landscape;
+    private final Landscape landscape;
 
     /**
      * @param source the LandscapeDescription
      * @param landscape out
      */
-    public ProcessingFinishedEvent(LandscapeDescription source, LandscapeImpl landscape) {
+    public ProcessingFinishedEvent(LandscapeDescription source, Landscape landscape) {
         super(source);
         this.landscape = landscape;
     }
 
     @JsonSerialize(using = PLS.class)
-    public LandscapeImpl getLandscape() {
+    public Landscape getLandscape() {
         return landscape;
     }
 
-    private static class PLS extends JsonSerializer<LandscapeImpl> {
+    private static class PLS extends JsonSerializer<Landscape> {
         @Override
-        public void serialize(LandscapeImpl value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+        public void serialize(Landscape value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
             gen.writeString(value.getIdentifier());
         }
     }

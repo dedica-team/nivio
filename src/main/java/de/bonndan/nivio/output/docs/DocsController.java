@@ -2,7 +2,7 @@ package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.api.NotFoundException;
 import de.bonndan.nivio.assessment.kpi.KPIFactory;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.LocalServer;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class DocsController {
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/" + REPORT_HTML)
     public ResponseEntity<String> htmlResource(@PathVariable(name = "landscape") final String landscapeIdentifier) {
 
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
                 () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
         );
 
@@ -55,7 +55,7 @@ public class DocsController {
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/owners.html")
     public ResponseEntity<String> owners(@PathVariable(name = "landscape") final String landscapeIdentifier) {
 
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
                 () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
         );
 

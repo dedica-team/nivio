@@ -12,7 +12,7 @@ public class ItemRelationResolver extends Resolver {
     }
 
     @Override
-    public void process(LandscapeDescription input, LandscapeImpl landscape) {
+    public void process(LandscapeDescription input, Landscape landscape) {
         input.getItemDescriptions().all().forEach(serviceDescription -> {
             Item origin = landscape.getItems().pick(serviceDescription);
             if (!input.isPartial()) {

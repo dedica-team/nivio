@@ -2,7 +2,7 @@ package de.bonndan.nivio.output.map;
 
 import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.ProcessLog;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.layout.Layouter;
 import de.bonndan.nivio.output.layout.OrganicLayouter;
@@ -26,7 +26,7 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RenderCache.class);
 
-    private final Map<LandscapeImpl, String> renderings = new HashMap<>();
+    private final Map<Landscape, String> renderings = new HashMap<>();
 
     private final SVGRenderer svgRenderer;
     private final Layouter<LayoutedComponent> layouter;
@@ -44,7 +44,7 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
      * @return the svg as string, uncached
      */
     @Nullable
-    public String getSVG(LandscapeImpl landscape) {
+    public String getSVG(Landscape landscape) {
 
         if (!renderings.containsKey(landscape))
             createCacheEntry(landscape);
@@ -52,7 +52,7 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
         return renderings.get(landscape);
     }
 
-    private void createCacheEntry(LandscapeImpl landscape) {
+    private void createCacheEntry(Landscape landscape) {
         LayoutedComponent layout = layouter.layout(landscape);
 
         if (landscape.getLog() == null) {
@@ -65,7 +65,7 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
 
     @Override
     public void onApplicationEvent(ProcessingFinishedEvent processingFinishedEvent) {
-        LandscapeImpl landscape = processingFinishedEvent.getLandscape();
+        Landscape landscape = processingFinishedEvent.getLandscape();
         if (landscape != null) {
             LOGGER.info("Generating SVG rendering of landscape {}", landscape.getIdentifier());
             createCacheEntry(landscape);

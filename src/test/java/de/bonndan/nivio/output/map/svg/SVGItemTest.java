@@ -2,13 +2,12 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeFactory;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +16,7 @@ class SVGItemTest {
     @Test
     @DisplayName("ensure item uses proper fqi as id")
     public void regression184() {
-        LandscapeImpl landscape = LandscapeFactory.create("l1");
+        Landscape landscape = LandscapeFactory.create("l1");
 
         // item has no group
         Item foo = new Item(null, "foo");
@@ -30,7 +29,7 @@ class SVGItemTest {
     @Test
     @DisplayName("contains x and y data")
     public void xyData() {
-        LandscapeImpl landscape = LandscapeFactory.create("l1");
+        Landscape landscape = LandscapeFactory.create("l1");
 
         // item has no group
         Item foo = new Item(null, "foo");

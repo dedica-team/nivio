@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Compares the input {@link LandscapeDescription} against the existing {@link LandscapeImpl}.
+ * Compares the input {@link LandscapeDescription} against the existing {@link Landscape}.
  *
  * Adds, updates and removes items in the landscape.
  */
@@ -20,7 +20,7 @@ public class DiffResolver extends Resolver {
     }
 
     @Override
-    public void process(LandscapeDescription input, LandscapeImpl landscape) {
+    public void process(LandscapeDescription input, Landscape landscape) {
         Set<Item> existingItems = landscape.getItems().all();
 
         //insert new ones
@@ -86,7 +86,7 @@ public class DiffResolver extends Resolver {
     /**
      * Returns all items that are also present in the new itemDescriptions
      */
-    static List<Item> kept(Collection<? extends ItemDescription> newItems, Collection<? extends Item> items, LandscapeImpl landscape) {
+    static List<Item> kept(Collection<? extends ItemDescription> newItems, Collection<? extends Item> items, Landscape landscape) {
         return items.stream()
                 .filter(item -> presentInNewItems(item, newItems, landscape))
                 .collect(Collectors.toList());
@@ -104,14 +104,14 @@ public class DiffResolver extends Resolver {
     /**
      * Returns all elements which are not in the second list
      */
-    static List<Item> added(Collection<? extends ItemDescription> itemDescriptions, Collection<? extends Item> existingItems, LandscapeImpl landscape) {
+    static List<Item> added(Collection<? extends ItemDescription> itemDescriptions, Collection<? extends Item> existingItems, Landscape landscape) {
         return itemDescriptions.stream()
                 .map(itemDescription -> ItemFactory.fromDescription(itemDescription, landscape))
                 .filter(newItem -> doesNotExistAsItem(newItem, existingItems))
                 .collect(Collectors.toList());
     }
 
-    private static boolean presentInNewItems(Item item, Collection<? extends ItemDescription> newItems, LandscapeImpl landscape) {
+    private static boolean presentInNewItems(Item item, Collection<? extends ItemDescription> newItems, Landscape landscape) {
         return newItems.stream()
                 .map(newItem -> ItemFactory.fromDescription(newItem, landscape))
                 .anyMatch(inList -> ItemMatcher.forTarget(item).isSimilarTo(inList));

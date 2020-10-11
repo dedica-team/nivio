@@ -29,7 +29,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
     @NotNull
     @JsonIgnore
     @Schema(hidden = true)
-    private LandscapeImpl landscape;
+    private Landscape landscape;
 
     private String name;
 
@@ -73,11 +73,11 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         return FullyQualifiedIdentifier.build(landscape == null ? "" : landscape.getIdentifier(), group, identifier);
     }
 
-    public LandscapeImpl getLandscape() {
+    public Landscape getLandscape() {
         return landscape;
     }
 
-    public void setLandscape(LandscapeImpl landscape) {
+    public void setLandscape(Landscape landscape) {
         this.landscape = landscape;
     }
 

@@ -33,7 +33,7 @@ public class MagicLabelRelations extends Resolver {
         super(processLog);
     }
 
-    public void process(LandscapeDescription input, LandscapeImpl landscape) {
+    public void process(LandscapeDescription input, Landscape landscape) {
 
         Map<ItemDescription, List<LabelMatch>> itemMatches = new HashMap<>();
         List<Function<String, Boolean>> blacklistSpecs = getBlacklistSpecs(landscape.getConfig().getLabelBlacklist());
@@ -92,7 +92,7 @@ public class MagicLabelRelations extends Resolver {
 
     private List<LabelMatch> getMatches(
             ItemDescription itemDescription,
-            LandscapeImpl landscape,
+            Landscape landscape,
             List<Function<String, Boolean>> blacklistSpecs
     ) {
         return itemDescription.getLabels().entrySet().stream()
@@ -103,7 +103,7 @@ public class MagicLabelRelations extends Resolver {
                 .collect(Collectors.toList());
     }
 
-    private LabelMatch getPossibleTargetsForLabel(String key, String value, LandscapeImpl landscape) {
+    private LabelMatch getPossibleTargetsForLabel(String key, String value, Landscape landscape) {
 
         List<String> keyParts = Arrays.stream(key.split(KEY_SEPARATOR))
                 .map(String::toLowerCase)

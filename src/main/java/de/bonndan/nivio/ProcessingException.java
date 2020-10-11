@@ -2,10 +2,6 @@ package de.bonndan.nivio;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.LandscapeImpl;
-import org.springframework.lang.Nullable;
-
-import java.util.Optional;
 
 /**
  * Generic exception tied to a landscape.

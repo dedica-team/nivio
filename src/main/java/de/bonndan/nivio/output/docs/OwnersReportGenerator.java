@@ -18,12 +18,12 @@ public class OwnersReportGenerator extends HtmlGenerator {
         super(localServer);
     }
 
-    public String toDocument(LandscapeImpl landscape) {
+    public String toDocument(Landscape landscape) {
 
         return writeLandscape(landscape);
     }
 
-    private String writeLandscape(LandscapeImpl landscape) {
+    private String writeLandscape(Landscape landscape) {
 
         return html(
                 getHead(landscape),

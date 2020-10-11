@@ -13,7 +13,7 @@ public class ItemFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ItemFactory.class);
 
-    public static Item fromDescription(ItemDescription item, LandscapeImpl landscape) {
+    public static Item fromDescription(ItemDescription item, Landscape landscape) {
         if (item == null) {
             throw new RuntimeException("landscape item is null");
         }

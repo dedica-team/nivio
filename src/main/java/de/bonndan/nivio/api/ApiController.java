@@ -61,8 +61,8 @@ public class ApiController {
      */
     @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(path = "/{landscapeIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LandscapeImpl> landscape(@PathVariable String landscapeIdentifier) {
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
+    public ResponseEntity<Landscape> landscape(@PathVariable String landscapeIdentifier) {
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }
@@ -80,7 +80,7 @@ public class ApiController {
     public ResponseEntity<Group> group(@PathVariable String landscapeIdentifier,
                                        @PathVariable String groupIdentifier
     ) {
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }
@@ -104,7 +104,7 @@ public class ApiController {
                                      @PathVariable String groupIdentifier,
                                      @PathVariable String itemIdentifier
     ) {
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }
@@ -155,7 +155,7 @@ public class ApiController {
     @RequestMapping(path = "/landscape/{identifier}/log", method = RequestMethod.GET)
     public ResponseEntity<ProcessLog> log(@PathVariable String identifier) {
 
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }
@@ -168,7 +168,7 @@ public class ApiController {
     @RequestMapping(path = "/landscape/{identifier}/search/{query}", method = RequestMethod.GET)
     public ResponseEntity<Set<Item>> search(@PathVariable String identifier, @PathVariable String query) {
 
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }
@@ -185,7 +185,7 @@ public class ApiController {
     @RequestMapping(path = "/landscape/{identifier}/facets", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<List<FacetResult>> facets(@PathVariable String identifier) {
 
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }
@@ -199,7 +199,7 @@ public class ApiController {
      */
     @RequestMapping(path = "/reindex/{landscape}", method = RequestMethod.POST)
     public ProcessLog reindex(@PathVariable String landscape) {
-        LandscapeImpl distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape).orElse(null);
+        Landscape distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape).orElse(null);
         if (distinctByIdentifier == null) {
             ProcessLog p = new ProcessLog(LoggerFactory.getLogger("nivio"));
             p.error(new ProcessingException(null, "Could not find landscape " + landscape));

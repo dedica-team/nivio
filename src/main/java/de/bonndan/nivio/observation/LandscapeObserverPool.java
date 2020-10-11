@@ -1,7 +1,7 @@
 package de.bonndan.nivio.observation;
 
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,10 +18,10 @@ public class LandscapeObserverPool {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeObserverPool.class);
 
-    private final LandscapeImpl landscape;
+    private final Landscape landscape;
     private final List<InputFormatObserver> observers;
 
-    public LandscapeObserverPool(LandscapeImpl landscape, List<InputFormatObserver> observers) {
+    public LandscapeObserverPool(Landscape landscape, List<InputFormatObserver> observers) {
         this.landscape = landscape;
         this.observers = observers;
     }
@@ -59,7 +59,7 @@ public class LandscapeObserverPool {
         return change;
     }
 
-    LandscapeImpl getLandscape() {
+    Landscape getLandscape() {
         return landscape;
     }
 

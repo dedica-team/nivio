@@ -3,7 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,13 +19,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class AppearanceResolverTest {
 
     private AppearanceResolver resolver;
-    private LandscapeImpl landscape;
+    private Landscape landscape;
 
     @BeforeEach
     public void setup() {
         resolver = new AppearanceResolver(new ProcessLog(LoggerFactory.getLogger(AppearanceResolverTest.class)), new LocalServer("", new VendorIcons()));
 
-        landscape = new LandscapeImpl("l1", new Group(Group.COMMON));
+        landscape = new Landscape("l1", new Group(Group.COMMON));
 
         Group g1 = new Group("g1");
         landscape.addGroup(g1);

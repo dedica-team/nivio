@@ -30,14 +30,14 @@ public class SVGDocument extends Component {
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGDocument.class);
 
     private final LayoutedComponent layouted;
-    private final LandscapeImpl landscape;
+    private final Landscape landscape;
     private final String cssStyles;
     private boolean debug = false;
     private HexMap hexMap;
 
     public SVGDocument(@NonNull LayoutedComponent layouted, @Nullable String cssStyles) {
         this.layouted = Objects.requireNonNull(layouted);
-        this.landscape = (LandscapeImpl) layouted.getComponent();
+        this.landscape = (Landscape) layouted.getComponent();
         this.cssStyles = StringUtils.isEmpty(cssStyles) ? "" : cssStyles;
     }
 

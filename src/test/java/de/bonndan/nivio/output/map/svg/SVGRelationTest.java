@@ -15,7 +15,7 @@ class SVGRelationTest {
     @DisplayName("items without groups use proper fqi")
     public void regression184() {
 
-        LandscapeImpl landscape = LandscapeFactory.create("l1");
+        Landscape landscape = LandscapeFactory.create("l1");
 
         //both items have no group
         Item foo = new Item(null, "foo");

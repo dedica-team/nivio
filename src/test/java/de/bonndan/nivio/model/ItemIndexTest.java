@@ -14,12 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ItemIndexTest {
 
     private ArrayList<Item> items;
-    private LandscapeImpl landscape;
+    private Landscape landscape;
 
     @BeforeEach
     public void setup() {
 
-        landscape = new LandscapeImpl("l1", new Group(Group.COMMON));
+        landscape = new Landscape("l1", new Group(Group.COMMON));
 
         items = new ArrayList<>();
 

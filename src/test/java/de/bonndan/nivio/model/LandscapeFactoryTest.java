@@ -28,7 +28,7 @@ class LandscapeFactoryTest {
 
     @Test
     public void create() {
-        LandscapeImpl landscape = LandscapeFactory.create(description);
+        Landscape landscape = LandscapeFactory.create(description);
         assertNotNull(landscape);
         assertEquals(description.getIdentifier(), landscape.getIdentifier());
         assertEquals(description.getSource(), landscape.getSource());
@@ -36,13 +36,13 @@ class LandscapeFactoryTest {
 
     @Test
     public void createWithMinIdentifier() {
-        LandscapeImpl landscape = LandscapeFactory.create("l1");
+        Landscape landscape = LandscapeFactory.create("l1");
         assertNotNull(landscape);
     }
 
     @Test
     public void createAddsCommonGroup() {
-        LandscapeImpl landscape = LandscapeFactory.create(description);
+        Landscape landscape = LandscapeFactory.create(description);
         assertNotNull(landscape);
         assertEquals(1, landscape.getGroups().size());
         assertNotNull(landscape.getGroup(Group.COMMON));
@@ -50,7 +50,7 @@ class LandscapeFactoryTest {
 
     @Test
     public void assignAll() {
-        LandscapeImpl landscape = LandscapeFactory.create(description);
+        Landscape landscape = LandscapeFactory.create(description);
         LandscapeFactory.assignAll(description, landscape);
         assertEquals(description.getContact(), landscape.getContact());
         assertEquals(description.getConfig(), landscape.getConfig());

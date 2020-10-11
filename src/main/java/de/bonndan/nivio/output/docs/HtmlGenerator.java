@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output.docs;
 
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.LocalServer;
 import j2html.tags.ContainerTag;
 
@@ -15,7 +15,7 @@ public abstract class HtmlGenerator {
         this.localServer = localServer;
     }
 
-    protected ContainerTag getHead(LandscapeImpl landscape) {
+    protected ContainerTag getHead(Landscape landscape) {
         return head(
                 title(landscape.getName()),
                 link().attr("rel", "stylesheet").attr("href", localServer.getUrl("/css/bootstrap.min.css")),
