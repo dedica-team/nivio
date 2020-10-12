@@ -73,7 +73,7 @@ items:
   - identifier: nivio
     name: Nivio
     group: nivio
-    icon: static/icons/nivio.png
+    type: nivio
     providedBy:
       - csv
       - prometheus
