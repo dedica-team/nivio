@@ -11,19 +11,15 @@ import java.util.Optional;
 public enum IconMapping {
 
     DEFAULT_ICON("cog"),
-    API("api"),
     CACHE("flash-circle"),
     CONTAINER("inbox"),
-    DATABASE("database"),
     FIREWALL("wall"),
     HUMANUSER("account"),
     INTERFACE("connection"),
     KEYVALUESTORE("keyvaluestore"),
     LOADBALANCER("loadbalancer"),
-    LOCK("lock"),
     MESSAGEQUEUE("tray-full"),
     MOBILECLIENT("cellphone"),
-    SERVER("server"),
     VOLUME("harddisk"),
     WEBSERVICE("application")
     ;
