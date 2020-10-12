@@ -46,6 +46,20 @@ like "account".
       - identifier: bar
         type: account
 
+The following types are translated icon to maintain backward compatibility:
+
+* CACHE -> "flash-circle"
+* CONTAINER -> "inbox"
+* FIREWALL -> "wall"
+* HUMANUSER -> "account"
+* INTERFACE -> "connection"
+* KEYVALUESTORE -> "keyvaluestore"
+* LOADBALANCER -> "loadbalancer"
+* MESSAGEQUEUE -> "tray-full"
+* MOBILECLIENT -> "cellphone"
+* VOLUME -> "harddisk"
+* WEBSERVICE -> "application"
+
 Vendor Logos
 ^^^^^^^^^^^^^
 The *icon* property can also work with a predefined vendor name like "redis", prefixed with "vendor://" as scheme.
