@@ -41,7 +41,7 @@ public class ItemFactory {
         item.setContact(description.getContact());
 
         item.setInterfaces(description.getInterfaces().stream()
-                .map(interfaceDescription -> new ServiceInterface())
+                .map(ServiceInterface::new)
                 .collect(Collectors.toSet()));
 
         item.getLinks().putAll(description.getLinks());
