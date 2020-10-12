@@ -12,10 +12,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -59,14 +56,17 @@ public class VendorIcons {
             return Optional.empty();
         }
 
-        if (!imageCache.containsKey(vendor.toLowerCase())) {
-            return load(vendor);
+        try {
+            if (!imageCache.containsKey(vendor.toLowerCase())) {
+                return load(vendor);
+            }
+            return responseToDataUrl(vendor, imageCache.get(vendor));
+        } catch (NoSuchElementException e) {
+            return Optional.empty();
         }
-
-        return responseToDataUrl(vendor, imageCache.get(vendor));
     }
 
-    public Optional<String> load(String vendor) {
+    private Optional<String> load(String vendor) {
 
         String iconRequestURI = vendorIconUrls.get(vendor);
         if (iconRequestURI == null) {
@@ -77,7 +77,6 @@ public class VendorIcons {
             CachedResponse cachedResponse;
             try {
                 cachedResponse = httpService.getResponse(new URL(iconRequestURI));
-                //TODO check status
             } catch (IOException | URISyntaxException | RuntimeException e) {
                 LOGGER.warn("Failed to load vendor icon: {}", e.getMessage());
                 return Optional.empty();
@@ -93,7 +92,7 @@ public class VendorIcons {
         Optional<String> contentType = getHeader(cachedResponse, "Content-type");
         LOGGER.debug("Downloaded file for vendor {} has content-type {}", vendor, contentType.orElse("unknown"));
         String dataUrl = getPrefix(contentType.orElse(""));
-        dataUrl += DataUrlHelper.asBase64(cachedResponse.getBytes());
+        dataUrl += DataUrlHelper.asBase64(cachedResponse.getBytes()).orElseThrow();
         return Optional.of(dataUrl);
     }
 
