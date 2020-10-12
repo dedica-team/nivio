@@ -1,0 +1,46 @@
+@import '../../../../Ressources/styling/colors.scss';
+@import '../../../../Ressources/styling/font.scss';
+
+.logContent {
+  position: relative;
+  overflow: auto;
+  width: 800px;
+  max-height: 85vh;
+  z-index: 1;
+  background-color: $background-grey;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  max-width: 100%;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .title {
+    position: relative;
+    z-index: 1;
+    display: block;
+    background-color: $header-color;
+
+    padding: 5px 09px;
+    box-shadow: 0px 0px 12px $box-shadow-color;
+
+    font-size: $header-font-size;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    width: 100%;
+  }
+
+  .logContainer {
+    margin-left: 6.4px;
+    padding-right: 14.4px;
+    margin-top: 11px;
+    display: flex;
+    flex-direction: row;
+
+    .logMessage {
+      align-self: center;
+    }
+  }
+}

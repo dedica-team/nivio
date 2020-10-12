@@ -60,8 +60,7 @@ class SVGRendererTest {
 
         lc.getChildren().add(glc);
 
-        Item baz = new Item();
-        baz.setIdentifier("baz");
+        Item baz = new Item(null,"baz");
 
         LayoutedComponent ilc = new LayoutedComponent(baz);
         glc.setWidth(50);

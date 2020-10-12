@@ -21,15 +21,11 @@ class SubLayoutTest {
         //given
         Group foo = new Group("foo");
 
-        Item bar = new Item();
-        bar.setIdentifier("bar");
-        bar.setGroup(foo.getIdentifier());
-        foo.getItems().add(bar);
+        Item bar = new Item(foo.getIdentifier(), "bar");;
+        foo.addItem(bar);
 
-        Item baz = new Item();
-        baz.setIdentifier("baz");
-        baz.setGroup(foo.getIdentifier());
-        foo.getItems().add(baz);
+        Item baz = new Item(foo.getIdentifier(), "baz");
+        foo.addItem(baz);
         baz.getRelations().add(new Relation(baz, bar));
 
         HashSet<Item> objects = new HashSet<>();
@@ -45,13 +41,13 @@ class SubLayoutTest {
         LayoutedComponent one = outerBounds.getChildren().get(0);
         assertNotNull(one);
         assertEquals(bar, one.getComponent());
-        assertEquals(63, Math.round(one.getX()));
-        assertEquals(63, Math.round(one.getY()));
+        assertEquals(-54, Math.round(one.getX()));
+        assertEquals(-14, Math.round(one.getY()));
 
         LayoutedComponent two = outerBounds.getChildren().get(1);
         assertNotNull(two);
         assertEquals(baz, two.getComponent());
-        assertEquals(-13, Math.round(two.getX()));
-        assertEquals(-13, Math.round(two.getY()));
+        assertEquals(104, Math.round(two.getX()));
+        assertEquals(64, Math.round(two.getY()));
     }
 }

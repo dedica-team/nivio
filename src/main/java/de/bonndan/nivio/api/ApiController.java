@@ -7,7 +7,6 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.URLHelper;
-import org.apache.http.entity.ContentType;
 import org.apache.lucene.facet.FacetResult;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -28,13 +27,13 @@ public class ApiController {
 
     private final LandscapeRepository landscapeRepository;
     private final LandscapeDescriptionFactory landscapeDescriptionFactory;
-    private final ItemDescriptionFormatFactory formatFactory;
+    private final InputFormatHandlerFactory formatFactory;
     private final Indexer indexer;
     private final LinkFactory linkFactory;
 
     public ApiController(LandscapeRepository landscapeRepository,
                          LandscapeDescriptionFactory landscapeDescriptionFactory,
-                         ItemDescriptionFormatFactory formatFactory,
+                         InputFormatHandlerFactory formatFactory,
                          Indexer indexer,
                          LinkFactory linkFactory
     ) {
@@ -47,7 +46,6 @@ public class ApiController {
 
     /**
      * Overview on all landscapes.
-     *
      */
     @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -135,21 +133,22 @@ public class ApiController {
             @RequestHeader(name = "format") String format,
             @RequestBody String body
     ) {
-        LandscapeDescription env = new LandscapeDescription();
-        env.setIdentifier(identifier);
-        env.setIsPartial(true);
+        LandscapeDescription dto = new LandscapeDescription();
+        dto.setIdentifier(identifier);
+        dto.setIsPartial(true);
 
-        SourceReference sourceReference = new SourceReference(null, format);
+        SourceReference sourceReference = new SourceReference();
+        sourceReference.setFormat(format);
         sourceReference.setContent(body);
 
-        ItemDescriptionFactory factory = formatFactory.getFactory(sourceReference, env);
-        URL baseUrl = URLHelper.getParentPath(env.getSource());
+        InputFormatHandler factory = formatFactory.getInputFormatHandler(sourceReference);
+        Optional<URL> baseUrl = URLHelper.getParentPath(dto.getSource());
 
-        List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference, baseUrl);
+        List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference, baseUrl.orElse(null));
 
-        env.setItemDescriptions(itemDescriptions);
+        dto.setItemDescriptions(itemDescriptions);
 
-        return indexer.reIndex(env);
+        return indexer.reIndex(dto);
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
@@ -223,12 +222,10 @@ public class ApiController {
             return indexer.reIndex(Objects.requireNonNull(landscapeDescription));
         }
 
-        URL url = URLHelper.getURL(landscape.getSource());
-        if (url != null) {
-            return process(landscapeDescriptionFactory.from(url));
-        }
+        Optional<URL> url = URLHelper.getURL(landscape.getSource());
 
-        return process(LandscapeDescriptionFactory.fromString(landscape.getSource(), landscape.getIdentifier() + " source"));
+        return url.map(u -> process(landscapeDescriptionFactory.from(u)))
+                .orElseGet(() -> process(LandscapeDescriptionFactory.fromString(landscape.getSource(), landscape.getIdentifier() + " source")));
     }
 
 }

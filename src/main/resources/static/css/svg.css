@@ -14,24 +14,26 @@
   cursor: pointer;
 }
 
-.map g.label rect {
+.map g.label {
   stroke-width: 0.1em;
-  stroke: #007F7F;
+  fill: white;
+  text-shadow: 2px 2px 2px black;
 }
 
 .map text.title {
   font-size: 3em;
 }
 
-.map text.item_shortName {
-  font-size: 2em;
+.map text.itemLabel {
+  font-size: 2.5em;
 }
 
 .map text.groupLabel {
   text-shadow: 1px 1px 1px black;
+  font-size: 2.5em;
 }
 
-.map path {
+.map .relation path {
   fill: none;
   stroke-width: 0.2em;
   stroke-opacity: 0.8;

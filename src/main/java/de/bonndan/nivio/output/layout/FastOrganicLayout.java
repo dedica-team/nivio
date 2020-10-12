@@ -56,7 +56,7 @@ public class FastOrganicLayout {
     /**
      * Start value of temperature. Default is 200.
      */
-    protected double initialTemp = 200;
+    protected double initialTemp = 300;
 
     /**
      * Temperature to limit displacement at later stages of layout.
@@ -418,6 +418,10 @@ public class FastOrganicLayout {
 
     public void setMaxDistanceLimit(double maxDistanceLimit) {
         this.maxDistanceLimit = maxDistanceLimit;
+    }
+
+    public void setInitialTemp(int initialTemp) {
+        this.initialTemp = initialTemp;
     }
 
     /**

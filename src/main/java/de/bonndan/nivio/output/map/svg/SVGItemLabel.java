@@ -9,6 +9,8 @@ import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
+import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
+
 class SVGItemLabel extends Component {
 
     public static final int LABEL_WIDTH = 140;
@@ -23,8 +25,7 @@ class SVGItemLabel extends Component {
 
     public DomContent render() {
         String name = StringUtils.isEmpty(item.getName()) ? item.getIdentifier() : item.getName();
-        int size = 40;
-        ContainerTag labelText = new SVGLabelText(name, "0", String.valueOf(size + 15), "").render();
+        ContainerTag labelText = new SVGLabelText(name, DEFAULT_ICON_SIZE * 2 + 15 + "", "0", "itemLabel").render();
 
         //TODO this is naive
         if (name.length() < 10) {
@@ -34,16 +35,7 @@ class SVGItemLabel extends Component {
             this.width = 200;
         }
 
-        var rect = SvgTagCreator.rect()
-                .attr("x", -width / 2)
-                .attr("y", size + 4)
-                .attr("rx", CORNER_RADIUS)
-                .attr("ry", CORNER_RADIUS)
-                .attr("fill", "white")
-                .attr("width", width)
-                .attr("height", size / 2);
-
-        ContainerTag g = SvgTagCreator.g(rect, labelText).attr("class", "label");
+        ContainerTag g = SvgTagCreator.g(null, labelText).attr("class", "label");
         g.attr("id", getId());
         g.attr("data-identifier", item.getFullyQualifiedIdentifier().jsonValue());
         if (!StringUtils.isEmpty(item.getName()))

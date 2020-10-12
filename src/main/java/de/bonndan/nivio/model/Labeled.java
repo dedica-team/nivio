@@ -83,7 +83,7 @@ public interface Labeled {
      * @return prefix-unique map
      */
     static Map<String, String> groupedByPrefixes(Map<String, String> all, String delimiter) {
-        Map<String, String> grouped = new HashMap<>();
+        Map<String, String> grouped = new HashMap<>(all.size());
         all.forEach((key, value1) -> {
             if (key.contains(Label.DELIMITER)) {
                 key = key.split("\\" + Label.DELIMITER)[0];
@@ -114,20 +114,25 @@ public interface Labeled {
     default Map<String, Map<String, String>> indexedByPrefix(String prefix) {
         Map<String, Map<String, String>> byValue = new HashMap<>();
         getLabels().forEach((s, labelValue) -> {
-            if (!s.startsWith(prefix))
+            if (!s.startsWith(prefix)) {
                 return;
+            }
             //label status.foo.status
             //label status.foo.message
             String[] parts = s.replace(prefix + Label.DELIMITER, "").split("\\" + Label.DELIMITER);
-            if (parts.length != 2)
+            if (parts.length != 2) {
                 return;
+            }
             String key = parts[0];
             String statusOrMessage = parts[1];
-            if(statusOrMessage == null)
+            if(statusOrMessage == null) {
                 return;
-            if(labelValue == null)
+            }
+            if(labelValue == null) {
                 labelValue = "";
-            byValue.put(key, Map.of(statusOrMessage, labelValue));
+            }
+            byValue.putIfAbsent(key, new HashMap<>());
+            byValue.get(key).put(statusOrMessage, labelValue);
         });
         return byValue;
     }

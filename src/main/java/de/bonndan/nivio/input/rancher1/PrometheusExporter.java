@@ -1,6 +1,6 @@
 package de.bonndan.nivio.input.rancher1;
 
-import de.bonndan.nivio.input.ItemDescriptionFactory;
+import de.bonndan.nivio.input.ItemDescriptionValues;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Label;
@@ -56,7 +56,7 @@ public class PrometheusExporter {
                         .filter(Objects::nonNull)
                         .forEach(itemDescription -> {
                             ItemDescription inMap = tmp.computeIfAbsent(itemDescription.getFullyQualifiedIdentifier(), ItemDescription::new);
-                            ItemDescriptionFactory.assignNotNull(inMap, itemDescription);
+                            ItemDescriptionValues.assignNotNull(inMap, itemDescription);
                         });
             });
 

@@ -3,11 +3,11 @@ package de.bonndan.nivio.output;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.Indexer;
-import de.bonndan.nivio.input.ItemDescriptionFormatFactory;
+import de.bonndan.nivio.input.InputFormatHandlerFactory;
 import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
+import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.icons.VendorIcons;
@@ -32,13 +32,13 @@ import static org.mockito.Mockito.when;
 public abstract class RenderingTest {
 
     protected LandscapeRepository landscapeRepository;
-    protected ItemDescriptionFormatFactory formatFactory;
+    protected InputFormatHandlerFactory formatFactory;
     protected Indexer indexer;
     protected LandscapeDescriptionFactory factory;
 
     public void setup() {
         landscapeRepository = new LandscapeRepository();
-        formatFactory = ItemDescriptionFormatFactory.with(ItemDescriptionFactoryNivio.forTesting());
+        formatFactory = InputFormatHandlerFactory.with(new InputFormatHandlerNivio(new FileFetcher(new HttpService())));
         FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
         factory = new LandscapeDescriptionFactory(fileFetcher);
 

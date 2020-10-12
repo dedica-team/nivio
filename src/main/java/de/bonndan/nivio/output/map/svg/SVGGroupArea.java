@@ -18,11 +18,11 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 class SVGGroupArea extends Component {
 
-    final Group group;
+    private final Group group;
     final Set<Hex> groupArea;
-    private final List<ContainerTag> outlines;
+    private final List<DomContent> outlines;
 
-    SVGGroupArea(Group group, Set<Hex> groupArea, List<ContainerTag> outlines) {
+    SVGGroupArea(Group group, Set<Hex> groupArea, List<DomContent> outlines) {
         this.group = group;
         this.groupArea = groupArea;
         this.outlines = outlines;
@@ -48,9 +48,8 @@ class SVGGroupArea extends Component {
             territoryHexes.add(
                     SvgTagCreator.text(group.getIdentifier())
                             .attr("x", anchor.x)
-                            .attr("y", anchor.y + Hex.HEX_SIZE + 10)
+                            .attr("y", anchor.y + 15)
                             .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
-                            .attr("font-size", 24)
                             .attr("text-anchor", "middle")
                             .attr("class", "groupLabel")
             );

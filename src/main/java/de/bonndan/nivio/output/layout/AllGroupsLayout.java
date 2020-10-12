@@ -55,7 +55,7 @@ public class AllGroupsLayout {
         layout.configure(landscape.getConfig().getGroupLayoutConfig());
 
         layout.execute();
-        LOGGER.info("AllGroupsLayout bounds: {}", layout.getBounds());
+        LOGGER.debug("AllGroupsLayout bounds: {}", layout.getBounds());
     }
 
 

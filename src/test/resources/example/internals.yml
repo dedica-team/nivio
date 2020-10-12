@@ -1,0 +1,199 @@
+identifier: nivio.internals
+name: Internal Workflows
+contact: info@dedica.team
+description: The workflow end to end
+
+groups:
+  start:
+    description: Bootstrapping
+  sources:
+    description: Source file parsing
+  indexing:
+    description: The final landscape
+  rendering:
+    description: Renders a landscape graph as a map
+
+
+items:
+  - identifier: seed
+    name: SEED
+    description: \"SEED\" is an environment variable containing a list of urls.
+    group: start
+    relations:
+      - target: config
+
+  - identifier: config
+    name: Config Files
+    description: Config files are loaded from all locations (file system, remote URLs, git repos)
+    group: start
+    relations:
+      - target: sources/parsing
+
+  - identifier: parsing
+    group: sources
+    description: Iterate all the sources and determine proper formats (nivio, k8s...)
+    relations:
+      - target: sources/factory
+
+  - identifier: factory
+    group: sources
+    description: For each format a factory provides a handler that can extract data and provides DTOs.
+    note: See "xxxDescription.java"
+    relations:
+      - target: sources/environment
+
+  - identifier: environment
+    group: sources
+    description: A partial or complete landscape graph consisting of DTOs that is merge into the landscape graph.
+    note: See LandscapeDescription.java
+    relations:
+      - target: indexing/indexing
+
+  - identifier: indexing
+    group: indexing
+    description: The environment graph is applied to the landscape
+    note: See Indexer.java
+    relations:
+      - target: indexing/templates
+
+  - identifier: templates
+    group: indexing
+    description: Dynamic batch assignment of item values based on templates
+    relations:
+      - target: indexing/speciallabels
+
+  - identifier: speciallabels
+    group: indexing
+    description: Applies labels prefixed with "nivio" to item fields.
+    relations:
+      - target: indexing/greedy
+
+  - identifier: greedy
+    name: items on the fly
+    group: indexing
+    description: Creates items on the fly if nivio is configured "greedy".
+    relations:
+      - target: indexing/dynrelations
+
+  - identifier: dynrelations
+    group: indexing
+    name: dynamic relations
+    description: Finds relation endpoints based on regexes or queries
+    relations:
+      - target: indexing/groups
+
+  - identifier: groups
+    group: indexing
+    description: Adds groups
+    relations:
+      - target: indexing/diff
+
+  - identifier: diff
+    group: indexing
+    description: Updates item fiels, adds and removes items
+    relations:
+      - target: indexing/grouping
+
+  - identifier: grouping
+    group: indexing
+    description: Resolves grouping queries to assign items to groups
+    relations:
+      - target: indexing/magic
+
+  - identifier: magic
+    name: magic relations
+    group: indexing
+    description: Parses item labels to find clues on relations (like database links).
+    relations:
+      - target: indexing/relations
+
+  - identifier: relations
+    name: relations
+    group: indexing
+    description: Sets regular relations
+    relations:
+      - target: indexing/enrich
+
+  - identifier: enrich
+    name: enrich data
+    group: indexing
+    lifecycle: PLAN
+    description: Adds data to item fields from external sources (links)
+    links:
+      issue: https://github.com/dedica-team/nivio/issues/97
+    relations:
+      - target: graph/graph
+
+  #
+  # graph
+  #
+  - identifier: graph
+    name: landscape
+    group: graph
+    description: The application landscape as graph
+    relations:
+      - target: assessment/kpis
+      - target: rendering/group
+
+  #
+  # assessment
+  #
+  - identifier: kpis
+    name: load KPIs
+    group: assessment
+    description: Loads the KPIs that have been configured for the landscape
+    relations:
+      - target: assessment/visitor
+
+  - identifier: visitor
+    name: visit components
+    group: assessment
+    description: Visits all landscape components in order to apply KPIs
+    relations:
+      - target: assessment/assessment
+
+  - identifier: assessment
+    group: assessment
+    description: Collects all KPIs from all components as map (containing FullyQualifiedIdenfiers)
+
+  #
+  # rendering
+  #
+  - identifier: group
+    name: group items
+    group: rendering
+    description: Groups items
+    relations:
+      - target: rendering/sublayout
+
+  - identifier: sublayout
+    name: in-group layout
+    group: rendering
+    description: Layouts the items inside group containers
+    relations:
+      - target: rendering/layout
+
+  - identifier: layout
+    name: group layout
+    group: rendering
+    description: Layouts the group containers
+    relations:
+      - target: rendering/hex
+
+  - identifier: hex
+    name: hex mapping
+    group: rendering
+    description: Projection of items onto a hex map
+    relations:
+      - target: rendering/pathfinding
+
+  - identifier: pathfinding
+    note: see PathFinder.java
+    group: rendering
+    description: A* pathfinding to draw item relations (graph edges)
+    relations:
+      - target: rendering/svg
+
+  - identifier: svg
+    group: rendering
+    description: Renders item, pathes and groups

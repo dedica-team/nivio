@@ -23,7 +23,7 @@
         <frontend-src-dir>${project.basedir}/src/main/app</frontend-src-dir>
         <node.version>v12.18.2</node.version>
         <yarnVersion>v1.22.4</yarnVersion>
-        <frontend-maven-plugin.version>1.7.6</frontend-maven-plugin.version>
+        <frontend-maven-plugin.version>1.10.0</frontend-maven-plugin.version>
         <lucene.version>8.6.0</lucene.version>
     </properties>
 
@@ -153,19 +153,19 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-client</artifactId>
-            <version>4.10.1</version>
+            <version>4.11.0</version>
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-server-mock</artifactId>
-            <version>4.10.1</version>
+            <version>4.11.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.googlecode.cqengine</groupId>
             <artifactId>cqengine</artifactId>
-            <version>3.4.0</version>
+            <version>3.5.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.xerial</groupId>
@@ -215,14 +215,6 @@
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>5.0</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-all -->
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-all</artifactId>
-            <version>1.12</version>
-            <type>pom</type>
         </dependency>
 
         <!-- swagger documentation -->
@@ -427,7 +419,7 @@
         <repository>
             <id>spring-releases</id>
             <name>Spring Releases</name>
-            <url>https://repo.spring.io/libs-release</url>
+            <url>https://repo.spring.io/release</url>
         </repository>
 
         <repository>

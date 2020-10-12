@@ -2,10 +2,11 @@ package de.bonndan.nivio.output.map.svg;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.List;
 
 public class WobblyGroupOutline {
 
-    public static String getPath(ArrayList<Point2D.Double> corners) {
+    public static String getPath(List<Point2D.Double> corners) {
         ArrayList<Point2D.Double> middles = new ArrayList<>();
 
         for (int i = 0; i < corners.size(); i++) {

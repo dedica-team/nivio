@@ -21,12 +21,12 @@ public class Indexer {
     private static final Logger _logger = LoggerFactory.getLogger(Indexer.class);
 
     private final LandscapeRepository landscapeRepo;
-    private final ItemDescriptionFormatFactory formatFactory;
+    private final InputFormatHandlerFactory formatFactory;
     private final ApplicationEventPublisher eventPublisher;
     private final LocalServer localServer;
 
     public Indexer(LandscapeRepository landscapeRepository,
-                   ItemDescriptionFormatFactory formatFactory,
+                   InputFormatHandlerFactory formatFactory,
                    ApplicationEventPublisher eventPublisher,
                    LocalServer localServer
     ) {
@@ -67,34 +67,37 @@ public class Indexer {
     private void runResolvers(LandscapeDescription input, ProcessLog logger, LandscapeImpl landscape) {
         Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
 
-        // 1. read all input sources
+        // read all input sources
         new SourceReferencesResolver(formatFactory, logger).resolve(input, templatesAndTargets);
 
-        // 2. apply template values to the items
+        // apply template values to the items
         new TemplateResolver().processTemplates(input, templatesAndTargets);
 
-        // 3. read special labels on items and assign the values to fields
+        // read special labels on items and assign the values to fields
         new LabelToFieldProcessor(logger).process(input, landscape);
 
-        // 4. create relation targets on the fly if the landscape is configured "greedy"
+        // mask any label containing secrets
+        new SecureLabelsProcessor().process(input);
+
+        // create relation targets on the fly if the landscape is configured "greedy"
         new InstantItemResolver(logger).processTargets(input);
 
-        // 5. find items for relation endpoints (which can be queries, identifiers...)
+        // find items for relation endpoints (which can be queries, identifiers...)
         new RelationEndpointResolver(logger).processRelations(input);
 
-        // 6. add any missing groups
+        // add any missing groups
         new GroupResolver(logger).process(input, landscape);
 
-        // 7. compare landscape against input, add and remove items
+        // compare landscape against input, add and remove items
         new DiffResolver(logger).process(input, landscape);
 
-        // 8. execute group "contains" queries
+        // execute group "contains" queries
         new GroupQueryResolver(logger).process(input, landscape);
 
-        // 9. try to find "magic" relations by examining item labels for keywords
+        // try to find "magic" relations by examining item labels for keywords
         new MagicLabelRelations(logger).process(input, landscape);
 
-        // 10. create relations between items
+        // create relations between items
         new ItemRelationResolver(logger).process(input, landscape);
 
         new AppearanceResolver(logger, localServer).process(input, landscape);

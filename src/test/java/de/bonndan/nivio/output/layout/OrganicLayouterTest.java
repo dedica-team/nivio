@@ -3,38 +3,27 @@ package de.bonndan.nivio.output.layout;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.Indexer;
-import de.bonndan.nivio.input.ItemDescriptionFormatFactory;
-import de.bonndan.nivio.input.LandscapeDescriptionFactory;
-import de.bonndan.nivio.input.csv.ItemDescriptionFactoryCSV;
+import de.bonndan.nivio.input.InputFormatHandlerFactory;
+import de.bonndan.nivio.input.csv.InputFormatHandlerCSV;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
 import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.RenderingTest;
 import de.bonndan.nivio.output.icons.VendorIcons;
-import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
-import de.bonndan.nivio.output.map.svg.SVGRenderer;
-import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class OrganicLayouterTest extends RenderingTest {
 
@@ -177,7 +166,7 @@ class OrganicLayouterTest extends RenderingTest {
     @Test
     public void renderCSV() throws IOException {
 
-        formatFactory = ItemDescriptionFormatFactory.with(new ItemDescriptionFactoryCSV(new FileFetcher(new HttpService())));
+        formatFactory = InputFormatHandlerFactory.with(new InputFormatHandlerCSV(new FileFetcher(new HttpService())));
         indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class), new LocalServer("", new VendorIcons()));
 
         debugRender("/src/test/resources/example/example_csv", false);

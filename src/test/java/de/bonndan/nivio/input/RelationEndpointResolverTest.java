@@ -3,7 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.input.nivio.ItemDescriptionFactoryNivio;
+import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import de.bonndan.nivio.model.RelationItem;
 import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.util.RootPath;
@@ -12,16 +12,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
-import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
 class RelationEndpointResolverTest {
@@ -93,7 +92,8 @@ class RelationEndpointResolverTest {
     }
 
     private Map<ItemDescription, List<String>> getTemplates(LandscapeDescription landscapeDescription) {
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(ItemDescriptionFormatFactory.with(ItemDescriptionFactoryNivio.forTesting()), log);
+        InputFormatHandlerNivio inputFormatHandlerNivio = new InputFormatHandlerNivio(new FileFetcher(new HttpService()));
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(InputFormatHandlerFactory.with(inputFormatHandlerNivio), log);
         Map<ItemDescription, List<String>> templateAndTargets = new HashMap<>();
         sourceReferencesResolver.resolve(landscapeDescription, templateAndTargets);
         return templateAndTargets;

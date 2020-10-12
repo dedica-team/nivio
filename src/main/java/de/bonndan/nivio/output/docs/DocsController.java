@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.api.NotFoundException;
+import de.bonndan.nivio.assessment.kpi.KPIFactory;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.LocalServer;
@@ -24,10 +25,12 @@ public class DocsController {
 
     private final LandscapeRepository landscapeRepository;
     private final LocalServer localServer;
+    private final KPIFactory factory;
 
-    public DocsController(LandscapeRepository landscapeRepository, LocalServer localServer) {
+    public DocsController(LandscapeRepository landscapeRepository, LocalServer localServer, KPIFactory factory) {
         this.landscapeRepository = landscapeRepository;
         this.localServer = localServer;
+        this.factory = factory;
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/" + REPORT_HTML)
@@ -37,7 +40,7 @@ public class DocsController {
                 () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
         );
 
-        ReportGenerator generator = new ReportGenerator(localServer);
+        ReportGenerator generator = new ReportGenerator(localServer, factory);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html");

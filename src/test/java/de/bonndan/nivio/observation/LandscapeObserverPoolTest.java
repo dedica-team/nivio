@@ -2,6 +2,7 @@ package de.bonndan.nivio.observation;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.junit.jupiter.api.Test;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,11 +25,11 @@ class LandscapeObserverPoolTest {
         LandscapeObserverPool landscapeObserverPool = new LandscapeObserverPool(description, List.of(urlObserver1, urlObserver2));
 
         //when
-        Optional<String> s = landscapeObserverPool.hasChange();
+        ObservedChange change = landscapeObserverPool.getChange();
 
         //then
-        assertTrue(s.isPresent());
-        assertEquals("hello;world", s.get());
+        assertEquals(2, change.getChanges().size());
+        assertEquals("hello;world", StringUtils.collectionToDelimitedString(change.getChanges(), ";"));
     }
 
 }

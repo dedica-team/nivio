@@ -16,8 +16,6 @@ import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 
 /**
  * A landscape item to be rendered in svg.
- *
- *
  */
 class SVGItem extends Component {
 
@@ -35,7 +33,6 @@ class SVGItem extends Component {
 
     /**
      * Renders the fill as background if possible, otherwise tries explicit icon or shortName.
-     *
      */
     public DomContent render() {
 
@@ -46,18 +43,21 @@ class SVGItem extends Component {
         Item item = (Item) layoutedComponent.getComponent();
         //use the shortname as text instead
         if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(item.getLabel(Label.shortname))) {
-            content = new SVGLabelText(item.getLabel(Label.shortname), "0", "3", "item_shortName").render();
+            content = new SVGLabelText(item.getLabel(Label.shortname), "0", "3", "itemLabel")
+                    .render().attr("text-anchor", "middle");
             fillId = "white";
             hasText = true;
         }
 
         DomContent icon = null;
         if (!hasFill && !hasText && !StringUtils.isEmpty(layoutedComponent.getIcon())) {
+            final int size = DEFAULT_ICON_SIZE * 3;
+            final int trans = Math.round(size/2);
             icon = SvgTagCreator.image()
                     .attr("xlink:href", layoutedComponent.getIcon())
-                    .attr("width", DEFAULT_ICON_SIZE)
-                    .attr("height", DEFAULT_ICON_SIZE)
-                    .attr("transform", "translate(-" + DEFAULT_ICON_SIZE / 2 + ",-" + DEFAULT_ICON_SIZE / 2 + ")")
+                    .attr("width", size)
+                    .attr("height", size)
+                    .attr("transform", "translate(-" + trans + ",-" + trans + ")")
             ;
         }
 
@@ -65,8 +65,8 @@ class SVGItem extends Component {
                 .attr("id", this.id)
                 .attr("cx", 0)
                 .attr("cy", 0)
-                .attr("r", DEFAULT_ICON_SIZE - 10)
-                .condAttr(!StringUtils.isEmpty(fillId),"fill", fillId)
+                .attr("r", DEFAULT_ICON_SIZE * 2)
+                .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
                 .attr("stroke", "#" + (layoutedComponent.getColor() != null ? layoutedComponent.getColor() : Color.GRAY))
                 .attr("data-x", String.format(Locale.ENGLISH, "%.2f", pixel.x))
                 .attr("data-y", String.format(Locale.ENGLISH, "%.2f", pixel.y));

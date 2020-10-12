@@ -31,21 +31,17 @@ class AppearanceResolverTest {
         landscape.addGroup(g1);
         List<Item> items = new ArrayList<>();
 
-        Item s1 = new Item();
-        s1.setIdentifier("s1");
-        s1.setGroup("g1");
+        Item s1 = new Item("g1", "s1");
         s1.setLandscape(landscape);
         s1.setLabel(Label.type, "loadbalancer");
         items.add(s1);
-        g1.getItems().add(s1);
+        g1.addItem(s1);
 
-        Item s2 = new Item();
-        s2.setIdentifier("s2");
-        s2.setGroup("g1");
+        Item s2 = new Item("g1", "s2");
         s2.setLandscape(landscape);
         s2.setIcon("https://foo.bar/icon.png");
         items.add(s2);
-        g1.getItems().add(s2);
+        g1.addItem(s2);
 
         landscape.setItems(new HashSet<>(items));
     }

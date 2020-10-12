@@ -24,8 +24,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 
@@ -300,7 +299,7 @@ class LandscapeDescriptionFactoryTest {
         CustomKPI costKPI = new CustomKPI();
         costKPI.init(monthlyCosts);
 
-        Item item = new Item();
+        Item item = new Item("test", "a");
         item.setLabel(Label.costs, "200");
         StatusValue statusValue = costKPI.getStatusValues(item).get(0);
         assertNotNull(statusValue);

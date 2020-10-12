@@ -18,7 +18,7 @@ public class Item implements LandscapeItem, Tagged, Labeled, Assessable {
 
     @NotNull
     @Pattern(regexp = LandscapeItem.IDENTIFIER_VALIDATION)
-    private String identifier;
+    private final String identifier;
 
     @NotNull
     @JsonIgnore
@@ -50,15 +50,16 @@ public class Item implements LandscapeItem, Tagged, Labeled, Assessable {
     private String color;
     private String icon;
 
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
+    public Item(String group, String identifier) {
+        this.group = group;
         if (StringUtils.isEmpty(identifier)) {
             throw new RuntimeException("Identifier must not be empty");
         }
         this.identifier = identifier.toLowerCase();
+    }
+
+    public String getIdentifier() {
+        return identifier;
     }
 
     @Override
@@ -126,7 +127,15 @@ public class Item implements LandscapeItem, Tagged, Labeled, Assessable {
         return group;
     }
 
-    public void setGroup(String group) {
+    /**
+     * Sets the group name IF not set previously.
+     *
+     * @param group name
+     */
+    void setGroup(String group) {
+        if (this.group != null && group != null && !this.group.equals(group)) {
+            throw new IllegalArgumentException(String.format("A once set item group ('%s') cannot be overwritten with ('%s').", this.group, group));
+        }
         this.group = group;
     }
 
@@ -227,7 +236,7 @@ public class Item implements LandscapeItem, Tagged, Labeled, Assessable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(toString());
+        return Objects.hash(identifier);
     }
 
     /**

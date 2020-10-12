@@ -1,10 +1,11 @@
 package de.bonndan.nivio.output.docs;
 
+import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Groups;
 import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.model.LandscapeItem;
-import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.Color;
+import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.LocalServer;
 import j2html.tags.ContainerTag;
 
@@ -32,7 +33,7 @@ public class OwnersReportGenerator extends HtmlGenerator {
                 body(
                         h1("Owner Report: " + landscape.getName()),
                         br(),
-                        rawHtml(writeOwnerGroups(Groups.by(landscapeItem -> landscapeItem.getOwner(), new ArrayList<>(landscape.getItems().all()))))
+                        rawHtml(writeOwnerGroups(Groups.by(Component::getOwner, new ArrayList<>(landscape.getItems().all()))))
                 )
         ).renderFormatted();
     }
@@ -62,7 +63,7 @@ public class OwnersReportGenerator extends HtmlGenerator {
     private ContainerTag writeItem(LandscapeItem item) {
         String groupColor = "#" + Color.nameToRGB(item.getGroup());
 
-        return div(rawHtml("<span style=\"color: " + groupColor + "\">&#9899;</span> " + FormatUtils.nice(item.getGroup()) +": " + item.toString() + " (" + item.getFullyQualifiedIdentifier().toString() +  ")"));
+        return div(rawHtml("<span style=\"color: " + groupColor + "\">&#9899;</span> " + FormatUtils.nice(item.getGroup()) + ": " + item.toString() + " (" + item.getFullyQualifiedIdentifier().toString() + ")"));
 
     }
 

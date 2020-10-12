@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ItemIndexTest {
@@ -23,17 +23,13 @@ class ItemIndexTest {
 
         items = new ArrayList<>();
 
-        Item s1 = new Item();
-        s1.setIdentifier("s1");
+        Item s1 = new Item("g1", "s1");
         s1.setName("foo");
-        s1.setGroup("g1");
         s1.setLandscape(landscape);
         items.add(s1);
 
-        Item s2 = new Item();
+        Item s2 = new Item("g1", "s2");
         s2.setName("bar");
-        s2.setIdentifier("s2");
-        s2.setGroup("g1");
         s2.setLandscape(landscape);
         items.add(s2);
 
@@ -54,9 +50,7 @@ class ItemIndexTest {
         assertNotNull(landscape.getItems().pick("s1", "g1"));
         assertNotNull(landscape.getItems().pick("s2", "g1"));
 
-        Item s2 = new Item();
-        s2.setIdentifier("s2");
-        s2.setGroup("g1");
+        Item s2 = new Item("g1", "s2");
         s2.setLandscape(landscape);
 
         assertNotNull(landscape.getItems().pick(s2));
@@ -71,9 +65,7 @@ class ItemIndexTest {
     @Test
     public void pickGracefulFails() {
 
-        Item s2 = new Item();
-        s2.setIdentifier("s2");
-        s2.setGroup("g2"); //othergroup
+        Item s2 = new Item("g2", "s2");
         s2.setLandscape(landscape);
         items.add(s2);
         landscape.setItems(new HashSet<>(items));

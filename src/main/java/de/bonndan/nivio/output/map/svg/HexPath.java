@@ -1,6 +1,9 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.hex.Hex;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;

@@ -44,7 +44,8 @@ public class Seed {
         try {
             demoFiles.add(new File(absPath + "/src/test/resources/example/example_env.yml").toURI().toURL());
             demoFiles.add(new File(absPath + "/src/test/resources/example/inout.yml").toURI().toURL());
-            //demoFiles.add(new File(absPath + "/src/test/resources/example/dedica.yml"));
+            demoFiles.add(new File(absPath + "/src/test/resources/example/internals.yml").toURI().toURL());
+            //demoFiles.add(new File(absPath + "/src/test/resources/example/dedica.yml").toURI().toURL());
         } catch (MalformedURLException e) {
             logger.error("Error in demo files: " + e.getMessage(), e);
         }

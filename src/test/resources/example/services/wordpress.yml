@@ -119,3 +119,25 @@ items:
   layer: infrastructure
   lifecycle: planned
 
+- identifier: volume1
+  type: volume
+  description: backup volume
+
+- identifier: volume2
+  type: volume
+  description: backup volume
+
+- identifier: volume3
+  type: volume
+  description: backup volume
+
+- identifier: volume4
+  type: volume
+  description: backup volume
+
+- identifier: api
+  type: api
+  name: internal api
+  description: API for administrators
+  visibility: hidden
+

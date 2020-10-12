@@ -40,7 +40,7 @@ items:
       - dedica
 
   - identifier: michelle
-    name: Michelle Fernandez-Bieber
+    name: Michelle Fernandez Bieber
     group: dedica
     fill: https://dedica.team/images/michellefernandezbieber.jpg
     providedBy:
@@ -49,6 +49,6 @@ items:
   - identifier: marvin
     name: Marvin Schöning
     group: dedica
-    fill: http://localhost:8080/icons/pp.jpeg
+    fill: http://dedica.team/images/marvinschoening.jpeg
     providedBy:
       - dedica

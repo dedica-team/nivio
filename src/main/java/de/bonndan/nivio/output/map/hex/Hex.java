@@ -1,8 +1,13 @@
 package de.bonndan.nivio.output.map.hex;
 
+import org.springframework.lang.NonNull;
+
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 
@@ -35,11 +40,28 @@ public class Hex {
     //double DEFAULT_ICON_SIZE
     public static final int HEX_SIZE = 2 * DEFAULT_ICON_SIZE;
 
+    /**
+     * q coordinate
+     * <p>
+     * For coords see https://www.redblobgames.com/grids/hexagons/#coordinates
+     */
     public final int q;
+
+    /**
+     * r coordinate
+     */
     public final int r;
+
+    /**
+     * s coordinate (could be omitted here, since q + r + s = 0 is mandatory)
+     */
     public final int s;
+
     public String id;
 
+    /**
+     * Using this constructor is discouraged, since only q and r are needed.
+     */
     public Hex(int q, int r, int s) {
         if (q + r + s != 0) {
             throw new RuntimeException("q + r + s must be 0");
@@ -47,6 +69,17 @@ public class Hex {
         this.q = q;
         this.r = r;
         this.s = s;
+    }
+
+    /**
+     * https://www.redblobgames.com/grids/hexagons/implementation.html
+     *
+     * TLDR: q and r and like x and y and sufficient to describe a hex position. s is a third axis orthogonal to q and r.
+     * @param q coordinate
+     * @param r coordinate
+     */
+    public Hex(int q, int r) {
+        this(q, r, (r + q) * -1);
     }
 
     /**
@@ -87,17 +120,55 @@ public class Hex {
         return new Hex(qi, ri, si);
     }
 
-
+    /**
+     * Returns the distance to the target hex in number of tiles.
+     *
+     * https://www.redblobgames.com/grids/hexagons/#distances
+     *
+     * @param target target hex
+     * @return number of tiles
+     */
     public int distance(Hex target) {
-        return lengths(this.subtract(target));
+        Hex hex = this.subtract(target);
+        double l = (Math.abs(hex.q) + Math.abs(hex.r) + Math.abs(hex.s)) / 2.0;
+        return (int) Math.round(l);
     }
 
+    @NonNull
     public List<Hex> neighbours() {
         List<Hex> n = new ArrayList<>();
         for (var i = 0; i < DIRECTIONS.size(); i += 1) {
             n.add(neighbour(this, i));
         }
         return n;
+    }
+
+    /**
+     * Return the leftmost (q coord) of the highest (r coord) hexes.
+     *
+     * @param area all hexes in the area (unsorted)
+     * @return
+     */
+    public static Hex topLeft(Collection<Hex> area) {
+        AtomicInteger q = new AtomicInteger(Integer.MAX_VALUE);
+        AtomicInteger r = new AtomicInteger(Integer.MAX_VALUE);
+        AtomicReference<Hex> topLeft = new AtomicReference<>(null);
+        area.forEach(hex -> {
+            //higher
+            if (hex.r < r.get()) {
+                r.set(hex.r);
+                topLeft.set(hex);
+            }
+
+            if (hex.r == r.get()) {
+                if (topLeft.get() == null || hex.q < q.get()) {
+                    q.set(hex.q);
+                    topLeft.set(hex);
+                }
+            }
+        });
+
+        return topLeft.get();
     }
 
 
@@ -127,11 +198,6 @@ public class Hex {
 
     private Hex neighbour(Hex hex, int direction) {
         return add(hex, this.direction(direction));
-    }
-
-    private static Integer lengths(Hex hex) {
-        double l = (Math.abs(hex.q) + Math.abs(hex.r) + Math.abs(hex.s)) / 2.0;
-        return (int) Math.round(l);
     }
 
     private Hex direction(int _direction) {

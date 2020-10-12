@@ -24,7 +24,7 @@ class SVGLabelText extends Component {
                 .attr("y", StringUtils.isEmpty(y) ? "0.3em" : y)
                 .attr("class", className)
                 .attr("alignment-baseline", "middle")
-                .attr("text-anchor", "middle");
+                .attr("text-anchor", "left");
     }
 }
 

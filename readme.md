@@ -27,7 +27,6 @@ approach, i.e. there is no interface for manual data maintenance. It is designed
 * Redis™ is a trademark of Redis Labs Ltd. Any rights therein are reserved to Redis Labs Ltd.
 * Apache Httpd and the logo are trademarks of the ASF.
 * WordPress and the logo are trademarks of Wordpress Foundation. http://wordpressfoundation.org/trademark-policy/
-* Flame, Danger, Warning, Checked icon made by <a href="https://www.flaticon.com/authors/vectors-market" title="Vectors Market">Vectors Market</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
 
 ## Development Setup
 
@@ -58,9 +57,12 @@ Clone nivio, build and run a Docker image:
       git clone https://github.com/dedica-team/nivio.git && cd nivio
       mvn clean package
       docker build -t nivio:latest .
-      docker run -e SEED=/tmp/nivio/inout.yml --mount type=bind,source=C:\<your>\<path>\<to>\nivio\src\test\resources\example,target=/tmp/nivio -p 8080:8080 nivio:latest
+      docker run -e SEED=//tmp/nivio/inout.yml --mount type=bind,source="C:\<your>\<path>\<to>\nivio\src\test\resources\example",target=/tmp/nivio -p 8080:8080 nivio:latest
       
    then open http://localhost:8080
+   
+   (Note: the double slashes at the beginning of the path for the SEED environment variable work as a fix to make MSYS/MinGW consoles
+   *not* translate the `/tmp` path to a local DOS path. This is safe to use with the PowerShell. Further reading: https://stackoverflow.com/a/14189687/10000398)
    
    ---
  
@@ -79,3 +81,29 @@ Clone nivio, build and run a Docker image:
   Open http://localhost:8080
   
   If you want to contribute to our frontend, read further into our [Frontend Readme](https://github.com/dedica-team/nivio/tree/develop/src/main/app)
+  
+**Nivio Backend Architecture**
+
+If you want to contribute to our backend, maybe the following diagram is of use to you. It shows some of the most important classes and 
+interfaces. It is supposed to give you an idea on how the backend is structured, but note that not all details are displayed:
+
+ ![layoutedArtifact graph](backend_architecture_api.png)
+ 
+ If you use the `ApiController` as the entry point to the backend, you can see that it retrieves information and triggers events
+  to the most important parts of the application. 
+ 
+The `LandscapeRespository` gives access to the stored landscapes.
+  
+The `LandscapeDescriptionFactory` is used to generate a `LandscapeDescription` from various sources, such as a `String` input, 
+or e.g. from a yaml file. 
+
+This `LandscapeDescription` has to be enriched with the `ItemDescription` for all items in the landscape.
+This is managed by the `InputFormatHandler`, which are able to read several input formats such as e.g. kubernetes files, or the
+nivio description format. Access to these handlers is managed by the `InputFormatHandlerFactory`.
+
+To actually create a landscape, the `Indexer` is used. This is able to compute the landscape graph from a `LandscapeDescription`.
+The `Indexer` uses several `Resolver` to resolve groups and item relations in landscapes and e.g. the appearance of the graph.
+
+The `Indexer` can be triggered either directly through the `ApiController` to index or reindex a landscape, or it is triggered
+by an observer mechanism on files. These are the files located under the path provided through the `SEED` environment variable.
+

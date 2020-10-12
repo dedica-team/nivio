@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Link;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,6 +47,27 @@ class LabelToFieldProcessorTest {
         assertEquals(2, item1.getProvidedBy().size());
     }
 
+
+    @Test
+    @DisplayName("Prefixed labels are removed after processing")
+    void cleanup() {
+        ItemDescription item1 = new ItemDescription();
+        item1.getLabels().put("a", "b");
+        item1.getLabels().put("nivio.name", "foo");
+        item1.getLabels().put("nivio.description", "bar");
+        item1.getLabels().put("nivio.providedBy", "baz, bak");
+
+        LandscapeDescription input = new LandscapeDescription();
+        input.getItemDescriptions().add(item1);
+
+        assertEquals(4, item1.getLabels().size());
+
+        //when
+        processor.process(input, null);
+
+        //then
+        assertEquals(1, item1.getLabels().size()); //"a" remains
+    }
 
     @Test
     @DisplayName("Ensure comma separated strings are parsed properly")
@@ -121,5 +143,34 @@ class LabelToFieldProcessorTest {
         assertNotNull(url);
         assertNotNull(url.getHref());
         assertEquals("https://two.net", url.getHref().toString());
+    }
+
+    @Test
+    @DisplayName("Ensure comma separated links are parsed properly")
+    public void labelsToLabels() {
+        ItemDescription item1 = new ItemDescription();
+        item1.getLabels().put("a", "b");
+        item1.getLabels().put("nivio.visibility", "public");
+        item1.getLabels().put("nivio.software", "wordpress");
+        item1.getLabels().put("nivio.other", "foo");
+
+        LandscapeDescription input = new LandscapeDescription();
+        input.getItemDescriptions().add(item1);
+
+        //when
+        processor.process(input, null);
+
+        //then
+        String vis = item1.getLabel(Label.visibility);
+        assertNotNull(vis);
+        assertEquals("public", vis);
+
+        String software = item1.getLabel(Label.software);
+        assertNotNull(software);
+        assertEquals("wordpress", software);
+
+        String other = item1.getLabel("other");
+        assertNotNull(other);
+        assertEquals("foo", other);
     }
 }

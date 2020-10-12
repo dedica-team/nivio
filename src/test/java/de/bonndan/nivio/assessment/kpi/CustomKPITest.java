@@ -169,7 +169,7 @@ class CustomKPITest {
     }
 
     private Item getComponent(String value) {
-        Item item = new Item();
+        Item item = new Item("test", "a");
         item.setLabel(LABEL, value);
         return item;
     }

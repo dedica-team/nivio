@@ -16,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * After the application has booted the SEED ({@link Seed}) is processed.
@@ -52,9 +53,9 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
     private List<URL> getUrls(Seed seed) {
         List<URL> landscapeDescriptionLocations = new ArrayList<>(seed.getDemoFiles());
         for (String s : seed.getLocations()) {
-            URL tmpURL = URLHelper.getURL(s);
-            if (tmpURL != null) {
-                landscapeDescriptionLocations.add(tmpURL);
+            Optional<URL> tmpURL = URLHelper.getURL(s);
+            if (tmpURL.isPresent()) {
+                landscapeDescriptionLocations.add(tmpURL.get());
                 continue;
             }
             ProcessingException processingException = new ProcessingException(

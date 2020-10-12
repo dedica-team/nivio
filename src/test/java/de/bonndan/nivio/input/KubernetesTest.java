@@ -2,15 +2,13 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.input.kubernetes.ItemDescriptionFactoryKubernetes;
-import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.PodBuilder;
 import io.fabric8.kubernetes.api.model.PodSpecBuilder;
 import io.fabric8.kubernetes.api.model.PodStatusBuilder;
-import io.fabric8.kubernetes.client.NamespacedKubernetesClient;
-import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
-import org.junit.jupiter.api.AfterEach;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.server.mock.EnableKubernetesMockClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,22 +17,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@EnableKubernetesMockClient(crud = true)
 public class KubernetesTest {
 
-    private NamespacedKubernetesClient client;
-    private KubernetesServer server;
+    static KubernetesClient client;
 
     @BeforeEach
     void setup() {
-
-        server = new KubernetesServer(false, true);
-        server.before();
-
-        client = server.getClient();
-
         List<Container> containers = new ArrayList<>();
         Container c1 = new Container();
         c1.setImage("postgres:9.5");
@@ -65,7 +57,7 @@ public class KubernetesTest {
         SourceReference sourceReference = new SourceReference(null, "k8s");
         sourceReference.setUrl("http://localhost:80?groupLabel=release&namespace=default");
 
-        ItemDescriptionFactoryKubernetes factory = new ItemDescriptionFactoryKubernetes(client);
+        InputFormatHandlerKubernetes factory = new InputFormatHandlerKubernetes(java.util.Optional.ofNullable(client));
 
         factory.getConfiguration().setNamespace("default");
 
@@ -80,14 +72,5 @@ public class KubernetesTest {
         assertEquals("pod1", itemDescription.getName());
         assertEquals("pod1", itemDescription.getIdentifier());
         assertEquals("testgroup", itemDescription.getLabels().get("release"));
-
-        tearDown();
     }
-
-    @AfterEach
-    private void tearDown() {
-        server.after();
-    }
-
-
 }

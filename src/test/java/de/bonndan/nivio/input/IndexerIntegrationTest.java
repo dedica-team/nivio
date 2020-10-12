@@ -4,19 +4,14 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.LocalServer;
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runners.MethodSorters;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -25,20 +20,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IndexerIntegrationTest {
 
     @Autowired
     LandscapeRepository landscapeRepository;
 
     @Autowired
-    ItemDescriptionFormatFactory formatFactory;
+    InputFormatHandlerFactory formatFactory;
 
     @Autowired
     LandscapeDescriptionFactory landscapeDescriptionFactory;
@@ -71,7 +66,7 @@ public class IndexerIntegrationTest {
         assertEquals("mail@acme.org", landscape.getContact());
         assertTrue(landscape.getDescription().contains("demonstrate"));
         Assertions.assertNotNull(landscape.getItems());
-        assertEquals(8, landscape.getItems().all().size());
+        assertEquals(13, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
@@ -111,7 +106,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(landscape);
         assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getItems());
-        assertEquals(8, landscape.getItems().all().size());
+        assertEquals(13, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
@@ -233,7 +228,7 @@ public class IndexerIntegrationTest {
         LandscapeImpl landscape = index("/src/test/resources/example/example_templates.yml");
 
         LandscapeItem web = landscape.getItems().pick("web", null);
-        Assert.assertNotNull(web);
+        assertNotNull(web);
         assertEquals("web", web.getIdentifier());
         assertEquals("webservice", web.getType());
     }
@@ -260,6 +255,17 @@ public class IndexerIntegrationTest {
         ItemIndex index = new ItemIndex(new HashSet<>(a.getItems()));
         assertNotNull(index.pick("blog-server", null));
         assertNotNull(index.pick("crappy_dockername-234234", null));
+    }
+
+    @Test
+    public void masksSecrets() {
+        LandscapeImpl landscape1 = index("/src/test/resources/example/example_secret.yml");
+        Optional<Item> abc = landscape1.getItems().find("abc", null);
+        assertThat(abc).isNotEmpty();
+        Item item = abc.get();
+        assertThat(item.getLabel("key")).isEqualTo(SecureLabelsProcessor.MASK);
+        assertThat(item.getLabel("password")).isEqualTo(SecureLabelsProcessor.MASK);
+        assertThat(item.getLabel("foo_url")).isEqualTo("https://*@foobar.com");
     }
 
     @Test

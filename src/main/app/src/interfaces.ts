@@ -102,7 +102,7 @@ export interface IItem {
   fullyQualifiedIdentifier: string;
   tags: Array<String>;
   color?: string;
-  icon?: string;
+  icon: string;
   links?: Object;
   _links?: ILinks;
 }
@@ -159,6 +159,8 @@ export interface IAssessmentProps {
   field: string;
   status: string;
   message: string;
+  maxField?: string;
+  summary: boolean;
 }
 
 export interface INotificationMessage {
@@ -168,4 +170,11 @@ export interface INotificationMessage {
   level: 'success' | 'info' | 'warning' | 'error' | undefined;
   type: string;
   date: Date;
+}
+
+export interface ISnackbarMessage {
+  message: string;
+  key: number;
+  landscape: string;
+  level: 'success' | 'info' | 'warning' | 'error' | undefined;
 }
