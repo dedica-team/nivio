@@ -70,10 +70,6 @@ public class ItemMatcher {
         throw new IllegalArgumentException("Given string '" + string + "' contains too many parts to build an item matcher.");
     }
 
-    public static ItemMatcher forTarget(ItemDescription item) {
-        return build("", item.getGroup(), item.getIdentifier());
-    }
-
     public static ItemMatcher forTarget(Item item) {
         return build("", item.getGroup(), item.getIdentifier());
     }
