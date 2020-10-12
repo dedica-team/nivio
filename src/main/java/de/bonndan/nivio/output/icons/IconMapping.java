@@ -16,8 +16,6 @@ public enum IconMapping {
     FIREWALL("wall"),
     HUMANUSER("account"),
     INTERFACE("connection"),
-    KEYVALUESTORE("keyvaluestore"),
-    LOADBALANCER("loadbalancer"),
     KEYVALUESTORE("view-list"),
     LOADBALANCER("call-split"),
     MESSAGEQUEUE("tray-full"),
