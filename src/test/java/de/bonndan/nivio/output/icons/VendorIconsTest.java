@@ -50,6 +50,7 @@ class VendorIconsTest {
         Optional<String> s = vendorIcons.getUrl("redis");
         assertThat(s).isNotEmpty();
         assertThat(s.get()).contains("c29tZWRhdGE=");
+        assertThat(s.get()).doesNotContain("Optional");
     }
 
     @Test
