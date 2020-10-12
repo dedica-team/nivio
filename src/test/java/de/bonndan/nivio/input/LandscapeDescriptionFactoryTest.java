@@ -95,12 +95,11 @@ class LandscapeDescriptionFactoryTest {
     public void readUrlFromDescription() throws IOException {
 
         File file = new File(FILE_PATH_ENV);
-        LandscapeDescription description = new LandscapeDescription();
-        description.setIdentifier("test");
-        description.setSource(file.toURI().toURL().toString());
+        Landscape outdatedLandscape = new Landscape("test", new Group(Group.COMMON));
+        outdatedLandscape.setSource(file.toURI().toURL().toString());
 
         //when
-        LandscapeDescription landscapeDescription = factory.from(description);
+        LandscapeDescription landscapeDescription = factory.from(outdatedLandscape);
         assertNotNull(landscapeDescription);
         assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource());
     }
