@@ -22,6 +22,7 @@
     "axios": "^0.19.2",
     "classnames": "^2.2.6",
     "dateformat": "^3.0.3",
+    "fs-extra": "^9.0.1",
     "html-react-parser": "^0.13.0",
     "node-sass": "^4.14.1",
     "react": "^16.13.0",
@@ -51,7 +52,7 @@
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --config .prettierrc --write \"**/*.{js,jsx,ts,tsx}\"",
     "format:check": "prettier --config .prettierrc --c ./src/*.{js,jsx,ts,tsx}",
-    "postinstall": "cp -R node_modules/@mdi/svg/svg ../resources/static/icons"
+    "postinstall": "node ./copy-icons.js"
   },
   "eslintConfig": {
     "extends": "react-app"
