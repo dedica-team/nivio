@@ -8,7 +8,7 @@ import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
@@ -45,14 +45,14 @@ public abstract class RenderingTest {
         indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class),new LocalServer("", new VendorIcons()));
     }
 
-    protected LandscapeImpl getLandscape(String path) {
+    protected Landscape getLandscape(String path) {
         File file = new File(RootPath.get() + path);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
         indexer.reIndex(landscapeDescription);
         return landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
     }
 
-    protected LayoutedComponent debugRenderLandscape(String path, LandscapeImpl landscape) throws IOException {
+    protected LayoutedComponent debugRenderLandscape(String path, Landscape landscape) throws IOException {
 
         OrganicLayouter layouter = new OrganicLayouter();
         LayoutedComponent graph = layouter.layout(landscape);
@@ -60,7 +60,7 @@ public abstract class RenderingTest {
         return graph;
     }
 
-    protected String renderLandscape(String path, LandscapeImpl landscape) throws IOException {
+    protected String renderLandscape(String path, Landscape landscape) throws IOException {
 
         OrganicLayouter layouter = new OrganicLayouter();
         LayoutedComponent graph = layouter.layout(landscape);

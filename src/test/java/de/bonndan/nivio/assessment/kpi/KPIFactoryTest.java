@@ -5,7 +5,7 @@ import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.model.LandscapeFactory;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ class KPIFactoryTest {
 
     private ApplicationEventPublisher publisher;
     private KPIFactory kpiFactory;
-    private LandscapeImpl landscape;
+    private Landscape landscape;
 
     @BeforeEach
     public void setup() {

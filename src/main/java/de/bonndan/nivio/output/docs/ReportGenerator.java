@@ -33,11 +33,11 @@ public class ReportGenerator extends HtmlGenerator {
         this.factory = factory;
     }
 
-    public String toDocument(LandscapeImpl landscape) {
+    public String toDocument(Landscape landscape) {
         return writeLandscape(landscape);
     }
 
-    private String writeLandscape(LandscapeImpl landscape) {
+    private String writeLandscape(Landscape landscape) {
 
         assessment = new Assessment(landscape.applyKPIs(factory.getConfiguredKPIs(landscape)));
         return html(
@@ -52,9 +52,9 @@ public class ReportGenerator extends HtmlGenerator {
         ).renderFormatted();
     }
 
-    private String writeGroups(LandscapeImpl landscape) {
+    private String writeGroups(Landscape landscape) {
         final StringBuilder builder = new StringBuilder();
-        Map<String, GroupItem> groups = landscape.getGroups();
+        Map<String, Group> groups = landscape.getGroups();
         groups.forEach((s, groupItem) -> {
             String color = "#" + Color.getGroupColor(s, landscape);
             builder.append(

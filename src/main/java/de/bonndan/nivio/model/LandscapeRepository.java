@@ -9,17 +9,17 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class LandscapeRepository {
 
-    private final Map<String, LandscapeImpl> landscapes = new ConcurrentHashMap<>();
+    private final Map<String, Landscape> landscapes = new ConcurrentHashMap<>();
 
-    public Optional<LandscapeImpl> findDistinctByIdentifier(String identifier) {
+    public Optional<Landscape> findDistinctByIdentifier(String identifier) {
         return Optional.ofNullable(landscapes.get(identifier));
     }
 
-    public void save(LandscapeImpl landscape) {
+    public void save(Landscape landscape) {
         landscapes.put(landscape.getIdentifier(), landscape);
     }
 
-    public Iterable<LandscapeImpl> findAll() {
+    public Iterable<Landscape> findAll() {
         return landscapes.values();
     }
 }

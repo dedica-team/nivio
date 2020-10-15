@@ -48,7 +48,7 @@ class GroupAreaFactoryTest {
         Item landscapeItem = new Item("group", "landscapeItem");
         Item target = new Item("group", "target");
 
-        Map<LandscapeItem, Hex> vertexHexes = Map.of(
+        Map<Item, Hex> vertexHexes = Map.of(
                 landscapeItem, new Hex(1, 2, -3),
                 target, new Hex(3, 5, -8)
         );
@@ -77,7 +77,7 @@ class GroupAreaFactoryTest {
 
         Item landscapeItem = new Item("group", "landscapeItem");
 
-        Map<LandscapeItem, Hex> vertexHexes = Map.of(landscapeItem, new Hex(1, 2, -3));
+        Map<Item, Hex> vertexHexes = Map.of(landscapeItem, new Hex(1, 2, -3));
 
         Group group = new Group("group");
         group.addItem(landscapeItem);
@@ -94,7 +94,7 @@ class GroupAreaFactoryTest {
         Item one = new Item("group", "one");
         Item two = new Item("group", "two");
 
-        Map<LandscapeItem, Hex> vertexHexes = Map.of(
+        Map<Item, Hex> vertexHexes = Map.of(
                 one, new Hex(4, 4),
                 two, new Hex(6, 4)
         );
@@ -115,7 +115,7 @@ class GroupAreaFactoryTest {
         Item one = new Item("group", "one");
         Item two = new Item("group", "two");
 
-        Map<LandscapeItem, Hex> vertexHexes = Map.of(
+        Map<Item, Hex> vertexHexes = Map.of(
                 one, new Hex(4, 4),
                 two, new Hex(7, 4)
         );

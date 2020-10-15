@@ -4,12 +4,10 @@ import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.ReadingException;
 import de.bonndan.nivio.model.LandscapeFactory;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +18,7 @@ class MapStyleSheetFactoryTest {
 
     private FileFetcher fileFetcher;
     private MapStyleSheetFactory factory;
-    private LandscapeImpl landscape  = LandscapeFactory.create("test");
+    private Landscape landscape  = LandscapeFactory.create("test");
     private ProcessLog processLog;
 
     @BeforeEach

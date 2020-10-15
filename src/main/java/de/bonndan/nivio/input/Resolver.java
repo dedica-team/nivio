@@ -1,7 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 
 abstract class Resolver {
 
@@ -11,5 +11,5 @@ abstract class Resolver {
         this.processLog = processLog;
     }
 
-    public abstract void process(LandscapeDescription input, LandscapeImpl landscape);
+    public abstract void process(LandscapeDescription input, Landscape landscape);
 }

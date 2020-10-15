@@ -2,14 +2,10 @@ package de.bonndan.nivio.output.map.hex;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.svg.HexPath;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * Representation of a hex map.
@@ -17,7 +13,7 @@ import java.util.stream.Collectors;
 public class HexMap {
 
     private final Set<Hex> occupied = new HashSet<>();
-    private final Map<LandscapeItem, Hex> vertexHexes = new HashMap<>();
+    private final Map<Item, Hex> vertexHexes = new HashMap<>();
     private final PathFinder pathFinder;
 
     public HexMap(boolean debug) {

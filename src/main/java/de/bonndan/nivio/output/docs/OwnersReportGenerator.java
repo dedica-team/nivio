@@ -1,9 +1,6 @@
 package de.bonndan.nivio.output.docs;
 
-import de.bonndan.nivio.model.Component;
-import de.bonndan.nivio.model.Groups;
-import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.model.LandscapeItem;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.LocalServer;
@@ -21,12 +18,12 @@ public class OwnersReportGenerator extends HtmlGenerator {
         super(localServer);
     }
 
-    public String toDocument(LandscapeImpl landscape) {
+    public String toDocument(Landscape landscape) {
 
         return writeLandscape(landscape);
     }
 
-    private String writeLandscape(LandscapeImpl landscape) {
+    private String writeLandscape(Landscape landscape) {
 
         return html(
                 getHead(landscape),
@@ -44,7 +41,7 @@ public class OwnersReportGenerator extends HtmlGenerator {
             builder.append(
                     h2(rawHtml(owner)).attr("class", "rounded").render()
             );
-            builder.append(writeGroups(Groups.by(LandscapeItem::getGroup, landscapeItems)).render());
+            builder.append(writeGroups(Groups.by(Item::getGroup, landscapeItems)).render());
         });
 
         return builder.toString();
@@ -56,11 +53,11 @@ public class OwnersReportGenerator extends HtmlGenerator {
         return ul().with(collect);
     }
 
-    private ContainerTag writeGroup(Map.Entry<String, List<LandscapeItem>> services) {
+    private ContainerTag writeGroup(Map.Entry<String, List<Item>> services) {
         return li().with(services.getValue().stream().map(this::writeItem));
     }
 
-    private ContainerTag writeItem(LandscapeItem item) {
+    private ContainerTag writeItem(Item item) {
         String groupColor = "#" + Color.nameToRGB(item.getGroup());
 
         return div(rawHtml("<span style=\"color: " + groupColor + "\">&#9899;</span> " + FormatUtils.nice(item.getGroup()) + ": " + item.toString() + " (" + item.getFullyQualifiedIdentifier().toString() + ")"));

@@ -3,7 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.LocalServer;
 import org.springframework.util.StringUtils;
@@ -22,7 +22,7 @@ public class AppearanceResolver extends Resolver {
         this.localServer = localServer;
     }
 
-    public void process(LandscapeDescription input, LandscapeImpl landscape) {
+    public void process(LandscapeDescription input, Landscape landscape) {
         landscape.getGroupItems().forEach(groupItem -> {
             Group g = (Group)groupItem;
             setItemAppearance(g);

@@ -1,6 +1,7 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -127,7 +128,7 @@ public class FullyQualifiedIdentifier {
      * @param item other item
      * @return true if group and identifier match (if group is null, it is not taken into account)
      */
-    public boolean isSimilarTo(LandscapeItem item) {
+    public boolean isSimilarTo(ItemDescription item) {
         FullyQualifiedIdentifier otherItemFQI = item.getFullyQualifiedIdentifier();
 
         boolean equalsLandscape;

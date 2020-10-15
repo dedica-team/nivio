@@ -1,6 +1,12 @@
 package de.bonndan.nivio;
 
-import de.bonndan.nivio.model.Landscape;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
+
+import java.io.IOException;
 
 /**
  * A processing event that occurred because of an error ({@link ProcessingException} present).
@@ -20,9 +26,16 @@ public class ProcessingErrorEvent extends ProcessingEvent {
         return exception;
     }
 
-    @Override
-    public Landscape getLandscape() {
-        return exception.getLandscape();
+    @JsonSerialize(using = PLS.class)
+    public LandscapeDescription getLandscape() {
+        return exception.getLandscapeDescription();
+    }
+
+    private static class PLS extends JsonSerializer<LandscapeDescription> {
+        @Override
+        public void serialize(LandscapeDescription value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            gen.writeString(value.getIdentifier());
+        }
     }
 
     @Override

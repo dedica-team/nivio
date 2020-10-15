@@ -6,6 +6,7 @@ import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.support.SimpleFunction;
 import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.facet.FacetResult;
@@ -40,7 +41,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.googlecode.cqengine.query.QueryFactory.attribute;
-import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
+import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
 import static de.bonndan.nivio.model.SearchDocumentFactory.*;
 
 /**
@@ -115,7 +116,7 @@ public class ItemIndex {
         setItems(items);
     }
 
-    public Stream<Item> stream() {
+    public Stream<Item> itemStream() {
         return index.stream();
     }
 
@@ -161,11 +162,11 @@ public class ItemIndex {
     /**
      * Ensures that the given item has a sibling in the list, returns the item from the list.
      *
-     * @param item item to search for
+     * @param itemDescription item to search for
      * @return the sibling from the list
      */
-    public Item pick(final LandscapeItem item) {
-        return pick(item.getIdentifier(), item.getGroup());
+    public Item pick(final ItemDescription itemDescription) {
+        return pick(itemDescription.getIdentifier(), itemDescription.getGroup());
     }
 
     /**
@@ -320,8 +321,8 @@ public class ItemIndex {
     }
 
     private List<Item> findAll(ItemMatcher itemMatcher) {
-        return stream()
-                .filter(itemMatcher::isSimilarTo)
+        return itemStream()
+                .filter(item -> itemMatcher.isSimilarTo(item.getFullyQualifiedIdentifier()))
                 .collect(Collectors.toList());
     }
 }

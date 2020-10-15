@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.input.dto.ItemDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -12,7 +13,7 @@ public class ItemFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ItemFactory.class);
 
-    public static Item fromDescription(LandscapeItem item, LandscapeImpl landscape) {
+    public static Item fromDescription(ItemDescription item, Landscape landscape) {
         if (item == null) {
             throw new RuntimeException("landscape item is null");
         }
@@ -27,7 +28,7 @@ public class ItemFactory {
      * Assigns all values from the description except relations. Description values
      * overwrite all fields except the group
      */
-    public static void assignAll(Item item, LandscapeItem description) {
+    public static void assignAll(Item item, ItemDescription description) {
         if (description == null) {
             logger.warn("ServiceDescription for service " + item.getIdentifier() + " is null in assignAllValues");
             return;

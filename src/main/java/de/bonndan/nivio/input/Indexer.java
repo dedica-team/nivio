@@ -40,9 +40,9 @@ public class Indexer {
 
         ProcessLog logger = new ProcessLog(_logger);
 
-        LandscapeImpl landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier()).orElseGet(() -> {
+        Landscape landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier()).orElseGet(() -> {
             logger.info("Creating new landscape " + input.getIdentifier());
-            LandscapeImpl landscape1 = LandscapeFactory.create(input);
+            Landscape landscape1 = LandscapeFactory.create(input);
             landscapeRepo.save(landscape1);
             return landscape1;
         });
@@ -64,7 +64,7 @@ public class Indexer {
         return logger;
     }
 
-    private void runResolvers(LandscapeDescription input, ProcessLog logger, LandscapeImpl landscape) {
+    private void runResolvers(LandscapeDescription input, ProcessLog logger, Landscape landscape) {
         Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
 
         // read all input sources

@@ -2,7 +2,7 @@ package de.bonndan.nivio.assessment.kpi;
 
 import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +35,7 @@ public class KPIFactory {
      * @param landscape the landscape
      * @return effective KPIs
      */
-    public Map<String, KPI> getConfiguredKPIs(LandscapeImpl landscape) {
+    public Map<String, KPI> getConfiguredKPIs(Landscape landscape) {
 
         Map<String, KPIConfig> config = landscape.getConfig().getKPIs();
         Map<String, KPI> kpis = new HashMap<>(defaultKPIs.size() + config.size());

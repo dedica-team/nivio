@@ -2,7 +2,6 @@ package de.bonndan.nivio.output.map.hex;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.map.svg.HexPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,7 @@ public class GroupAreaFactory {
      * @param allVertexHexes a mapping from item to its hex (all, unfiltered)
      * @return all hexes the group consists of (an area)
      */
-    public static Set<Hex> getGroup(Set<Hex> occupied, Group group, Map<LandscapeItem, Hex> allVertexHexes) {
+    public static Set<Hex> getGroup(Set<Hex> occupied, Group group, Map<Item, Hex> allVertexHexes) {
 
         Set<Item> items = group.getItems();
         Set<Hex> inArea = new HashSet<>();
@@ -78,7 +77,7 @@ public class GroupAreaFactory {
      * @param allVertexHexes item hex mapping
      * @return the closest neighbours
      */
-    private static Set<Hex> getClosestItemsHexes(Item item, Set<Item> items, Map<LandscapeItem, Hex> allVertexHexes) {
+    private static Set<Hex> getClosestItemsHexes(Item item, Set<Item> items, Map<Item, Hex> allVertexHexes) {
         Hex start = allVertexHexes.get(item);
         AtomicInteger minDist = new AtomicInteger(Integer.MAX_VALUE);
         final Set<Hex> min = new HashSet<>();

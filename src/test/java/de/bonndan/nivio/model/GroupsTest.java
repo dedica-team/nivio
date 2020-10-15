@@ -12,7 +12,7 @@ public class GroupsTest {
 
     @Test
     public void testBy() {
-        List<LandscapeItem> items = new ArrayList<>();
+        List<Item> items = new ArrayList<>();
         Item item1 = new Item(null,"1");
         item1.setOwner("A");
         items.add(item1);
@@ -25,21 +25,21 @@ public class GroupsTest {
         item3.setOwner("B");
         items.add(item3);
 
-        Groups ownerGroups = Groups.by(LandscapeItem::getOwner, items);
-        Map<String, List<LandscapeItem>> all = ownerGroups.getAll();
+        Groups ownerGroups = Groups.by(Item::getOwner, items);
+        Map<String, List<Item>> all = ownerGroups.getAll();
         assertNotNull(all);
         assertFalse(all.isEmpty());
         assertTrue(all.containsKey("A"));
-        List<LandscapeItem> a = all.get("A");
+        List<Item> a = all.get("A");
         assertEquals(2, a.size());
 
-        List<LandscapeItem> b = all.get("B");
+        List<Item> b = all.get("B");
         assertEquals(1, b.size());
     }
 
     @Test
     public void testByDefault() {
-        List<LandscapeItem> services = new ArrayList<>();
+        List<Item> services = new ArrayList<>();
         Item item1 = new Item(null,"1");
         services.add(item1);
 
@@ -51,24 +51,24 @@ public class GroupsTest {
         item3.setOwner("B");
         services.add(item3);
 
-        Groups ownerGroups = Groups.by(LandscapeItem::getOwner, services);
-        Map<String, List<LandscapeItem>> all = ownerGroups.getAll();
+        Groups ownerGroups = Groups.by(Item::getOwner, services);
+        Map<String, List<Item>> all = ownerGroups.getAll();
         assertNotNull(all);
         assertFalse(all.isEmpty());
         assertTrue(all.containsKey("A"));
-        List<LandscapeItem> a = all.get("A");
+        List<Item> a = all.get("A");
         assertEquals(1, a.size());
 
-        List<LandscapeItem> b = all.get("B");
+        List<Item> b = all.get("B");
         assertEquals(1, b.size());
 
-        List<LandscapeItem> common = all.get(Group.COMMON);
+        List<Item> common = all.get(Group.COMMON);
         assertEquals(1, common.size());
     }
 
     @Test
     public void testByNotUsingGroupField() {
-        List<LandscapeItem> services = new ArrayList<>();
+        List<Item> services = new ArrayList<>();
         Item item1 = new Item(null,"1");
         item1.setOwner("A");
         item1.setGroup("content");
@@ -83,8 +83,8 @@ public class GroupsTest {
         item3.setOwner("B");
         services.add(item3);
 
-        Groups ownerGroups = Groups.by(LandscapeItem::getOwner, services);
-        Map<String, List<LandscapeItem>> all = ownerGroups.getAll();
+        Groups ownerGroups = Groups.by(Item::getOwner, services);
+        Map<String, List<Item>> all = ownerGroups.getAll();
         assertEquals(2, all.size());
         assertFalse(all.containsKey(Group.COMMON));
         assertFalse(all.containsKey("content"));

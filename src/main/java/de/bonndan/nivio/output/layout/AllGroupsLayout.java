@@ -1,9 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeItem;
+import de.bonndan.nivio.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -28,7 +25,7 @@ public class AllGroupsLayout {
 
         LOGGER.debug("Subgraphs sequence: {}", subgraphs);
 
-        List<LandscapeItem> items = new ArrayList<>();
+        List<Item> items = new ArrayList<>();
         groups.forEach((groupName, groupItem) -> {
 
             //do not layout the default group if empty
@@ -62,7 +59,7 @@ public class AllGroupsLayout {
     /**
      * Virtual edges between group containers enable organic layout of groups.
      */
-    private void addVirtualEdgesBetweenGroups(List<LandscapeItem> items) {
+    private void addVirtualEdgesBetweenGroups(List<Item> items) {
 
         GroupConnections groupConnections = new GroupConnections();
 
@@ -77,7 +74,7 @@ public class AllGroupsLayout {
             LayoutedComponent groupNode = findGroupBounds(group);
 
             item.getRelations().forEach(relationItem -> {
-                Item targetItem = (Item) relationItem.getTarget();
+                Item targetItem = relationItem.getTarget();
                 if (targetItem == null) {
                     LOGGER.warn("Virtual connections: No target in relation item {}", relationItem);
                     return;

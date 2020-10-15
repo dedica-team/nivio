@@ -2,7 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.Link;
 import de.bonndan.nivio.model.Linked;
 import org.springframework.beans.NotWritablePropertyException;
@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Inspects item description labels for keys starting with "nivio" and tries to set the corresponding values to fields.
@@ -33,7 +32,7 @@ public class LabelToFieldProcessor {
         this.logger = logger;
     }
 
-    public void process(LandscapeDescription input, LandscapeImpl landscape) {
+    public void process(LandscapeDescription input, Landscape landscape) {
         input.getItemDescriptions().all().forEach(item -> {
             List<Map.Entry<String, String>> nivioLabels = item.getLabels().entrySet().stream()
                     .filter(entry -> entry.getKey().toLowerCase().startsWith(NIVIO_LABEL_PREFIX))

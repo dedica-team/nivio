@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 
 /**
  * Layouts / arranges landscapes.
@@ -15,5 +15,5 @@ public interface Layouter<T> {
      * @param landscape landscape impl
      * @return an artifact
      */
-    LayoutedComponent layout(LandscapeImpl landscape);
+    LayoutedComponent layout(Landscape landscape);
 }

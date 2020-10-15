@@ -34,7 +34,7 @@ public class LandscapeObserverPool {
         LOGGER.info("Detecting changes in {} observers for landscape {}.", observers.size(), landscape.getIdentifier());
 
         ObservedChange change = new ObservedChange();
-        CompletableFuture<String>[] futures = observers.stream().map(observer -> {
+        CompletableFuture<String>[] futures = observers.stream().map(observer -> { //TODO: resolve unchecked assignment
             try {
                 return observer.hasChange();
             } catch (ProcessingException e) {

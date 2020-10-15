@@ -10,7 +10,7 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.RenderingTest;
 import de.bonndan.nivio.output.icons.VendorIcons;
@@ -37,7 +37,7 @@ class OrganicLayouterTest extends RenderingTest {
     }
 
     private LayoutedComponent debugRender(String path, boolean debugMode) throws IOException {
-        LandscapeImpl landscape = getLandscape(path + ".yml");
+        Landscape landscape = getLandscape(path + ".yml");
         return debugRenderLandscape(path, landscape);
     }
 
@@ -59,7 +59,7 @@ class OrganicLayouterTest extends RenderingTest {
     @Test
     public void renderInout() throws IOException {
         String path = "/src/test/resources/example/inout";
-        LandscapeImpl landscape = getLandscape(path + ".yml");
+        Landscape landscape = getLandscape(path + ".yml");
         debugRenderLandscape(path, landscape);
     }
 
@@ -90,7 +90,7 @@ class OrganicLayouterTest extends RenderingTest {
         }
 
         indexer.reIndex(input);
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
         debugRenderLandscape("/src/test/resources/example/large", landscape);
     }
@@ -130,7 +130,7 @@ class OrganicLayouterTest extends RenderingTest {
         }
 
         indexer.reIndex(input);
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
         debugRenderLandscape("/src/test/resources/example/large", landscape);
     }
@@ -158,7 +158,7 @@ class OrganicLayouterTest extends RenderingTest {
         });
 
         indexer.reIndex(landscapeDescription);
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
 
         debugRenderLandscape("/src/test/resources/example/model", landscape);
     }

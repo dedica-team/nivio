@@ -3,7 +3,7 @@ package de.bonndan.nivio.input;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -16,7 +16,7 @@ public class ReadingException extends ProcessingException {
         super(s, e);
     }
 
-    public ReadingException(Landscape landscape, String s, Throwable e) {
+    public ReadingException(LandscapeDescription landscape, String s, Throwable e) {
         super(landscape, s, e);
     }
 

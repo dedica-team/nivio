@@ -44,23 +44,23 @@ public class IndexerIntegrationTest {
     @Mock
     ApplicationEventPublisher applicationEventPublisher;
 
-    private LandscapeImpl index() {
+    private Landscape index() {
         return index("/src/test/resources/example/example_env.yml");
     }
 
-    private LandscapeImpl index(String path) {
+    private Landscape index(String path) {
         File file = new File(getRootPath() + path);
         LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
 
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, localServer);
 
         ProcessLog processLog = indexer.reIndex(landscapeDescription);
-        return (LandscapeImpl) processLog.getLandscape();
+        return (Landscape) processLog.getLandscape();
     }
 
     @Test //first pass
     public void testIndexing() {
-        LandscapeImpl landscape = index();
+        Landscape landscape = index();
 
         Assertions.assertNotNull(landscape);
         assertEquals("mail@acme.org", landscape.getContact());
@@ -89,9 +89,9 @@ public class IndexerIntegrationTest {
         assertEquals(blog.getIdentifier(), push.getSource().getIdentifier());
         assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget().getFullyQualifiedIdentifier().toString());
 
-        Set<InterfaceItem> interfaces = blog.getInterfaces();
+        Set<ServiceInterface> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());
-        InterfaceItem i = blog.getInterfaces().stream()
+        ServiceInterface i = blog.getInterfaces().stream()
                 .filter(d -> d.getDescription().equals("posts"))
                 .findFirst()
                 .orElseThrow();
@@ -101,7 +101,7 @@ public class IndexerIntegrationTest {
 
     @Test //second pass
     public void testReIndexing() {
-        LandscapeImpl landscape = index();
+        Landscape landscape = index();
 
         Assertions.assertNotNull(landscape);
         assertEquals("mail@acme.org", landscape.getContact());
@@ -116,7 +116,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
 
-        Relation push = (Relation) blog.getRelations().stream()
+        Relation push = blog.getRelations().stream()
                 .filter(d -> "push".equals(d.getDescription()))
                 .findFirst()
                 .orElse(null);
@@ -128,9 +128,9 @@ public class IndexerIntegrationTest {
         assertEquals("nivio:example/content/blog-server", push.getSource().getFullyQualifiedIdentifier().toString());
         assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget().getFullyQualifiedIdentifier().toString());
 
-        Set<InterfaceItem> interfaces = blog.getInterfaces();
+        Set<ServiceInterface> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());
-        InterfaceItem i = blog.getInterfaces().stream()
+        ServiceInterface i = blog.getInterfaces().stream()
                 .filter(d -> d.getDescription().equals("posts"))
                 .findFirst()
                 .orElseThrow();
@@ -142,7 +142,7 @@ public class IndexerIntegrationTest {
      */
     @Test
     public void testIncrementalUpdate() {
-        LandscapeImpl landscape = index();
+        Landscape landscape = index();
         Item blog = landscape.getItems().pick("blog-server", null);
         int before = landscape.getItems().all().size();
 
@@ -163,7 +163,7 @@ public class IndexerIntegrationTest {
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, localServer);
 
         //created
-        landscape = (LandscapeImpl) indexer.reIndex(landscapeDescription).getLandscape();
+        landscape = (Landscape) indexer.reIndex(landscapeDescription).getLandscape();
         blog = (Item) landscape.getItems().pick("blog-server", "completelyNewGroup");
         assertEquals("completelyNewGroup", blog.getGroup());
         assertEquals(before + 1, landscape.getItems().all().size());
@@ -181,8 +181,8 @@ public class IndexerIntegrationTest {
      */
     @Test
     public void testNameConflictDifferentLandscapes() {
-        LandscapeImpl landscape1 = index("/src/test/resources/example/example_env.yml");
-        LandscapeImpl landscape2 = index("/src/test/resources/example/example_other.yml");
+        Landscape landscape1 = index("/src/test/resources/example/example_env.yml");
+        Landscape landscape2 = index("/src/test/resources/example/example_other.yml");
 
         Assertions.assertNotNull(landscape1);
         assertEquals("mail@acme.org", landscape1.getContact());
@@ -205,7 +205,7 @@ public class IndexerIntegrationTest {
      */
     @Test
     public void testDataflow() {
-        LandscapeImpl landscape1 = index("/src/test/resources/example/example_dataflow.yml");
+        Landscape landscape1 = index("/src/test/resources/example/example_dataflow.yml");
 
         Assertions.assertNotNull(landscape1);
         Assertions.assertNotNull(landscape1.getItems());
@@ -225,9 +225,9 @@ public class IndexerIntegrationTest {
 
     @Test
     public void environmentTemplatesApplied() {
-        LandscapeImpl landscape = index("/src/test/resources/example/example_templates.yml");
+        Landscape landscape = index("/src/test/resources/example/example_templates.yml");
 
-        LandscapeItem web = landscape.getItems().pick("web", null);
+        Item web = landscape.getItems().pick("web", null);
         assertNotNull(web);
         assertEquals("web", web.getIdentifier());
         assertEquals("webservice", web.getType());
@@ -235,23 +235,23 @@ public class IndexerIntegrationTest {
 
     @Test
     public void readGroups() {
-        LandscapeImpl landscape1 = index("/src/test/resources/example/example_env.yml");
-        Map<String, GroupItem> groups = landscape1.getGroups();
+        Landscape landscape1 = index("/src/test/resources/example/example_env.yml");
+        Map<String, Group> groups = landscape1.getGroups();
         assertTrue(groups.containsKey("content"));
-        Group content = (Group) groups.get("content");
+        Group content = groups.get("content");
         assertFalse(content.getItems().isEmpty());
         assertEquals(3, content.getItems().size());
 
         assertTrue(groups.containsKey("ingress"));
-        Group ingress = (Group) groups.get("ingress");
+        Group ingress = groups.get("ingress");
         assertFalse(ingress.getItems().isEmpty());
         assertEquals(1, ingress.getItems().size());
     }
 
     @Test
     public void readGroupsContains() {
-        LandscapeImpl landscape1 = index("/src/test/resources/example/example_groups.yml");
-        Group a = (Group) landscape1.getGroups().get("groupA");
+        Landscape landscape1 = index("/src/test/resources/example/example_groups.yml");
+        Group a = landscape1.getGroups().get("groupA");
         ItemIndex index = new ItemIndex(new HashSet<>(a.getItems()));
         assertNotNull(index.pick("blog-server", null));
         assertNotNull(index.pick("crappy_dockername-234234", null));
@@ -259,7 +259,7 @@ public class IndexerIntegrationTest {
 
     @Test
     public void masksSecrets() {
-        LandscapeImpl landscape1 = index("/src/test/resources/example/example_secret.yml");
+        Landscape landscape1 = index("/src/test/resources/example/example_secret.yml");
         Optional<Item> abc = landscape1.getItems().find("abc", null);
         assertThat(abc).isNotEmpty();
         Item item = abc.get();
@@ -270,7 +270,7 @@ public class IndexerIntegrationTest {
 
     @Test
     public void labelRelations() {
-        LandscapeImpl landscape = index("/src/test/resources/example/example_label_relations.yml");
+        Landscape landscape = index("/src/test/resources/example/example_label_relations.yml");
         assertEquals(2, landscape.getGroups().size()); //common group is present by default
         assertEquals(2, landscape.getItems().all().size());
 
@@ -283,7 +283,7 @@ public class IndexerIntegrationTest {
     public void triggersSearchIndexing() {
 
         //when
-        LandscapeImpl landscape = index("/src/test/resources/example/example_env.yml");
+        Landscape landscape = index("/src/test/resources/example/example_env.yml");
 
         //then
         Set<Item> result = landscape.getItems().search("contact:alphateam@acme.io");
@@ -297,7 +297,7 @@ public class IndexerIntegrationTest {
     public void searchForTags() {
 
         //when
-        LandscapeImpl landscape = index("/src/test/resources/example/example_env.yml");
+        Landscape landscape = index("/src/test/resources/example/example_env.yml");
 
         //then
         Set<Item> result = landscape.getItems().search("tag:CMS");

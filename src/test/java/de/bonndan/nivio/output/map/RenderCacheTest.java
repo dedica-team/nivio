@@ -9,7 +9,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeFactory;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
@@ -62,7 +62,7 @@ class RenderCacheTest {
 
     @Test
     void toPNGCached() {
-        LandscapeImpl landscape = getLandscape("test");
+        Landscape landscape = getLandscape("test");
         String first = renderCache.getSVG(landscape);
         String second = renderCache.getSVG(landscape);
 
@@ -71,9 +71,9 @@ class RenderCacheTest {
 
     @Test
     void cachesBasedOnIdentifier() {
-        LandscapeImpl one = getLandscape("test");
+        Landscape one = getLandscape("test");
         String first = renderCache.getSVG(getLandscape("test"));
-        LandscapeImpl two = getLandscape("test");
+        Landscape two = getLandscape("test");
         two.setProcessLog(one.getLog()); //sync last update
         two.setIdentifier("second");
         String second = renderCache.getSVG(two);
@@ -95,8 +95,8 @@ class RenderCacheTest {
         verify(stylesheetFactory, times(1)).getMapStylesheet(any(), any());
     }
 
-    private LandscapeImpl getLandscape(String identifier) {
-        LandscapeImpl landscape = LandscapeFactory.create(identifier);
+    private Landscape getLandscape(String identifier) {
+        Landscape landscape = LandscapeFactory.create(identifier);
 
         Item item = new Item("bar", "foo");
         landscape.setItems(Set.of(item));

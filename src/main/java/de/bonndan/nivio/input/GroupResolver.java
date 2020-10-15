@@ -1,11 +1,11 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.GroupItem;
 import de.bonndan.nivio.model.Groups;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -25,12 +25,12 @@ public class GroupResolver extends Resolver {
         super(processLog);
     }
 
-    public void process(LandscapeDescription input, LandscapeImpl landscape) {
+    public void process(LandscapeDescription input, Landscape landscape) {
 
         List<Function<String, Boolean>> specs = getSpecs(input.getConfig().getGroupBlacklist());
 
-        input.getGroups().forEach((identifier, groupItem) -> {
-            Group g = getGroup(identifier, groupItem);
+        input.getGroups().forEach((identifier, groupDescription) -> {
+            Group g = getGroup(identifier, groupDescription);
 
             if (!isBlacklisted(g.getIdentifier(), specs)) {
                 processLog.info("Adding or updating group " + g.getIdentifier());
@@ -76,9 +76,9 @@ public class GroupResolver extends Resolver {
         return specs.stream().anyMatch(spec -> spec.apply(group));
     }
 
-    private Group getGroup(String identifier, GroupItem groupItem) {
+    private Group getGroup(String identifier, GroupDescription groupItem) {
         Group g = new Group(identifier);
-        Groups.merge(g, groupItem);
+        Groups.mergeWithGroupDescription(g, groupItem);
         return g;
     }
 

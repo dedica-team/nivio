@@ -50,7 +50,7 @@ public class LinkFactory {
         return out;
     }
 
-    public Map<String, Link> getLandscapeLinks(LandscapeImpl landscape) {
+    public Map<String, Link> getLandscapeLinks(Landscape landscape) {
         Map<String, Link> links = new HashMap<>();
         links.put(REL_SELF, generateSelfLink(landscape));
 
@@ -111,11 +111,11 @@ public class LinkFactory {
      * @param landscapes all landscape
      * @return the index
      */
-    Index getIndex(Iterable<LandscapeImpl> landscapes) {
+    Index getIndex(Iterable<Landscape> landscapes) {
         Index index = new Index();
 
         StreamSupport.stream(landscapes.spliterator(), false)
-                .forEach((LandscapeImpl landscape) -> {
+                .forEach((Landscape landscape) -> {
                     Link link = linkTo(localServer.getUrl(ApiController.PATH, landscape.getIdentifier()))
                             .withName(landscape.getName())
                             .withRel("landscape")
@@ -132,14 +132,14 @@ public class LinkFactory {
      *
      * @param landscape landscape
      */
-    void setLandscapeLinksRecursive(LandscapeImpl landscape) {
+    void setLandscapeLinksRecursive(Landscape landscape) {
         Map<String, Link> landscapeLinks = getLandscapeLinks(landscape);
         landscape.setLinks(landscapeLinks);
         setGroupSelfLinksRecursive(landscape.getGroups());
     }
 
-    void setGroupSelfLinksRecursive(Map<String, GroupItem> groups) {
-        groups.forEach((s, groupItem) -> setGroupLinksRecursive((Group) groupItem));
+    void setGroupSelfLinksRecursive(Map<String, Group> groups) {
+        groups.forEach((s, groupItem) -> setGroupLinksRecursive(groupItem));
     }
 
     void setGroupLinksRecursive(Group groupItem) {

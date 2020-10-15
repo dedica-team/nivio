@@ -1,7 +1,7 @@
 package de.bonndan.nivio.output.map;
 
 import de.bonndan.nivio.api.NotFoundException;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ public class MapController {
     @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/" + MAP_SVG_ENDPOINT)
     public ResponseEntity<String> svg(@PathVariable(name = "landscape") final String landscapeIdentifier) {
-        LandscapeImpl landscape = getLandscape(landscapeIdentifier);
+        Landscape landscape = getLandscape(landscapeIdentifier);
 
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -50,7 +50,7 @@ public class MapController {
         }
     }
 
-    private LandscapeImpl getLandscape(@PathVariable(name = "landscape") String landscapeIdentifier) {
+    private Landscape getLandscape(@PathVariable(name = "landscape") String landscapeIdentifier) {
         return landscapeRepository.findDistinctByIdentifier(landscapeIdentifier)
                 .orElseThrow(() -> new NotFoundException("Landscape " + landscapeIdentifier + " not found"));
     }

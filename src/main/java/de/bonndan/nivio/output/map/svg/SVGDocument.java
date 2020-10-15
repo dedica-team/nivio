@@ -1,9 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.model.RelationItem;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexMap;
@@ -33,14 +30,14 @@ public class SVGDocument extends Component {
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGDocument.class);
 
     private final LayoutedComponent layouted;
-    private final LandscapeImpl landscape;
+    private final Landscape landscape;
     private final String cssStyles;
     private boolean debug = false;
     private HexMap hexMap;
 
     public SVGDocument(@NonNull LayoutedComponent layouted, @Nullable String cssStyles) {
         this.layouted = Objects.requireNonNull(layouted);
-        this.landscape = (LandscapeImpl) layouted.getComponent();
+        this.landscape = (Landscape) layouted.getComponent();
         this.cssStyles = StringUtils.isEmpty(cssStyles) ? "" : cssStyles;
     }
 
@@ -190,7 +187,7 @@ public class SVGDocument extends Component {
         return relations;
     }
 
-    private SVGRelation getSvgRelation(LayoutedComponent layoutedItem, Item item, RelationItem<Item> rel) {
+    private SVGRelation getSvgRelation(LayoutedComponent layoutedItem, Item item, Relation rel) {
         Optional<HexPath> bestPath = hexMap.getPath(item, rel.getTarget());
         if (bestPath.isPresent()) {
             SVGRelation svgRelation = new SVGRelation(bestPath.get(), layoutedItem.getColor(), rel);

@@ -12,7 +12,7 @@ public class ItemRelationResolver extends Resolver {
     }
 
     @Override
-    public void process(LandscapeDescription input, LandscapeImpl landscape) {
+    public void process(LandscapeDescription input, Landscape landscape) {
         input.getItemDescriptions().all().forEach(serviceDescription -> {
             Item origin = landscape.getItems().pick(serviceDescription);
             if (!input.isPartial()) {
@@ -39,7 +39,7 @@ public class ItemRelationResolver extends Resolver {
                     return;
                 }
 
-                Iterator<RelationItem<Item>> iterator = origin.getRelations().iterator();
+                Iterator<Relation> iterator = origin.getRelations().iterator();
                 Relation existing = null;
                 Relation created = new Relation(source, target);
                 while (iterator.hasNext()) {
