@@ -46,7 +46,7 @@ class GroupQueryResolverTest {
 
         groupResolver.process(input, landscape);
 
-        assertThat(landscape.getItems().stream().count()).isEqualTo(1L);
+        assertThat(landscape.getItems().itemStream().count()).isEqualTo(1L);
         assertThat(landscape.getGroup("groupIdentifier").get().getItems()).containsExactly(item);
     }
 
@@ -66,7 +66,7 @@ class GroupQueryResolverTest {
 
         groupResolver.process(input, landscape);
 
-        assertThat(landscape.getItems().stream().count()).isEqualTo(1L);
+        assertThat(landscape.getItems().itemStream().count()).isEqualTo(1L);
         assertThat(landscape.getGroup("groupIdentifier")).isPresent();
         assertThat(landscape.getGroup("groupIdentifier").get().getItems()).containsExactly(item);
     }
@@ -90,7 +90,7 @@ class GroupQueryResolverTest {
 
         groupResolver.process(input, landscape);
 
-        assertThat(landscape.getItems().stream().count()).isEqualTo(1L);
+        assertThat(landscape.getItems().itemStream().count()).isEqualTo(1L);
         assertThat(landscape.getGroups().values().size()).isEqualTo(1);
         assertThat(landscape.getGroups().values().stream().findFirst().get().getIdentifier()).isEqualTo("common");
     }
@@ -109,7 +109,7 @@ class GroupQueryResolverTest {
 
         groupResolver.process(input, landscape);
 
-        assertThat(landscape.getItems().stream().count()).isEqualTo(1L);
+        assertThat(landscape.getItems().itemStream().count()).isEqualTo(1L);
         assertThat(landscape.getGroups().values().size()).isEqualTo(1);
         assertThat(landscape.getGroups().values().stream().findFirst().get().getIdentifier()).isEqualTo("common");
 

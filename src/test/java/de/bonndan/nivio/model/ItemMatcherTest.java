@@ -38,9 +38,9 @@ public class ItemMatcherTest {
         otherIdentifier.setIdentifier("d2");
         otherIdentifier.setGroup("g1");
 
-        assertTrue(fqi1.isSimilarTo(desc1));
-        assertFalse(fqi1.isSimilarTo(otherGroup));
-        assertFalse(fqi1.isSimilarTo(otherIdentifier));
+        assertTrue(fqi1.isSimilarTo(desc1.getFullyQualifiedIdentifier()));
+        assertFalse(fqi1.isSimilarTo(otherGroup.getFullyQualifiedIdentifier()));
+        assertFalse(fqi1.isSimilarTo(otherIdentifier.getFullyQualifiedIdentifier()));
     }
 
     @Test
@@ -50,15 +50,15 @@ public class ItemMatcherTest {
         ItemDescription desc1 = new ItemDescription();
         desc1.setIdentifier("d1");
         desc1.setGroup(null);
-        assertTrue(fqi1.isSimilarTo(desc1));
+        assertTrue(fqi1.isSimilarTo(desc1.getFullyQualifiedIdentifier()));
 
         ItemDescription otherGroup = new ItemDescription();
         otherGroup.setIdentifier("d1");
         otherGroup.setGroup("g2");
 
         var fqiNoGroup = ItemMatcher.build(null, null, "d1");
-        assertTrue(fqiNoGroup.isSimilarTo(desc1));
-        assertTrue(fqiNoGroup.isSimilarTo(otherGroup));
+        assertTrue(fqiNoGroup.isSimilarTo(desc1.getFullyQualifiedIdentifier()));
+        assertTrue(fqiNoGroup.isSimilarTo(otherGroup.getFullyQualifiedIdentifier()));
     }
 
     @Test

@@ -34,7 +34,7 @@ public class GroupQueryResolver extends Resolver {
           and all following resolvers might fail to find or set a group. So this is a fallback.
          */
         Group common = landscape.getGroup(Group.COMMON).get();
-        landscape.getItems().stream()
+        landscape.getItems().itemStream()
                 .forEach(item -> landscape.getGroup(item.getGroup()).orElse(common).addItem(item));
     }
 }

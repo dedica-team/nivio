@@ -114,12 +114,12 @@ public class DiffResolver extends Resolver {
     private static boolean presentInNewItems(Item item, Collection<? extends ItemDescription> newItems, Landscape landscape) {
         return newItems.stream()
                 .map(newItem -> ItemFactory.fromDescription(newItem, landscape))
-                .anyMatch(inList -> ItemMatcher.forTarget(item).isSimilarTo(inList));
+                .anyMatch(inList -> ItemMatcher.forTarget(item).isSimilarTo(inList.getFullyQualifiedIdentifier()));
     }
 
     private static boolean doesNotExistAsItem(Item item, Collection<? extends Item> items) {
         return items.stream().noneMatch(
-                inList -> ItemMatcher.forTarget(item).isSimilarTo(inList)
+                inList -> ItemMatcher.forTarget(item).isSimilarTo(inList.getFullyQualifiedIdentifier())
         );
     }
 }

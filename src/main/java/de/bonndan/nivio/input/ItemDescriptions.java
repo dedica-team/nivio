@@ -101,7 +101,9 @@ public class ItemDescriptions {
     }
 
     private List<ItemDescription> findAll(ItemMatcher itemMatcher) {
-        return index.stream().filter(itemMatcher::isSimilarTo).collect(Collectors.toList());
+        return index.stream()
+                .filter(itemDescription -> itemMatcher.isSimilarTo(itemDescription.getFullyQualifiedIdentifier()))
+                .collect(Collectors.toList());
     }
 
     /**

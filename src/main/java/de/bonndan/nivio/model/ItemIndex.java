@@ -114,7 +114,7 @@ public class ItemIndex {
         setItems(items);
     }
 
-    public Stream<Item> stream() {
+    public Stream<Item> itemStream() {
         return index.stream();
     }
 
@@ -317,8 +317,8 @@ public class ItemIndex {
     }
 
     private List<Item> findAll(ItemMatcher itemMatcher) {
-        return stream()
-                .filter(itemMatcher::isSimilarTo)
+        return itemStream()
+                .filter(item -> itemMatcher.isSimilarTo(item.getFullyQualifiedIdentifier()))
                 .collect(Collectors.toList());
     }
 }

@@ -23,7 +23,7 @@ public class Groups {
      */
     public static Groups from(Landscape landscape) {
         Groups groups = new Groups();
-        landscape.getItems().stream().forEach(groups::add);
+        landscape.getItems().itemStream().forEach(groups::add);
         return groups;
     }
 
