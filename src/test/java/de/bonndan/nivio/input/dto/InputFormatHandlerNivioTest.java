@@ -75,18 +75,6 @@ class InputFormatHandlerNivioTest {
             }
         });
 
-        assertNotNull(RelationType.PROVIDER.filterRelationDescription(service.getRelations()));
-        assertEquals(3, service.getProvidedBy().size());
-
-        List<RelationDescription> dataflows = RelationType.DATAFLOW.filterRelationDescription(service.getRelations());
-        assertNotNull(dataflows);
-        assertEquals(2, dataflows.size());
-        dataflows.forEach(dataFlow -> {
-            if (dataFlow.getDescription().equals("kpis")) {
-                assertEquals("content-kpi-dashboard", dataFlow.getTarget());
-            }
-        });
-
         ItemDescription web = services.get(2);
         assertEquals(Item.LAYER_INGRESS, web.getLabel("layer"));
         assertEquals("wordpress-web", web.getIdentifier());

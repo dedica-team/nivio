@@ -17,6 +17,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -69,7 +70,10 @@ class RelationEndpointResolverTest {
         //the provider has been resolved using a query instead of naming a service
         ItemDescription providedbyBar = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
         assertNotNull(providedbyBar);
-        List<RelationDescription> relations = RelationType.PROVIDER.filterRelationDescription(providedbyBar.getRelations());
+
+        List<RelationDescription> relations = providedbyBar.getRelations().stream()
+                .filter(relation -> RelationType.PROVIDER.equals(relation.getType()))
+                .collect(Collectors.toUnmodifiableList());
         assertNotNull(relations);
         assertEquals(1, relations.size());
         RelationDescription s = relations.iterator().next();
@@ -85,7 +89,9 @@ class RelationEndpointResolverTest {
         ItemDescription hasdataFlow = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
         assertNotNull(hasdataFlow);
         assertNotNull(hasdataFlow.getRelations());
-        List<RelationDescription> relations = RelationType.DATAFLOW.filterRelationDescription(hasdataFlow.getRelations());
+        List<RelationDescription> relations = hasdataFlow.getRelations().stream()
+                .filter(relation -> RelationType.DATAFLOW.equals(relation.getType()))
+                .collect(Collectors.toUnmodifiableList());
         assertFalse(relations.isEmpty());
         RelationDescription next = relations.iterator().next();
         assertEquals("nivio:templates2/beta/other_crappy_name-2343a", next.getTarget());

@@ -9,6 +9,8 @@ import de.bonndan.nivio.model.RelationBuilder;
 import de.bonndan.nivio.model.RelationType;
 import org.junit.jupiter.api.Test;
 
+import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ItemDescriptionValuesTest {
@@ -63,7 +65,10 @@ class ItemDescriptionValuesTest {
 
         ItemDescriptionValues.assignNotNull(sd1, increment);
 
-        assertEquals(2, RelationType.PROVIDER.filterRelationDescription(sd1.getRelations()).size());
+        assertEquals(2,
+                sd1.getRelations().stream()
+                .filter(relation -> RelationType.PROVIDER.equals(relation.getType()))
+                .collect(Collectors.toUnmodifiableList()).size());
     }
 
     @Test
