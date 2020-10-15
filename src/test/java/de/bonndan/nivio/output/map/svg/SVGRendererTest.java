@@ -20,8 +20,6 @@ class SVGRendererTest {
     void testRendering() throws MalformedURLException {
 
         //given
-        LocalServer localServer = mock(LocalServer.class);
-        when(localServer.getIconUrl(any(Item.class))).thenReturn("https://foo.bar/icon.png");
         LocalIcons localIcons = mock(LocalIcons.class);
         when(localIcons.getIconUrl(any(Item.class))).thenReturn("https://foo.bar/icon.png");
         MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
