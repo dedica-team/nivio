@@ -4,6 +4,32 @@
   "title": "Nivio DSL",
   "description": "A landscape configuration",
   "definitions": {
+    "Group": {
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "string",
+          "description": "Identifier (must be unique in a landscape)"
+        },
+        "contact": {
+          "type": "string",
+          "description": "Contact (preferably email)"
+        },
+        "owner": {
+          "type": "string",
+          "description": "Who is responsible for this group?"
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description"
+        },
+        "color": {
+          "type": "string",
+          "description": "A hex color"
+        }
+      },
+      "required": ["identifier"]
+    },
     "Relation": {
       "type": "object",
       "properties": {
@@ -111,6 +137,12 @@
     "contact": {
       "type": "string",
       "description": "A contact address, preferably email."
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Group"
+      }
     },
     "items": {
       "type": "array",
