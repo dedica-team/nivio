@@ -50,6 +50,10 @@
           "type": "string",
           "description": "A brief description"
         },
+        "note": {
+          "type": "string",
+          "description": "A note (anything not belonging into the description, like a to-do)"
+        },
         "group": {
           "type": "string",
           "description": "The name of the group the item belongs to."
@@ -61,6 +65,19 @@
         "color": {
           "type": "string",
           "description": "Hex color"
+        },
+        "scale": {
+          "type": "string",
+          "description": "A number representing instances (stored as label)"
+        },
+        "hostType": {
+          "type": "string",
+          "description": "Type of hosting (e.g. docker, stored as label)"
+        },
+        "lifecycle": {
+          "type": "string",
+          "enum": ["planned", "integration", "production", "end_of_life"],
+          "description": "Type of hosting (e.g. docker, stored as label)"
         },
         "tags": {
           "type": "array",
