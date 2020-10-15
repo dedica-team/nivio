@@ -127,16 +127,18 @@ public class LinkFactory {
     Index getIndex(Iterable<Landscape> landscapes) {
 
         Index index = new Index();
-        StreamSupport.stream(landscapes.spliterator(), false).forEach(
-                (Landscape landscape) -> localServer.getUrl(ApiController.PATH, landscape.getIdentifier()).ifPresent(url -> {
-                    Link link = linkTo(url)
-                            .withName(landscape.getName())
-                            .withRel("landscape")
-                            .withMedia("application/json")
-                            .build();
-                    index.getLinks().put(landscape.getIdentifier(), link);
-                })
-        );
+
+        StreamSupport.stream(landscapes.spliterator(), false)
+                .forEach((Landscape landscape) -> {
+                    localServer.getUrl(ApiController.PATH, landscape.getIdentifier()).ifPresent(url -> {
+                        Link link = linkTo(url)
+                                .withName(landscape.getName())
+                                .withRel("landscape")
+                                .withMedia("application/json")
+                                .build();
+                        index.getLinks().put(landscape.getIdentifier(), link);
+                    });
+                });
         return index;
     }
 
