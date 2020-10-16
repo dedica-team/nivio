@@ -1,7 +1,9 @@
 package de.bonndan.nivio.input.rancher1.patches;
 
 import io.rancher.base.AbstractType;
-import io.rancher.type.*;
+import io.rancher.type.LbTargetConfig;
+import io.rancher.type.PublicEndpoint;
+import io.rancher.type.ScalePolicy;
 
 import java.util.List;
 import java.util.Map;
