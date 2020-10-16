@@ -1,4 +1,4 @@
-package de.bonndan.nivio.input.rancher1;
+package de.bonndan.nivio.input.rancher1.patches;
 
 import io.rancher.base.TypeCollection;
 import io.rancher.type.Service;
