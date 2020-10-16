@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static de.bonndan.nivio.output.icons.IconMapping.DEFAULT_ICON;
 
 /**
- * Provides icons and vendor icons as data.
+ * Provides the builtin icons (shipped with nivio) and vendor icons (loaded form remote locations) as embeddable data.
  *
  *
  */
@@ -44,6 +44,14 @@ public class LocalIcons {
         defaultIcon = getIconUrl(DEFAULT_ICON.getIcon(), false);
     }
 
+    /**
+     * Returns the proper icon url for an item.
+     *
+     * item.icon has precedence over item label "type".
+     *
+     * @param item landscape item
+     * @return the string representation of an URL or data url.
+     */
     public String getIconUrl(Item item) {
 
         //icon label based
