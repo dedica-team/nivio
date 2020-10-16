@@ -24,9 +24,8 @@ public class AppearanceResolver extends Resolver {
 
     public void process(LandscapeDescription input, Landscape landscape) {
         landscape.getGroupItems().forEach(groupItem -> {
-            Group g = (Group)groupItem;
-            setItemAppearance(g);
-            g.getItems().forEach(item -> setItemAppearance(item, g));
+            setItemAppearance(groupItem);
+            groupItem.getItems().forEach(item -> setItemAppearance(item, groupItem));
         });
 
     }
