@@ -1,33 +1,28 @@
 package de.bonndan.nivio.output.map;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.AppearanceResolver;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.output.LocalServer;
-import de.bonndan.nivio.output.icons.VendorIcons;
+import de.bonndan.nivio.model.LandscapeFactory;
+import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
 import de.bonndan.nivio.output.map.svg.SVGRenderer;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.Set;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.ok;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -37,27 +32,13 @@ class RenderCacheTest {
     private MapStyleSheetFactory stylesheetFactory;
     private SVGRenderer svgRenderer;
 
-    private WireMockServer wireMockServer;
-
     @BeforeEach
-    public void setup() throws IOException {
-        wireMockServer = new WireMockServer(options().port(8080));
-        wireMockServer.start();
-        WireMock.configureFor("localhost", wireMockServer.port());
-        wireMockServer.stubFor(get("/icons/service.png")
-                .willReturn(ok().withBody(
-                        Files.readAllBytes(Paths.get("src/main/resources/static/icons/service.png")))
-                ));
+    public void setup() {
 
         stylesheetFactory = mock(MapStyleSheetFactory.class);
         svgRenderer = new SVGRenderer(stylesheetFactory);
         renderCache = new RenderCache(svgRenderer);
         when(stylesheetFactory.getMapStylesheet(any(), any())).thenReturn("");
-    }
-
-    @AfterEach
-    void stopWireMockServer() {
-        wireMockServer.stop();
     }
 
     @Test
@@ -110,7 +91,8 @@ class RenderCacheTest {
         test.info("foo");
         landscape.setProcessLog(test);
 
-        new AppearanceResolver(landscape.getLog(), new LocalServer("", new VendorIcons())).process(null, landscape);
+        HttpService httpService = mock(HttpService.class);
+        new AppearanceResolver(landscape.getLog(), mock(IconService.class)).process(null, landscape);
         return landscape;
     }
 }
