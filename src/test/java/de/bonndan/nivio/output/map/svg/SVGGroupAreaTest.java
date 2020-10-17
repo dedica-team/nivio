@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class SVGGroupAreaTest {
 
@@ -25,7 +24,7 @@ class SVGGroupAreaTest {
         group.addItem(landscapeItem);
 
         Set<Hex> area = GroupAreaFactory.getGroup(occupied, group, vertexHexes);
-        SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(group, area);
+        SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(group, area, false);
 
         assertThat(svgGroupArea.render().render()).contains("<text x=\"350.0\" y=\"821.217782649107\" text-anchor=\"middle\" class=\"groupLabel\">group</text>");
     }

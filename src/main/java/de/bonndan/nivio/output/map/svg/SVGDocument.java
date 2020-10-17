@@ -89,7 +89,7 @@ public class SVGDocument extends Component {
 
         List<DomContent> groups = layouted.getChildren().stream().map(groupLayout -> {
             Set<Hex> groupArea = hexMap.getGroupArea((Group) groupLayout.getComponent());
-            SVGGroupArea area = SVGGroupAreaFactory.getGroup((Group) groupLayout.getComponent(), groupArea);
+            SVGGroupArea area = SVGGroupAreaFactory.getGroup((Group) groupLayout.getComponent(), groupArea, debug);
 
             //fix viewport, because xy and hex coordinate system have different offsets
             area.groupArea.forEach(hex -> {

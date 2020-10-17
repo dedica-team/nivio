@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 public interface Renderer<T> {
 
-    T render(LayoutedComponent landscape);
+    T render(LayoutedComponent layoutedComponent, boolean debug);
 
-    void render(LayoutedComponent landscape, File file) throws IOException;
+    void render(LayoutedComponent landscape, File file, boolean debug) throws IOException;
 }

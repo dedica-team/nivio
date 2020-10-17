@@ -35,16 +35,17 @@ public class SVGRenderer implements Renderer<String> {
     }
 
     @Override
-    public String render(LayoutedComponent layoutedComponent) {
+    public String render(LayoutedComponent layoutedComponent, boolean debug) {
         applyValues(layoutedComponent);
         SVGDocument svgDocument = new SVGDocument(layoutedComponent, getStyles((Landscape) layoutedComponent.getComponent()));
+        svgDocument.setDebug(debug);
         return svgDocument.getXML();
     }
 
     @Override
-    public void render(LayoutedComponent landscape, File file)  {
+    public void render(LayoutedComponent landscape, File file, boolean debug)  {
         try (FileWriter fileWriter = new FileWriter(file)) {
-            fileWriter.write(render(landscape));
+            fileWriter.write(render(landscape, debug));
         } catch (IOException ignored) {}
     }
 

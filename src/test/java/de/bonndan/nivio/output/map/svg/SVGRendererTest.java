@@ -28,7 +28,7 @@ class SVGRendererTest {
         LayoutedComponent lc = getLayoutedLandscape();
 
         //when
-        String render = svgRenderer.render(lc);
+        String render = svgRenderer.render(lc, true);
 
         //check svg xml is returned
         assertTrue(render.contains("svg version=\"1.1\""));

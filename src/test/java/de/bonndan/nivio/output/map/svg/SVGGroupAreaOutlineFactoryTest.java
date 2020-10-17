@@ -35,7 +35,7 @@ class SVGGroupAreaOutlineFactoryTest {
 
         Set<Hex> area = GroupAreaFactory.getGroup(occupied, foo, map);
 
-        SVGGroupArea group = SVGGroupAreaFactory.getGroup(foo, area);
+        SVGGroupArea group = SVGGroupAreaFactory.getGroup(foo, area, false);
         Set<Hex> groupArea = group.groupArea;
 
         //when

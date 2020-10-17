@@ -66,7 +66,7 @@ public class IndexerIntegrationTest {
         assertEquals("mail@acme.org", landscape.getContact());
         assertTrue(landscape.getDescription().contains("demonstrate"));
         Assertions.assertNotNull(landscape.getItems());
-        assertEquals(13, landscape.getItems().all().size());
+        assertEquals(17, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());
@@ -106,7 +106,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(landscape);
         assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getItems());
-        assertEquals(13, landscape.getItems().all().size());
+        assertEquals(17, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
         assertEquals(3, blog.getProvidedBy().size());

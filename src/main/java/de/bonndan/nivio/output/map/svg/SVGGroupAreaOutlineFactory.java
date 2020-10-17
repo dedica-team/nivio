@@ -112,18 +112,7 @@ public class SVGGroupAreaOutlineFactory {
         int neighboursSize = neighbours.size();
 
         for (int i = startPosition.rotationOffset; i < neighboursSize; i++) {
-
             Hex neighbour = neighbours.get(i);
-
-            //circulate around until we find first free side
-            /*
-            if (!foundFreeSide) {
-                if (!allInGroup.contains(neighbour)) {
-                    foundFreeSide = true;
-                    if (i == 5) i = -1; //took us the whole cycle
-                }
-                continue;
-            }*/
 
             //return the first group item in rotation direction
             if (allInGroup.contains(neighbour)) {
