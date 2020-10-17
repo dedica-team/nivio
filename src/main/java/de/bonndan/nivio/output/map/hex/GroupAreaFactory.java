@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Collects all hexes close to group item hexes to create an area.
@@ -34,37 +35,57 @@ public class GroupAreaFactory {
 
         Set<Item> items = group.getItems();
         Set<Hex> inArea = new HashSet<>();
+        List<Item> connected = new ArrayList<>();
 
+        if (!items.iterator().hasNext()) {
+            LOGGER.warn("Could not determine group area for group {}", group);
+            return inArea;
+        }
         //surround each item
-        items.forEach(item -> {
-            Hex hex = allVertexHexes.get(item);
+        Item next = items.iterator().next();
+        while (next != null) {
+
+            LOGGER.debug("adding {} to group area", next);
+            Hex hex = allVertexHexes.get(next);
             inArea.add(hex);
             hex.neighbours().forEach(neigh -> {
                 if (!occupied.contains(neigh))
                     inArea.add(neigh);
             });
 
-            Set<Hex> closestNeighbours = getClosestItemsHexes(item, items, allVertexHexes);
+            Optional<Item> closest = getClosestItem(next, items, allVertexHexes, connected);
+            if (closest.isEmpty()) {
+                LOGGER.debug("no closest item found for {}", next);
+                break;
+            }
+
             // we dont care for occupied tiles here, since we just want the closest item within group, and non-group
             // items cannot be anywhere nearby (other types of obstacles do not exist yet)
             PathFinder pathFinder = new PathFinder(Set.of());
-            closestNeighbours.forEach(neighbour -> {
-                Optional<HexPath> path = pathFinder.getPath(hex, neighbour);
-                if (path.isEmpty()) {
-                    return;
-                }
+
+            Hex destination = allVertexHexes.get(closest.get());
+            Optional<HexPath> path = pathFinder.getPath(hex, destination);
+            if (path.isPresent()) {
                 Set<Hex> padded = new HashSet<>(); //pad to avoid thin bridges, also workaround for svh outline issue
                 path.get().getHexes().forEach(pathTile -> {
                     padded.add(pathTile);
                     padded.addAll(pathTile.neighbours());
                 });
                 padded.stream().filter(hex1 -> !occupied.contains(hex1)).forEach(inArea::add);
-            });
+            }
 
-        });
+            connected.add(next);
+            // stop if the next one has been connected already
+            next = connected.contains(closest.get()) ? null : closest.get();
+        }
 
+        // adding hexes with many sides adjacent to group area until no more can be added
+        // this might be too aggressive and collide with other group areas
         Set<Hex> bridges = getBridges(inArea);
-        inArea.addAll(bridges);
+        while (!bridges.isEmpty()) {
+            inArea.addAll(bridges);
+            bridges = getBridges(inArea);
+        }
 
         return inArea;
     }
@@ -75,14 +96,16 @@ public class GroupAreaFactory {
      * @param item           the current group item
      * @param items          all group items
      * @param allVertexHexes item hex mapping
+     * @param connected
      * @return the closest neighbours
      */
-    private static Set<Hex> getClosestItemsHexes(Item item, Set<Item> items, Map<Item, Hex> allVertexHexes) {
+    private static Optional<Item> getClosestItem(Item item, Set<Item> items, Map<Item, Hex> allVertexHexes, List<Item> connected) {
         Hex start = allVertexHexes.get(item);
         AtomicInteger minDist = new AtomicInteger(Integer.MAX_VALUE);
-        final Set<Hex> min = new HashSet<>();
+        AtomicReference<Item> min = new AtomicReference<>(null);
         items.stream()
                 .filter(otherGroupItem -> !item.equals(otherGroupItem))
+                .filter(otherGroupItem -> !connected.contains(otherGroupItem))
                 .forEach(otherGroupItem -> {
                     Hex dest = allVertexHexes.get(otherGroupItem);
                     int distance = start.distance(dest);
@@ -90,17 +113,15 @@ public class GroupAreaFactory {
                         return;
                     }
                     if (distance == minDist.get()) {
-                        min.add(dest);
                         return;
                     }
                     if (distance < minDist.get()) {
                         minDist.set(distance);
-                        min.clear();
-                        min.add(dest);
+                        min.set(otherGroupItem);
                     }
                 });
 
-        return min;
+        return Optional.ofNullable(min.get());
     }
 
     /**
