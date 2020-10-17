@@ -1,9 +1,9 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.icons.LocalIcons;
+import de.bonndan.nivio.output.icons.IconService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +39,7 @@ public class IndexerIntegrationTest {
     LandscapeDescriptionFactory landscapeDescriptionFactory;
 
     @Autowired
-    LocalIcons localIcons;
+    IconService iconService;
 
     @Mock
     ApplicationEventPublisher applicationEventPublisher;
@@ -52,7 +52,7 @@ public class IndexerIntegrationTest {
         File file = new File(getRootPath() + path);
         LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, localIcons);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, iconService);
 
         ProcessLog processLog = indexer.reIndex(landscapeDescription);
         return (Landscape) processLog.getLandscape();
@@ -160,7 +160,7 @@ public class IndexerIntegrationTest {
         exsistingWordPress.setName("Other name");
         landscapeDescription.getItemDescriptions().add(exsistingWordPress);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, localIcons);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, iconService);
 
         //created
         landscape = (Landscape) indexer.reIndex(landscapeDescription).getLandscape();

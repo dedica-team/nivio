@@ -4,6 +4,7 @@ import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
 import j2html.tags.ContainerTag;
 
@@ -15,8 +16,8 @@ import static j2html.TagCreator.*;
 
 public class OwnersReportGenerator extends HtmlGenerator {
 
-    public OwnersReportGenerator(LocalServer localServer, LocalIcons localIcons) {
-        super(localServer, localIcons);
+    public OwnersReportGenerator(LocalServer localServer, IconService iconService) {
+        super(localServer, iconService);
     }
 
     public String toDocument(Landscape landscape) {

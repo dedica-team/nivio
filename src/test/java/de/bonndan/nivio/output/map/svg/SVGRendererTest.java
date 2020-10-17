@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.Test;
@@ -20,8 +21,8 @@ class SVGRendererTest {
     void testRendering() throws MalformedURLException {
 
         //given
-        LocalIcons localIcons = mock(LocalIcons.class);
-        when(localIcons.getIconUrl(any(Item.class))).thenReturn("https://foo.bar/icon.png");
+        IconService iconService = mock(IconService.class);
+        when(iconService.getIconUrl(any(Item.class))).thenReturn("https://foo.bar/icon.png");
         MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
         SVGRenderer svgRenderer = new SVGRenderer(mapStyleSheetFactory);
 

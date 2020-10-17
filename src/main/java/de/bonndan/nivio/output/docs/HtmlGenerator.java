@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
 import j2html.tags.ContainerTag;
 
@@ -11,11 +12,11 @@ import static j2html.TagCreator.*;
 public abstract class HtmlGenerator {
 
     protected final LocalServer localServer;
-    protected final LocalIcons localIcons;
+    protected final IconService iconService;
 
-    protected HtmlGenerator(LocalServer localServer, LocalIcons localIcons) {
+    protected HtmlGenerator(LocalServer localServer, IconService iconService) {
         this.localServer = localServer;
-        this.localIcons = localIcons;
+        this.iconService = iconService;
     }
 
     protected ContainerTag getHead(Landscape landscape) {

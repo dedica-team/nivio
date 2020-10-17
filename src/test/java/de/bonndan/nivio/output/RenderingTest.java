@@ -10,6 +10,7 @@ import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
+import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
@@ -44,7 +45,8 @@ public abstract class RenderingTest {
         factory = new LandscapeDescriptionFactory(fileFetcher);
 
         HttpService httpService = mock(HttpService.class);
-        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class), new LocalIcons(new VendorIcons(httpService)));
+        IconService iconService = new IconService(new LocalIcons(), new VendorIcons(httpService));
+        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class), iconService);
     }
 
     protected Landscape getLandscape(String path) {

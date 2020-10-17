@@ -7,22 +7,22 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.output.LocalServer;
-import de.bonndan.nivio.output.icons.LocalIcons;
-import de.bonndan.nivio.output.icons.VendorIcons;
+import de.bonndan.nivio.model.LandscapeFactory;
+import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
 import de.bonndan.nivio.output.map.svg.SVGRenderer;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.Set;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.ok;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -92,7 +92,7 @@ class RenderCacheTest {
         landscape.setProcessLog(test);
 
         HttpService httpService = mock(HttpService.class);
-        new AppearanceResolver(landscape.getLog(), new LocalIcons(new VendorIcons(httpService))).process(null, landscape);
+        new AppearanceResolver(landscape.getLog(), mock(IconService.class)).process(null, landscape);
         return landscape;
     }
 }

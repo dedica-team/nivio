@@ -7,6 +7,7 @@ import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.output.map.MapController;
 import j2html.tags.ContainerTag;
@@ -29,8 +30,8 @@ public class ReportGenerator extends HtmlGenerator {
     private final KPIFactory factory;
     private Assessment assessment;
 
-    public ReportGenerator(LocalServer localServer, LocalIcons localIcons, KPIFactory factory) {
-        super(localServer, localIcons);
+    public ReportGenerator(LocalServer localServer, IconService iconService, KPIFactory factory) {
+        super(localServer, iconService);
         this.factory = factory;
     }
 
@@ -91,7 +92,7 @@ public class ReportGenerator extends HtmlGenerator {
                         iff(!isEmpty(item.getLabel(Label.note)), div(item.getLabel(Label.note)).attr("class", "alert alert-warning float float-right")),
                         a().attr("id", item.getFullyQualifiedIdentifier().toString()),
                         h3(
-                                img().attr("src", localIcons.getIconUrl(item)).attr("width", "30px").attr("class", "img-fluid"),
+                                img().attr("src", iconService.getIconUrl(item)).attr("width", "30px").attr("class", "img-fluid"),
                                 rawHtml(" "),
                                 rawHtml(isEmpty(item.getName()) ? item.getIdentifier() : item.getName())
                         ),
