@@ -5,6 +5,7 @@ import de.bonndan.nivio.assessment.kpi.KPIFactory;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.icons.IconService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -25,11 +26,13 @@ public class DocsController {
 
     private final LandscapeRepository landscapeRepository;
     private final LocalServer localServer;
+    private final IconService iconService;
     private final KPIFactory factory;
 
-    public DocsController(LandscapeRepository landscapeRepository, LocalServer localServer, KPIFactory factory) {
+    public DocsController(LandscapeRepository landscapeRepository, LocalServer localServer, IconService iconService, KPIFactory factory) {
         this.landscapeRepository = landscapeRepository;
         this.localServer = localServer;
+        this.iconService = iconService;
         this.factory = factory;
     }
 
@@ -40,7 +43,7 @@ public class DocsController {
                 () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
         );
 
-        ReportGenerator generator = new ReportGenerator(localServer, factory);
+        ReportGenerator generator = new ReportGenerator(localServer, iconService, factory);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
@@ -59,7 +62,7 @@ public class DocsController {
                 () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
         );
 
-        OwnersReportGenerator generator = new OwnersReportGenerator(localServer);
+        OwnersReportGenerator generator = new OwnersReportGenerator(localServer, iconService);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html");

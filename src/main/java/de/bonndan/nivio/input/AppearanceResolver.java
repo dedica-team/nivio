@@ -5,7 +5,8 @@ import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.Color;
-import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.icons.IconService;
+import de.bonndan.nivio.output.icons.LocalIcons;
 import org.springframework.util.StringUtils;
 
 /**
@@ -15,18 +16,17 @@ import org.springframework.util.StringUtils;
  */
 public class AppearanceResolver extends Resolver {
 
-    private final LocalServer localServer;
+    private final IconService iconService;
 
-    public AppearanceResolver(ProcessLog processLog, LocalServer localServer) {
+    public AppearanceResolver(ProcessLog processLog, IconService iconService) {
         super(processLog);
-        this.localServer = localServer;
+        this.iconService = iconService;
     }
 
     public void process(LandscapeDescription input, Landscape landscape) {
         landscape.getGroupItems().forEach(groupItem -> {
-            Group g = (Group)groupItem;
-            setItemAppearance(g);
-            g.getItems().forEach(item -> setItemAppearance(item, g));
+            setItemAppearance(groupItem);
+            groupItem.getItems().forEach(item -> setItemAppearance(item, groupItem));
         });
 
     }
@@ -41,7 +41,7 @@ public class AppearanceResolver extends Resolver {
         if (StringUtils.isEmpty(item.getColor())) {
             item.setColor(group.getColor());
         }
-        item.setIcon(localServer.getIconUrl(item).toString());
+        item.setIcon(iconService.getIconUrl(item));
     }
 
 }

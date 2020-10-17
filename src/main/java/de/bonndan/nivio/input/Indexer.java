@@ -7,7 +7,8 @@ import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.icons.IconService;
+import de.bonndan.nivio.output.icons.LocalIcons;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -23,17 +24,17 @@ public class Indexer {
     private final LandscapeRepository landscapeRepo;
     private final InputFormatHandlerFactory formatFactory;
     private final ApplicationEventPublisher eventPublisher;
-    private final LocalServer localServer;
+    private final IconService iconService;
 
     public Indexer(LandscapeRepository landscapeRepository,
                    InputFormatHandlerFactory formatFactory,
                    ApplicationEventPublisher eventPublisher,
-                   LocalServer localServer
+                   IconService iconService
     ) {
         this.landscapeRepo = landscapeRepository;
         this.formatFactory = formatFactory;
         this.eventPublisher = eventPublisher;
-        this.localServer = localServer;
+        this.iconService = iconService;
     }
 
     public ProcessLog reIndex(final LandscapeDescription input) {
@@ -100,7 +101,8 @@ public class Indexer {
         // create relations between items
         new ItemRelationResolver(logger).process(input, landscape);
 
-        new AppearanceResolver(logger, localServer).process(input, landscape);
+        // ensures that item have a resolved icon in the api
+        new AppearanceResolver(logger, iconService).process(input, landscape);
 
         // this step must be final or very late to include all item modifications
         landscape.getItems().indexForSearch();
