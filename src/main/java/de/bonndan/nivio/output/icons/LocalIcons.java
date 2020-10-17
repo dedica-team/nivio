@@ -4,6 +4,7 @@ import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.net.URL;
 import java.util.Map;
@@ -30,12 +31,17 @@ public class LocalIcons {
     public LocalIcons() {
         getIconUrl(DEFAULT_ICON.getIcon()).ifPresent(s -> defaultIcon = s);
     }
+
     /**
      * Provides an URL for a locally served icon.
      *
      * @return an url pointing to a file or a data url
      */
     Optional<String> getIconUrl(String icon) {
+        if (StringUtils.isEmpty(icon)) {
+            return Optional.empty();
+        }
+
         URL url = URLHelper.getURL(icon).orElse(null);
 
         //local icon urls are not supported
@@ -44,7 +50,7 @@ public class LocalIcons {
         }
 
         if (url == null) {
-            String iconFile = "/static/icons/svg/" + icon + ".svg";
+            String iconFile = "/static/icons/svg/" + icon.toLowerCase() + ".svg";
             return asSVGDataUrl(iconFile);
         }
 
