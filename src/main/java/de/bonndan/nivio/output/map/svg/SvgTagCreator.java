@@ -10,7 +10,7 @@ public class SvgTagCreator {
     }
 
     public static ContainerTag path() {
-        return (new ContainerTag("path"));
+        return new ContainerTag("path");
     }
 
     public static ContainerTag g(DomContent... dc) {

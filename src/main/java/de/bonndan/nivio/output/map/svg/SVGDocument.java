@@ -50,12 +50,6 @@ public class SVGDocument extends Component {
 
         List<DomContent> defs = new ArrayList<>();
         List<DomContent> items = new ArrayList<>();
-        List<DomContent> background = new ArrayList<>();
-
-        //reusable definition of bg hex shape
-        ContainerTag bgTemplate = (ContainerTag) new SVGHex(new Hex(0, 0), "none", "#cccccc").render();
-        bgTemplate.attr("id", "bg");
-        defs.add(bgTemplate);
 
         hexMap = new HexMap(this.debug);
 
@@ -127,22 +121,14 @@ public class SVGDocument extends Component {
         }).collect(Collectors.toList());
 
         //render background hexes
-        var i = 0;
+        defs.add(SVGBackgroundFactory.getHex());
         minQ.decrementAndGet();
         maxQ.incrementAndGet();
-        for (int q = minQ.get(); q <= maxQ.get(); q++) {
-            for (int r = minR.get() - i; r < (maxR.get() + maxQ.get()-q); r++) {
-                Point2D.Double hex = new Hex(q, r).toPixel();
-                int y = (int) hex.y + 146; //TODO why? without this bg hexes are displaced
-                if (y < 0 || y > height.get()) continue;
-                ContainerTag use = SvgTagCreator.use("#bg").attr("x", (int) hex.x - 2 * Hex.HEX_SIZE).attr("y", y);
-                background.add(use);
-            }
-            i++;
-        }
+        List<DomContent> background = new ArrayList<>(
+                SVGBackgroundFactory.getBackgroundTiles(minQ.get(), maxQ.get(), minR.get(), maxR.get(), height.get())
+        );
 
         int paddingTopLeft = 3 * Hex.HEX_SIZE;
-
         DomContent title = SvgTagCreator.text(landscape.getName())
                 .attr("x", minX.get() - paddingTopLeft)
                 .attr("y", minY.get() - paddingTopLeft + 40)

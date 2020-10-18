@@ -25,18 +25,18 @@ public class SVGHex extends Component {
 
     public DomContent render() {
         return SvgTagCreator.polygon()
+                .attr("stroke-width", 1)
+                .attr("points", asPoints(hex))
                 .condAttr(!StringUtils.isEmpty(stroke), "stroke", stroke)
                 .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
                 .condAttr(!StringUtils.isEmpty(fillId), "fill-opacity", String.valueOf(0.1))
-                .attr("stroke-width", 1)
                 .condAttr(debug, "data-hex-coords", hex.q + "," + hex.r)
-                .attr("points", asPoints(hex))
                 ;
     }
 
     private String asPoints(Hex hex) {
         return hex.asPoints(Hex.HEX_SIZE).stream()
-                .map(aDouble -> (int)aDouble.x + " " + (int)aDouble.y)
+                .map(aDouble -> round(aDouble.x) + " " + round(aDouble.y))
                 .collect(Collectors.joining(","));
     }
 }

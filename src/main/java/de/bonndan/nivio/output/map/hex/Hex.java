@@ -226,7 +226,7 @@ public class Hex {
         for (int i = 0; i < 6; i++) {
             Point2D.Double offset = hex_corner_offset(i, size);
             corners.add(
-                    new Point2D.Double(Math.round(center.x + offset.x), Math.round(center.y + offset.y))
+                    new Point2D.Double(Math.round((center.x + offset.x)*10)/10f, Math.round((center.y + offset.y)*10)/10f)
             );
         }
         return corners;
