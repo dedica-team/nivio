@@ -55,7 +55,7 @@ class SVGGroupArea extends Component {
             );
         }
 
-        return SvgTagCreator.g(territoryHexes.toArray(DomContent[]::new));
+        return SvgTagCreator.g(territoryHexes.toArray(DomContent[]::new)).attr("class", "groupArea");
     }
 }
 
