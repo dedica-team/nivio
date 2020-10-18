@@ -18,7 +18,6 @@ public class ServiceInterface {
     public ServiceInterface() {
     }
 
-    //TODO: who uses these constructors?
     public ServiceInterface(InterfaceDescription interfaceItem) {
         this.description = interfaceItem.getDescription();
         this.format = interfaceItem.getFormat();

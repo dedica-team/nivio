@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Evaluates the "condition.*" labels, see {@link InputFormatHandlerKubernetes}
  *
- * TODO this is similiar to the {@link HealthKPI}, it only works on a different field.
+ * this is similiar to the {@link HealthKPI}, it only works on a different field.
  */
 public class ConditionKPI implements KPI {
 
