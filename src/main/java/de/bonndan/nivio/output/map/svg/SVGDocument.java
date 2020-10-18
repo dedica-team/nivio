@@ -18,7 +18,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.output.map.svg.SVGItemLabel.LABEL_WIDTH;
 import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 import static j2html.TagCreator.rawHtml;
 
@@ -29,6 +28,7 @@ import static j2html.TagCreator.rawHtml;
 public class SVGDocument extends Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGDocument.class);
+    public static final int LABEL_WIDTH = 140;
 
     private final LayoutedComponent layouted;
     private final Landscape landscape;
