@@ -4,6 +4,7 @@ import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexMap;
+import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import j2html.tags.UnescapedText;
 import org.slf4j.Logger;
@@ -47,9 +48,15 @@ public class SVGDocument extends Component {
 
     public DomContent render() {
 
-        List<DomContent> patterns = new ArrayList<>();
+        List<DomContent> defs = new ArrayList<>();
         List<DomContent> items = new ArrayList<>();
         List<DomContent> background = new ArrayList<>();
+
+        //reusable definition of bg hex shape
+        ContainerTag bgTemplate = (ContainerTag) new SVGHex(new Hex(0, 0), "none", "#cccccc").render();
+        bgTemplate.attr("id", "bg");
+        defs.add(bgTemplate);
+
         hexMap = new HexMap(this.debug);
 
         //transform all item positions to hex map positions
@@ -63,7 +70,7 @@ public class SVGDocument extends Component {
                 //collect patterns for icons
                 if (!StringUtils.isEmpty(layoutedItem.getFill())) {
                     SVGPattern SVGPattern = new SVGPattern(layoutedItem.getFill());
-                    patterns.add(SVGPattern.render());
+                    defs.add(SVGPattern.render());
                 }
 
                 //render icons
@@ -121,14 +128,20 @@ public class SVGDocument extends Component {
 
         //render background hexes
         var i = 0;
+        minQ.decrementAndGet();
+        maxQ.incrementAndGet();
         for (int q = minQ.get(); q <= maxQ.get(); q++) {
-            for (int r = minR.get() - i; r <= (maxR.get() + (maxQ.get())); r++) {
-                background.add(new SVGHex(new Hex(q, r), "none", "#cccccc").render());
+            for (int r = minR.get() - i; r < (maxR.get() + maxQ.get()-q); r++) {
+                Point2D.Double hex = new Hex(q, r).toPixel();
+                int y = (int) hex.y + 146; //TODO why? without this bg hexes are displaced
+                if (y < 0 || y > height.get()) continue;
+                ContainerTag use = SvgTagCreator.use("#bg").attr("x", (int) hex.x - 2 * Hex.HEX_SIZE).attr("y", y);
+                background.add(use);
             }
             i++;
         }
 
-        int paddingTopLeft = 2 * Hex.HEX_SIZE;
+        int paddingTopLeft = 3 * Hex.HEX_SIZE;
 
         DomContent title = SvgTagCreator.text(landscape.getName())
                 .attr("x", minX.get() - paddingTopLeft)
@@ -164,7 +177,7 @@ public class SVGDocument extends Component {
                 .with(groups)
                 .with(relations.stream().map(SVGRelation::render))
                 .with(items)
-                .with(SvgTagCreator.defs().with(patterns));
+                .with(SvgTagCreator.defs().with(defs));
     }
 
     /**
