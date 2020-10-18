@@ -107,7 +107,6 @@ public class SVGGroupAreaOutlineFactory {
         }
 
         int repeats = 0;
-        boolean foundFreeSide = false;
         int neighboursSize = neighbours.size();
 
         for (int i = startPosition.rotationOffset; i < neighboursSize; i++) {
