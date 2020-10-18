@@ -26,6 +26,6 @@ class SVGGroupAreaTest {
         Set<Hex> area = GroupAreaFactory.getGroup(occupied, group, vertexHexes);
         SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(group, area, false);
 
-        assertThat(svgGroupArea.render().render()).contains("<text x=\"350.0\" y=\"821.217782649107\" text-anchor=\"middle\" class=\"groupLabel\">group</text>");
+        assertThat(svgGroupArea.render().render()).contains("<text x=\"350.0\" y=\"831\" text-anchor=\"middle\" class=\"groupLabel\">group</text>");
     }
 }
