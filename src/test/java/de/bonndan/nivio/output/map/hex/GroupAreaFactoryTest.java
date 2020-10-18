@@ -5,7 +5,6 @@ import de.bonndan.nivio.output.map.svg.HexPath;
 import org.apache.commons.collections4.set.UnmodifiableSet;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Path;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +33,7 @@ class GroupAreaFactoryTest {
         inArea.add(new Hex(3, 3, -6));
 
         //when
-        Set<Hex> bridges = GroupAreaFactory.getBridges(inArea);
+        Set<Hex> bridges = GroupAreaFactory.getBridges(inArea, 2);
         assertEquals(1, bridges.size());
         assertEquals(new Hex(3, 2, -5), bridges.iterator().next());
     }

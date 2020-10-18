@@ -80,11 +80,11 @@ public class GroupAreaFactory {
         }
 
         // adding hexes with many sides adjacent to group area until no more can be added
-        // this might be too aggressive and collide with other group areas
-        Set<Hex> bridges = getBridges(inArea);
+
+        Set<Hex> bridges = getBridges(inArea, 2);
         while (!bridges.isEmpty()) {
             inArea.addAll(bridges);
-            bridges = getBridges(inArea);
+            bridges = getBridges(inArea, 3); // 2 might be too aggressive and collide with other group areas
         }
 
         return inArea;
@@ -127,10 +127,11 @@ public class GroupAreaFactory {
     /**
      * Finds neighbours of in-area tiles which have in-area neighbours at adjacent sides (gaps).
      *
-     * @param inArea all hexes in area
+     * @param inArea   all hexes in area
+     * @param minSides min number of sides having in-group neighbours to be added as "bridge"
      * @return all hexes which fill gaps
      */
-    static Set<Hex> getBridges(Set<Hex> inArea) {
+    static Set<Hex> getBridges(Set<Hex> inArea, int minSides) {
 
         Set<Hex> bridges = new HashSet<>();
         inArea.forEach(hex -> {
@@ -141,7 +142,7 @@ public class GroupAreaFactory {
                 int i = 0;
                 List<Integer> sides = new ArrayList<>();
                 for (Hex nn : neighbour.neighbours()) {
-                    if (sides.size() > 2)
+                    if (sides.size() > minSides)
                         break;
 
                     //check on in-area tiles
@@ -153,7 +154,7 @@ public class GroupAreaFactory {
 
                 if (sides.size() < 2)
                     return;
-                if (sides.size() > 2) {
+                if (sides.size() > minSides) {
                     bridges.add(neighbour);
                     return;
                 }
