@@ -48,7 +48,7 @@ class SVGGroupArea extends Component {
             territoryHexes.add(
                     SvgTagCreator.text(group.getIdentifier())
                             .attr("x", anchor.x)
-                            .attr("y", anchor.y + 15)
+                            .attr("y", anchor.y + 25)
                             .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
                             .attr("text-anchor", "middle")
                             .attr("class", "groupLabel")
