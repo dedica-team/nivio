@@ -2,7 +2,6 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.output.map.hex.Hex;
-import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.util.StringUtils;
 
