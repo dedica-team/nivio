@@ -12,7 +12,22 @@ import java.io.IOException;
  */
 public interface Renderer<T> {
 
-    T render(LayoutedComponent layoutedComponent, boolean debug);
+    /**
+     * Renders a landscape layout to the given type.
+     *
+     * @param landscape layouted landscape
+     * @param debug             if true, result may contain extra elements to show internal rendering details
+     * @return the rendering result in the given type
+     */
+    T render(LayoutedComponent landscape, boolean debug);
 
+    /**
+     * Renders the layouted landscape and writes the result directly into a file.
+     *
+     * @param landscape layouted landscape
+     * @param file      destination file
+     * @param debug     if true, result may contain extra elements to show internal rendering details
+     * @throws IOException if file cannot be written
+     */
     void render(LayoutedComponent landscape, File file, boolean debug) throws IOException;
 }
