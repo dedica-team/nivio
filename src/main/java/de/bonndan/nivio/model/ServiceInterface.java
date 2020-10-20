@@ -15,9 +15,6 @@ public class ServiceInterface {
     private URL url;
     private String protection;
 
-    public ServiceInterface() {
-    }
-
     public ServiceInterface(InterfaceDescription interfaceItem) {
         this.description = interfaceItem.getDescription();
         this.format = interfaceItem.getFormat();
