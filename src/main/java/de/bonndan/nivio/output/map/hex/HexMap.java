@@ -4,6 +4,8 @@ import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.svg.HexPath;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
 import java.util.*;
 
@@ -12,13 +14,16 @@ import java.util.*;
  */
 public class HexMap {
 
-    private final Set<Hex> occupied = new HashSet<>();
-    private final Map<Item, Hex> vertexHexes = new HashMap<>();
+    /**
+     * key is a {@link Hex}, value an {@link Item}
+     */
+    private final BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
     private final PathFinder pathFinder;
 
     public HexMap(boolean debug) {
+
         // find and render relations
-        pathFinder = new PathFinder(occupied);
+        pathFinder = new PathFinder(hexesToItems);
         pathFinder.debug = debug;
     }
 
@@ -31,15 +36,14 @@ public class HexMap {
     public Hex add(LayoutedComponent layoutedItem) {
         Hex hex = null;
         int i = 0;
-        while (hex == null || occupied.contains(hex)) {
+        while (hex == null || hexesToItems.containsKey(hex)) {
             hex = Hex.of(Math.round(layoutedItem.getX()) - i, Math.round(layoutedItem.getY()) - i);
             i++;
         }
 
         Item item = (Item) layoutedItem.getComponent();
         hex.item = item.getFullyQualifiedIdentifier().toString();
-        vertexHexes.put(item, hex);
-        occupied.add(hex);
+        hexesToItems.put(hex, item);
         return hex;
     }
 
@@ -50,7 +54,7 @@ public class HexMap {
      * @return the corresponding {@link Hex}
      */
     public Hex hexForItem(Item item) {
-        return vertexHexes.get(item);
+        return (Hex) hexesToItems.getKey(item);
     }
 
     /**
@@ -71,8 +75,8 @@ public class HexMap {
      * @return a set of (adjacent) hexes
      */
     public Set<Hex> getGroupArea(Group group) {
-        Set<Hex> inArea = GroupAreaFactory.getGroup(occupied, group, vertexHexes);
-        inArea.stream().filter(hex -> !occupied.contains(hex)).forEach(occupied::add);
+        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems, group);
+        inArea.forEach(hex -> hexesToItems.putIfAbsent(hex, UUID.randomUUID()));
         return inArea;
     }
 }

@@ -78,8 +78,6 @@ public class SVGDocument extends Component {
             });
         });
 
-        List<SVGRelation> relations = getRelations(layouted);
-
         //generate group areas
         AtomicInteger width = new AtomicInteger(0);
         AtomicInteger height = new AtomicInteger(0);
@@ -121,6 +119,8 @@ public class SVGDocument extends Component {
 
             return area.render();
         }).collect(Collectors.toList());
+
+        List<SVGRelation> relations = getRelations(layouted);
 
         //render background hexes
         defs.add(SVGBackgroundFactory.getHex());

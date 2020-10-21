@@ -3,6 +3,8 @@ package de.bonndan.nivio.output.map.hex;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.svg.HexPath;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,12 +28,11 @@ public class GroupAreaFactory {
      * <p>
      * There is clearly much room for improvement here. It's only that I haven't found a better approach so far.
      *
-     * @param occupied       tiles occupied by items
-     * @param group          the group
-     * @param allVertexHexes a mapping from item to its hex (all, unfiltered)
+     * @param hexesToItems tiles occupied by items
+     * @param group        the group
      * @return all hexes the group consists of (an area)
      */
-    public static Set<Hex> getGroup(Set<Hex> occupied, Group group, Map<Item, Hex> allVertexHexes) {
+    public static Set<Hex> getGroup(BidiMap<Hex, Object> hexesToItems, Group group) {
 
         Set<Item> items = group.getItems();
         Set<Hex> inArea = new HashSet<>();
@@ -46,14 +47,14 @@ public class GroupAreaFactory {
         while (next != null) {
 
             LOGGER.debug("adding {} to group area", next);
-            Hex hex = allVertexHexes.get(next);
+            Hex hex = hexesToItems.getKey(next);
             inArea.add(hex);
             hex.neighbours().forEach(neigh -> {
-                if (!occupied.contains(neigh))
+                if (!hexesToItems.containsKey(neigh))
                     inArea.add(neigh);
             });
 
-            Optional<Item> closest = getClosestItem(next, items, allVertexHexes, connected);
+            Optional<Item> closest = getClosestItem(next, items, hexesToItems, connected);
             if (closest.isEmpty()) {
                 LOGGER.debug("no closest item found for {}", next);
                 break;
@@ -61,9 +62,9 @@ public class GroupAreaFactory {
 
             // we dont care for occupied tiles here, since we just want the closest item within group, and non-group
             // items cannot be anywhere nearby (other types of obstacles do not exist yet)
-            PathFinder pathFinder = new PathFinder(Set.of());
+            PathFinder pathFinder = new PathFinder(new DualHashBidiMap<>());
 
-            Hex destination = allVertexHexes.get(closest.get());
+            Hex destination = hexesToItems.getKey(closest.get());
             Optional<HexPath> path = pathFinder.getPath(hex, destination);
             if (path.isPresent()) {
                 Set<Hex> padded = new HashSet<>(); //pad to avoid thin bridges, also workaround for svg outline issue
@@ -71,7 +72,7 @@ public class GroupAreaFactory {
                     padded.add(pathTile);
                     padded.addAll(pathTile.neighbours());
                 });
-                padded.stream().filter(hex1 -> !occupied.contains(hex1)).forEach(inArea::add);
+                padded.stream().filter(hex1 -> !hexesToItems.containsKey(hex1)).forEach(inArea::add);
             }
 
             connected.add(next);
@@ -86,7 +87,7 @@ public class GroupAreaFactory {
             bridges = getBridges(inArea, 3); // 2 might be too aggressive and collide with other group areas
         }
 
-        //set group identifier to all untyped
+        //set group identifier to all
         inArea.forEach(hex -> hex.group = group.getFullyQualifiedIdentifier().toString());
         return inArea;
     }
@@ -97,18 +98,18 @@ public class GroupAreaFactory {
      * @param item           the current group item
      * @param items          all group items
      * @param allVertexHexes item hex mapping
-     * @param connected
+     * @param connected      the items which have been connected previously
      * @return the closest neighbours
      */
-    private static Optional<Item> getClosestItem(Item item, Set<Item> items, Map<Item, Hex> allVertexHexes, List<Item> connected) {
-        Hex start = allVertexHexes.get(item);
+    private static Optional<Item> getClosestItem(Item item, Set<Item> items, BidiMap<Hex, Object> allVertexHexes, List<Item> connected) {
+        Hex start = allVertexHexes.getKey(item);
         AtomicInteger minDist = new AtomicInteger(Integer.MAX_VALUE);
         AtomicReference<Item> min = new AtomicReference<>(null);
         items.stream()
                 .filter(otherGroupItem -> !item.equals(otherGroupItem))
                 .filter(otherGroupItem -> !connected.contains(otherGroupItem))
                 .forEach(otherGroupItem -> {
-                    Hex dest = allVertexHexes.get(otherGroupItem);
+                    Hex dest = allVertexHexes.getKey(otherGroupItem);
                     int distance = start.distance(dest);
                     if (distance > minDist.get()) {
                         return;
