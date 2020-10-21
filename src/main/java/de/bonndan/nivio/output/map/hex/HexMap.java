@@ -26,8 +26,9 @@ public class HexMap {
      * Add a previously layouted item to the map.
      *
      * @param layoutedItem landscape item plus coordinates
+     * @return the created hex
      */
-    public void add(LayoutedComponent layoutedItem) {
+    public Hex add(LayoutedComponent layoutedItem) {
         Hex hex = null;
         int i = 0;
         while (hex == null || occupied.contains(hex)) {
@@ -36,9 +37,10 @@ public class HexMap {
         }
 
         Item item = (Item) layoutedItem.getComponent();
-        hex.id = item.getFullyQualifiedIdentifier().jsonValue();
+        hex.item = item.getFullyQualifiedIdentifier().toString();
         vertexHexes.put(item, hex);
         occupied.add(hex);
+        return hex;
     }
 
     /**
@@ -69,6 +71,8 @@ public class HexMap {
      * @return a set of (adjacent) hexes
      */
     public Set<Hex> getGroupArea(Group group) {
-        return GroupAreaFactory.getGroup(occupied, group, vertexHexes);
+        Set<Hex> inArea = GroupAreaFactory.getGroup(occupied, group, vertexHexes);
+        inArea.stream().filter(hex -> !occupied.contains(hex)).forEach(occupied::add);
+        return inArea;
     }
 }

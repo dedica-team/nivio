@@ -57,7 +57,8 @@ public class Hex {
      */
     public final int s;
 
-    public String id;
+    public String item;
+    public String group;
 
     /**
      * Using this constructor is discouraged, since only q and r are needed.
@@ -238,7 +239,7 @@ public class Hex {
                 "q=" + q +
                 ", r=" + r +
                 ", s=" + s +
-                ", id='" + id + '\'' +
+                ", id='" + item + '\'' +
                 '}';
     }
 

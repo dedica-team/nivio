@@ -66,7 +66,7 @@ public class GroupAreaFactory {
             Hex destination = allVertexHexes.get(closest.get());
             Optional<HexPath> path = pathFinder.getPath(hex, destination);
             if (path.isPresent()) {
-                Set<Hex> padded = new HashSet<>(); //pad to avoid thin bridges, also workaround for svh outline issue
+                Set<Hex> padded = new HashSet<>(); //pad to avoid thin bridges, also workaround for svg outline issue
                 path.get().getHexes().forEach(pathTile -> {
                     padded.add(pathTile);
                     padded.addAll(pathTile.neighbours());
@@ -80,13 +80,14 @@ public class GroupAreaFactory {
         }
 
         // adding hexes with many sides adjacent to group area until no more can be added
-
         Set<Hex> bridges = getBridges(inArea, 2);
         while (!bridges.isEmpty()) {
             inArea.addAll(bridges);
             bridges = getBridges(inArea, 3); // 2 might be too aggressive and collide with other group areas
         }
 
+        //set group identifier to all untyped
+        inArea.forEach(hex -> hex.group = group.getFullyQualifiedIdentifier().toString());
         return inArea;
     }
 

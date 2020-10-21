@@ -36,4 +36,21 @@ class HexMapTest {
         //then
         assertThat(path).isNotEmpty();
     }
+
+    @Test
+    void addCreatesHexWithItem() {
+        Item bar = new Item("foo", "bar");
+        LayoutedComponent barComponent = new LayoutedComponent(bar);
+        barComponent.x = 0;
+        barComponent.y = 0;
+
+        HexMap hexMap = new HexMap(false);
+
+        //when
+        Hex added = hexMap.add(barComponent);
+
+        //then
+        assertThat(added).isNotNull();
+        assertThat(added.item).isEqualTo(bar.getFullyQualifiedIdentifier().toString());
+    }
 }

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.in;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GroupAreaFactoryTest {
@@ -127,5 +128,30 @@ class GroupAreaFactoryTest {
         Set<Hex> inArea = GroupAreaFactory.getGroup(Set.of(), group, vertexHexes);
         assertThat(inArea).contains(new Hex(6,3));
         assertThat(inArea).contains(new Hex(5,5));
+    }
+
+    @Test
+    public void allAreaHexesHaveCorrectGroup() {
+        Item one = new Item("group", "one");
+        Item two = new Item("group", "two");
+
+        Hex hexOne = new Hex(4, 4);
+        hexOne.item = one.getFullyQualifiedIdentifier().toString();
+        Hex hexTwo = new Hex(7, 4);
+        hexTwo.item = two.getFullyQualifiedIdentifier().toString();
+
+        Map<Item, Hex> vertexHexes = Map.of(
+                one, hexOne,
+                two, hexTwo
+        );
+
+        Group group = new Group("group");
+        group.addItem(one);
+        group.addItem(two);
+
+        //when
+        Set<Hex> inArea = GroupAreaFactory.getGroup(Set.of(hexOne, hexTwo), group, vertexHexes);
+        long count = inArea.stream().filter(hex -> hex.group != null).count();
+        assertThat(count).isEqualTo(inArea.size());
     }
 }
