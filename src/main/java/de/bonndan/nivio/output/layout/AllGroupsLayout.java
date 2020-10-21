@@ -29,7 +29,7 @@ public class AllGroupsLayout {
         groups.forEach((groupName, groupItem) -> {
 
             //do not layout the default group if empty
-            if (Group.COMMON.equals(groupName)&& groupItem.getItems().size() == 0) {
+            if (Group.COMMON.equals(groupName) && groupItem.getItems().size() == 0) {
                 return;
             }
 
@@ -48,6 +48,9 @@ public class AllGroupsLayout {
         //layout.setDebug(true);
         layout.setForceConstant(FORCE_CONSTANT);
         layout.setMaxDistanceLimit(MAX_DISTANCE_LIMIT);
+
+        //results in more iterations and better layouts for larger graphs
+        layout.setInitialTemp((int) (layout.initialTemp * 2));
 
         layout.configure(landscape.getConfig().getGroupLayoutConfig());
 
