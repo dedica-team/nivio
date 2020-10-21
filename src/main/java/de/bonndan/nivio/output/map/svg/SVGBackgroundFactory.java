@@ -20,7 +20,7 @@ public class SVGBackgroundFactory {
         return fullHex;
     }
 
-    public static List<ContainerTag> getBackgroundTiles(int minQ, int maxQ, int minR, int maxR, int height) {
+    public static List<ContainerTag> getBackgroundTiles(int minQ, int maxQ, int minR, int maxR, int minY, int height) {
         //render background hexes
         List<ContainerTag> background = new ArrayList<>();
         var i = 0;
@@ -28,7 +28,7 @@ public class SVGBackgroundFactory {
             for (int r = minR - i; r < (maxR + maxQ - q); r++) {
                 Point2D.Double hex = new Hex(q, r).toPixel();
                 float y = round((hex.y + 146)*10f)/10f ; //TODO why 146? without this bg hexes are displaced
-                if (y < 0 || y > height) continue;
+                if (y < minY || y > height) continue;
                 ContainerTag use = SvgTagCreator.use("#" + HEX)
                         .attr("x", (int) hex.x - 2 * Hex.HEX_SIZE)
                         .attr("y", y);

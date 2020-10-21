@@ -126,11 +126,11 @@ public class SVGDocument extends Component {
         defs.add(SVGBackgroundFactory.getHex());
         minQ.decrementAndGet();
         maxQ.incrementAndGet();
+        int paddingTopLeft = 3 * Hex.HEX_SIZE;
         List<DomContent> background = new ArrayList<>(
-                SVGBackgroundFactory.getBackgroundTiles(minQ.get(), maxQ.get(), minR.get(), maxR.get(), height.get())
+                SVGBackgroundFactory.getBackgroundTiles(minQ.get(), maxQ.get(), minR.get(), maxR.get(), minY.get()-paddingTopLeft, height.get())
         );
 
-        int paddingTopLeft = 3 * Hex.HEX_SIZE;
         DomContent title = SvgTagCreator.text(landscape.getName())
                 .attr("x", minX.get() - paddingTopLeft)
                 .attr("y", minY.get() - paddingTopLeft + 40)
@@ -151,13 +151,15 @@ public class SVGDocument extends Component {
 
 
         int viewBoxPadding2 = 2 * Hex.HEX_SIZE;
+        int viewBoxPadding3 = 3 * Hex.HEX_SIZE;
+        int viewBoxPadding4 = 4 * Hex.HEX_SIZE;
         return SvgTagCreator.svg(style)
                 .attr("version", "1.1")
                 .attr("xmlns", "http://www.w3.org/2000/svg")
                 .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
-                .attr("width", width.addAndGet(DEFAULT_ICON_SIZE + LABEL_WIDTH / 2))
-                .attr("height", height.addAndGet(DEFAULT_ICON_SIZE))
-                .attr("viewBox", (minX.get() - paddingTopLeft) + " " + (minY.get() - paddingTopLeft) + " " + (width.get() + viewBoxPadding2) + " " + (height.get() + viewBoxPadding2))
+                .attr("width", width.addAndGet(viewBoxPadding2))
+                .attr("height", height.addAndGet(viewBoxPadding2))
+                .attr("viewBox", (minX.get() - paddingTopLeft) + " " + (minY.get() - paddingTopLeft) + " " + (width.get() + viewBoxPadding4) + " " + (height.get() + viewBoxPadding3))
                 .attr("class", "map")
 
                 .with(background)
