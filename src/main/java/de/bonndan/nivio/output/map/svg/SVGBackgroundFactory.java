@@ -9,6 +9,11 @@ import java.util.List;
 
 import static java.lang.Math.round;
 
+/**
+ * This generates the background hex tiles.
+ *
+ * TODO It is a bad bank for technical debt.
+ */
 public class SVGBackgroundFactory {
 
     private static final String HEX = "hex";
