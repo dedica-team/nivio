@@ -50,7 +50,7 @@ public class AllGroupsLayout {
         layout.setMaxDistanceLimit(MAX_DISTANCE_LIMIT);
 
         //results in more iterations and better layouts for larger graphs
-        layout.setInitialTemp((int) (layout.initialTemp * 2));
+        layout.setInitialTemp((int) (layout.initialTemp * 3));
 
         layout.configure(landscape.getConfig().getGroupLayoutConfig());
 
