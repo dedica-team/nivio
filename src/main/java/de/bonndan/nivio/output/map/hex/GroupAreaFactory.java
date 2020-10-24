@@ -36,19 +36,47 @@ public class GroupAreaFactory {
 
         Set<Item> items = group.getItems();
         Set<Hex> inArea = new HashSet<>();
-        List<Item> connected = new ArrayList<>();
 
         if (!items.iterator().hasNext()) {
             LOGGER.warn("Could not determine group area for group {}", group);
             return inArea;
         }
-        //surround each item
+
+        //build the area by adding paths
+        addPathsBetweenClosestItems(hexesToItems, items, inArea);
+
+        // enlarge area by adding hexes with many sides adjacent to group area until no more can be added
+        Set<Hex> bridges = getBridges(inArea, 2);
+        while (!bridges.isEmpty()) {
+            inArea.addAll(bridges);
+            bridges = getBridges(inArea, 3); // 2 might be too aggressive and collide with other group areas
+        }
+
+        //set group identifier to all
+        inArea.forEach(hex -> hex.group = group.getFullyQualifiedIdentifier().toString());
+        return inArea;
+    }
+
+    /**
+     * Generates paths between each item and its closest neighbour and added tiles of the paths to the group area.
+     *
+     * @param hexesToItems hex tiles occupied by items
+     * @param items        group items
+     * @param inArea       area hex tiles
+     */
+    private static void addPathsBetweenClosestItems(BidiMap<Hex, Object> hexesToItems,
+                                                    Set<Item> items,
+                                                    Set<Hex> inArea
+    ) {
+        List<Item> connected = new ArrayList<>();
         Item next = items.iterator().next();
         while (next != null) {
 
             LOGGER.debug("adding {} to group area", next);
             Hex hex = hexesToItems.getKey(next);
+            //the item itself is added automatically
             inArea.add(hex);
+            //every "unregistered" neighbour is added automatically
             hex.neighbours().forEach(neigh -> {
                 if (!hexesToItems.containsKey(neigh))
                     inArea.add(neigh);
@@ -79,21 +107,12 @@ public class GroupAreaFactory {
             // stop if the next one has been connected already
             next = connected.contains(closest.get()) ? null : closest.get();
         }
-
-        // adding hexes with many sides adjacent to group area until no more can be added
-        Set<Hex> bridges = getBridges(inArea, 2);
-        while (!bridges.isEmpty()) {
-            inArea.addAll(bridges);
-            bridges = getBridges(inArea, 3); // 2 might be too aggressive and collide with other group areas
-        }
-
-        //set group identifier to all
-        inArea.forEach(hex -> hex.group = group.getFullyQualifiedIdentifier().toString());
-        return inArea;
     }
 
     /**
-     * Returns all neighbours in group which are the have same (minimum) distance.
+     * Returns the closest item of the group items.
+     * <p>
+     * Also regards that connections will not be reversed (a->b will prevent b->a).
      *
      * @param item           the current group item
      * @param items          all group items
@@ -101,7 +120,11 @@ public class GroupAreaFactory {
      * @param connected      the items which have been connected previously
      * @return the closest neighbours
      */
-    private static Optional<Item> getClosestItem(Item item, Set<Item> items, BidiMap<Hex, Object> allVertexHexes, List<Item> connected) {
+    private static Optional<Item> getClosestItem(Item item,
+                                                 Set<Item> items,
+                                                 BidiMap<Hex, Object> allVertexHexes,
+                                                 List<Item> connected
+    ) {
         Hex start = allVertexHexes.getKey(item);
         AtomicInteger minDist = new AtomicInteger(Integer.MAX_VALUE);
         AtomicReference<Item> min = new AtomicReference<>(null);
@@ -111,12 +134,6 @@ public class GroupAreaFactory {
                 .forEach(otherGroupItem -> {
                     Hex dest = allVertexHexes.getKey(otherGroupItem);
                     int distance = start.distance(dest);
-                    if (distance > minDist.get()) {
-                        return;
-                    }
-                    if (distance == minDist.get()) {
-                        return;
-                    }
                     if (distance < minDist.get()) {
                         minDist.set(distance);
                         min.set(otherGroupItem);
