@@ -159,37 +159,48 @@ public class GroupAreaFactory {
                     return;
 
                 int i = 0;
-                List<Integer> sides = new ArrayList<>();
+                List<Integer> sidesWithNeighbours = new ArrayList<>();
                 for (Hex nn : neighbour.neighbours()) {
-                    if (sides.size() > minSides)
+                    if (sidesWithNeighbours.size() > minSides)
                         break;
 
                     //check on in-area tiles
                     if (inArea.contains(nn)) {
-                        sides.add(i);
+                        sidesWithNeighbours.add(i);
                     }
                     i++;
                 }
 
-                if (sides.size() < 2)
+                if (sidesWithNeighbours.size() < 2)
                     return;
-                if (sides.size() > minSides) {
+                if (sidesWithNeighbours.size() > minSides) {
                     bridges.add(neighbour);
                     return;
                 }
 
-                //find out if the two neighbours are adjacent
-                int diff = sides.get(0) - sides.get(1);
-
-                //-1 if any two are adjacent
-                //-5 if first (0) and last (5) are adjacent
-                if (diff != -1 && diff != -5) {
+                if (hasOppositeNeighbours(sidesWithNeighbours)) {
                     bridges.add(neighbour);
-                    LOGGER.debug("Adding bridge tile {}", neighbour);
                 }
-
             });
         });
         return bridges;
+    }
+
+    /**
+     * Find out if any sides having a neighbour are not adjacent.
+     *
+     * @param sidesWithNeighbours numbers of sides having a same-group neighbour (0..5)
+     */
+    static private boolean hasOppositeNeighbours(List<Integer> sidesWithNeighbours) {
+
+        for (int i = 0; i < sidesWithNeighbours.size(); i++) {
+            Integer integer = sidesWithNeighbours.get(i);
+            Integer next = sidesWithNeighbours.get(i == sidesWithNeighbours.size() - 1 ? 0 : i + 1);
+            int diff = Math.abs(integer - next);
+            if (diff != 1 && diff != 5) {
+                return true;
+            }
+        }
+        return false;
     }
 }
