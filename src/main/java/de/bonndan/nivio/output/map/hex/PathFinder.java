@@ -159,8 +159,9 @@ class PathFinder {
         Tile tileBetween = dst;
         while (!start.equals(tileBetween)) {
 
-            if (tileBetween.getParent() == null)
+            if (tileBetween.getParent() == null) {
                 break;
+            }
 
             tileBetween = tileBetween.getParent();
             if (path.contains(tileBetween)) { //already contains the parent
@@ -170,13 +171,6 @@ class PathFinder {
                 throw new RuntimeException(String.format("Path from %s to %s runs through item %s!", start, dst, tileBetween));
             }
 
-            if (!dst.equals(tileBetween) && !start.equals(tileBetween)
-                    && tileBetween.hex.group != null
-                    && !start.hex.group.equals(tileBetween.hex.group)
-                    && !dst.hex.group.equals(tileBetween.hex.group)
-            ) {
-                LOGGER.warn("Path from {} to {} runs through group {}!", start, dst, tileBetween.hex.group);
-            }
             path.add(tileBetween);
         }
 
@@ -197,8 +191,6 @@ class PathFinder {
 
 
     private List<Tile> getNeighbours(Tile current) {
-
-        //LOGGER.debug("{} free tiles at {}", free.size(), current);
 
         return current.hex.neighbours().stream()
                 .map(hex -> {

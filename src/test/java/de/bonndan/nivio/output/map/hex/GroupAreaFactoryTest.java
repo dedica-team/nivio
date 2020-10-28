@@ -58,7 +58,7 @@ class GroupAreaFactoryTest {
         hexesToItems.put(two, target);
 
         //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems, group);
+        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
 
         //then
         assertThat(inArea).containsAll(expectedTerritory);
@@ -85,7 +85,7 @@ class GroupAreaFactoryTest {
         hexesToItems.put(two, target);
 
         //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems, group);
+        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
 
         //then
         assertThat(inArea).isEqualTo(expectedTerritory);
@@ -108,7 +108,7 @@ class GroupAreaFactoryTest {
         hexesToItems.put(two, target);
 
         //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems, group);
+        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
         assertThat(inArea).doesNotContain(new Hex(5,2));
         assertThat(inArea).doesNotContain(new Hex(6,2));
         assertThat(inArea).doesNotContain(new Hex(7,2));
@@ -132,7 +132,7 @@ class GroupAreaFactoryTest {
         hexesToItems.put(two, target);
 
         //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems, group);
+        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
 
         //then
         assertThat(inArea).contains(new Hex(6,3));
@@ -155,7 +155,7 @@ class GroupAreaFactoryTest {
         hexesToItems.put(two, target);
 
         //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems, group);
+        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
 
         //then
         long count = inArea.stream().filter(hex -> hex.group != null).count();

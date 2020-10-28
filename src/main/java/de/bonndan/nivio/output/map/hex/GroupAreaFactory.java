@@ -28,11 +28,11 @@ public class GroupAreaFactory {
      * <p>
      * There is clearly much room for improvement here. It's only that I haven't found a better approach so far.
      *
-     * @param hexesToItems tiles occupied by items
+     * @param itemsToHexes tiles occupied by items
      * @param group        the group
      * @return all hexes the group consists of (an area)
      */
-    public static Set<Hex> getGroup(BidiMap<Hex, Object> hexesToItems, Group group) {
+    public static Set<Hex> getGroup(Map<Object, Hex> itemsToHexes, Group group) {
 
         Set<Item> items = group.getItems();
         Set<Hex> inArea = new HashSet<>();
@@ -43,7 +43,7 @@ public class GroupAreaFactory {
         }
 
         //build the area by adding paths
-        addPathsBetweenClosestItems(hexesToItems, items, inArea);
+        addPathsBetweenClosestItems(itemsToHexes, items, inArea);
 
         // enlarge area by adding hexes with many sides adjacent to group area until no more can be added
         Set<Hex> bridges = getBridges(inArea, 2);
@@ -60,11 +60,11 @@ public class GroupAreaFactory {
     /**
      * Generates paths between each item and its closest neighbour and added tiles of the paths to the group area.
      *
-     * @param hexesToItems hex tiles occupied by items
+     * @param itemsToHexes hex tiles occupied by items
      * @param items        group items
      * @param inArea       area hex tiles
      */
-    private static void addPathsBetweenClosestItems(BidiMap<Hex, Object> hexesToItems,
+    private static void addPathsBetweenClosestItems(Map<Object, Hex> itemsToHexes,
                                                     Set<Item> items,
                                                     Set<Hex> inArea
     ) {
@@ -73,16 +73,16 @@ public class GroupAreaFactory {
         while (next != null) {
 
             LOGGER.debug("adding {} to group area", next);
-            Hex hex = hexesToItems.getKey(next);
+            Hex hex = itemsToHexes.get(next);
             //the item itself is added automatically
             inArea.add(hex);
             //every "unregistered" neighbour is added automatically
             hex.neighbours().forEach(neigh -> {
-                if (!hexesToItems.containsKey(neigh))
+                if (!itemsToHexes.containsKey(neigh))
                     inArea.add(neigh);
             });
 
-            Optional<Item> closest = getClosestItem(next, items, hexesToItems, connected);
+            Optional<Item> closest = getClosestItem(next, items, itemsToHexes, connected);
             if (closest.isEmpty()) {
                 LOGGER.debug("no closest item found for {}", next);
                 break;
@@ -92,7 +92,7 @@ public class GroupAreaFactory {
             // items cannot be anywhere nearby (other types of obstacles do not exist yet)
             PathFinder pathFinder = new PathFinder(new DualHashBidiMap<>());
 
-            Hex destination = hexesToItems.getKey(closest.get());
+            Hex destination = itemsToHexes.get(closest.get());
             Optional<HexPath> path = pathFinder.getPath(hex, destination);
             if (path.isPresent()) {
                 Set<Hex> padded = new HashSet<>(); //pad to avoid thin bridges, also workaround for svg outline issue
@@ -100,7 +100,7 @@ public class GroupAreaFactory {
                     padded.add(pathTile);
                     padded.addAll(pathTile.neighbours());
                 });
-                padded.stream().filter(hex1 -> !hexesToItems.containsKey(hex1)).forEach(inArea::add);
+                padded.stream().filter(hex1 -> !itemsToHexes.containsKey(hex1)).forEach(inArea::add);
             }
 
             connected.add(next);
@@ -122,17 +122,17 @@ public class GroupAreaFactory {
      */
     private static Optional<Item> getClosestItem(Item item,
                                                  Set<Item> items,
-                                                 BidiMap<Hex, Object> allVertexHexes,
+                                                 Map<Object, Hex> allVertexHexes,
                                                  List<Item> connected
     ) {
-        Hex start = allVertexHexes.getKey(item);
+        Hex start = allVertexHexes.get(item);
         AtomicInteger minDist = new AtomicInteger(Integer.MAX_VALUE);
         AtomicReference<Item> min = new AtomicReference<>(null);
         items.stream()
                 .filter(otherGroupItem -> !item.equals(otherGroupItem))
                 .filter(otherGroupItem -> !connected.contains(otherGroupItem))
                 .forEach(otherGroupItem -> {
-                    Hex dest = allVertexHexes.getKey(otherGroupItem);
+                    Hex dest = allVertexHexes.get(otherGroupItem);
                     int distance = start.distance(dest);
                     if (distance < minDist.get()) {
                         minDist.set(distance);

@@ -29,7 +29,7 @@ class SVGGroupAreaTest {
         hexesToItems.put(e1, landscapeItem);
         hexesToItems.put(e2, landscapeItem2);
 
-        Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems, group);
+        Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
         SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(group, area, false);
 
         assertThat(svgGroupArea.render().render()).contains("<text x=\"650.0\" y=\"1177\" text-anchor=\"middle\" class=\"groupLabel\">group</text>");

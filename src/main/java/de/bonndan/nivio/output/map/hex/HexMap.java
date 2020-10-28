@@ -54,7 +54,7 @@ public class HexMap {
      * @return the corresponding {@link Hex}
      */
     public Hex hexForItem(Item item) {
-        return (Hex) hexesToItems.getKey(item);
+        return Objects.requireNonNull(hexesToItems.getKey(item), String.format("Item %s has no hex tile assigned.", item));
     }
 
     /**
@@ -75,7 +75,7 @@ public class HexMap {
      * @return a set of (adjacent) hexes
      */
     public Set<Hex> getGroupArea(Group group) {
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems, group);
+        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
         inArea.forEach(hex -> hexesToItems.putIfAbsent(hex, UUID.randomUUID()));
         return inArea;
     }
