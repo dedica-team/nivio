@@ -7,6 +7,7 @@ import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexMap;
+import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import j2html.tags.UnescapedText;
 import org.slf4j.Logger;
@@ -17,10 +18,8 @@ import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 import static j2html.TagCreator.rawHtml;
 
 
@@ -78,88 +77,39 @@ public class SVGDocument extends Component {
             });
         });
 
-        //generate group areas
-        AtomicInteger width = new AtomicInteger(0);
-        AtomicInteger height = new AtomicInteger(0);
-        AtomicInteger minX = new AtomicInteger(Integer.MAX_VALUE);
-        AtomicInteger minY = new AtomicInteger(Integer.MAX_VALUE);
-        AtomicInteger minQ = new AtomicInteger(Integer.MAX_VALUE);
-        AtomicInteger minR = new AtomicInteger(Integer.MAX_VALUE);
-        AtomicInteger maxQ = new AtomicInteger(Integer.MIN_VALUE);
-        AtomicInteger maxR = new AtomicInteger(Integer.MIN_VALUE);
-
+        List<SVGGroupArea> groupAreas = new ArrayList<>();
         List<DomContent> groups = layouted.getChildren().stream().map(groupLayout -> {
             Set<Hex> groupArea = hexMap.getGroupArea((Group) groupLayout.getComponent());
             SVGGroupArea area = SVGGroupAreaFactory.getGroup((Group) groupLayout.getComponent(), groupArea, debug);
-
-            //fix viewport, because xy and hex coordinate system have different offsets
-            area.groupArea.forEach(hex -> {
-                var pos = hex.toPixel();
-                if (pos.x < minX.get()) {
-                    minX.set((int) pos.x);
-                    minQ.set(hex.q);
-                }
-
-                if (pos.y < minY.get()) {
-                    minY.set((int) pos.y);
-                    minR.set(hex.r);
-                }
-
-                //iterate all items to render them and collect max svg dimension
-                // add extra margins size group area is larger than max item positions
-                if (pos.x > width.get()) {
-                    width.set((int) pos.x);
-                    maxQ.set(hex.q);
-                }
-                if (pos.y > height.get()) {
-                    height.set((int) pos.y);
-                    maxR.set(hex.r);
-                }
-            });
-
+            groupAreas.add(area);
             return area.render();
         }).collect(Collectors.toList());
 
         List<SVGRelation> relations = getRelations(layouted);
 
+        SVGDimension dimension = SVGDimensionFactory.getDimension(groupAreas);
+
         //render background hexes
         defs.add(SVGBackgroundFactory.getHex());
-        minQ.decrementAndGet();
-        maxQ.incrementAndGet();
-        int paddingTopLeft = 3 * Hex.HEX_SIZE;
+
+
         List<DomContent> background = new ArrayList<>(
-                SVGBackgroundFactory.getBackgroundTiles(minQ.get(), maxQ.get(), minR.get(), maxR.get(), minY.get()-paddingTopLeft, height.get())
+                SVGBackgroundFactory.getBackgroundTiles(dimension)
         );
 
-        DomContent title = SvgTagCreator.text(landscape.getName())
-                .attr("x", minX.get() - paddingTopLeft)
-                .attr("y", minY.get() - paddingTopLeft + 40)
-                .attr("class", "title");
-        DomContent logo = null;
-        String logoUrl = landscape.getConfig().getBranding().getMapLogo();
-        if (!StringUtils.isEmpty(logoUrl)) {
-            logo = SvgTagCreator.image()
-                    .attr("xlink:href", logoUrl)
-                    .attr("x", minX.get() - paddingTopLeft)
-                    .attr("y", minY.get() - paddingTopLeft + 60)
-                    .attr("width", LABEL_WIDTH)
-                    .attr("height", LABEL_WIDTH);
-        }
-
+        DomContent title = getTitle(dimension);
+        DomContent logo = getLogo(dimension);
 
         UnescapedText style = rawHtml("<style>\n" + cssStyles + "</style>");
 
 
-        int viewBoxPadding2 = 2 * Hex.HEX_SIZE;
-        int viewBoxPadding3 = 3 * Hex.HEX_SIZE;
-        int viewBoxPadding4 = 4 * Hex.HEX_SIZE;
         return SvgTagCreator.svg(style)
                 .attr("version", "1.1")
                 .attr("xmlns", "http://www.w3.org/2000/svg")
                 .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
-                .attr("width", width.addAndGet(viewBoxPadding2))
-                .attr("height", height.addAndGet(viewBoxPadding2))
-                .attr("viewBox", (minX.get() - paddingTopLeft) + " " + (minY.get() - paddingTopLeft) + " " + (width.get() + viewBoxPadding4) + " " + (height.get() + viewBoxPadding3))
+                .attr("width", dimension.cartesian.horMax)
+                .attr("height", dimension.cartesian.vertMax)
+                .attr("viewBox", dimension.cartesian.asViewBox())
                 .attr("class", "map")
 
                 .with(background)
@@ -168,6 +118,28 @@ public class SVGDocument extends Component {
                 .with(relations.stream().map(SVGRelation::render))
                 .with(items)
                 .with(SvgTagCreator.defs().with(defs));
+    }
+
+    @Nullable
+    private DomContent getLogo(SVGDimension dimension) {
+        DomContent logo = null;
+        String logoUrl = landscape.getConfig().getBranding().getMapLogo();
+        if (!StringUtils.isEmpty(logoUrl)) {
+            logo = SvgTagCreator.image()
+                    .attr("xlink:href", logoUrl)
+                    .attr("x", dimension.cartesian.horMin - dimension.cartesian.padding)
+                    .attr("y", dimension.cartesian.vertMin - dimension.cartesian.padding + 60)
+                    .attr("width", LABEL_WIDTH)
+                    .attr("height", LABEL_WIDTH);
+        }
+        return logo;
+    }
+
+    private ContainerTag getTitle(SVGDimension dimension) {
+        return SvgTagCreator.text(landscape.getName())
+                .attr("x", dimension.cartesian.horMin - dimension.cartesian.padding)
+                .attr("y", dimension.cartesian.vertMin - dimension.cartesian.padding + 40)
+                .attr("class", "title");
     }
 
     /**

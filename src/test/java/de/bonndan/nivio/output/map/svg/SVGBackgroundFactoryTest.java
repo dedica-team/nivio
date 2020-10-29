@@ -1,12 +1,14 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class SVGBackgroundFactoryTest {
 
@@ -20,10 +22,16 @@ class SVGBackgroundFactoryTest {
 
     @Test
     void getBackgroundTiles() {
-        List<ContainerTag> backgroundTiles = SVGBackgroundFactory.getBackgroundTiles(-1, 10, -1, 10, -500, 500);
+
+        Group g = new Group("a");
+        Set<Hex> hexes = Set.of(new Hex(-3, -3), new Hex(10, 10));
+        SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of());
+        SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(svgGroupArea));
+
+        List<ContainerTag> backgroundTiles = SVGBackgroundFactory.getBackgroundTiles(dimension);
         assertThat(backgroundTiles).isNotNull();
         assertThat(backgroundTiles).isNotEmpty();
-        assertThat(backgroundTiles.size()).isEqualTo(57);
+        assertThat(backgroundTiles.size()).isEqualTo(343);
         assertThat(backgroundTiles.get(0).getTagName()).isEqualTo("use");
     }
 

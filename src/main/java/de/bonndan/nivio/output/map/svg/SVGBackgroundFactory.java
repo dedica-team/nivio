@@ -12,7 +12,6 @@ import static java.lang.Math.round;
 /**
  * This generates the background hex tiles.
  *
- * TODO It is a bad bank for technical debt.
  */
 public class SVGBackgroundFactory {
 
@@ -25,15 +24,33 @@ public class SVGBackgroundFactory {
         return fullHex;
     }
 
-    public static List<ContainerTag> getBackgroundTiles(int minQ, int maxQ, int minR, int maxR, int minY, int height) {
+    /**
+     * @param dimension svg dimesion, containing bounding boxes
+     * @return a set of "use" references to a background hex
+     */
+    public static List<ContainerTag> getBackgroundTiles(SVGDimension dimension) {
+
         //render background hexes
         List<ContainerTag> background = new ArrayList<>();
         var i = 0;
-        for (int q = minQ; q <= maxQ; q++) {
-            for (int r = minR - i; r < (maxR + maxQ - q); r++) {
+        //add extra space for relations being drawn outside of group areas (which define the outer borders)
+        int horMin = dimension.hex.horMin - 1;
+        int horMax = dimension.hex.horMax + 1;
+
+
+        final int yOffset = Hex.HEX_SIZE / 4; //why? without this bg hexes are displaced
+        for (int q = horMin; q <= horMax; q++) {
+            for (int r = dimension.hex.vertMin - i; r < (horMax + dimension.hex.vertMax - q); r++) {
                 Point2D.Double hex = new Hex(q, r).toPixel();
-                float y = round((hex.y + 146)*10f)/10f ; //TODO why 146? without this bg hexes are displaced
-                if (y < minY || y > height) continue;
+                float y = (float) round((hex.y - yOffset)*10f)/10f ;
+                if (y < dimension.cartesian.vertMin - dimension.cartesian.padding) {
+                    continue;
+                }
+
+                if (y > dimension.cartesian.vertMax) {
+                    continue;
+                }
+
                 ContainerTag use = SvgTagCreator.use("#" + HEX)
                         .attr("x", (int) hex.x - 2 * Hex.HEX_SIZE)
                         .attr("y", y);
