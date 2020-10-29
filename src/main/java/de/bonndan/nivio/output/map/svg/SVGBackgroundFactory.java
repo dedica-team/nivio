@@ -39,9 +39,12 @@ public class SVGBackgroundFactory {
 
 
         final int yOffset = Hex.HEX_SIZE / 4; //why? without this bg hexes are displaced
+
         for (int q = horMin; q <= horMax; q++) {
+            //the correction "+verticalmax -q" is because q and r are not orthogonal like x and y
             for (int r = dimension.hex.vertMin - i; r < (horMax + dimension.hex.vertMax - q); r++) {
                 Point2D.Double hex = new Hex(q, r).toPixel();
+                int x = (int) hex.x - 2 * Hex.HEX_SIZE;
                 float y = (float) round((hex.y - yOffset)*10f)/10f ;
                 if (y < dimension.cartesian.vertMin - dimension.cartesian.padding) {
                     continue;
@@ -52,7 +55,7 @@ public class SVGBackgroundFactory {
                 }
 
                 ContainerTag use = SvgTagCreator.use("#" + HEX)
-                        .attr("x", (int) hex.x - 2 * Hex.HEX_SIZE)
+                        .attr("x", x)
                         .attr("y", y);
                 background.add(use);
             }
