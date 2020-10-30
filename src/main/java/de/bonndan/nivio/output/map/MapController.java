@@ -9,10 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 
 @Controller
@@ -33,14 +30,16 @@ public class MapController {
 
     @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/" + MAP_SVG_ENDPOINT)
-    public ResponseEntity<String> svg(@PathVariable(name = "landscape") final String landscapeIdentifier) {
+    public ResponseEntity<String> svg(@PathVariable(name = "landscape") final String landscapeIdentifier,
+                                      @RequestParam(value = "debug", required = false, defaultValue = "false") boolean debug
+    ) {
         Landscape landscape = getLandscape(landscapeIdentifier);
 
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_TYPE, "image/svg+xml");
             return new ResponseEntity<>(
-                    renderCache.getSVG(landscape),
+                    renderCache.getSVG(landscape, debug),
                     headers,
                     HttpStatus.OK
             );

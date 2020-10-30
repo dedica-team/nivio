@@ -58,7 +58,7 @@ class SVGRelation extends Component {
         }
 
         List<ContainerTag> markers = new ArrayList<>();
-        float pieces = bezierPath.path.curveLength / 30;
+        float pieces = bezierPath.path.curveLength / 40;
         float pct = 100 / pieces;
         for (float i = 0; i < 1; i += pct / 100) {
             Point2D.Float point1 = bezierPath.eval(i);

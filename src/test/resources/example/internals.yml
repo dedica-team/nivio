@@ -12,6 +12,9 @@ groups:
     description: The final landscape
   rendering:
     description: Renders a landscape graph as a map
+  reports:
+    name: Reporting
+    description: Written Reports
 
 
 items:
@@ -19,6 +22,7 @@ items:
     name: SEED
     description: \"SEED\" is an environment variable containing a list of urls.
     group: start
+    icon: sprout
     relations:
       - target: config
 
@@ -26,12 +30,14 @@ items:
     name: Config Files
     description: Config files are loaded from all locations (file system, remote URLs, git repos)
     group: start
+    icon: file-multiple
     relations:
       - target: sources/parsing
 
   - identifier: parsing
     group: sources
     description: Iterate all the sources and determine proper formats (nivio, k8s...)
+    icon: file-cog
     relations:
       - target: sources/factory
 
@@ -39,6 +45,7 @@ items:
     group: sources
     description: For each format a factory provides a handler that can extract data and provides DTOs.
     note: See "xxxDescription.java"
+    icon: factory
     relations:
       - target: sources/environment
 
@@ -130,10 +137,12 @@ items:
   - identifier: graph
     name: landscape
     group: graph
-    description: The application landscape as graph
+    description: The application landscape as graph (items as nodes, relations as edges)
+    icon: graphql
     relations:
       - target: assessment/kpis
       - target: rendering/sublayout
+      - target: reports/html
 
   #
   # assessment
@@ -162,7 +171,7 @@ items:
   - identifier: sublayout
     name: in-group layout
     group: rendering
-    shortname: 🌈
+    icon: checkerboard
     description: Layouts the items of one group and provides a container for the group to hold all items
     relations:
       - target: rendering/layout
@@ -170,7 +179,7 @@ items:
   - identifier: layout
     name: group layout
     group: rendering
-    shortname: 🌈
+    icon: ungroup
     description: Layouts the group containers as graph nodes, edges are connections between items of different groups
     relations:
       - target: rendering/hex
@@ -178,7 +187,7 @@ items:
   - identifier: hex
     name: hex mapping
     group: rendering
-    shortname: ⬡
+    icon: hexagon
     description: Projection of items onto a hex map by transforming previously calculated x-y coordinates to q-r hex coordinates
     relations:
       - target: rendering/pathfinding
@@ -195,3 +204,12 @@ items:
     group: rendering
     shortname: 🌈
     description: Renders item, pathes and groups
+
+  #
+  # report
+  #
+  - identifier: html
+    name: Report
+    group: reports
+    icon: file-chart
+    description: Written report containing all landscape data

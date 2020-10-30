@@ -80,7 +80,7 @@ public abstract class RenderingTest {
         new ObjectMapper().writeValue(json, layoutedComponent);
 
         SVGRenderer svgRenderer = new SVGRenderer(mapStyleSheetFactory);
-        String svg = svgRenderer.render(layoutedComponent);
+        String svg = svgRenderer.render(layoutedComponent, true);
 
         File svgFile = new File(filename + "_debug.svg");
         FileWriter fileWriter = new FileWriter(svgFile);

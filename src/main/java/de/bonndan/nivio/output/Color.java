@@ -52,11 +52,14 @@ public class Color {
     }
 
     public static String getGroupColor(String name, Landscape landscape) {
-        Group g = landscape.getGroup(name).orElse(landscape.getGroup(Group.COMMON).get()); //TODO: optional.get() without ifPresent check
+        Group g = landscape.getGroup(name).orElse(landscape.getGroup(Group.COMMON).orElse(null));
         return getGroupColor(g);
     }
 
     public static String getGroupColor(Group group) {
+        if (group == null) {
+            return Color.DARKGRAY;
+        }
         return Optional.ofNullable(group.getColor())
                 .orElse(Color.nameToRGB(group.getIdentifier(), Color.DARKGRAY));
     }

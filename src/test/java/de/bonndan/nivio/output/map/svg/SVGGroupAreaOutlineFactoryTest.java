@@ -5,6 +5,8 @@ import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
 import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.DomContent;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -29,13 +31,14 @@ class SVGGroupAreaOutlineFactoryTest {
         foo.addItem(item1);
         foo.addItem(item2);
 
-        Map<Item, Hex> map = new HashMap<>();
-        map.put(item1, e1);
-        map.put(item2, e2);
+        BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
+        hexesToItems.put(e1, item1);
+        hexesToItems.put(e2, item2);
 
-        Set<Hex> area = GroupAreaFactory.getGroup(occupied, foo, map);
 
-        SVGGroupArea group = SVGGroupAreaFactory.getGroup(foo, area);
+        Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), foo);
+
+        SVGGroupArea group = SVGGroupAreaFactory.getGroup(foo, area, false);
         Set<Hex> groupArea = group.groupArea;
 
         //when

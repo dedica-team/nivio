@@ -13,6 +13,6 @@ class SVGHexTest {
 
         SVGHex svgHex = new SVGHex(new Hex(0, 0, 0), "#00ff00", "#00ff00");
         DomContent render = svgHex.render();
-        assertEquals("<polygon stroke=\"#00ff00\" fill=\"#00ff00\" fill-opacity=\"0.1\" stroke-width=\"1\" data-hex-coords=\"0,0\" points=\"300 200,250 287,150 287,100 200,150 113,250 113\"></polygon>", render.render());
+        assertEquals("<polygon stroke-width=\"1\" points=\"300.0 200.0,250.0 286.6,150.0 286.6,100.0 200.0,150.0 113.4,250.0 113.4\" stroke=\"#00ff00\" fill=\"#00ff00\" fill-opacity=\"0.1\"></polygon>", render.render());
     }
 }

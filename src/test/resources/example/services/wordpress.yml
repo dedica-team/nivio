@@ -135,6 +135,22 @@ items:
   type: volume
   description: backup volume
 
+- identifier: volume5
+  type: volume
+  description: backup volume
+
+- identifier: volume6
+  type: volume
+  description: backup volume
+
+- identifier: volume7
+  type: volume
+  description: backup volume
+
+- identifier: volume8
+  type: volume
+  description: backup volume
+
 - identifier: api
   type: api
   name: internal api

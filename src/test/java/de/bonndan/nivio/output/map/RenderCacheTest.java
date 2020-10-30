@@ -44,8 +44,8 @@ class RenderCacheTest {
     @Test
     void toPNGCached() {
         Landscape landscape = getLandscape("test");
-        String first = renderCache.getSVG(landscape);
-        String second = renderCache.getSVG(landscape);
+        String first = renderCache.getSVG(landscape, false);
+        String second = renderCache.getSVG(landscape, false);
 
         verify(stylesheetFactory, times(1)).getMapStylesheet(any(), any());
     }
@@ -53,18 +53,18 @@ class RenderCacheTest {
     @Test
     void cachesBasedOnIdentifier() {
         Landscape one = getLandscape("test");
-        String first = renderCache.getSVG(getLandscape("test"));
+        String first = renderCache.getSVG(getLandscape("test"), false);
         Landscape two = getLandscape("test");
         two.setProcessLog(one.getLog()); //sync last update
         two.setIdentifier("second");
-        String second = renderCache.getSVG(two);
+        String second = renderCache.getSVG(two, false);
 
         verify(stylesheetFactory, times(2)).getMapStylesheet(any(), any());
     }
 
     @Test
     void toSVG() {
-        String svg = renderCache.getSVG(getLandscape("test"));
+        String svg = renderCache.getSVG(getLandscape("test"), true);
         assertNotNull(svg);
         assertTrue(svg.contains("svg"));
     }

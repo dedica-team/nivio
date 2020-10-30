@@ -16,6 +16,8 @@ import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 
 /**
  * A landscape item to be rendered in svg.
+ *
+ *
  */
 class SVGItem extends Component {
 
