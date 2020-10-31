@@ -1,6 +1,8 @@
 package de.bonndan.nivio.input.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.input.ItemDescriptionValues;
@@ -8,6 +10,8 @@ import de.bonndan.nivio.input.ItemDescriptions;
 import de.bonndan.nivio.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -22,26 +26,26 @@ public class LandscapeDescription implements Component, Linked {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeDescription.class);
 
-    public static final LandscapeDescription NONE = new LandscapeDescription();
-
-    static {
-        NONE.contact = "";
-        NONE.identifier = "unknown landscape";
-    }
+    public static final LandscapeDescription NONE = new LandscapeDescription(
+            "unknown landscape", "", ""
+    );
 
     /**
      * Immutable unique identifier. Maybe use an URN.
      */
-    private String identifier;
+    @NonNull
+    private final String identifier;
 
     /**
      * Human readable name.
      */
-    private String name;
+    @NonNull
+    private final String name;
 
     /**
      * Contact of the maintainer
      */
+    @Nullable
     private String contact;
     private String description;
     private String owner;
@@ -68,6 +72,15 @@ public class LandscapeDescription implements Component, Linked {
     private final Map<String, Link> links = new HashMap<>();
     private Map<String, String> labels = new HashMap<>();
 
+    @JsonCreator
+    public LandscapeDescription(@JsonProperty("identifier") @NonNull String identifier,
+                                @JsonProperty("name") @NonNull String name,
+                                @JsonProperty("contact") @Nullable String contact) {
+        this.identifier = Objects.requireNonNull(identifier);
+        this.name = Objects.requireNonNull(name);
+        this.contact = contact;
+    }
+
     public void setIsPartial(boolean isPartial) {
         this.isPartial = isPartial;
     }
@@ -79,6 +92,7 @@ public class LandscapeDescription implements Component, Linked {
         return isPartial;
     }
 
+    @NonNull
     public String getIdentifier() {
         return identifier;
     }
@@ -87,24 +101,14 @@ public class LandscapeDescription implements Component, Linked {
         return FullyQualifiedIdentifier.build(identifier, null, null);
     }
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
+    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    @Nullable
     public String getContact() {
         return contact;
-    }
-
-    public void setContact(String contact) {
-        this.contact = contact;
     }
 
     public String getDescription() {

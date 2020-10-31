@@ -133,8 +133,7 @@ public class ApiController {
             @RequestHeader(name = "format") String format,
             @RequestBody String body
     ) {
-        LandscapeDescription dto = new LandscapeDescription();
-        dto.setIdentifier(identifier);
+        LandscapeDescription dto = new LandscapeDescription(identifier, "", null);
         dto.setIsPartial(true);
 
         SourceReference sourceReference = new SourceReference();

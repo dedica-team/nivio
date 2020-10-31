@@ -20,7 +20,7 @@ class SecureLabelsProcessorTest {
         item = new ItemDescription();
         item.setIdentifier("foo");
 
-        landscapeDescription = new LandscapeDescription();
+        landscapeDescription = new LandscapeDescription("identifier", "name", null);
         landscapeDescription.addItems(List.of(item));
 
         secureLabelsProcessor = new SecureLabelsProcessor();

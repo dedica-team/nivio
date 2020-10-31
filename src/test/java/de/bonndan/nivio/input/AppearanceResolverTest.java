@@ -31,7 +31,7 @@ class AppearanceResolverTest {
         iconService = mock(IconService.class);
         resolver = new AppearanceResolver(new ProcessLog(LoggerFactory.getLogger(AppearanceResolverTest.class)), iconService);
 
-        landscape = new Landscape("l1", new Group(Group.COMMON), "l1Landscape");
+        landscape = new Landscape("l1", new Group(Group.COMMON), "l1Landscape", null);
 
         Group g1 = new Group("g1");
         landscape.addGroup(g1);

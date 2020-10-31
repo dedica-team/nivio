@@ -27,7 +27,7 @@ class KPIFactoryTest {
         publisher = mock(ApplicationEventPublisher.class);
         kpiFactory = new KPIFactory(publisher);
 
-        landscape = LandscapeFactory.create("test", "testLandscape");
+        landscape = LandscapeFactory.create("test", "testLandscape", null);
         landscape.setConfig(new LandscapeConfig());
         landscape.setProcessLog(new ProcessLog(mock(Logger.class)));
     }

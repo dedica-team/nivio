@@ -146,8 +146,9 @@ public class IndexerIntegrationTest {
         Item blog = landscape.getItems().pick("blog-server", null);
         int before = landscape.getItems().all().size();
 
-        LandscapeDescription landscapeDescription = new LandscapeDescription();
-        landscapeDescription.setIdentifier(landscape.getIdentifier());
+        LandscapeDescription landscapeDescription = new LandscapeDescription(
+                landscape.getIdentifier(), landscape.getName(), null
+        );
         landscapeDescription.setIsPartial(true);
 
         ItemDescription newItem = new ItemDescription();

@@ -76,7 +76,7 @@ class RenderCacheTest {
     @Test
     void onProcessingFinishedEvent() {
         renderCache.onApplicationEvent(new ProcessingFinishedEvent(
-                new LandscapeDescription(),
+                new LandscapeDescription("test", "testLandscape", null),
                 getLandscape("test", "testLandscape")
         ));
 
@@ -84,7 +84,7 @@ class RenderCacheTest {
     }
 
     private Landscape getLandscape(String identifier, String name) {
-        Landscape landscape = LandscapeFactory.create(identifier, name);
+        Landscape landscape = LandscapeFactory.create(identifier, name, null);
 
         Item item = new Item("bar", "foo");
         landscape.setItems(Set.of(item));

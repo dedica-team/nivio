@@ -9,6 +9,7 @@ import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ProcessLog;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
@@ -27,17 +28,20 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     /**
      * Immutable unique identifier. Maybe use an URN.
      */
+    @NonNull
     @Pattern(regexp = IDENTIFIER_VALIDATION)
-    private String identifier;
+    private final String identifier;
 
     /**
      * Human readable name.
      */
-    private String name;
+    @NonNull
+    private final String name;
 
     /**
      * Maintainer email
      */
+    @Nullable
     private String contact;
 
     private String description;
@@ -58,12 +62,14 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     private String owner;
 
     public Landscape(@NonNull String identifier, @NonNull Group defaultGroup,
-                     @NonNull String name) {
-        setIdentifier(Objects.requireNonNull(identifier));
+                     @NonNull String name, @Nullable String contact) {
+        this.identifier = validateIdentifier(Objects.requireNonNull(identifier));
         this.addGroup(Objects.requireNonNull(defaultGroup));
         this.name = Objects.requireNonNull(name);
+        this.contact = contact;
     }
 
+    @NonNull
     public String getIdentifier() {
         return identifier;
     }
@@ -73,19 +79,16 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return FullyQualifiedIdentifier.build(identifier, null, null);
     }
 
-    private void setIdentifier(String identifier) {
+    private String validateIdentifier(String identifier) {
         if (StringUtils.isEmpty(identifier) || !identifier.matches(IDENTIFIER_VALIDATION)) {
             throw new IllegalArgumentException("Invalid landscape identifier given: '" + identifier + "', it must match " + IDENTIFIER_VALIDATION);
         }
-        this.identifier = StringUtils.trimAllWhitespace(identifier);
+        return StringUtils.trimAllWhitespace(identifier);
     }
 
+    @NonNull
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @JsonIgnore
@@ -106,6 +109,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     @Override
+    @Nullable
     public String getContact() {
         return contact;
     }

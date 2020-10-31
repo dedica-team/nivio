@@ -15,12 +15,9 @@ class LandscapeFactoryTest {
 
     @BeforeEach
     public void setup() throws MalformedURLException {
-        description = new LandscapeDescription();
-        description.setIdentifier("foo");
+        description = new LandscapeDescription("foo", "bar", "baz@mail.com");
         description.setSource("/my/file.yaml");
-        description.setName("bar");
         description.setOwner("baz");
-        description.setContact("baz@mail.com");
         description.setDescription("Hello, World.");
         description.setLink("home", new URL("https://dedica.team"));
         description.getLabels().put("one", "two");
@@ -36,7 +33,7 @@ class LandscapeFactoryTest {
 
     @Test
     public void createWithMinIdentifier() {
-        Landscape landscape = LandscapeFactory.create("l1", "l1Landscape");
+        Landscape landscape = LandscapeFactory.create("l1", "l1Landscape", null);
         assertNotNull(landscape);
     }
 

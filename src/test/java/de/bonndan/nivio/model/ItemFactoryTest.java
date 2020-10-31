@@ -38,7 +38,7 @@ public class ItemFactoryTest {
 
     @Test
     public void testCreate() {
-        Landscape l = LandscapeFactory.create("testLandscape", "testLandscape");
+        Landscape l = LandscapeFactory.create("testLandscape", "testLandscape", null);
 
         Item created = ItemFactory.fromDescription(landscapeItem, l);
         assertNotNull(created);

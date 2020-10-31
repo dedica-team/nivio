@@ -67,9 +67,7 @@ class OrganicLayouterTest extends RenderingTest {
     @Test
     public void debugRenderLargeGraph() throws IOException {
 
-        LandscapeDescription input = new LandscapeDescription();
-        input.setIdentifier("largetest");
-        input.setName("largetest");
+        LandscapeDescription input = new LandscapeDescription("largetest", "largetest", null);
 
         int g = 0;
         while (g < 30) {
@@ -99,9 +97,7 @@ class OrganicLayouterTest extends RenderingTest {
     @Test
     public void debugRenderLargeGraphSVG() throws IOException {
 
-        LandscapeDescription input = new LandscapeDescription();
-        input.setIdentifier("largetest");
-        input.setName("largetest");
+        LandscapeDescription input = new LandscapeDescription("largetest", "largetest", null);
 
         List<ItemDescription> descriptionList = new ArrayList<>();
         int g = 0;
@@ -146,9 +142,9 @@ class OrganicLayouterTest extends RenderingTest {
 
         Map<String, Object> map = mapper.convertValue(model, Map.class);
 
-        LandscapeDescription landscapeDescription = new LandscapeDescription();
-        landscapeDescription.setIdentifier("landscapeItem:model");
-        landscapeDescription.setName("Landscape Item Model");
+        LandscapeDescription landscapeDescription = new LandscapeDescription(
+                "landscapeItem:model", "Landscape Item Model", null
+        );
         landscapeDescription.getItemDescriptions().add(model);
 
         map.forEach((field, o) -> {

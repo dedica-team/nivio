@@ -18,7 +18,7 @@ class MapStyleSheetFactoryTest {
 
     private FileFetcher fileFetcher;
     private MapStyleSheetFactory factory;
-    private final Landscape landscape  = LandscapeFactory.create("test", "testLandscape");
+    private final Landscape landscape  = LandscapeFactory.create("test", "testLandscape", null);
     private ProcessLog processLog;
 
     @BeforeEach

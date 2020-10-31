@@ -32,13 +32,13 @@ class GroupQueryResolverTest {
 
     @Test
     void process_doesNotContainDuplicatedItemsInGroups() {
-        Landscape landscape = LandscapeFactory.create("test", "testLandscape");
+        Landscape landscape = LandscapeFactory.create("test", "testLandscape", null);
         landscape.setProcessLog(processLog);
         Item item = new Item("groupIdentifier", "itemIdentifier");
         landscape.setItems(Set.of(item));
         landscape.addGroup(new Group("groupIdentifier"));
 
-        LandscapeDescription input = new LandscapeDescription();
+        LandscapeDescription input = new LandscapeDescription("landscapeIdentifier", "testLandscape", null);
         GroupDescription groupDescription = new GroupDescription();
         groupDescription.setIdentifier("groupIdentifier");
         groupDescription.setContains(List.of("itemidentifier"));
@@ -52,13 +52,13 @@ class GroupQueryResolverTest {
 
     @Test
     void process_findsItemsIfQueryConditionIsNotLowercase() {
-        Landscape landscape = LandscapeFactory.create("test", "testLandscape");
+        Landscape landscape = LandscapeFactory.create("test", "testLandscape", null);
         landscape.setProcessLog(processLog);
         Item item = new Item("groupIdentifier", "itemIdentifier");
         landscape.setItems(Set.of(item));
         landscape.addGroup(new Group("groupIdentifier"));
 
-        LandscapeDescription input = new LandscapeDescription();
+        LandscapeDescription input = new LandscapeDescription("landscapeIdentifier", "testLandscape", null);
         GroupDescription groupDescription = new GroupDescription();
         groupDescription.setIdentifier("groupIdentifier");
         groupDescription.setContains(List.of("itemIdentifier"));
@@ -77,13 +77,13 @@ class GroupQueryResolverTest {
          * I have removed the magic from landscape.getGroup() and made that LandscapeFactory creates the COMMON group
          * as default. I've also added a test, so this test is obsolete.
          */
-        Landscape landscape = LandscapeFactory.create("test", "testLandscape");
+        Landscape landscape = LandscapeFactory.create("test", "testLandscape", null);
         landscape.setProcessLog(processLog);
         Item item = new Item(null, "itemIdentifier");
 
         landscape.setItems(Set.of(item));
 
-        LandscapeDescription input = new LandscapeDescription();
+        LandscapeDescription input = new LandscapeDescription("landscapeIdentifier", "testLandscape", null);
         GroupDescription groupDescription = new GroupDescription();
 
         input.getGroups().put("group", groupDescription);
@@ -97,12 +97,12 @@ class GroupQueryResolverTest {
 
     @Test
     void process_withLandscapeFromLandscapeFactory_containsCommonGroupIfNoGroupWasSet() {
-        Landscape landscape = LandscapeFactory.create("landscapeIdentifier", "testLandscape");
+        Landscape landscape = LandscapeFactory.create("landscapeIdentifier", "testLandscape", null);
         Item item = new Item(null, "itemIdentifier");
 
         landscape.setItems(Set.of(item));
 
-        LandscapeDescription input = new LandscapeDescription();
+        LandscapeDescription input = new LandscapeDescription("landscapeIdentifier", "testLandscape", null);
         GroupDescription groupDescription = new GroupDescription();
 
         input.getGroups().put("group", groupDescription);

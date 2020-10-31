@@ -20,7 +20,7 @@ class ItemIndexTest {
     @BeforeEach
     public void setup() {
 
-        landscape = new Landscape("l1", new Group(Group.COMMON), "l1Landscape");
+        landscape = new Landscape("l1", new Group(Group.COMMON), "l1Landscape", null);
 
         items = new ArrayList<>();
 

@@ -20,7 +20,7 @@ public class DiffResolverTest {
     @BeforeEach
     public void setup() {
 
-        landscape = LandscapeFactory.create("l1", "l1name");
+        landscape = LandscapeFactory.create("l1", "l1name", null);
 
         items = new ArrayList<>();
 

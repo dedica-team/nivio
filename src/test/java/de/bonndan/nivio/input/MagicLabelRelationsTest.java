@@ -26,7 +26,7 @@ class MagicLabelRelationsTest {
     @BeforeEach
     public void setup() {
         item = getItemWithLabels();
-        input = new LandscapeDescription();
+        input = new LandscapeDescription("test", "testLandscape", null);
         input.getItemDescriptions().add(item);
 
         resolver = new MagicLabelRelations(new ProcessLog(mock(Logger.class)));
@@ -222,7 +222,7 @@ class MagicLabelRelationsTest {
 
 
     private Landscape getLandscapeWith(Set<Item> items) {
-        Landscape landscape = LandscapeFactory.create("test", "testLandscape");
+        Landscape landscape = LandscapeFactory.create("test", "testLandscape", null);
         landscape.setItems(items);
         return landscape;
     }

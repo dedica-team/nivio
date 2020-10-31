@@ -28,8 +28,8 @@ class MessagingServiceTest {
     @Test
     void onApplicationEvent() {
         ProcessingFinishedEvent processingFinishedEvent = new ProcessingFinishedEvent(
-                new LandscapeDescription(),
-                LandscapeFactory.create("test", "testLandscape")
+                new LandscapeDescription("test", "testLandscape", null),
+                LandscapeFactory.create("test", "testLandscape", null)
         );
         messagingService.onApplicationEvent(processingFinishedEvent);
 
@@ -40,8 +40,8 @@ class MessagingServiceTest {
     void getLast() {
 
         ProcessingFinishedEvent processingFinishedEvent = new ProcessingFinishedEvent(
-                new LandscapeDescription(),
-                LandscapeFactory.create("test", "testLandscape")
+                new LandscapeDescription("test", "testLandscape", null),
+                LandscapeFactory.create("test", "testLandscape", null)
         );
         messagingService.onApplicationEvent(processingFinishedEvent);
 
