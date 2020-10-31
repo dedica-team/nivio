@@ -170,7 +170,12 @@ class OrganicLayouterTest extends RenderingTest {
         HttpService httpService = new HttpService();
         IconService iconService = new IconService(new LocalIcons(), new VendorIcons(httpService));
         formatFactory = InputFormatHandlerFactory.with(new InputFormatHandlerCSV(new FileFetcher(httpService)));
-        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class),  iconService);
+        indexer = new Indexer(
+                landscapeRepository,
+                formatFactory,
+                mock(ApplicationEventPublisher.class),
+                iconService
+        );
 
         debugRender("/src/test/resources/example/example_csv", false);
     }

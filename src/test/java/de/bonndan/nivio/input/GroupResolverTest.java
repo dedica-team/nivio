@@ -28,7 +28,7 @@ class GroupResolverTest {
     void process() {
 
         LandscapeDescription input = getLandscapeDescription();
-        Landscape landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.create("test", "testLandscape");
 
         groupResolver.process(input, landscape);
 
@@ -44,7 +44,7 @@ class GroupResolverTest {
         item.setIdentifier("abc");
         input.addItems(Arrays.asList(item));
 
-        Landscape landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.create("test", "testLandscape");
 
 
         groupResolver.process(input, landscape);
@@ -57,7 +57,7 @@ class GroupResolverTest {
     public void testBlacklistOnGroups() {
         LandscapeDescription input = getLandscapeDescription();
         input.getConfig().getGroupBlacklist().add("test2");
-        Landscape landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.create("test", "testLandscape");
 
         groupResolver.process(input, landscape);
         assertEquals(2, landscape.getGroups().size()); //COMMON is always present
@@ -69,7 +69,7 @@ class GroupResolverTest {
     public void testBlacklistOnGroupsWithRegex() {
         LandscapeDescription input = getLandscapeDescription();
         input.getConfig().getGroupBlacklist().add("^test[0-9].*");
-        Landscape landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.create("test", "testLandscape");
 
         groupResolver.process(input, landscape);
         assertEquals(1, landscape.getGroups().size()); //COMMON only
@@ -88,7 +88,7 @@ class GroupResolverTest {
         test2item.setGroup("test2");
         input.getItemDescriptions().add(test2item);
 
-        Landscape landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.create("test", "testLandscape");
 
         groupResolver.process(input, landscape);
 

@@ -1,6 +1,7 @@
 package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import org.springframework.lang.NonNull;
 
 public class LandscapeFactory {
 
@@ -9,8 +10,8 @@ public class LandscapeFactory {
      *
      * @param input the description
      */
-    public static Landscape create(LandscapeDescription input) {
-        Landscape landscape = create(input.getIdentifier());
+    public static Landscape create(@NonNull LandscapeDescription input) {
+        Landscape landscape = create(input.getIdentifier(), input.getName());
         landscape.setSource(input.getSource());
         return landscape;
     }
@@ -21,8 +22,8 @@ public class LandscapeFactory {
      * @param identifier landscape identifier
      * @return new landscape
      */
-    public static Landscape create(String identifier) {
-        return new Landscape(identifier, new Group(Group.COMMON));
+    public static Landscape create(@NonNull String identifier, @NonNull String name) {
+        return new Landscape(identifier, new Group(Group.COMMON), name);
     }
 
     public static void assignAll(LandscapeDescription input, Landscape landscape) {

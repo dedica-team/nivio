@@ -14,7 +14,7 @@ class SVGItemLabelTest {
     @DisplayName("ensure label uses proper fqi")
     public void regression184() {
 
-        Landscape landscape = LandscapeFactory.create("l1");
+        Landscape landscape = LandscapeFactory.create("l1", "l1Landscape");
 
         // item has no group
         Item foo = new Item(null, "foo");

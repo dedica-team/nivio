@@ -32,7 +32,7 @@ class LandscapeObserverPoolFactoryTest {
 
     @BeforeEach
     public void setup() {
-        landscape = LandscapeFactory.create("test");
+        landscape = LandscapeFactory.create("test", "testLandscape");
         formatFactory = mock(InputFormatHandlerFactory.class);
         fileFetcher = mock(FileFetcher.class);
         observerPoolFactory = new LandscapeObserverPoolFactory(formatFactory, fileFetcher);

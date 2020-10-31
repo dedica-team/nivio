@@ -222,7 +222,7 @@ class MagicLabelRelationsTest {
 
 
     private Landscape getLandscapeWith(Set<Item> items) {
-        Landscape landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.create("test", "testLandscape");
         landscape.setItems(items);
         return landscape;
     }

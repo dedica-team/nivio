@@ -20,7 +20,7 @@ class LandscapeObserverPoolTest {
         URLObserver urlObserver2 = mock(URLObserver.class);
         when(urlObserver1.hasChange()).thenReturn(CompletableFuture.completedFuture("hello"));
         when(urlObserver2.hasChange()).thenReturn(CompletableFuture.completedFuture("world"));
-        Landscape landscape = new Landscape("test", new Group(Group.COMMON));
+        Landscape landscape = new Landscape("test", new Group(Group.COMMON), "testLandscape");
         LandscapeObserverPool landscapeObserverPool = new LandscapeObserverPool(landscape, List.of(urlObserver1, urlObserver2));
 
         //when

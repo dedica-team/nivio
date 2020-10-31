@@ -43,41 +43,48 @@ class RenderCacheTest {
 
     @Test
     void toPNGCached() {
-        Landscape landscape = getLandscape("test");
+        Landscape landscape = getLandscape("test", "testLandscape");
         String first = renderCache.getSVG(landscape, false);
         String second = renderCache.getSVG(landscape, false);
 
-        verify(stylesheetFactory, times(1)).getMapStylesheet(any(), any());
+        verify(stylesheetFactory, times(1))
+                .getMapStylesheet(any(), any());
     }
 
     @Test
     void cachesBasedOnIdentifier() {
-        Landscape one = getLandscape("test");
-        String first = renderCache.getSVG(getLandscape("test"), false);
-        Landscape two = getLandscape("test");
+        Landscape one = getLandscape("first", "one");
+        String first = renderCache.getSVG(
+                getLandscape("first", "testLandscape"),
+                false
+        );
+        Landscape two = getLandscape("second", "two");
         two.setProcessLog(one.getLog()); //sync last update
-        two.setIdentifier("second");
         String second = renderCache.getSVG(two, false);
 
-        verify(stylesheetFactory, times(2)).getMapStylesheet(any(), any());
+        verify(stylesheetFactory, times(2))
+                .getMapStylesheet(any(), any());
     }
 
     @Test
     void toSVG() {
-        String svg = renderCache.getSVG(getLandscape("test"), true);
+        String svg = renderCache.getSVG(getLandscape("test", "testLandscape"), true);
         assertNotNull(svg);
         assertTrue(svg.contains("svg"));
     }
 
     @Test
     void onProcessingFinishedEvent() {
-        renderCache.onApplicationEvent(new ProcessingFinishedEvent(new LandscapeDescription(), getLandscape("test")));
+        renderCache.onApplicationEvent(new ProcessingFinishedEvent(
+                new LandscapeDescription(),
+                getLandscape("test", "testLandscape")
+        ));
 
         verify(stylesheetFactory, times(1)).getMapStylesheet(any(), any());
     }
 
-    private Landscape getLandscape(String identifier) {
-        Landscape landscape = LandscapeFactory.create(identifier);
+    private Landscape getLandscape(String identifier, String name) {
+        Landscape landscape = LandscapeFactory.create(identifier, name);
 
         Item item = new Item("bar", "foo");
         landscape.setItems(Set.of(item));
@@ -91,8 +98,8 @@ class RenderCacheTest {
         test.info("foo");
         landscape.setProcessLog(test);
 
-        HttpService httpService = mock(HttpService.class);
-        new AppearanceResolver(landscape.getLog(), mock(IconService.class)).process(null, landscape);
+        new AppearanceResolver(landscape.getLog(), mock(IconService.class))
+                .process(null, landscape);
         return landscape;
     }
 }

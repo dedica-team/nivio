@@ -1,4 +1,5 @@
 identifier: csvtest
+name: csvTestLandscape
 
 sources:
   - url: "./services/test.csv"

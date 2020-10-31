@@ -44,7 +44,7 @@ class SVGRendererTest {
     }
 
     private LayoutedComponent getLayoutedLandscape() {
-        Landscape foo = LandscapeFactory.create("foo");
+        Landscape foo = LandscapeFactory.create("foo", "fooLandscape");
 
         LayoutedComponent lc = new LayoutedComponent(foo);
         lc.setChildren(new ArrayList<>());

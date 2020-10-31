@@ -36,7 +36,7 @@ class LandscapeFactoryTest {
 
     @Test
     public void createWithMinIdentifier() {
-        Landscape landscape = LandscapeFactory.create("l1");
+        Landscape landscape = LandscapeFactory.create("l1", "l1Landscape");
         assertNotNull(landscape);
     }
 

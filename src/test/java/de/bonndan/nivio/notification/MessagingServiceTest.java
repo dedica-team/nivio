@@ -27,7 +27,10 @@ class MessagingServiceTest {
 
     @Test
     void onApplicationEvent() {
-        ProcessingFinishedEvent processingFinishedEvent = new ProcessingFinishedEvent(new LandscapeDescription(), LandscapeFactory.create("test"));
+        ProcessingFinishedEvent processingFinishedEvent = new ProcessingFinishedEvent(
+                new LandscapeDescription(),
+                LandscapeFactory.create("test", "testLandscape")
+        );
         messagingService.onApplicationEvent(processingFinishedEvent);
 
         verify(tpl).convertAndSend(eq(WebSocketConfig.TOPIC + WebSocketConfig.EVENTS), any(ProcessingFinishedEvent.class));
@@ -36,7 +39,10 @@ class MessagingServiceTest {
     @Test
     void getLast() {
 
-        ProcessingFinishedEvent processingFinishedEvent = new ProcessingFinishedEvent(new LandscapeDescription(), LandscapeFactory.create("test"));
+        ProcessingFinishedEvent processingFinishedEvent = new ProcessingFinishedEvent(
+                new LandscapeDescription(),
+                LandscapeFactory.create("test", "testLandscape")
+        );
         messagingService.onApplicationEvent(processingFinishedEvent);
 
         ProcessingEvent[] last = messagingService.getLast();

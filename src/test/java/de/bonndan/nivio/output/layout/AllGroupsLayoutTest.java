@@ -20,7 +20,7 @@ class AllGroupsLayoutTest {
         Group b = new Group("b");
         Group c = new Group("c");
 
-        Landscape landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.create("test", "testLandscape");
 
         landscape.getGroups().put("a", a);
         landscape.getGroups().put("b", b);

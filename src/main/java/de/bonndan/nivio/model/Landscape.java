@@ -57,9 +57,11 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     private final Map<String, Link> links = new HashMap<>();
     private String owner;
 
-    public Landscape(@NonNull String identifier, @NonNull Group defaultGroup) {
-        setIdentifier(identifier);
-        this.addGroup(defaultGroup);
+    public Landscape(@NonNull String identifier, @NonNull Group defaultGroup,
+                     @NonNull String name) {
+        setIdentifier(Objects.requireNonNull(identifier));
+        this.addGroup(Objects.requireNonNull(defaultGroup));
+        this.name = Objects.requireNonNull(name);
     }
 
     public String getIdentifier() {
@@ -71,8 +73,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return FullyQualifiedIdentifier.build(identifier, null, null);
     }
 
-    public void setIdentifier(String identifier) {
-
+    private void setIdentifier(String identifier) {
         if (StringUtils.isEmpty(identifier) || !identifier.matches(IDENTIFIER_VALIDATION)) {
             throw new IllegalArgumentException("Invalid landscape identifier given: '" + identifier + "', it must match " + IDENTIFIER_VALIDATION);
         }
@@ -157,7 +158,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
         group.setLandscape(this.identifier);
         if (groups.containsKey(group.getIdentifier())) {
-            Groups.merge((Group) groups.get(group.getIdentifier()), group);
+            Groups.merge(groups.get(group.getIdentifier()), group);
         } else {
             groups.put(group.getIdentifier(), group);
         }

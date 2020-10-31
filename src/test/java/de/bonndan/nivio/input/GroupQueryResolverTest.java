@@ -32,7 +32,7 @@ class GroupQueryResolverTest {
 
     @Test
     void process_doesNotContainDuplicatedItemsInGroups() {
-        Landscape landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.create("test", "testLandscape");
         landscape.setProcessLog(processLog);
         Item item = new Item("groupIdentifier", "itemIdentifier");
         landscape.setItems(Set.of(item));
@@ -52,7 +52,7 @@ class GroupQueryResolverTest {
 
     @Test
     void process_findsItemsIfQueryConditionIsNotLowercase() {
-        Landscape landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.create("test", "testLandscape");
         landscape.setProcessLog(processLog);
         Item item = new Item("groupIdentifier", "itemIdentifier");
         landscape.setItems(Set.of(item));
@@ -77,7 +77,7 @@ class GroupQueryResolverTest {
          * I have removed the magic from landscape.getGroup() and made that LandscapeFactory creates the COMMON group
          * as default. I've also added a test, so this test is obsolete.
          */
-        Landscape landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.create("test", "testLandscape");
         landscape.setProcessLog(processLog);
         Item item = new Item(null, "itemIdentifier");
 
@@ -97,7 +97,7 @@ class GroupQueryResolverTest {
 
     @Test
     void process_withLandscapeFromLandscapeFactory_containsCommonGroupIfNoGroupWasSet() {
-        Landscape landscape = LandscapeFactory.create("landscapeIdentifier");
+        Landscape landscape = LandscapeFactory.create("landscapeIdentifier", "testLandscape");
         Item item = new Item(null, "itemIdentifier");
 
         landscape.setItems(Set.of(item));
