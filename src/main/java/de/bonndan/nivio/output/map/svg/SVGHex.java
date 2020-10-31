@@ -13,25 +13,30 @@ public class SVGHex extends Component {
 
     private final Hex hex;
     private final String fillId;
+    private final String stroke;
 
-    public SVGHex(Hex hex, String fillId) {
+    private boolean debug = false;
+
+    public SVGHex(Hex hex, String fillId, String stroke) {
         this.hex = hex;
         this.fillId = fillId;
+        this.stroke = stroke;
     }
 
     public DomContent render() {
         return SvgTagCreator.polygon()
-                .condAttr(!StringUtils.isEmpty(fillId), "stroke", fillId)
+                .attr("stroke-width", 1)
+                .attr("points", asPoints(hex))
+                .condAttr(!StringUtils.isEmpty(stroke), "stroke", stroke)
                 .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
                 .condAttr(!StringUtils.isEmpty(fillId), "fill-opacity", String.valueOf(0.1))
-                .attr("stroke-width", 2)
-                .attr("data-hex-coords", hex.q + "," + hex.r)
-                .attr("points", asPoints(hex));
+                .condAttr(debug, "data-hex-coords", hex.q + "," + hex.r)
+                ;
     }
 
     private String asPoints(Hex hex) {
-        return hex.asPoints(Hex.HEX_SIZE - 1).stream()
-                .map(aDouble -> aDouble.x + " " + aDouble.y)
+        return hex.asPoints(Hex.HEX_SIZE).stream()
+                .map(aDouble -> round(aDouble.x) + " " + round(aDouble.y))
                 .collect(Collectors.joining(","));
     }
 }

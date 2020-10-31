@@ -20,31 +20,48 @@ Nivio indexes all landscape items in an in-memory search engine called Lucene. Y
 various item fields (see Model). For further information, see https://www.lucenetutorial.com/lucene-query-syntax.html
 
 
-Item Icons and Background
+Modifying Item Appearance
 -------------------------
 
-The default icon of a item is determined by its item type (e.g. server, messagequeue, database...). To change the
-appearance of a item to a vendor logo, for instance, the *icon* or *fill* property can be set. Both properties take
-a valid URL.
 
-While icon is rendered as centered image on the node, fill is used to paint the entire background and is more suitable
-to be used with images, photos and so on.
+Icons by Type
+^^^^^^^^^^^^^
+
+The icon of an item is determined by its item type (e.g. server, database...) and defaults to a cog () .
 
 .. code-block:: yaml
    :linenos:
 
-   items:
-      - identifier: foo
-        shortName: blog1
-        icon: http://my.custom/icon.png
+    items:
       - identifier: bar
-        shortName: db2
-        fill: http://my.custom/background.png
+        type: database
 
+As type values all items from https://materialdesignicons.com/ can be chosen. Just add the icon name without the "svg" suffix,
+like "account".
 
-Vendor Icons
-------------
+.. code-block:: yaml
+   :linenos:
 
+    items:
+      - identifier: bar
+        type: account
+
+The following types are translated icon to maintain backward compatibility:
+
+* CACHE -> "flash-circle"
+* CONTAINER -> "inbox"
+* FIREWALL -> "wall"
+* HUMANUSER -> "account"
+* INTERFACE -> "connection"
+* KEYVALUESTORE -> "keyvaluestore"
+* LOADBALANCER -> "loadbalancer"
+* MESSAGEQUEUE -> "tray-full"
+* MOBILECLIENT -> "cellphone"
+* VOLUME -> "harddisk"
+* WEBSERVICE -> "application"
+
+Vendor Logos
+^^^^^^^^^^^^^
 The *icon* property can also work with a predefined vendor name like "redis", prefixed with "vendor://" as scheme.
 
 Vendor icons are work in progress.
@@ -55,6 +72,52 @@ Vendor icons are work in progress.
     items:
       - identifier: bar
         icon: vendor://redis
+
+To change the appearance of a item to a vendor logo, for instance, the *icon* or *fill* property can be set. Both properties take
+a valid URL.
+
+External Images
+^^^^^^^^^^^^^^^
+
+To include external images in the map, just set the icon (or fill, see below) property to a valid URL.
+
+.. code-block:: yaml
+   :linenos:
+
+   items:
+      - identifier: foo
+        icon: http://my.custom/icon.png
+
+
+Background fill
+^^^^^^^^^^^^^^^
+
+While icon is rendered as centered image on the node, fill is used to paint the entire background and is more suitable
+to be used with images, photos and so on.
+
+.. code-block:: yaml
+   :linenos:
+
+   items:
+      - identifier: bar
+        fill: http://my.custom/background.png
+
+UTF-8 Symbols and shortname as Icons
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If **NO** icon, type or fill value is set, but a shortname value is given, the value is displayed on the icon. The first
+example would display "FOOBAR" on the item, the second an enlarged unicorn symbol (shortnames less than three chars are
+enlarged).
+
+.. code-block:: yaml
+   :linenos:
+
+   items:
+      - identifier: bar
+        shortname: FOOBAR
+      - identifier: pony
+        shortname: 🦄
+
 
 Custom(er) Branding
 ===================

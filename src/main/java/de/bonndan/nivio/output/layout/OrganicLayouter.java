@@ -1,7 +1,7 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,7 +17,7 @@ public class OrganicLayouter implements Layouter<LayoutedComponent> {
     }
 
     @Override
-    public LayoutedComponent layout(LandscapeImpl landscape) {
+    public LayoutedComponent layout(Landscape landscape) {
 
         Map<String, SubLayout> subgraphs = new LinkedHashMap<>();
         landscape.getGroups().forEach((name, groupItem) ->  {

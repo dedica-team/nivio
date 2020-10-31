@@ -14,16 +14,22 @@ import java.util.stream.Collectors;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Item implements LandscapeItem, Tagged, Labeled, Assessable {
+public class Item implements Linked, Tagged, Labeled, Assessable {
+
+    public static final String LAYER_INFRASTRUCTURE = "infrastructure";
+    public static final String LAYER_APPLICATION = "applications";
+    public static final String LAYER_INGRESS = "ingress";
+
+    public static final String IDENTIFIER_VALIDATION = "^[a-zA-Z0-9\\.\\:_-]{2,256}$";
 
     @NotNull
-    @Pattern(regexp = LandscapeItem.IDENTIFIER_VALIDATION)
+    @Pattern(regexp = IDENTIFIER_VALIDATION)
     private final String identifier;
 
     @NotNull
     @JsonIgnore
     @Schema(hidden = true)
-    private LandscapeImpl landscape;
+    private Landscape landscape;
 
     private String name;
 
@@ -41,10 +47,10 @@ public class Item implements LandscapeItem, Tagged, Labeled, Assessable {
      * Can be both read and modified by {@link de.bonndan.nivio.input.ItemRelationResolver}
      */
     @JsonManagedReference
-    private final Set<RelationItem<Item>> relations = ConcurrentHashMap.newKeySet();
+    private final Set<Relation> relations = ConcurrentHashMap.newKeySet();
 
     @JsonManagedReference
-    private Set<InterfaceItem> interfaces = new HashSet<>();
+    private Set<ServiceInterface> interfaces = new HashSet<>();
 
     private Map<String, String> labels = new HashMap<>();
     private String color;
@@ -67,11 +73,11 @@ public class Item implements LandscapeItem, Tagged, Labeled, Assessable {
         return FullyQualifiedIdentifier.build(landscape == null ? "" : landscape.getIdentifier(), group, identifier);
     }
 
-    public LandscapeImpl getLandscape() {
+    public Landscape getLandscape() {
         return landscape;
     }
 
-    public void setLandscape(LandscapeImpl landscape) {
+    public void setLandscape(Landscape landscape) {
         this.landscape = landscape;
     }
 
@@ -157,18 +163,17 @@ public class Item implements LandscapeItem, Tagged, Labeled, Assessable {
         this.labels = labels;
     }
 
-    @Override
-    public Set<RelationItem<Item>> getRelations() {
+    public Set<Relation> getRelations() {
         return relations;
     }
 
-    public Set<RelationItem<Item>> getRelations(RelationType type) {
+    public Set<Relation> getRelations(RelationType type) {
         return relations.stream()
                 .filter(relationItem -> type.equals(relationItem.getType()))
                 .collect(Collectors.toSet());
     }
 
-    public void setRelations(Set<RelationItem<Item>> outgoing) {
+    public void setRelations(Set<Relation> outgoing) {
         relations.addAll(outgoing);
     }
 
@@ -176,7 +181,6 @@ public class Item implements LandscapeItem, Tagged, Labeled, Assessable {
         this.setLabel(Label.type, type);
     }
 
-    @Override
     public String getType() {
         return getLabel(Label.type);
     }
@@ -188,15 +192,15 @@ public class Item implements LandscapeItem, Tagged, Labeled, Assessable {
     public Set<Item> getProvidedBy() {
         return getRelations(RelationType.PROVIDER).stream()
                 .filter(relationItem -> relationItem.getTarget().equals(this))
-                .map(RelationItem::getSource)
+                .map(Relation::getSource)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public void setInterfaces(Set<InterfaceItem> interfaces) {
+    public void setInterfaces(Set<ServiceInterface> interfaces) {
         this.interfaces = interfaces;
     }
 
-    public Set<InterfaceItem> getInterfaces() {
+    public Set<ServiceInterface> getInterfaces() {
         return interfaces;
     }
 
@@ -224,14 +228,14 @@ public class Item implements LandscapeItem, Tagged, Labeled, Assessable {
         if (o == null)
             return false;
 
-        if (!(o instanceof LandscapeItem))
+        if (!(o instanceof Item))
             return false;
 
-        LandscapeItem landscapeItem = (LandscapeItem) o;
+        Item item = (Item) o;
         if (toString() == null)
             return false;
 
-        return toString().equals(landscapeItem.toString());
+        return toString().equals(item.toString());
     }
 
     @Override

@@ -1,9 +1,8 @@
 package de.bonndan.nivio.input.dto;
 
-import de.bonndan.nivio.model.RelationItem;
 import de.bonndan.nivio.model.RelationType;
 
-public class RelationDescription implements RelationItem<String> {
+public class RelationDescription {
 
     private RelationType type;
     private String description;

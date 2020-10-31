@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,14 +40,14 @@ class MagicLabelRelationsTest {
         Item elastic = new Item(null, "elastic-server-as89");
         elastic.setName("elastic");
 
-        LandscapeImpl landscape = getLandscapeWith(Collections.singleton(elastic));
+        Landscape landscape = getLandscapeWith(Collections.singleton(elastic));
 
         //when
         resolver.process(input, landscape);
 
         //then
         assertEquals(1, item.getRelations().size());
-        RelationItem<String> rel = item.getRelations().iterator().next();
+        RelationDescription rel = item.getRelations().iterator().next();
         assertEquals("elastic-server-as89", rel.getTarget());
     }
 
@@ -55,14 +56,14 @@ class MagicLabelRelationsTest {
     public void findFromLabelUrlHostnameByIdentifier() {
         //given
         Item elastic = new Item(null, "elastic");
-        LandscapeImpl landscape = getLandscapeWith(Collections.singleton(elastic));
+        Landscape landscape = getLandscapeWith(Collections.singleton(elastic));
 
         //when
         resolver.process(input, landscape);
 
         //then
         assertEquals(1, item.getRelations().size());
-        RelationItem<String> rel = item.getRelations().iterator().next();
+        RelationDescription rel = item.getRelations().iterator().next();
         assertEquals("elastic", rel.getTarget());
     }
 
@@ -71,14 +72,14 @@ class MagicLabelRelationsTest {
     public void findFromLabelValueByIdentifier() {
         //given
         Item api = new Item(null, "api-foo");
-        LandscapeImpl landscape = getLandscapeWith(Collections.singleton(api));
+        Landscape landscape = getLandscapeWith(Collections.singleton(api));
 
         //when
         resolver.process(input, landscape);
 
         //then
         assertEquals(1, item.getRelations().size());
-        RelationItem<String> rel = item.getRelations().iterator().next();
+        RelationDescription rel = item.getRelations().iterator().next();
         assertEquals("api-foo", rel.getTarget());
     }
 
@@ -89,14 +90,14 @@ class MagicLabelRelationsTest {
         Item api = new Item(null, "api.foo.123");
         api.setName("api-foo");
 
-        LandscapeImpl landscape = getLandscapeWith(Collections.singleton(api));
+        Landscape landscape = getLandscapeWith(Collections.singleton(api));
 
         //when
         resolver.process(input, landscape);
 
         //then
         assertEquals(1, item.getRelations().size());
-        RelationItem<String> rel = item.getRelations().iterator().next();
+        RelationDescription rel = item.getRelations().iterator().next();
         assertEquals("api.foo.123", rel.getTarget());
     }
 
@@ -110,7 +111,7 @@ class MagicLabelRelationsTest {
         Item api2 = new Item(null, "api.foo.234");
         api2.setName("api-foo");
 
-        LandscapeImpl landscape = getLandscapeWith(Set.of(api, api2));
+        Landscape landscape = getLandscapeWith(Set.of(api, api2));
 
         //when
         resolver.process(input, landscape);
@@ -128,7 +129,7 @@ class MagicLabelRelationsTest {
         Item foo = new Item(null, "foo"); //part of the label "FOO_API_URL", should not match
         Item api = new Item(null, "api");//part of the label "FOO_API_URL", should not match
 
-        LandscapeImpl landscape = getLandscapeWith(Set.of(apiFoo, foo, api));
+        Landscape landscape = getLandscapeWith(Set.of(apiFoo, foo, api));
 
         //when
         resolver.process(input, landscape);
@@ -145,14 +146,14 @@ class MagicLabelRelationsTest {
     public void keyPartMatchesidentifier() {
         //given
         Item hihi = new Item(null, "baz");
-        LandscapeImpl landscape = getLandscapeWith(Collections.singleton(hihi));
+        Landscape landscape = getLandscapeWith(Collections.singleton(hihi));
 
         //when
         resolver.process(input, landscape);
 
         //then
         assertEquals(1, item.getRelations().size());
-        RelationItem<String> rel = item.getRelations().iterator().next();
+        RelationDescription rel = item.getRelations().iterator().next();
         assertEquals("baz", rel.getTarget());
     }
 
@@ -161,7 +162,7 @@ class MagicLabelRelationsTest {
     public void blacklistPreventsRelations() {
         //given
         Item hihi = new Item(null, "baz");
-        LandscapeImpl landscape = getLandscapeWith(Collections.singleton(hihi));
+        Landscape landscape = getLandscapeWith(Collections.singleton(hihi));
         landscape.getConfig().getLabelBlacklist().add(".*COMPOSITION.*");
 
         //when
@@ -176,7 +177,7 @@ class MagicLabelRelationsTest {
     public void blacklistPreventsRelationsCaseInsensitive() {
         //given
         Item hihi = new Item(null, "baz");
-        LandscapeImpl landscape = getLandscapeWith(Collections.singleton(hihi));
+        Landscape landscape = getLandscapeWith(Collections.singleton(hihi));
         landscape.getConfig().getLabelBlacklist().add(".*composition.*");
 
         //when
@@ -193,7 +194,7 @@ class MagicLabelRelationsTest {
         Item hihi = new Item(null, IDENTIFIER);
 
         item.getLabels().put("BASE_URL", IDENTIFIER);
-        LandscapeImpl landscape = getLandscapeWith(Collections.singleton(hihi));
+        Landscape landscape = getLandscapeWith(Collections.singleton(hihi));
 
         //when
         resolver.process(input, landscape);
@@ -206,22 +207,22 @@ class MagicLabelRelationsTest {
     public void hasProviderRelation() {
         //given
         Item db = new Item(null, "x.y.z");
-        LandscapeImpl landscape = getLandscapeWith(Collections.singleton(db));
+        Landscape landscape = getLandscapeWith(Collections.singleton(db));
 
         //when
         resolver.process(input, landscape);
 
         //then
         assertEquals(1, item.getRelations().size());
-        RelationItem<String> rel = item.getRelations().iterator().next();
+        RelationDescription rel = item.getRelations().iterator().next();
         assertEquals("x.y.z", rel.getSource());
         assertEquals("x.y.z", rel.getSource());
         assertEquals(RelationType.PROVIDER, rel.getType());
     }
 
 
-    private LandscapeImpl getLandscapeWith(Set<Item> items) {
-        LandscapeImpl landscape = LandscapeFactory.create("test");
+    private Landscape getLandscapeWith(Set<Item> items) {
+        Landscape landscape = LandscapeFactory.create("test");
         landscape.setItems(items);
         return landscape;
     }

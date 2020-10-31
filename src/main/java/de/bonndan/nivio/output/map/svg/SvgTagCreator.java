@@ -10,7 +10,7 @@ public class SvgTagCreator {
     }
 
     public static ContainerTag path() {
-        return (new ContainerTag("path"));
+        return new ContainerTag("path");
     }
 
     public static ContainerTag g(DomContent... dc) {
@@ -42,5 +42,9 @@ public class SvgTagCreator {
 
     public static ContainerTag defs() {
         return new ContainerTag("defs");
+    }
+
+    public static ContainerTag use(String path) {
+        return new ContainerTag("use").attr("xlink:href", path);
     }
 }

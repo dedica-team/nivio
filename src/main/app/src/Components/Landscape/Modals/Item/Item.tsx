@@ -75,14 +75,16 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, findItem, onAsses
           <span className='description item'>
             {item?.description ? `${item?.description}` : ''}
           </span>
-          <span className='contact item'>
-            <span className='label'>Contact: </span>
-            {item?.contact || 'No Contact provided'}
-          </span>
-          <span className='owner item'>
+          {item.contact ? (
+            <span className='contact item'>
+              <span className='label'>Contact: </span>
+              {item?.contact || 'No Contact provided'}
+            </span>
+          ) : null}
+          {item.owner ? (<span className='owner item'>
             <span className='label'>Owner: </span>
             {item?.owner || 'No Owner provided'}
-          </span>
+          </span>) : null}
         </div>
 
         {labels.length ? <div className='labels'>{labels}</div> : null}

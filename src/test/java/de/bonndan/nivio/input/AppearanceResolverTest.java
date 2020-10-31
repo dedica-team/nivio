@@ -3,9 +3,9 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.LandscapeImpl;
-import de.bonndan.nivio.output.LocalServer;
-import de.bonndan.nivio.output.icons.VendorIcons;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.output.icons.DataUrlHelper;
+import de.bonndan.nivio.output.icons.IconService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -14,18 +14,24 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AppearanceResolverTest {
 
     private AppearanceResolver resolver;
-    private LandscapeImpl landscape;
+    private Landscape landscape;
+    private IconService iconService;
 
     @BeforeEach
     public void setup() {
-        resolver = new AppearanceResolver(new ProcessLog(LoggerFactory.getLogger(AppearanceResolverTest.class)), new LocalServer("", new VendorIcons()));
 
-        landscape = new LandscapeImpl("l1", new Group(Group.COMMON));
+        iconService = mock(IconService.class);
+        resolver = new AppearanceResolver(new ProcessLog(LoggerFactory.getLogger(AppearanceResolverTest.class)), iconService);
+
+        landscape = new Landscape("l1", new Group(Group.COMMON));
 
         Group g1 = new Group("g1");
         landscape.addGroup(g1);
@@ -49,14 +55,14 @@ class AppearanceResolverTest {
     @Test
     public void setsItemIcons() {
 
+        Item pick = landscape.getItems().pick("s1", "g1");
+        when(iconService.getIconUrl(eq(pick))).thenReturn(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
+        //when
         resolver.process(null, landscape);
 
-        Item pick = landscape.getItems().pick("s2", "g1");
-        //check icon is set
-        assertEquals("http://localhost:8080/vendoricons/aHR0cHM6Ly9mb28uYmFyL2ljb24ucG5n", pick.getIcon());
+        //then
 
-        pick = landscape.getItems().pick("s1", "g1");
         //check icon is set
-        assertEquals("http://localhost:8080/icons/loadbalancer.png", pick.getIcon());
+        assertThat(pick.getIcon()).isEqualTo(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
     }
 }

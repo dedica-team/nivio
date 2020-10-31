@@ -7,6 +7,8 @@ import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.icons.IconService;
+import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.output.map.MapController;
 import j2html.tags.ContainerTag;
 import org.springframework.util.StringUtils;
@@ -28,16 +30,16 @@ public class ReportGenerator extends HtmlGenerator {
     private final KPIFactory factory;
     private Assessment assessment;
 
-    public ReportGenerator(LocalServer localServer, KPIFactory factory) {
-        super(localServer);
+    public ReportGenerator(LocalServer localServer, IconService iconService, KPIFactory factory) {
+        super(localServer, iconService);
         this.factory = factory;
     }
 
-    public String toDocument(LandscapeImpl landscape) {
+    public String toDocument(Landscape landscape) {
         return writeLandscape(landscape);
     }
 
-    private String writeLandscape(LandscapeImpl landscape) {
+    private String writeLandscape(Landscape landscape) {
 
         assessment = new Assessment(landscape.applyKPIs(factory.getConfiguredKPIs(landscape)));
         return html(
@@ -52,9 +54,9 @@ public class ReportGenerator extends HtmlGenerator {
         ).renderFormatted();
     }
 
-    private String writeGroups(LandscapeImpl landscape) {
+    private String writeGroups(Landscape landscape) {
         final StringBuilder builder = new StringBuilder();
-        Map<String, GroupItem> groups = landscape.getGroups();
+        Map<String, Group> groups = landscape.getGroups();
         groups.forEach((s, groupItem) -> {
             String color = "#" + Color.getGroupColor(s, landscape);
             builder.append(
@@ -90,7 +92,7 @@ public class ReportGenerator extends HtmlGenerator {
                         iff(!isEmpty(item.getLabel(Label.note)), div(item.getLabel(Label.note)).attr("class", "alert alert-warning float float-right")),
                         a().attr("id", item.getFullyQualifiedIdentifier().toString()),
                         h3(
-                                img().attr("src", localServer.getIconUrl(item)).attr("width", "30px").attr("class", "img-fluid"),
+                                img().attr("src", iconService.getIconUrl(item)).attr("width", "30px").attr("class", "img-fluid"),
                                 rawHtml(" "),
                                 rawHtml(isEmpty(item.getName()) ? item.getIdentifier() : item.getName())
                         ),

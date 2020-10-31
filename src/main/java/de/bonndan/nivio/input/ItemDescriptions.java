@@ -8,7 +8,6 @@ import com.googlecode.cqengine.resultset.ResultSet;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.ItemMatcher;
-import de.bonndan.nivio.model.LandscapeItem;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Type;
@@ -16,7 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.googlecode.cqengine.query.QueryFactory.attribute;
-import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
+import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
 
 public class ItemDescriptions {
 
@@ -53,7 +52,7 @@ public class ItemDescriptions {
      * @param item  item to search for
      * @return the sibling from the list
      */
-    public LandscapeItem pick(final LandscapeItem item) {
+    public ItemDescription pick(final ItemDescription item) {
         return pick(item.getIdentifier(), item.getGroup());
     }
 
@@ -102,7 +101,9 @@ public class ItemDescriptions {
     }
 
     private List<ItemDescription> findAll(ItemMatcher itemMatcher) {
-        return index.stream().filter(itemMatcher::isSimilarTo).collect(Collectors.toList());
+        return index.stream()
+                .filter(itemDescription -> itemMatcher.isSimilarTo(itemDescription.getFullyQualifiedIdentifier()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -111,7 +112,7 @@ public class ItemDescriptions {
      * @param itemMatcher  the identifier
      * @return the or null
      */
-    public Optional<LandscapeItem> find(ItemMatcher itemMatcher) {
+    public Optional<ItemDescription> find(ItemMatcher itemMatcher) {
         List<ItemDescription> found = findAll(itemMatcher);
 
         if (found.size() > 1)
@@ -126,7 +127,7 @@ public class ItemDescriptions {
      * @param term wildcard, ItemMatcher as string, or sql-like query where-condition
      * @return matched items
      */
-    public Collection<? extends LandscapeItem> query(String term) {
+    public Collection<? extends ItemDescription> query(String term) {
 
         if ("*".equals(term))
             return index;

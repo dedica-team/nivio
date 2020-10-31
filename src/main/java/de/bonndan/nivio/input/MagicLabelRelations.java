@@ -33,7 +33,7 @@ public class MagicLabelRelations extends Resolver {
         super(processLog);
     }
 
-    public void process(LandscapeDescription input, LandscapeImpl landscape) {
+    public void process(LandscapeDescription input, Landscape landscape) {
 
         Map<ItemDescription, List<LabelMatch>> itemMatches = new HashMap<>();
         List<Function<String, Boolean>> blacklistSpecs = getBlacklistSpecs(landscape.getConfig().getLabelBlacklist());
@@ -45,7 +45,7 @@ public class MagicLabelRelations extends Resolver {
             labelMatches.forEach(labelMatch -> {
                 labelMatch.possibleTargets.forEach(toFind -> {
                     String s = landscape.getItems().selectByIdentifierOrName(toFind);
-                    Collection<? extends LandscapeItem> possibleTargets = landscape.getItems().cqnQueryOnIndex(s);
+                    Collection<? extends Item> possibleTargets = landscape.getItems().cqnQueryOnIndex(s);
 
                     if (possibleTargets.size() != 1) {
                         processLog.debug("Found no target of magic relation from item " + item.getIdentifier() + " using '" + toFind + "'");
@@ -85,14 +85,14 @@ public class MagicLabelRelations extends Resolver {
         return labelParts.stream().anyMatch(PROVIDER_INDICATORS::contains);
     }
 
-    private boolean hasRelation(String source, String target, RelationItem<String> r) {
+    private boolean hasRelation(String source, String target, RelationDescription r) {
         return r.getSource().equals(source) && r.getTarget().equals(target) ||
                 r.getSource().equals(target) && r.getTarget().equals(source);
     }
 
     private List<LabelMatch> getMatches(
             ItemDescription itemDescription,
-            LandscapeImpl landscape,
+            Landscape landscape,
             List<Function<String, Boolean>> blacklistSpecs
     ) {
         return itemDescription.getLabels().entrySet().stream()
@@ -103,7 +103,7 @@ public class MagicLabelRelations extends Resolver {
                 .collect(Collectors.toList());
     }
 
-    private LabelMatch getPossibleTargetsForLabel(String key, String value, LandscapeImpl landscape) {
+    private LabelMatch getPossibleTargetsForLabel(String key, String value, Landscape landscape) {
 
         List<String> keyParts = Arrays.stream(key.split(KEY_SEPARATOR))
                 .map(String::toLowerCase)

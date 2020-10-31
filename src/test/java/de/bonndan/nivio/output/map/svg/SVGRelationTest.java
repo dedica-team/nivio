@@ -15,7 +15,7 @@ class SVGRelationTest {
     @DisplayName("items without groups use proper fqi")
     public void regression184() {
 
-        LandscapeImpl landscape = LandscapeFactory.create("l1");
+        Landscape landscape = LandscapeFactory.create("l1");
 
         //both items have no group
         Item foo = new Item(null, "foo");
@@ -24,7 +24,7 @@ class SVGRelationTest {
         Item bar = new Item(null, "bar");
         bar.setLandscape(landscape);
 
-        RelationItem<Item> itemRelationItem = new Relation(foo, bar);
+        Relation itemRelationItem = new Relation(foo, bar);
         SVGRelation svgRelation = new SVGRelation(new HexPath(new ArrayList<>()), "", itemRelationItem);
         DomContent render = svgRelation.render();
         String render1 = render.render();

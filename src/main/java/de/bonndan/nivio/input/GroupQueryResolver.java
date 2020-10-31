@@ -3,11 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeImpl;
-import org.springframework.util.StringUtils;
-
-import java.util.Collection;
+import de.bonndan.nivio.model.Landscape;
 
 /**
  * This class resolves all "contains" queries of a group description, i.e. the items are assigned dynamically to a group.
@@ -19,7 +15,7 @@ public class GroupQueryResolver extends Resolver {
     }
 
     @Override
-    public void process(LandscapeDescription input, LandscapeImpl landscape) {
+    public void process(LandscapeDescription input, Landscape landscape) {
         
         input.getGroups().forEach((s, groupItem) -> {
             GroupDescription groupDescription = (GroupDescription) groupItem;
@@ -38,7 +34,7 @@ public class GroupQueryResolver extends Resolver {
           and all following resolvers might fail to find or set a group. So this is a fallback.
          */
         Group common = landscape.getGroup(Group.COMMON).get();
-        landscape.getItems().stream()
+        landscape.getItems().itemStream()
                 .forEach(item -> landscape.getGroup(item.getGroup()).orElse(common).addItem(item));
     }
 }

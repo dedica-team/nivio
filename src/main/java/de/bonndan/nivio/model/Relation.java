@@ -13,7 +13,7 @@ import java.util.Objects;
  * Outgoing flows having a target which matches a service identifier will cause a relation to be created.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Relation implements RelationItem<Item>, Serializable {
+public class Relation implements Serializable {
 
     @JsonIdentityReference(alwaysAsId = true)
     private Item source;
@@ -41,7 +41,6 @@ public class Relation implements RelationItem<Item>, Serializable {
         this.target = target;
     }
 
-    @Override
     public RelationType getType() {
         return type;
     }
@@ -50,7 +49,6 @@ public class Relation implements RelationItem<Item>, Serializable {
         this.type = type;
     }
 
-    @Override
     public String getDescription() {
         return description;
     }
@@ -59,7 +57,6 @@ public class Relation implements RelationItem<Item>, Serializable {
         this.description = description;
     }
 
-    @Override
     public String getFormat() {
         return format;
     }
@@ -68,7 +65,6 @@ public class Relation implements RelationItem<Item>, Serializable {
         this.format = format;
     }
 
-    @Override
     public Item getTarget() {
         return target;
     }
@@ -77,7 +73,6 @@ public class Relation implements RelationItem<Item>, Serializable {
         this.target = target;
     }
 
-    @Override
     public Item getSource() {
         return source;
     }

@@ -8,8 +8,10 @@ import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
+import de.bonndan.nivio.output.icons.IconService;
+import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.output.icons.VendorIcons;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.layout.OrganicLayouter;
@@ -42,17 +44,19 @@ public abstract class RenderingTest {
         FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
         factory = new LandscapeDescriptionFactory(fileFetcher);
 
-        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class),new LocalServer("", new VendorIcons()));
+        HttpService httpService = mock(HttpService.class);
+        IconService iconService = new IconService(new LocalIcons(), new VendorIcons(httpService));
+        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class), iconService);
     }
 
-    protected LandscapeImpl getLandscape(String path) {
+    protected Landscape getLandscape(String path) {
         File file = new File(RootPath.get() + path);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
         indexer.reIndex(landscapeDescription);
         return landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
     }
 
-    protected LayoutedComponent debugRenderLandscape(String path, LandscapeImpl landscape) throws IOException {
+    protected LayoutedComponent debugRenderLandscape(String path, Landscape landscape) throws IOException {
 
         OrganicLayouter layouter = new OrganicLayouter();
         LayoutedComponent graph = layouter.layout(landscape);
@@ -60,7 +64,7 @@ public abstract class RenderingTest {
         return graph;
     }
 
-    protected String renderLandscape(String path, LandscapeImpl landscape) throws IOException {
+    protected String renderLandscape(String path, Landscape landscape) throws IOException {
 
         OrganicLayouter layouter = new OrganicLayouter();
         LayoutedComponent graph = layouter.layout(landscape);
@@ -76,7 +80,7 @@ public abstract class RenderingTest {
         new ObjectMapper().writeValue(json, layoutedComponent);
 
         SVGRenderer svgRenderer = new SVGRenderer(mapStyleSheetFactory);
-        String svg = svgRenderer.render(layoutedComponent);
+        String svg = svgRenderer.render(layoutedComponent, true);
 
         File svgFile = new File(filename + "_debug.svg");
         FileWriter fileWriter = new FileWriter(svgFile);

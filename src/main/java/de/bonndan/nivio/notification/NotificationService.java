@@ -26,20 +26,20 @@ public class NotificationService implements ApplicationListener<ProcessingErrorE
 
     public void sendError(ProcessingException exception, String subject) {
 
-        if (exception.getLandscape() == null || StringUtils.isEmpty(exception.getLandscape().getContact())) {
+        if (exception.getLandscapeDescription() == null || StringUtils.isEmpty(exception.getLandscapeDescription().getContact())) {
             logger.warn("Cannot send error, landscape is not configured");
             return;
         }
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(exception.getLandscape().getContact());
-        message.setSubject(exception.getLandscape().getIdentifier() + ": " + subject);
+        message.setTo(exception.getLandscapeDescription().getContact());
+        message.setSubject(exception.getLandscapeDescription().getIdentifier() + ": " + subject);
         message.setText(exception.getMessage());
 
         try {
             emailSender.send(message);
         } catch (Exception ex) {
-            logger.warn("Could not send email '" + subject + "' in landscape " + exception.getLandscape());
+            logger.warn("Could not send email '" + subject + "' in landscape " + exception.getLandscapeDescription());
         }
 
         logger.info("Sent mail to user ");

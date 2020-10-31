@@ -1,9 +1,8 @@
 package de.bonndan.nivio.output;
 
 import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.GroupItem;
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -52,12 +51,15 @@ public class Color {
         return getGroupColor(item.getGroup(), item.getLandscape());
     }
 
-    public static String getGroupColor(String name, LandscapeImpl landscape) {
-        Group g = landscape.getGroup(name).orElse(landscape.getGroup(Group.COMMON).get());
+    public static String getGroupColor(String name, Landscape landscape) {
+        Group g = landscape.getGroup(name).orElse(landscape.getGroup(Group.COMMON).orElse(null));
         return getGroupColor(g);
     }
 
-    public static String getGroupColor(GroupItem group) {
+    public static String getGroupColor(Group group) {
+        if (group == null) {
+            return Color.DARKGRAY;
+        }
         return Optional.ofNullable(group.getColor())
                 .orElse(Color.nameToRGB(group.getIdentifier(), Color.DARKGRAY));
     }

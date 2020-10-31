@@ -47,7 +47,9 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
 
         getUrls(seed).stream()
                 .map(landscapeDescriptionFactory::from)
-                .forEach(description -> publisher.publishEvent(new IndexEvent(this, description, "Initialising from SEED")));
+                .forEach(description -> {
+                    publisher.publishEvent(new IndexEvent(this, description, "Initialising from SEED"));
+                });
     }
 
     private List<URL> getUrls(Seed seed) {

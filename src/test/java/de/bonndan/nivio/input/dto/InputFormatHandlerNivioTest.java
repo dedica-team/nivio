@@ -9,7 +9,6 @@ import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.observation.FileSourceReferenceObserver;
 import de.bonndan.nivio.observation.InputFormatObserver;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,9 +17,9 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class InputFormatHandlerNivioTest {
@@ -72,24 +71,12 @@ class InputFormatHandlerNivioTest {
         assertEquals(3, service.getInterfaces().size());
         service.getInterfaces().forEach(dataFlow -> {
             if (dataFlow.getDescription().equals("posts")) {
-                Assert.assertEquals("form", dataFlow.getFormat());
-            }
-        });
-
-        assertNotNull(RelationType.PROVIDER.filter(service.getRelations()));
-        assertEquals(3, service.getProvidedBy().size());
-
-        List<RelationItem> dataflows = RelationType.DATAFLOW.filter(service.getRelations());
-        assertNotNull(dataflows);
-        assertEquals(2, dataflows.size());
-        dataflows.forEach(dataFlow -> {
-            if (dataFlow.getDescription().equals("kpis")) {
-                Assert.assertEquals("content-kpi-dashboard", dataFlow.getTarget());
+                assertEquals("form", dataFlow.getFormat());
             }
         });
 
         ItemDescription web = services.get(2);
-        assertEquals(LandscapeItem.LAYER_INGRESS, web.getLabel("layer"));
+        assertEquals(Item.LAYER_INGRESS, web.getLabel("layer"));
         assertEquals("wordpress-web", web.getIdentifier());
         assertEquals("Webserver", web.getDescription());
         assertEquals("Apache", web.getLabel(Label.software));
@@ -107,7 +94,7 @@ class InputFormatHandlerNivioTest {
 
         List<ItemDescription> services = descriptionFactory.getDescriptions(file, null);
         ItemDescription service = services.get(0);
-        assertEquals(LandscapeItem.LAYER_INGRESS, service.getGroup());
+        assertEquals(Item.LAYER_INGRESS, service.getGroup());
         assertEquals("Keycloak SSO", service.getName());
         assertEquals("keycloak", service.getIdentifier());
     }

@@ -7,9 +7,7 @@ import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.CustomKPI;
 import de.bonndan.nivio.assessment.kpi.HealthKPI;
 import de.bonndan.nivio.assessment.kpi.KPIConfig;
-import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.input.dto.*;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.RootPath;
@@ -24,8 +22,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 
@@ -98,12 +95,11 @@ class LandscapeDescriptionFactoryTest {
     public void readUrlFromDescription() throws IOException {
 
         File file = new File(FILE_PATH_ENV);
-        LandscapeDescription description = new LandscapeDescription();
-        description.setIdentifier("test");
-        description.setSource(file.toURI().toURL().toString());
+        Landscape outdatedLandscape = new Landscape("test", new Group(Group.COMMON));
+        outdatedLandscape.setSource(file.toURI().toURL().toString());
 
         //when
-        LandscapeDescription landscapeDescription = factory.from(description);
+        LandscapeDescription landscapeDescription = factory.from(outdatedLandscape);
         assertNotNull(landscapeDescription);
         assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource());
     }
@@ -172,9 +168,9 @@ class LandscapeDescriptionFactoryTest {
         assertNotNull(landscapeDescription.getTemplates());
         assertEquals(2, landscapeDescription.getTemplates().size());
 
-        LandscapeItem template = landscapeDescription.getTemplates().get("myfirsttemplate");
+        ItemDescription template = landscapeDescription.getTemplates().get("myfirsttemplate");
         assertNotNull(template);
-        LandscapeItem groupTemplate = landscapeDescription.getTemplates().get("insamegroup");
+        ItemDescription groupTemplate = landscapeDescription.getTemplates().get("insamegroup");
         assertNotNull(groupTemplate);
     }
 
@@ -210,7 +206,7 @@ class LandscapeDescriptionFactoryTest {
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
 
         ItemDescription template = landscapeDescription.getTemplates().get("addDataFlow");
-        RelationItem df = (RelationItem) template.getRelations().toArray()[0];
+        RelationDescription df = (RelationDescription) template.getRelations().toArray()[0];
         assertEquals("identifier LIKE 'other_crappy_name%'", df.getTarget());
     }
 
@@ -249,14 +245,14 @@ class LandscapeDescriptionFactoryTest {
         File file = new File(FILE_PATH_GROUPS);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
 
-        Map<String, GroupItem> groups = landscapeDescription.getGroups();
+        Map<String, GroupDescription> groups = landscapeDescription.getGroups();
         assertNotNull(groups);
         assertEquals(2, groups.size());
-        GroupItem groupItem = groups.get("groupA");
-        assertNotNull(groupItem);
-        assertEquals("groupA", groupItem.getIdentifier());
+        GroupDescription groupDescription = groups.get("groupA");
+        assertNotNull(groupDescription);
+        assertEquals("groupA", groupDescription.getIdentifier());
 
-        GroupItem b = groups.get("B");
+        GroupDescription b = groups.get("B");
         assertNotNull(b);
         assertEquals("B", b.getIdentifier());
     }
@@ -267,14 +263,14 @@ class LandscapeDescriptionFactoryTest {
         File file = new File(FILE_PATH_GROUPS);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
 
-        Map<String, GroupItem> groups = landscapeDescription.getGroups();
+        Map<String, GroupDescription> groups = landscapeDescription.getGroups();
         assertNotNull(groups);
         assertEquals(2, groups.size());
-        GroupItem groupItem = groups.get("groupA");
-        assertNotNull(groupItem);
-        assertEquals(landscapeDescription.getIdentifier(), groupItem.getFullyQualifiedIdentifier().getLandscape());
+        GroupDescription groupDescription = groups.get("groupA");
+        assertNotNull(groupDescription);
+        assertEquals(landscapeDescription.getIdentifier(), groupDescription.getFullyQualifiedIdentifier().getLandscape());
 
-        GroupItem b = groups.get("B");
+        GroupDescription b = groups.get("B");
         assertNotNull(b);
         assertEquals(landscapeDescription.getIdentifier(), b.getFullyQualifiedIdentifier().getLandscape());
     }

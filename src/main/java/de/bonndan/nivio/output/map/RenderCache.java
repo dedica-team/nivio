@@ -3,7 +3,6 @@ package de.bonndan.nivio.output.map;
 import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeImpl;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.layout.Layouter;
 import de.bonndan.nivio.output.layout.OrganicLayouter;
@@ -27,7 +26,10 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RenderCache.class);
 
-    private final Map<LandscapeImpl, String> renderings = new HashMap<>();
+    /**
+     * cache map, key is FQI string representation (or debugged version)
+     */
+    private final Map<String, String> renderings = new HashMap<>();
 
     private final SVGRenderer svgRenderer;
     private final Layouter<LayoutedComponent> layouter;
@@ -42,18 +44,25 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
      * Returns an svg.
      *
      * @param landscape the landscape to render
+     * @param debug
      * @return the svg as string, uncached
      */
     @Nullable
-    public String getSVG(LandscapeImpl landscape) {
+    public String getSVG(Landscape landscape, boolean debug) {
 
-        if (!renderings.containsKey(landscape))
-            createCacheEntry(landscape);
+        String key = getKey(landscape, debug);
+        if (!renderings.containsKey(key)) {
+            createCacheEntry(landscape, debug);
+        }
 
-        return renderings.get(landscape);
+        return renderings.get(key);
     }
 
-    private void createCacheEntry(LandscapeImpl landscape) {
+    private String getKey(Landscape landscape, boolean debug) {
+        return landscape.getFullyQualifiedIdentifier().toString() + (debug ? "debug" : "");
+    }
+
+    private void createCacheEntry(Landscape landscape, boolean debug) {
         LayoutedComponent layout = layouter.layout(landscape);
 
         if (landscape.getLog() == null) {
@@ -61,15 +70,15 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
             processLog.setLandscape(landscape);
             landscape.setProcessLog(processLog);
         }
-        renderings.put(landscape, svgRenderer.render(layout));
+        LOGGER.info("Generating SVG rendering of landscape {} (debug: {})", landscape.getIdentifier(), debug);
+        renderings.put(getKey(landscape, debug), svgRenderer.render(layout, debug));
     }
 
     @Override
     public void onApplicationEvent(ProcessingFinishedEvent processingFinishedEvent) {
         Landscape landscape = processingFinishedEvent.getLandscape();
-        if (landscape instanceof LandscapeImpl) {
-            LOGGER.info("Generating SVG rendering of landscape {}", landscape.getIdentifier());
-            createCacheEntry((LandscapeImpl) landscape);
+        if (landscape != null) {
+            createCacheEntry(landscape, false);
         }
     }
 }

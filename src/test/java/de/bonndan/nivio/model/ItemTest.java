@@ -2,15 +2,14 @@ package de.bonndan.nivio.model;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ItemTest {
 
     @Test
     public void equalsWithGroup() {
 
-        LandscapeImpl landscape = LandscapeFactory.create("l1");
+        Landscape landscape = LandscapeFactory.create("l1");
 
 
         Item s1 = new Item("g1","a");
@@ -36,7 +35,7 @@ public class ItemTest {
     @Test
     public void equalsWithoutGroup() {
 
-        LandscapeImpl landscape = LandscapeFactory.create("l1");
+        Landscape landscape = LandscapeFactory.create("l1");
 
         Item s1 = new Item(null, "a");
         s1.setLandscape(landscape);
@@ -57,7 +56,7 @@ public class ItemTest {
     @Test
     public void equalsWithLandscape() {
 
-        LandscapeImpl landscape = LandscapeFactory.create("l1");
+        Landscape landscape = LandscapeFactory.create("l1");
 
         Item s1 = new Item("g1", "a");
         s1.setLandscape(landscape);

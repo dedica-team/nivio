@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.input.dto.ItemDescription;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
@@ -69,7 +70,7 @@ public class ItemMatcher {
         throw new IllegalArgumentException("Given string '" + string + "' contains too many parts to build an item matcher.");
     }
 
-    public static ItemMatcher forTarget(LandscapeItem item) {
+    public static ItemMatcher forTarget(Item item) {
         return build("", item.getGroup(), item.getIdentifier());
     }
 
@@ -107,29 +108,28 @@ public class ItemMatcher {
     /**
      * Compares landscape items by landscape, group and identifier (ignoring case).
      *
-     * @param item other item
+     * @param fullyQualifiedIdentifier other items FullyQualifiedIdentifier
      * @return true if group and identifier match (if group is null, it is not taken into account)
      */
-    public boolean isSimilarTo(LandscapeItem item) {
-        FullyQualifiedIdentifier otherItemFQI = item.getFullyQualifiedIdentifier();
+    public boolean isSimilarTo(FullyQualifiedIdentifier fullyQualifiedIdentifier) {
 
         boolean equalsLandscape;
-        if (StringUtils.isEmpty(landscape) || StringUtils.isEmpty(otherItemFQI.getLandscape()))
+        if (StringUtils.isEmpty(landscape) || StringUtils.isEmpty(fullyQualifiedIdentifier.getLandscape()))
             equalsLandscape = true; //ignoring landscape because not set
         else
-            equalsLandscape = landscape.equalsIgnoreCase(otherItemFQI.getLandscape());
+            equalsLandscape = landscape.equalsIgnoreCase(fullyQualifiedIdentifier.getLandscape());
 
         boolean equalsGroup;
-        if (StringUtils.isEmpty(group) || StringUtils.isEmpty(otherItemFQI.getGroup()))
+        if (StringUtils.isEmpty(group) || StringUtils.isEmpty(fullyQualifiedIdentifier.getGroup()))
             equalsGroup = true;
         else
-            equalsGroup = this.group.equalsIgnoreCase(otherItemFQI.getGroup());
+            equalsGroup = this.group.equalsIgnoreCase(fullyQualifiedIdentifier.getGroup());
 
         boolean equalsItem;
-        if (StringUtils.isEmpty(this.item) || StringUtils.isEmpty(otherItemFQI.getItem()))
+        if (StringUtils.isEmpty(this.item) || StringUtils.isEmpty(fullyQualifiedIdentifier.getItem()))
             equalsItem = true;
         else
-            equalsItem = this.item.equalsIgnoreCase(otherItemFQI.getItem());
+            equalsItem = this.item.equalsIgnoreCase(fullyQualifiedIdentifier.getItem());
 
         return equalsLandscape && equalsGroup && equalsItem;
     }

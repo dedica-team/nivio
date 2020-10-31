@@ -5,6 +5,7 @@ import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -34,15 +35,17 @@ public class LandscapeObserverPool {
         LOGGER.info("Detecting changes in {} observers for landscape {}.", observers.size(), landscape.getIdentifier());
 
         ObservedChange change = new ObservedChange();
-        CompletableFuture<String>[] futures = observers.stream().map(observer -> {
-            try {
-                return observer.hasChange();
-            } catch (ProcessingException e) {
-                change.addError(e);
-                LOGGER.warn("Failed to get change: " + e.getMessage(), e);
-                return null;
-            }
-        })
+        CompletableFuture<String>[] futures = observers.stream()
+                .filter(Objects::nonNull)
+                .map(observer -> { //TODO: resolve unchecked assignment
+                    try {
+                        return observer.hasChange();
+                    } catch (ProcessingException e) {
+                        change.addError(e);
+                        LOGGER.warn("Failed to get change: " + e.getMessage(), e);
+                        return null;
+                    }
+                })
                 .filter(Objects::nonNull)
                 .toArray(CompletableFuture[]::new);
         CompletableFuture<Void> allDoneFuture = CompletableFuture.allOf(futures);

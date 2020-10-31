@@ -36,7 +36,7 @@ public class InstantItemResolver {
         List<ItemDescription> newItems = new ArrayList<>();
         //providers
         description.getProvidedBy().forEach(term -> {
-            Optional<? extends LandscapeItem> provider = allItems.query(term.toLowerCase()).stream().findFirst();
+            Optional<? extends ItemDescription> provider = allItems.query(term.toLowerCase()).stream().findFirst();
 
             if (provider.isEmpty()) {
                 log.info("Creating a new provider landscape item for term '" + term + "' instantly.");
@@ -72,7 +72,7 @@ public class InstantItemResolver {
 
     private boolean hasTarget(String term, ItemDescriptions allItems) {
 
-        Collection<? extends LandscapeItem> result = allItems.query(term);
+        Collection<? extends ItemDescription> result = allItems.query(term);
         if (result.size() > 1) {
             log.warn("Found ambiguous sources matching " + term);
             return true;
