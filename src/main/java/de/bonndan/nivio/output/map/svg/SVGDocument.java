@@ -128,7 +128,7 @@ public class SVGDocument extends Component {
             logo = SvgTagCreator.image()
                     .attr("xlink:href", logoUrl)
                     .attr("x", dimension.cartesian.horMin - dimension.cartesian.padding)
-                    .attr("y", dimension.cartesian.vertMin - dimension.cartesian.padding + 60)
+                    .attr("y", dimension.cartesian.vertMin - dimension.cartesian.padding + 80)
                     .attr("width", LABEL_WIDTH)
                     .attr("height", LABEL_WIDTH);
         }
@@ -138,7 +138,7 @@ public class SVGDocument extends Component {
     private ContainerTag getTitle(SVGDimension dimension) {
         return SvgTagCreator.text(landscape.getName())
                 .attr("x", dimension.cartesian.horMin - dimension.cartesian.padding)
-                .attr("y", dimension.cartesian.vertMin - dimension.cartesian.padding + 40)
+                .attr("y", dimension.cartesian.vertMin - dimension.cartesian.padding + 60)
                 .attr("class", "title");
     }
 
