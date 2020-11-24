@@ -2,13 +2,11 @@ package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.assessment.kpi.KPIFactory;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
-import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.output.map.MapController;
 import j2html.tags.ContainerTag;
 import org.springframework.util.StringUtils;
@@ -24,15 +22,18 @@ import static de.bonndan.nivio.output.map.MapController.MAP_SVG_ENDPOINT;
 import static j2html.TagCreator.*;
 import static org.springframework.util.StringUtils.isEmpty;
 
+/**
+ * Generates a report containing all landscape groups and items.
+ *
+ *
+ */
 public class ReportGenerator extends HtmlGenerator {
 
     private static final String GROUP_CIRCLE = "&#10687;";
-    private final KPIFactory factory;
     private Assessment assessment;
 
-    public ReportGenerator(LocalServer localServer, IconService iconService, KPIFactory factory) {
+    public ReportGenerator(LocalServer localServer, IconService iconService) {
         super(localServer, iconService);
-        this.factory = factory;
     }
 
     public String toDocument(Landscape landscape) {
@@ -41,7 +42,7 @@ public class ReportGenerator extends HtmlGenerator {
 
     private String writeLandscape(Landscape landscape) {
 
-        assessment = new Assessment(landscape.applyKPIs(factory.getConfiguredKPIs(landscape)));
+        assessment = new Assessment(landscape.applyKPIs(landscape.getKpis()));
         return html(
                 getHead(landscape),
                 body(
