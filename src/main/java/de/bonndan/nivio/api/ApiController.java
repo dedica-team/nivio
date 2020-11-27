@@ -124,7 +124,7 @@ public class ApiController {
     @RequestMapping(path = "/landscape", method = RequestMethod.POST)
     public ProcessLog create(@RequestBody String body) {
         LandscapeDescription env = LandscapeDescriptionFactory.fromString(body, "request body");
-        return indexer.reIndex(env);
+        return indexer.index(env);
     }
 
     @RequestMapping(path = "/landscape/{identifier}/services", method = RequestMethod.POST)
@@ -148,7 +148,7 @@ public class ApiController {
 
         dto.setItemDescriptions(itemDescriptions);
 
-        return indexer.reIndex(dto);
+        return indexer.index(dto);
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
@@ -222,7 +222,7 @@ public class ApiController {
         File file = new File(landscape.getSource());
         if (file.exists()) {
             LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
-            return indexer.reIndex(Objects.requireNonNull(landscapeDescription));
+            return indexer.index(Objects.requireNonNull(landscapeDescription));
         }
 
         Optional<URL> url = URLHelper.getURL(landscape.getSource());

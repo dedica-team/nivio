@@ -1,7 +1,6 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.ProcessingErrorEvent;
-import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.*;
@@ -59,7 +58,7 @@ public class IndexerIntegrationTest {
 
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, iconService);
 
-        ProcessLog processLog = indexer.reIndex(landscapeDescription);
+        ProcessLog processLog = indexer.index(landscapeDescription);
         return (Landscape) processLog.getLandscape();
     }
 
@@ -168,7 +167,7 @@ public class IndexerIntegrationTest {
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, iconService);
 
         //created
-        landscape = (Landscape) indexer.reIndex(landscapeDescription).getLandscape();
+        landscape = (Landscape) indexer.index(landscapeDescription).getLandscape();
         blog = (Item) landscape.getItems().pick("blog-server", "completelyNewGroup");
         assertEquals("completelyNewGroup", blog.getGroup());
         assertEquals(before + 1, landscape.getItems().all().size());

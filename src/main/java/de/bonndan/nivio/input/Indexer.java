@@ -16,6 +16,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+/**
+ * This component is a wrapper around all the steps to examine and index an landscape input dto.
+ *
+ *
+ */
 @Component
 public class Indexer {
 
@@ -37,7 +42,13 @@ public class Indexer {
         this.iconService = iconService;
     }
 
-    public ProcessLog reIndex(final LandscapeDescription input) {
+    /**
+     * Indexes the given input and creates a landscape or updates an existing one.
+     *
+     * @param input dto
+     * @return the log of the operation
+     */
+    public ProcessLog index(final LandscapeDescription input) {
 
         ProcessLog logger = new ProcessLog(_logger);
 
