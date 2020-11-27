@@ -1,6 +1,5 @@
 package de.bonndan.nivio.assessment;
 
-import de.bonndan.nivio.assessment.kpi.KPIFactory;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
@@ -15,11 +14,9 @@ public class AssessmentController {
 
     public static final String PATH = "/assessment";
     private final LandscapeRepository landscapeRepository;
-    private final KPIFactory factory;
 
-    public AssessmentController(LandscapeRepository landscapeRepository, KPIFactory factory) {
+    public AssessmentController(LandscapeRepository landscapeRepository) {
         this.landscapeRepository = landscapeRepository;
-        this.factory = factory;
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
@@ -31,9 +28,7 @@ public class AssessmentController {
             return ResponseEntity.notFound().build();
         }
 
-        Assessment assessment = new Assessment(
-                landscape.applyKPIs(factory.getConfiguredKPIs(landscape))
-        );
+        Assessment assessment = new Assessment(landscape.applyKPIs(landscape.getKpis()));
         return new ResponseEntity<>(assessment, HttpStatus.OK);
     }
 

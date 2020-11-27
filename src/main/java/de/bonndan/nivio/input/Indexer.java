@@ -4,11 +4,11 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.ProcessingFinishedEvent;
+import de.bonndan.nivio.assessment.kpi.KPIFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.IconService;
-import de.bonndan.nivio.output.icons.LocalIcons;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -16,6 +16,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+/**
+ * This component is a wrapper around all the steps to examine and index an landscape input dto.
+ *
+ *
+ */
 @Component
 public class Indexer {
 
@@ -37,7 +42,13 @@ public class Indexer {
         this.iconService = iconService;
     }
 
-    public ProcessLog reIndex(final LandscapeDescription input) {
+    /**
+     * Indexes the given input and creates a landscape or updates an existing one.
+     *
+     * @param input dto
+     * @return the log of the operation
+     */
+    public ProcessLog index(final LandscapeDescription input) {
 
         ProcessLog logger = new ProcessLog(_logger);
 
@@ -49,9 +60,12 @@ public class Indexer {
         });
         LandscapeFactory.assignAll(input, landscape);
         logger.setLandscape(landscape);
+        if (landscape.getLog() == null) {
+            landscape.setProcessLog(logger);
+        }
 
         try {
-            runResolvers(input, logger, landscape);
+            runResolvers(input, landscape);
             landscapeRepo.save(landscape);
         } catch (ProcessingException e) {
             final String msg = "Error while reindexing landscape " + input.getIdentifier();
@@ -65,9 +79,15 @@ public class Indexer {
         return logger;
     }
 
-    private void runResolvers(LandscapeDescription input, ProcessLog logger, Landscape landscape) {
-        Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
+    private void runResolvers(LandscapeDescription input, Landscape landscape) {
 
+        ProcessLog logger = landscape.getLog();
+
+        //initialize KPIs
+        KPIFactory kpiFactory = new KPIFactory();
+        landscape.setKpis(kpiFactory.getConfiguredKPIs(input.getConfig().getKPIs()));
+
+        Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
         // read all input sources
         new SourceReferencesResolver(formatFactory, logger).resolve(input, templatesAndTargets);
 
