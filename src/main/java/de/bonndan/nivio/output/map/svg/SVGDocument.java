@@ -94,7 +94,7 @@ public class SVGDocument extends Component {
 
 
         List<DomContent> background = new ArrayList<>(
-                SVGBackgroundFactory.getBackgroundTiles(dimension)
+                //SVGBackgroundFactory.getBackgroundTiles(dimension)
         );
 
         DomContent title = getTitle(dimension);
