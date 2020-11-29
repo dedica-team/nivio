@@ -27,7 +27,7 @@ class KPIFactoryTest {
     public void setup() {
         kpiFactory = new KPIFactory();
 
-        landscape = LandscapeFactory.create("test");
+        landscape = LandscapeFactory.create("test", "testLandscape", null);
         landscapeConfig = new LandscapeConfig();
         landscape.setConfig(landscapeConfig);
         landscape.setProcessLog(new ProcessLog(mock(Logger.class)));
