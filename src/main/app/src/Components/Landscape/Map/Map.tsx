@@ -239,7 +239,7 @@ const Map: React.FC<Props> = () => {
           xml={data.xml}
           proxy={
             <>
-              <SvgLoaderSelectElement selector='.label' onClick={onItemClick} />
+              <SvgLoaderSelectElement selector='.item' onClick={onItemClick} />
               <SvgLoaderSelectElement selector='.relation' onClick={onRelationClick} />
             </>
           }

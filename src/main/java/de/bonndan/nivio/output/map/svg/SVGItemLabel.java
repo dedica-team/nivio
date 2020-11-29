@@ -27,11 +27,10 @@ class SVGItemLabel extends Component {
 
         ContainerTag labelText = new SVGLabelText(name, "0", 2 * DEFAULT_ICON_SIZE + 30 + "", "itemLabel").render();
 
-        ContainerTag g = SvgTagCreator.g(null, labelText).attr("class", "label");
-        g.attr("id", id);
-        g.attr("data-identifier", identifier);
-        g.attr("text-anchor", "middle");
-        return g;
+        return SvgTagCreator.g(null, labelText)
+                .attr("class", "label")
+                .attr("id", id)
+                .attr("text-anchor", "middle");
     }
 
     private String getId(Item item) {

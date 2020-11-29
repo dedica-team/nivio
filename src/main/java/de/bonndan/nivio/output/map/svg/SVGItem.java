@@ -81,11 +81,11 @@ class SVGItem extends Component {
             circle.attr("stroke-dasharray", 5);
             circle.attr("opacity", 0.7);
         }
-        ContainerTag inner = SvgTagCreator.g(circle, content, children)
-                .attr("class", "hexagon");
+        ContainerTag inner = SvgTagCreator.g(circle, content, children);
 
         return SvgTagCreator.g(inner, icon)
-                .attr("class", "hexagon-group")
+                .attr("data-identifier", this.id)
+                .attr("class", "item")
                 .attr("transform", "translate(" + pixel.x + "," + pixel.y + ")");
     }
 
