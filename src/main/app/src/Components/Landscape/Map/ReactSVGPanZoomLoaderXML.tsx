@@ -3,13 +3,13 @@
  *
  */
 import React from "react";
-import PropTypes from 'prop-types'
+// @ts-ignore
 import { SvgLoader } from 'react-svgmt'
 
 interface ReactSvgPanZoomLoaderXMLProps {
-    xml: PropTypes.string.isRequired,
-    render: PropTypes.func.isRequired,
-    proxy: PropTypes.node
+    xml: string;
+    render: any;
+    proxy: any;
 }
 
 const ReactSvgPanZoomLoaderXML = (props : ReactSvgPanZoomLoaderXMLProps) => {
