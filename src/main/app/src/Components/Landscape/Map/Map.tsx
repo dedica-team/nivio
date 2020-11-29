@@ -1,7 +1,7 @@
 import React, { MouseEvent, ReactElement, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { ReactSvgPanZoomLoader, SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
+import { SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
 import {
   fitSelection,
   fitToViewer,
@@ -23,6 +23,7 @@ import Search from '../Search/Search';
 import { withBasePath } from '../../../utils/API/BasePath';
 import Assessment from '../Modals/Assessment/Assessment';
 import { get } from '../../../utils/API/APIClient';
+import { ReactSvgPanZoomLoaderXML } from './ReactSVGPanZoomLoaderXML';
 
 interface Props {
   identifier: string;
@@ -31,8 +32,7 @@ interface Props {
 interface SVGData {
   width: number;
   height: number;
-  content: any;
-  url: string;
+  xml: string;
 }
 
 /**
@@ -167,14 +167,13 @@ const Map: React.FC<Props> = () => {
   };
 
   useEffect(() => {
-    // TODO this loads the svg only to obtain width and height, svgloader loads it again to place it in the DOM
-    let route = withBasePath(`/render/${identifier}/map.svg`);
+    const route = withBasePath(`/render/${identifier}/map.svg`);
     get(route).then((svg) => {
       const parser = new DOMParser();
       const doc: any = parser.parseFromString(svg, 'image/svg+xml');
       const width = doc.firstElementChild.width.baseVal.value;
       const height = doc.firstElementChild.height.baseVal.value;
-      setData({ width: width, height: height, content: svg , url: route});
+      setData({ width: width, height: height, xml: svg });
     });
   }, [identifier]);
 
@@ -236,8 +235,8 @@ const Map: React.FC<Props> = () => {
         >
           <Slider sliderContent={sliderContent} closeSlider={closeSlider} />
         </CSSTransition>
-        <ReactSvgPanZoomLoader
-          src={data.url}
+        <ReactSvgPanZoomLoaderXML
+          xml={data.xml}
           proxy={
             <>
               <SvgLoaderSelectElement selector='.label' onClick={onItemClick} />
