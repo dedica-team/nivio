@@ -88,7 +88,7 @@ class OrganicLayouterTest extends RenderingTest {
             g++;
         }
 
-        indexer.reIndex(input);
+        indexer.index(input);
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
         debugRenderLandscape("/src/test/resources/example/large", landscape);
@@ -126,7 +126,7 @@ class OrganicLayouterTest extends RenderingTest {
             source.addRelation(new RelationDescription(source.getIdentifier(), target.getIdentifier()));
         }
 
-        indexer.reIndex(input);
+        indexer.index(input);
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
         debugRenderLandscape("/src/test/resources/example/large", landscape);
@@ -154,7 +154,7 @@ class OrganicLayouterTest extends RenderingTest {
             model.getLabels().put(field + "_PROVIDER_URL", field.toLowerCase());
         });
 
-        indexer.reIndex(landscapeDescription);
+        indexer.index(landscapeDescription);
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
 
         debugRenderLandscape("/src/test/resources/example/model", landscape);

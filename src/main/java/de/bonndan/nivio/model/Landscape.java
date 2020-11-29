@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.ProcessLog;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
@@ -60,6 +61,11 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     private final Map<String, String> labels = new HashMap<>();
     private final Map<String, Link> links = new HashMap<>();
     private String owner;
+
+    /**
+     * all KPIs for the landscape, configured and initialized
+     */
+    private Map<String, KPI> kpis = new HashMap<>();
 
     public Landscape(@NonNull String identifier, @NonNull Group defaultGroup,
                      @NonNull String name, @Nullable String contact) {
@@ -248,5 +254,19 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     @Override
     public String getIcon() {
         return null;
+    }
+
+    /**
+     * Returns all KPIs for the landscape.
+     *
+     * @return kpis, configured and initialized
+     */
+    @JsonIgnore
+    public Map<String, KPI> getKpis() {
+        return kpis;
+    }
+
+    public void setKpis(Map<String, KPI> kpis) {
+        this.kpis = kpis;
     }
 }

@@ -9547,10 +9547,18 @@ react-svg-pan-zoom-loader@^1.4.1:
     react-svg-pan-zoom ">=3.0.0"
     react-svgmt "^1.1.7"
 
-react-svg-pan-zoom@>=3.0.0, react-svg-pan-zoom@^3.8.0:
+react-svg-pan-zoom@>=3.0.0:
   version "3.8.0"
   resolved "https://registry.yarnpkg.com/react-svg-pan-zoom/-/react-svg-pan-zoom-3.8.0.tgz#5724c71d257a07233c9cc511a5c6498d80bb397a"
   integrity sha512-s92QDFJuRrp784aQZKX8qxukMY/85IpOXO5Bjbn1G/CoNapdHCRVAHynPP6Ea9cyMmycSmu6paPqUIAW3i5s9Q==
+  dependencies:
+    prop-types "^15.7.2"
+    transformation-matrix "^2.2.0"
+
+react-svg-pan-zoom@^3.8.1:
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/react-svg-pan-zoom/-/react-svg-pan-zoom-3.8.1.tgz#4a9b793b39039e3b68db726c6e6f8125ce0fb7fa"
+  integrity sha512-DjhBTlwO+aS9KCerWqbTMaYoQodhz64Ej9pg3ihobabO+AtO2ZOQ0OZ9Gep9+YcDWGwhck//r3tUlcMvBdRmJQ==
   dependencies:
     prop-types "^15.7.2"
     transformation-matrix "^2.2.0"

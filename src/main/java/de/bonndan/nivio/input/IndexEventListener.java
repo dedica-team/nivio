@@ -24,6 +24,6 @@ public class IndexEventListener implements ApplicationListener<IndexEvent> {
     public void onApplicationEvent(IndexEvent event) {
         LandscapeDescription description = event.getLandscape();
         LOGGER.debug("Received index event for landscape {}", description.getIdentifier());
-        indexer.reIndex(description);
+        indexer.index(description);
     }
 }

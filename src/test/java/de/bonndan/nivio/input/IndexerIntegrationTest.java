@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.*;
@@ -7,6 +8,7 @@ import de.bonndan.nivio.output.icons.IconService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -54,7 +58,7 @@ public class IndexerIntegrationTest {
 
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, iconService);
 
-        ProcessLog processLog = indexer.reIndex(landscapeDescription);
+        ProcessLog processLog = indexer.index(landscapeDescription);
         return (Landscape) processLog.getLandscape();
     }
 
@@ -164,7 +168,7 @@ public class IndexerIntegrationTest {
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, iconService);
 
         //created
-        landscape = (Landscape) indexer.reIndex(landscapeDescription).getLandscape();
+        landscape = (Landscape) indexer.index(landscapeDescription).getLandscape();
         blog = (Item) landscape.getItems().pick("blog-server", "completelyNewGroup");
         assertEquals("completelyNewGroup", blog.getGroup());
         assertEquals(before + 1, landscape.getItems().all().size());
@@ -314,6 +318,25 @@ public class IndexerIntegrationTest {
         assertEquals("nivio:example/content/blog-server", match.getFullyQualifiedIdentifier().toString());
         assertTrue(List.of(match.getTags()).contains("cms"));
         assertTrue(List.of(match.getTags()).contains("ui"));
+    }
+
+    /**
+     * Ensures that KPIs are inited early
+     */
+    @Test
+    public void testKpisInitialisedEarly() {
+
+        //when
+        index("/src/test/resources/example/example_kpis_broken.yml");
+
+        //then
+        ArgumentCaptor<ProcessingErrorEvent> captor = ArgumentCaptor.forClass(ProcessingErrorEvent.class);
+        verify(applicationEventPublisher, times(2)).publishEvent(captor.capture());
+
+        List<ProcessingErrorEvent> allValues = captor.getAllValues();
+        ProcessingErrorEvent value = allValues.get(0);
+        assertNotNull(value);
+        assertEquals("Failed to parse KPI 'costs' range: 0,abc", value.getMessage());
     }
 
 

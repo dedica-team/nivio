@@ -25,6 +25,6 @@ class IndexEventListenerTest {
         LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
         IndexEvent indexEvent = new IndexEvent(this, input, "");
         listener.onApplicationEvent(indexEvent);
-        verify(indexer).reIndex(eq(input));
+        verify(indexer).index(eq(input));
     }
 }
