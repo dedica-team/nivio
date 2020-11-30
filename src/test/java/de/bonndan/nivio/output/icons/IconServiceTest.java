@@ -23,7 +23,7 @@ class IconServiceTest {
     @BeforeEach
     public void setup() {
         vendorIcons = mock(VendorIcons.class);
-        localIcons = new LocalIcons();
+        localIcons = new LocalIcons(null);
         iconService = new IconService(localIcons, vendorIcons);
     }
 

@@ -45,7 +45,7 @@ public abstract class RenderingTest {
         factory = new LandscapeDescriptionFactory(fileFetcher);
 
         HttpService httpService = mock(HttpService.class);
-        IconService iconService = new IconService(new LocalIcons(), new VendorIcons(httpService));
+        IconService iconService = new IconService(new LocalIcons(null), new VendorIcons(httpService));
         indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class), iconService);
     }
 
