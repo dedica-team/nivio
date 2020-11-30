@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
@@ -16,8 +17,6 @@ import static de.bonndan.nivio.output.icons.IconMapping.DEFAULT_ICON;
 
 /**
  * This component is responsible to resolve icons into urls / data urls.
- *
- *
  */
 @Component
 public class LocalIcons {
@@ -39,8 +38,15 @@ public class LocalIcons {
      */
     private final Map<String, String> iconDataUrls = new ConcurrentHashMap<>();
 
+    /**
+     * @param iconFolder optional dir containing a different icon set
+     */
     public LocalIcons(@Value("${nivio.iconFolder:#{null}}") String iconFolder) {
-        this.iconFolder = iconFolder != null ? iconFolder : DEFAULT_ICONS_FOLDER;
+        if (iconFolder != null) {
+            this.iconFolder = iconFolder.endsWith(File.separator) ? iconFolder : iconFolder + File.separator;
+        } else {
+            this.iconFolder = DEFAULT_ICONS_FOLDER;
+        }
         defaultIcon = getIconUrl(DEFAULT_ICON.getIcon()).orElseThrow(() -> {
             throw new RuntimeException(String.format(initErrorMsg, this.iconFolder));
         });
