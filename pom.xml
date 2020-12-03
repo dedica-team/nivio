@@ -252,32 +252,6 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.1</version>
-                <configuration>
-                    <!-- https://github.com/junit-team/junit5/issues/1469#issuecomment-397853653 -->
-                    <forkCount>0</forkCount>
-                    <reuseForks>true</reuseForks>
-                    <threadCount>1</threadCount>
-
-                    <includes>
-                        <include>**/*Test.java</include>
-                    </includes>
-                </configuration>
-
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.surefire</groupId>
-                        <artifactId>surefire-logger-api</artifactId>
-                        <version>2.21.0</version>
-                        <!-- to get around bug https://github.com/junit-team/junit5/issues/1367 -->
-                        <optional>true</optional>
-                    </dependency>
-                </dependencies>
-            </plugin>
-
             <!-- Collect code coverage with Jacoco: https://www.baeldung.com/jacoco -->
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -297,6 +271,32 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+                <!--<configuration-->
+                    <!-- https://github.com/junit-team/junit5/issues/1469#issuecomment-397853653 -->
+                    <!--forkCount>0</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <threadCount>1</threadCount>
+
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                </configuration> -->
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-logger-api</artifactId>
+                        <version>2.22.2</version>
+                        <!-- to get around bug https://github.com/junit-team/junit5/issues/1367 -->
+                        <optional>true</optional>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <!-- build the frontend app -->
