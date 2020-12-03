@@ -46,7 +46,7 @@ public class LandscapeDescription implements Component, Linked {
      * Contact of the maintainer
      */
     @Nullable
-    private String contact;
+    private final String contact;
     private String description;
     private String owner;
 

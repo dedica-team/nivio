@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -13,13 +15,21 @@ public class Group implements Labeled, Assessable {
     /**
      * Default group identifier (items are assigned to this group if no group is given
      */
+    @NonNull
     public static final String COMMON = "common";
+
+    @NonNull
     private final Map<String, Link> links = new HashMap<>();
+
+    @NonNull
     private final Map<String, String> labels = new HashMap<>();
     /**
      * Items belonging to this group. Order is important for layouting (until items are ordered there).
      */
+    @NonNull
     private final Set<Item> items = new LinkedHashSet<>();
+
+    @NonNull
     private final String identifier;
     private String owner;
     private String description;
@@ -36,16 +46,19 @@ public class Group implements Labeled, Assessable {
     }
 
     @Override
+    @NonNull
     public String getIdentifier() {
         return identifier;
     }
 
     @Override
+    @NonNull
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(landscapeIdentifier, identifier, null);
     }
 
     @Override
+    @NonNull
     public String getName() {
         return identifier;
     }
@@ -60,6 +73,7 @@ public class Group implements Labeled, Assessable {
     }
 
     @Override
+    @Nullable
     public String getDescription() {
         return description;
     }
@@ -69,6 +83,7 @@ public class Group implements Labeled, Assessable {
     }
 
     @Override
+    @Nullable
     public String getContact() {
         return contact;
     }
@@ -78,6 +93,7 @@ public class Group implements Labeled, Assessable {
     }
 
     @Override
+    @Nullable
     public String getColor() {
         return color;
     }
@@ -101,11 +117,13 @@ public class Group implements Labeled, Assessable {
     }
 
     @Override
+    @NonNull
     public Map<String, String> getLabels() {
         return labels;
     }
 
     @Override
+    @Nullable
     public String getLabel(String key) {
         return labels.get(key);
     }
@@ -116,12 +134,14 @@ public class Group implements Labeled, Assessable {
     }
 
     @Override
+    @NonNull
     public Set<StatusValue> getAdditionalStatusValues() {
         return StatusValue.fromMapping(indexedByPrefix(Label.status));
     }
 
     @JsonIgnore
     @Override
+    @NonNull
     public List<? extends Assessable> getChildren() {
         return new ArrayList<>(getItems());
     }

@@ -20,6 +20,7 @@
         <maven.compiler.release>11</maven.compiler.release>
         <junit-jupiter.version>5.4.0</junit-jupiter.version>
         <mockito.version>2.24.0</mockito.version>
+        <jacoco.version>0.8.6</jacoco.version>
         <frontend-src-dir>${project.basedir}/src/main/app</frontend-src-dir>
         <node.version>v12.18.2</node.version>
         <yarnVersion>v1.22.4</yarnVersion>
@@ -275,6 +276,27 @@
                         <optional>true</optional>
                     </dependency>
                 </dependencies>
+            </plugin>
+
+            <!-- Collect code coverage with Jacoco: https://www.baeldung.com/jacoco -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- build the frontend app -->

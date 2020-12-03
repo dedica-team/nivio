@@ -127,7 +127,7 @@ public class ApiController {
         return indexer.index(env);
     }
 
-    @RequestMapping(path = "/landscape/{identifier}/services", method = RequestMethod.POST)
+    @RequestMapping(path = "/landscape/{identifier}/items", method = RequestMethod.POST)
     public ProcessLog indexLandscape(
             @PathVariable String identifier,
             @RequestHeader(name = "format") String format,
