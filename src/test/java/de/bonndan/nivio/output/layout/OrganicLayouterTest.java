@@ -168,7 +168,7 @@ class OrganicLayouterTest extends RenderingTest {
     public void renderCSV() throws IOException {
 
         HttpService httpService = new HttpService();
-        IconService iconService = new IconService(new LocalIcons(null), new VendorIcons(httpService));
+        IconService iconService = new IconService(new LocalIcons(), new VendorIcons(httpService));
         formatFactory = InputFormatHandlerFactory.with(new InputFormatHandlerCSV(new FileFetcher(httpService)));
         indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class),  iconService);
 

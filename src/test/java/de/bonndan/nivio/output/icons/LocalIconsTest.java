@@ -16,7 +16,7 @@ class LocalIconsTest {
 
     @BeforeEach
     public void setup() {
-        localIcons = new LocalIcons(null);
+        localIcons = new LocalIcons();
     }
 
     @Test

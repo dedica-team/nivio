@@ -3,13 +3,13 @@ package de.bonndan.nivio.output.icons;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.net.URL;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,13 +18,12 @@ import static de.bonndan.nivio.output.icons.IconMapping.DEFAULT_ICON;
 /**
  * This component is responsible to resolve icons into urls / data urls.
  */
-@Component
 public class LocalIcons {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalIcons.class);
     private static final String initErrorMsg = "Default icon could not be loaded from icon set folder %s." +
             " Make sure all npm dependencies are installed (or run mvn package).";
-    private static final String DEFAULT_ICONS_FOLDER = "/static/icons/svg/";
+    public static final String DEFAULT_ICONS_FOLDER = "/static/icons/svg/";
 
     /**
      * default icon data url
@@ -39,10 +38,12 @@ public class LocalIcons {
     private final Map<String, String> iconDataUrls = new ConcurrentHashMap<>();
 
     /**
+     * Bean constructor.
+     *
      * @param iconFolder optional dir containing a different icon set
      */
-    public LocalIcons(@Value("${nivio.iconFolder:#{null}}") String iconFolder) {
-        if (iconFolder != null) {
+    public LocalIcons(@NonNull String iconFolder) {
+        if (!StringUtils.isEmpty(Objects.requireNonNull(iconFolder))) {
             this.iconFolder = iconFolder.endsWith(File.separator) ? iconFolder : iconFolder + File.separator;
         } else {
             this.iconFolder = DEFAULT_ICONS_FOLDER;
@@ -50,6 +51,10 @@ public class LocalIcons {
         defaultIcon = getIconUrl(DEFAULT_ICON.getIcon()).orElseThrow(() -> {
             throw new RuntimeException(String.format(initErrorMsg, this.iconFolder));
         });
+    }
+
+    public LocalIcons() {
+        this(DEFAULT_ICONS_FOLDER);
     }
 
     /**
