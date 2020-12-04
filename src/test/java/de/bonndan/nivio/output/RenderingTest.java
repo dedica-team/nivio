@@ -52,7 +52,7 @@ public abstract class RenderingTest {
     protected Landscape getLandscape(String path) {
         File file = new File(RootPath.get() + path);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
-        indexer.reIndex(landscapeDescription);
+        indexer.index(landscapeDescription);
         return landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
     }
 
