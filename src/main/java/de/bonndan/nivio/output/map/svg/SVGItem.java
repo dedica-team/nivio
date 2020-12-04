@@ -81,38 +81,12 @@ class SVGItem extends Component {
             circle.attr("stroke-dasharray", 5);
             circle.attr("opacity", 0.7);
         }
-        ContainerTag inner = SvgTagCreator.g(circle, content, children)
-                .attr("class", "hexagon");
+        ContainerTag inner = SvgTagCreator.g(circle, content, children);
 
         return SvgTagCreator.g(inner, icon)
-                .attr("class", "hexagon-group")
+                .attr("data-identifier", this.id)
+                .attr("class", "item")
                 .attr("transform", "translate(" + pixel.x + "," + pixel.y + ")");
     }
 
-    /* TODO make scale reappear, but without evaluation (this is part of assessment)
-    private ContainerTag getScale() {
-
-        if (StringUtils.isEmpty(item.getLabel(Label.SCALE))) {
-            return null;
-        }
-
-        int scaleVal = 0;
-        try {
-            scaleVal = Integer.parseInt(item.getLabel(Label.SCALE));
-        } catch (NumberFormatException ignored) {
-        }
-
-        return SvgTagCreator.g(
-                        SvgTagCreator.circle()
-                                .attr("cx", 0)
-                                .attr("cy", 0)
-                                .attr("r", 12)
-                                .attr("fill", scaleVal > 0 ? "green" : "red")
-                        ,
-                        SvgTagCreator.text(String.valueOf(scaleVal))
-                                .attr("transform", "translate(-" + 4 + "," + 5 + ")")
-                ).attr("transform", "translate(" + 30 + "," + 30 + ")");
-    }
-
-     */
 }

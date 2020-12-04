@@ -41,9 +41,10 @@ items:
 
   - identifier: nivio-prop
     name: Nivio proprietary
-    description: The custom format to describe landscape items. Try "man model" to learn more.
+    description: The custom format to describe landscape items.
+    links:
+      manual: https://nivio.readthedocs.io/en/latest/model.html
     type: humanuser
-    icon: https://raw.githubusercontent.com/bonndan/nivio/master/src/main/resources/static/icons/humanuser.png
     group: input
 
   - identifier: docker-compose

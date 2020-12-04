@@ -27,6 +27,7 @@ public class DataUrlHelper {
     public static Optional<String> asBase64(String path) {
 
         try (InputStream resourceAsStream = DataUrlHelper.class.getResourceAsStream(path)) {
+            if (resourceAsStream == null) throw new RuntimeException("File does not exist or is empty.");
             byte[] bytes = StreamUtils.copyToByteArray(resourceAsStream);
             return asBase64(bytes);
         } catch (IOException | RuntimeException e) {

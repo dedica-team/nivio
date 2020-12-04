@@ -35,7 +35,7 @@ public class KPIFactory {
      */
     public Map<String, KPI> getConfiguredKPIs(@NonNull Map<String, KPIConfig> kpiConfigMap) {
 
-        Objects.requireNonNull(kpiConfigMap, "kpi config is null or empty");
+        Objects.requireNonNull(kpiConfigMap, "kpi config is null");
 
         Map<String, KPI> kpis = new HashMap<>(defaultKPIs.size() + kpiConfigMap.size());
         defaultKPIs.forEach((s, kpiSupplier) -> kpis.put(s, kpiSupplier.get()));
