@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.ProcessingErrorEvent;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.linked.LinkHandlerFactory;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.IconService;
 import org.junit.jupiter.api.Assertions;
@@ -46,7 +47,7 @@ public class IndexerIntegrationTest {
     IconService iconService;
 
     @Mock
-    LinkResolverFactory linkResolverFactory;
+    LinkHandlerFactory linkHandlerFactory;
 
     @Mock
     ApplicationEventPublisher applicationEventPublisher;
@@ -59,7 +60,7 @@ public class IndexerIntegrationTest {
         File file = new File(getRootPath() + path);
         LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher, iconService);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, applicationEventPublisher, iconService);
 
         ProcessLog processLog = indexer.index(landscapeDescription);
         return (Landscape) processLog.getLandscape();
@@ -167,7 +168,7 @@ public class IndexerIntegrationTest {
         exsistingWordPress.setName("Other name");
         landscapeDescription.getItemDescriptions().add(exsistingWordPress);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, applicationEventPublisher);
+        Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, applicationEventPublisher, iconService);
 
         //created
         landscape = (Landscape) indexer.index(landscapeDescription).getLandscape();

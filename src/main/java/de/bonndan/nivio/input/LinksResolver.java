@@ -2,47 +2,56 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.input.linked.LinkHandlerFactory;
+import de.bonndan.nivio.model.Component;
+import de.bonndan.nivio.model.Labeled;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.Linked;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
  * Resolves all links of all landscape components.
- *
- *
  */
 public class LinksResolver extends Resolver {
 
-    private final LinkResolverFactory linkResolverFactory;
+    private static final Logger LOGGER = LoggerFactory.getLogger(LinksResolver.class);
+
+    private final LinkHandlerFactory linkHandlerFactory;
 
     /**
-     * @param logger the log belonging to the landscape.
-     * @param linkResolverFactory factory responsible to create single link resolvers.
+     * @param logger             the log belonging to the landscape.
+     * @param linkHandlerFactory factory responsible to create single link resolvers.
      */
-    public LinksResolver(ProcessLog logger, LinkResolverFactory linkResolverFactory) {
+    public LinksResolver(ProcessLog logger, LinkHandlerFactory linkHandlerFactory) {
         super(logger);
-        this.linkResolverFactory = linkResolverFactory;
+        this.linkHandlerFactory = linkHandlerFactory;
     }
 
     @Override
-    public void process(LandscapeDescription input, LandscapeImpl landscape) {
-        resolve(landscape, landscape);
-        landscape.getGroups().forEach((s, groupItem) -> resolve(landscape, groupItem));
-        landscape.getItems().all().forEach(item -> resolve(landscape, item));
+    public void process(LandscapeDescription input, Landscape landscape) {
+        resolveLinks(input, landscape);
+        landscape.getGroups().forEach((s, groupItem) -> {
+            resolveLinks(input, groupItem);
+            groupItem.getItems().forEach(item -> resolveLinks(input, item));
+        });
     }
 
-    private <T extends Linked & Labeled & Component> void resolve(Landscape landscape, T component) {
+    private <T extends Linked & Labeled & Component> void resolveLinks(LandscapeDescription input, T component) {
 
-        component.getLinks().forEach((s, link) -> {
-            linkResolverFactory.getResolver(s).resolve(link)
-                    .whenComplete((resolver, throwable) -> {
-                        if (throwable != null) {
-                            processLog.error(ProcessingException.of(landscape, throwable));
-                        } else {
-                            resolver.applyData(component);
-                            processLog.info("Successfully read link " + s + " of " + component.getFullyQualifiedIdentifier().jsonValue());
+        component.getLinks().forEach((key, link) -> linkHandlerFactory.getResolver(key)
+                .ifPresent(handler -> {
+                            try {
+                                handler.resolveAndApplyData(link, component)
+                                        .thenAccept(s -> processLog.info(String.format("Successfully read link %s of %s: %s", key, component, s)));
+                            } catch (Exception e) {
+                                LOGGER.warn("Link resolving failure {} {}", key, component, e);
+                                processLog.warn(String.format("Failed read link %s of %s: %s", key, component, e.getMessage()));
+                            }
                         }
-                    });
-        });
+
+                ));
     }
 
 

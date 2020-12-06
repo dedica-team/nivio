@@ -7,6 +7,7 @@ import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.assessment.kpi.KPIFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.linked.LinkHandlerFactory;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.IconService;
 import org.slf4j.Logger;
@@ -28,20 +29,19 @@ public class Indexer {
 
     private final LandscapeRepository landscapeRepo;
     private final InputFormatHandlerFactory formatFactory;
-    private final ItemDescriptionFormatFactory formatFactory;
-    private final LinkResolverFactory linkResolverFactory;
+    private final LinkHandlerFactory linkHandlerFactory;
     private final ApplicationEventPublisher eventPublisher;
     private final IconService iconService;
 
     public Indexer(LandscapeRepository landscapeRepository,
                    InputFormatHandlerFactory formatFactory,
-                   LinkResolverFactory linkResolverFactory,
+                   LinkHandlerFactory linkHandlerFactory,
                    ApplicationEventPublisher eventPublisher,
                    IconService iconService
     ) {
         this.landscapeRepo = landscapeRepository;
         this.formatFactory = formatFactory;
-        this.linkResolverFactory = linkResolverFactory;
+        this.linkHandlerFactory = linkHandlerFactory;
         this.eventPublisher = eventPublisher;
         this.iconService = iconService;
     }
@@ -126,7 +126,7 @@ public class Indexer {
         new ItemRelationResolver(logger).process(input, landscape);
 
         // 11. resolve links on components to gather more data, this runs async.
-        new LinksResolver(logger, linkResolverFactory).process(input, landscape);
+        new LinksResolver(logger, linkHandlerFactory).process(input, landscape);
 
         // ensures that item have a resolved icon in the api
         new AppearanceResolver(logger, iconService).process(input, landscape);
