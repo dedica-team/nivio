@@ -224,6 +224,13 @@
             <version>1.4.1</version>
         </dependency>
 
+        <!-- github api https://mvnrepository.com/artifact/org.kohsuke/github-api -->
+        <dependency>
+            <groupId>org.kohsuke</groupId>
+            <artifactId>github-api</artifactId>
+            <version>1.117</version>
+        </dependency>
+
     </dependencies>
 
     <build>

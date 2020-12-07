@@ -2,10 +2,11 @@ package de.bonndan.nivio.input.linked;
 
 
 import de.bonndan.nivio.input.http.HttpService;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,10 +23,10 @@ public class LinkHandlerFactory {
             GITHUB, GitHubProjectHandler.class
     );
 
-    private final HttpService httpService;
+    private final AutowireCapableBeanFactory beanFactory;
 
-    public LinkHandlerFactory(HttpService httpService) {
-        this.httpService = httpService;
+    public LinkHandlerFactory(AutowireCapableBeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
     }
 
     /**
@@ -34,15 +35,15 @@ public class LinkHandlerFactory {
     public Optional<ExternalLinkHandler> getResolver(final String key) {
 
         return Optional.ofNullable(KNOWN_RESOLVERS.get(key.toLowerCase()))
-                .map(aClass -> createHandler(key, httpService, aClass));
+                .map(aClass -> createHandler(key, aClass));
     }
 
     @NonNull
-    private ExternalLinkHandler createHandler(String key, HttpService httpService, Class<? extends ExternalLinkHandler> aClass) {
+    private ExternalLinkHandler createHandler(String key, Class<? extends ExternalLinkHandler> aClass) {
         try {
-            return aClass.getDeclaredConstructor().newInstance(httpService);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException(String.format("Failed to create resolver of type %s", key));
+            return beanFactory.createBean(aClass);
+        } catch (BeansException e) {
+            throw new RuntimeException(String.format("Failed to create external link handler of type %s", key));
         }
     }
 }

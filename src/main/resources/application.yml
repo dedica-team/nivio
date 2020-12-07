@@ -1,6 +1,8 @@
 spring:
   application:
     name: nivio
+  main:
+    lazy-initialization: true
 
   mail:
     host: smtp.gmail.com
