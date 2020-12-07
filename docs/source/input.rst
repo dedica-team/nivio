@@ -46,4 +46,24 @@ from environment variables. To exclude internal stacks (like those responsible f
 Nivio proprietary format
 ------------------------
 
-Nivio provided an own format, which allows to set all model properties manually (see Model and Syntax section)
+Nivio provided an own format, which allows to set all model properties manually (see Model and Syntax section).
+
+
+External data
+-------------
+
+Nivio can load external data that can not be used directly to build landscapes, but is still valuable. For example, the
+number of GitHub issues might be interesting to see on a landscape item that is an open source component. To attach such
+data to landscape components, use links having special known identifiers like "github" or "sonar".
+
+This is work in progress.
+
+.. code-block:: yaml
+   :linenos:
+
+    items:
+      - identifier: nivio
+        links:
+          github: https://github.com/dedica-team/nivio
+          sonar: http://hihi.huhu
+
