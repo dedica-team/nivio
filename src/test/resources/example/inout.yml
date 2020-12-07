@@ -81,6 +81,8 @@ items:
       - k8s
       - docker-compose
       - nivio-prop
+    links:
+      github: https://github.com/dedica-team/nivio
 
 
 

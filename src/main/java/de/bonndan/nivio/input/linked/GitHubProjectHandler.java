@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -27,7 +25,7 @@ public class GitHubProjectHandler implements ExternalLinkHandler {
     }
 
     /**
-     *
+     * Loads the open issues from the repo.
      */
     @Override
     public CompletableFuture<String> resolveAndApplyData(Link link, Labeled component) {
