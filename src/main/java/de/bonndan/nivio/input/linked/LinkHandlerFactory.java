@@ -1,7 +1,6 @@
 package de.bonndan.nivio.input.linked;
 
 
-import de.bonndan.nivio.input.http.HttpService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.lang.NonNull;
@@ -20,7 +19,7 @@ public class LinkHandlerFactory {
     // add semantics, e.g. handle identifier "sonarqube" to grab metrics
     // see https://github.com/dedica-team/nivio/issues/97
     static Map<String, Class<? extends ExternalLinkHandler>> KNOWN_RESOLVERS = Map.of(
-            GITHUB, GitHubProjectHandler.class
+            GITHUB, GitHubrepoHandler.class
     );
 
     private final AutowireCapableBeanFactory beanFactory;

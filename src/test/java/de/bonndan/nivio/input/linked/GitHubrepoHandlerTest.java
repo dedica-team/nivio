@@ -8,22 +8,21 @@ import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-class GitHubProjectHandlerTest {
+class GitHubrepoHandlerTest {
 
-    private GitHubProjectHandler handler;
+    private GitHubrepoHandler handler;
     private GitHub gitHub;
 
     @BeforeEach
     void setup() {
         gitHub = mock(GitHub.class);
-        handler = new GitHubProjectHandler(gitHub);
+        handler = new GitHubrepoHandler(gitHub);
     }
 
     @Test
@@ -39,7 +38,7 @@ class GitHubProjectHandlerTest {
         handler.resolveAndApplyData(link, item);
         verify(gitHub).getRepository(eq("dedica-team/nivio"));
 
-        assertThat(item.getLabel(GitHubProjectHandler.OPEN_ISSUES)).isEqualTo("12");
+        assertThat(item.getLabel(GitHubrepoHandler.OPEN_ISSUES)).isEqualTo("12");
     }
 
 }

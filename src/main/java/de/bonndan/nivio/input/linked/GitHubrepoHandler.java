@@ -13,14 +13,14 @@ import java.util.concurrent.CompletableFuture;
 /**
  * https://github-api.kohsuke.org/index.html
  */
-public class GitHubProjectHandler implements ExternalLinkHandler {
+public class GitHubrepoHandler implements ExternalLinkHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GitHubProjectHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GitHubrepoHandler.class);
     public static final String OPEN_ISSUES = "github.issues.open";
 
     private final GitHub gitHub;
 
-    public GitHubProjectHandler(GitHub gitHub) {
+    public GitHubrepoHandler(GitHub gitHub) {
         this.gitHub = gitHub;
     }
 
