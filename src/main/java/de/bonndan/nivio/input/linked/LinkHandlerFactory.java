@@ -16,10 +16,13 @@ import java.util.Optional;
 public class LinkHandlerFactory {
 
     public static final String GITHUB = "github";
+    private static final String SONAR = "sonar";
+
     // add semantics, e.g. handle identifier "sonarqube" to grab metrics
     // see https://github.com/dedica-team/nivio/issues/97
     static Map<String, Class<? extends ExternalLinkHandler>> KNOWN_RESOLVERS = Map.of(
-            GITHUB, GitHubrepoHandler.class
+            GITHUB, GitHubrepoHandler.class,
+            SONAR, SonarLinkHandler.class
     );
 
     private final AutowireCapableBeanFactory beanFactory;
