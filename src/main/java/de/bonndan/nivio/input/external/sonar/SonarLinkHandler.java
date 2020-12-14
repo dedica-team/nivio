@@ -1,6 +1,8 @@
-package de.bonndan.nivio.input.linked;
+package de.bonndan.nivio.input.external.sonar;
 
-import de.bonndan.nivio.model.Labeled;
+import de.bonndan.nivio.input.dto.ComponentDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.external.ExternalLinkHandler;
 import de.bonndan.nivio.model.Link;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,17 +27,16 @@ public class SonarLinkHandler implements ExternalLinkHandler {
     /**
      * https://medium.com/@shanchathusanda/https-medium-com-shanchathusanda-integrating-sonarqube-apis-with-a-java-application-de8fdc8b951f
      * @param link
-     * @param component
      * @return
      */
     @Override
-    public CompletableFuture<String> resolveAndApplyData(Link link, Labeled component) {
+    public CompletableFuture<ComponentDescription> resolve(Link link) {
         if (sonarClient.isEmpty()) {
-            return CompletableFuture.completedFuture("SonarClient is not configured");
+            return CompletableFuture.failedFuture(new RuntimeException("SonarClient is not configured"));
         }
 
         SonarClient sonarClient = this.sonarClient.get();
         // TODO
-        return CompletableFuture.completedFuture("OK");
+        return CompletableFuture.completedFuture(new ItemDescription());
     }
 }

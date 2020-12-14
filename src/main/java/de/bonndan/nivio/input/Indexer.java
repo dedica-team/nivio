@@ -7,7 +7,7 @@ import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.assessment.kpi.KPIFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.linked.LinkHandlerFactory;
+import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.IconService;
 import org.slf4j.Logger;
@@ -98,6 +98,9 @@ public class Indexer {
         // apply template values to the items
         new TemplateResolver().processTemplates(input, templatesAndTargets);
 
+        // resolve links on components to gather more data.
+        new LinksResolver(logger, linkHandlerFactory).process(input);
+
         // read special labels on items and assign the values to fields
         new LabelToFieldProcessor(logger).process(input, landscape);
 
@@ -124,9 +127,6 @@ public class Indexer {
 
         // create relations between items
         new ItemRelationResolver(logger).process(input, landscape);
-
-        // 11. resolve links on components to gather more data, this runs async.
-        new LinksResolver(logger, linkHandlerFactory).process(input, landscape);
 
         // ensures that item have a resolved icon in the api
         new AppearanceResolver(logger, iconService).process(input, landscape);

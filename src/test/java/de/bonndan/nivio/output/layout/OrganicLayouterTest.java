@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.Indexer;
 import de.bonndan.nivio.input.InputFormatHandlerFactory;
-import de.bonndan.nivio.input.linked.LinkHandlerFactory;
+import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.input.csv.InputFormatHandlerCSV;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;

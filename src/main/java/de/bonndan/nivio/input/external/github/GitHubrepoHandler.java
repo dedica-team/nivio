@@ -1,6 +1,8 @@
-package de.bonndan.nivio.input.linked;
+package de.bonndan.nivio.input.external.github;
 
-import de.bonndan.nivio.model.Labeled;
+import de.bonndan.nivio.input.dto.ComponentDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.external.ExternalLinkHandler;
 import de.bonndan.nivio.model.Link;
 import org.kohsuke.github.GitHub;
 import org.slf4j.Logger;
@@ -28,16 +30,17 @@ public class GitHubrepoHandler implements ExternalLinkHandler {
      * Loads the open issues from the repo.
      */
     @Override
-    public CompletableFuture<String> resolveAndApplyData(Link link, Labeled component) {
+    public CompletableFuture<ComponentDescription> resolve(Link link) {
         String repoName = getRepoName(link);
+        ItemDescription itemDescription = new ItemDescription();
         try {
             int openIssues = gitHub.getRepository(repoName).getOpenIssueCount();
-            component.setLabel(OPEN_ISSUES, String.valueOf(openIssues));
+            itemDescription.setLabel(OPEN_ISSUES, String.valueOf(openIssues));
         } catch (Exception e) {
-            throw new RuntimeException("Failed to connect: " + e.getMessage());
+            return CompletableFuture.failedFuture(e);
         }
 
-        return CompletableFuture.completedFuture("Resolved GitHub project " + repoName);
+        return CompletableFuture.completedFuture(itemDescription);
     }
 
     @NonNull

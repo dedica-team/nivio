@@ -16,7 +16,7 @@ import java.util.*;
 /**
  * This is representation of a service in the textual form as described in a source file.
  */
-public class ItemDescription implements Labeled, Linked, Tagged {
+public class ItemDescription implements ComponentDescription, Labeled, Linked, Tagged {
 
     private final Map<String, Link> links = new HashMap<>();
     @JsonDeserialize(contentAs = RelationDescription.class)

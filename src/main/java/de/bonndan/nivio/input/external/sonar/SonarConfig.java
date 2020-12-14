@@ -1,4 +1,4 @@
-package de.bonndan.nivio.input.linked;
+package de.bonndan.nivio.input.external.sonar;
 
 import org.sonar.wsclient.SonarClient;
 import org.springframework.context.annotation.Bean;

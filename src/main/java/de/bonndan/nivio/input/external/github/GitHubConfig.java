@@ -1,4 +1,4 @@
-package de.bonndan.nivio.input.linked;
+package de.bonndan.nivio.input.external.github;
 
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
