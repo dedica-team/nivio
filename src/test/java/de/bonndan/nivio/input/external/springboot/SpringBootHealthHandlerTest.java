@@ -83,7 +83,7 @@ class SpringBootHealthHandlerTest {
     }
 
     @Test
-    void badResponse() throws ExecutionException, InterruptedException {
+    void badResponse() {
 
         //given
         givenThat(
@@ -93,6 +93,22 @@ class SpringBootHealthHandlerTest {
         );
 
         String url = String.format("http://localhost:%d/actuator/health", wireMockServer.port());
+        Link link = new Link(url);
+
+        //when
+        CompletableFuture<ComponentDescription> resolve = handler.resolve(link);
+
+        assertThat(resolve.isCompletedExceptionally()).isTrue();
+        assertThrows(ExecutionException.class, () ->  resolve.get());
+
+    }
+
+    @Test
+    void noConnection() {
+
+        //given
+
+        String url = "http://totally.unknown/actuator/health";
         Link link = new Link(url);
 
         //when

@@ -12,6 +12,7 @@ import org.springframework.boot.actuate.health.Status;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URISyntaxException;
@@ -22,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Reads Spring Boot health actuator output and stores it in labels.
- *
+ * <p>
  * https://docs.spring.io/spring-boot/docs/current/actuator-api/htmlsingle/#health
  */
 public class SpringBootHealthHandler implements ExternalLinkHandler {
@@ -50,7 +51,7 @@ public class SpringBootHealthHandler implements ExternalLinkHandler {
             String msg = String.format("Got status code %s while trying to resolve %s", exchange.getStatusCode(), link.getHref());
             LOGGER.warn(msg);
             return CompletableFuture.failedFuture(new RuntimeException(msg));
-        } catch (URISyntaxException |HttpServerErrorException e) {
+        } catch (URISyntaxException | HttpServerErrorException | ResourceAccessException e) {
             return CompletableFuture.failedFuture(e);
         }
     }
