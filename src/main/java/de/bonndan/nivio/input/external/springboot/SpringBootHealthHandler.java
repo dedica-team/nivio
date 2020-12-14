@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URISyntaxException;
@@ -19,6 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Reads Spring Boot health actuator output and stores it in labels.
+ *
+ * https://docs.spring.io/spring-boot/docs/current/actuator-api/htmlsingle/#health
+ */
 public class SpringBootHealthHandler implements ExternalLinkHandler {
 
     private final Logger LOGGER = LoggerFactory.getLogger(SpringBootHealthHandler.class);
@@ -29,9 +35,6 @@ public class SpringBootHealthHandler implements ExternalLinkHandler {
         this.restTemplate = restTemplate;
     }
 
-    /**
-     * https://docs.spring.io/spring-boot/docs/current/actuator-api/htmlsingle/#health
-     */
     @Override
     public CompletableFuture<ComponentDescription> resolve(Link link) {
         try {
@@ -47,7 +50,7 @@ public class SpringBootHealthHandler implements ExternalLinkHandler {
             String msg = String.format("Got status code %s while trying to resolve %s", exchange.getStatusCode(), link.getHref());
             LOGGER.warn(msg);
             return CompletableFuture.failedFuture(new RuntimeException(msg));
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException |HttpServerErrorException e) {
             return CompletableFuture.failedFuture(e);
         }
     }
@@ -88,7 +91,7 @@ public class SpringBootHealthHandler implements ExternalLinkHandler {
         }
 
         if (value.getStatus() != null) {
-            labels.put(Label.key(Label.health, key), value.getStatus());
+            labels.put(Label.key(Label.health, key), asHealth(value.getStatus()));
         }
 
         if (value.getDetails() != null) {

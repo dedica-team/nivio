@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -61,14 +62,14 @@ class SpringBootHealthHandlerTest {
         String path = RootPath.get() + "/src/test/resources/example/springhealth.json";
         String json = FileFetcher.readFile(new File(path));
         givenThat(
-                get("/some/export").willReturn(aResponse()
+                get("/actuator/health").willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-type", "application/json")
                         .withBody(json)
                 )
         );
 
-        String url = String.format("http://localhost:%d/some/export", wireMockServer.port());
+        String url = String.format("http://localhost:%d/actuator/health", wireMockServer.port());
         Link link = new Link(url);
 
         //when
@@ -78,5 +79,27 @@ class SpringBootHealthHandlerTest {
         //then
         assertThat(itemDescription).isNotNull();
         assertThat(itemDescription.getLabel(Label.health)).isEqualTo(HealthKPI.HEALTHY);
+        assertThat(itemDescription.getLabel(Label.key(Label.health, "broker"))).isEqualTo(HealthKPI.HEALTHY);
+    }
+
+    @Test
+    void badResponse() throws ExecutionException, InterruptedException {
+
+        //given
+        givenThat(
+                get("/actuator/health").willReturn(aResponse()
+                        .withStatus(500)
+                )
+        );
+
+        String url = String.format("http://localhost:%d/actuator/health", wireMockServer.port());
+        Link link = new Link(url);
+
+        //when
+        CompletableFuture<ComponentDescription> resolve = handler.resolve(link);
+
+        assertThat(resolve.isCompletedExceptionally()).isTrue();
+        assertThrows(ExecutionException.class, () ->  resolve.get());
+
     }
 }
