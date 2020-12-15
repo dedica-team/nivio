@@ -1,7 +1,7 @@
 package de.bonndan.nivio.input.external;
 
 
-import de.bonndan.nivio.input.external.github.GitHubrepoHandler;
+import de.bonndan.nivio.input.external.github.GitHubRepoHandler;
 import de.bonndan.nivio.input.external.sonar.SonarLinkHandler;
 import de.bonndan.nivio.input.external.springboot.SpringBootHealthHandler;
 import org.springframework.beans.BeansException;
@@ -25,7 +25,7 @@ public class LinkHandlerFactory {
     // add semantics, e.g. handle identifier "sonarqube" to grab metrics
     // see https://github.com/dedica-team/nivio/issues/97
     static Map<String, Class<? extends ExternalLinkHandler>> KNOWN_RESOLVERS = Map.of(
-            GITHUB, GitHubrepoHandler.class,
+            GITHUB, GitHubRepoHandler.class,
             SONAR, SonarLinkHandler.class,
             SPRING_HEALTH, SpringBootHealthHandler.class
     );
