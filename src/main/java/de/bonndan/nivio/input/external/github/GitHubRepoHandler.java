@@ -7,6 +7,7 @@ import de.bonndan.nivio.model.Link;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
+import org.kohsuke.github.MarkdownMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -49,6 +50,9 @@ public class GitHubRepoHandler implements ExternalLinkHandler {
             itemDescription.setLabel(README, readme);
             String description = repository.getDescription();
             itemDescription.setLabel(DESCRIPTION, description);
+            if (StringUtils.isEmpty(itemDescription.getDescription())) {
+                itemDescription.setDescription(description);
+            }
         } catch (Exception e) {
             LOGGER.warn("Failed to grab GitHub data from repo:" + e.getMessage(), e);
             return CompletableFuture.failedFuture(e);

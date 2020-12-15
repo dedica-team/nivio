@@ -1,13 +1,14 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.*;
-import org.springframework.util.StringUtils;
+import de.bonndan.nivio.util.URLHelper;
 
-import java.util.*;
-
-import static de.bonndan.nivio.util.SafeAssign.assignSafeIfAbsent;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Responsible to apply templates to landscape items.
@@ -19,12 +20,20 @@ public class TemplateResolver {
     /**
      * Applies the template values and relations to all items the template is assigned to.
      *
-     * @param landscape           the landscape containing all(!) items. Querying happens on these items.
-     * @param templatesAndTargets The assignment can be a list of static item identifiers or dynamic queries to match
-     *                            certain items.
+     * @param landscape the landscape containing all(!) items. Querying happens on these items.
      */
-    public void processTemplates(LandscapeDescription landscape, Map<ItemDescription, List<String>> templatesAndTargets) {
-        templatesAndTargets.forEach((landscapeItem, identifiers) -> applyTemplateValues(landscapeItem, identifiers, landscape));
+    public void processTemplates(LandscapeDescription landscape) {
+
+        Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
+        landscape.getSourceReferences().forEach(ref -> {
+            ref.getAssignTemplates().forEach((key, identifiers) -> {
+                ItemDescription template = landscape.getTemplates().get(key);
+                template.setName(null);
+                templatesAndTargets.put(template, identifiers);
+            });
+        });
+
+        templatesAndTargets.forEach((template, identifiers) -> applyTemplateValues(template, identifiers, landscape));
     }
 
     /**
@@ -37,38 +46,7 @@ public class TemplateResolver {
     ) {
         templateTargets.forEach(term ->
                 landscape.getItemDescriptions().query(term)
-                        .forEach(item -> assignTemplateValues((ItemDescription) item, template))
+                        .forEach(item -> ItemDescriptionValues.assignSafeNotNull(item, template))
         );
-    }
-
-
-    /**
-     * Writes the values of the template (second object) to the first where first is null.
-     *
-     * @param item     target
-     * @param template source
-     */
-    static void assignTemplateValues(ItemDescription item, ItemDescription template) {
-
-        assignSafeIfAbsent(template.getType(), item.getType(), item::setType);
-        assignSafeIfAbsent(template.getDescription(), item.getDescription(), item::setDescription);
-        assignSafeIfAbsent(template.getContact(), item.getContact(), item::setContact);
-        assignSafeIfAbsent(template.getOwner(), item.getOwner(), item::setOwner);
-        assignSafeIfAbsent(template.getGroup(), item.getGroup(), item::setGroup);
-
-        if (template.getProvidedBy() != null) {
-            template.getProvidedBy().stream()
-                    .filter(s -> !StringUtils.isEmpty(s) && !item.getProvidedBy().contains(s))
-                    .forEach(s -> item.getProvidedBy().add(s));
-        }
-
-        template.getRelations().forEach(item::addRelation);
-
-        Labeled.merge(template, item);
-
-        template.getInterfaces().forEach(interfaceItem -> {
-            if (!item.getInterfaces().contains(interfaceItem))
-                item.getInterfaces().add(interfaceItem);
-        });
     }
 }

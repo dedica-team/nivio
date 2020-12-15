@@ -91,21 +91,21 @@ public class Indexer {
         KPIFactory kpiFactory = new KPIFactory();
         landscape.setKpis(kpiFactory.getConfiguredKPIs(input.getConfig().getKPIs()));
 
-        Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
         // read all input sources
-        new SourceReferencesResolver(formatFactory, logger).resolve(input, templatesAndTargets);
+        new SourceReferencesResolver(formatFactory, logger).resolve(input);
 
-        // apply template values to the items
-        new TemplateResolver().processTemplates(input, templatesAndTargets);
+        // apply template values to items
+        new TemplateResolver().processTemplates(input);
 
         // resolve links on components to gather more data.
         new LinksResolver(logger, linkHandlerFactory).process(input);
 
+        // mask any label containing secrets
+        new SecureLabelsProcessor().process(input);
+
         // read special labels on items and assign the values to fields
         new LabelToFieldProcessor(logger).process(input, landscape);
 
-        // mask any label containing secrets
-        new SecureLabelsProcessor().process(input);
 
         // create relation targets on the fly if the landscape is configured "greedy"
         new InstantItemResolver(logger).processTargets(input);

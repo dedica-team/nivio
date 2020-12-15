@@ -11,6 +11,7 @@ import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -42,9 +43,7 @@ class TemplateResolverTest {
     public void assignTemplateToAll() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates.yml");
-        Map<ItemDescription, List<String>> templates = getTemplates(landscapeDescription);
-        templateResolver.processTemplates(landscapeDescription, templates);
-
+        templateResolver.processTemplates(landscapeDescription);
 
         ItemDescription redis = landscapeDescription.getItemDescriptions().pick("redis", null);
         assertNotNull(redis);
@@ -65,8 +64,7 @@ class TemplateResolverTest {
     public void assignTemplateWithRegex() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates2.yml");
-        Map<ItemDescription, List<String>> templates = getTemplates(landscapeDescription);
-        templateResolver.processTemplates(landscapeDescription, templates);
+        templateResolver.processTemplates(landscapeDescription);
 
         ItemDescription one = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
         assertNotNull(one);
@@ -85,8 +83,7 @@ class TemplateResolverTest {
     public void assignsAllValues() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates.yml");
-        Map<ItemDescription, List<String>> templates = getTemplates(landscapeDescription);
-        templateResolver.processTemplates(landscapeDescription, templates);
+        templateResolver.processTemplates(landscapeDescription);
 
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
@@ -106,29 +103,22 @@ class TemplateResolverTest {
     public void assignsOnlyToGivenTargets() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates.yml");
-        Map<ItemDescription, List<String>> templates = getTemplates(landscapeDescription);
-        templateResolver.processTemplates(landscapeDescription, templates);
+        templateResolver.processTemplates(landscapeDescription);
 
         ItemDescription redis = landscapeDescription.getItemDescriptions().pick("redis", null);
         assertNotNull(redis);
         assertNull(redis.getLabel(Label.software));
     }
 
-    private Map<ItemDescription, List<String>> getTemplates(LandscapeDescription landscapeDescription) {
-        InputFormatHandlerFactory ff = new InputFormatHandlerFactory(
-                new ArrayList<>(Arrays.asList(new InputFormatHandlerNivio(new FileFetcher(new HttpService())), InputFormatHandlerCompose2.forTesting()))
-        );
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(ff, log);
-        Map<ItemDescription, List<String>> templateAndTargets = new HashMap<>();
-        sourceReferencesResolver.resolve(landscapeDescription, templateAndTargets);
-        return templateAndTargets;
-    }
-
     private LandscapeDescription getLandscapeDescription(String s) {
         File file = new File(RootPath.get() + s);
-
-
-        return factory.fromYaml(file);
+        InputFormatHandlerFactory formatFactory = new InputFormatHandlerFactory(
+                new ArrayList<>(Arrays.asList(new InputFormatHandlerNivio(new FileFetcher(new HttpService())), InputFormatHandlerCompose2.forTesting()))
+        );
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(formatFactory, new ProcessLog(mock(Logger.class)));
+        LandscapeDescription landscapeDescription = factory.fromYaml(file);
+        sourceReferencesResolver.resolve(landscapeDescription);
+        return landscapeDescription;
     }
 
 }

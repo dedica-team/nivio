@@ -1,8 +1,10 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
+import org.springframework.util.StringUtils;
 
 import static de.bonndan.nivio.util.SafeAssign.assignSafe;
+import static de.bonndan.nivio.util.SafeAssign.assignSafeIfAbsent;
 
 public class ItemDescriptionValues {
 
@@ -27,5 +29,33 @@ public class ItemDescriptionValues {
         assignSafe(increment.getRelations(), (rel) -> rel.forEach(existing::addRelation));
 
         assignSafe(increment.getInterfaces(), (set) -> set.forEach(intf -> existing.getInterfaces().add(intf)));
+    }
+
+    /**
+     * Writes the values of the template (second object) to the first where first is null.
+     *
+     * @param item     target
+     * @param template source
+     */
+    public static void assignSafeNotNull(ItemDescription item, ItemDescription template) {
+
+        ComponentDescriptionValues.assignSafeNotNull(item, template);
+
+        assignSafeIfAbsent(template.getType(), item.getType(), item::setType);
+        assignSafeIfAbsent(template.getContact(), item.getContact(), item::setContact);
+        assignSafeIfAbsent(template.getGroup(), item.getGroup(), item::setGroup);
+
+        if (template.getProvidedBy() != null) {
+            template.getProvidedBy().stream()
+                    .filter(s -> !StringUtils.isEmpty(s) && !item.getProvidedBy().contains(s))
+                    .forEach(s -> item.getProvidedBy().add(s));
+        }
+
+        template.getRelations().forEach(item::addRelation);
+
+        template.getInterfaces().forEach(interfaceItem -> {
+            if (!item.getInterfaces().contains(interfaceItem))
+                item.getInterfaces().add(interfaceItem);
+        });
     }
 }
