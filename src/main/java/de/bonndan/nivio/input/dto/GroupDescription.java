@@ -39,7 +39,7 @@ public class GroupDescription implements ComponentDescription {
 
     @Override
     public void setName(String name) {
-        throw new RuntimeException("Group name is the identifier, it cannot be set.");
+        identifier = name;
     }
 
     public String getOwner() {
