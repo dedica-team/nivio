@@ -60,9 +60,9 @@ public class LinksResolver {
                                     if (componentDescription != null) {
                                         logger.info(String.format("Successfully read link %s of %s", key, component));
                                         ComponentDescriptionValues.assignNotNull(component, componentDescription);
+                                    } else {
+                                        LOGGER.warn("Link resolving failure {} {}", key, component, throwable);
                                     }
-                                    LOGGER.warn("Link resolving failure {} {}", key, component, throwable);
-                                    logger.warn(String.format("Failed read link %s of %s: %s", key, component, throwable.getMessage()));
                                     return component;
                                 });
                         all.add(f);
