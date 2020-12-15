@@ -44,7 +44,7 @@ class RelationEndpointResolverTest {
     public void assignTemplateWithRegex() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates("/src/test/resources/example/example_templates2.yml");
-        relationEndpointResolver.processRelations(landscapeDescription);
+        relationEndpointResolver.resolve(landscapeDescription);
 
         ItemDescription one = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
         assertNotNull(one);
@@ -64,7 +64,7 @@ class RelationEndpointResolverTest {
     public void resolvesTemplatePlaceholdersInProviders() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates("/src/test/resources/example/example_templates2.yml");
-        relationEndpointResolver.processRelations(landscapeDescription);
+        relationEndpointResolver.resolve(landscapeDescription);
 
         //the provider has been resolved using a query instead of naming a service
         ItemDescription providedbyBar = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
@@ -83,7 +83,7 @@ class RelationEndpointResolverTest {
     public void resolvesTemplatePlaceholdersInDataflow() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates("/src/test/resources/example/example_templates2.yml");
-        relationEndpointResolver.processRelations(landscapeDescription);
+        relationEndpointResolver.resolve(landscapeDescription);
 
         ItemDescription hasdataFlow = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
         assertNotNull(hasdataFlow);
@@ -103,10 +103,11 @@ class RelationEndpointResolverTest {
         InputFormatHandlerFactory formatFactory = new InputFormatHandlerFactory(
                 new ArrayList<>(Arrays.asList(new InputFormatHandlerNivio(new FileFetcher(new HttpService())), InputFormatHandlerCompose2.forTesting()))
         );
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(formatFactory, new ProcessLog(mock(Logger.class)));
-
+        ProcessLog logger = new ProcessLog(mock(Logger.class));
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(formatFactory, logger);
         sourceReferencesResolver.resolve(landscapeDescription);
-        new TemplateResolver().processTemplates(landscapeDescription);
+
+        new TemplateResolver(logger).resolve(landscapeDescription);
 
         return landscapeDescription;
     }

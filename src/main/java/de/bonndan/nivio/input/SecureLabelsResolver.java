@@ -12,12 +12,17 @@ import java.util.*;
  *
  * Replaces value completely unless it is an url containing userinfo.
  */
-public class SecureLabelsProcessor {
+public class SecureLabelsResolver extends Resolver {
 
     private static final List<String> keyBlacklist = Arrays.asList("secret", "pass", "credentials", "token", "key");
     public static final String MASK = "*";
 
-    public void process(LandscapeDescription input) {
+    protected SecureLabelsResolver(ProcessLog processLog) {
+        super(processLog);
+    }
+
+    @Override
+    public void resolve(LandscapeDescription input) {
 
         input.getItemDescriptions().all().forEach(itemDescription -> {
             Map<String, Object> cleaned = new HashMap<>();

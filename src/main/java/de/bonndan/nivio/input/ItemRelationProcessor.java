@@ -5,9 +5,9 @@ import de.bonndan.nivio.model.*;
 
 import java.util.Iterator;
 
-public class ItemRelationResolver extends Resolver {
+public class ItemRelationProcessor extends Processor {
 
-    protected ItemRelationResolver(ProcessLog processLog) {
+    protected ItemRelationProcessor(ProcessLog processLog) {
         super(processLog);
     }
 

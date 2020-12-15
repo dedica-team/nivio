@@ -15,14 +15,19 @@ import java.util.Map;
  * <p>
  * Resolves the items the templates are assigned to as well as dynamic endpoints of relation in templates.
  */
-public class TemplateResolver {
+public class TemplateResolver extends Resolver {
+
+    protected TemplateResolver(ProcessLog processLog) {
+        super(processLog);
+    }
 
     /**
      * Applies the template values and relations to all items the template is assigned to.
      *
      * @param landscape the landscape containing all(!) items. Querying happens on these items.
      */
-    public void processTemplates(LandscapeDescription landscape) {
+    @Override
+    public void resolve(LandscapeDescription landscape) {
 
         Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
         landscape.getSourceReferences().forEach(ref -> {

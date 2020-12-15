@@ -271,8 +271,8 @@ public class IndexerIntegrationTest {
         Optional<Item> abc = landscape1.getItems().find("abc", null);
         assertThat(abc).isNotEmpty();
         Item item = abc.get();
-        assertThat(item.getLabel("key")).isEqualTo(SecureLabelsProcessor.MASK);
-        assertThat(item.getLabel("password")).isEqualTo(SecureLabelsProcessor.MASK);
+        assertThat(item.getLabel("key")).isEqualTo(SecureLabelsResolver.MASK);
+        assertThat(item.getLabel("password")).isEqualTo(SecureLabelsResolver.MASK);
         assertThat(item.getLabel("foo_url")).isEqualTo("https://*@foobar.com");
     }
 

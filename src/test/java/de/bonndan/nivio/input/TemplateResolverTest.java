@@ -33,7 +33,7 @@ class TemplateResolverTest {
     @BeforeEach
     public void setup() {
         log = new ProcessLog(LoggerFactory.getLogger(TemplateResolver.class));
-        templateResolver = new TemplateResolver();
+        templateResolver = new TemplateResolver(mock(ProcessLog.class));
         FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
         factory = new LandscapeDescriptionFactory(fileFetcher);
     }
@@ -43,7 +43,7 @@ class TemplateResolverTest {
     public void assignTemplateToAll() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates.yml");
-        templateResolver.processTemplates(landscapeDescription);
+        templateResolver.resolve(landscapeDescription);
 
         ItemDescription redis = landscapeDescription.getItemDescriptions().pick("redis", null);
         assertNotNull(redis);
@@ -64,7 +64,7 @@ class TemplateResolverTest {
     public void assignTemplateWithRegex() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates2.yml");
-        templateResolver.processTemplates(landscapeDescription);
+        templateResolver.resolve(landscapeDescription);
 
         ItemDescription one = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
         assertNotNull(one);
@@ -83,7 +83,7 @@ class TemplateResolverTest {
     public void assignsAllValues() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates.yml");
-        templateResolver.processTemplates(landscapeDescription);
+        templateResolver.resolve(landscapeDescription);
 
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
@@ -103,7 +103,7 @@ class TemplateResolverTest {
     public void assignsOnlyToGivenTargets() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates.yml");
-        templateResolver.processTemplates(landscapeDescription);
+        templateResolver.resolve(landscapeDescription);
 
         ItemDescription redis = landscapeDescription.getItemDescriptions().pick("redis", null);
         assertNotNull(redis);

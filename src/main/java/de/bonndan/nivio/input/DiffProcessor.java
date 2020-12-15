@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
  *
  * Adds, updates and removes items in the landscape.
  */
-public class DiffResolver extends Resolver {
+public class DiffProcessor extends Processor {
 
-    protected DiffResolver(ProcessLog processLog) {
+    protected DiffProcessor(ProcessLog processLog) {
         super(processLog);
     }
 

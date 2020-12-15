@@ -18,16 +18,16 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class GroupQueryResolverTest {
+class GroupQueryProcessorTest {
 
-    private GroupQueryResolver groupResolver;
+    private GroupQueryProcessor groupResolver;
 
     @Mock
     private ProcessLog processLog;
 
     @BeforeEach
     public void setup() {
-        groupResolver = new GroupQueryResolver(processLog);
+        groupResolver = new GroupQueryProcessor(processLog);
     }
 
     @Test

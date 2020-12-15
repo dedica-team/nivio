@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DiffResolverTest {
+public class DiffProcessorTest {
 
     private ArrayList<Item> items;
     private Landscape landscape;
@@ -44,7 +44,7 @@ public class DiffResolverTest {
         ArrayList<Item> items2 = new ArrayList<>();
         items2.add(new Item("a", "c"));
 
-        List<Item> added = DiffResolver.added(items1, items2, landscape);
+        List<Item> added = DiffProcessor.added(items1, items2, landscape);
         assertEquals(2, added.size());
     }
 
@@ -61,7 +61,7 @@ public class DiffResolverTest {
         items2.add(new Item("a", "b"));
         items2.add(new Item("a", "c"));
 
-        List<Item> added = DiffResolver.added(items1, items2, landscape);
+        List<Item> added = DiffProcessor.added(items1, items2, landscape);
         assertEquals(0, added.size());
     }
 
@@ -77,7 +77,7 @@ public class DiffResolverTest {
         items2.add(new Item("a", "c"));
         items2.add(new Item("a", "d"));
 
-        List<Item> removed = DiffResolver.removed(items1, items2);
+        List<Item> removed = DiffProcessor.removed(items1, items2);
         assertEquals(1, removed.size());
     }
 
@@ -93,7 +93,7 @@ public class DiffResolverTest {
         items2.add(new Item("a", "a"));
         items2.add(new Item("a", "b"));
 
-        List<Item> removed = DiffResolver.removed(items1, items2);
+        List<Item> removed = DiffProcessor.removed(items1, items2);
         assertEquals(0, removed.size());
     }
 
@@ -109,7 +109,7 @@ public class DiffResolverTest {
         items2.add(new Item("a", "a"));
         items2.add(new Item("a", "b"));
 
-        List<Item> kept = DiffResolver.kept(items1, items2, landscape);
+        List<Item> kept = DiffProcessor.kept(items1, items2, landscape);
         assertEquals(2, kept.size());
     }
 
@@ -125,7 +125,7 @@ public class DiffResolverTest {
         items2.add(new Item("a", "d"));
         items2.add(new Item("a", "e"));
 
-        List<Item> kept = DiffResolver.kept(items1, items2, landscape);
+        List<Item> kept = DiffProcessor.kept(items1, items2, landscape);
         assertEquals(0, kept.size());
     }
 }

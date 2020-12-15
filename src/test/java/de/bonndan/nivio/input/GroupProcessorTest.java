@@ -14,14 +14,14 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GroupResolverTest {
+class GroupProcessorTest {
 
-    private GroupResolver groupResolver;
+    private GroupProcessor groupProcessor;
 
     @BeforeEach
     public void setup() {
-        ProcessLog log = new ProcessLog(LoggerFactory.getLogger(GroupResolverTest.class));
-        groupResolver = new GroupResolver(log);
+        ProcessLog log = new ProcessLog(LoggerFactory.getLogger(GroupProcessorTest.class));
+        groupProcessor = new GroupProcessor(log);
     }
 
     @Test
@@ -30,7 +30,7 @@ class GroupResolverTest {
         LandscapeDescription input = getLandscapeDescription();
         Landscape landscape = LandscapeFactory.create("test");
 
-        groupResolver.process(input, landscape);
+        groupProcessor.process(input, landscape);
 
         assertEquals(3, landscape.getGroups().size());
     }
@@ -47,7 +47,7 @@ class GroupResolverTest {
         Landscape landscape = LandscapeFactory.create("test");
 
 
-        groupResolver.process(input, landscape);
+        groupProcessor.process(input, landscape);
 
         assertEquals(3, landscape.getGroups().size());
         assertTrue(landscape.getGroups().containsKey(Group.COMMON));
@@ -59,7 +59,7 @@ class GroupResolverTest {
         input.getConfig().getGroupBlacklist().add("test2");
         Landscape landscape = LandscapeFactory.create("test");
 
-        groupResolver.process(input, landscape);
+        groupProcessor.process(input, landscape);
         assertEquals(2, landscape.getGroups().size()); //COMMON is always present
         assertTrue(landscape.getGroup("test1").isPresent());
         assertEquals("test1", landscape.getGroup("test1").get().getIdentifier());
@@ -71,7 +71,7 @@ class GroupResolverTest {
         input.getConfig().getGroupBlacklist().add("^test[0-9].*");
         Landscape landscape = LandscapeFactory.create("test");
 
-        groupResolver.process(input, landscape);
+        groupProcessor.process(input, landscape);
         assertEquals(1, landscape.getGroups().size()); //COMMON only
     }
 
@@ -90,7 +90,7 @@ class GroupResolverTest {
 
         Landscape landscape = LandscapeFactory.create("test");
 
-        groupResolver.process(input, landscape);
+        groupProcessor.process(input, landscape);
 
         assertEquals(2, landscape.getGroups().size()); //incl COMMON
         assertEquals(1, input.getItemDescriptions().all().size());
