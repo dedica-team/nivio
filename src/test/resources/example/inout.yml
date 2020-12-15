@@ -64,6 +64,8 @@ items:
     group: input
     lifecycle: planned
     icon: vendor://prometheus
+    links:
+      github: https://github.com/prometheus/prometheus
 
   - identifier: csv
     shortName: CSV
