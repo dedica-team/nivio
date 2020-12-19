@@ -53,9 +53,6 @@ public class ItemDescriptionValues {
 
         template.getRelations().forEach(item::addRelation);
 
-        template.getInterfaces().forEach(interfaceItem -> {
-            if (!item.getInterfaces().contains(interfaceItem))
-                item.getInterfaces().add(interfaceItem);
-        });
+        item.getInterfaces().addAll(template.getInterfaces());
     }
 }
