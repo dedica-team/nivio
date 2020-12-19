@@ -8,6 +8,7 @@ import java.util.Base64;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LocalIconsTest {
 
@@ -16,6 +17,11 @@ class LocalIconsTest {
     @BeforeEach
     public void setup() {
         localIcons = new LocalIcons();
+    }
+
+    @Test
+    public void throwsIfIconsMissing() {
+        assertThrows(RuntimeException.class, () -> new LocalIcons(System.getProperty("java.io.tmpdir")));
     }
 
     @Test
