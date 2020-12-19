@@ -52,7 +52,7 @@ Nivio provides an own format, which allows to set all model properties manually 
 External data
 -------------
 
-Nivio can load external data that can not be used directly to build landscapes, but is still valuable. For example, the
+Nivio can load external data that cannot be used directly to build landscapes, but is still valuable. For example, the
 number of GitHub issues might be interesting to see on a landscape item that is an open source component. To attach such
 data to landscape components, use links having special known identifiers like "github" or "sonar".
 
