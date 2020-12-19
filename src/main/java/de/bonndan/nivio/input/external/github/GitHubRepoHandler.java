@@ -16,6 +16,8 @@ import org.springframework.util.StringUtils;
 import java.util.concurrent.CompletableFuture;
 
 /**
+ * Loads the open issues, open pull requests, the readme and the repositories description.
+ *
  * https://github-api.kohsuke.org/index.html
  */
 public class GitHubRepoHandler implements ExternalLinkHandler {
