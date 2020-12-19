@@ -26,7 +26,6 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     private String environment;
     @NotEmpty
     private String identifier;
-    @NotEmpty
     private String name;
     private String owner;
     private String description;
