@@ -82,7 +82,7 @@ public class StatusValue {
         if (StringUtils.isEmpty(field)) {
             throw new IllegalArgumentException("Status value has no field");
         }
-        this.field = Objects.requireNonNull(field);
+        this.field = field;
 
         if (status == null) {
             status = Status.UNKNOWN;
