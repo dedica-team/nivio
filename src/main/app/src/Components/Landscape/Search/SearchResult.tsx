@@ -1,12 +1,12 @@
 import React, { useState, ReactElement, useEffect } from 'react';
-import { Card, CardHeader, Theme } from '@material-ui/core';
+import {Card, CardActions, CardHeader, Theme} from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
 import { IAssessmentProps, IItem } from '../../../interfaces';
 import {getAssessmentSummary, getItemIcon, getLabels, getLinks} from '../Utils/utils';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import StatusChip from "../../StatusChip/StatusChip";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -49,7 +49,7 @@ const SearchResult: React.FC<Props> = ({
     if (useItem) {
       setItem(useItem);
     } else {
-      if (fullyQualifiedItemIdentifier) {
+      if (!item && fullyQualifiedItemIdentifier) {
         get(`/api/${fullyQualifiedItemIdentifier}`).then((loaded) => {
           setItem(loaded);
         });
@@ -57,7 +57,7 @@ const SearchResult: React.FC<Props> = ({
     }
 
     const landscapeIdentifier = item ? item.fullyQualifiedIdentifier.split('/') : [];
-    if (landscapeIdentifier[0]) {
+    if (!assessment && landscapeIdentifier[0]) {
         //TODO load direct to with fqi in path
       get(`/assessment/${landscapeIdentifier[0]}`).then((response) => {
         if (response) {
@@ -110,6 +110,20 @@ const SearchResult: React.FC<Props> = ({
     });
   }
 
+  const getItemAssessments = (assessmentItem: IAssessmentProps[]) => {
+    if (item && assessmentItem) {
+      return assessmentItem.map((item) => {
+        if (!item.field.includes('summary.')) {
+          return (
+              <StatusChip name={item.field} value={item.message} status={item.status} key={item.field}/>
+          );
+        }
+        return <React.Fragment key={item.field} />;
+      });
+    }
+    return [];
+  };
+
   return (
     <Card className={classes.card}>
       <CardHeader
@@ -126,12 +140,9 @@ const SearchResult: React.FC<Props> = ({
           <span
     className='status'
     style={{backgroundColor: assessmentsColor}}
-    onClick={() => {
-        if (onAssessmentClick) {
-            onAssessmentClick(item.fullyQualifiedIdentifier);
-        }
-    }}
-    />
+
+          >Status</span>
+          {assessment ? getItemAssessments(assessment) : null}
         </div>
 
         <div className='information'>
