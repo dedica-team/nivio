@@ -26,10 +26,10 @@ public class DiffResolver extends Resolver {
         //insert new ones
         List<Item> newItems = added(input.getItemDescriptions().all(), existingItems, landscape);
         Set<Item> inLandscape = new HashSet<>();
-        processLog.info("Adding " + newItems.size() + " items in env " + landscape.getIdentifier());
+        processLog.info(String.format("Adding %d items in env %s", newItems.size(), landscape.getIdentifier()));
         newItems.forEach(
                 newItem -> {
-                    processLog.info("Creating new service " + newItem.getIdentifier() + " in env " + input.getIdentifier());
+                    processLog.info(String.format("Creating new item %s in env %s", newItem.getIdentifier(), input.getIdentifier()));
                     inLandscape.add(newItem);
                 }
         );
@@ -41,7 +41,7 @@ public class DiffResolver extends Resolver {
         } else {
             kept = kept(input.getItemDescriptions().all(), existingItems, landscape);
         }
-        processLog.info("Updating " + kept.size() + " items in landscape " + landscape.getIdentifier());
+        processLog.info(String.format("Updating %d items in landscape %s", kept.size(), landscape.getIdentifier()));
         kept.forEach(
                 item -> {
 
