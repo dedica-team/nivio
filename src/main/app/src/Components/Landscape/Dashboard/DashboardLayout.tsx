@@ -2,19 +2,16 @@ import React from 'react';
 
 import Grid from '@material-ui/core/Grid';
 import './Dashboard.scss';
-import { ILandscape, IAssessment, IGroup } from '../../../interfaces';
+import {ILandscape, IAssessment, IGroup, IItem} from '../../../interfaces';
 import { getAssessmentSummary, getItemIcon } from '../Utils/utils';
-
-import Search from '../Search/Search';
 
 interface Props {
   landscape: ILandscape | null | undefined;
   assessments: IAssessment | undefined;
-  onItemClick: (fullyQualifiedItemIdentifier: string) => void;
+  onItemClick: (item: IItem) => void;
   onGroupClick: (fullyQualifiedGroupIdentifier: string) => void;
   onGroupAssessmentClick: (fullyQualifiedGroupIdentifier: string) => void;
   onItemAssessmentClick: (fullyQualifiedItemIdentifier: string) => void;
-  findItem: (fullyQualifiedItemIdentifier: string) => void;
 }
 
 /**
@@ -28,7 +25,6 @@ const DashboardLayout: React.FC<Props> = ({
   onGroupClick,
   onGroupAssessmentClick,
   onItemAssessmentClick,
-  findItem,
 }) => {
   // Render
   /*
@@ -60,7 +56,7 @@ const DashboardLayout: React.FC<Props> = ({
           </span>
           <div className='itemDescription'>
             <img src={getItemIcon(item)} className='icon' alt={'icon'} />
-            <span className='itemName' onClick={() => onItemClick(item.fullyQualifiedIdentifier)}>
+            <span className='itemName' onClick={() => onItemClick(item)}>
               {item.name || item.identifier}
             </span>
           </div>
@@ -115,7 +111,6 @@ const DashboardLayout: React.FC<Props> = ({
           {landscape ? `${landscape.name}` : null}
         </Grid>
         <Grid item xs={12} md={5} lg={4} xl={2}>
-          <Search findItem={findItem} />
         </Grid>
       </Grid>
       <Grid key={'group'} className={'groupContainer'} container spacing={5}>

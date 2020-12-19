@@ -1,91 +1,81 @@
-import React, { ReactElement, MouseEvent } from 'react';
+import React, { ReactElement } from 'react';
 
-import TitleBar from '../../TitleBar/TitleBar';
 import { Link } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import { Button } from '@material-ui/core';
-import './Overview.scss';
+import {Box, Button, Card, CardActions, CardHeader, CardMedia, Theme} from '@material-ui/core';
 import { ILandscape } from '../../../interfaces';
 import dateFormat from 'dateformat';
-import { CSSTransition } from 'react-transition-group';
 import { withBasePath } from '../../../utils/API/BasePath';
+import IconButton from '@material-ui/core/IconButton';
+import { FormatListBulleted, MapOutlined, Report } from '@material-ui/icons';
+import Log from '../Modals/Log/Log';
+import CardContent from '@material-ui/core/CardContent';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    card: {
+      marginBottom: 5,
+      padding: 5,
+      backgroundColor: '#161618',
+      borderColor: theme.palette.secondary.main,
+      height: "100%",
+    },
+  })
+);
 
 interface Props {
-  sliderContent: string | ReactElement | ReactElement[] | null;
   landscapes: ILandscape[] | null | undefined;
-  showSlider: boolean;
-  enterLog: (e: MouseEvent<HTMLButtonElement>, landscape: ILandscape) => void;
+  setSidebarContent: Function;
 }
 
 /**
  * Displays all available landscapes and provides all needed navigation
  */
 
-const OverviewLayout: React.FC<Props> = ({ sliderContent, landscapes, enterLog, showSlider }) => {
+const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
   // Render
   /*
-    value         |0px     600px    960px    1280px   1920px
-    key           |xs      sm       md       lg       xl
-    screen width  |--------|--------|--------|--------|-------->
-    range         |   xs   |   sm   |   md   |   lg   |   xl
-  */
-  let content: string | ReactElement[] = 'Loading landscapes...';
+                    value         |0px     600px    960px    1280px   1920px
+                    key           |xs      sm       md       lg       xl
+                    screen width  |--------|--------|--------|--------|-------->
+                    range         |   xs   |   sm   |   md   |   lg   |   xl
+                  */
+  const classes = useStyles();
+  let content: ReactElement[] = [<Box>Loading landscapes...</Box>];
 
   if (Array.isArray(landscapes) && landscapes.length) {
     content = landscapes.map((landscape) => {
       let itemCount = 0;
       landscape.groups?.forEach((group) => (itemCount += group.items.length));
       return (
-        <Grid key={landscape.identifier} className={'landscapeContainer'} container spacing={3}>
-          <Grid item xs={12}>
-            <TitleBar title={landscape.name} />
-          </Grid>
-
-          <Grid item xs={12} sm={4} md={2} lg={2} xl={1} className={'previewItem'}>
-            <Button component={Link} to={`/landscape/${landscape.identifier}`}>
-              <img
-                className={'preview'}
-                alt={'preview'}
-                src={withBasePath(`/render/${landscape.identifier}/map.svg`)}
-                style={{ maxWidth: 100, float: 'left' }}
-              />
-            </Button>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3} lg={3} xl={3} className='infoContainer'>
-            <Typography variant='overline' display='block' gutterBottom>
-              Info
-            </Typography>
-            <div className='infoContent'>
-              <span className='description'>{landscape.description}</span>
-              <span className='identifier'>Identifier: {landscape.identifier}</span>
-            </div>
-          </Grid>
-
-          <Grid item xs={12} sm={4} md={1} lg={1} xl={1} className='itemContainer'>
-            <Typography variant='overline' display='block' className='itemTitle'>
-              Items
-            </Typography>
-            <Typography variant='h2' display='block' className='itemCount'>
-              {itemCount}
-            </Typography>
-            <span className='itemGroups'>
-              in {landscape.groups ? Object.keys(landscape.groups).length : 0} groups
-            </span>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3} lg={3} xl={3}>
-            <Typography variant='overline' display='block' gutterBottom>
-              Last update
-            </Typography>
-            <Typography variant='h5' display='block'>
-              {landscape.lastUpdate
+        <Card key={landscape.identifier} className={classes.card} variant={'outlined'}>
+          <CardHeader
+            title={landscape.name}
+            subheader={
+              'Last update ' + landscape.lastUpdate
                 ? dateFormat(landscape.lastUpdate, 'dd-mm-yyyy hh:MM:ss TT')
-                : '-'}
-            </Typography>
-          </Grid>
+                : '-'
+            }
+          />
+          <CardContent>
+            <Button component={Link} to={`/landscape/${landscape.identifier}`}>
+              <CardMedia
+                  component="img"
+                  alt="map"
+                  height="140" width={'100%'}
+                  image={withBasePath(`/render/${landscape.identifier}/map.svg`)}
+              />
 
-          <Grid item xs={12} sm={6} md={3} lg={3} xl={4} className='last'>
+            </Button>
+            {landscape.description}
+            <br />
+            <span>
+              {itemCount} items in {landscape.groups ? Object.keys(landscape.groups).length : 0}{' '}
+              groups
+            </span>
+          </CardContent>
+          <CardActions>
             <Button
               variant='outlined'
               color='primary'
@@ -96,58 +86,49 @@ const OverviewLayout: React.FC<Props> = ({ sliderContent, landscapes, enterLog, 
               enter
             </Button>
 
-            <Button
-              variant='outlined'
-              color='secondary'
-              onClick={(e) => enterLog(e, landscape)}
-              fullWidth
+            <IconButton
+              aria-label='log'
+              color={'secondary'}
+              onClick={() => setSidebarContent(<Log landscape={landscape} />)}
             >
-              log
-            </Button>
+              <FormatListBulleted />
+            </IconButton>
 
-            <Button
-              fullWidth
-              className={'noShadow'}
-              color='secondary'
-              variant='outlined'
+            <IconButton
+              aria-label='map'
+              color={'secondary'}
+              title={'SVG Export'}
               rel='noopener noreferrer'
               target={'_blank'}
               href={withBasePath(`/render/${landscape.identifier}/map.svg`)}
             >
-              Printable Graph
-            </Button>
+              <MapOutlined />
+            </IconButton>
 
-            <Button
-              fullWidth
-              className={'noShadow'}
-              color='secondary'
-              variant='outlined'
+            <IconButton
+              aria-label='report'
+              color={'secondary'}
+              title={'Printable Report'}
               rel='noopener noreferrer'
               target={'_blank'}
               href={withBasePath(`/docs/${landscape.identifier}/report.html`)}
             >
-              Printable Report
-            </Button>
-          </Grid>
-        </Grid>
+              <Report />
+            </IconButton>
+          </CardActions>
+        </Card>
       );
     });
   }
 
   return (
-    <div className='homeContainer'>
-      <CSSTransition
-        in={showSlider}
-        timeout={{ enter: 0, exit: 1000, appear: 1000 }}
-        appear
-        unmountOnExit
-        classNames='slider'
-      >
-        <React.Fragment>{sliderContent}</React.Fragment>
-      </CSSTransition>
-      {content}
-    </div>
+    <Grid container spacing={3}>
+      {content.map((value, i) => (
+        <Grid item xs={12} sm={6} key={i}>
+          {value}
+        </Grid>
+      ))}
+    </Grid>
   );
 };
-
 export default OverviewLayout;

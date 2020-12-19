@@ -1,23 +1,23 @@
-import React, { useState, useEffect, ReactElement } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import DashboardLayout from './DashboardLayout';
-import Slider from '../../Slider/Slider';
-import { ILandscape, IAssessment } from '../../../interfaces';
+import { ILandscape, IAssessment, IItem } from '../../../interfaces';
 import { get } from '../../../utils/API/APIClient';
-import Item from '../Modals/Item/Item';
 import Group from '../Modals/Group/Group';
-import { CSSTransition } from 'react-transition-group';
 import Assessment from '../Modals/Assessment/Assessment';
+import SearchResult from '../Search/SearchResult';
 
 /**
  * Logic Component to display all available landscapes
  */
+interface Props {
+  setSidebarContent: Function;
+  setFindFunction: Function;
+}
 
-const Dashboard: React.FC = () => {
+const Dashboard: React.FC<Props> = ({ setSidebarContent }) => {
   const [landscape, setLandscape] = useState<ILandscape | null>();
-  const [sliderContent, setSliderContent] = useState<string | ReactElement | null>(null);
-  const [showSlider, setShowSlider] = useState(false);
   const [assessments, setAssessments] = useState<IAssessment | undefined>(undefined);
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
 
@@ -50,19 +50,14 @@ const Dashboard: React.FC = () => {
     return () => clearTimeout(timeout);
   }, [highlightElement]);
 
-  const onItemClick = (fullyQualifiedItemIdentifier: string) => {
-    setSliderContent(
-      <Item
-        fullyQualifiedItemIdentifier={fullyQualifiedItemIdentifier}
-        findItem={findItem}
-        onAssessmentClick={onItemAssessmentClick}
-      />
+  const onItemClick = (item: IItem) => {
+    setSidebarContent(
+      <SearchResult useItem={item} findItem={findItem} onAssessmentClick={onItemAssessmentClick} />
     );
-    setShowSlider(true);
   };
 
   const onGroupClick = (fullyQualifiedGroupIdentifier: string) => {
-    setSliderContent(
+    setSidebarContent(
       <Group
         fullyQualifiedGroupIdentifier={fullyQualifiedGroupIdentifier}
         findItem={findItem}
@@ -70,11 +65,10 @@ const Dashboard: React.FC = () => {
         onAssessmentClick={onGroupAssessmentClick}
       />
     );
-    setShowSlider(true);
   };
 
   const onGroupAssessmentClick = (fullyQualifiedGroupIdentifier: string) => {
-    setSliderContent(
+    setSidebarContent(
       <Assessment
         fullyQualifiedIdentifier={fullyQualifiedGroupIdentifier}
         findItem={findItem}
@@ -82,22 +76,16 @@ const Dashboard: React.FC = () => {
         isGroup={true}
       />
     );
-    setShowSlider(true);
   };
 
   const onItemAssessmentClick = (fullyQualifiedItemIdentifier: string) => {
-    setSliderContent(
+    setSidebarContent(
       <Assessment
         fullyQualifiedIdentifier={fullyQualifiedItemIdentifier}
         findItem={findItem}
         isGroup={false}
       />
     );
-    setShowSlider(true);
-  };
-
-  const closeSlider = () => {
-    setShowSlider(false);
   };
 
   const { identifier } = useParams<{ identifier: string }>();
@@ -114,15 +102,6 @@ const Dashboard: React.FC = () => {
 
   return (
     <React.Fragment>
-      <CSSTransition
-        in={showSlider}
-        timeout={{ enter: 0, exit: 1000, appear: 1000 }}
-        appear
-        unmountOnExit
-        classNames='slider'
-      >
-        <Slider sliderContent={sliderContent} closeSlider={closeSlider} />
-      </CSSTransition>
       <DashboardLayout
         landscape={landscape}
         assessments={assessments}

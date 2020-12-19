@@ -1,45 +1,77 @@
 import React, { useState, ReactElement, useEffect } from 'react';
-import { Card } from '@material-ui/core';
+import { Card, CardHeader, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import { IAssessmentProps, IItem } from '../../../interfaces';
-import { getAssessmentSummary, getItemIcon } from '../Utils/utils';
+import {getAssessmentSummary, getItemIcon, getLabels, getLinks} from '../Utils/utils';
 import Button from '@material-ui/core/Button';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-import './Search.scss';
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    card: {
+      margin: 5,
+      padding: 5,
+      backgroundColor: theme.palette.secondary.main,
+      overflow: 'show',
+    },
+    icon: {
+      height: '2em',
+    },
+  })
+);
 
 interface Props {
-  item: IItem;
-  findItem?: (fullyQualifiedItemIdentifier: string) => void;
+  useItem?: IItem;
+  findItem?: Function;
+  fullyQualifiedItemIdentifier?: string;
+  onAssessmentClick?: (fullyQualifiedItemIdentifier: string) => void;
 }
 
 /**
  * Returns a choosen Landscape Item if informations are available
  * @param element Choosen SVG Element from our Landscape Component
  */
-const SearchResult: React.FC<Props> = ({ item, findItem }) => {
+const SearchResult: React.FC<Props> = ({
+  useItem,
+  findItem,
+  fullyQualifiedItemIdentifier,
+  onAssessmentClick,
+}) => {
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
-
-  let assesmentColor = 'grey';
+  const [item, setItem] = useState<IItem | undefined>(undefined);
+  const classes = useStyles();
+  let assessmentsColor = 'grey';
   let relations: ReactElement[] = [];
 
   useEffect(() => {
-    const landscapeIdentifier = item.fullyQualifiedIdentifier.split('/');
+    if (useItem) {
+      setItem(useItem);
+    } else {
+      if (fullyQualifiedItemIdentifier) {
+        get(`/api/${fullyQualifiedItemIdentifier}`).then((loaded) => {
+          setItem(loaded);
+        });
+      }
+    }
+
+    const landscapeIdentifier = item ? item.fullyQualifiedIdentifier.split('/') : [];
     if (landscapeIdentifier[0]) {
+        //TODO load direct to with fqi in path
       get(`/assessment/${landscapeIdentifier[0]}`).then((response) => {
         if (response) {
-          setAssessment(response.results[item.fullyQualifiedIdentifier]);
+          setAssessment(response.results[item?.fullyQualifiedIdentifier]);
         }
       });
     }
-  }, [item]);
+  }, [item, fullyQualifiedItemIdentifier, useItem]);
 
   if (item) {
-    [assesmentColor] = getAssessmentSummary(assessment);
+    [assessmentsColor] = getAssessmentSummary(assessment);
   }
 
-  if (item?.relations && item.relations.length) {
+  if (item && item?.relations && item.relations.length) {
     relations = item.relations.map((relation) => {
       let relationName: string;
       let groupNameStart: number;
@@ -49,8 +81,6 @@ const SearchResult: React.FC<Props> = ({ item, findItem }) => {
         return (
           <Button
             size={'small'}
-            variant={'outlined'}
-            className='relation'
             key={relation.source}
             onClick={() => {
               if (findItem) {
@@ -67,8 +97,6 @@ const SearchResult: React.FC<Props> = ({ item, findItem }) => {
       return (
         <Button
           size={'small'}
-          variant={'outlined'}
-          className='relation'
           key={relation.target}
           onClick={() => {
             if (findItem) {
@@ -83,45 +111,61 @@ const SearchResult: React.FC<Props> = ({ item, findItem }) => {
   }
 
   return (
-    <Card className={'searchResult'} square={true}>
+    <Card className={classes.card}>
+      <CardHeader
+        title={item ? item.name || item.identifier : null}
+        avatar={item ? <img src={getItemIcon(item)} alt='Icon' className={classes.icon} /> : ''}
+        onClick={() => {
+          if (findItem && item) {
+            findItem(item.fullyQualifiedIdentifier);
+          }
+        }}
+      />
       <CardContent>
         <div className='header'>
-          <img src={getItemIcon(item)} alt='Icon' className='icon' />
           <span
-            className='title'
-            onClick={() => {
-              if (findItem) {
-                findItem(item.fullyQualifiedIdentifier);
-              }
-            }}
-          >
-            {item ? item.name || item.identifier : null}
-          </span>
-          <span className='status' style={{ backgroundColor: assesmentColor }}></span>
+    className='status'
+    style={{backgroundColor: assessmentsColor}}
+    onClick={() => {
+        if (onAssessmentClick) {
+            onAssessmentClick(item.fullyQualifiedIdentifier);
+        }
+    }}
+    />
         </div>
 
         <div className='information'>
           <span className='description item'>
-            {item?.description ? `${item?.description}` : ''}
+            {item?.description ? `${item?.description}` : ''}<br />
           </span>
-          {item?.contact.length ? (<span className='contact item'>
-            <span className='label'>Contact: </span>
-            {item?.contact || 'No Contact provided'}
+          {item?.contact?.length ? (
+            <span className='contact item'>
+              <span className='label'>Contact: </span>
+              {item?.contact || 'No Contact provided'}<br />
             </span>
           ) : null}
-          <span className='owner item'>
-            <span className='label'>Owner: </span>
-            {item?.owner || 'No Owner provided'}
-          </span>
+          {item?.owner ? (
+            <span className='owner item'>
+              <span className='label'>Owner: </span>
+              {item?.owner || 'No Contact provided'}<br />
+            </span>
+          ) : null}
         </div>
+
+          {item?.labels.length ? <div className='labels'>{getLabels(item?.labels)}</div> : null}
       </CardContent>
       <CardActions>
-        {relations.length ? (
-          <div className='relationsContent'>
+        {relations != null ? <div className='relationsContent'>
             <span className='relationsLabel'>Relations</span>
             <div className='relations'>{relations}</div>
-          </div>
-        ) : null}
+          </div> : null}
+
+          {item?.links?.length ? (
+              <div className='linkContent'>
+                  <span className='linkLabel'>Links</span>
+                  <div className='links'>{getLinks(item?.links)}</div>
+              </div>
+          ) : null}
       </CardActions>
     </Card>
   );

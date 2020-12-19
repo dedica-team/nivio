@@ -2,9 +2,21 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { ILandscape } from '../../../../interfaces';
 import { get } from '../../../../utils/API/APIClient';
 
-import './Log.scss';
 import LevelChip from '../../../LevelChip/LevelChip';
-import Grid from '@material-ui/core/Grid';
+import { Card, Theme, Typography } from '@material-ui/core';
+import CardContent from '@material-ui/core/CardContent';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    card: {
+      margin: 5,
+      padding: 5,
+      backgroundColor: theme.palette.secondary.main,
+      overflow: 'visible'
+    },
+  })
+);
 
 interface Props {
   landscape: ILandscape;
@@ -23,7 +35,7 @@ interface Entry {
 const Log: React.FC<Props> = ({ landscape }) => {
   const [data, setData] = useState<Entry[] | null>(null);
   const [loadData, setLoadData] = useState<boolean>(true);
-
+  const classes = useStyles();
   const getLog = useCallback(async () => {
     if (loadData) {
       const log: any = await get(`/api/landscape/${landscape.identifier}/log`);
@@ -38,30 +50,20 @@ const Log: React.FC<Props> = ({ landscape }) => {
     getLog();
   }, [getLog]);
 
-  /*
-    value         |0px     600px    960px    1280px   1920px
-    key           |xs      sm       md       lg       xl
-    screen width  |--------|--------|--------|--------|-------->
-    range         |   xs   |   sm   |   md   |   lg   |   xl
-  */
   const content = data?.map((m, i) => {
     return (
-      <Grid key={i} className={'logContainer'} container spacing={0}>
-        <Grid item xs={12} sm={6} md={4}>
-          <LevelChip level={m.level} title={m.date}></LevelChip>
-        </Grid>
-        <Grid item xs={12} sm={6} md={8}>
-          <span className='logMessage'>{m.message}</span>
-        </Grid>
-      </Grid>
+      <div key={i}>
+        <LevelChip level={m.level} title={m.date}></LevelChip><br />
+        <span className='logMessage'>{m.message}</span>
+      </div>
     );
   });
 
   return (
-    <div className='logContent'>
-      <span className='title'>{landscape.name} Process Log</span>
-      {content}
-    </div>
+    <Card className={classes.card}>
+      <Typography variant={'h5'}>Process Log of '{landscape.name}' </Typography>
+      <CardContent>{content}</CardContent>
+    </Card>
   );
 };
 

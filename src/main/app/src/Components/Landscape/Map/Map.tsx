@@ -12,21 +12,18 @@ import {
   Value,
 } from 'react-svg-pan-zoom';
 
-import { CSSTransition } from 'react-transition-group';
-
 import './Map.scss';
-import Item from '../Modals/Item/Item';
 
-import Slider from '../../Slider/Slider';
 import MapRelation from './MapRelation/MapRelation';
-import Search from '../Search/Search';
 import { withBasePath } from '../../../utils/API/BasePath';
 import Assessment from '../Modals/Assessment/Assessment';
 import { get } from '../../../utils/API/APIClient';
 import { ReactSvgPanZoomLoaderXML } from './ReactSVGPanZoomLoaderXML';
+import SearchResult from "../Search/SearchResult";
 
 interface Props {
-  identifier: string;
+  setSidebarContent: Function;
+  setFindFunction: Function;
 }
 
 interface SVGData {
@@ -40,7 +37,7 @@ interface SVGData {
  * @param identifier Landscape Identifier
  * @param onItemClick Handler for our label click
  */
-const Map: React.FC<Props> = () => {
+const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction }) => {
   const [tool, setTool] = useState<Tool>(TOOL_AUTO);
 
   // It wants a value or null but if we defined it as null it throws an error that shouldn't use null
@@ -48,8 +45,6 @@ const Map: React.FC<Props> = () => {
   // @ts-ignore
   const [value, setValue] = useState<Value>({});
 
-  const [sliderContent, setSliderContent] = useState<string | ReactElement | null>(null);
-  const [showSlider, setShowSlider] = useState(false);
   const [data, setData] = useState<SVGData | null>(null);
   const [renderWithTransition, setRenderWithTransition] = useState(false);
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
@@ -76,37 +71,34 @@ const Map: React.FC<Props> = () => {
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
     if (fullyQualifiedItemIdentifier) {
-      setSliderContent(
-        <Item
+      setSidebarContent(
+        <SearchResult
           fullyQualifiedItemIdentifier={fullyQualifiedItemIdentifier}
           findItem={findItem}
           onAssessmentClick={onAssessmentClick}
         />
       );
-      setShowSlider(true);
     }
   };
 
   const onAssessmentHeaderClick = (fullyQualifiedItemIdentifier: string) => {
-    setSliderContent(
-      <Item
+    setSidebarContent(
+      <SearchResult
         fullyQualifiedItemIdentifier={fullyQualifiedItemIdentifier}
         findItem={findItem}
         onAssessmentClick={onAssessmentClick}
       />
     );
-    setShowSlider(true);
   };
 
   const onAssessmentClick = (fullyQualifiedItemIdentifier: string) => {
-    setSliderContent(
+    setSidebarContent(
       <Assessment
         fullyQualifiedIdentifier={fullyQualifiedItemIdentifier}
         findItem={onAssessmentHeaderClick}
         isGroup={false}
       />
     );
-    setShowSlider(true);
   };
 
   const onRelationClick = (e: MouseEvent<HTMLElement>) => {
@@ -150,7 +142,7 @@ const Map: React.FC<Props> = () => {
     const dataType = e.currentTarget.getAttribute('data-type');
 
     if (dataSource && dataTarget) {
-      setSliderContent(
+      setSidebarContent(
         <MapRelation
           sourceIdentifier={dataSource}
           targetIdentifier={dataTarget}
@@ -158,12 +150,7 @@ const Map: React.FC<Props> = () => {
           findItem={findItem}
         />
       );
-      setShowSlider(true);
     }
-  };
-
-  const closeSlider = () => {
-    setShowSlider(false);
   };
 
   useEffect(() => {
@@ -178,6 +165,8 @@ const Map: React.FC<Props> = () => {
   }, [identifier]);
 
   useEffect(() => {
+    setFindFunction(findItem);
+
     let timeout: NodeJS.Timeout;
 
     if (highlightElement instanceof Element) {
@@ -214,7 +203,7 @@ const Map: React.FC<Props> = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [highlightElement]);
+  }, [highlightElement, setFindFunction]);
 
   if (data) {
     if (isFirstRender && value.a != null) {
@@ -225,16 +214,6 @@ const Map: React.FC<Props> = () => {
 
     return (
       <div className='landscapeMapContainer'>
-        <Search findItem={findItem} />
-        <CSSTransition
-          in={showSlider}
-          timeout={{ enter: 0, exit: 1000, appear: 1000 }}
-          appear
-          unmountOnExit
-          classNames='slider'
-        >
-          <Slider sliderContent={sliderContent} closeSlider={closeSlider} />
-        </CSSTransition>
         <ReactSvgPanZoomLoaderXML
           xml={data.xml}
           proxy={
