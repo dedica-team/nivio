@@ -19,11 +19,10 @@ import java.util.concurrent.TimeoutException;
 /**
  * Resolves all links of all landscape components.
  */
-public class LinksResolver {
+public class LinksResolver extends Resolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LinksResolver.class);
 
-    private final ProcessLog logger;
     private final LinkHandlerFactory linkHandlerFactory;
 
     /**
@@ -31,11 +30,12 @@ public class LinksResolver {
      * @param linkHandlerFactory factory responsible to create single link resolvers.
      */
     public LinksResolver(ProcessLog logger, LinkHandlerFactory linkHandlerFactory) {
-        this.logger = logger;
+        super(logger);
         this.linkHandlerFactory = linkHandlerFactory;
     }
 
-    public void process(LandscapeDescription input) {
+    @Override
+    public void resolve(LandscapeDescription input) {
         List<CompletableFuture<ComponentDescription>> completableFutures = resolveLinks(input);
         input.getGroups().forEach((s, groupItem) -> {
             resolveLinks(groupItem);
@@ -46,7 +46,7 @@ public class LinksResolver {
             LOGGER.info("Waiting for completion of {} external link handlers.", completableFutures.size());
             CompletableFuture.allOf(completableFutures.toArray(CompletableFuture[]::new)).get(2, TimeUnit.MINUTES);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.error(new ProcessingException("Failed to complete all external data resolvers", e));
+            processLog.error(new ProcessingException("Failed to complete all external data resolvers", e));
         }
     }
 
@@ -59,7 +59,7 @@ public class LinksResolver {
                                 .resolve(link)
                                 .handleAsync((componentDescription, throwable) -> {
                                     if (componentDescription != null) {
-                                        logger.info(String.format("Successfully read link %s of %s", key, component));
+                                        processLog.info(String.format("Successfully read link %s of %s", key, component));
                                         ComponentDescriptionValues.assignSafeNotNull(component, componentDescription);
                                     } else {
                                         LOGGER.warn("Link resolving failure {} {}", key, component, throwable);
@@ -69,7 +69,7 @@ public class LinksResolver {
                         all.add(f);
                     } catch (Exception e) {
                         LOGGER.warn("Link resolving failure {} {}", key, component, e);
-                        logger.warn(String.format("Failed read link %s of %s: %s", key, component, e.getMessage()));
+                        processLog.warn(String.format("Failed read link %s of %s: %s", key, component, e.getMessage()));
                     }
                 }
 

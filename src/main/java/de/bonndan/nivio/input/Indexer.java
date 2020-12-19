@@ -95,7 +95,7 @@ public class Indexer {
         new TemplateResolver(logger).resolve(input);
 
         // resolve links on components to gather more data.
-        new LinksResolver(logger, linkHandlerFactory).process(input);
+        new LinksResolver(logger, linkHandlerFactory).resolve(input);
 
         // mask any label containing secrets
         new SecureLabelsResolver(logger).resolve(input);

@@ -48,7 +48,7 @@ class LinksResolverTest {
         when(mockResolver.resolve(eq(link))).thenReturn(CompletableFuture.completedFuture(new ItemDescription()));
 
         //when
-        resolver.process(landscapeDescription);
+        resolver.resolve(landscapeDescription);
 
         //then
         verify(linkHandlerFactory, times(1)).getResolver(eq(GITHUB));
@@ -66,7 +66,7 @@ class LinksResolverTest {
         when(mockResolver.resolve(eq(link))).thenReturn(CompletableFuture.completedFuture(new GroupDescription()));
 
         //when
-        resolver.process(landscapeDescription);
+        resolver.resolve(landscapeDescription);
 
         //then
         verify(linkHandlerFactory, times(1)).getResolver(eq(GITHUB));
@@ -86,7 +86,7 @@ class LinksResolverTest {
         when(mockResolver.resolve(eq(link))).thenReturn(CompletableFuture.completedFuture(new ItemDescription()));
 
         //when
-        resolver.process(landscapeDescription);
+        resolver.resolve(landscapeDescription);
 
         //then
         verify(linkHandlerFactory, times(1)).getResolver(eq(GITHUB));
@@ -104,7 +104,7 @@ class LinksResolverTest {
         when(mockResolver.resolve(eq(link))).thenThrow(new RuntimeException("foobar"));
 
         //when
-        resolver.process(landscapeDescription);
+        resolver.resolve(landscapeDescription);
 
         //then
         verify(linkHandlerFactory, times(1)).getResolver(eq(GITHUB));
