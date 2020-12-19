@@ -56,7 +56,10 @@ Nivio can load external data that cannot be used directly to build landscapes, b
 number of GitHub issues might be interesting to see on a landscape item that is an open source component. To attach such
 data to landscape components, use links having special known identifiers like "github" or "sonar".
 
-This is work in progress.
+This is work in progress. Currently supported link identifiers are:
+
+* 'github' for GitHub repositories
+* 'spring.health' for Spring Boot health actuators https://docs.spring.io/spring-boot/docs/current/actuator-api/htmlsingle/#health
 
 .. code-block:: yaml
    :linenos:
@@ -65,5 +68,6 @@ This is work in progress.
       - identifier: nivio
         links:
           github: https://github.com/dedica-team/nivio
-          sonar: http://hihi.huhu
+          spring.health: http://localhost:8090/actuator/health
+          # sonar: http://hihi.huhu not implemented yet
 
