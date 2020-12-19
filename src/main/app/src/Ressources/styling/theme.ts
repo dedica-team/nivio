@@ -26,6 +26,11 @@ const theme = createMuiTheme({
       fontFamily: 'monospace',
       textTransform: 'uppercase',
       color: 'rgba(255, 255, 255, 0.75)'
+    },
+    h6 : {
+      fontFamily: 'monospace',
+      textTransform: 'uppercase',
+      color: 'rgba(255, 255, 255, 0.75)'
     }
   },
 });

@@ -38,7 +38,7 @@ const Overview: React.FC<Props> = ({ setSidebarContent }) => {
   useEffect(() => {
     getLandscapes();
     setSidebarContent(<Events />);
-  }, [getLandscapes]);
+  }, [getLandscapes, setSidebarContent]);
 
   return <OverviewLayout landscapes={landscapes} setSidebarContent={setSidebarContent} />;
 };

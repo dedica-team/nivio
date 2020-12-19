@@ -1,4 +1,4 @@
-import React, { MouseEvent, ReactElement, useEffect, useState } from 'react';
+import React, { MouseEvent, ReactElement, useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
@@ -19,7 +19,7 @@ import { withBasePath } from '../../../utils/API/BasePath';
 import Assessment from '../Modals/Assessment/Assessment';
 import { get } from '../../../utils/API/APIClient';
 import { ReactSvgPanZoomLoaderXML } from './ReactSVGPanZoomLoaderXML';
-import SearchResult from "../Search/SearchResult";
+import SearchResult from '../Search/SearchResult';
 
 interface Props {
   setSidebarContent: Function;
@@ -52,27 +52,31 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction }) => {
 
   const [isFirstRender, setIsFirstRender] = useState(true);
 
-  const findItem = (fullyQualifiedItemIdentifier: string) => {
-    const element = document.getElementById(fullyQualifiedItemIdentifier);
-    if (element) {
-      let dataX = element.getAttribute('data-x');
-      let dataY = element.getAttribute('data-y');
-      if (dataX && dataY) {
-        const shift: number = 200; //shift all a bit to left, since on the right is the sidebar
-        const x = parseFloat(dataX) + shift;
-        const y = parseFloat(dataY) + shift / 2;
-        setValue(setPointOnViewerCenter(value, x, y, 1));
-        setRenderWithTransition(true);
-        setHighlightElement(element);
+  const findItem = useCallback(
+    (fullyQualifiedItemIdentifier: string) => {
+      const element = document.getElementById(fullyQualifiedItemIdentifier);
+      if (element) {
+        let dataX = element.getAttribute('data-x');
+        let dataY = element.getAttribute('data-y');
+        if (dataX && dataY) {
+          const shift: number = 200; //shift all a bit to left, since on the right is the sidebar
+          const x = parseFloat(dataX) + shift;
+          const y = parseFloat(dataY) + shift / 2;
+          setValue(setPointOnViewerCenter(value, x, y, 1));
+          setRenderWithTransition(true);
+          setHighlightElement(element);
+        }
       }
-    }
-  };
+    },
+    [value]
+  );
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
     if (fullyQualifiedItemIdentifier) {
       setSidebarContent(
         <SearchResult
+          key={fullyQualifiedItemIdentifier}
           fullyQualifiedItemIdentifier={fullyQualifiedItemIdentifier}
           findItem={findItem}
           onAssessmentClick={onAssessmentClick}
@@ -84,6 +88,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction }) => {
   const onAssessmentHeaderClick = (fullyQualifiedItemIdentifier: string) => {
     setSidebarContent(
       <SearchResult
+        key={fullyQualifiedItemIdentifier}
         fullyQualifiedItemIdentifier={fullyQualifiedItemIdentifier}
         findItem={findItem}
         onAssessmentClick={onAssessmentClick}
@@ -203,7 +208,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction }) => {
     }
 
     return () => clearTimeout(timeout);
-  }, [highlightElement, setFindFunction]);
+  }, [highlightElement, setFindFunction, findItem]);
 
   if (data) {
     if (isFirstRender && value.a != null) {

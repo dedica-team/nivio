@@ -53,7 +53,7 @@ const Log: React.FC<Props> = ({ landscape }) => {
   const content = data?.map((m, i) => {
     return (
       <div key={i}>
-        <LevelChip level={m.level} title={m.date}></LevelChip><br />
+        <LevelChip level={m.level} title={m.date}/><br />
         <span className='logMessage'>{m.message}</span>
       </div>
     );

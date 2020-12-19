@@ -1,12 +1,12 @@
 import React, { useState, ReactElement, useEffect } from 'react';
-import {Card, CardActions, CardHeader, Theme} from '@material-ui/core';
+import { Card, CardActions, CardHeader, Theme, Typography } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../interfaces';
-import {getAssessmentSummary, getItemIcon, getLabels, getLinks} from '../Utils/utils';
+import { getItemIcon, getLabels, getLinks } from '../Utils/utils';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import StatusChip from "../../StatusChip/StatusChip";
+import StatusChip from '../../StatusChip/StatusChip';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,13 +36,11 @@ interface Props {
 const SearchResult: React.FC<Props> = ({
   useItem,
   findItem,
-  fullyQualifiedItemIdentifier,
-  onAssessmentClick,
+  fullyQualifiedItemIdentifier
 }) => {
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const classes = useStyles();
-  let assessmentsColor = 'grey';
   let relations: ReactElement[] = [];
 
   useEffect(() => {
@@ -58,18 +56,15 @@ const SearchResult: React.FC<Props> = ({
 
     const landscapeIdentifier = item ? item.fullyQualifiedIdentifier.split('/') : [];
     if (!assessment && landscapeIdentifier[0]) {
-        //TODO load direct to with fqi in path
+      //TODO load direct to with fqi in path
       get(`/assessment/${landscapeIdentifier[0]}`).then((response) => {
         if (response) {
+          // @ts-ignore
           setAssessment(response.results[item?.fullyQualifiedIdentifier]);
         }
       });
     }
-  }, [item, fullyQualifiedItemIdentifier, useItem]);
-
-  if (item) {
-    [assessmentsColor] = getAssessmentSummary(assessment);
-  }
+  }, [item, fullyQualifiedItemIdentifier, useItem, assessment]);
 
   if (item && item?.relations && item.relations.length) {
     relations = item.relations.map((relation) => {
@@ -115,7 +110,12 @@ const SearchResult: React.FC<Props> = ({
       return assessmentItem.map((item) => {
         if (!item.field.includes('summary.')) {
           return (
-              <StatusChip name={item.field} value={item.message} status={item.status} key={item.field}/>
+            <StatusChip
+              name={item.field}
+              value={item.message}
+              status={item.status}
+              key={item.field}
+            />
           );
         }
         return <React.Fragment key={item.field} />;
@@ -136,47 +136,42 @@ const SearchResult: React.FC<Props> = ({
         }}
       />
       <CardContent>
-        <div className='header'>
-          <span
-    className='status'
-    style={{backgroundColor: assessmentsColor}}
-
-          >Status</span>
-          {assessment ? getItemAssessments(assessment) : null}
-        </div>
-
         <div className='information'>
           <span className='description item'>
-            {item?.description ? `${item?.description}` : ''}<br />
+            {item?.description ? `${item?.description}` : ''}
+            <br />
           </span>
           {item?.contact?.length ? (
             <span className='contact item'>
               <span className='label'>Contact: </span>
-              {item?.contact || 'No Contact provided'}<br />
+              {item?.contact || 'No Contact provided'}
+              <br />
             </span>
           ) : null}
           {item?.owner ? (
             <span className='owner item'>
               <span className='label'>Owner: </span>
-              {item?.owner || 'No Contact provided'}<br />
+              {item?.owner || 'No Contact provided'}
+              <br />
             </span>
           ) : null}
         </div>
 
-          {item?.labels.length ? <div className='labels'>{getLabels(item?.labels)}</div> : null}
+        {item?.labels.length ? <div className='labels'>{getLabels(item?.labels)}</div> : null}
+
+        {assessment ? <Typography variant={'h6'}>Statuses</Typography> : null}
+        {assessment ? getItemAssessments(assessment) : null}
       </CardContent>
       <CardActions>
-        {relations != null ? <div className='relationsContent'>
-            <span className='relationsLabel'>Relations</span>
-            <div className='relations'>{relations}</div>
-          </div> : null}
+        {relations != null ? <Typography variant={'h6'}>Relations</Typography> : null}
+        {relations != null ? <div className='relations'>{relations}</div> : null}
 
-          {item?.links?.length ? (
-              <div className='linkContent'>
-                  <span className='linkLabel'>Links</span>
-                  <div className='links'>{getLinks(item?.links)}</div>
-              </div>
-          ) : null}
+        {item?.links?.length ? (
+          <div className='linkContent'>
+            <span className='linkLabel'>Links</span>
+            <div className='links'>{getLinks(item?.links)}</div>
+          </div>
+        ) : null}
       </CardActions>
     </Card>
   );

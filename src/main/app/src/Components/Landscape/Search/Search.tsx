@@ -1,31 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
-import {Card, TextField, Theme} from '@material-ui/core';
+import { Card, TextField, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import { IItem, Routes } from '../../../interfaces';
 import { withRouter, RouteComponentProps, matchPath } from 'react-router-dom';
 import SearchResult from './SearchResult';
 import SearchIcon from '@material-ui/icons/Search';
-import {Backspace, ExpandMore} from '@material-ui/icons';
+import { Backspace, ExpandMore } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
-import {createStyles, makeStyles} from "@material-ui/core/styles";
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-      card: {
-        marginBottom: 5,
-        padding: 5,
-        backgroundColor: theme.palette.secondary.main,
-      },
-      facetTitle: {
-        fontSize: 'small'
-      }
-    })
+  createStyles({
+    card: {
+      marginBottom: 5,
+      padding: 5,
+      backgroundColor: theme.palette.secondary.main,
+    },
+    facetTitle: {
+      fontSize: 'small',
+    },
+  })
 );
 
 interface PropsInterface extends RouteComponentProps {
@@ -61,31 +61,32 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
   const classes = useStyles();
   const searchInput = React.useRef<HTMLDivElement>(null);
 
-  async function search(searchTerm: string, identifier: string) {
+  const search = useCallback((searchTerm: string, identifier: string) => {
     if (searchTerm.length < 2) return;
 
-    const result: IItem[] | null = await get(
+    get(
       '/api/landscape/' +
         identifier +
         '/search/' +
         encodeURIComponent(searchTerm)
           .replace(/[!'()]/g, escape)
           .replace(/\*/g, '%2A')
-    );
+    ).then(result => {
+      setResults(result);
+    });
 
-    if (!result) return;
+    if (!results) return;
 
-    setResults(result);
     const searchResult = results.map((value1) => (
-        <SearchResult
-            key={value1.fullyQualifiedIdentifier}
-            useItem={value1}
-            findItem={props.findItem}
-        />
+      <SearchResult
+        key={value1.fullyQualifiedIdentifier}
+        useItem={value1}
+        findItem={props.findItem}
+      />
     ));
     props.setSidebarContent(searchResult);
     setHasChange(false);
-  }
+  }, [props, results]);
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
@@ -120,7 +121,7 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
 
   useEffect(() => {
     if (identifier && hasChange) search(searchTerm, identifier);
-  }, [identifier, searchTerm, results, hasChange]);
+  }, [identifier, searchTerm, results, hasChange, search]);
 
   if (identifier == null) {
     console.debug('identifier missing');
@@ -140,7 +141,7 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
 
   const facetsHtml = facets.map((facet) => (
     <Card className={classes.card} key={facet.dim}>
-      <Typography className={classes.facetTitle} color="textSecondary" gutterBottom>
+      <Typography className={classes.facetTitle} color='textSecondary' gutterBottom>
         {facet.dim}
       </Typography>
       {facet.labelValues.map((lv) => (
@@ -179,9 +180,12 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
         }
       >
         <SearchIcon className={'searchIcon'} />
-
       </HtmlTooltip>
-      <IconButton className={'searchIcon'} size={'small'} onClick={() => props.setSidebarContent(facetsHtml)}>
+      <IconButton
+        className={'searchIcon'}
+        size={'small'}
+        onClick={() => props.setSidebarContent(facetsHtml)}
+      >
         <ExpandMore></ExpandMore>
       </IconButton>
       <TextField
