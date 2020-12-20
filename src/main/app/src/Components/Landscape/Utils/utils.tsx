@@ -1,23 +1,24 @@
 import React, { ReactElement } from 'react';
-import { IGroup, IItem, IAssessmentProps } from '../../../interfaces';
+import { IAssessmentProps, IGroup, IItem } from '../../../interfaces';
+import { Link } from 'react-router-dom';
+import { Button } from '@material-ui/core';
 
 export const getLinks = (element: IGroup | IItem) => {
   let links: ReactElement[] = [];
   if (element?._links) {
     Object.keys(element._links).forEach((key) => {
       if (element && element._links && !key.startsWith('self')) {
-        const linkContent = (
-          <a
-            href={element._links[key].href}
+        links.push(
+          <Button
+            key={key}
+            component={Link}
             target='_blank'
             rel='noopener noreferrer'
-            className='link'
-            key={key}
+            to={element._links[key].href}
           >
             {key}
-          </a>
+          </Button>
         );
-        links.push(linkContent);
       }
     });
   }
@@ -29,15 +30,13 @@ export const getLabels = (element: IGroup | IItem) => {
   if (element?.labels) {
     Object.keys(element.labels).forEach((key) => {
       if (element && element.labels && element.labels[key]) {
-        if (!key.startsWith('icon') && !key.startsWith('status') && !key.startsWith('fill')) {
-          const labelContent = (
-            <span className='labelContent' key={key}>
-              <span className='label'>{key}: </span>
-              {element.labels[key]}
-            </span>
-          );
-          labels.push(labelContent);
-        }
+        if (key.startsWith('icon') || key.startsWith('fill')) return;
+
+        labels.push(
+          <div key={key}>
+            <span className='labelContent' key={key}>{key}</span>: <strong>{element.labels[key]}</strong>
+          </div>
+        );
       }
     });
   }
