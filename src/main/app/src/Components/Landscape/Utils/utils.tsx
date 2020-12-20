@@ -1,20 +1,19 @@
 import React, { ReactElement } from 'react';
 import { IAssessmentProps, IGroup, IItem } from '../../../interfaces';
-import { Link } from 'react-router-dom';
-import { Button } from '@material-ui/core';
+import { Button, Link } from '@material-ui/core';
 
-export const getLinks = (element: IGroup | IItem) => {
+export const getLinks = (element: IGroup | IItem): ReactElement[] => {
   let links: ReactElement[] = [];
   if (element?._links) {
     Object.keys(element._links).forEach((key) => {
       if (element && element._links && !key.startsWith('self')) {
         links.push(
           <Button
-            key={key}
             component={Link}
+            key={key}
             target='_blank'
             rel='noopener noreferrer'
-            to={element._links[key].href}
+            href={element._links[key].href}
           >
             {key}
           </Button>
@@ -34,7 +33,10 @@ export const getLabels = (element: IGroup | IItem) => {
 
         labels.push(
           <div key={key}>
-            <span className='labelContent' key={key}>{key}</span>: <strong>{element.labels[key]}</strong>
+            <span className='labelContent' key={key}>
+              {key}
+            </span>
+            : <strong>{element.labels[key]}</strong>
           </div>
         );
       }

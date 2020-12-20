@@ -120,6 +120,7 @@ const SearchResult: React.FC<Props> = ({ useItem, findItem, fullyQualifiedItemId
   };
 
   const assessmentStatuses = assessment ? getItemAssessments(assessment) : [];
+  const links: ReactElement[] = item ? getLinks(item) : [];
   return (
     <Card className={classes.card}>
       <CardHeader
@@ -144,30 +145,35 @@ const SearchResult: React.FC<Props> = ({ useItem, findItem, fullyQualifiedItemId
               <br />
             </span>
           ) : null}
-          {item?.owner ? (
+          {item?.owner ?? (
             <span className='owner item'>
               <span className='label'>Owner: </span>
               {item?.owner || 'No Contact provided'}
               <br />
             </span>
-          ) : null}
+          )}
+          <br />
+          <div className='labels'>{item ? getLabels(item) : null}</div>
         </div>
 
-        {item?.labels.length ? <div className='labels'>{getLabels(item?.labels)}</div> : null}
+        <div className={'statuses'}>
+          <Typography variant={'h6'}>Statuses</Typography>
+          {assessmentStatuses ? <div>{assessmentStatuses}</div> : '-'}
+        </div>
 
-        {assessmentStatuses.length > 0 ? <Typography variant={'h6'}>Statuses</Typography> : null}
-        {assessmentStatuses.length > 0 ? assessmentStatuses : null}
+        <div className='links'>
+          <Typography variant={'h6'}>Links</Typography>
+          <br />
+          {links}
+        </div>
       </CardContent>
-      <CardActions>
-        {relations != null ? <Typography variant={'h6'}>Relations</Typography> : null}
-        {relations != null ? <div className='relations'>{relations}</div> : null}
 
-        {item?.links?.length ? (
-          <div className='linkContent'>
-            <span className='linkLabel'>Links</span>
-            <div className='links'>{getLinks(item?.links)}</div>
-          </div>
-        ) : null}
+      <CardActions>
+        <div className='relations'>
+          <Typography variant={'h6'}>Relations</Typography>
+          <br />
+          {relations ?? { relations }}
+        </div>
       </CardActions>
     </Card>
   );

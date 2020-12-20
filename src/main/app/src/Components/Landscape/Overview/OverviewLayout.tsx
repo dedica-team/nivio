@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
     link: {
       display: 'block',
       borderRadius: 5,
-      backgroundColor: 'black'
+      backgroundColor: 'black',
     },
     cardMedia: {
       height: 140,
@@ -50,11 +50,11 @@ interface Props {
 const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
   // Render
   /*
-                          value         |0px     600px    960px    1280px   1920px
-                          key           |xs      sm       md       lg       xl
-                          screen width  |--------|--------|--------|--------|-------->
-                          range         |   xs   |   sm   |   md   |   lg   |   xl
-                        */
+                            value         |0px     600px    960px    1280px   1920px
+                            key           |xs      sm       md       lg       xl
+                            screen width  |--------|--------|--------|--------|-------->
+                            range         |   xs   |   sm   |   md   |   lg   |   xl
+                          */
   const classes = useStyles();
   let content: ReactElement[] = [<Box>Loading landscapes...</Box>];
 
@@ -91,8 +91,7 @@ const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
           </CardContent>
           <CardActions>
             <Button
-              variant='outlined'
-              color='primary'
+              variant={'outlined'}
               fullWidth
               component={Link}
               to={`/landscape/${landscape.identifier}/dashboard`}
