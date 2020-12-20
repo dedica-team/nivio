@@ -5,6 +5,9 @@ import de.bonndan.nivio.model.*;
 
 import java.util.Iterator;
 
+/**
+ * Creates {@link Relation}s between {@link Item}s.
+ */
 public class ItemRelationProcessor extends Processor {
 
     protected ItemRelationProcessor(ProcessLog processLog) {
@@ -43,7 +46,7 @@ public class ItemRelationProcessor extends Processor {
                 Relation existing = null;
                 Relation created = new Relation(source, target);
                 while (iterator.hasNext()) {
-                    existing = (Relation) iterator.next();
+                    existing = iterator.next();
                     if (existing.equals(created)) {
                         processLog.info(String.format("Updating relation between %s and %s", existing.getSource(), existing.getTarget()));
                         existing.setDescription(relationDescription.getDescription());
