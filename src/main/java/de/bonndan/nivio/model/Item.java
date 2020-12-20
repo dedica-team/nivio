@@ -178,8 +178,14 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         this.labels = labels;
     }
 
+    @JsonIgnore
     public Set<Relation> getRelations() {
         return relations;
+    }
+
+    @JsonProperty("relations")
+    public Set<Relation.ApiModel> getJSONRelations() {
+        return relations.stream().map(relation -> new Relation.ApiModel(relation, this)).collect(Collectors.toSet());
     }
 
     public Set<Relation> getRelations(RelationType type) {
