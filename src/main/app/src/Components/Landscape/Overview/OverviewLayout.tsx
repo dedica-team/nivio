@@ -7,7 +7,14 @@ import { ILandscape } from '../../../interfaces';
 import dateFormat from 'dateformat';
 import { withBasePath } from '../../../utils/API/BasePath';
 import IconButton from '@material-ui/core/IconButton';
-import { Assignment, FormatListBulleted, MapOutlined } from '@material-ui/icons';
+import {
+  Assignment,
+  DashboardRounded,
+  FormatListBulleted,
+  LinearScale,
+  MapOutlined,
+  SpeedRounded,
+} from '@material-ui/icons';
 import Log from '../Modals/Log/Log';
 import CardContent from '@material-ui/core/CardContent';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -16,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     card: {
       marginBottom: 5,
-      backgroundColor: '#161618',
+      backgroundColor: '#333',
       // borderColor: theme.palette.secondary.main,
       height: '100%',
       color: 'white',
@@ -50,11 +57,11 @@ interface Props {
 const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
   // Render
   /*
-                            value         |0px     600px    960px    1280px   1920px
-                            key           |xs      sm       md       lg       xl
-                            screen width  |--------|--------|--------|--------|-------->
-                            range         |   xs   |   sm   |   md   |   lg   |   xl
-                          */
+                                value         |0px     600px    960px    1280px   1920px
+                                key           |xs      sm       md       lg       xl
+                                screen width  |--------|--------|--------|--------|-------->
+                                range         |   xs   |   sm   |   md   |   lg   |   xl
+                              */
   const classes = useStyles();
   let content: ReactElement[] = [<Box>Loading landscapes...</Box>];
 
@@ -75,9 +82,6 @@ const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
         <Card key={landscape.identifier} className={classes.card} variant={'outlined'}>
           <CardHeader title={landscape.name} subheader={stats} className={classes.cardHeader} />
           <CardContent>
-            {landscape.description}
-            <br />
-
             <Button
               component={Link}
               to={`/landscape/${landscape.identifier}`}
@@ -88,15 +92,18 @@ const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
                 image={withBasePath(`/render/${landscape.identifier}/map.svg`)}
               />
             </Button>
+            <br />
+            {landscape.description}
           </CardContent>
           <CardActions>
             <Button
-              variant={'outlined'}
+              variant='contained'
+              color='primary'
               fullWidth
               component={Link}
               to={`/landscape/${landscape.identifier}/dashboard`}
             >
-              status dashboard
+              <SpeedRounded /> status dashboard
             </Button>
 
             <IconButton
