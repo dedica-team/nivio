@@ -51,6 +51,7 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
   });
 
   const identifier = match?.params?.identifier;
+  const [currentLandscape, setCurrentLandscape] = useState<string>('');
   const [results, setResults] = useState<IItem[]>([]);
   const [facets, setFacets] = useState<IFacet[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -131,6 +132,11 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
   if (identifier == null) {
     console.debug('identifier missing');
     return null;
+  }
+
+  if (currentLandscape == null || currentLandscape !== identifier) {
+    setFacets([]);
+    setCurrentLandscape(identifier);
   }
 
   const HtmlTooltip = withStyles((theme: Theme) => ({

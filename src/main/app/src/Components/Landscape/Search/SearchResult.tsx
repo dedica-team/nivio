@@ -7,6 +7,7 @@ import { getItemIcon, getLabels, getLinks } from '../Utils/utils';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import StatusChip from '../../StatusChip/StatusChip';
+import {ExpandMoreOutlined} from "@material-ui/icons";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  small? : boolean;
+  small?: boolean;
   useItem?: IItem;
   findItem?: Function;
   fullyQualifiedItemIdentifier?: string;
@@ -34,9 +35,15 @@ interface Props {
  * Returns a choosen Landscape Item if informations are available
  * @param element Choosen SVG Element from our Landscape Component
  */
-const SearchResult: React.FC<Props> = ({ useItem, findItem, fullyQualifiedItemIdentifier }) => {
+const SearchResult: React.FC<Props> = ({
+  useItem,
+  findItem,
+  fullyQualifiedItemIdentifier,
+  small,
+}) => {
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
   const [item, setItem] = useState<IItem | undefined>(undefined);
+  const [compact, setCompact] = useState<boolean>(false);
   const classes = useStyles();
   let relations: ReactElement[] = [];
 
@@ -60,6 +67,10 @@ const SearchResult: React.FC<Props> = ({ useItem, findItem, fullyQualifiedItemId
           setAssessment(response.results[item?.fullyQualifiedIdentifier]);
         }
       });
+    }
+
+    if (small) {
+      setCompact(true);
     }
   }, [item, fullyQualifiedItemIdentifier, useItem, assessment]);
 
@@ -122,60 +133,69 @@ const SearchResult: React.FC<Props> = ({ useItem, findItem, fullyQualifiedItemId
 
   const assessmentStatuses = assessment ? getItemAssessments(assessment) : [];
   const links: ReactElement[] = item ? getLinks(item) : [];
+
   return (
     <Card className={classes.card}>
       <CardHeader
-        title={item ? item.name || item.identifier : null}
-        avatar={item ? <img src={getItemIcon(item)} alt='Icon' className={classes.icon} /> : ''}
-        onClick={() => {
-          if (findItem && item) {
-            findItem(item.fullyQualifiedIdentifier);
-          }
-        }}
-      />
-      <CardContent>
-        <div className='information'>
-          <span className='description item'>
-            {item?.description ? `${item?.description}` : ''}
+    title={item ? item.name || item.identifier : null}
+    avatar={item ? <img src={getItemIcon(item)} alt='Icon' className={classes.icon}/> : ''}
+    onClick={() => {
+      //can only be toggled if once small
+      if (small) {
+        setCompact(!compact);
+      }
+      if (findItem && item) {
+        findItem(item.fullyQualifiedIdentifier);
+      }
+    }}/>
+
+      {!compact ? (
+        <CardContent>
+          <div className='information'>
+            <span className='description item'>
+              {item?.description ? `${item?.description}` : ''}
+              <br />
+            </span>
+            {item?.contact?.length ? (
+              <span className='contact item'>
+                <span className='label'>Contact: </span>
+                {item?.contact || 'No Contact provided'}
+                <br />
+              </span>
+            ) : null}
+            {item?.owner ?? (
+              <span className='owner item'>
+                <span className='label'>Owner: </span>
+                {item?.owner || 'No Contact provided'}
+                <br />
+              </span>
+            )}
             <br />
-          </span>
-          {item?.contact?.length ? (
-            <span className='contact item'>
-              <span className='label'>Contact: </span>
-              {item?.contact || 'No Contact provided'}
-              <br />
-            </span>
-          ) : null}
-          {item?.owner ?? (
-            <span className='owner item'>
-              <span className='label'>Owner: </span>
-              {item?.owner || 'No Contact provided'}
-              <br />
-            </span>
-          )}
-          <br />
-          <div className='labels'>{item ? getLabels(item) : null}</div>
-        </div>
+            <div className='labels'>{item ? getLabels(item) : null}</div>
+          </div>
 
-        <div className={'statuses'}>
-          <Typography variant={'h6'}>Statuses</Typography>
-          {assessmentStatuses ? <div>{assessmentStatuses}</div> : '-'}
-        </div>
+          <div className={'statuses'}>
+            <Typography variant={'h6'}>Statuses</Typography>
+            {assessmentStatuses ? <div>{assessmentStatuses}</div> : '-'}
+          </div>
 
-        <div className='links'>
-          <Typography variant={'h6'}>Links</Typography>
-          <br />
-          {links}
-        </div>
-      </CardContent>
+          <div className='links'>
+            <Typography variant={'h6'}>Links</Typography>
+            <br />
+            {links}
+          </div>
+        </CardContent>
+      ) : null}
 
-      <CardActions>
-        <div className='relations'>
-          <Typography variant={'h6'}>Relations</Typography>
-          <br />
-          {relations ?? { relations }}
-        </div>
-      </CardActions>
+      {!compact ? (
+        <CardActions>
+          <div className='relations'>
+            <Typography variant={'h6'}>Relations</Typography>
+            <br />
+            {relations ?? { relations }}
+          </div>
+        </CardActions>
+      ) : null}
     </Card>
   );
 };
