@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Card, TextField, Theme } from '@material-ui/core';
+import {Box, Card, TextField, Theme} from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import { IItem, Routes } from '../../../interfaces';
 import { withRouter, RouteComponentProps, matchPath } from 'react-router-dom';
@@ -18,13 +18,10 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     card: {
-      marginBottom: 5,
+      margin: 5,
       padding: 5,
       backgroundColor: theme.palette.secondary.main,
-    },
-    facetTitle: {
-      fontSize: 'small',
-    },
+    }
   })
 );
 
@@ -61,32 +58,40 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
   const classes = useStyles();
   const searchInput = React.useRef<HTMLDivElement>(null);
 
-  const search = useCallback((searchTerm: string, identifier: string) => {
-    if (searchTerm.length < 2) return;
+  const setSidebarContent = useCallback(
+    (content: any) => {
+      props.setSidebarContent(content);
+    },
+    [props]
+  );
 
-    get(
-      '/api/landscape/' +
-        identifier +
-        '/search/' +
-        encodeURIComponent(searchTerm)
-          .replace(/[!'()]/g, escape)
-          .replace(/\*/g, '%2A')
-    ).then(result => {
-      setResults(result);
-    });
+  const search = useCallback(
+    (searchTerm: string, identifier: string) => {
+      if (searchTerm.length < 2) return;
 
-    if (!results) return;
-
-    const searchResult = results.map((value1) => (
-      <SearchResult
-        key={value1.fullyQualifiedIdentifier}
-        useItem={value1}
-        findItem={props.findItem}
-      />
-    ));
-    props.setSidebarContent(searchResult);
-    setHasChange(false);
-  }, [props, results]);
+      get(
+        '/api/landscape/' +
+          identifier +
+          '/search/' +
+          encodeURIComponent(searchTerm)
+            .replace(/[!'()]/g, escape)
+            .replace(/\*/g, '%2A')
+      ).then((result) => {
+        setResults(result);
+        const searchResult = results.map((value1) => (
+          <SearchResult
+            small={true}
+            key={value1.fullyQualifiedIdentifier}
+            useItem={value1}
+            findItem={props.findItem}
+          />
+        ));
+        setSidebarContent(searchResult);
+        setHasChange(false);
+      });
+    },
+    [props, results, setSidebarContent]
+  );
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
@@ -140,10 +145,8 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
   }))(Tooltip);
 
   const facetsHtml = facets.map((facet) => (
-    <Card className={classes.card} key={facet.dim}>
-      <Typography className={classes.facetTitle} color='textSecondary' gutterBottom>
-        {facet.dim}
-      </Typography>
+    <Box className={classes.card} key={facet.dim}>
+      <Typography variant={'h6'} >{facet.dim}</Typography>
       {facet.labelValues.map((lv) => (
         <Chip
           onClick={(e) => {
@@ -153,13 +156,13 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
             current.focus();
           }}
           variant={'outlined'}
+          size={"small"}
           key={facet.dim + '' + lv.label}
           label={lv.label}
           avatar={<Avatar>{lv.value}</Avatar>}
         />
       ))}
-      <br />
-    </Card>
+    </Box>
   ));
 
   return (
@@ -184,7 +187,7 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
       <IconButton
         className={'searchIcon'}
         size={'small'}
-        onClick={() => props.setSidebarContent(facetsHtml)}
+        onClick={() => setSidebarContent(<Card className={classes.card}>{facetsHtml}</Card>)}
       >
         <ExpandMore></ExpandMore>
       </IconButton>

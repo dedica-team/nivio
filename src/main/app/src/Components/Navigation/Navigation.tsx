@@ -9,6 +9,8 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Search from '../Landscape/Search/Search';
+import {Help, HelpOutline, HelpOutlineRounded} from "@material-ui/icons";
+import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,9 +56,9 @@ const Navigation: React.FC<Props> = ({ appBarClass, setSidebarContent, findFunct
         </Typography>
         <div className={classes.grow} />
         <Search findItem={findFunction} setSidebarContent={setSidebarContent} />
-        <Button data-testid='ManualButton' component={Link} to={`/man/install.html`}>
-          Help
-        </Button>
+        <IconButton data-testid='ManualButton' component={Link} to={`/man/install.html`} title={'Help / Manual'}>
+            <HelpOutlineRounded/>
+        </IconButton>
       </Toolbar>
     </AppBar>
   );

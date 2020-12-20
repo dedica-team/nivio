@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
+  small? : boolean;
   useItem?: IItem;
   findItem?: Function;
   fullyQualifiedItemIdentifier?: string;
