@@ -3,13 +3,11 @@ import { Button, Typography, AppBar, Theme, createStyles } from '@material-ui/co
 import { Link } from 'react-router-dom';
 
 import Toolbar from '@material-ui/core/Toolbar';
-import './Navigation.scss';
-
 import FavoriteIcon from '@material-ui/icons/Favorite';
 
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Search from '../Landscape/Search/Search';
-import {Help, HelpOutline, HelpOutlineRounded} from "@material-ui/icons";
+import {HelpOutlineRounded} from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles((theme: Theme) =>
