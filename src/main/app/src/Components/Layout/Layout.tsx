@@ -2,7 +2,6 @@ import React, { ReactElement } from 'react';
 
 import Navigation from '../Navigation/Navigation';
 import Notification from '../Notification/Notification';
-import './Layout.scss';
 import {darken, Drawer, Theme, Toolbar} from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
