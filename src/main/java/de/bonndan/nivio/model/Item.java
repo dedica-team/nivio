@@ -154,9 +154,24 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         this.description = description;
     }
 
+    @JsonIgnore
     @Override
     public Map<String, String> getLabels() {
         return labels;
+    }
+
+    /**
+     * Returns the labels without the internal ones (having prefixes).
+     *
+     * @return filtered labels
+     */
+    @JsonProperty("labels")
+    public Map<String, String> getJSONLabels() {
+
+        return Labeled.groupedByPrefixes(
+                Labeled.withoutPrefixes(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG),
+                ","
+        );
     }
 
     public void setLabels(Map<String, String> labels) {

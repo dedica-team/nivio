@@ -3,6 +3,7 @@ package de.bonndan.nivio.model;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.LandscapeConfig;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
@@ -206,9 +207,24 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         this.owner = owner;
     }
 
+    @JsonIgnore
     @Override
     public Map<String, String> getLabels() {
         return labels;
+    }
+
+    /**
+     * Returns the labels without the internal ones (having prefixes).
+     *
+     * @return filtered labels
+     */
+    @JsonProperty("labels")
+    public Map<String, String> getJSONLabels() {
+
+        return Labeled.groupedByPrefixes(
+                Labeled.withoutPrefixes(labels, Label.status.name(), Tagged.LABEL_PREFIX_TAG),
+                ","
+        );
     }
 
     @Override
