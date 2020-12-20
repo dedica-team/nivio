@@ -45,7 +45,7 @@ public class DiffProcessor extends Processor {
         kept.forEach(
                 item -> {
 
-                    ItemDescription description = (ItemDescription) input.getItemDescriptions().find(ItemMatcher.forTarget(item)).orElse(null);
+                    ItemDescription description = input.getItemDescriptions().find(ItemMatcher.forTarget(item)).orElse(null);
                     if (description == null) {
                         if (input.isPartial()) {
                             inLandscape.add(item);
