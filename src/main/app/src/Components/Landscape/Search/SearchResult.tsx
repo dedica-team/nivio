@@ -33,11 +33,7 @@ interface Props {
  * Returns a choosen Landscape Item if informations are available
  * @param element Choosen SVG Element from our Landscape Component
  */
-const SearchResult: React.FC<Props> = ({
-  useItem,
-  findItem,
-  fullyQualifiedItemIdentifier
-}) => {
+const SearchResult: React.FC<Props> = ({ useItem, findItem, fullyQualifiedItemIdentifier }) => {
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const classes = useStyles();
@@ -107,8 +103,9 @@ const SearchResult: React.FC<Props> = ({
 
   const getItemAssessments = (assessmentItem: IAssessmentProps[]) => {
     if (item && assessmentItem) {
-      return assessmentItem.map((item) => {
-        if (!item.field.includes('summary.')) {
+      return assessmentItem
+        .filter((item) => !item.field.includes('summary.'))
+        .map((item) => {
           return (
             <StatusChip
               name={item.field}
@@ -117,13 +114,12 @@ const SearchResult: React.FC<Props> = ({
               key={item.field}
             />
           );
-        }
-        return <React.Fragment key={item.field} />;
-      });
+        });
     }
     return [];
   };
 
+  const assessmentStatuses = assessment ? getItemAssessments(assessment) : [];
   return (
     <Card className={classes.card}>
       <CardHeader
@@ -159,8 +155,8 @@ const SearchResult: React.FC<Props> = ({
 
         {item?.labels.length ? <div className='labels'>{getLabels(item?.labels)}</div> : null}
 
-        {assessment ? <Typography variant={'h6'}>Statuses</Typography> : null}
-        {assessment ? getItemAssessments(assessment) : null}
+        {assessmentStatuses.length > 0 ? <Typography variant={'h6'}>Statuses</Typography> : null}
+        {assessmentStatuses.length > 0 ? assessmentStatuses : null}
       </CardContent>
       <CardActions>
         {relations != null ? <Typography variant={'h6'}>Relations</Typography> : null}
