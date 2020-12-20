@@ -7,7 +7,6 @@ import { getItemIcon, getLabels, getLinks } from '../Utils/utils';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import StatusChip from '../../StatusChip/StatusChip';
-import {ExpandMoreOutlined} from "@material-ui/icons";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -72,7 +71,7 @@ const SearchResult: React.FC<Props> = ({
     if (small) {
       setCompact(true);
     }
-  }, [item, fullyQualifiedItemIdentifier, useItem, assessment]);
+  }, [item, fullyQualifiedItemIdentifier, useItem, assessment, small]);
 
   if (item && item?.relations && item.relations.length) {
     relations = item.relations.map((relation) => {
@@ -137,17 +136,18 @@ const SearchResult: React.FC<Props> = ({
   return (
     <Card className={classes.card}>
       <CardHeader
-    title={item ? item.name || item.identifier : null}
-    avatar={item ? <img src={getItemIcon(item)} alt='Icon' className={classes.icon}/> : ''}
-    onClick={() => {
-      //can only be toggled if once small
-      if (small) {
-        setCompact(!compact);
-      }
-      if (findItem && item) {
-        findItem(item.fullyQualifiedIdentifier);
-      }
-    }}/>
+        title={item ? item.name || item.identifier : null}
+        avatar={item ? <img src={getItemIcon(item)} alt='Icon' className={classes.icon} /> : ''}
+        onClick={() => {
+          //can only be toggled if once small
+          if (small) {
+            setCompact(!compact);
+          }
+          if (findItem && item) {
+            findItem(item.fullyQualifiedIdentifier);
+          }
+        }}
+      />
 
       {!compact ? (
         <CardContent>

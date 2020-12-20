@@ -9,9 +9,7 @@ import { withBasePath } from '../../../utils/API/BasePath';
 import IconButton from '@material-ui/core/IconButton';
 import {
   Assignment,
-  DashboardRounded,
   FormatListBulleted,
-  LinearScale,
   MapOutlined,
   SpeedRounded,
 } from '@material-ui/icons';
