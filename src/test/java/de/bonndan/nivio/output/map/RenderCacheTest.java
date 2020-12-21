@@ -1,7 +1,7 @@
 package de.bonndan.nivio.output.map;
 
 import de.bonndan.nivio.ProcessingFinishedEvent;
-import de.bonndan.nivio.input.AppearanceResolver;
+import de.bonndan.nivio.input.AppearanceProcessor;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.HttpService;
@@ -92,7 +92,7 @@ class RenderCacheTest {
         landscape.setProcessLog(test);
 
         HttpService httpService = mock(HttpService.class);
-        new AppearanceResolver(landscape.getLog(), mock(IconService.class)).process(null, landscape);
+        new AppearanceProcessor(landscape.getLog(), mock(IconService.class)).process(null, landscape);
         return landscape;
     }
 }

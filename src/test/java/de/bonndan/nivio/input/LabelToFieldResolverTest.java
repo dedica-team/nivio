@@ -10,20 +10,19 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class LabelToFieldProcessorTest {
+class LabelToFieldResolverTest {
 
-    private LabelToFieldProcessor processor;
+    private LabelToFieldResolver processor;
 
     @BeforeEach
     public void setup() {
-        Logger logger = LoggerFactory.getLogger(LabelToFieldProcessorTest.class);
+        Logger logger = LoggerFactory.getLogger(LabelToFieldResolverTest.class);
         ProcessLog processLog = new ProcessLog(logger);
-        processor = new LabelToFieldProcessor(processLog);
+        processor = new LabelToFieldResolver(processLog);
     }
 
     @Test
@@ -39,7 +38,7 @@ class LabelToFieldProcessorTest {
         input.getItemDescriptions().add(item1);
 
         //when
-        processor.process(input, null);
+        processor.resolve(input);
 
         //then
         assertEquals("foo", item1.getName());
@@ -63,7 +62,7 @@ class LabelToFieldProcessorTest {
         assertEquals(4, item1.getLabels().size());
 
         //when
-        processor.process(input, null);
+        processor.resolve(input);
 
         //then
         assertEquals(1, item1.getLabels().size()); //"a" remains
@@ -82,7 +81,7 @@ class LabelToFieldProcessorTest {
         input.getItemDescriptions().add(item1);
 
         //when
-        processor.process(input, null);
+        processor.resolve(input);
 
         //then
         assertEquals("foo", item1.getName());
@@ -101,7 +100,7 @@ class LabelToFieldProcessorTest {
         input.getItemDescriptions().add(item1);
 
         //when
-        processor.process(input, null);
+        processor.resolve(input);
 
         //then
         Map<String, Link> links = item1.getLinks();
@@ -129,7 +128,7 @@ class LabelToFieldProcessorTest {
         input.getItemDescriptions().add(item1);
 
         //when
-        processor.process(input, null);
+        processor.resolve(input);
 
         //then
         Map<String, Link> links = item1.getLinks();
@@ -158,7 +157,7 @@ class LabelToFieldProcessorTest {
         input.getItemDescriptions().add(item1);
 
         //when
-        processor.process(input, null);
+        processor.resolve(input);
 
         //then
         String vis = item1.getLabel(Label.visibility);

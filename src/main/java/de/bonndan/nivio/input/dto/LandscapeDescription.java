@@ -18,7 +18,7 @@ import java.util.*;
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
 @JsonIgnoreType
-public class LandscapeDescription implements Component, Linked {
+public class LandscapeDescription implements ComponentDescription {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeDescription.class);
 
@@ -228,5 +228,15 @@ public class LandscapeDescription implements Component, Linked {
 
     public void setLabels(Map<String, String> labels) {
         this.labels = labels;
+    }
+
+    @Override
+    public String getLabel(String key) {
+        return getLabels().get(key);
+    }
+
+    @Override
+    public void setLabel(String key, String value) {
+        getLabels().put(key, value);
     }
 }

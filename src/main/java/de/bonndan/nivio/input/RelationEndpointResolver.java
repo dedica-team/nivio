@@ -12,15 +12,14 @@ import java.util.Optional;
 /**
  * Resolves the dynamic endpoints of relations.
  */
-public class RelationEndpointResolver {
+public class RelationEndpointResolver extends Resolver {
 
-    private final ProcessLog log;
-
-    public RelationEndpointResolver(ProcessLog log) {
-        this.log = log;
+    protected RelationEndpointResolver(ProcessLog processLog) {
+        super(processLog);
     }
 
-    public void processRelations(LandscapeDescription landscape) {
+    @Override
+    public void resolve(LandscapeDescription landscape) {
         landscape.getItemDescriptions().all().forEach(itemDescription -> resolveRelations(itemDescription, landscape.getItemDescriptions()));
     }
 
@@ -31,7 +30,7 @@ public class RelationEndpointResolver {
             allItems.query(term).stream().findFirst().ifPresentOrElse(o -> {
                 RelationDescription rel = RelationBuilder.createProviderDescription(o, description.getIdentifier());
                 description.addRelation(rel);
-            }, () -> log.warn(description.getIdentifier() + ": no provider target found for term " + term));
+            }, () -> processLog.warn(description.getIdentifier() + ": no provider target found for term " + term));
         });
 
         //other relations
@@ -56,10 +55,10 @@ public class RelationEndpointResolver {
 
         Collection<? extends ItemDescription> result = allItems.query(term);
         if (result.size() > 1) {
-            log.warn(description.getIdentifier() + ": Found ambiguous sources matching " + term);
+            processLog.warn(String.format("%s: Found ambiguous sources matching %s", description.getIdentifier(), term));
             return Optional.empty();
         } else if (result.size() == 0) {
-            log.warn(description.getIdentifier() + ": Found no sources matching " + term);
+            processLog.warn(String.format("%s: Found no sources matching %s", description.getIdentifier(), term));
             return Optional.empty();
         }
 

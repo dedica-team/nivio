@@ -21,25 +21,24 @@ import java.util.stream.Collectors;
 /**
  * Inspects item description labels for keys starting with "nivio" and tries to set the corresponding values to fields.
  */
-public class LabelToFieldProcessor {
+public class LabelToFieldResolver extends Resolver {
 
     public static final String NIVIO_LABEL_PREFIX = "nivio.";
     public static final String COLLECTION_DELIMITER = ",";
 
-    private final ProcessLog logger;
-
-    public LabelToFieldProcessor(ProcessLog logger) {
-        this.logger = logger;
+    public LabelToFieldResolver(ProcessLog logger) {
+        super(logger);
     }
 
-    public void process(LandscapeDescription input, Landscape landscape) {
+    @Override
+    public void resolve(LandscapeDescription input) {
         input.getItemDescriptions().all().forEach(item -> {
             List<Map.Entry<String, String>> nivioLabels = item.getLabels().entrySet().stream()
                     .filter(entry -> entry.getKey().toLowerCase().startsWith(NIVIO_LABEL_PREFIX))
                     .collect(Collectors.toList());
 
             nivioLabels.forEach(entry -> {
-                String field = entry.getKey().substring(LabelToFieldProcessor.NIVIO_LABEL_PREFIX.length());
+                String field = entry.getKey().substring(LabelToFieldResolver.NIVIO_LABEL_PREFIX.length());
                 setValue(item, field, entry.getValue());
             });
 
@@ -78,11 +77,11 @@ public class LabelToFieldProcessor {
                 if (propertyValue != null) {
                     for (int i = 0; i < o.length; i++) {
                         if ("links".equals(name)) {
-                            logger.warn("Found deprecated label named links.");
+                            processLog.warn("Found deprecated label named links.");
                             try {
                                 propertyValue.put(String.valueOf(i + 1), new Link(new URL(o[i])));
                             } catch (MalformedURLException e) {
-                                logger.warn("Failed to parse link " + o[i]);
+                                processLog.warn("Failed to parse link " + o[i]);
                             }
                         } else {
                             propertyValue.put(String.valueOf(i + 1), o[i]);
@@ -98,10 +97,10 @@ public class LabelToFieldProcessor {
                 myAccessor.setPropertyValue(name, value.trim());
             }
         } catch (NotWritablePropertyException e) {
-            logger.debug("Failed to write field '" + name + "' via label");
+            processLog.debug("Failed to write field '" + name + "' via label");
             item.getLabels().put(name, value);
         } catch (MalformedURLException e) {
-            logger.warn("Failed to add link '" + name + "' via label because of malformed URL " + value);
+            processLog.warn("Failed to add link '" + name + "' via label because of malformed URL " + value);
         }
     }
 

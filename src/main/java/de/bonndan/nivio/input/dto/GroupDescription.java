@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GroupDescription implements Labeled {
+public class GroupDescription implements ComponentDescription {
 
     private final Map<String, Link> links = new HashMap<>();
     private final Map<String, String> labels = new HashMap<>();
@@ -35,6 +35,11 @@ public class GroupDescription implements Labeled {
 
     public String getName() {
         return identifier;
+    }
+
+    @Override
+    public void setName(String name) {
+        identifier = name;
     }
 
     public String getOwner() {

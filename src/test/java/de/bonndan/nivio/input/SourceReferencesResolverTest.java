@@ -55,8 +55,7 @@ public class SourceReferencesResolverTest {
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
 
-        Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
-        sourceReferencesResolver.resolve(landscapeDescription, templatesAndTargets);
+        sourceReferencesResolver.resolve(landscapeDescription);
 
         ItemDescription mapped = landscapeDescription.getItemDescriptions().pick("blog-server", null);
         assertNotNull(mapped);
@@ -84,30 +83,13 @@ public class SourceReferencesResolverTest {
         );
 
         //when
-        Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
-        sourceReferencesResolver.resolve(landscapeDescription, templatesAndTargets);
+        sourceReferencesResolver.resolve(landscapeDescription);
 
         //then
         var last = log.getMessages().get(log.getMessages().size() -1);
         assertEquals("WARN", last.level);
         assertFalse(StringUtils.isEmpty(last.message));
         assertTrue(landscapeDescription.isPartial());
-    }
-
-    @Test
-    public void readsTemplates() {
-
-        //given
-        File file = new File(RootPath.get() + "/src/test/resources/example/example_templates.yml");
-        LandscapeDescription landscapeDescription = factory.fromYaml(file);
-
-        //when
-        Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
-        sourceReferencesResolver.resolve(landscapeDescription, templatesAndTargets);
-
-        //then
-        assertFalse(templatesAndTargets.isEmpty());
-        assertEquals(2, templatesAndTargets.size());
     }
 
 }

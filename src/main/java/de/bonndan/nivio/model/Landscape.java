@@ -130,9 +130,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
     @JsonGetter("groups")
     public Collection<Group> getGroupItems() {
-        return groups.values().stream()
-                .map(groupItem -> (Group)groupItem)
-                .collect(Collectors.toList());
+        return new ArrayList<>(groups.values());
     }
 
     public void setContact(String contact) {
@@ -164,7 +162,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
         group.setLandscape(this.identifier);
         if (groups.containsKey(group.getIdentifier())) {
-            Groups.merge((Group) groups.get(group.getIdentifier()), group);
+            Groups.merge(groups.get(group.getIdentifier()), group);
         } else {
             groups.put(group.getIdentifier(), group);
         }
@@ -177,7 +175,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
      * @return group or null if the group cannot be found as optional
      */
     public Optional<Group> getGroup(String group) {
-        return Optional.ofNullable((Group) groups.get(group));
+        return Optional.ofNullable(groups.get(group));
     }
 
     public void setProcessLog(ProcessLog processLog) {

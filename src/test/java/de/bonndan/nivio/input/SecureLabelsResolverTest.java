@@ -4,15 +4,17 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
-class SecureLabelsProcessorTest {
+class SecureLabelsResolverTest {
 
     private ItemDescription item;
-    private SecureLabelsProcessor secureLabelsProcessor;
+    private SecureLabelsResolver secureLabelsResolver;
     private LandscapeDescription landscapeDescription;
 
     @BeforeEach
@@ -23,7 +25,7 @@ class SecureLabelsProcessorTest {
         landscapeDescription = new LandscapeDescription();
         landscapeDescription.addItems(List.of(item));
 
-        secureLabelsProcessor = new SecureLabelsProcessor();
+        secureLabelsResolver = new SecureLabelsResolver(new ProcessLog(mock(Logger.class)));
     }
 
     @Test
@@ -31,7 +33,7 @@ class SecureLabelsProcessorTest {
         item.setLabel("foo", "bar");
         item.setLabel("niviofoo", "baz");
 
-        secureLabelsProcessor.process(landscapeDescription);
+        secureLabelsResolver.resolve(landscapeDescription);
 
         assertEquals("bar", item.getLabels().get("foo"));
         assertEquals("baz", item.getLabels().get("niviofoo"));
@@ -42,7 +44,7 @@ class SecureLabelsProcessorTest {
         item.setLabel("foo", "bar");
         item.setLabel("nivio.description", "baz");
 
-        secureLabelsProcessor.process(landscapeDescription);
+        secureLabelsResolver.resolve(landscapeDescription);
 
         assertEquals("bar", item.getLabels().get("foo"));
     }
@@ -50,84 +52,84 @@ class SecureLabelsProcessorTest {
     @Test
     public void pass() {
         item.setLabel("pass", "x");
-        secureLabelsProcessor.process(landscapeDescription);
-        assertEquals(SecureLabelsProcessor.MASK, item.getLabels().get("pass"));
+        secureLabelsResolver.resolve(landscapeDescription);
+        assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("pass"));
     }
 
     @Test
     public void apass() {
         item.setLabel("a.pass_", "x");
-        secureLabelsProcessor.process(landscapeDescription);
-        assertEquals(SecureLabelsProcessor.MASK, item.getLabels().get("a.pass_"));
+        secureLabelsResolver.resolve(landscapeDescription);
+        assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("a.pass_"));
     }
 
     @Test
     public void secret() {
         item.setLabel("secret", "x");
-        secureLabelsProcessor.process(landscapeDescription);
-        assertEquals(SecureLabelsProcessor.MASK, item.getLabels().get("secret"));
+        secureLabelsResolver.resolve(landscapeDescription);
+        assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("secret"));
     }
 
     @Test
     public void my_secret_x() {
         item.setLabel("my_secret_x", "x");
-        secureLabelsProcessor.process(landscapeDescription);
-        assertEquals(SecureLabelsProcessor.MASK, item.getLabels().get("my_secret_x"));
+        secureLabelsResolver.resolve(landscapeDescription);
+        assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("my_secret_x"));
     }
 
     @Test
     public void credentials() {
         item.setLabel("credentials", "x");
-        secureLabelsProcessor.process(landscapeDescription);
-        assertEquals(SecureLabelsProcessor.MASK, item.getLabels().get("credentials"));
+        secureLabelsResolver.resolve(landscapeDescription);
+        assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("credentials"));
     }
 
     @Test
     public void ucredentials() {
         item.setLabel("_credentials_", "x");
-        secureLabelsProcessor.process(landscapeDescription);
-        assertEquals(SecureLabelsProcessor.MASK, item.getLabels().get("_credentials_"));
+        secureLabelsResolver.resolve(landscapeDescription);
+        assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("_credentials_"));
     }
 
     @Test
     public void token() {
         item.setLabel("token", "x");
-        secureLabelsProcessor.process(landscapeDescription);
-        assertEquals(SecureLabelsProcessor.MASK, item.getLabels().get("token"));
+        secureLabelsResolver.resolve(landscapeDescription);
+        assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("token"));
     }
 
     @Test
     public void atoken() {
         item.setLabel("a_token_", "x");
-        secureLabelsProcessor.process(landscapeDescription);
-        assertEquals(SecureLabelsProcessor.MASK, item.getLabels().get("a_token_"));
+        secureLabelsResolver.resolve(landscapeDescription);
+        assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("a_token_"));
     }
 
     @Test
     public void key() {
         item.setLabel("key", "x");
-        secureLabelsProcessor.process(landscapeDescription);
-        assertEquals(SecureLabelsProcessor.MASK, item.getLabels().get("key"));
+        secureLabelsResolver.resolve(landscapeDescription);
+        assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("key"));
     }
 
     @Test
     public void akey() {
         item.setLabel("a_key_", "x");
-        secureLabelsProcessor.process(landscapeDescription);
-        assertEquals(SecureLabelsProcessor.MASK, item.getLabels().get("a_key_"));
+        secureLabelsResolver.resolve(landscapeDescription);
+        assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("a_key_"));
     }
 
     @Test
     public void secretUrl() {
         item.setLabel("foo", "http://very:secret@foobar.com:8080/a/path?foo=bar");
-        secureLabelsProcessor.process(landscapeDescription);
+        secureLabelsResolver.resolve(landscapeDescription);
         assertEquals("http://*@foobar.com:8080/a/path?foo=bar", item.getLabels().get("foo"));
     }
 
     @Test
     public void simpleSecretUrl() {
         item.setLabel("foo", "http://very:secret@foobar.com");
-        secureLabelsProcessor.process(landscapeDescription);
+        secureLabelsResolver.resolve(landscapeDescription);
         assertEquals("http://*@foobar.com", item.getLabels().get("foo"));
     }
 
@@ -135,7 +137,7 @@ class SecureLabelsProcessorTest {
     @Test
     public void regularUrl() {
         item.setLabel("foo", "http://foobar.com");
-        secureLabelsProcessor.process(landscapeDescription);
+        secureLabelsResolver.resolve(landscapeDescription);
         assertEquals("http://foobar.com", item.getLabels().get("foo"));
     }
 

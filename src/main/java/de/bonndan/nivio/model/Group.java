@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.*;
 
-public class Group implements Labeled, Assessable {
+public class Group implements Labeled, Linked, Assessable {
 
     /**
      * Default group identifier (items are assigned to this group if no group is given

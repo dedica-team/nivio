@@ -6,6 +6,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Groups;
 import de.bonndan.nivio.model.Landscape;
+import org.apache.tomcat.jni.Proc;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -19,9 +20,9 @@ import java.util.stream.Collectors;
  * <p>
  * Blacklists groups and removes items from the input which are part of a blacklisted group.
  */
-public class GroupResolver extends Resolver {
+public class GroupProcessor extends Processor {
 
-    protected GroupResolver(ProcessLog processLog) {
+    protected GroupProcessor(ProcessLog processLog) {
         super(processLog);
     }
 

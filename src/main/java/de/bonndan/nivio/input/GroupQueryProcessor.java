@@ -8,9 +8,9 @@ import de.bonndan.nivio.model.Landscape;
 /**
  * This class resolves all "contains" queries of a group description, i.e. the items are assigned dynamically to a group.
  */
-public class GroupQueryResolver extends Resolver {
+public class GroupQueryProcessor extends Processor {
 
-    protected GroupQueryResolver(ProcessLog processLog) {
+    protected GroupQueryProcessor(ProcessLog processLog) {
         super(processLog);
     }
 
@@ -18,14 +18,13 @@ public class GroupQueryResolver extends Resolver {
     public void process(LandscapeDescription input, Landscape landscape) {
         
         input.getGroups().forEach((s, groupItem) -> {
-            GroupDescription groupDescription = (GroupDescription) groupItem;
-            Group group = (Group) landscape.getGroups().get(groupDescription.getIdentifier());
+            Group group = landscape.getGroups().get(groupItem.getIdentifier());
             if (group == null) {
-                processLog.warn("Could not resolve group with identifier " + groupDescription.getIdentifier());
+                processLog.warn("Could not resolve group with identifier " + groupItem.getIdentifier());
                 return;
             }
             // run the query against all landscape items which match the condition
-            groupDescription.getContains()
+            groupItem.getContains()
                     .forEach(condition -> landscape.getItems().query(condition).forEach(group::addItem));
         });
 

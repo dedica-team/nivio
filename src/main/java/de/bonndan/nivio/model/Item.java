@@ -3,6 +3,7 @@ package de.bonndan.nivio.model;
 import com.fasterxml.jackson.annotation.*;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.input.ItemRelationProcessor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.StringUtils;
 
@@ -44,7 +45,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
     private String group;
 
     /**
-     * Can be both read and modified by {@link de.bonndan.nivio.input.ItemRelationResolver}
+     * Can be both read and modified by {@link ItemRelationProcessor}
      */
     @JsonManagedReference
     private final Set<Relation> relations = ConcurrentHashMap.newKeySet();
