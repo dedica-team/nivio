@@ -47,31 +47,43 @@ const SearchResult: React.FC<Props> = ({
   let relations: ReactElement[] = [];
 
   useEffect(() => {
+
+    const loadAssessment = (item: IItem) => {
+      const landscapeIdentifier = item ? item.fullyQualifiedIdentifier.split('/') : [];
+
+      if (landscapeIdentifier[0]) {
+        //TODO load direct to with fqi in path
+        get(`/assessment/${landscapeIdentifier[0]}`).then((response) => {
+          if (response) {
+            // @ts-ignore
+            setAssessment(response.results[item?.fullyQualifiedIdentifier]);
+          }
+        });
+      }
+    };
+
+    const reset = (item: IItem) => {
+      setItem(item);
+      setAssessment(undefined);
+      loadAssessment(item);
+    };
+
     if (useItem) {
-      setItem(useItem);
+      if (useItem && item !== useItem) {
+        reset(useItem);
+      }
     } else {
       if (!item && fullyQualifiedItemIdentifier) {
         get(`/api/${fullyQualifiedItemIdentifier}`).then((loaded) => {
-          setItem(loaded);
+          reset(loaded);
         });
       }
-    }
-
-    const landscapeIdentifier = item ? item.fullyQualifiedIdentifier.split('/') : [];
-    if (!assessment && landscapeIdentifier[0]) {
-      //TODO load direct to with fqi in path
-      get(`/assessment/${landscapeIdentifier[0]}`).then((response) => {
-        if (response) {
-          // @ts-ignore
-          setAssessment(response.results[item?.fullyQualifiedIdentifier]);
-        }
-      });
     }
 
     if (small) {
       setCompact(true);
     }
-  }, [item, fullyQualifiedItemIdentifier, useItem, assessment, small]);
+  }, [item, fullyQualifiedItemIdentifier, useItem, small, assessment]);
 
   if (item && item?.relations && item.relations.length) {
     relations = item.relations.map((relation) => {
