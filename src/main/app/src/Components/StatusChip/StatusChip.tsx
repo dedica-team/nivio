@@ -12,6 +12,8 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: '100%',
       textShadow: 'none',
       fontFamily: 'monospace',
+      backgroundColor: theme.palette.secondary.dark,
+      color: 'white',
     },
     green: {
       backgroundColor: 'green',
@@ -30,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   name: string;
-  value: string;
+  value?: string;
   status: string;
 }
 
@@ -42,12 +44,17 @@ const StatusChip: React.FC<Props> = ({ name, value, status }) => {
   if (status.toLowerCase() === 'orange') letter = '*';
   if (status.toLowerCase() === 'red') letter = '!';
   if (status.toLowerCase() === 'brown') letter = '!!';
+
+  let label = name;
+  if (value) {
+    label += ': ' + value;
+  }
   return (
     <Chip
       size={'small'}
       className={classes.chip}
       avatar={<Avatar className={classes[status.toLowerCase()]}>{letter}</Avatar>}
-      label={name + ': ' + value}
+      label={label}
     />
   );
 };
