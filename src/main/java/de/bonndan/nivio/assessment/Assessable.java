@@ -5,6 +5,7 @@ import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import io.fabric8.zjsonpatch.internal.guava.Lists;
 
 import java.util.*;
 
@@ -73,6 +74,8 @@ public interface Assessable extends Component {
         childrenValues.addAll(map.get(fqi));
         map.get(fqi).add(StatusValue.summary(SUMMARY_LABEL + "." + getIdentifier(), getWorst(childrenValues)));
 
+        //sort in descending order, worst first
+        map.get(fqi).sort(Collections.reverseOrder(new StatusValue.Comparator()));
         return map;
     }
 
