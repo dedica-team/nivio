@@ -2,23 +2,26 @@ import React from 'react';
 
 import Grid from '@material-ui/core/Grid';
 import { ILandscape, IAssessment, IGroup, IItem } from '../../../interfaces';
-import { getAssessmentSummary, getItemIcon } from '../Utils/utils';
-import { Card, Paper, Theme, Typography } from '@material-ui/core';
+import { getAssessmentSummary } from '../Utils/utils';
+import { Box, Card, CardHeader, Theme, Typography } from '@material-ui/core';
 import StatusChip from '../../StatusChip/StatusChip';
-import Avatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     item: {
       width: '7rem',
-      height: '5rem',
+      height: '6rem',
       overflow: 'hidden',
       margin: 5,
-      padding: 5,
       textAlign: 'center',
-      backgroundColor: 'transparent',
-      color: theme.palette.secondary.main,
+      backgroundColor: theme.palette.secondary.dark, //'transparent',
+      color: 'white',
+      border: '1px solid',
+    },
+    itemHeader: {
+      fontSize: 'small',
+      color: 'black',
     },
     icon: {
       margin: 'auto',
@@ -26,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
       border: '2px solid',
     },
     groupCard: {
-      backgroundColor: theme.palette.secondary.main,
+      backgroundColor: 'transparent',
     },
   })
 );
@@ -54,41 +57,43 @@ const DashboardLayout: React.FC<Props> = ({
 }) => {
   // Render
   /*
-                                    value         |0px     600px    960px    1280px   1920px
-                                    key           |xs      sm       md       lg       xl
-                                    screen width  |--------|--------|--------|--------|-------->
-                                    range         |   xs   |   sm   |   md   |   lg   |   xl
-                                     */
+                                                value         |0px     600px    960px    1280px   1920px
+                                                key           |xs      sm       md       lg       xl
+                                                screen width  |--------|--------|--------|--------|-------->
+                                                range         |   xs   |   sm   |   md   |   lg   |   xl
+                                                 */
 
   const classes = useStyles();
   const getItems = (group: IGroup) => {
-    const groupColor = `#${group.color}` || 'grey';
+    //const groupColor = `#${group.color}` || 'grey';
     return group.items.map((item) => {
-      const [assessmentColor, , assessmentField] = getAssessmentSummary(
+      const [assessmentColor, msg, field] = getAssessmentSummary(
         assessments?.results[item.fullyQualifiedIdentifier]
       );
 
       return (
-        <Paper
-          variant={'outlined'}
+        <Card
           className={classes.item}
           key={item.fullyQualifiedIdentifier}
           onClick={() => onItemClick(item)}
           style={{ borderColor: assessmentColor }}
         >
-          <Avatar
-            variant={'circle'}
-            src={getItemIcon(item)}
-            className={classes.icon}
-            style={{ borderColor: groupColor }}
+          <CardHeader
+            disableTypography={true}
+            className={classes.itemHeader}
+            style={{ backgroundColor: assessmentColor, padding: 5, marginBottom: 10 }}
+            title={item.name || item.identifier}
           />
-          {item.name || item.identifier}
-          {assessmentField.length > 0 ? (
-            <StatusChip name={assessmentField} status={assessmentColor} />
+
+          {field.length > 0 ? (
+            <Box>
+              {field}:<br />
+              {msg}
+            </Box>
           ) : (
             ''
           )}
-        </Paper>
+        </Card>
       );
     });
   };
@@ -104,14 +109,25 @@ const DashboardLayout: React.FC<Props> = ({
         );
 
         return (
-          <Paper
+          <Card
             key={group.name}
             className={classes.item}
             id={group.fullyQualifiedIdentifier}
             onClick={() => onGroupClick(group.fullyQualifiedIdentifier)}
-            style={{ backgroundColor: groupColor }}
+            style={{ borderColor: groupAssessmentColor }}
           >
-            <Typography variant={'h6'}>{group.name}</Typography>
+            <CardHeader
+              disableTypography={true}
+              className={classes.itemHeader}
+              style={{
+                backgroundColor: groupColor,
+                padding: 5,
+                marginBottom: 10,
+                borderBottomColor: groupAssessmentColor,
+              }}
+              title={group.name}
+            />
+
             <span
               className='smallDot'
               id={group.fullyQualifiedIdentifier}
@@ -119,7 +135,7 @@ const DashboardLayout: React.FC<Props> = ({
               onClick={() => onGroupAssessmentClick(group.fullyQualifiedIdentifier)}
             />
             <StatusChip name={groupAssessmentField} status={groupAssessmentColor} />
-          </Paper>
+          </Card>
         );
       }
 
@@ -127,7 +143,8 @@ const DashboardLayout: React.FC<Props> = ({
     });
 
     return (
-      <Card className={classes.groupCard}>
+      <Card className={classes.groupCard} variant={'outlined'}>
+        <Typography variant={'h6'}>Group Status</Typography>
         <Grid container spacing={0}>
           {elements}
         </Grid>
@@ -138,8 +155,11 @@ const DashboardLayout: React.FC<Props> = ({
   if (!landscape) return null;
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12} style={{ padding: 5 }}>
+      <Grid item xs={12} style={{ padding: 0 }}>
         {getGroupsCard(landscape.groups)}
+      </Grid>
+      <Grid item xs={12} style={{ padding: 5 }}>
+        <Typography variant={'h6'}>Item Status</Typography>
       </Grid>
       {landscape?.groups.map((group, i) => getItems(group))}
     </Grid>
