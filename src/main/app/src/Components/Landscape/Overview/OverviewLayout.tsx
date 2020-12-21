@@ -103,7 +103,7 @@ const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
               component={Link}
               to={`/landscape/${landscape.identifier}/dashboard`}
             >
-              <SpeedRounded />&nbsp; statuses
+              <SpeedRounded />&nbsp; status
             </Button>
 
             <IconButton

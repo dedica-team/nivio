@@ -94,7 +94,7 @@ const Dashboard: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   useEffect(() => {
     get(`/api/${identifier}`).then((response) => {
       setLandscape(response);
-      setPageTitle(`Statuses (${response.name})`);
+      setPageTitle(`Status (${response.name})`);
     });
 
     get(`/assessment/${identifier}`).then((response) => {

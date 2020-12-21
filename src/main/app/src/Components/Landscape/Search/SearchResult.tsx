@@ -142,7 +142,7 @@ const SearchResult: React.FC<Props> = ({
     return [];
   };
 
-  const assessmentStatuses = assessment ? getItemAssessments(assessment) : [];
+  const assessmentStatus = assessment ? getItemAssessments(assessment) : [];
   const links: ReactElement[] = item ? getLinks(item) : [];
 
   return (
@@ -186,9 +186,9 @@ const SearchResult: React.FC<Props> = ({
             <div className='labels'>{item ? getLabels(item) : null}</div>
           </div>
 
-          <div className={'statuses'}>
-            <Typography variant={'h6'}>Statuses</Typography>
-            {assessmentStatuses ? <div>{assessmentStatuses}</div> : '-'}
+          <div className={'status'}>
+            <Typography variant={'h6'}>Status</Typography>
+            {assessmentStatus ? <div>{assessmentStatus}</div> : '-'}
           </div>
 
           <div className='links'>
