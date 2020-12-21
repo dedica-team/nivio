@@ -8,10 +8,9 @@ import { ILandscape, IItem, IGroup } from '../../../interfaces';
 it('should render LandscapeDashboard component', () => {
   const { getByText } = render(
     <MemoryRouter>
-      <Dashboard />
+      <Dashboard setSidebarContent={() =>{}} setPageTitle={() =>{}} setFindFunction={() =>{}}/>
     </MemoryRouter>
   );
-  expect(getByText('Loading landscapes...')).toBeInTheDocument();
 });
 
 it('should display all group information', () => {
@@ -21,7 +20,13 @@ it('should display all group information', () => {
       owner: 'daniel',
       fullyQualifiedIdentifier: 'fullTestIdentifier',
       identifier: 'testIdentifier',
+      name: 'testIdentifier',
       description: 'testDescription',
+      relations: [],
+      labels: {},
+      tags: [],
+      type: 'service',
+      icon: ''
     },
   ];
 
@@ -37,15 +42,24 @@ it('should display all group information', () => {
   const landscape: ILandscape = {
     name: 'landscapeTestName',
     identifier: 'testIdentifier',
+    description: 'testIdentifier',
     groups,
     lastUpdate: 'gestern',
+    contact: 'marvin',
+    owner: 'daniel',
+    fullyQualifiedIdentifier: 'fullTestIdentifier',
   };
   const { getByText } = render(
     <MemoryRouter>
-      <DashboardLayout landscape={landscape} assessments={null} onItemClick={() => {}} />
+      <DashboardLayout
+        landscape={landscape}
+        assessments={undefined}
+        onItemClick={() => {}}
+        onItemAssessmentClick={() => {}}
+        onGroupClick={() => {}}
+        onGroupAssessmentClick={() => {}}
+      />
     </MemoryRouter>
   );
-  expect(getByText('landscapeTestName')).toBeInTheDocument();
   expect(getByText('groupName')).toBeInTheDocument();
-  expect(getByText('testIdentifier')).toBeInTheDocument();
 });
