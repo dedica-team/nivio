@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 
 import Navigation from '../Navigation/Navigation';
 import Notification from '../Notification/Notification';
-import {darken, Drawer, Theme, Toolbar} from '@material-ui/core';
+import { darken, Drawer, Theme, Toolbar } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 interface Props {
@@ -10,6 +10,7 @@ interface Props {
   sidebarContent: string | ReactElement | ReactElement[];
   setSidebarContent: Function;
   findFunction: Function;
+  pageTitle?: string;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -45,7 +46,13 @@ const useStyles = makeStyles((theme: Theme) =>
  * Contains our site layout, Navigation on top, content below
  * @param param0
  */
-const Layout: React.FC<Props> = ({ children, sidebarContent, setSidebarContent, findFunction }) => {
+const Layout: React.FC<Props> = ({
+  children,
+  sidebarContent,
+  setSidebarContent,
+  findFunction,
+  pageTitle,
+}) => {
   const classes = useStyles();
 
   return (
@@ -54,6 +61,7 @@ const Layout: React.FC<Props> = ({ children, sidebarContent, setSidebarContent, 
         appBarClass={classes.appBar}
         setSidebarContent={setSidebarContent}
         findFunction={findFunction}
+        pageTitle={pageTitle}
       />
       <div className={classes.content}>
         {children}

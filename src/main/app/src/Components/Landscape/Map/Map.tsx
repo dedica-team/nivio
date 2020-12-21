@@ -24,6 +24,7 @@ import SearchResult from '../Search/SearchResult';
 interface Props {
   setSidebarContent: Function;
   setFindFunction: Function;
+  setPageTitle: Function;
 }
 
 interface SVGData {
@@ -37,7 +38,7 @@ interface SVGData {
  * @param identifier Landscape Identifier
  * @param onItemClick Handler for our label click
  */
-const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction }) => {
+const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle }) => {
   const [tool, setTool] = useState<Tool>(TOOL_AUTO);
 
   // It wants a value or null but if we defined it as null it throws an error that shouldn't use null
@@ -166,8 +167,9 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction }) => {
       const width = doc.firstElementChild.width.baseVal.value;
       const height = doc.firstElementChild.height.baseVal.value;
       setData({ width: width, height: height, xml: svg });
+      setPageTitle(`Map of #${identifier}`);
     });
-  }, [identifier]);
+  }, [identifier, setPageTitle]);
 
   useEffect(() => {
     setFindFunction(findItem);

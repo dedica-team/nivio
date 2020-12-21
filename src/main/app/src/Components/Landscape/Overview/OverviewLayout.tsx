@@ -21,15 +21,17 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     card: {
       marginBottom: 5,
-      backgroundColor: '#333',
-      // borderColor: theme.palette.secondary.main,
+      backgroundColor: theme.palette.secondary.dark,
       height: '100%',
       color: 'white',
     },
     cardHeader: {
       backgroundColor: theme.palette.secondary.main,
-      padding: 5,
+      padding: 10,
       borderRadius: 5,
+    },
+    cardSubheader: {
+      fontSize: '0.8rem'
     },
     link: {
       display: 'block',
@@ -78,7 +80,7 @@ const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
 
       return (
         <Card key={landscape.identifier} className={classes.card} variant={'outlined'}>
-          <CardHeader title={landscape.name} subheader={stats} className={classes.cardHeader} />
+          <CardHeader title={landscape.name} subheader={stats} className={classes.cardHeader} classes={{subheader: classes.cardSubheader}}/>
           <CardContent>
             <Button
               component={Link}
@@ -101,7 +103,7 @@ const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
               component={Link}
               to={`/landscape/${landscape.identifier}/dashboard`}
             >
-              <SpeedRounded /> status dashboard
+              <SpeedRounded />&nbsp; statuses
             </Button>
 
             <IconButton

@@ -14,9 +14,10 @@ import SearchResult from '../Search/SearchResult';
 interface Props {
   setSidebarContent: Function;
   setFindFunction: Function;
+  setPageTitle: Function;
 }
 
-const Dashboard: React.FC<Props> = ({ setSidebarContent }) => {
+const Dashboard: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [landscape, setLandscape] = useState<ILandscape | null>();
   const [assessments, setAssessments] = useState<IAssessment | undefined>(undefined);
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
@@ -93,12 +94,13 @@ const Dashboard: React.FC<Props> = ({ setSidebarContent }) => {
   useEffect(() => {
     get(`/api/${identifier}`).then((response) => {
       setLandscape(response);
+      setPageTitle(`Statuses (${response.name})`);
     });
 
     get(`/assessment/${identifier}`).then((response) => {
       setAssessments(response);
     });
-  }, [identifier]);
+  }, [identifier, setPageTitle]);
 
   return (
     <React.Fragment>

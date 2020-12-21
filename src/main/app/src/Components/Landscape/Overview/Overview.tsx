@@ -11,9 +11,10 @@ import Events from '../../Events/Events';
 
 interface Props {
   setSidebarContent: Function;
+  setPageTitle: Function;
 }
 
-const Overview: React.FC<Props> = ({ setSidebarContent }) => {
+const Overview: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [landscapes, setLandscapes] = useState<ILandscape[]>([]);
   const [landscapeLinks, setLandscapeLinks] = useState<ILandscapeLinks | null>();
   const [loadLandscapes, setLoadLandscapes] = useState<boolean>(true);
@@ -38,7 +39,8 @@ const Overview: React.FC<Props> = ({ setSidebarContent }) => {
   useEffect(() => {
     getLandscapes();
     setSidebarContent(<Events />);
-  }, [getLandscapes, setSidebarContent]);
+    setPageTitle('All Landscapes');
+  }, [getLandscapes, setSidebarContent, setPageTitle]);
 
   return <OverviewLayout landscapes={landscapes} setSidebarContent={setSidebarContent} />;
 };
