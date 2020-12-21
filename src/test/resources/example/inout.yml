@@ -64,6 +64,8 @@ items:
     group: input
     lifecycle: planned
     icon: vendor://prometheus
+    links:
+      github: https://github.com/prometheus/prometheus
 
   - identifier: csv
     shortName: CSV
@@ -81,6 +83,8 @@ items:
       - k8s
       - docker-compose
       - nivio-prop
+    links:
+      github: https://github.com/dedica-team/nivio
 
 
 

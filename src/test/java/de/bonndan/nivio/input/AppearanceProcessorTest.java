@@ -19,9 +19,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class AppearanceResolverTest {
+class AppearanceProcessorTest {
 
-    private AppearanceResolver resolver;
+    private AppearanceProcessor resolver;
     private Landscape landscape;
     private IconService iconService;
 
@@ -29,7 +29,7 @@ class AppearanceResolverTest {
     public void setup() {
 
         iconService = mock(IconService.class);
-        resolver = new AppearanceResolver(new ProcessLog(LoggerFactory.getLogger(AppearanceResolverTest.class)), iconService);
+        resolver = new AppearanceProcessor(new ProcessLog(LoggerFactory.getLogger(AppearanceProcessorTest.class)), iconService);
 
         landscape = new Landscape("l1", new Group(Group.COMMON));
 

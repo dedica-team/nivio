@@ -16,12 +16,12 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-class MagicLabelRelationsTest {
+class MagicLabelRelationProcessorTest {
 
     public static final String IDENTIFIER = "anItemWithLabels";
     private ItemDescription item;
     private LandscapeDescription input;
-    private MagicLabelRelations resolver;
+    private MagicLabelRelationProcessor resolver;
 
     @BeforeEach
     public void setup() {
@@ -29,7 +29,7 @@ class MagicLabelRelationsTest {
         input = new LandscapeDescription();
         input.getItemDescriptions().add(item);
 
-        resolver = new MagicLabelRelations(new ProcessLog(mock(Logger.class)));
+        resolver = new MagicLabelRelationProcessor(new ProcessLog(mock(Logger.class)));
     }
 
     @Test

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * Every label is split into parts and these parts are matched against landscape item names or identifiers.
  *
  */
-public class MagicLabelRelations extends Resolver {
+public class MagicLabelRelationProcessor extends Processor {
 
     /**
      * this could be made configurable later
@@ -29,10 +29,11 @@ public class MagicLabelRelations extends Resolver {
     private static final List<String> PROVIDER_INDICATORS = Arrays.asList("db", "database", "provider");
     public static final String KEY_SEPARATOR = "_";
 
-    protected MagicLabelRelations(ProcessLog processLog) {
+    protected MagicLabelRelationProcessor(ProcessLog processLog) {
         super(processLog);
     }
 
+    @Override
     public void process(LandscapeDescription input, Landscape landscape) {
 
         Map<ItemDescription, List<LabelMatch>> itemMatches = new HashMap<>();

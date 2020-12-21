@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
  *
  * Adds, updates and removes items in the landscape.
  */
-public class DiffResolver extends Resolver {
+public class DiffProcessor extends Processor {
 
-    protected DiffResolver(ProcessLog processLog) {
+    protected DiffProcessor(ProcessLog processLog) {
         super(processLog);
     }
 
@@ -45,7 +45,7 @@ public class DiffResolver extends Resolver {
         kept.forEach(
                 item -> {
 
-                    ItemDescription description = (ItemDescription) input.getItemDescriptions().find(ItemMatcher.forTarget(item)).orElse(null);
+                    ItemDescription description = input.getItemDescriptions().find(ItemMatcher.forTarget(item)).orElse(null);
                     if (description == null) {
                         if (input.isPartial()) {
                             inLandscape.add(item);

@@ -14,11 +14,11 @@ import org.springframework.util.StringUtils;
  *
  * Appearance must be determined after indexing, because values might be needed in api, too.
  */
-public class AppearanceResolver extends Resolver {
+public class AppearanceProcessor extends Processor {
 
     private final IconService iconService;
 
-    public AppearanceResolver(ProcessLog processLog, IconService iconService) {
+    public AppearanceProcessor(ProcessLog processLog, IconService iconService) {
         super(processLog);
         this.iconService = iconService;
     }

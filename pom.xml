@@ -110,6 +110,11 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
         </dependency>
@@ -223,6 +228,21 @@
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>1.4.1</version>
         </dependency>
+
+        <!-- github api https://mvnrepository.com/artifact/org.kohsuke/github-api -->
+        <dependency>
+            <groupId>org.kohsuke</groupId>
+            <artifactId>github-api</artifactId>
+            <version>1.117</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.codehaus.sonar/sonar-ws-client -->
+        <dependency>
+            <groupId>org.codehaus.sonar</groupId>
+            <artifactId>sonar-ws-client</artifactId>
+            <version>5.1</version>
+        </dependency>
+
 
     </dependencies>
 
