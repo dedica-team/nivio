@@ -29,7 +29,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     drawerPaper: {
       width: 320,
-      backgroundColor: darken(theme.palette.secondary.main, 0.2),
+      backgroundColor: darken(theme.palette.secondary.dark, 0.2),
+        border: 'none'
     },
     drawerContainer: {
       overflow: 'auto',

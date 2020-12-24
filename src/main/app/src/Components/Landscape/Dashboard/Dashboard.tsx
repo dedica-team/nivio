@@ -1,31 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 
 import DashboardLayout from './DashboardLayout';
-import { ILandscape, IAssessment, IItem } from '../../../interfaces';
-import { get } from '../../../utils/API/APIClient';
+import {ILandscape, IAssessment, IItem, IGroup} from '../../../interfaces';
 import Group from '../Modals/Group/Group';
-import Assessment from '../Modals/Assessment/Assessment';
 import SearchResult from '../Search/SearchResult';
 
 /**
- * Logic Component to display all available landscapes
+ * Logic Component to display all status of groups and items.
  */
 interface Props {
   setSidebarContent: Function;
-  setFindFunction: Function;
-  setPageTitle: Function;
+  findItem: (fqi: string) => void;
+  landscape: ILandscape;
+  assessments: IAssessment;
 }
 
-const Dashboard: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
-  const [landscape, setLandscape] = useState<ILandscape | null>();
-  const [assessments, setAssessments] = useState<IAssessment | undefined>(undefined);
+const Dashboard: React.FC<Props> = ({ setSidebarContent, findItem, landscape, assessments }) => {
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
-
-  const findItem = (fullyQualifiedItemIdentifier: string) => {
-    const element = document.getElementById(fullyQualifiedItemIdentifier);
-    setHighlightElement(element);
-  };
 
   const findGroup = (fullyQualifiedGroupIdentifier: string) => {
     const element = document.getElementById(fullyQualifiedGroupIdentifier);
@@ -52,69 +43,32 @@ const Dashboard: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   }, [highlightElement]);
 
   const onItemClick = (item: IItem) => {
+    findItem(item.fullyQualifiedIdentifier);
+    setSidebarContent(<SearchResult useItem={item} findItem={findItem} />);
+  };
+
+  const onGroupClick = (group: IGroup) => {
     setSidebarContent(
-      <SearchResult useItem={item} findItem={findItem} onAssessmentClick={onItemAssessmentClick} />
+        <Group
+          group={group}
+          assessments={assessments}
+          findItem={findItem}
+          findGroup={findGroup}
+        />
     );
   };
 
-  const onGroupClick = (fullyQualifiedGroupIdentifier: string) => {
-    setSidebarContent(
-      <Group
-        fullyQualifiedGroupIdentifier={fullyQualifiedGroupIdentifier}
-        findItem={findItem}
-        findGroup={findGroup}
-        onAssessmentClick={onGroupAssessmentClick}
-      />
-    );
-  };
-
-  const onGroupAssessmentClick = (fullyQualifiedGroupIdentifier: string) => {
-    setSidebarContent(
-      <Assessment
-        fullyQualifiedIdentifier={fullyQualifiedGroupIdentifier}
-        findItem={findItem}
-        findGroup={findGroup}
-        isGroup={true}
-      />
-    );
-  };
-
-  const onItemAssessmentClick = (fullyQualifiedItemIdentifier: string) => {
-    setSidebarContent(
-      <Assessment
-        fullyQualifiedIdentifier={fullyQualifiedItemIdentifier}
-        findItem={findItem}
-        isGroup={false}
-      />
-    );
-  };
-
-  const { identifier } = useParams<{ identifier: string }>();
-
-  useEffect(() => {
-    get(`/api/${identifier}`).then((response) => {
-      setLandscape(response);
-      setPageTitle(`Status (${response.name})`);
-    });
-
-    get(`/assessment/${identifier}`).then((response) => {
-      setAssessments(response);
-    });
-  }, [identifier, setPageTitle]);
-
-  return (
-    <React.Fragment>
+  if (landscape && assessments)
+    return (
       <DashboardLayout
         landscape={landscape}
         assessments={assessments}
         onItemClick={onItemClick}
         onGroupClick={onGroupClick}
-        onGroupAssessmentClick={onGroupAssessmentClick}
-        onItemAssessmentClick={onItemAssessmentClick}
-        findItem={findItem}
       />
-    </React.Fragment>
-  );
+    );
+
+  return null;
 };
 
 export default Dashboard;

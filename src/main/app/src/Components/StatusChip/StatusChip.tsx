@@ -34,9 +34,10 @@ interface Props {
   name: string;
   value?: string;
   status: string;
+  style?: any;
 }
 
-const StatusChip: React.FC<Props> = ({ name, value, status }) => {
+const StatusChip: React.FC<Props> = ({ name, value, status, style }) => {
   const classes: Record<string, any> = useStyles();
   let letter = '?';
   if (status.toLowerCase() === 'green') letter = '✓';
@@ -51,6 +52,7 @@ const StatusChip: React.FC<Props> = ({ name, value, status }) => {
   }
   return (
     <Chip
+      style={style}
       size={'small'}
       className={classes.chip}
       avatar={<Avatar className={classes[status.toLowerCase()]}>{letter}</Avatar>}

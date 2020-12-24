@@ -7,6 +7,8 @@ import { getItemIcon, getLabels, getLinks } from '../Utils/utils';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import StatusChip from '../../StatusChip/StatusChip';
+import IconButton from '@material-ui/core/IconButton';
+import { FilterCenterFocus } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -19,6 +21,9 @@ const useStyles = makeStyles((theme: Theme) =>
     icon: {
       height: '2em',
     },
+    floatingButton: {
+      float: 'right',
+    },
   })
 );
 
@@ -27,12 +32,12 @@ interface Props {
   useItem?: IItem;
   findItem?: Function;
   fullyQualifiedItemIdentifier?: string;
-  onAssessmentClick?: (fullyQualifiedItemIdentifier: string) => void;
 }
 
 /**
- * Returns a choosen Landscape Item if informations are available
- * @param element Choosen SVG Element from our Landscape Component
+ * Returns a chosen Landscape Item if information is available
+ *
+ *
  */
 const SearchResult: React.FC<Props> = ({
   useItem,
@@ -47,7 +52,6 @@ const SearchResult: React.FC<Props> = ({
   let relations: ReactElement[] = [];
 
   useEffect(() => {
-
     const loadAssessment = (item: IItem) => {
       const landscapeIdentifier = item ? item.fullyQualifiedIdentifier.split('/') : [];
 
@@ -147,6 +151,14 @@ const SearchResult: React.FC<Props> = ({
 
   return (
     <Card className={classes.card}>
+      {findItem && item ? (
+        <IconButton
+          onClick={() => findItem(item.fullyQualifiedIdentifier)}
+          className={classes.floatingButton}
+        >
+          <FilterCenterFocus />
+        </IconButton>
+      ) : null}
       <CardHeader
         title={item ? item.name || item.identifier : null}
         avatar={item ? <img src={getItemIcon(item)} alt='Icon' className={classes.icon} /> : ''}
@@ -186,26 +198,34 @@ const SearchResult: React.FC<Props> = ({
             <div className='labels'>{item ? getLabels(item) : null}</div>
           </div>
 
-          <div className={'status'}>
-            <Typography variant={'h6'}>Status</Typography>
-            {assessmentStatus ? <div>{assessmentStatus}</div> : '-'}
-          </div>
+          {assessmentStatus.length > 0 ? (
+            <div className={'status'}>
+              <Typography variant={'h6'}>Status</Typography>
+              {assessmentStatus ? <div>{assessmentStatus}</div> : '-'}
+            </div>
+          ) : null}
 
-          <div className='links'>
-            <Typography variant={'h6'}>Links</Typography>
-            <br />
-            {links}
-          </div>
+          {links.length > 0 ? (
+            <div className='links'>
+              <Typography variant={'h6'}>Links</Typography>
+              <br />
+              {links}
+            </div>
+          ) : null}
         </CardContent>
       ) : null}
 
       {!compact ? (
         <CardActions>
-          <div className='relations'>
-            <Typography variant={'h6'}>Relations</Typography>
-            <br />
-            {relations ?? { relations }}
-          </div>
+          {relations && relations.length ? (
+            <div className='relations'>
+              <Typography variant={'h6'}>Relations</Typography>
+              <br />
+              {relations}
+            </div>
+          ) : (
+            ''
+          )}
         </CardActions>
       ) : null}
     </Card>

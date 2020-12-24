@@ -122,7 +122,7 @@ export const getAssessmentSummary = (
   let assessmentField = '';
 
   if (assessmentResults) {
-    const result = assessmentResults.find((assessmentResult) => assessmentResult.summary === true);
+    const result = assessmentResults.find((assessmentResult) => assessmentResult.summary);
 
     if (result) {
       if (result.status !== 'UNKNOWN') {

@@ -16,10 +16,26 @@ import './Map.scss';
 
 import MapRelation from './MapRelation/MapRelation';
 import { withBasePath } from '../../../utils/API/BasePath';
-import Assessment from '../Modals/Assessment/Assessment';
 import { get } from '../../../utils/API/APIClient';
 import { ReactSvgPanZoomLoaderXML } from './ReactSVGPanZoomLoaderXML';
 import SearchResult from '../Search/SearchResult';
+import { Theme, Toolbar } from '@material-ui/core';
+import Dashboard from '../Dashboard/Dashboard';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { IAssessment, ILandscape } from '../../../interfaces';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    bottomBar: {
+      top: 'auto',
+      bottom: 0,
+      left: 5,
+      padding: 5,
+      position: 'fixed',
+      width: '100%',
+    },
+  })
+);
 
 interface Props {
   setSidebarContent: Function;
@@ -45,11 +61,13 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
   // In their own documentation, they initialize it with {}, but that will invoke a typescript error
   // @ts-ignore
   const [value, setValue] = useState<Value>({});
-
+  const classes = useStyles();
   const [data, setData] = useState<SVGData | null>(null);
   const [renderWithTransition, setRenderWithTransition] = useState(false);
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
   const { identifier } = useParams<{ identifier: string }>();
+  const [landscape, setLandscape] = useState<ILandscape | null>();
+  const [assessments, setAssessments] = useState<IAssessment | undefined>(undefined);
 
   const [isFirstRender, setIsFirstRender] = useState(true);
 
@@ -80,31 +98,9 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
           key={fullyQualifiedItemIdentifier}
           fullyQualifiedItemIdentifier={fullyQualifiedItemIdentifier}
           findItem={findItem}
-          onAssessmentClick={onAssessmentClick}
         />
       );
     }
-  };
-
-  const onAssessmentHeaderClick = (fullyQualifiedItemIdentifier: string) => {
-    setSidebarContent(
-      <SearchResult
-        key={fullyQualifiedItemIdentifier}
-        fullyQualifiedItemIdentifier={fullyQualifiedItemIdentifier}
-        findItem={findItem}
-        onAssessmentClick={onAssessmentClick}
-      />
-    );
-  };
-
-  const onAssessmentClick = (fullyQualifiedItemIdentifier: string) => {
-    setSidebarContent(
-      <Assessment
-        fullyQualifiedIdentifier={fullyQualifiedItemIdentifier}
-        findItem={onAssessmentHeaderClick}
-        isGroup={false}
-      />
-    );
   };
 
   const onRelationClick = (e: MouseEvent<HTMLElement>) => {
@@ -167,9 +163,20 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
       const width = doc.firstElementChild.width.baseVal.value;
       const height = doc.firstElementChild.height.baseVal.value;
       setData({ width: width, height: height, xml: svg });
-      setPageTitle(`Map of #${identifier}`);
     });
   }, [identifier, setPageTitle]);
+
+  //load landscape
+  useEffect(() => {
+    get(`/api/${identifier}`).then((response) => {
+      setLandscape(response);
+      setPageTitle(response.name);
+    });
+
+    get(`/assessment/${identifier}`).then((response) => {
+      setAssessments(response);
+    });
+  }, [identifier]);
 
   useEffect(() => {
     setFindFunction(findItem);
@@ -256,6 +263,16 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
             </ReactSVGPanZoom>
           )}
         />
+        <Toolbar className={classes.bottomBar}>
+          {landscape && assessments && (
+            <Dashboard
+              findItem={findItem}
+              setSidebarContent={setSidebarContent}
+              landscape={landscape}
+              assessments={assessments}
+            />
+          )}
+        </Toolbar>
       </div>
     );
   }

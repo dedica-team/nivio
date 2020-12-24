@@ -7,12 +7,7 @@ import { ILandscape } from '../../../interfaces';
 import dateFormat from 'dateformat';
 import { withBasePath } from '../../../utils/API/BasePath';
 import IconButton from '@material-ui/core/IconButton';
-import {
-  Assignment,
-  FormatListBulleted,
-  MapOutlined,
-  SpeedRounded,
-} from '@material-ui/icons';
+import { Assignment, FormatListBulleted, MapOutlined } from '@material-ui/icons';
 import Log from '../Modals/Log/Log';
 import CardContent from '@material-ui/core/CardContent';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -28,10 +23,12 @@ const useStyles = makeStyles((theme: Theme) =>
     cardHeader: {
       backgroundColor: theme.palette.secondary.main,
       padding: 10,
-      borderRadius: 5,
     },
     cardSubheader: {
-      fontSize: '0.8rem'
+      fontSize: '0.8rem',
+    },
+    cardActions: {
+      padding: 0,
     },
     link: {
       display: 'block',
@@ -55,13 +52,7 @@ interface Props {
  */
 
 const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
-  // Render
-  /*
-                                value         |0px     600px    960px    1280px   1920px
-                                key           |xs      sm       md       lg       xl
-                                screen width  |--------|--------|--------|--------|-------->
-                                range         |   xs   |   sm   |   md   |   lg   |   xl
-                              */
+
   const classes = useStyles();
   let content: ReactElement[] = [<Box>Loading landscapes...</Box>];
 
@@ -79,8 +70,13 @@ const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
         stats += ', updated: ' + dateFormat(landscape.lastUpdate, 'dd-mm-yyyy hh:MM:ss TT');
 
       return (
-        <Card key={landscape.identifier} className={classes.card} variant={'outlined'}>
-          <CardHeader title={landscape.name} subheader={stats} className={classes.cardHeader} classes={{subheader: classes.cardSubheader}}/>
+        <Card key={landscape.identifier} className={classes.card}>
+          <CardHeader
+            title={landscape.name}
+            subheader={stats}
+            className={classes.cardHeader}
+            classes={{ subheader: classes.cardSubheader }}
+          />
           <CardContent>
             <Button
               component={Link}
@@ -95,17 +91,7 @@ const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
             <br />
             {landscape.description}
           </CardContent>
-          <CardActions>
-            <Button
-              variant='contained'
-              color='primary'
-              fullWidth
-              component={Link}
-              to={`/landscape/${landscape.identifier}/dashboard`}
-            >
-              <SpeedRounded />&nbsp; status
-            </Button>
-
+          <CardActions className={classes.cardActions}>
             <IconButton
               aria-label='log'
               color={'secondary'}
