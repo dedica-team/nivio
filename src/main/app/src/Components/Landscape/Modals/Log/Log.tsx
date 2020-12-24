@@ -3,9 +3,7 @@ import { ILandscape } from '../../../../interfaces';
 import { get } from '../../../../utils/API/APIClient';
 
 import LevelChip from '../../../LevelChip/LevelChip';
-import { Card, Typography } from '@material-ui/core';
-import CardContent from '@material-ui/core/CardContent';
-import componentStyles from "../../../../Ressources/styling/ComponentStyles";
+import {Box, Typography} from '@material-ui/core';
 
 interface Props {
   landscape: ILandscape;
@@ -24,7 +22,6 @@ interface Entry {
 const Log: React.FC<Props> = ({ landscape }) => {
   const [data, setData] = useState<Entry[] | null>(null);
   const [loadData, setLoadData] = useState<boolean>(true);
-  const classes = componentStyles();
   const getLog = useCallback(async () => {
     if (loadData) {
       const log: any = await get(`/api/landscape/${landscape.identifier}/log`);
@@ -49,10 +46,10 @@ const Log: React.FC<Props> = ({ landscape }) => {
   });
 
   return (
-    <Card className={classes.card}>
+    <Box m={2}>
       <Typography variant={'h5'}>Process Log of '{landscape.name}' </Typography>
-      <CardContent>{content}</CardContent>
-    </Card>
+      {content}
+    </Box>
   );
 };
 

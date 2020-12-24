@@ -1,15 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Box, Card, CardHeader, InputBase, TextField, Theme } from '@material-ui/core';
+import { Card, CardHeader, TextField, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import { IItem, Routes } from '../../../interfaces';
 import { withRouter, RouteComponentProps, matchPath } from 'react-router-dom';
 import Item from '../Modals/Item/Item';
 import SearchIcon from '@material-ui/icons/Search';
-import { Backspace, ExpandMore } from '@material-ui/icons';
+import { Backspace } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import withStyles from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
