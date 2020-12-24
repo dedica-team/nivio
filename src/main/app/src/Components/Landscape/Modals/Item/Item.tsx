@@ -1,12 +1,12 @@
 import React, { useState, ReactElement, useEffect } from 'react';
 import { Card, CardActions, CardHeader, Theme, Typography } from '@material-ui/core';
-import { get } from '../../../utils/API/APIClient';
+import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
-import { IAssessmentProps, IItem } from '../../../interfaces';
-import { getItemIcon, getLabels, getLinks } from '../Utils/utils';
+import { IAssessmentProps, IItem } from '../../../../interfaces';
+import { getItemIcon, getLabels, getLinks } from '../../Utils/utils';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import StatusChip from '../../StatusChip/StatusChip';
+import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import { FilterCenterFocus } from '@material-ui/icons';
 
@@ -35,11 +35,11 @@ interface Props {
 }
 
 /**
- * Returns a chosen Landscape Item if information is available
+ * Returns a chosen Landscape item if information is available
  *
  *
  */
-const SearchResult: React.FC<Props> = ({
+const Item: React.FC<Props> = ({
   useItem,
   findItem,
   fullyQualifiedItemIdentifier,
@@ -231,4 +231,4 @@ const SearchResult: React.FC<Props> = ({
     </Card>
   );
 };
-export default SearchResult;
+export default Item;

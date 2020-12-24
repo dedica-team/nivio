@@ -18,7 +18,7 @@ import MapRelation from './MapRelation/MapRelation';
 import { withBasePath } from '../../../utils/API/BasePath';
 import { get } from '../../../utils/API/APIClient';
 import { ReactSvgPanZoomLoaderXML } from './ReactSVGPanZoomLoaderXML';
-import SearchResult from '../Search/SearchResult';
+import Item from '../Modals/Item/Item';
 import { Theme, Toolbar } from '@material-ui/core';
 import Dashboard from '../Dashboard/Dashboard';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -94,7 +94,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
     if (fullyQualifiedItemIdentifier) {
       setSidebarContent(
-        <SearchResult
+        <Item
           key={fullyQualifiedItemIdentifier}
           fullyQualifiedItemIdentifier={fullyQualifiedItemIdentifier}
           findItem={findItem}

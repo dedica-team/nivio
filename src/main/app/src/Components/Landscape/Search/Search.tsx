@@ -4,7 +4,7 @@ import {Box, Card, TextField, Theme} from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import { IItem, Routes } from '../../../interfaces';
 import { withRouter, RouteComponentProps, matchPath } from 'react-router-dom';
-import SearchResult from './SearchResult';
+import Item from '../Modals/Item/Item';
 import SearchIcon from '@material-ui/icons/Search';
 import { Backspace, ExpandMore } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
@@ -80,7 +80,7 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
       ).then((result) => {
         setResults(result);
         const searchResult = results.map((value1) => (
-          <SearchResult
+          <Item
             small={true}
             key={value1.fullyQualifiedIdentifier}
             useItem={value1}

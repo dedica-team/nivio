@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import DashboardLayout from './DashboardLayout';
 import {ILandscape, IAssessment, IItem, IGroup} from '../../../interfaces';
 import Group from '../Modals/Group/Group';
-import SearchResult from '../Search/SearchResult';
+import Item from '../Modals/Item/Item';
 
 /**
  * Logic Component to display all status of groups and items.
@@ -44,7 +44,7 @@ const Dashboard: React.FC<Props> = ({ setSidebarContent, findItem, landscape, as
 
   const onItemClick = (item: IItem) => {
     findItem(item.fullyQualifiedIdentifier);
-    setSidebarContent(<SearchResult useItem={item} findItem={findItem} />);
+    setSidebarContent(<Item useItem={item} findItem={findItem} />);
   };
 
   const onGroupClick = (group: IGroup) => {
