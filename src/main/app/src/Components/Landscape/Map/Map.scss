@@ -2,6 +2,7 @@
 @import '../../../Ressources/styling/colors.scss';
 
 .landscapeMapContainer {
+  overflow: hidden;
   .map {
     font-family: $svg-font;
     text-shadow: none;
