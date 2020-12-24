@@ -5,6 +5,7 @@ const componentStyles = makeStyles((theme: Theme) =>
     createStyles({
         card: {
             margin: 5,
+            marginTop: 0,
             padding: 5,
             backgroundColor: theme.palette.secondary.main,
         },

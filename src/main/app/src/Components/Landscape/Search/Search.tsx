@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
-import {Box, Card, TextField, Theme} from '@material-ui/core';
+import { Box, Card, CardHeader, InputBase, TextField, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import { IItem, Routes } from '../../../interfaces';
 import { withRouter, RouteComponentProps, matchPath } from 'react-router-dom';
@@ -14,14 +14,21 @@ import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import CardContent from '@material-ui/core/CardContent';
+import componentStyles from '../../../Ressources/styling/ComponentStyles';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    card: {
-      margin: 5,
-      padding: 5,
-      backgroundColor: theme.palette.secondary.main,
-    }
+    searchField: {
+      margin: 0,
+      padding: 0,
+      borderRadius: 5,
+      backgroundColor: theme.palette.primary.dark,
+    },
+    searchIcon: {
+      border: '1px solid',
+      borderColor: theme.palette.primary.dark,
+    },
   })
 );
 
@@ -57,6 +64,7 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [hasChange, setHasChange] = useState(false);
   const classes = useStyles();
+  const componentClasses = componentStyles();
   const searchInput = React.useRef<HTMLDivElement>(null);
 
   const setSidebarContent = useCallback(
@@ -139,20 +147,9 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
     setCurrentLandscape(identifier);
   }
 
-  const HtmlTooltip = withStyles((theme: Theme) => ({
-    tooltip: {
-      backgroundColor: '#f5f5f9',
-      color: 'rgba(0, 0, 0, 0.87)',
-      maxWidth: 220,
-      fontSize: theme.typography.pxToRem(12),
-      border: '1px solid #dadde9',
-      textShadow: 'none',
-    },
-  }))(Tooltip);
-
   const facetsHtml = facets.map((facet) => (
-    <Box className={classes.card} key={facet.dim}>
-      <Typography variant={'h6'} >{facet.dim}</Typography>
+    <Card className={componentClasses.card} key={facet.dim}>
+      <Typography variant={'h6'}>{facet.dim}</Typography>
       {facet.labelValues.map((lv) => (
         <Chip
           onClick={(e) => {
@@ -162,53 +159,61 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
             current.focus();
           }}
           variant={'outlined'}
-          size={"small"}
+          size={'small'}
           key={facet.dim + '' + lv.label}
           label={lv.label}
           avatar={<Avatar>{lv.value}</Avatar>}
         />
       ))}
-    </Box>
+    </Card>
   ));
 
   return (
-    <div className={'search'}>
-      <HtmlTooltip
-        title={
-          <React.Fragment>
-            <Typography color='inherit'>Search: </Typography>
-            <strong>{'You can use the Lucene query syntax.'}</strong>
-            <br />
-            <em>{'foo*'}</em>
-            <br />
-            <em>{'*press'}</em>
-            <br />
-            <em>{'tag:cms'}</em>
-            <br />
-          </React.Fragment>
+    <React.Fragment>
+      <IconButton
+        className={classes.searchIcon}
+        size={'small'}
+        onClick={() =>
+          setSidebarContent(
+            <React.Fragment>
+              <Card className={componentClasses.card}>
+                <CardHeader title={'Search'} />
+                <CardContent>
+                  <strong>{'You can use the Lucene query syntax.'}</strong>
+                  <br />
+                  <em>{'foo*'}</em>
+                  <br />
+                  <em>{'*press'}</em>
+                  <br />
+                  <em>{'tag:cms'}</em>
+                </CardContent>
+              </Card>
+              {facetsHtml}
+            </React.Fragment>
+          )
         }
       >
         <SearchIcon className={'searchIcon'} />
-      </HtmlTooltip>
-      <IconButton
-        className={'searchIcon'}
-        size={'small'}
-        onClick={() => setSidebarContent(<Card className={classes.card}>{facetsHtml}</Card>)}
-      >
-        <ExpandMore></ExpandMore>
       </IconButton>
       <TextField
+        className={classes.searchField}
         value={searchTerm}
         onChange={(event) => setSearchTermSafely(event.target.value)}
         ref={searchInput}
-      >
-        Search
-      </TextField>
+        variant={'outlined'}
+        margin={'dense'}
+        placeholder={'Search'}
+      />
 
-      <IconButton className={'searchIcon'} size={'small'} onClick={() => clear()}>
-        <Backspace></Backspace>
+      <IconButton
+        className={'searchIcon'}
+        size={'small'}
+        onClick={() => clear()}
+        disabled={searchTerm.length == 0}
+      >
+        <Backspace />
       </IconButton>
-    </div>
+    </React.Fragment>
   );
 };
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { IAssessment, IAssessmentProps, IGroup } from '../../../../interfaces';
+import { IAssessment, IGroup } from '../../../../interfaces';
 import { getLabels, getLinks, getAssessmentSummary, getItemIcon } from '../../Utils/utils';
 import { Card, CardHeader } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
@@ -46,7 +46,6 @@ const Group: React.FC<Props> = ({ group, assessments, findItem, findGroup }) => 
           >
             <Avatar
               src={getItemIcon(item)}
-              variant={'circle'}
               style={{ backgroundColor: 'white' }}
             />
             &nbsp;

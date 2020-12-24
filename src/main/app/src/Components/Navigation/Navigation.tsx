@@ -1,13 +1,12 @@
 import React from 'react';
-import { Button, Typography, AppBar, Theme, createStyles, Box, darken } from '@material-ui/core';
+import { Typography, AppBar, Theme, createStyles, Box, darken } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
 import Toolbar from '@material-ui/core/Toolbar';
-import FavoriteIcon from '@material-ui/icons/Favorite';
 
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Search from '../Landscape/Search/Search';
-import { HelpOutlineRounded } from '@material-ui/icons';
+import { HelpOutlineRounded, HomeOutlined } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -15,15 +14,14 @@ const useStyles = makeStyles((theme: Theme) =>
     grow: {
       flexGrow: 1,
     },
-    title: {
-      marginRight: '20px',
-      color: 'rgba(255, 255, 255, 0.75)',
-    },
     pageTitle: {
-      padding: 8,
+      padding: 11,
       paddingLeft: 16,
       paddingRight: 16,
       backgroundColor: darken(theme.palette.secondary.main, 0.2),
+    },
+    menuIcon: {
+      color: 'rgba(255, 255, 255, 0.75)',
     },
   })
 );
@@ -55,21 +53,16 @@ const Navigation: React.FC<Props> = ({
   return (
     <AppBar position='static' className={appBarClass}>
       <Toolbar variant='dense'>
-        <Typography variant='h6' className={classes.title}>
-          <FavoriteIcon
-            alignmentBaseline={'central'}
-            style={{ verticalAlign: 'top', paddingTop: '7px', paddingRight: '3px' }}
-          />
-          <Button component={Link} to={``}>
-            Nivio
-          </Button>
-        </Typography>
         <Box className={classes.pageTitle}>
-          <Typography variant='h6'>{pageTitle}</Typography>
+          <Typography variant='h6'>nivio: {pageTitle}</Typography>
         </Box>
         <div className={classes.grow} />
         <Search findItem={findFunction} setSidebarContent={setSidebarContent} />
+        <IconButton component={Link} to={``} className={classes.menuIcon}>
+          <HomeOutlined />
+        </IconButton>{' '}
         <IconButton
+          className={classes.menuIcon}
           data-testid='ManualButton'
           component={Link}
           to={`/man/install.html`}
