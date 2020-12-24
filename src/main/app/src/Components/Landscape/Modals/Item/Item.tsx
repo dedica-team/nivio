@@ -1,31 +1,14 @@
 import React, { useState, ReactElement, useEffect } from 'react';
-import { Card, CardActions, CardHeader, Theme, Typography } from '@material-ui/core';
+import { Card, CardActions, CardHeader, Typography } from '@material-ui/core';
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../../interfaces';
 import { getItemIcon, getLabels, getLinks } from '../../Utils/utils';
 import Button from '@material-ui/core/Button';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import { FilterCenterFocus } from '@material-ui/icons';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    card: {
-      margin: 5,
-      padding: 5,
-      backgroundColor: theme.palette.secondary.main,
-      overflow: 'show',
-    },
-    icon: {
-      height: '2em',
-    },
-    floatingButton: {
-      float: 'right',
-    },
-  })
-);
+import componentStyles from "../../../../Ressources/styling/ComponentStyles";
 
 interface Props {
   small?: boolean;
@@ -48,7 +31,7 @@ const Item: React.FC<Props> = ({
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const [compact, setCompact] = useState<boolean>(false);
-  const classes = useStyles();
+  const classes = componentStyles();
   let relations: ReactElement[] = [];
 
   useEffect(() => {

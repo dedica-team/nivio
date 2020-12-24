@@ -3,20 +3,9 @@ import { ILandscape } from '../../../../interfaces';
 import { get } from '../../../../utils/API/APIClient';
 
 import LevelChip from '../../../LevelChip/LevelChip';
-import { Card, Theme, Typography } from '@material-ui/core';
+import { Card, Typography } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    card: {
-      margin: 5,
-      padding: 5,
-      backgroundColor: theme.palette.secondary.main,
-      overflow: 'visible'
-    },
-  })
-);
+import componentStyles from "../../../../Ressources/styling/ComponentStyles";
 
 interface Props {
   landscape: ILandscape;
@@ -35,7 +24,7 @@ interface Entry {
 const Log: React.FC<Props> = ({ landscape }) => {
   const [data, setData] = useState<Entry[] | null>(null);
   const [loadData, setLoadData] = useState<boolean>(true);
-  const classes = useStyles();
+  const classes = componentStyles();
   const getLog = useCallback(async () => {
     if (loadData) {
       const log: any = await get(`/api/landscape/${landscape.identifier}/log`);

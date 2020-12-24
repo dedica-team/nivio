@@ -58,7 +58,7 @@ const DashboardLayout: React.FC<Props> = ({
         return (
           <Button
             id={group.fullyQualifiedIdentifier}
-            onClick={() => onGroupClick(group.fullyQualifiedIdentifier)}
+            onClick={() => onGroupClick(group)}
             key={group.name}
           >
             <StatusChip

@@ -90,29 +90,7 @@ export const getRelations = (
   return [];
 };
 
-export const getGroupItems = (
-  group: IGroup,
-  findItem?: (fullyQualifiedItemIdentifier: string) => void
-) => {
-  if (group?.items) {
-    return group.items.map((item) => {
-      return (
-        <span
-          className='item'
-          key={item.fullyQualifiedIdentifier}
-          onClick={() => {
-            if (findItem) {
-              findItem(item.fullyQualifiedIdentifier);
-            }
-          }}
-        >
-          {item.identifier}
-        </span>
-      );
-    });
-  }
-  return [];
-};
+
 
 export const getAssessmentSummary = (
   assessmentResults: IAssessmentProps[] | undefined

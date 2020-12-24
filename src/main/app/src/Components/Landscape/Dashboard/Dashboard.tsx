@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import DashboardLayout from './DashboardLayout';
-import {ILandscape, IAssessment, IItem, IGroup} from '../../../interfaces';
+import { ILandscape, IAssessment, IItem, IGroup } from '../../../interfaces';
 import Group from '../Modals/Group/Group';
 import Item from '../Modals/Item/Item';
 
@@ -49,12 +49,7 @@ const Dashboard: React.FC<Props> = ({ setSidebarContent, findItem, landscape, as
 
   const onGroupClick = (group: IGroup) => {
     setSidebarContent(
-        <Group
-          group={group}
-          assessments={assessments}
-          findItem={findItem}
-          findGroup={findGroup}
-        />
+      <Group group={group} assessments={assessments} findItem={findItem} findGroup={findGroup} />
     );
   };
 

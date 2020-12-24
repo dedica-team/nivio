@@ -50,9 +50,9 @@ interface SVGData {
 }
 
 /**
- * Displays a choosen landscape as interactive SVG
- * @param identifier Landscape Identifier
- * @param onItemClick Handler for our label click
+ * Displays a chosen landscape as interactive SVG
+ *
+ *
  */
 const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle }) => {
   const [tool, setTool] = useState<Tool>(TOOL_AUTO);
@@ -164,7 +164,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
       const height = doc.firstElementChild.height.baseVal.value;
       setData({ width: width, height: height, xml: svg });
     });
-  }, [identifier, setPageTitle]);
+  }, [identifier]);
 
   //load landscape
   useEffect(() => {
@@ -176,7 +176,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
     get(`/assessment/${identifier}`).then((response) => {
       setAssessments(response);
     });
-  }, [identifier]);
+  }, [identifier,setPageTitle]);
 
   useEffect(() => {
     setFindFunction(findItem);
