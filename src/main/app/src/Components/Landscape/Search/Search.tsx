@@ -207,7 +207,7 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
         className={'searchIcon'}
         size={'small'}
         onClick={() => clear()}
-        disabled={searchTerm.length == 0}
+        disabled={searchTerm.length === 0}
       >
         <Backspace />
       </IconButton>
