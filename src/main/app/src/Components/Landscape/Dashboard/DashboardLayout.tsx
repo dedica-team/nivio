@@ -22,7 +22,6 @@ const DashboardLayout: React.FC<Props> = ({
   onItemClick,
   onGroupClick,
 }) => {
-
   const getItems = (group: IGroup) => {
     return group.items.map((item) => {
       const [assessmentColor, , field] = getAssessmentSummary(
@@ -46,33 +45,37 @@ const DashboardLayout: React.FC<Props> = ({
     if (!groups) return;
 
     return groups.map((group) => {
-      if (group.items.length > 0) {
-        const groupColor = `#${group.color}` || 'grey';
-        const [groupAssessmentColor, , groupAssessmentField] = getAssessmentSummary(
-          assessments?.results[group.fullyQualifiedIdentifier]
-        );
-
-        if (groupAssessmentField === '') return null;
-
-        const title = 'Group ' + group.name;
-        return (
-          <Button
-            id={group.fullyQualifiedIdentifier}
-            onClick={() => onGroupClick(group)}
-            key={group.name}
-          >
-            <StatusChip
-              name={title}
-              status={groupAssessmentColor}
-              style={{
-                backgroundColor: groupColor,
-              }}
-            />
-          </Button>
-        );
+      if (group.items.length === 0) {
+        console.debug('Skipping group without items');
+        return null;
       }
 
-      return null;
+      const groupColor = `#${group.color}` || 'grey';
+      const [groupAssessmentColor, , groupAssessmentField] = getAssessmentSummary(
+        assessments?.results[group.fullyQualifiedIdentifier]
+      );
+
+      if (groupAssessmentField === '') {
+        console.debug('Group ' + group.fullyQualifiedIdentifier + ' has no summary assessment');
+        return null;
+      }
+
+      const title = 'Group ' + group.name;
+      return (
+        <Button
+          id={group.fullyQualifiedIdentifier}
+          onClick={() => onGroupClick(group)}
+          key={group.name}
+        >
+          <StatusChip
+            name={title}
+            status={groupAssessmentColor}
+            style={{
+              backgroundColor: groupColor,
+            }}
+          />
+        </Button>
+      );
     });
   };
 
