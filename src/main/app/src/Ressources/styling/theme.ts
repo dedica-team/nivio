@@ -4,39 +4,41 @@ const theme = createMuiTheme({
   palette: {
     type: 'dark',
     background: {
-      default: '#161618'
+      default: '#161618',
     },
-    primary: { main: 'rgb(0, 104, 104)'},
+    primary: {
+      main: 'rgb(0, 104, 104)',
+      contrastText: 'rgba(255, 255, 255, 0.75)',
+    },
     secondary: {
       main: 'rgb(0, 104, 104)',
       dark: '#333',
     },
   },
   zIndex: {
-    drawer: 1000
+    drawer: 1000,
   },
   typography: {
-
-    h3 : {
+    h3: {
       fontFamily: 'monospace',
       textTransform: 'uppercase',
-      color: 'rgba(255, 255, 255, 0.75)'
+      color: 'rgba(255, 255, 255, 0.75)',
     },
-    h4 : {
+    h4: {
       fontFamily: 'monospace',
       textTransform: 'uppercase',
-      color: 'rgba(255, 255, 255, 0.75)'
+      color: 'rgba(255, 255, 255, 0.75)',
     },
-    h5 : {
+    h5: {
       fontFamily: 'monospace',
       textTransform: 'uppercase',
-      color: 'rgba(255, 255, 255, 0.75)'
+      color: 'rgba(255, 255, 255, 0.75)',
     },
-    h6 : {
+    h6: {
       fontFamily: 'monospace',
       textTransform: 'uppercase',
-      color: 'rgba(255, 255, 255, 0.75)'
-    }
+      color: 'rgba(255, 255, 255, 0.75)',
+    },
   },
 });
 export default theme;

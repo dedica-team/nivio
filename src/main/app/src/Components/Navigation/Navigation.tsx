@@ -6,8 +6,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Search from '../Landscape/Search/Search';
-import { HelpOutlineRounded, HomeOutlined } from '@material-ui/icons';
+import { HelpOutlineRounded } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -53,14 +54,14 @@ const Navigation: React.FC<Props> = ({
   return (
     <AppBar position='static' className={appBarClass}>
       <Toolbar variant='dense'>
+        <Button component={Link} to={``} className={classes.menuIcon}>
+          nivio
+        </Button>
         <Box className={classes.pageTitle}>
-          <Typography variant='h6'>nivio: {pageTitle}</Typography>
+          <Typography variant='h6'>{pageTitle}</Typography>
         </Box>
         <div className={classes.grow} />
-        <Search findItem={findFunction} setSidebarContent={setSidebarContent} />
-        <IconButton component={Link} to={``} className={classes.menuIcon}>
-          <HomeOutlined />
-        </IconButton>{' '}
+        <Search findItem={findFunction} setSidebarContent={setSidebarContent} />{' '}
         <IconButton
           className={classes.menuIcon}
           data-testid='ManualButton'

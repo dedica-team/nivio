@@ -132,19 +132,22 @@ const Item: React.FC<Props> = ({
   const assessmentStatus = assessment ? getItemAssessments(assessment) : [];
   const links: ReactElement[] = item ? getLinks(item) : [];
 
-  return (
-    <Card className={classes.card}>
-      {findItem && item ? (
-        <IconButton
+  const findButton = findItem && item ? (
+      <IconButton
           onClick={() => findItem(item.fullyQualifiedIdentifier)}
           className={classes.floatingButton}
-        >
-          <FilterCenterFocus />
-        </IconButton>
-      ) : null}
+      >
+        <FilterCenterFocus />
+      </IconButton>
+  ) : null;
+
+  return (
+    <Card className={classes.card}>
+
       <CardHeader
         title={item ? item.name || item.identifier : null}
         avatar={item ? <img src={getItemIcon(item)} alt='Icon' className={classes.icon} /> : ''}
+        className={classes.cardHeader}
         onClick={() => {
           //can only be toggled if once small
           if (small) {
@@ -154,6 +157,7 @@ const Item: React.FC<Props> = ({
             findItem(item.fullyQualifiedIdentifier);
           }
         }}
+        action={findButton}
       />
 
       {!compact ? (

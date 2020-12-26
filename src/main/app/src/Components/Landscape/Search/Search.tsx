@@ -5,8 +5,7 @@ import { get } from '../../../utils/API/APIClient';
 import { IItem, Routes } from '../../../interfaces';
 import { withRouter, RouteComponentProps, matchPath } from 'react-router-dom';
 import Item from '../Modals/Item/Item';
-import SearchIcon from '@material-ui/icons/Search';
-import { Backspace } from '@material-ui/icons';
+import {Backspace, MoreVertSharp} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
@@ -22,11 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 0,
       borderRadius: 5,
       backgroundColor: theme.palette.primary.dark,
-    },
-    searchIcon: {
-      border: '1px solid',
-      borderColor: theme.palette.primary.dark,
-    },
+    }
   })
 );
 
@@ -169,13 +164,12 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
   return (
     <React.Fragment>
       <IconButton
-        className={classes.searchIcon}
         size={'small'}
         onClick={() =>
           setSidebarContent(
             <React.Fragment>
               <Card className={componentClasses.card}>
-                <CardHeader title={'Search'} />
+                <CardHeader title={'Search'} className={componentClasses.cardHeader}/>
                 <CardContent>
                   <strong>{'You can use the Lucene query syntax.'}</strong>
                   <br />
@@ -191,7 +185,7 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
           )
         }
       >
-        <SearchIcon className={'searchIcon'} />
+        <MoreVertSharp />
       </IconButton>
       <TextField
         className={classes.searchField}

@@ -22,11 +22,6 @@ interface Props {
  */
 const Group: React.FC<Props> = ({ group, assessments, findItem, findGroup }) => {
   const classes = componentStyles();
-  const [assessmentColor, field, msg] = getAssessmentSummary(
-    assessments.results[group.fullyQualifiedIdentifier]
-  );
-  const labels = getLabels(group);
-  const links = getLinks(group);
 
   const getGroupItems = (
     group: IGroup,
@@ -34,6 +29,9 @@ const Group: React.FC<Props> = ({ group, assessments, findItem, findGroup }) => 
   ) => {
     if (group?.items) {
       return group.items.map((item) => {
+        const [status, ,] = getAssessmentSummary(
+          assessments.results[item.fullyQualifiedIdentifier]
+        );
         return (
           <Button
             style={{ textAlign: 'left' }}
@@ -46,7 +44,7 @@ const Group: React.FC<Props> = ({ group, assessments, findItem, findGroup }) => 
           >
             <Avatar
               src={getItemIcon(item)}
-              style={{ backgroundColor: 'white' }}
+              style={{ backgroundColor: 'white', border: '2px solid ' + status }}
             />
             &nbsp;
             {item.identifier}
@@ -58,6 +56,12 @@ const Group: React.FC<Props> = ({ group, assessments, findItem, findGroup }) => 
   };
   const items = getGroupItems(group, findItem);
 
+  const [assessmentColor, message, field] = getAssessmentSummary(
+    assessments.results[group.fullyQualifiedIdentifier]
+  );
+  const labels = getLabels(group);
+  const links = getLinks(group);
+
   return (
     <Card className={classes.card}>
       <CardHeader
@@ -67,6 +71,7 @@ const Group: React.FC<Props> = ({ group, assessments, findItem, findGroup }) => 
             findGroup(group.fullyQualifiedIdentifier);
           }
         }}
+        className={classes.cardHeader}
       />
       <CardContent>
         <div className='information'>
@@ -90,7 +95,7 @@ const Group: React.FC<Props> = ({ group, assessments, findItem, findGroup }) => 
           <StatusChip
             name={group.name || group.identifier}
             status={assessmentColor}
-            value={field + ':' + msg}
+            value={field + ':' + message}
           />
         </div>
 

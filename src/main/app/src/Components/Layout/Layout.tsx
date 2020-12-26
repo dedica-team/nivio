@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 
 import Navigation from '../Navigation/Navigation';
 import Notification from '../Notification/Notification';
-import { darken, Drawer, Theme, Toolbar } from '@material-ui/core';
+import { Drawer, Theme, Toolbar } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 interface Props {
@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     drawerPaper: {
       width: 320,
-      backgroundColor: darken(theme.palette.secondary.dark, 0.2),
-        border: 'none'
+      backgroundColor: 'transparent',
+      border: 'none',
     },
     drawerContainer: {
       overflow: 'auto',
