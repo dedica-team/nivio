@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface PropsInterface extends RouteComponentProps {
-  findItem?: Function;
+  findFunction: Function;
   setSidebarContent: Function;
 }
 
@@ -43,7 +43,7 @@ interface ILabelValue {
   value: number;
 }
 
-const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
+const Search: React.FC<PropsInterface> = ({findFunction, setSidebarContent, ...props}) => {
   const match: { params?: { identifier?: string } } | null = matchPath(props.location.pathname, {
     path: Routes.MAP_ROUTE,
     exact: false,
@@ -59,13 +59,6 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
   const classes = useStyles();
   const componentClasses = componentStyles();
   const searchInput = React.useRef<HTMLDivElement>(null);
-
-  const setSidebarContent = useCallback(
-    (content: any) => {
-      props.setSidebarContent(content);
-    },
-    [props]
-  );
 
   const search = useCallback(
     (searchTerm: string, identifier: string) => {
@@ -85,14 +78,14 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
             small={true}
             key={value1.fullyQualifiedIdentifier}
             useItem={value1}
-            findItem={props.findItem}
+            findItem={findFunction}
           />
         ));
         setSidebarContent(searchResult);
         setHasChange(false);
       });
     },
-    [props, results, setSidebarContent]
+    [results, setSidebarContent, findFunction]
   );
 
   async function loadFacets(identifier: string | undefined) {

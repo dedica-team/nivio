@@ -37,12 +37,6 @@ interface Props {
 /**
  * Header Component
  */
-/*
-    value         |0px     600px    960px    1280px   1920px
-    key           |xs      sm       md       lg       xl
-    screen width  |--------|--------|--------|--------|-------->
-    range         |   xs   |   sm   |   md   |   lg   |   xl
-     */
 const Navigation: React.FC<Props> = ({
   appBarClass,
   setSidebarContent,
@@ -61,7 +55,7 @@ const Navigation: React.FC<Props> = ({
           <Typography variant='h6'>{pageTitle}</Typography>
         </Box>
         <div className={classes.grow} />
-        <Search findItem={findFunction} setSidebarContent={setSidebarContent} />{' '}
+        <Search findFunction={findFunction} setSidebarContent={setSidebarContent} />{' '}
         <IconButton
           className={classes.menuIcon}
           data-testid='ManualButton'

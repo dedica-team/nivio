@@ -7,7 +7,7 @@ import { getItemIcon, getLabels, getLinks } from '../../Utils/utils';
 import Button from '@material-ui/core/Button';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
-import { ArrowDownward, ArrowUpward, FilterCenterFocus } from '@material-ui/icons';
+import { ArrowDownward, ArrowUpward, FilterCenterFocus, MoreVertSharp } from '@material-ui/icons';
 import componentStyles from '../../../../Ressources/styling/ComponentStyles';
 
 interface Props {
@@ -73,7 +73,6 @@ const Item: React.FC<Props> = ({ useItem, findItem, fullyQualifiedItemIdentifier
       const isInbound = relation.direction === 'inbound';
       relations.push(
         <Paper style={{ width: '100%', padding: 5, marginTop: 5 }} key={key}>
-
           <Button
             size={'small'}
             fullWidth={true}
@@ -86,7 +85,7 @@ const Item: React.FC<Props> = ({ useItem, findItem, fullyQualifiedItemIdentifier
             {isInbound ? <ArrowDownward /> : <ArrowUpward />}
             {relation.name}
           </Button>
-          {relation.direction} {relation.description?.length ? ', ' +relation.description : null}
+          {relation.direction} {relation.description?.length ? ', ' + relation.description : null}
           {relation.format?.length ? ', format: ' + relation.format : null}
         </Paper>
       );
@@ -117,29 +116,32 @@ const Item: React.FC<Props> = ({ useItem, findItem, fullyQualifiedItemIdentifier
   const findButton =
     findItem && item ? (
       <IconButton
-        onClick={() => findItem(item.fullyQualifiedIdentifier)}
+        onClick={() => {
+          findItem(item.fullyQualifiedIdentifier);
+        }}
         className={classes.floatingButton}
       >
         <FilterCenterFocus />
       </IconButton>
     ) : null;
 
+  const extend = small ? (
+    <IconButton onClick={() => setCompact(!compact)} className={classes.floatingButton}>
+      <MoreVertSharp />
+    </IconButton>
+  ) : null;
   return (
     <Card className={classes.card}>
       <CardHeader
         title={item ? item.name || item.identifier : null}
         avatar={item ? <img src={getItemIcon(item)} alt='Icon' className={classes.icon} /> : ''}
         className={classes.cardHeader}
-        onClick={() => {
-          //can only be toggled if once small
-          if (small) {
-            setCompact(!compact);
-          }
-          if (findItem && item) {
-            findItem(item.fullyQualifiedIdentifier);
-          }
-        }}
-        action={findButton}
+        action={
+          <React.Fragment>
+            {extend}
+            {findButton}
+          </React.Fragment>
+        }
       />
 
       {!compact ? (
@@ -187,7 +189,7 @@ const Item: React.FC<Props> = ({ useItem, findItem, fullyQualifiedItemIdentifier
       {!compact ? (
         <CardActions>
           {relations && relations.length ? (
-            <div style={{width: '100%'}}>
+            <div style={{ width: '100%' }}>
               <Typography variant={'h6'}>Relations</Typography>
               {relations}
             </div>

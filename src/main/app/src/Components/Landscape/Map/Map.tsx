@@ -53,7 +53,9 @@ interface SVGData {
 /**
  * Displays a chosen landscape as interactive SVG
  *
- *
+ * @param setSidebarContent function to set sidebar/drawer content
+ * @param setFindFunction function to use to find an item. make sure to pass an anon func returning the actually used function
+ * @param setPageTitle can be used to set the page title in parent state
  */
 const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle }) => {
   const [tool, setTool] = useState<Tool>(TOOL_AUTO);
@@ -79,7 +81,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
         let dataX = element.getAttribute('data-x');
         let dataY = element.getAttribute('data-y');
         if (dataX && dataY) {
-          const shift: number = 200; //shift all a bit to left, since on the right is the sidebar
+          const shift: number = 0;
           const x = parseFloat(dataX) + shift;
           const y = parseFloat(dataY) + shift / 2;
           setValue(setPointOnViewerCenter(value, x, y, 1));
@@ -167,19 +169,22 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
 
   //load landscape
   useEffect(() => {
-    get(`/api/${identifier}`).then((response) => {
-      setLandscape(response);
-      setPageTitle(response.name);
-    });
+    if (!landscape) {
+      get(`/api/${identifier}`).then((response) => {
+        setLandscape(response);
+        setPageTitle(response.name);
+        if (findItem) {
+          setFindFunction(() => findItem);
+        }
+      });
 
-    get(`/assessment/${identifier}`).then((response) => {
-      setAssessments(response);
-    });
-  }, [identifier, setPageTitle]);
+      get(`/assessment/${identifier}`).then((response) => {
+        setAssessments(response);
+      });
+    }
+  }, [identifier, setPageTitle, setFindFunction, findItem, landscape]);
 
   useEffect(() => {
-    setFindFunction(findItem);
-
     let timeout: NodeJS.Timeout;
 
     if (highlightElement instanceof Element) {
@@ -216,7 +221,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
     }
 
     return () => clearTimeout(timeout);
-  }, [highlightElement, setFindFunction, findItem]);
+  }, [highlightElement]);
 
   if (data) {
     if (isFirstRender && value.a != null) {

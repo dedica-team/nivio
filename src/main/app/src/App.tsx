@@ -1,5 +1,5 @@
-import React, { ReactElement, useState } from 'react';
-import { HashRouter as Router, Switch, Route } from 'react-router-dom';
+import React, { ReactElement, useCallback, useState } from 'react';
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 
 import LandscapeOverview from './Components/Landscape/Overview/Overview';
 import LandscapeMap from './Components/Landscape/Map/Map';
@@ -10,14 +10,23 @@ import { Routes } from './interfaces';
 const App: React.FC = () => {
   const [sidebarContent, setSidebarContent] = useState<ReactElement[]>([]);
   const [pageTitle, setPageTitle] = useState<string>('');
-  const [findFunction, setFindFunction] = useState<Function>(() => {});
+  const [findFunction, setFindFunction] = useState<Function>();
+
+  const ff = useCallback(
+    (args) => {
+      if (findFunction) findFunction(args);
+      else console.warn('find function not set');
+    },
+    [findFunction]
+  );
+
   return (
     <Router hashType='slash'>
       <Switch>
         <Layout
           sidebarContent={sidebarContent}
           setSidebarContent={setSidebarContent}
-          findFunction={findFunction}
+          findFunction={ff}
           pageTitle={pageTitle}
         >
           <Route
