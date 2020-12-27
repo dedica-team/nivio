@@ -78,7 +78,7 @@ const Item: React.FC<Props> = ({ useItem, findItem, fullyQualifiedItemIdentifier
             fullWidth={true}
             onClick={() => {
               if (findItem) {
-                findItem(relation.target);
+                findItem(isInbound ? relation.source : relation.target);
               }
             }}
           >
