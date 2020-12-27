@@ -112,6 +112,8 @@ public class Relation implements Serializable {
 
         public final String name;
 
+        public final String id;
+
         public final String direction;
 
         ApiModel (Relation relation, Item owner) {
@@ -123,9 +125,11 @@ public class Relation implements Serializable {
 
             if (relation.source == owner) {
                 name = StringUtils.isEmpty(target.getName()) ? target.getIdentifier() : target.getName();
+                id = target.getFullyQualifiedIdentifier().toString();
                 direction = OUTBOUND;
             } else {
                 name = StringUtils.isEmpty(source.getName()) ? source.getIdentifier() : source.getName();
+                id = source.getFullyQualifiedIdentifier().toString();
                 direction = INBOUND;
             }
         }
