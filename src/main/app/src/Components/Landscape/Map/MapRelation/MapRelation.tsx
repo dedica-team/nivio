@@ -28,7 +28,7 @@ const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type
   const title = 'Relation ' + sourceTitle + ' ⇄ ' + targetTitle;
   return (
     <Card className={classes.card}>
-      <CardHeader title={title} />
+      <CardHeader title={title} className={classes.cardHeader}/>
       <CardContent>
         <span>Type: {type}</span>
         <br />

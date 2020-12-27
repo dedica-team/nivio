@@ -23,6 +23,7 @@ import { Theme, Toolbar } from '@material-ui/core';
 import Dashboard from '../Dashboard/Dashboard';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { IAssessment, ILandscape } from '../../../interfaces';
+import { getItem } from '../Utils/utils';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -92,14 +93,12 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
-    if (fullyQualifiedItemIdentifier) {
-      setSidebarContent(
-        <Item
-          key={fullyQualifiedItemIdentifier}
-          fullyQualifiedItemIdentifier={fullyQualifiedItemIdentifier}
-          findItem={findItem}
-        />
-      );
+    if (fullyQualifiedItemIdentifier && landscape) {
+      let item = getItem(landscape, fullyQualifiedItemIdentifier);
+      if (item)
+        setSidebarContent(
+          <Item key={fullyQualifiedItemIdentifier} useItem={item} findItem={findItem} />
+        );
     }
   };
 
@@ -176,7 +175,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
     get(`/assessment/${identifier}`).then((response) => {
       setAssessments(response);
     });
-  }, [identifier,setPageTitle]);
+  }, [identifier, setPageTitle]);
 
   useEffect(() => {
     setFindFunction(findItem);

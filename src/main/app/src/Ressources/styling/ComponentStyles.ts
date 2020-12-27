@@ -8,6 +8,7 @@ const componentStyles = makeStyles((theme: Theme) =>
       marginTop: 0,
       padding: 0,
       backgroundColor: theme.palette.secondary.dark,
+      overflowY: 'auto',
     },
     cardHeader: {
       backgroundColor: theme.palette.secondary.main,

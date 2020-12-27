@@ -1,5 +1,5 @@
 import React, { useState, ReactElement, useEffect } from 'react';
-import { Card, CardActions, CardHeader, Typography } from '@material-ui/core';
+import { Card, CardActions, CardHeader, Paper, Typography } from '@material-ui/core';
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../../interfaces';
@@ -7,8 +7,8 @@ import { getItemIcon, getLabels, getLinks } from '../../Utils/utils';
 import Button from '@material-ui/core/Button';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
-import { FilterCenterFocus } from '@material-ui/icons';
-import componentStyles from "../../../../Ressources/styling/ComponentStyles";
+import { ArrowDownward, ArrowUpward, FilterCenterFocus } from '@material-ui/icons';
+import componentStyles from '../../../../Ressources/styling/ComponentStyles';
 
 interface Props {
   small?: boolean;
@@ -22,12 +22,7 @@ interface Props {
  *
  *
  */
-const Item: React.FC<Props> = ({
-  useItem,
-  findItem,
-  fullyQualifiedItemIdentifier,
-  small,
-}) => {
+const Item: React.FC<Props> = ({ useItem, findItem, fullyQualifiedItemIdentifier, small }) => {
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const [compact, setCompact] = useState<boolean>(false);
@@ -72,43 +67,30 @@ const Item: React.FC<Props> = ({
     }
   }, [item, fullyQualifiedItemIdentifier, useItem, small, assessment]);
 
-  if (item && item?.relations && item.relations.length) {
-    relations = item.relations.map((relation) => {
-      let relationName: string;
-      let groupNameStart: number;
-      if (relation.target.endsWith(item.identifier)) {
-        groupNameStart = relation.source.indexOf('/') + 1;
-        relationName = relation.source.substr(groupNameStart);
-        return (
+  if (item) {
+    for (let key of Object.keys(item.relations)) {
+      let relation = item.relations[key];
+      const isInbound = relation.direction === 'inbound';
+      relations.push(
+        <Paper style={{ width: '100%', padding: 5, marginTop: 5 }} key={key}>
+
           <Button
             size={'small'}
-            key={relation.source}
+            fullWidth={true}
             onClick={() => {
               if (findItem) {
-                findItem(relation.source);
+                findItem(relation.target);
               }
             }}
           >
-            {relationName}
+            {isInbound ? <ArrowDownward /> : <ArrowUpward />}
+            {relation.name}
           </Button>
-        );
-      }
-      groupNameStart = relation.target.indexOf('/') + 1;
-      relationName = relation.target.substr(groupNameStart);
-      return (
-        <Button
-          size={'small'}
-          key={relation.target}
-          onClick={() => {
-            if (findItem) {
-              findItem(relation.target);
-            }
-          }}
-        >
-          {relationName}
-        </Button>
+          {relation.direction} {relation.description?.length ? ', ' +relation.description : null}
+          {relation.format?.length ? ', format: ' + relation.format : null}
+        </Paper>
       );
-    });
+    }
   }
 
   const getItemAssessments = (assessmentItem: IAssessmentProps[]) => {
@@ -132,18 +114,18 @@ const Item: React.FC<Props> = ({
   const assessmentStatus = assessment ? getItemAssessments(assessment) : [];
   const links: ReactElement[] = item ? getLinks(item) : [];
 
-  const findButton = findItem && item ? (
+  const findButton =
+    findItem && item ? (
       <IconButton
-          onClick={() => findItem(item.fullyQualifiedIdentifier)}
-          className={classes.floatingButton}
+        onClick={() => findItem(item.fullyQualifiedIdentifier)}
+        className={classes.floatingButton}
       >
         <FilterCenterFocus />
       </IconButton>
-  ) : null;
+    ) : null;
 
   return (
     <Card className={classes.card}>
-
       <CardHeader
         title={item ? item.name || item.identifier : null}
         avatar={item ? <img src={getItemIcon(item)} alt='Icon' className={classes.icon} /> : ''}
@@ -205,9 +187,8 @@ const Item: React.FC<Props> = ({
       {!compact ? (
         <CardActions>
           {relations && relations.length ? (
-            <div className='relations'>
+            <div style={{width: '100%'}}>
               <Typography variant={'h6'}>Relations</Typography>
-              <br />
               {relations}
             </div>
           ) : (

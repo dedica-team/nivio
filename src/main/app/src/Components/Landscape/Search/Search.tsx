@@ -5,7 +5,7 @@ import { get } from '../../../utils/API/APIClient';
 import { IItem, Routes } from '../../../interfaces';
 import { withRouter, RouteComponentProps, matchPath } from 'react-router-dom';
 import Item from '../Modals/Item/Item';
-import {Backspace, MoreVertSharp} from '@material-ui/icons';
+import { Backspace, MoreVertSharp } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 0,
       borderRadius: 5,
       backgroundColor: theme.palette.primary.dark,
-    }
+    },
   })
 );
 
@@ -142,22 +142,24 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
 
   const facetsHtml = facets.map((facet) => (
     <Card className={componentClasses.card} key={facet.dim}>
-      <Typography variant={'h6'}>{facet.dim}</Typography>
-      {facet.labelValues.map((lv) => (
-        <Chip
-          onClick={(e) => {
-            let current = searchInput.current;
-            if (!current) return;
-            setSearchTermSafely(facet.dim + ':' + lv.label);
-            current.focus();
-          }}
-          variant={'outlined'}
-          size={'small'}
-          key={facet.dim + '' + lv.label}
-          label={lv.label}
-          avatar={<Avatar>{lv.value}</Avatar>}
-        />
-      ))}
+      <CardContent>
+        <Typography variant={'h6'}>{facet.dim}</Typography>
+        {facet.labelValues.map((lv) => (
+          <Chip
+            onClick={(e) => {
+              let current = searchInput.current;
+              if (!current) return;
+              setSearchTermSafely(facet.dim + ':' + lv.label);
+              current.focus();
+            }}
+            variant={'outlined'}
+            size={'small'}
+            key={facet.dim + '' + lv.label}
+            label={lv.label}
+            avatar={<Avatar>{lv.value}</Avatar>}
+          />
+        ))}
+      </CardContent>
     </Card>
   ));
 
@@ -169,7 +171,7 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
           setSidebarContent(
             <React.Fragment>
               <Card className={componentClasses.card}>
-                <CardHeader title={'Search'} className={componentClasses.cardHeader}/>
+                <CardHeader title={'Search'} className={componentClasses.cardHeader} />
                 <CardContent>
                   <strong>{'You can use the Lucene query syntax.'}</strong>
                   <br />

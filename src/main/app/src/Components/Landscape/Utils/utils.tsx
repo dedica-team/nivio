@@ -1,7 +1,29 @@
 import React, { ReactElement } from 'react';
-import { IAssessmentProps, IGroup, IItem } from '../../../interfaces';
+import { IAssessmentProps, IGroup, IItem, ILandscape } from '../../../interfaces';
 import { Button, Link } from '@material-ui/core';
 
+/**
+ * Find an item by its fully qualified identifier.
+ *
+ * @param landscape object containing groups
+ * @param fullyQualifiedIdentifier string to identify the item
+ */
+export const getItem = (landscape: ILandscape, fullyQualifiedIdentifier: string): IItem | null => {
+  let item: IItem | null = null;
+  landscape.groups.forEach((value) => {
+    value.items.forEach((value1) => {
+      if (value1.fullyQualifiedIdentifier === fullyQualifiedIdentifier) item = value1;
+    });
+  });
+
+  return item;
+};
+
+/**
+ * Renders the links of a component as buttons.
+ *
+ * @param element item/group/landscape
+ */
 export const getLinks = (element: IGroup | IItem): ReactElement[] => {
   let links: ReactElement[] = [];
   if (element?._links) {
@@ -44,53 +66,6 @@ export const getLabels = (element: IGroup | IItem) => {
   }
   return labels;
 };
-
-export const getRelations = (
-  item: IItem,
-  findItem?: (fullyQualifiedItemIdentifier: string) => void
-) => {
-  if (item.relations && item.relations.length) {
-    return item.relations.map((relation) => {
-      let relationName: string;
-      let groupNameStart: number;
-      if (relation.target.endsWith(item.identifier)) {
-        groupNameStart = relation.source.indexOf('/') + 1;
-        relationName = relation.source.substr(groupNameStart);
-        return (
-          <span
-            className='relation'
-            key={relation.source}
-            onClick={() => {
-              if (findItem) {
-                findItem(relation.source);
-              }
-            }}
-          >
-            {relationName}
-          </span>
-        );
-      }
-      groupNameStart = relation.target.indexOf('/') + 1;
-      relationName = relation.target.substr(groupNameStart);
-      return (
-        <span
-          className='relation'
-          key={relation.target}
-          onClick={() => {
-            if (findItem) {
-              findItem(relation.target);
-            }
-          }}
-        >
-          {relationName}
-        </span>
-      );
-    });
-  }
-  return [];
-};
-
-
 
 export const getAssessmentSummary = (
   assessmentResults: IAssessmentProps[] | undefined

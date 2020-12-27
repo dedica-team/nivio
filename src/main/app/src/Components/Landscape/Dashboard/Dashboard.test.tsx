@@ -13,7 +13,7 @@ const items: IItem[] = [
     identifier: 'testIdentifier',
     name: 'testIdentifier',
     description: 'testDescription',
-    relations: [],
+    relations: {},
     labels: {},
     tags: [],
     type: 'service',
