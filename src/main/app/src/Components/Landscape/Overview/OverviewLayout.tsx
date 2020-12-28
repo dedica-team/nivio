@@ -74,6 +74,7 @@ const OverviewLayout: React.FC<Props> = ({landscapes, setSidebarContent}) => {
                                 <IconButton
                                     aria-label='log'
                                     color={'secondary'}
+                                    title={'process log'}
                                     onClick={() => setSidebarContent(<Log landscape={landscape}/>)}
                                     className={componentClasses.floatingButton}
                                 >
@@ -106,9 +107,11 @@ const OverviewLayout: React.FC<Props> = ({landscapes, setSidebarContent}) => {
                     />
                     <CardContent>
                         <Button
+                            aria-label={'map'}
                             component={Link}
                             to={`/landscape/${landscape.identifier}`}
                             className={classes.link}
+                            title={'Landscape map'}
                         >
                             <CardMedia
                                 className={classes.cardMedia}
