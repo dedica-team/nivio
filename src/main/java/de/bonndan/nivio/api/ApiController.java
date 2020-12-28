@@ -61,8 +61,8 @@ public class ApiController {
      */
     @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(path = "/{landscapeIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LandscapeImpl> landscape(@PathVariable String landscapeIdentifier) {
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
+    public ResponseEntity<Landscape> landscape(@PathVariable String landscapeIdentifier) {
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }
@@ -80,7 +80,7 @@ public class ApiController {
     public ResponseEntity<Group> group(@PathVariable String landscapeIdentifier,
                                        @PathVariable String groupIdentifier
     ) {
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }
@@ -104,7 +104,7 @@ public class ApiController {
                                      @PathVariable String groupIdentifier,
                                      @PathVariable String itemIdentifier
     ) {
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }
@@ -124,7 +124,7 @@ public class ApiController {
     @RequestMapping(path = "/landscape", method = RequestMethod.POST)
     public ProcessLog create(@RequestBody String body) {
         LandscapeDescription env = LandscapeDescriptionFactory.fromString(body, "request body");
-        return indexer.reIndex(env);
+        return indexer.index(env);
     }
 
     @RequestMapping(path = "/landscape/{identifier}/services", method = RequestMethod.POST)
@@ -148,14 +148,14 @@ public class ApiController {
 
         dto.setItemDescriptions(itemDescriptions);
 
-        return indexer.reIndex(dto);
+        return indexer.index(dto);
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
     @RequestMapping(path = "/landscape/{identifier}/log", method = RequestMethod.GET)
     public ResponseEntity<ProcessLog> log(@PathVariable String identifier) {
 
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }
@@ -168,7 +168,7 @@ public class ApiController {
     @RequestMapping(path = "/landscape/{identifier}/search/{query}", method = RequestMethod.GET)
     public ResponseEntity<Set<Item>> search(@PathVariable String identifier, @PathVariable String query) {
 
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }
@@ -185,7 +185,7 @@ public class ApiController {
     @RequestMapping(path = "/landscape/{identifier}/facets", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<List<FacetResult>> facets(@PathVariable String identifier) {
 
-        LandscapeImpl landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }
@@ -199,17 +199,20 @@ public class ApiController {
      */
     @RequestMapping(path = "/reindex/{landscape}", method = RequestMethod.POST)
     public ProcessLog reindex(@PathVariable String landscape) {
-        LandscapeImpl distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape).orElse(null);
+        Landscape distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape).orElse(null);
         if (distinctByIdentifier == null) {
             ProcessLog p = new ProcessLog(LoggerFactory.getLogger("nivio"));
             p.error(new ProcessingException(null, "Could not find landscape " + landscape));
             return p;
         }
 
-        return process(distinctByIdentifier);
+        return process(LandscapeDescriptionFactory.fromString(
+                distinctByIdentifier.getSource(),
+                distinctByIdentifier.getIdentifier() + " source"
+        ));
     }
 
-    private ProcessLog process(Landscape landscape) {
+    private ProcessLog process(LandscapeDescription landscape) {
         if (landscape == null || StringUtils.isEmpty(landscape.getSource())) {
             ProcessLog p = new ProcessLog(LoggerFactory.getLogger("nivio"));
             p.error(new ProcessingException(landscape, "Cannot process empty source."));
@@ -219,7 +222,7 @@ public class ApiController {
         File file = new File(landscape.getSource());
         if (file.exists()) {
             LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
-            return indexer.reIndex(Objects.requireNonNull(landscapeDescription));
+            return indexer.index(Objects.requireNonNull(landscapeDescription));
         }
 
         Optional<URL> url = URLHelper.getURL(landscape.getSource());

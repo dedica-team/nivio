@@ -5,7 +5,6 @@ import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,7 +20,7 @@ class AllGroupsLayoutTest {
         Group b = new Group("b");
         Group c = new Group("c");
 
-        LandscapeImpl landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.create("test");
 
         landscape.getGroups().put("a", a);
         landscape.getGroups().put("b", b);
@@ -53,8 +52,8 @@ class AllGroupsLayoutTest {
         assertEquals(3, layoutedLandscape.getChildren().size());
 
         //assert postition is always the same
-        assertEquals(240, Math.round(layoutedLandscape.getChildren().get(0).getX()));
-        assertEquals(496, Math.round(layoutedLandscape.getChildren().get(0).getY()));
+        assertEquals(615, Math.round(layoutedLandscape.getChildren().get(0).getX()));
+        assertEquals(-343, Math.round(layoutedLandscape.getChildren().get(0).getY()));
     }
 
     private SubLayout getSubLayout(Group group) {

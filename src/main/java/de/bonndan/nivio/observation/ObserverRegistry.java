@@ -6,7 +6,6 @@ import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -17,7 +16,6 @@ import org.springframework.util.StringUtils;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -53,7 +51,7 @@ public class ObserverRegistry implements ApplicationListener<ProcessingFinishedE
     @Override
     public void onApplicationEvent(ProcessingFinishedEvent event) {
         LandscapeDescription landscapeDescription = (LandscapeDescription) event.getSource();
-        LandscapeImpl landscape = Objects.requireNonNull((LandscapeImpl) event.getLandscape());
+        Landscape landscape = Objects.requireNonNull(event.getLandscape());
 
         if (landscapeDescription == null) {
             String msg = "No landscape description (input) available. Landscape " + landscape.getIdentifier() + "could not be registered for observation";

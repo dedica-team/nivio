@@ -12,10 +12,12 @@ import java.util.Map;
 public class HealthKPI extends CustomKPI {
 
     public static final String IDENTIFIER = "health";
+    public static final String HEALTHY = "healthy";
+    public static final String UNHEALTHY = "unhealthy";
 
     private static final Map<Status, String> matches = Map.of(
-            Status.GREEN, PrometheusExporter.HEALTHY,
-            Status.RED, PrometheusExporter.UNHEALTHY
+            Status.GREEN, HEALTHY,
+            Status.RED, UNHEALTHY
     );
 
     public HealthKPI() {

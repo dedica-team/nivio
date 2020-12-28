@@ -1,6 +1,7 @@
 package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 
 public class RelationBuilder {
@@ -22,7 +23,7 @@ public class RelationBuilder {
     /**
      * Creates a new relation description of type dataflow and adds it to the source.
      */
-    public static RelationDescription createDataflowDescription(LandscapeItem source, String target) {
+    public static RelationDescription createDataflowDescription(ItemDescription source, String target) {
         RelationDescription relationDescription = new RelationDescription();
         relationDescription.setSource(source.getIdentifier());
         relationDescription.setTarget(target);
@@ -37,11 +38,11 @@ public class RelationBuilder {
         return relation;
     }
 
-    public static RelationDescription provides(LandscapeItem source, LandscapeItem target) {
+    public static RelationDescription provides(ItemDescription source, ItemDescription target) {
         return provides(source.getIdentifier(), target);
     }
 
-    public static RelationDescription provides(String source, LandscapeItem target) {
+    public static RelationDescription provides(String source, ItemDescription target) {
         RelationDescription relationDescription = new RelationDescription();
         relationDescription.setSource(source);
         relationDescription.setTarget(target.getFullyQualifiedIdentifier().toString());

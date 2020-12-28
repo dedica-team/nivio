@@ -46,4 +46,28 @@ from environment variables. To exclude internal stacks (like those responsible f
 Nivio proprietary format
 ------------------------
 
-Nivio provided an own format, which allows to set all model properties manually (see Model and Syntax section)
+Nivio provides an own format, which allows to set all model properties manually (see Model and Syntax section).
+
+
+External data
+-------------
+
+Nivio can load external data that cannot be used directly to build landscapes, but is still valuable. For example, the
+number of GitHub issues might be interesting to see on a landscape item that is an open source component. To attach such
+data to landscape components, use links having special known identifiers like "github" or "sonar".
+
+This is work in progress. Currently supported link identifiers are:
+
+* 'github' for GitHub repositories
+* 'spring.health' for Spring Boot health actuators https://docs.spring.io/spring-boot/docs/current/actuator-api/htmlsingle/#health
+
+.. code-block:: yaml
+   :linenos:
+
+    items:
+      - identifier: nivio
+        links:
+          github: https://github.com/dedica-team/nivio
+          spring.health: http://localhost:8090/actuator/health
+          # sonar: http://hihi.huhu not implemented yet
+

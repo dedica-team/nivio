@@ -6,6 +6,7 @@ import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.support.SimpleFunction;
 import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.facet.FacetResult;
@@ -29,6 +30,8 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -38,14 +41,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.googlecode.cqengine.query.QueryFactory.attribute;
-import static de.bonndan.nivio.model.LandscapeItem.IDENTIFIER_VALIDATION;
+import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
 import static de.bonndan.nivio.model.SearchDocumentFactory.*;
 
 /**
  * A queryable index on all landscape items.
  */
 public class ItemIndex {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemIndex.class);
     private static final String CQE_FIELD_FQI = "fqi";
 
     /**
@@ -113,7 +116,7 @@ public class ItemIndex {
         setItems(items);
     }
 
-    public Stream<Item> stream() {
+    public Stream<Item> itemStream() {
         return index.stream();
     }
 
@@ -129,8 +132,9 @@ public class ItemIndex {
      * @return all matching items.
      */
     public Collection<Item> query(String term) {
-        if ("*".equals(term))
+        if ("*".equals(term)) {
             return all();
+        }
 
         if (term.contains("/")) {
             return findAll(ItemMatcher.forTarget(term));
@@ -158,11 +162,11 @@ public class ItemIndex {
     /**
      * Ensures that the given item has a sibling in the list, returns the item from the list.
      *
-     * @param item item to search for
+     * @param itemDescription item to search for
      * @return the sibling from the list
      */
-    public Item pick(final LandscapeItem item) {
-        return pick(item.getIdentifier(), item.getGroup());
+    public Item pick(final ItemDescription itemDescription) {
+        return pick(itemDescription.getIdentifier(), itemDescription.getGroup());
     }
 
     /**
@@ -195,8 +199,9 @@ public class ItemIndex {
 
         List<Item> found = findAll(identifier, group);
 
-        if (found.size() > 1)
+        if (found.size() > 1) {
             throw new RuntimeException("Ambiguous result for " + group + "/" + identifier + ": " + found + " in collection ");
+        }
 
         return Optional.ofNullable((found.size() == 1) ? found.get(0) : null);
     }
@@ -219,6 +224,7 @@ public class ItemIndex {
 
     /**
      * Creates a search index based in a snapshot of current items state (later modifications won't be shown).
+     *
      * @return number of indexed items
      */
     public int indexForSearch() {
@@ -245,10 +251,10 @@ public class ItemIndex {
     public Set<Item> search(String queryString) {
         try {
             return documentSearch(queryString).stream()
-                    .map(doc -> {
-                        //TODO this is ineffective, there must be a way (index?) to obtain the item directly
-                        return cqnQueryOnIndex("SELECT * FROM items WHERE " + CQE_FIELD_FQI + " = '" + doc.get(LUCENE_FIELD_FQI) + "'").stream().findFirst().orElse(null);
-                    })
+                    .map(doc ->
+                            //TODO this is ineffective, there must be a way (index?) to obtain the item directly
+                            cqnQueryOnIndex("SELECT * FROM items WHERE " + CQE_FIELD_FQI + " = '" + doc.get(LUCENE_FIELD_FQI) + "'").stream().findFirst().orElse(null)
+                    )
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
         } catch (IOException | ParseException e) {
@@ -275,7 +281,7 @@ public class ItemIndex {
             ireader.close();
             return facets.getAllDims(10);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.warn("Unable to get the facets for the given query error: ", e);
         }
 
         return null;
@@ -293,15 +299,14 @@ public class ItemIndex {
 
         List<Document> documents = new ArrayList<>();
         // Iterate through the results:
-        for (int i = 0; i < hits.length; i++) {
-            Document hitDoc = isearcher.doc(hits[i].doc);
+        for (ScoreDoc hit : hits) {
+            Document hitDoc = isearcher.doc(hit.doc);
             documents.add(hitDoc);
         }
         ireader.close();
 
         return documents;
     }
-
 
 
     public List<Item> cqnQueryOnIndex(String condition) {
@@ -316,8 +321,8 @@ public class ItemIndex {
     }
 
     private List<Item> findAll(ItemMatcher itemMatcher) {
-        return stream()
-                .filter(itemMatcher::isSimilarTo)
+        return itemStream()
+                .filter(item -> itemMatcher.isSimilarTo(item.getFullyQualifiedIdentifier()))
                 .collect(Collectors.toList());
     }
 }

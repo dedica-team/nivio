@@ -20,7 +20,7 @@ public class ItemFactoryTest {
         landscapeItem.setName("test");
         landscapeItem.setLabel(Label.shortname, "t");
         landscapeItem.setType("loadbalancer");
-        landscapeItem.setLabel(Label.layer, LandscapeItem.LAYER_INFRASTRUCTURE);
+        landscapeItem.setLabel(Label.layer, Item.LAYER_INFRASTRUCTURE);
         landscapeItem.setIdentifier("id");
         landscapeItem.setLink("homepage", new URL("http://home.page"));
         landscapeItem.setLink("repo", new URL("https://acme.git/repo1"));
@@ -38,7 +38,7 @@ public class ItemFactoryTest {
 
     @Test
     public void testCreate() {
-        LandscapeImpl l = LandscapeFactory.create("testLandscape");
+        Landscape l = LandscapeFactory.create("testLandscape");
 
         Item created = ItemFactory.fromDescription(landscapeItem, l);
         assertNotNull(created);

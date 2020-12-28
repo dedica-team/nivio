@@ -37,16 +37,16 @@ public class LandscapeDescriptionFactory {
     /**
      * Returns a {@link LandscapeDescription}s from config file url.
      *
-     * @param old an outdated landscape / description
+     * @param outdatedLandscape an outdated landscape
      * @return the description or null if the source is no URL
      */
     @Nullable
-    public LandscapeDescription from(Landscape old) {
+    public LandscapeDescription from(Landscape outdatedLandscape) {
         try {
-            URL url = new URL(old.getSource());
+            URL url = new URL(outdatedLandscape.getSource());
             return from(url);
         } catch (MalformedURLException e) {
-            String msg = "Source in landscape " + old.getIdentifier() + " might be no url: " + old.getSource();
+            String msg = "Source in landscape " + outdatedLandscape.getIdentifier() + " might be no url: " + outdatedLandscape.getSource();
             LOGGER.info(msg);
             return null;
         }

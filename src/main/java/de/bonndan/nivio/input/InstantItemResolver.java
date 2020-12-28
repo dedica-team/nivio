@@ -9,17 +9,15 @@ import java.util.*;
 
 /**
  * If the landscape is configured as "greedy", new items are created on the fly by a reference name.
- *
  */
-public class InstantItemResolver {
+public class InstantItemResolver extends Resolver {
 
-    private final ProcessLog log;
-
-    public InstantItemResolver(ProcessLog log) {
-        this.log = log;
+    protected InstantItemResolver(ProcessLog processLog) {
+        super(processLog);
     }
 
-    public void processTargets(LandscapeDescription landscape) {
+    @Override
+    public void resolve(LandscapeDescription landscape) {
 
         if (!landscape.getConfig().isGreedy()) {
             return;
@@ -36,10 +34,10 @@ public class InstantItemResolver {
         List<ItemDescription> newItems = new ArrayList<>();
         //providers
         description.getProvidedBy().forEach(term -> {
-            Optional<? extends LandscapeItem> provider = allItems.query(term.toLowerCase()).stream().findFirst();
+            Optional<? extends ItemDescription> provider = allItems.query(term.toLowerCase()).stream().findFirst();
 
             if (provider.isEmpty()) {
-                log.info("Creating a new provider landscape item for term '" + term + "' instantly.");
+                processLog.info("Creating a new provider landscape item for term '" + term + "' instantly.");
                 newItems.add(createItem(term));
             }
         });
@@ -50,7 +48,7 @@ public class InstantItemResolver {
             String target = rel.getTarget().equalsIgnoreCase(description.getIdentifier()) ?
                     rel.getSource() : rel.getTarget();
             if (!StringUtils.isEmpty(target) && !hasTarget(target.toLowerCase(), allItems)) {
-                log.info(description + ": creating a new target item '" + target.toLowerCase() + "' instantly.");
+                processLog.info(description + ": creating a new target item '" + target.toLowerCase() + "' instantly.");
                 newItems.add(createItem(rel.getTarget()));
             }
         });
@@ -72,9 +70,9 @@ public class InstantItemResolver {
 
     private boolean hasTarget(String term, ItemDescriptions allItems) {
 
-        Collection<? extends LandscapeItem> result = allItems.query(term);
+        Collection<? extends ItemDescription> result = allItems.query(term);
         if (result.size() > 1) {
-            log.warn("Found ambiguous sources matching " + term);
+            processLog.warn("Found ambiguous sources matching " + term);
             return true;
         }
 

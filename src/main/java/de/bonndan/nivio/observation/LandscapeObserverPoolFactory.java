@@ -48,7 +48,10 @@ public class LandscapeObserverPoolFactory {
 
         for (SourceReference sourceReference : description.getSourceReferences()) {
             InputFormatHandler inputFormatHandler = inputFormatHandlerFactory.getInputFormatHandler(sourceReference);
-            observers.add(inputFormatHandler.getObserver(sourceReference, baseUrl.orElse(null)));
+            InputFormatObserver observer = inputFormatHandler.getObserver(sourceReference, baseUrl.orElse(null));
+            if (observer != null) {
+                observers.add(observer);
+            }
         }
 
         return new LandscapeObserverPool(landscape, observers);

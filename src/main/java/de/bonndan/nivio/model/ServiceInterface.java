@@ -1,10 +1,11 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import de.bonndan.nivio.input.dto.InterfaceDescription;
 
 import java.net.URL;
 
-public class ServiceInterface implements InterfaceItem {
+public class ServiceInterface {
 
     @JsonBackReference
     private Item item;
@@ -14,32 +15,24 @@ public class ServiceInterface implements InterfaceItem {
     private URL url;
     private String protection;
 
-    public ServiceInterface() {
-
-    }
-
-    public ServiceInterface(InterfaceItem interfaceItem) {
+    public ServiceInterface(InterfaceDescription interfaceItem) {
         this.description = interfaceItem.getDescription();
         this.format = interfaceItem.getFormat();
         this.url = interfaceItem.getUrl();
     }
 
-    @Override
     public String getDescription() {
         return description;
     }
 
-    @Override
     public String getFormat() {
         return format;
     }
 
-    @Override
     public URL getUrl() {
         return url;
     }
 
-    @Override
     public String getProtection() {
         return protection;
     }

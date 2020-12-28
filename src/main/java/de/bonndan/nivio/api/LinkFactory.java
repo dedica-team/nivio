@@ -50,59 +50,72 @@ public class LinkFactory {
         return out;
     }
 
-    public Map<String, Link> getLandscapeLinks(LandscapeImpl landscape) {
+    public Map<String, Link> getLandscapeLinks(Landscape landscape) {
         Map<String, Link> links = new HashMap<>();
         links.put(REL_SELF, generateSelfLink(landscape));
 
-        links.put("reindex", linkTo(localServer.getUrl(ApiController.PATH, "reindex", landscape.getIdentifier()))
-                .withMedia(MediaType.APPLICATION_JSON_VALUE)
-                .withTitle("Reindex the source")
-                .build()
-        );
+        localServer.getUrl(ApiController.PATH, "reindex", landscape.getIdentifier()).ifPresent(url -> {
+            links.put("reindex", linkTo(url)
+                    .withMedia(MediaType.APPLICATION_JSON_VALUE)
+                    .withTitle("Reindex the source")
+                    .build()
+            );
+        });
 
         /*
          * map output
          */
-        links.put("svg", linkTo(localServer.getUrl(MapController.PATH, landscape.getIdentifier(), MapController.MAP_SVG_ENDPOINT))
-                .withMedia("image/svg+xml")
-                .withTitle("SVG map")
-                .build()
-        );
+        localServer.getUrl(MapController.PATH, landscape.getIdentifier(), MapController.MAP_SVG_ENDPOINT).ifPresent(url -> {
+            links.put("svg", linkTo(url)
+                    .withMedia("image/svg+xml")
+                    .withTitle("SVG map")
+                    .build()
+            );
+        });
+
+        localServer.getUrl(DocsController.PATH, landscape.getIdentifier(), DocsController.REPORT_HTML).ifPresent(url -> {
+            links.put("report", linkTo(url)
+                    .withTitle("Written landscape report")
+                    .build()
+            );
+        });
+
+        localServer.getUrl(ApiController.PATH, "landscape", landscape.getIdentifier(), "log").ifPresent(url -> {
+            links.put("log", linkTo(url)
+                    .withMedia(MediaType.APPLICATION_JSON_VALUE)
+                    .withTitle("Processing log")
+                    .build()
+            );
+        });
+
+        localServer.getUrl(ApiController.PATH, "landscape", landscape.getIdentifier(), "search/{lucene:query}").ifPresent(url -> {
+            links.put("search", linkTo(url)
+                    .withMedia(MediaType.APPLICATION_JSON_VALUE)
+                    .withTitle("Search for items")
+                    .build()
+            );
+        });
 
 
-        links.put("report",
-                linkTo(localServer.getUrl(DocsController.PATH, landscape.getIdentifier(), DocsController.REPORT_HTML))
-                        .withTitle("Written landscape report").build()
-        );
-        links.put("log",
-                linkTo(localServer.getUrl(ApiController.PATH, "landscape", landscape.getIdentifier(), "log"))
-                        .withMedia(MediaType.APPLICATION_JSON_VALUE)
-                        .withTitle("Processing log")
-                        .build()
-        );
+        localServer.getUrl(AssessmentController.PATH, landscape.getFullyQualifiedIdentifier().toString()).ifPresent(url -> {
+            links.put("assessment", linkTo(url)
+                    .withMedia(MediaType.APPLICATION_JSON_VALUE)
+                    .withTitle("assessment")
+                    .build()
+            );
+        });
 
-        links.put("search",
-                linkTo(localServer.getUrl(ApiController.PATH, "landscape", landscape.getIdentifier(), "search/{lucene:query}"))
-                        .withMedia(MediaType.APPLICATION_JSON_VALUE)
-                        .withTitle("Search for items")
-                        .build()
-        );
-
-        links.put("assessment",
-                linkTo(localServer.getUrl(AssessmentController.PATH, landscape.getFullyQualifiedIdentifier().toString()))
-                        .withMedia(MediaType.APPLICATION_JSON_VALUE)
-                        .withTitle("assessment")
-                        .build()
-        );
 
         return links;
     }
 
     private Link generateSelfLink(de.bonndan.nivio.model.Component component) {
-        return linkTo(localServer.getUrl(ApiController.PATH, component.getFullyQualifiedIdentifier().jsonValue()))
-                .withMedia(MediaType.APPLICATION_JSON_VALUE)
-                .withTitle("JSON representation")
-                .build();
+        return localServer.getUrl(ApiController.PATH, component.getFullyQualifiedIdentifier().jsonValue())
+                .map(url -> linkTo(url)
+                        .withMedia(MediaType.APPLICATION_JSON_VALUE)
+                        .withTitle("JSON representation")
+                        .build()
+                ).orElse(null);
     }
 
     /**
@@ -111,18 +124,20 @@ public class LinkFactory {
      * @param landscapes all landscape
      * @return the index
      */
-    Index getIndex(Iterable<LandscapeImpl> landscapes) {
+    Index getIndex(Iterable<Landscape> landscapes) {
+
         Index index = new Index();
 
         StreamSupport.stream(landscapes.spliterator(), false)
-                .forEach((LandscapeImpl landscape) -> {
-                    Link link = linkTo(localServer.getUrl(ApiController.PATH, landscape.getIdentifier()))
-                            .withName(landscape.getName())
-                            .withRel("landscape")
-                            .withMedia("application/json")
-                            .build();
-
-                    index.getLinks().put(landscape.getIdentifier(), link);
+                .forEach((Landscape landscape) -> {
+                    localServer.getUrl(ApiController.PATH, landscape.getIdentifier()).ifPresent(url -> {
+                        Link link = linkTo(url)
+                                .withName(landscape.getName())
+                                .withRel("landscape")
+                                .withMedia("application/json")
+                                .build();
+                        index.getLinks().put(landscape.getIdentifier(), link);
+                    });
                 });
         return index;
     }
@@ -132,14 +147,14 @@ public class LinkFactory {
      *
      * @param landscape landscape
      */
-    void setLandscapeLinksRecursive(LandscapeImpl landscape) {
+    void setLandscapeLinksRecursive(Landscape landscape) {
         Map<String, Link> landscapeLinks = getLandscapeLinks(landscape);
         landscape.setLinks(landscapeLinks);
         setGroupSelfLinksRecursive(landscape.getGroups());
     }
 
-    void setGroupSelfLinksRecursive(Map<String, GroupItem> groups) {
-        groups.forEach((s, groupItem) -> setGroupLinksRecursive((Group) groupItem));
+    void setGroupSelfLinksRecursive(Map<String, Group> groups) {
+        groups.forEach((s, groupItem) -> setGroupLinksRecursive(groupItem));
     }
 
     void setGroupLinksRecursive(Group groupItem) {

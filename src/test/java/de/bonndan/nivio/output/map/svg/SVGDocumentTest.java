@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.RenderingTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,12 +20,12 @@ class SVGDocumentTest  extends RenderingTest {
     @Test
     public void renderInout() throws IOException {
         String path = "/src/test/resources/example/inout";
-        LandscapeImpl landscape = getLandscape(path + ".yml");
+        Landscape landscape = getLandscape(path + ".yml");
         String svg = renderLandscape(path, landscape);
         assertTrue(svg.contains("svg version=\"1.1\""));
         assertTrue(svg.contains("<image xlink:href=\"https://dedica.team/images/logo_orange_weiss.png\""));
         assertTrue(svg.contains("class=\"title\">Input and Output</text>"));
-        assertTrue(svg.contains("<g class=\"hexagon-group\""));
+        assertTrue(svg.contains("<g data-identifier=\"inout/output/svg\" class=\"item\""));
         assertTrue(svg.contains(">Docker Compose files</text>"));
 
     }
@@ -33,7 +33,7 @@ class SVGDocumentTest  extends RenderingTest {
     @Test
     public void renderCustomFill() throws IOException {
         String path = "/src/test/resources/example/dedica";
-        LandscapeImpl landscape = getLandscape(path + ".yml");
+        Landscape landscape = getLandscape(path + ".yml");
         String svg = renderLandscape(path, landscape);
         assertTrue(svg.contains("svg version=\"1.1\""));
         assertTrue(svg.contains("<image xlink:href=\"https://dedica.team/images/logo_orange_weiss.png\""));

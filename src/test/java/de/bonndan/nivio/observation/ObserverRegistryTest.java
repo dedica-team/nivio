@@ -6,7 +6,7 @@ import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.LandscapeFactory;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ class ObserverRegistryTest {
     private ApplicationEventPublisher publisher;
     private LandscapeObserverPoolFactory observerPoolFactory;
     private ObserverRegistry observerRegistry;
-    private LandscapeImpl landscape;
+    private Landscape landscape;
 
     @BeforeEach
     public void setup() {

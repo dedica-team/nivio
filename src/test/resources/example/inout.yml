@@ -16,23 +16,23 @@ groups:
 items:
   - identifier: png
     name: Rendered Graph
-    icon: https://raw.githubusercontent.com/bonndan/nivio/master/src/main/resources/static/icons/nivio.png
-    description: renders the landscape as a bitmap
-    group: output
-    providedBy:
-      - nivio
-
-  - identifier: svg
-    name: Interactive Graph
-    icon: https://raw.githubusercontent.com/bonndan/nivio/master/src/main/resources/static/icons/nivio.png
+    icon: graph
     description: Renders a svg based graph of the landscape for interactive use and large scale printing.
     group: output
     providedBy:
       - nivio
 
+  - identifier: svg
+    name: GUI
+    icon: television-guide
+    description: user interface to explore landscapes
+    group: output
+    providedBy:
+      - nivio
+
   - identifier: report
-    icon: https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/200px-PDF_file_icon.svg.png
-    name: HTML/PDF Report
+    icon: file-pdf
+    name: HTML Report
     description: Generates a report on the landscape suitable for printing including all items, groups, owners and the like.
     group: output
     providedBy:
@@ -41,9 +41,10 @@ items:
 
   - identifier: nivio-prop
     name: Nivio proprietary
-    description: The custom format to describe landscape items. Try "man model" to learn more.
+    description: The custom format to describe landscape items.
+    links:
+      manual: https://nivio.readthedocs.io/en/latest/model.html
     type: humanuser
-    icon: https://raw.githubusercontent.com/bonndan/nivio/master/src/main/resources/static/icons/humanuser.png
     group: input
 
   - identifier: docker-compose
@@ -63,6 +64,8 @@ items:
     group: input
     lifecycle: planned
     icon: vendor://prometheus
+    links:
+      github: https://github.com/prometheus/prometheus
 
   - identifier: csv
     shortName: CSV
@@ -73,13 +76,15 @@ items:
   - identifier: nivio
     name: Nivio
     group: nivio
-    icon: https://raw.githubusercontent.com/bonndan/nivio/master/src/main/resources/static/icons/nivio.png
+    type: nivio
     providedBy:
       - csv
       - prometheus
       - k8s
       - docker-compose
       - nivio-prop
+    links:
+      github: https://github.com/dedica-team/nivio
 
 
 

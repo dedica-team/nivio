@@ -2,11 +2,12 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.output.icons.IconService;
+import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,15 +21,15 @@ class SVGRendererTest {
     void testRendering() throws MalformedURLException {
 
         //given
-        LocalServer localServer = mock(LocalServer.class);
-        when(localServer.getIconUrl(any(Item.class))).thenReturn(new URL("https://foo.bar/icon.png"));
+        IconService iconService = mock(IconService.class);
+        when(iconService.getIconUrl(any(Item.class))).thenReturn("https://foo.bar/icon.png");
         MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
         SVGRenderer svgRenderer = new SVGRenderer(mapStyleSheetFactory);
 
         LayoutedComponent lc = getLayoutedLandscape();
 
         //when
-        String render = svgRenderer.render(lc);
+        String render = svgRenderer.render(lc, true);
 
         //check svg xml is returned
         assertTrue(render.contains("svg version=\"1.1\""));
@@ -43,7 +44,7 @@ class SVGRendererTest {
     }
 
     private LayoutedComponent getLayoutedLandscape() {
-        LandscapeImpl foo = LandscapeFactory.create("foo");
+        Landscape foo = LandscapeFactory.create("foo");
 
         LayoutedComponent lc = new LayoutedComponent(foo);
         lc.setChildren(new ArrayList<>());

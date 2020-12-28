@@ -16,24 +16,23 @@ import java.util.*;
 /**
  * This is representation of a service in the textual form as described in a source file.
  */
-public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
+public class ItemDescription implements ComponentDescription, Labeled, Linked, Tagged {
 
     private final Map<String, Link> links = new HashMap<>();
     @JsonDeserialize(contentAs = RelationDescription.class)
-    private final Set<RelationItem<String>> relations = new HashSet<>();
+    private final Set<RelationDescription> relations = new HashSet<>();
     private final Map<String, String> labels = new HashMap<>();
     @NotEmpty
     private String environment;
     @NotEmpty
     private String identifier;
-    @NotEmpty
     private String name;
     private String owner;
     private String description;
     private String contact;
     private String group;
     @JsonDeserialize(contentAs = InterfaceDescription.class)
-    private Set<InterfaceItem> interfaces = new HashSet<>();
+    private Set<InterfaceDescription> interfaces = new HashSet<>();
     private List<String> providedBy = new ArrayList<>();
     private String icon;
     private String color;
@@ -58,7 +57,6 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         this.identifier = StringUtils.trimAllWhitespace(identifier);
     }
 
-    @Override
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(environment, group, identifier);
     }
@@ -71,7 +69,6 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         this.environment = environment;
     }
 
-    @Override
     public String getType() {
         return getLabel(Label.type);
     }
@@ -88,7 +85,6 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         this.name = name;
     }
 
-    @Override
     public String getOwner() {
         return owner;
     }
@@ -97,7 +93,6 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         this.owner = owner;
     }
 
-    @Override
     public String getIcon() {
         return icon;
     }
@@ -106,7 +101,6 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         this.icon = icon;
     }
 
-    @Override
     public String getColor() {
         return color;
     }
@@ -164,11 +158,11 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         return labels;
     }
 
-    public Set<InterfaceItem> getInterfaces() {
+    public Set<InterfaceDescription> getInterfaces() {
         return interfaces;
     }
 
-    public void setInterfaces(Set<InterfaceItem> interfaces) {
+    public void setInterfaces(Set<InterfaceDescription> interfaces) {
         this.interfaces = interfaces;
     }
 
@@ -185,8 +179,7 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
         this.providedBy = providedBy;
     }
 
-    @Override
-    public Set<RelationItem<String>> getRelations() {
+    public Set<RelationDescription> getRelations() {
         return relations;
     }
 
@@ -203,7 +196,7 @@ public class ItemDescription implements LandscapeItem, Labeled, Linked, Tagged {
                 .forEach(this::addRelation);
     }
 
-    public void addRelation(RelationItem<String> relationItem) {
+    public void addRelation(RelationDescription relationItem) {
         Objects.requireNonNull(relationItem);
         this.relations.add(relationItem);
     }

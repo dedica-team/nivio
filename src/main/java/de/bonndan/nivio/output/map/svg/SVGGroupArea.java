@@ -2,7 +2,6 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.output.map.hex.Hex;
-import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.util.StringUtils;
 
@@ -48,14 +47,14 @@ class SVGGroupArea extends Component {
             territoryHexes.add(
                     SvgTagCreator.text(group.getIdentifier())
                             .attr("x", anchor.x)
-                            .attr("y", anchor.y + 15)
+                            .attr("y", (int)(anchor.y + 25))
                             .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
                             .attr("text-anchor", "middle")
                             .attr("class", "groupLabel")
             );
         }
 
-        return SvgTagCreator.g(territoryHexes.toArray(DomContent[]::new));
+        return SvgTagCreator.g(territoryHexes.toArray(DomContent[]::new)).attr("class", "groupArea");
     }
 }
 

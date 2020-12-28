@@ -8,7 +8,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.LandscapeFactory;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.util.URLHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 
 class LandscapeObserverPoolFactoryTest {
 
-    private LandscapeImpl landscape;
+    private Landscape landscape;
     private InputFormatHandlerFactory formatFactory;
     private LandscapeObserverPoolFactory observerPoolFactory;
     private FileFetcher fileFetcher;
@@ -39,7 +39,7 @@ class LandscapeObserverPoolFactoryTest {
     }
 
     @Test
-    @DisplayName("creates a pool with correct base rul")
+    @DisplayName("creates a pool with correct base url")
     public void getPool() {
         String source = getRootPath() + "/src/test/resources/example/example_env.yml";
         File file = new File(source);
@@ -52,6 +52,7 @@ class LandscapeObserverPoolFactoryTest {
         description.getSourceReferences().add(ref1);
 
         InputFormatHandler handler = mock(InputFormatHandler.class);
+        when(handler.getObserver(any(SourceReference.class), any())).thenReturn(mock(InputFormatObserver.class));
         when(formatFactory.getInputFormatHandler(any(SourceReference.class))).thenReturn(handler);
 
         when(fileFetcher.get(any(URL.class))).thenReturn("");
@@ -84,6 +85,7 @@ class LandscapeObserverPoolFactoryTest {
         description.getSourceReferences().add(ref1);
 
         InputFormatHandler handler = mock(InputFormatHandler.class);
+        when(handler.getObserver(any(SourceReference.class), any())).thenReturn(mock(InputFormatObserver.class));
         when(formatFactory.getInputFormatHandler(any(SourceReference.class))).thenReturn(handler);
 
         //when

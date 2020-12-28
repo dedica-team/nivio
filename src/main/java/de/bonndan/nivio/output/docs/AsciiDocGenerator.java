@@ -20,12 +20,12 @@ public class AsciiDocGenerator {
 
     private static final String NL = "\n";
 
-    public String toDocument(LandscapeImpl landscape) {
+    public String toDocument(Landscape landscape) {
 
         return writeLandscape(landscape);
     }
 
-    private String writeLandscape(LandscapeImpl landscape) {
+    private String writeLandscape(Landscape landscape) {
         final StringBuilder builder = new StringBuilder();
 
         builder.append("= " + landscape.getName() + NL);

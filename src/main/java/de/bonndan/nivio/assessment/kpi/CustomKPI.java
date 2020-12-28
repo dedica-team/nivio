@@ -49,7 +49,7 @@ public class CustomKPI extends AbstractKPI {
             }
             this.setEnabled(kpiConfig.enabled);
             messageLabel = kpiConfig.messageLabel;
-            ranges = asRanges(kpiConfig.ranges);
+            ranges = asRanges(kpiConfig.label, kpiConfig.ranges);
             addSpecsFromConfig(kpiConfig.matches);
         }
 
@@ -94,7 +94,7 @@ public class CustomKPI extends AbstractKPI {
         return values;
     }
 
-    protected Map<Status, Range<Double>> asRanges(Map<String, String> ranges) {
+    protected Map<Status, Range<Double>> asRanges(String label, Map<String, String> ranges) {
         Map<Status, Range<Double>> rangeMap = new HashMap<>();
         if (ranges == null) {
             return rangeMap;
@@ -112,7 +112,7 @@ public class CustomKPI extends AbstractKPI {
             try {
                 rangeMap.put(Status.from(statusString), Range.between(Double.valueOf(split[0]), Double.valueOf(split[1])));
             } catch (NumberFormatException e) {
-                throw new ProcessingException("Failed to parse KPI range: " + s, e);
+                throw new ProcessingException(String.format("Failed to parse KPI '%s' range: %s", label, s), e);
             }
         });
         return rangeMap;

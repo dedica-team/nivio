@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.Renderer;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.hex.Hex;
@@ -35,20 +35,21 @@ public class SVGRenderer implements Renderer<String> {
     }
 
     @Override
-    public String render(LayoutedComponent layoutedComponent) {
-        applyValues(layoutedComponent);
-        SVGDocument svgDocument = new SVGDocument(layoutedComponent, getStyles((LandscapeImpl) layoutedComponent.getComponent()));
+    public String render(LayoutedComponent landscape, boolean debug) {
+        applyValues(landscape);
+        SVGDocument svgDocument = new SVGDocument(landscape, getStyles((Landscape) landscape.getComponent()));
+        svgDocument.setDebug(debug);
         return svgDocument.getXML();
     }
 
     @Override
-    public void render(LayoutedComponent landscape, File file)  {
+    public void render(LayoutedComponent landscape, File file, boolean debug)  {
         try (FileWriter fileWriter = new FileWriter(file)) {
-            fileWriter.write(render(landscape));
+            fileWriter.write(render(landscape, debug));
         } catch (IOException ignored) {}
     }
 
-    private String getStyles(LandscapeImpl landscape) {
+    private String getStyles(Landscape landscape) {
         String css = "";
         try (InputStream resourceAsStream = getClass().getResourceAsStream("/static/css/svg.css")) {
             css = new String(StreamUtils.copyToByteArray(resourceAsStream));

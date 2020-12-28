@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.input.dto.ItemDescription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,12 +15,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ItemIndexTest {
 
     private ArrayList<Item> items;
-    private LandscapeImpl landscape;
+    private Landscape landscape;
 
     @BeforeEach
     public void setup() {
 
-        landscape = new LandscapeImpl("l1", new Group(Group.COMMON));
+        landscape = new Landscape("l1", new Group(Group.COMMON));
 
         items = new ArrayList<>();
 
@@ -46,12 +47,10 @@ class ItemIndexTest {
 
     @Test
     public void pick() {
-
         assertNotNull(landscape.getItems().pick("s1", "g1"));
         assertNotNull(landscape.getItems().pick("s2", "g1"));
 
-        Item s2 = new Item("g1", "s2");
-        s2.setLandscape(landscape);
+        ItemDescription s2 = new ItemDescription("s2");
 
         assertNotNull(landscape.getItems().pick(s2));
     }

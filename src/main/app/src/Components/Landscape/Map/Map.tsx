@@ -1,14 +1,15 @@
-import React, { useState, useEffect, ReactElement, MouseEvent } from 'react';
+import React, { MouseEvent, ReactElement, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { ReactSvgPanZoomLoader, SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
+import { SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
 import {
-  ReactSVGPanZoom,
-  TOOL_AUTO,
-  Tool,
-  Value,
   fitSelection,
+  fitToViewer,
+  ReactSVGPanZoom,
   setPointOnViewerCenter,
+  Tool,
+  TOOL_AUTO,
+  Value,
 } from 'react-svg-pan-zoom';
 
 import { CSSTransition } from 'react-transition-group';
@@ -21,9 +22,17 @@ import MapRelation from './MapRelation/MapRelation';
 import Search from '../Search/Search';
 import { withBasePath } from '../../../utils/API/BasePath';
 import Assessment from '../Modals/Assessment/Assessment';
+import { get } from '../../../utils/API/APIClient';
+import { ReactSvgPanZoomLoaderXML } from './ReactSVGPanZoomLoaderXML';
 
 interface Props {
   identifier: string;
+}
+
+interface SVGData {
+  width: number;
+  height: number;
+  xml: string;
 }
 
 /**
@@ -41,10 +50,12 @@ const Map: React.FC<Props> = () => {
 
   const [sliderContent, setSliderContent] = useState<string | ReactElement | null>(null);
   const [showSlider, setShowSlider] = useState(false);
-  const [data, setData] = useState('');
+  const [data, setData] = useState<SVGData | null>(null);
   const [renderWithTransition, setRenderWithTransition] = useState(false);
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
   const { identifier } = useParams<{ identifier: string }>();
+
+  const [isFirstRender, setIsFirstRender] = useState(true);
 
   const findItem = (fullyQualifiedItemIdentifier: string) => {
     const element = document.getElementById(fullyQualifiedItemIdentifier);
@@ -156,7 +167,14 @@ const Map: React.FC<Props> = () => {
   };
 
   useEffect(() => {
-    setData(withBasePath(`/render/${identifier}/map.svg`));
+    const route = withBasePath(`/render/${identifier}/map.svg`);
+    get(route).then((svg) => {
+      const parser = new DOMParser();
+      const doc: any = parser.parseFromString(svg, 'image/svg+xml');
+      const width = doc.firstElementChild.width.baseVal.value;
+      const height = doc.firstElementChild.height.baseVal.value;
+      setData({ width: width, height: height, xml: svg });
+    });
   }, [identifier]);
 
   useEffect(() => {
@@ -199,6 +217,12 @@ const Map: React.FC<Props> = () => {
   }, [highlightElement]);
 
   if (data) {
+    if (isFirstRender && value.a != null) {
+      // @ts-ignore
+      setValue(fitToViewer(value, 'center', 'center'));
+      setIsFirstRender(false);
+    }
+
     return (
       <div className='landscapeMapContainer'>
         <Search findItem={findItem} />
@@ -211,11 +235,11 @@ const Map: React.FC<Props> = () => {
         >
           <Slider sliderContent={sliderContent} closeSlider={closeSlider} />
         </CSSTransition>
-        <ReactSvgPanZoomLoader
-          src={data}
+        <ReactSvgPanZoomLoaderXML
+          xml={data.xml}
           proxy={
             <>
-              <SvgLoaderSelectElement selector='.label' onClick={onItemClick} />
+              <SvgLoaderSelectElement selector='.item' onClick={onItemClick} />
               <SvgLoaderSelectElement selector='.relation' onClick={onRelationClick} />
             </>
           }
@@ -240,7 +264,7 @@ const Map: React.FC<Props> = () => {
               onChangeValue={(newValue) => setValue(newValue)}
               className={`ReactSVGPanZoom ${renderWithTransition ? 'with-transition' : ''}`}
             >
-              <svg width={window.innerWidth} height={window.innerHeight * 0.92}>
+              <svg width={data?.width} height={data?.height}>
                 {content}
               </svg>
             </ReactSVGPanZoom>

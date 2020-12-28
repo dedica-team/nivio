@@ -13,12 +13,9 @@ class Tile {
     float moveCosts = 0f;
     float sumCosts;
     float heuristicCosts;
-    private final boolean occupied;
 
-    public Tile(Hex hex, boolean occupied) {
-        Objects.requireNonNull(hex);
-        this.hex = hex;
-        this.occupied = occupied;
+    public Tile(Hex hex) {
+        this.hex = Objects.requireNonNull(hex);
 
         sumCosts = 0f;
         heuristicCosts = 0f;
@@ -41,8 +38,10 @@ class Tile {
     }
 
     /**
-     * Calculates the movecosts from one tile to this tile. If this tile is a
-     * wall then increase the costs by factor 10 to avoid walls.
+     * Calculates the movecosts from one tile to this tile.
+     *
+     * If this tile is occupied by an item then increase the costs by factor 10 (like a wall).
+     * If this tile is not occupied by an item but from has a different group the costs are slighty raised (like a bump).
      *
      * @param from The tile from which we move to this tile
      * @return The move cost from "from" to "this"
@@ -50,8 +49,12 @@ class Tile {
     public float calcMoveCostsFrom(Tile from) {
         float cost = 1f;
 
-        if (this.isOccupied()) {
+        if (this.hex.item != null) {
             cost *= 10f;
+        } else {
+            if (this.hex.group != null) {
+                cost *= 3f;
+            }
         }
 
         return cost + from.moveCosts;
@@ -76,15 +79,8 @@ class Tile {
         this.parent = parent;
     }
 
-    public boolean isOccupied() {
-        return occupied;
-    }
-
     @Override
     public String toString() {
-        return "Tile{" +
-                "hex=" + hex +
-                ", occupied=" + occupied +
-                '}';
+        return "Tile{" + "hex=" + hex + '}';
     }
 }

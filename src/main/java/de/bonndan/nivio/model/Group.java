@@ -8,7 +8,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.*;
 
-public class Group implements GroupItem, Labeled, Assessable {
+public class Group implements Labeled, Linked, Assessable {
 
     /**
      * Default group identifier (items are assigned to this group if no group is given
@@ -86,7 +86,6 @@ public class Group implements GroupItem, Labeled, Assessable {
         this.color = color;
     }
 
-    @Override
     @Schema(name = "_links")
     public Map<String, Link> getLinks() {
         return links;

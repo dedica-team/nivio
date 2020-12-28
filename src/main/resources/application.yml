@@ -1,6 +1,8 @@
 spring:
   application:
     name: nivio
+  main:
+    lazy-initialization: true
 
   mail:
     host: smtp.gmail.com
@@ -24,10 +26,23 @@ logging:
 server:
   port: ${PORT:8080}
 
+management:
+  server:
+    port: 8090
+
+  endpoint:
+    health:
+      show-details: always
+
+  health:
+    mail:
+      enabled: false
+
 nivio:
   baseUrl: ${NIVIO_BASE_URL:}
   version: #project.version#
   pollingMilliseconds: 30000 # 30 secs
+  # iconFolder: /a/local/path
 
 ---
 spring:

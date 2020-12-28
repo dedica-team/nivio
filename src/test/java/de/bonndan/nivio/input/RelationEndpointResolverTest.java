@@ -1,10 +1,11 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.input.compose2.InputFormatHandlerCompose2;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
-import de.bonndan.nivio.model.RelationItem;
 import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,9 +15,8 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -44,7 +44,7 @@ class RelationEndpointResolverTest {
     public void assignTemplateWithRegex() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates("/src/test/resources/example/example_templates2.yml");
-        relationEndpointResolver.processRelations(landscapeDescription);
+        relationEndpointResolver.resolve(landscapeDescription);
 
         ItemDescription one = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
         assertNotNull(one);
@@ -64,15 +64,18 @@ class RelationEndpointResolverTest {
     public void resolvesTemplatePlaceholdersInProviders() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates("/src/test/resources/example/example_templates2.yml");
-        relationEndpointResolver.processRelations(landscapeDescription);
+        relationEndpointResolver.resolve(landscapeDescription);
 
         //the provider has been resolved using a query instead of naming a service
         ItemDescription providedbyBar = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
         assertNotNull(providedbyBar);
-        List<RelationItem> relations = RelationType.PROVIDER.filter(providedbyBar.getRelations());
+
+        List<RelationDescription> relations = providedbyBar.getRelations().stream()
+                .filter(relation -> RelationType.PROVIDER.equals(relation.getType()))
+                .collect(Collectors.toUnmodifiableList());
         assertNotNull(relations);
         assertEquals(1, relations.size());
-        RelationItem s = relations.iterator().next();
+        RelationDescription s = relations.iterator().next();
         assertEquals("nivio:templates2/alpha/crappy_dockername-2343a", s.getSource());
     }
 
@@ -80,30 +83,31 @@ class RelationEndpointResolverTest {
     public void resolvesTemplatePlaceholdersInDataflow() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates("/src/test/resources/example/example_templates2.yml");
-        relationEndpointResolver.processRelations(landscapeDescription);
+        relationEndpointResolver.resolve(landscapeDescription);
 
         ItemDescription hasdataFlow = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
         assertNotNull(hasdataFlow);
         assertNotNull(hasdataFlow.getRelations());
-        List<RelationItem> relations = RelationType.DATAFLOW.filter(hasdataFlow.getRelations());
+        List<RelationDescription> relations = hasdataFlow.getRelations().stream()
+                .filter(relation -> RelationType.DATAFLOW.equals(relation.getType()))
+                .collect(Collectors.toUnmodifiableList());
         assertFalse(relations.isEmpty());
-        RelationItem next = relations.iterator().next();
+        RelationDescription next = relations.iterator().next();
         assertEquals("nivio:templates2/beta/other_crappy_name-2343a", next.getTarget());
-    }
-
-    private Map<ItemDescription, List<String>> getTemplates(LandscapeDescription landscapeDescription) {
-        InputFormatHandlerNivio inputFormatHandlerNivio = new InputFormatHandlerNivio(new FileFetcher(new HttpService()));
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(InputFormatHandlerFactory.with(inputFormatHandlerNivio), log);
-        Map<ItemDescription, List<String>> templateAndTargets = new HashMap<>();
-        sourceReferencesResolver.resolve(landscapeDescription, templateAndTargets);
-        return templateAndTargets;
     }
 
     private LandscapeDescription getLandscapeDescriptionWithAppliedTemplates(String s) {
         File file = new File(RootPath.get() + s);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
 
-        new TemplateResolver().processTemplates(landscapeDescription, getTemplates(landscapeDescription));
+        InputFormatHandlerFactory formatFactory = new InputFormatHandlerFactory(
+                new ArrayList<>(Arrays.asList(new InputFormatHandlerNivio(new FileFetcher(new HttpService())), InputFormatHandlerCompose2.forTesting()))
+        );
+        ProcessLog logger = new ProcessLog(mock(Logger.class));
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(formatFactory, logger);
+        sourceReferencesResolver.resolve(landscapeDescription);
+
+        new TemplateResolver(logger).resolve(landscapeDescription);
 
         return landscapeDescription;
     }

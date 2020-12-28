@@ -5,7 +5,7 @@ import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.model.LandscapeFactory;
-import de.bonndan.nivio.model.LandscapeImpl;
+import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -18,28 +18,27 @@ import static org.mockito.Mockito.*;
 
 class KPIFactoryTest {
 
-    private ApplicationEventPublisher publisher;
     private KPIFactory kpiFactory;
-    private LandscapeImpl landscape;
+    private Landscape landscape;
+    private LandscapeConfig landscapeConfig;
 
     @BeforeEach
     public void setup() {
-        publisher = mock(ApplicationEventPublisher.class);
-        kpiFactory = new KPIFactory(publisher);
+        kpiFactory = new KPIFactory();
 
         landscape = LandscapeFactory.create("test");
-        landscape.setConfig(new LandscapeConfig());
+        landscapeConfig = new LandscapeConfig();
+        landscape.setConfig(landscapeConfig);
         landscape.setProcessLog(new ProcessLog(mock(Logger.class)));
     }
 
     @Test
     public void defaultKPIs() {
 
-        Map<String, KPI> configuredKPIs = kpiFactory.getConfiguredKPIs(landscape);
+        Map<String, KPI> configuredKPIs = kpiFactory.getConfiguredKPIs(landscapeConfig.getKPIs());
         assertNotNull(configuredKPIs);
         assertEquals(4, configuredKPIs.size());
         assertTrue(configuredKPIs.get(ScalingKPI.IDENTIFIER) instanceof ScalingKPI);
-        verify(publisher, never()).publishEvent(any());
     }
 
     @Test
@@ -51,8 +50,7 @@ class KPIFactoryTest {
         kpIs.put("foo", config);
 
         //when
-        assertThrows(ProcessingException.class, () -> kpiFactory.getConfiguredKPIs(landscape));
-        verify(publisher).publishEvent(any());
+        assertThrows(ProcessingException.class, () -> kpiFactory.getConfiguredKPIs(landscapeConfig.getKPIs()));
     }
 
     @Test
@@ -65,7 +63,7 @@ class KPIFactoryTest {
         kpIs.put("foo", config);
 
         //when
-        Map<String, KPI> configuredKPIs = kpiFactory.getConfiguredKPIs(landscape);
+        Map<String, KPI> configuredKPIs = kpiFactory.getConfiguredKPIs(landscapeConfig.getKPIs());
 
         //then
         KPI kpi = configuredKPIs.get("foo");

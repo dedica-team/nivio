@@ -5,7 +5,6 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +58,7 @@ class PrometheusExporterTest {
                 .filter(itemDescription -> itemDescription.getIdentifier().equals("rocketchat"))
                 .findFirst();
         assertNotNull(op.get());
-        LandscapeItem rocketchat = op.get();
+        ItemDescription rocketchat = op.get();
         assertEquals("rocket-chat", rocketchat.getFullyQualifiedIdentifier().getGroup());
         assertEquals("unhealthy", rocketchat.getLabel(Label.health));
     }

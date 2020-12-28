@@ -2,13 +2,15 @@ package de.bonndan.nivio.output.map.hex;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeItem;
 import de.bonndan.nivio.output.map.svg.HexPath;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Collects all hexes close to group item hexes to create an area.
@@ -26,91 +28,129 @@ public class GroupAreaFactory {
      * <p>
      * There is clearly much room for improvement here. It's only that I haven't found a better approach so far.
      *
-     * @param occupied       tiles occupied by items
-     * @param group          the group
-     * @param allVertexHexes a mapping from item to its hex (all, unfiltered)
+     * @param itemsToHexes tiles occupied by items
+     * @param group        the group
      * @return all hexes the group consists of (an area)
      */
-    public static Set<Hex> getGroup(Set<Hex> occupied, Group group, Map<LandscapeItem, Hex> allVertexHexes) {
+    public static Set<Hex> getGroup(Map<Object, Hex> itemsToHexes, Group group) {
 
         Set<Item> items = group.getItems();
         Set<Hex> inArea = new HashSet<>();
 
-        //surround each item
-        items.forEach(item -> {
-            Hex hex = allVertexHexes.get(item);
-            inArea.add(hex);
-            hex.neighbours().forEach(neigh -> {
-                if (!occupied.contains(neigh))
-                    inArea.add(neigh);
-            });
+        if (!items.iterator().hasNext()) {
+            LOGGER.warn("Could not determine group area for group {}", group);
+            return inArea;
+        }
 
-            Set<Hex> closestNeighbours = getClosestItemsHexes(item, items, allVertexHexes);
-            // we dont care for occupied tiles here, since we just want the closest item within group, and non-group
-            // items cannot be anywhere nearby (other types of obstacles do not exist yet)
-            PathFinder pathFinder = new PathFinder(Set.of());
-            closestNeighbours.forEach(neighbour -> {
-                Optional<HexPath> path = pathFinder.getPath(hex, neighbour);
-                if (path.isEmpty()) {
-                    return;
-                }
-                Set<Hex> padded = new HashSet<>(); //pad to avoid thin bridges, also workaround for svh outline issue
-                path.get().getHexes().forEach(pathTile -> {
-                    padded.add(pathTile);
-                    padded.addAll(pathTile.neighbours());
-                });
-                padded.stream().filter(hex1 -> !occupied.contains(hex1)).forEach(inArea::add);
-            });
+        //build the area by adding paths
+        addPathsBetweenClosestItems(itemsToHexes, items, inArea);
 
-        });
+        // enlarge area by adding hexes with many sides adjacent to group area until no more can be added
+        Set<Hex> bridges = getBridges(inArea, 2);
+        while (!bridges.isEmpty()) {
+            inArea.addAll(bridges);
+            bridges = getBridges(inArea, 3); // 2 might be too aggressive and collide with other group areas
+        }
 
-        Set<Hex> bridges = getBridges(inArea);
-        inArea.addAll(bridges);
-
+        //set group identifier to all
+        inArea.forEach(hex -> hex.group = group.getFullyQualifiedIdentifier().toString());
         return inArea;
     }
 
     /**
-     * Returns all neighbours in group which are the have same (minimum) distance.
+     * Generates paths between each item and its closest neighbour and added tiles of the paths to the group area.
+     *
+     * @param itemsToHexes hex tiles occupied by items
+     * @param items        group items
+     * @param inArea       area hex tiles
+     */
+    private static void addPathsBetweenClosestItems(Map<Object, Hex> itemsToHexes,
+                                                    Set<Item> items,
+                                                    Set<Hex> inArea
+    ) {
+        List<Item> connected = new ArrayList<>();
+        Item next = items.iterator().next();
+        while (next != null) {
+
+            LOGGER.debug("adding {} to group area", next);
+            Hex hex = itemsToHexes.get(next);
+            //the item itself is added automatically
+            inArea.add(hex);
+            //every "unregistered" neighbour is added automatically
+            hex.neighbours().forEach(neigh -> {
+                if (!itemsToHexes.containsKey(neigh))
+                    inArea.add(neigh);
+            });
+
+            Optional<Item> closest = getClosestItem(next, items, itemsToHexes, connected);
+            if (closest.isEmpty()) {
+                LOGGER.debug("no closest item found for {}", next);
+                break;
+            }
+
+            // we dont care for occupied tiles here, since we just want the closest item within group, and non-group
+            // items cannot be anywhere nearby (other types of obstacles do not exist yet)
+            PathFinder pathFinder = new PathFinder(new DualHashBidiMap<>());
+
+            Hex destination = itemsToHexes.get(closest.get());
+            Optional<HexPath> path = pathFinder.getPath(hex, destination);
+            if (path.isPresent()) {
+                Set<Hex> padded = new HashSet<>(); //pad to avoid thin bridges, also workaround for svg outline issue
+                path.get().getHexes().forEach(pathTile -> {
+                    padded.add(pathTile);
+                    padded.addAll(pathTile.neighbours());
+                });
+                padded.stream().filter(hex1 -> !itemsToHexes.containsKey(hex1)).forEach(inArea::add);
+            }
+
+            connected.add(next);
+            // stop if the next one has been connected already
+            next = connected.contains(closest.get()) ? null : closest.get();
+        }
+    }
+
+    /**
+     * Returns the closest item of the group items.
+     * <p>
+     * Also regards that connections will not be reversed (a->b will prevent b->a).
      *
      * @param item           the current group item
      * @param items          all group items
      * @param allVertexHexes item hex mapping
+     * @param connected      the items which have been connected previously
      * @return the closest neighbours
      */
-    private static Set<Hex> getClosestItemsHexes(Item item, Set<Item> items, Map<LandscapeItem, Hex> allVertexHexes) {
+    private static Optional<Item> getClosestItem(Item item,
+                                                 Set<Item> items,
+                                                 Map<Object, Hex> allVertexHexes,
+                                                 List<Item> connected
+    ) {
         Hex start = allVertexHexes.get(item);
         AtomicInteger minDist = new AtomicInteger(Integer.MAX_VALUE);
-        final Set<Hex> min = new HashSet<>();
+        AtomicReference<Item> min = new AtomicReference<>(null);
         items.stream()
                 .filter(otherGroupItem -> !item.equals(otherGroupItem))
+                .filter(otherGroupItem -> !connected.contains(otherGroupItem))
                 .forEach(otherGroupItem -> {
                     Hex dest = allVertexHexes.get(otherGroupItem);
                     int distance = start.distance(dest);
-                    if (distance > minDist.get()) {
-                        return;
-                    }
-                    if (distance == minDist.get()) {
-                        min.add(dest);
-                        return;
-                    }
                     if (distance < minDist.get()) {
                         minDist.set(distance);
-                        min.clear();
-                        min.add(dest);
+                        min.set(otherGroupItem);
                     }
                 });
 
-        return min;
+        return Optional.ofNullable(min.get());
     }
 
     /**
      * Finds neighbours of in-area tiles which have in-area neighbours at adjacent sides (gaps).
      *
-     * @param inArea all hexes in area
+     * @param inArea   all hexes in area
+     * @param minSides min number of sides having in-group neighbours to be added as "bridge"
      * @return all hexes which fill gaps
      */
-    static Set<Hex> getBridges(Set<Hex> inArea) {
+    static Set<Hex> getBridges(Set<Hex> inArea, int minSides) {
 
         Set<Hex> bridges = new HashSet<>();
         inArea.forEach(hex -> {
@@ -119,37 +159,48 @@ public class GroupAreaFactory {
                     return;
 
                 int i = 0;
-                List<Integer> sides = new ArrayList<>();
+                List<Integer> sidesWithNeighbours = new ArrayList<>();
                 for (Hex nn : neighbour.neighbours()) {
-                    if (sides.size() > 2)
+                    if (sidesWithNeighbours.size() > minSides)
                         break;
 
                     //check on in-area tiles
                     if (inArea.contains(nn)) {
-                        sides.add(i);
+                        sidesWithNeighbours.add(i);
                     }
                     i++;
                 }
 
-                if (sides.size() < 2)
+                if (sidesWithNeighbours.size() < 2)
                     return;
-                if (sides.size() > 2) {
+                if (sidesWithNeighbours.size() > minSides) {
                     bridges.add(neighbour);
                     return;
                 }
 
-                //find out if the two neighbours are adjacent
-                int diff = sides.get(0) - sides.get(1);
-
-                //-1 if any two are adjacent
-                //-5 if first (0) and last (5) are adjacent
-                if (diff != -1 && diff != -5) {
+                if (hasOppositeNeighbours(sidesWithNeighbours)) {
                     bridges.add(neighbour);
-                    LOGGER.debug("Adding bridge tile {}", neighbour);
                 }
-
             });
         });
         return bridges;
+    }
+
+    /**
+     * Find out if any sides having a neighbour are not adjacent.
+     *
+     * @param sidesWithNeighbours numbers of sides having a same-group neighbour (0..5)
+     */
+    static private boolean hasOppositeNeighbours(List<Integer> sidesWithNeighbours) {
+
+        for (int i = 0; i < sidesWithNeighbours.size(); i++) {
+            Integer integer = sidesWithNeighbours.get(i);
+            Integer next = sidesWithNeighbours.get(i == sidesWithNeighbours.size() - 1 ? 0 : i + 1);
+            int diff = Math.abs(integer - next);
+            if (diff != 1 && diff != 5) {
+                return true;
+            }
+        }
+        return false;
     }
 }

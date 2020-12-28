@@ -16,6 +16,8 @@ import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 
 /**
  * A landscape item to be rendered in svg.
+ *
+ *
  */
 class SVGItem extends Component {
 
@@ -41,10 +43,15 @@ class SVGItem extends Component {
         var fillId = hasFill ? "url(#" + SVGPattern.idForLink(layoutedComponent.getFill()) + ")" : "white";
         DomContent content = null;
         Item item = (Item) layoutedComponent.getComponent();
-        //use the shortname as text instead
-        if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(item.getLabel(Label.shortname))) {
-            content = new SVGLabelText(item.getLabel(Label.shortname), "0", "3", "itemLabel")
-                    .render().attr("text-anchor", "middle");
+
+        /*
+         * use the shortname as text instead, if it is shorter than 3 chars (utf8: one "symbol"), font size is increased
+         */
+        String shortName = item.getLabel(Label.shortname);
+        if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(shortName)) {
+            String className = shortName.length() < 3 ? "itemShortnameIcon" : "itemShortname";
+            content = new SVGLabelText(shortName, "0", "3", className).render()
+                    .attr("text-anchor", "middle");
             fillId = "white";
             hasText = true;
         }
@@ -52,7 +59,7 @@ class SVGItem extends Component {
         DomContent icon = null;
         if (!hasFill && !hasText && !StringUtils.isEmpty(layoutedComponent.getIcon())) {
             final int size = DEFAULT_ICON_SIZE * 3;
-            final int trans = Math.round(size/2);
+            final int trans = Math.round(size / 2);
             icon = SvgTagCreator.image()
                     .attr("xlink:href", layoutedComponent.getIcon())
                     .attr("width", size)
@@ -74,38 +81,12 @@ class SVGItem extends Component {
             circle.attr("stroke-dasharray", 5);
             circle.attr("opacity", 0.7);
         }
-        ContainerTag inner = SvgTagCreator.g(circle, content, children)
-                .attr("class", "hexagon");
+        ContainerTag inner = SvgTagCreator.g(circle, content, children);
 
         return SvgTagCreator.g(inner, icon)
-                .attr("class", "hexagon-group")
+                .attr("data-identifier", this.id)
+                .attr("class", "item")
                 .attr("transform", "translate(" + pixel.x + "," + pixel.y + ")");
     }
 
-    /* TODO make scale reappear, but without evaluation (this is part of assessment)
-    private ContainerTag getScale() {
-
-        if (StringUtils.isEmpty(item.getLabel(Label.SCALE))) {
-            return null;
-        }
-
-        int scaleVal = 0;
-        try {
-            scaleVal = Integer.parseInt(item.getLabel(Label.SCALE));
-        } catch (NumberFormatException ignored) {
-        }
-
-        return SvgTagCreator.g(
-                        SvgTagCreator.circle()
-                                .attr("cx", 0)
-                                .attr("cy", 0)
-                                .attr("r", 12)
-                                .attr("fill", scaleVal > 0 ? "green" : "red")
-                        ,
-                        SvgTagCreator.text(String.valueOf(scaleVal))
-                                .attr("transform", "translate(-" + 4 + "," + 5 + ")")
-                ).attr("transform", "translate(" + 30 + "," + 30 + ")");
-    }
-
-     */
 }
