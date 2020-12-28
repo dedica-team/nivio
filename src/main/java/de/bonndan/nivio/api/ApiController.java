@@ -1,5 +1,6 @@
 package de.bonndan.nivio.api;
 
+import de.bonndan.nivio.IndexEvent;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.ItemDescription;
@@ -9,6 +10,7 @@ import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.URLHelper;
 import org.apache.lucene.facet.FacetResult;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,18 +32,20 @@ public class ApiController {
     private final InputFormatHandlerFactory formatFactory;
     private final Indexer indexer;
     private final LinkFactory linkFactory;
+    private final ApplicationEventPublisher publisher;
 
     public ApiController(LandscapeRepository landscapeRepository,
                          LandscapeDescriptionFactory landscapeDescriptionFactory,
                          InputFormatHandlerFactory formatFactory,
                          Indexer indexer,
-                         LinkFactory linkFactory
-    ) {
+                         LinkFactory linkFactory,
+                         ApplicationEventPublisher publisher) {
         this.landscapeRepository = landscapeRepository;
         this.landscapeDescriptionFactory = landscapeDescriptionFactory;
         this.formatFactory = formatFactory;
         this.indexer = indexer;
         this.linkFactory = linkFactory;
+        this.publisher = publisher;
     }
 
     /**
@@ -124,7 +128,11 @@ public class ApiController {
     @RequestMapping(path = "/landscape", method = RequestMethod.POST)
     public ProcessLog create(@RequestBody String body) {
         LandscapeDescription env = LandscapeDescriptionFactory.fromString(body, "request body");
-        return indexer.index(env);
+        //return indexer.index(env);
+        IndexEvent event = new IndexEvent(this, env, "create landscape");
+        publisher.publishEvent(event);
+        return event.getProcessLog();
+
     }
 
     @RequestMapping(path = "/landscape/{identifier}/services", method = RequestMethod.POST)
