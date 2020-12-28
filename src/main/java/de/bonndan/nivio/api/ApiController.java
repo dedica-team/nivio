@@ -155,8 +155,9 @@ public class ApiController {
         List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference, baseUrl.orElse(null));
 
         dto.setItemDescriptions(itemDescriptions);
-
-        return indexer.index(dto);
+        IndexEvent event = new IndexEvent(this, dto, "index landscape");
+        publisher.publishEvent(event);
+        return event.getProcessLog();
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
@@ -230,7 +231,9 @@ public class ApiController {
         File file = new File(landscape.getSource());
         if (file.exists()) {
             LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
-            return indexer.index(Objects.requireNonNull(landscapeDescription));
+            IndexEvent event = new IndexEvent(this, Objects.requireNonNull(landscapeDescription), "create landscape");
+            publisher.publishEvent(event);
+            return event.getProcessLog();
         }
 
         Optional<URL> url = URLHelper.getURL(landscape.getSource());
