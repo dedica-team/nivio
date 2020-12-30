@@ -1,11 +1,8 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.util.URLHelper;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import org.springframework.util.StringUtils;

@@ -1,10 +1,8 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.ComponentDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
-import de.bonndan.nivio.util.SafeAssign;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

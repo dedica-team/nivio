@@ -1,6 +1,5 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.IndexEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

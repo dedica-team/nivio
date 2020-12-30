@@ -1,6 +1,6 @@
 package de.bonndan.nivio.notification;
 
-import de.bonndan.nivio.ProcessingEvent;
+import de.bonndan.nivio.input.ProcessingEvent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,6 +1,6 @@
 package de.bonndan.nivio.input.kubernetes;
 
-import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.ItemType;
 import de.bonndan.nivio.input.dto.ItemDescription;

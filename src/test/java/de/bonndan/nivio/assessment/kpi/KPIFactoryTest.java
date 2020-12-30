@@ -1,7 +1,7 @@
 package de.bonndan.nivio.assessment.kpi;
 
-import de.bonndan.nivio.LandscapeConfig;
-import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.model.LandscapeConfig;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.model.LandscapeFactory;
@@ -9,7 +9,6 @@ import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
-import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Map;
 

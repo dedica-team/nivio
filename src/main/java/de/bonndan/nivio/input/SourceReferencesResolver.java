@@ -1,6 +1,5 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.util.URLHelper;
 

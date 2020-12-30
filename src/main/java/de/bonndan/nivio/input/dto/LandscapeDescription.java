@@ -2,7 +2,7 @@ package de.bonndan.nivio.input.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.bonndan.nivio.LandscapeConfig;
+import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.input.ItemDescriptionValues;
 import de.bonndan.nivio.input.ItemDescriptions;
 import de.bonndan.nivio.model.*;

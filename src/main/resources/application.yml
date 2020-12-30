@@ -5,10 +5,10 @@ spring:
     lazy-initialization: true
 
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: <login user to smtp server>
-    password: <login password to smtp server>
+    host: ${NIVIO_MAIL_HOST:}
+    port: ${NIVIO_MAIL_PORT:587}
+    username: ${NIVIO_MAIL_USERNAME:}
+    password: ${NIVIO_MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
@@ -24,7 +24,7 @@ logging:
           output: INFO
 
 server:
-  port: ${PORT:8080}
+  port: ${NIVIO_PORT:8080}
 
 management:
   server:

@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output.map;
 
-import de.bonndan.nivio.ProcessingFinishedEvent;
+import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.AppearanceProcessor;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;

@@ -1,6 +1,6 @@
 package de.bonndan.nivio.assessment.kpi;
 
-import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Item;

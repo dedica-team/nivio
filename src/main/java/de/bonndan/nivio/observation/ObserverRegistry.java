@@ -1,8 +1,8 @@
 package de.bonndan.nivio.observation;
 
-import de.bonndan.nivio.IndexEvent;
-import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.ProcessingFinishedEvent;
+import de.bonndan.nivio.input.IndexEvent;
+import de.bonndan.nivio.input.ProcessingException;
+import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Landscape;

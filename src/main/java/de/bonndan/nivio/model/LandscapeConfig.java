@@ -1,4 +1,4 @@
-package de.bonndan.nivio;
+package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPIConfig;

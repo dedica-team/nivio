@@ -1,7 +1,7 @@
 package de.bonndan.nivio.input;
 
 
-import de.bonndan.nivio.LandscapeConfig;
+import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.CustomKPI;
@@ -129,7 +129,7 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void readEnvVars() throws IOException, NoSuchFieldException, IllegalAccessException {
+    public void readEnvVars() throws IOException {
         final String FILE_PATH_ENVIRONMENT_VARS;
         final String user;
         if (SystemUtils.IS_OS_WINDOWS) {
