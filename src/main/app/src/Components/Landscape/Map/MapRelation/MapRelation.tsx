@@ -12,8 +12,9 @@ interface Props {
 }
 
 /**
- * Returns a choosen Map Relation
- * TODO work with items and relation objects
+ * Returns a chosen Map Relation
+ *
+ * TODO work with items and relation objects (loaded via API, get rid of string splitting)
  */
 const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type, findItem }) => {
   const sourceGroupNameStart = sourceIdentifier.indexOf('/') + 1;
