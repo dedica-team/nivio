@@ -18,7 +18,7 @@ interface Props {
 }
 
 /**
- * Returns a choosen Landscape group if informations are available
+ * Returns a chosen Landscape group if informations are available
  */
 const Group: React.FC<Props> = ({ group, assessments, findItem, findGroup }) => {
   const classes = componentStyles();
