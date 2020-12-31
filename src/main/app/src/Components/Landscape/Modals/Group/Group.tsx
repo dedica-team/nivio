@@ -2,13 +2,54 @@ import React from 'react';
 
 import { IAssessment, IGroup } from '../../../../interfaces';
 import { getLabels, getLinks, getAssessmentSummary, getItemIcon } from '../../Utils/utils';
-import { Card, CardHeader } from '@material-ui/core';
+import { Badge, Card, CardHeader, Theme, withStyles } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import StatusChip from '../../../StatusChip/StatusChip';
 import componentStyles from '../../../../Ressources/styling/ComponentStyles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    groupAvatar: {
+      width: 15,
+      height: 15,
+      display: 'inline-block',
+    },
+  })
+);
+
+const StyledBadge = withStyles((theme: Theme) =>
+  createStyles({
+    'badge': {
+      'boxShadow': `0 0 0 2px ${theme.palette.background.paper}`,
+      '&::after': {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        borderRadius: '50%',
+        //animation: '$ripple 1.2s infinite ease-in-out',
+        border: '1px solid currentColor',
+        backgroundColor: 'currentColor',
+        content: '""',
+      },
+    },
+    '@keyframes ripple': {
+      '0%': {
+        transform: 'scale(.8)',
+        opacity: 1,
+      },
+      '100%': {
+        transform: 'scale(2.4)',
+        opacity: 0,
+      },
+    },
+  })
+)(Badge);
 
 interface Props {
   group: IGroup;
@@ -18,10 +59,11 @@ interface Props {
 }
 
 /**
- * Returns a chosen Landscape group if informations are available
+ * Returns a chosen group if information is available
  */
 const Group: React.FC<Props> = ({ group, assessments, locateItem, locateGroup }) => {
-  const classes = componentStyles();
+  const componentClasses = componentStyles();
+  const classes = useStyles();
 
   const getGroupItems = (
     group: IGroup,
@@ -42,10 +84,21 @@ const Group: React.FC<Props> = ({ group, assessments, locateItem, locateGroup })
               }
             }}
           >
-            <Avatar
-              src={getItemIcon(item)}
-              style={{ backgroundColor: 'white', border: '2px solid ' + status }}
-            />
+            <StyledBadge
+              overlap='circle'
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              variant='dot'
+              style={{ color: status }}
+            >
+              <Avatar
+                imgProps={{ style: { objectFit: 'contain' } }}
+                src={getItemIcon(item)}
+                style={{ backgroundColor: 'white', border: '2px solid #' + group.color }}
+              />
+            </StyledBadge>
             &nbsp;
             {item.identifier}
           </Button>
@@ -63,15 +116,26 @@ const Group: React.FC<Props> = ({ group, assessments, locateItem, locateGroup })
   const links = getLinks(group);
 
   return (
-    <Card className={classes.card}>
+    <Card className={componentClasses.card}>
       <CardHeader
-        title={'Group ' + group.name}
+        title={
+          <React.Fragment>
+            <Avatar
+              style={{ backgroundColor: '#' + group.color }}
+              className={classes.groupAvatar}
+              variant={'square'}
+            >
+              {' '}
+            </Avatar>
+            &nbsp;{group.name}
+          </React.Fragment>
+        }
         onClick={() => {
           if (locateGroup) {
             locateGroup(group.fullyQualifiedIdentifier);
           }
         }}
-        className={classes.cardHeader}
+        className={componentClasses.cardHeader}
       />
       <CardContent>
         <div className='information'>
