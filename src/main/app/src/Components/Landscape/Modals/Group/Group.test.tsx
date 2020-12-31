@@ -11,5 +11,5 @@ it('should render landscape group component', () => {
     date: '',
   }
   const { getByText } = render(<Group group={group} assessments={assessments}/>);
-  expect(getByText('Group foo')).toBeInTheDocument();
+  expect(getByText('foo')).toBeInTheDocument();
 });
