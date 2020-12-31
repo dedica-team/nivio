@@ -5,6 +5,23 @@ import { IAssessment, IGroup, ILandscape } from '../../../interfaces';
 import { getAssessmentSummary } from '../Utils/utils';
 import StatusChip from '../../StatusChip/StatusChip';
 import Button from '@material-ui/core/Button';
+import Toolbar from '@material-ui/core/Toolbar';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import {darken, Theme} from '@material-ui/core';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    bottomBar: {
+      top: 'auto',
+      bottom: 0,
+      left: 0,
+      padding: 5,
+      position: 'fixed',
+      width: '100%',
+      backgroundColor: darken(theme.palette.secondary.dark, 0.2),
+    },
+  })
+);
 
 interface Props {
   landscape: ILandscape;
@@ -16,12 +33,13 @@ interface Props {
 /**
  * Displays all groups of given landscape and provides all needed navigation
  */
-const DashboardLayout: React.FC<Props> = ({
+const StatusBarLayout: React.FC<Props> = ({
   landscape,
   assessments,
   onItemClick,
   onGroupClick,
 }) => {
+  const classes = useStyles();
   const getItems = (group: IGroup) => {
     return group.items.map((item) => {
       const [assessmentColor, , field] = getAssessmentSummary(
@@ -80,11 +98,13 @@ const DashboardLayout: React.FC<Props> = ({
   };
 
   return (
-    <Grid container spacing={3}>
-      {getGroups(landscape.groups)}
-      {landscape?.groups.map((group, i) => getItems(group))}
-    </Grid>
+    <Toolbar className={classes.bottomBar} variant={'dense'} disableGutters={true}>
+      <Grid container spacing={0}>
+        {getGroups(landscape.groups)}
+        {landscape?.groups.map((group, i) => getItems(group))}
+      </Grid>
+    </Toolbar>
   );
 };
 
-export default DashboardLayout;
+export default StatusBarLayout;

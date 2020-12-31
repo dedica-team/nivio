@@ -19,24 +19,9 @@ import { withBasePath } from '../../../utils/API/BasePath';
 import { get } from '../../../utils/API/APIClient';
 import { ReactSvgPanZoomLoaderXML } from './ReactSVGPanZoomLoaderXML';
 import Item from '../Modals/Item/Item';
-import { Theme, Toolbar } from '@material-ui/core';
-import Dashboard from '../Dashboard/Dashboard';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import StatusBar from '../Dashboard/StatusBar';
 import { IAssessment, ILandscape } from '../../../interfaces';
 import { getItem } from '../Utils/utils';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    bottomBar: {
-      top: 'auto',
-      bottom: 0,
-      left: 5,
-      padding: 5,
-      position: 'fixed',
-      width: '100%',
-    },
-  })
-);
 
 interface Props {
   setSidebarContent: Function;
@@ -64,7 +49,6 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
   // In their own documentation, they initialize it with {}, but that will invoke a typescript error
   // @ts-ignore
   const [value, setValue] = useState<Value>({});
-  const classes = useStyles();
   const [data, setData] = useState<SVGData | null>(null);
   const [renderWithTransition, setRenderWithTransition] = useState(false);
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
@@ -267,16 +251,14 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
             </ReactSVGPanZoom>
           )}
         />
-        <Toolbar className={classes.bottomBar}>
-          {landscape && assessments && (
-            <Dashboard
-              findItem={findItem}
-              setSidebarContent={setSidebarContent}
-              landscape={landscape}
-              assessments={assessments}
-            />
-          )}
-        </Toolbar>
+        {landscape && assessments && (
+          <StatusBar
+            findItem={findItem}
+            setSidebarContent={setSidebarContent}
+            landscape={landscape}
+            assessments={assessments}
+          />
+        )}
       </div>
     );
   }

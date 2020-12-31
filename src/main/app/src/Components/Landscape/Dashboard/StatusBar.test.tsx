@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import Dashboard from './Dashboard';
-import DashboardLayout from './DashboardLayout';
+import StatusBar from './StatusBar';
+import StatusBarLayout from './StatusBarLayout';
 import { ILandscape, IItem, IGroup, IAssessment } from '../../../interfaces';
 
 const items: IItem[] = [
@@ -66,7 +66,7 @@ const assessments: IAssessment = {
 it('should render LandscapeDashboard component', () => {
   const { getByText } = render(
     <MemoryRouter>
-      <Dashboard
+      <StatusBar
         findItem={() => {}}
         setSidebarContent={() => {}}
         landscape={landscape}
@@ -79,7 +79,7 @@ it('should render LandscapeDashboard component', () => {
 it('should display all group information', () => {
   const { getByText } = render(
     <MemoryRouter>
-      <DashboardLayout
+      <StatusBarLayout
         landscape={landscape}
         assessments={assessments}
         onItemClick={() => {}}

@@ -15,6 +15,9 @@ import componentStyles from '../../../Ressources/styling/ComponentStyles';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
+        overview: {
+          marginRight: 320,
+        },
         card: {
             marginBottom: 5,
             backgroundColor: theme.palette.secondary.dark,
@@ -127,7 +130,7 @@ const OverviewLayout: React.FC<Props> = ({landscapes, setSidebarContent}) => {
     }
 
     return (
-        <Grid container spacing={3}>
+        <Grid container spacing={3} className={classes.overview}>
             {content.map((value, i) => (
                 <Grid item xs={12} sm={6} key={i}>
                     {value}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import DashboardLayout from './DashboardLayout';
+import StatusBarLayout from './StatusBarLayout';
 import { ILandscape, IAssessment, IItem, IGroup } from '../../../interfaces';
 import Group from '../Modals/Group/Group';
 import Item from '../Modals/Item/Item';
@@ -15,7 +15,7 @@ interface Props {
   assessments: IAssessment;
 }
 
-const Dashboard: React.FC<Props> = ({ setSidebarContent, findItem, landscape, assessments }) => {
+const StatusBar: React.FC<Props> = ({ setSidebarContent, findItem, landscape, assessments }) => {
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
 
   const findGroup = (fullyQualifiedGroupIdentifier: string) => {
@@ -48,6 +48,7 @@ const Dashboard: React.FC<Props> = ({ setSidebarContent, findItem, landscape, as
   };
 
   const onGroupClick = (group: IGroup) => {
+    findGroup(group.fullyQualifiedIdentifier);
     setSidebarContent(
       <Group group={group} assessments={assessments} findItem={findItem} findGroup={findGroup} />
     );
@@ -55,7 +56,7 @@ const Dashboard: React.FC<Props> = ({ setSidebarContent, findItem, landscape, as
 
   if (landscape && assessments)
     return (
-      <DashboardLayout
+      <StatusBarLayout
         landscape={landscape}
         assessments={assessments}
         onItemClick={onItemClick}
@@ -66,4 +67,4 @@ const Dashboard: React.FC<Props> = ({ setSidebarContent, findItem, landscape, as
   return null;
 };
 
-export default Dashboard;
+export default StatusBar;
