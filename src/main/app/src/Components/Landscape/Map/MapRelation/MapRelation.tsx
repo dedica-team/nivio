@@ -8,7 +8,7 @@ interface Props {
   sourceIdentifier: string;
   targetIdentifier: string;
   type: string | null;
-  findItem: (fullyQualifiedItemIdentifier: string) => void;
+  locateItem: (fullyQualifiedItemIdentifier: string) => void;
 }
 
 /**
@@ -16,7 +16,7 @@ interface Props {
  *
  * TODO work with items and relation objects (loaded via API, get rid of string splitting)
  */
-const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type, findItem }) => {
+const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type, locateItem }) => {
   const sourceGroupNameStart = sourceIdentifier.indexOf('/') + 1;
   const sourceRelation = sourceIdentifier.substr(sourceGroupNameStart);
   const classes = componentStyles();
@@ -40,7 +40,7 @@ const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type
           fullWidth={true}
           key={sourceIdentifier}
           onClick={() => {
-            findItem(sourceIdentifier);
+            locateItem(sourceIdentifier);
           }}
         >
           {sourceRelation}
@@ -52,7 +52,7 @@ const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type
           fullWidth={true}
           key={targetIdentifier}
           onClick={() => {
-            findItem(targetIdentifier);
+            locateItem(targetIdentifier);
           }}
         >
           {targetRelation}

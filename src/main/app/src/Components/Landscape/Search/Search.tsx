@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface PropsInterface extends RouteComponentProps {
-  findFunction: Function;
+  locateFunction: Function;
   setSidebarContent: Function;
 }
 
@@ -43,7 +43,7 @@ interface ILabelValue {
   value: number;
 }
 
-const Search: React.FC<PropsInterface> = ({findFunction, setSidebarContent, ...props}) => {
+const Search: React.FC<PropsInterface> = ({locateFunction, setSidebarContent, ...props}) => {
   const match: { params?: { identifier?: string } } | null = matchPath(props.location.pathname, {
     path: Routes.MAP_ROUTE,
     exact: false,
@@ -78,14 +78,14 @@ const Search: React.FC<PropsInterface> = ({findFunction, setSidebarContent, ...p
             small={true}
             key={value1.fullyQualifiedIdentifier}
             useItem={value1}
-            findItem={findFunction}
+            locateItem={locateFunction}
           />
         ));
         setSidebarContent(searchResult);
         setHasChange(false);
       });
     },
-    [results, setSidebarContent, findFunction]
+    [results, setSidebarContent, locateFunction]
   );
 
   async function loadFacets(identifier: string | undefined) {

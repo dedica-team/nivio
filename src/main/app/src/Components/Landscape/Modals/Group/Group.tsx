@@ -13,14 +13,14 @@ import Avatar from '@material-ui/core/Avatar';
 interface Props {
   group: IGroup;
   assessments: IAssessment;
-  findItem?: (fullyQualifiedGroupIdentifier: string) => void;
-  findGroup?: (fullyQualifiedGroupIdentifier: string) => void;
+  locateItem?: (fullyQualifiedGroupIdentifier: string) => void;
+  locateGroup?: (fullyQualifiedGroupIdentifier: string) => void;
 }
 
 /**
  * Returns a chosen Landscape group if informations are available
  */
-const Group: React.FC<Props> = ({ group, assessments, findItem, findGroup }) => {
+const Group: React.FC<Props> = ({ group, assessments, locateItem, locateGroup }) => {
   const classes = componentStyles();
 
   const getGroupItems = (
@@ -54,7 +54,7 @@ const Group: React.FC<Props> = ({ group, assessments, findItem, findGroup }) => 
     }
     return [];
   };
-  const items = getGroupItems(group, findItem);
+  const items = getGroupItems(group, locateItem);
 
   const [assessmentColor, message, field] = getAssessmentSummary(
     assessments.results[group.fullyQualifiedIdentifier]
@@ -67,8 +67,8 @@ const Group: React.FC<Props> = ({ group, assessments, findItem, findGroup }) => 
       <CardHeader
         title={'Group ' + group.name}
         onClick={() => {
-          if (findGroup) {
-            findGroup(group.fullyQualifiedIdentifier);
+          if (locateGroup) {
+            locateGroup(group.fullyQualifiedIdentifier);
           }
         }}
         className={classes.cardHeader}

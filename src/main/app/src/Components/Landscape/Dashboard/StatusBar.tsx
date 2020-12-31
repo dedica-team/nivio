@@ -10,12 +10,12 @@ import Item from '../Modals/Item/Item';
  */
 interface Props {
   setSidebarContent: Function;
-  findItem: (fqi: string) => void;
+  locateItem: (fqi: string) => void;
   landscape: ILandscape;
   assessments: IAssessment;
 }
 
-const StatusBar: React.FC<Props> = ({ setSidebarContent, findItem, landscape, assessments }) => {
+const StatusBar: React.FC<Props> = ({ setSidebarContent, locateItem, landscape, assessments }) => {
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
 
   const findGroup = (fullyQualifiedGroupIdentifier: string) => {
@@ -43,14 +43,14 @@ const StatusBar: React.FC<Props> = ({ setSidebarContent, findItem, landscape, as
   }, [highlightElement]);
 
   const onItemClick = (item: IItem) => {
-    findItem(item.fullyQualifiedIdentifier);
-    setSidebarContent(<Item useItem={item} findItem={findItem} />);
+    locateItem(item.fullyQualifiedIdentifier);
+    setSidebarContent(<Item useItem={item} locateItem={locateItem} />);
   };
 
   const onGroupClick = (group: IGroup) => {
     findGroup(group.fullyQualifiedIdentifier);
     setSidebarContent(
-      <Group group={group} assessments={assessments} findItem={findItem} findGroup={findGroup} />
+      <Group group={group} assessments={assessments} locateItem={locateItem} locateGroup={findGroup} />
     );
   };
 

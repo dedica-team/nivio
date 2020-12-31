@@ -8,7 +8,7 @@ it('should render mapRelation component', () => {
       sourceIdentifier={'source/test/source'}
       targetIdentifier={'target/test/target'}
       type='typeTest'
-      findItem={() => {}}
+      locateItem={() => {}}
     />
   );
   expect(getByText('test/source')).toBeInTheDocument();

@@ -13,7 +13,7 @@ import componentStyles from '../../../../Ressources/styling/ComponentStyles';
 interface Props {
   small?: boolean;
   useItem?: IItem;
-  findItem?: Function;
+  locateItem?: Function;
   fullyQualifiedItemIdentifier?: string;
 }
 
@@ -22,7 +22,7 @@ interface Props {
  *
  *
  */
-const Item: React.FC<Props> = ({ useItem, findItem, fullyQualifiedItemIdentifier, small }) => {
+const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifier, small }) => {
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const [compact, setCompact] = useState<boolean>(false);
@@ -77,8 +77,8 @@ const Item: React.FC<Props> = ({ useItem, findItem, fullyQualifiedItemIdentifier
             size={'small'}
             fullWidth={true}
             onClick={() => {
-              if (findItem) {
-                findItem(isInbound ? relation.source : relation.target);
+              if (locateItem) {
+                locateItem(isInbound ? relation.source : relation.target);
               }
             }}
           >
@@ -114,10 +114,10 @@ const Item: React.FC<Props> = ({ useItem, findItem, fullyQualifiedItemIdentifier
   const links: ReactElement[] = item ? getLinks(item) : [];
 
   const findButton =
-    findItem && item ? (
+    locateItem && item ? (
       <IconButton
         onClick={() => {
-          findItem(item.fullyQualifiedIdentifier);
+          locateItem(item.fullyQualifiedIdentifier);
         }}
         className={classes.floatingButton}
       >

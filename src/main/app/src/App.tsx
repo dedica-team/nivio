@@ -10,14 +10,14 @@ import { Routes } from './interfaces';
 const App: React.FC = () => {
   const [sidebarContent, setSidebarContent] = useState<ReactElement[]>([]);
   const [pageTitle, setPageTitle] = useState<string>('');
-  const [findFunction, setFindFunction] = useState<Function>();
+  const [locateFunction, setLocateFunction] = useState<Function>();
 
   const ff = useCallback(
     (args) => {
-      if (findFunction) findFunction(args);
-      else console.warn('find function not set');
+      if (locateFunction) locateFunction(args);
+      else console.warn('locate function not set');
     },
-    [findFunction]
+    [locateFunction]
   );
 
   return (
@@ -26,7 +26,7 @@ const App: React.FC = () => {
         <Layout
           sidebarContent={sidebarContent}
           setSidebarContent={setSidebarContent}
-          findFunction={ff}
+          locateFunction={ff}
           pageTitle={pageTitle}
         >
           <Route
@@ -46,7 +46,7 @@ const App: React.FC = () => {
             render={(props) => (
               <LandscapeMap
                 setSidebarContent={setSidebarContent}
-                setFindFunction={setFindFunction}
+                setLocateFunction={setLocateFunction}
                 setPageTitle={setPageTitle}
                 {...props}
               />

@@ -25,7 +25,7 @@ import { getItem } from '../Utils/utils';
 
 interface Props {
   setSidebarContent: Function;
-  setFindFunction: Function;
+  setLocateFunction: Function;
   setPageTitle: Function;
 }
 
@@ -39,10 +39,10 @@ interface SVGData {
  * Displays a chosen landscape as interactive SVG
  *
  * @param setSidebarContent function to set sidebar/drawer content
- * @param setFindFunction function to use to find an item. make sure to pass an anon func returning the actually used function
+ * @param setLocateFunction function to use to find an item. make sure to pass an anon func returning the actually used function
  * @param setPageTitle can be used to set the page title in parent state
  */
-const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle }) => {
+const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTitle }) => {
   const [tool, setTool] = useState<Tool>(TOOL_AUTO);
 
   // It wants a value or null but if we defined it as null it throws an error that shouldn't use null
@@ -58,7 +58,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
 
   const [isFirstRender, setIsFirstRender] = useState(true);
 
-  const findItem = useCallback(
+  const locateItem = useCallback(
     (fullyQualifiedItemIdentifier: string) => {
       const element = document.getElementById(fullyQualifiedItemIdentifier);
       if (element) {
@@ -83,7 +83,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
       let item = getItem(landscape, fullyQualifiedItemIdentifier);
       if (item)
         setSidebarContent(
-          <Item key={fullyQualifiedItemIdentifier} useItem={item} findItem={findItem} />
+          <Item key={fullyQualifiedItemIdentifier} useItem={item} locateItem={locateItem} />
         );
     }
   };
@@ -134,7 +134,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
           sourceIdentifier={dataSource}
           targetIdentifier={dataTarget}
           type={dataType}
-          findItem={findItem}
+          locateItem={locateItem}
         />
       );
     }
@@ -157,8 +157,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
       get(`/api/${identifier}`).then((response) => {
         setLandscape(response);
         setPageTitle(response.name);
-        if (findItem) {
-          setFindFunction(() => findItem);
+        if (locateItem) {
+          setLocateFunction(() => locateItem);
         }
       });
 
@@ -166,7 +166,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
         setAssessments(response);
       });
     }
-  }, [identifier, setPageTitle, setFindFunction, findItem, landscape]);
+  }, [identifier, setPageTitle, setLocateFunction, locateItem, landscape]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -253,7 +253,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setFindFunction, setPageTitle
         />
         {landscape && assessments && (
           <StatusBar
-            findItem={findItem}
+            locateItem={locateItem}
             setSidebarContent={setSidebarContent}
             landscape={landscape}
             assessments={assessments}

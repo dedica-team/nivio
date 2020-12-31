@@ -67,7 +67,7 @@ it('should render LandscapeDashboard component', () => {
   const { getByText } = render(
     <MemoryRouter>
       <StatusBar
-        findItem={() => {}}
+        locateItem={() => {}}
         setSidebarContent={() => {}}
         landscape={landscape}
         assessments={assessments}
