@@ -54,7 +54,11 @@ class SVGGroupArea extends Component {
             );
         }
 
-        return SvgTagCreator.g(territoryHexes.toArray(DomContent[]::new)).attr("class", "groupArea");
+        String fqi = group.getFullyQualifiedIdentifier().jsonValue();
+        return SvgTagCreator.g(territoryHexes.toArray(DomContent[]::new))
+                .attr("id", fqi)
+                .attr("data-identifier", fqi)
+                .attr("class", "groupArea");
     }
 }
 

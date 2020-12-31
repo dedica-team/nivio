@@ -53,6 +53,10 @@
   stroke-width: 0.4em;
 }
 
+.map g.groupArea {
+  cursor: pointer;
+}
+
 .map g.groupArea path {
   fill-opacity: 0.3;
 }

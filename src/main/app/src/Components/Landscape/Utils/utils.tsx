@@ -10,13 +10,36 @@ import { Button, Link } from '@material-ui/core';
  */
 export const getItem = (landscape: ILandscape, fullyQualifiedIdentifier: string): IItem | null => {
   let item: IItem | null = null;
-  landscape.groups.forEach((value) => {
-    value.items.forEach((value1) => {
-      if (value1.fullyQualifiedIdentifier === fullyQualifiedIdentifier) item = value1;
-    });
-  });
+  for (const value of landscape.groups) {
+    for (let i = 0; i < value.items.length; i++) {
+      let value1 = value.items[i];
+      if (value1.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
+        item = value1;
+        break;
+      }
+    }
+  }
 
   return item;
+};
+
+/**
+ * Find a group by its fully qualified identifier.
+ *
+ * @param landscape object
+ * @param fullyQualifiedIdentifier string to identify the group
+ */
+export const getGroup = (landscape: ILandscape, fullyQualifiedIdentifier: string): IGroup | null => {
+  let group: IGroup | null = null;
+  for (let i = 0; i < landscape.groups.length; i++){
+    let value = landscape.groups[i];
+    if (value.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
+      group = value;
+      break;
+    }
+  }
+
+  return group;
 };
 
 /**

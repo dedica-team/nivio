@@ -21,7 +21,8 @@ import { ReactSvgPanZoomLoaderXML } from './ReactSVGPanZoomLoaderXML';
 import Item from '../Modals/Item/Item';
 import StatusBar from '../Dashboard/StatusBar';
 import { IAssessment, ILandscape } from '../../../interfaces';
-import { getItem } from '../Utils/utils';
+import {getGroup, getItem} from '../Utils/utils';
+import Group from "../Modals/Group/Group";
 
 interface Props {
   setSidebarContent: Function;
@@ -58,7 +59,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
 
   const [isFirstRender, setIsFirstRender] = useState(true);
 
-  const locateItem = useCallback(
+  const locateComponent = useCallback(
     (fullyQualifiedItemIdentifier: string) => {
       const element = document.getElementById(fullyQualifiedItemIdentifier);
       if (element) {
@@ -83,7 +84,18 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
       let item = getItem(landscape, fullyQualifiedItemIdentifier);
       if (item)
         setSidebarContent(
-          <Item key={fullyQualifiedItemIdentifier} useItem={item} locateItem={locateItem} />
+          <Item key={fullyQualifiedItemIdentifier} useItem={item} locateItem={locateComponent} />
+        );
+    }
+  };
+
+  const onGroupClick = (e: MouseEvent<HTMLElement>) => {
+    const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
+    if (fullyQualifiedItemIdentifier && landscape) {
+      let group = getGroup(landscape, fullyQualifiedItemIdentifier);
+      if (group && assessments)
+        setSidebarContent(
+            <Group group={group} locateItem={locateComponent} locateGroup={locateComponent} assessments={assessments}/>
         );
     }
   };
@@ -134,7 +146,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
           sourceIdentifier={dataSource}
           targetIdentifier={dataTarget}
           type={dataType}
-          locateItem={locateItem}
+          locateItem={locateComponent}
         />
       );
     }
@@ -157,8 +169,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
       get(`/api/${identifier}`).then((response) => {
         setLandscape(response);
         setPageTitle(response.name);
-        if (locateItem) {
-          setLocateFunction(() => locateItem);
+        if (locateComponent) {
+          setLocateFunction(() => locateComponent);
         }
       });
 
@@ -166,7 +178,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
         setAssessments(response);
       });
     }
-  }, [identifier, setPageTitle, setLocateFunction, locateItem, landscape]);
+  }, [identifier, setPageTitle, setLocateFunction, locateComponent, landscape]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -222,6 +234,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
             <>
               <SvgLoaderSelectElement selector='.item' onClick={onItemClick} />
               <SvgLoaderSelectElement selector='.relation' onClick={onRelationClick} />
+              <SvgLoaderSelectElement selector='.groupArea' onClick={onGroupClick} />
             </>
           }
           render={(content: ReactElement[]) => (
@@ -253,7 +266,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
         />
         {landscape && assessments && (
           <StatusBar
-            locateItem={locateItem}
+            locateItem={locateComponent}
             setSidebarContent={setSidebarContent}
             landscape={landscape}
             assessments={assessments}
