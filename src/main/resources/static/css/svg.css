@@ -7,7 +7,7 @@
 }
 
 .map g circle {
-  stroke-width: 0.4em;
+  stroke-width: 0.8em;
 }
 
 .map g.label {
@@ -50,7 +50,8 @@
 }
 
 .map g.relation path {
-  stroke-width: 0.4em;
+  stroke-width: 0.8em;
+  cursor: pointer;
 }
 
 .map g.groupArea {
