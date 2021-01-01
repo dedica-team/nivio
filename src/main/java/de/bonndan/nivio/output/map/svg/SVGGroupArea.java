@@ -41,7 +41,8 @@ class SVGGroupArea extends Component {
                 lowest.set(hex);
         });
 
-        Point2D.Double anchor = lowest.get().toPixel();
+
+        Point2D.Double anchor = lowest.get() != null ? lowest.get().toPixel() : new Point2D.Double(0,0);
 
         territoryHexes.add(
                 SvgTagCreator.text(group.getIdentifier())
