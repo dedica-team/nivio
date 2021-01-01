@@ -41,23 +41,23 @@ class SVGGroupArea extends Component {
                 lowest.set(hex);
         });
 
-        if (lowest.get() != null) {
-            Point2D.Double anchor = lowest.get().toPixel();
+        Point2D.Double anchor = lowest.get().toPixel();
 
-            territoryHexes.add(
-                    SvgTagCreator.text(group.getIdentifier())
-                            .attr("x", anchor.x)
-                            .attr("y", (int)(anchor.y + 25))
-                            .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
-                            .attr("text-anchor", "middle")
-                            .attr("class", "groupLabel")
-            );
-        }
+        territoryHexes.add(
+                SvgTagCreator.text(group.getIdentifier())
+                        .attr("x", anchor.x)
+                        .attr("y", (int) (anchor.y + 25))
+                        .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
+                        .attr("text-anchor", "middle")
+                        .attr("class", "groupLabel")
+        );
 
         String fqi = group.getFullyQualifiedIdentifier().jsonValue();
         return SvgTagCreator.g(territoryHexes.toArray(DomContent[]::new))
                 .attr("id", fqi)
                 .attr("data-identifier", fqi)
+                .attr("data-x", anchor.x)
+                .attr("data-y", anchor.y)
                 .attr("class", "groupArea");
     }
 }
