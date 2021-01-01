@@ -21,8 +21,8 @@ import { ReactSvgPanZoomLoaderXML } from './ReactSVGPanZoomLoaderXML';
 import Item from '../Modals/Item/Item';
 import StatusBar from '../Dashboard/StatusBar';
 import { IAssessment, ILandscape } from '../../../interfaces';
-import {getGroup, getItem} from '../Utils/utils';
-import Group from "../Modals/Group/Group";
+import { getGroup, getItem } from '../Utils/utils';
+import Group from '../Modals/Group/Group';
 
 interface Props {
   setSidebarContent: Function;
@@ -95,16 +95,24 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
       let group = getGroup(landscape, fullyQualifiedItemIdentifier);
       if (group && assessments)
         setSidebarContent(
-            <Group group={group} locateItem={locateComponent} locateGroup={locateComponent} assessments={assessments}/>
+          <Group
+            group={group}
+            locateItem={locateComponent}
+            locateGroup={locateComponent}
+            assessments={assessments}
+          />
         );
     }
   };
 
   const onRelationClick = (e: MouseEvent<HTMLElement>) => {
+    if (!landscape) return;
+
     const dataSource = e.currentTarget.getAttribute('data-source');
-    let sourceElement, sourceX, sourceY;
+    let source, sourceElement, sourceX, sourceY;
     if (dataSource) {
       sourceElement = document.getElementById(dataSource);
+      source = getItem(landscape, dataSource);
       if (sourceElement) {
         sourceX = sourceElement.getAttribute('data-x');
         sourceY = sourceElement.getAttribute('data-y');
@@ -112,9 +120,10 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
     }
 
     const dataTarget = e.currentTarget.getAttribute('data-target');
-    let targetElement, targetX, targetY;
+    let target, targetElement, targetX, targetY;
     if (dataTarget) {
       targetElement = document.getElementById(dataTarget);
+      target = getItem(landscape, dataTarget);
       if (targetElement) {
         targetX = targetElement.getAttribute('data-x');
         targetY = targetElement.getAttribute('data-y');
@@ -138,14 +147,13 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
       setValue(fitSelection(value, x - 500, y, zoomWidth, zoomHeight));
     }
 
-    const dataType = e.currentTarget.getAttribute('data-type');
-
-    if (dataSource && dataTarget) {
+    if (source && target && dataTarget) {
+      let relation = source.relations[dataTarget];
       setSidebarContent(
         <MapRelation
-          sourceIdentifier={dataSource}
-          targetIdentifier={dataTarget}
-          type={dataType}
+          relation={relation}
+          source={source}
+          target={target}
           locateItem={locateComponent}
         />
       );
