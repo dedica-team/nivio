@@ -1,21 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import './Search.scss';
-import { TextField, Theme } from '@material-ui/core';
+import React, { useCallback, useEffect, useState } from 'react';
+
+import { Card, CardHeader, TextField, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import { IItem, Routes } from '../../../interfaces';
 import { withRouter, RouteComponentProps, matchPath } from 'react-router-dom';
-import SearchResult from './SearchResult';
-import SearchIcon from '@material-ui/icons/Search';
-import { Backspace } from '@material-ui/icons';
+import Item from '../Modals/Item/Item';
+import { Backspace, MoreVertSharp } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import withStyles from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import CardContent from '@material-ui/core/CardContent';
+import componentStyles from '../../../Ressources/styling/ComponentStyles';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    searchField: {
+      margin: 0,
+      padding: 0,
+      borderRadius: 5,
+      backgroundColor: theme.palette.primary.dark,
+    },
+  })
+);
 
 interface PropsInterface extends RouteComponentProps {
-  findItem?: (fullyQualifiedItemIdentifier: string) => void;
+  locateFunction: Function;
+  setSidebarContent: Function;
 }
 
 interface IFacet {
@@ -31,7 +43,7 @@ interface ILabelValue {
   value: number;
 }
 
-const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
+const Search: React.FC<PropsInterface> = ({locateFunction, setSidebarContent, ...props}) => {
   const match: { params?: { identifier?: string } } | null = matchPath(props.location.pathname, {
     path: Routes.MAP_ROUTE,
     exact: false,
@@ -39,31 +51,42 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
   });
 
   const identifier = match?.params?.identifier;
+  const [currentLandscape, setCurrentLandscape] = useState<string>('');
   const [results, setResults] = useState<IItem[]>([]);
   const [facets, setFacets] = useState<IFacet[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [hasChange, setHasChange] = useState(false);
-  const [hasFocus, setHasFocus] = useState(false);
-
+  const classes = useStyles();
+  const componentClasses = componentStyles();
   const searchInput = React.useRef<HTMLDivElement>(null);
 
-  async function search(searchTerm: string, identifier: string) {
-    if (searchTerm.length < 2) return;
+  const search = useCallback(
+    (searchTerm: string, identifier: string) => {
+      if (searchTerm.length < 2) return;
 
-    const result: IItem[] | null = await get(
-      '/api/landscape/' +
-        identifier +
-        '/search/' +
-        encodeURIComponent(searchTerm)
-          .replace(/[!'()]/g, escape)
-          .replace(/\*/g, '%2A')
-    );
-
-    if (!result) return;
-
-    setResults(result);
-    setHasChange(false);
-  }
+      get(
+        '/api/landscape/' +
+          identifier +
+          '/search/' +
+          encodeURIComponent(searchTerm)
+            .replace(/[!'()]/g, escape)
+            .replace(/\*/g, '%2A')
+      ).then((result) => {
+        setResults(result);
+        const searchResult = results.map((value1) => (
+          <Item
+            small={true}
+            key={value1.fullyQualifiedIdentifier}
+            useItem={value1}
+            locateItem={locateFunction}
+          />
+        ));
+        setSidebarContent(searchResult);
+        setHasChange(false);
+      });
+    },
+    [results, setSidebarContent, locateFunction]
+  );
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
@@ -81,14 +104,12 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
     if (newTerm !== searchTerm) {
       setSearchTerm(newTerm);
       setHasChange(true);
-      setHasFocus(false);
     }
   }
 
   function clear() {
     setSearchTerm('');
     setHasChange(false);
-    setHasFocus(false);
     setResults([]);
   }
 
@@ -100,82 +121,86 @@ const Search: React.FC<PropsInterface> = (props: PropsInterface) => {
 
   useEffect(() => {
     if (identifier && hasChange) search(searchTerm, identifier);
-  }, [identifier, searchTerm, results, hasChange]);
+  }, [identifier, searchTerm, results, hasChange, search]);
 
   if (identifier == null) {
     console.debug('identifier missing');
     return null;
   }
 
-  const HtmlTooltip = withStyles((theme: Theme) => ({
-    tooltip: {
-      backgroundColor: '#f5f5f9',
-      color: 'rgba(0, 0, 0, 0.87)',
-      maxWidth: 220,
-      fontSize: theme.typography.pxToRem(12),
-      border: '1px solid #dadde9',
-      textShadow: 'none',
-    },
-  }))(Tooltip);
+  if (currentLandscape == null || currentLandscape !== identifier) {
+    setFacets([]);
+    setCurrentLandscape(identifier);
+  }
 
-  const searchResult = results.map((value1) => (
-    <SearchResult key={value1.fullyQualifiedIdentifier} item={value1} findItem={props.findItem} />
-  ));
   const facetsHtml = facets.map((facet) => (
-    <div className={'facet'} key={facet.dim}>
-      <Typography variant={'h6'}>{facet.dim}</Typography>
-      {facet.labelValues.map((lv) => (
-        <Chip
-          onClick={(e) => {
-            let current = searchInput.current;
-            if (!current) return;
-            setSearchTermSafely(facet.dim + ':' + lv.label);
-            current.focus();
-          }}
-          variant={'outlined'}
-          key={facet.dim + '' + lv.label}
-          label={lv.label}
-          avatar={<Avatar>{lv.value}</Avatar>}
-        />
-      ))}
-      <br />
-    </div>
+    <Card className={componentClasses.card} key={facet.dim}>
+      <CardContent>
+        <Typography variant={'h6'}>{facet.dim}</Typography>
+        {facet.labelValues.map((lv) => (
+          <Chip
+            onClick={(e) => {
+              let current = searchInput.current;
+              if (!current) return;
+              setSearchTermSafely(facet.dim + ':' + lv.label);
+              current.focus();
+            }}
+            variant={'outlined'}
+            size={'small'}
+            key={facet.dim + '' + lv.label}
+            label={lv.label}
+            avatar={<Avatar>{lv.value}</Avatar>}
+          />
+        ))}
+      </CardContent>
+    </Card>
   ));
 
   return (
-    <div className={'search'}>
-      <HtmlTooltip
-        title={
-          <React.Fragment>
-            <Typography color='inherit'>Search: </Typography>
-            <strong>{'You can use the Lucene query syntax.'}</strong>
-            <br />
-            <em>{'foo*'}</em>
-            <br />
-            <em>{'*press'}</em>
-            <br />
-            <em>{'tag:cms'}</em>
-            <br />
-          </React.Fragment>
+    <React.Fragment>
+      <IconButton
+        size={'small'}
+        onClick={() =>
+          setSidebarContent(
+            <React.Fragment>
+              <Card className={componentClasses.card}>
+                <CardHeader title={'Search'} className={componentClasses.cardHeader} />
+                <CardContent>
+                  <strong>{'You can use the Lucene query syntax.'}</strong>
+                  <br />
+                  <em>{'foo*'}</em>
+                  <br />
+                  <em>{'*press'}</em>
+                  <br />
+                  <em>{'tag:cms'}</em>
+                </CardContent>
+              </Card>
+              {facetsHtml}
+            </React.Fragment>
+          )
         }
       >
-        <SearchIcon className={'searchIcon'} />
-      </HtmlTooltip>
+        <MoreVertSharp />
+      </IconButton>
       <TextField
+        className={classes.searchField}
         value={searchTerm}
         onChange={(event) => setSearchTermSafely(event.target.value)}
-        onFocus={() => setHasFocus(true)}
         ref={searchInput}
-      >
-        Search
-      </TextField>
-      {results ? <div className={'results'}>{searchResult}</div> : null}
+        variant={'outlined'}
+        margin={'dense'}
+        placeholder={'Search'}
+      />
 
-      <IconButton className={'searchIcon'} size={'small'} onClick={() => clear()}>
-        <Backspace></Backspace>
+      <IconButton
+        className={'searchIcon'}
+        size={'small'}
+        onClick={() => clear()}
+        disabled={searchTerm.length === 0}
+      >
+        <Backspace />
       </IconButton>
-      {hasFocus && !searchTerm ? <div className={'facets'}>{facetsHtml}</div> : null}
-    </div>
+    </React.Fragment>
   );
 };
 

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { INotificationMessage, ISnackbarMessage } from '../../interfaces';
 import { Client, StompSubscription } from '@stomp/stompjs';
 
-import './Notification.scss';
 import NotificationLayout from './NotificationLayout';
 
 import { withBasePath } from '../../utils/API/BasePath';

@@ -9,7 +9,7 @@ it('should render Navigation component', () => {
       <Navigation />
     </MemoryRouter>
   );
-  expect(getByText('Nivio')).toBeInTheDocument();
+  expect(getByText('nivio')).toBeInTheDocument();
 });
 
 it('should link to manual on button click', () => {

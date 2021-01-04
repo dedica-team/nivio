@@ -64,7 +64,6 @@ will not be overwritten by templates applied later.
 
       endOfLife:
         tags: [eol]
-        statuses
 
 For CQ queries, read https://github.com/npgall/cqengine#string-based-queries-sql-and-cqn-dialects.
 

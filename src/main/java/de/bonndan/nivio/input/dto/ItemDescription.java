@@ -232,10 +232,20 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     /**
      * Legacy setter for {@link StatusValue}.
      *
-     * @param statuses a list of key-value pairs, keys are "label", "status", "message"
+     * @param status a list of key-value pairs, keys are "label", "status", "message"
      */
-    public void setStatuses(List<LinkedHashMap<String, String>> statuses) {
-        statuses.forEach(map -> {
+    @Deprecated
+    public void setStatuses(List<LinkedHashMap<String, String>> status) {
+        setStatus(status);
+    }
+
+    /**
+     * Legacy setter for {@link StatusValue}.
+     *
+     * @param status a list of key-value pairs, keys are "label", "status", "message"
+     */
+    public void setStatus(List<LinkedHashMap<String, String>> status) {
+        status.forEach(map -> {
             String key = map.get("label");
             if (key != null) {
                 String value = map.get(StatusValue.LABEL_SUFFIX_STATUS);

@@ -1,58 +1,66 @@
 import React from 'react';
-import './MapRelation.scss';
+import { Card, CardHeader } from '@material-ui/core';
+import CardContent from '@material-ui/core/CardContent';
+import componentStyles from '../../../../Ressources/styling/ComponentStyles';
+import Button from '@material-ui/core/Button';
+import { IItem, IRelation } from '../../../../interfaces';
+import Typography from '@material-ui/core/Typography';
 
 interface Props {
-  sourceIdentifier: string;
-  targetIdentifier: string;
-  type: string | null;
-  findItem: (fullyQualifiedItemIdentifier: string) => void;
+  source: IItem;
+  target: IItem;
+  relation: IRelation;
+  locateItem: (fullyQualifiedItemIdentifier: string) => void;
 }
 
 /**
- * Returns a choosen Map Relation
- * @param element Choosen SVG Element from our Landscape Component
+ * Returns a chosen Map Relation
+ *
  */
-const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type, findItem }) => {
-  const sourceGroupNameStart = sourceIdentifier.indexOf('/') + 1;
-  const sourceRelation = sourceIdentifier.substr(sourceGroupNameStart);
-
-  const targetGroupNameStart = targetIdentifier.indexOf('/') + 1;
-  const targetRelation = targetIdentifier.substr(targetGroupNameStart);
-
-  const sourceTitle = sourceIdentifier.split('/').pop();
-  const targetTitle = targetIdentifier.split('/').pop();
+const MapRelation: React.FC<Props> = ({ source, target, relation, locateItem }) => {
+  const classes = componentStyles();
+  const sourceTitle = source.name || source.identifier;
+  const targetTitle = target.name || target.identifier;
+  const title = sourceTitle + ' -> ' + targetTitle;
 
   return (
-    <div className='mapRelation'>
-      <div className='titleContainer'>
-        <span className='title'>
-          {sourceTitle} {'⇄'} {targetTitle}
-        </span>
-      </div>
-      <div className='mapRelationContent'>
-        <span className='type'>Type: {type}</span>
-        <div className='relationsContent'>
-          <span
-            className='relation'
-            key={sourceIdentifier}
+    <Card className={classes.card}>
+      <CardHeader title={title} className={classes.cardHeader} subheader={'Relation'} />
+      <CardContent>
+        <span>Type: {relation.type || '-'}</span>
+        <br />
+        <span>Format: {relation.format || '-'}</span>
+        <br />
+        <span>Description: {relation.description || '-'}</span>
+        <br />
+        <br />
+        <Typography variant={'h6'}>Source</Typography>
+        <div>
+          <Button
+            fullWidth={true}
+            key={source.fullyQualifiedIdentifier}
             onClick={() => {
-              findItem(sourceIdentifier);
+              locateItem(source.fullyQualifiedIdentifier);
             }}
           >
-            {sourceRelation}
-          </span>
-          <span
-            className='relation'
-            key={targetIdentifier}
-            onClick={() => {
-              findItem(targetIdentifier);
-            }}
-          >
-            {targetRelation}
-          </span>
+            {sourceTitle}
+          </Button>
         </div>
-      </div>
-    </div>
+
+        <Typography variant={'h6'}>Target</Typography>
+        <div>
+          <Button
+            fullWidth={true}
+            key={target.fullyQualifiedIdentifier}
+            onClick={() => {
+              locateItem(target.fullyQualifiedIdentifier);
+            }}
+          >
+            {targetTitle}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -1,23 +1,68 @@
 import React, { ReactElement } from 'react';
-import { IGroup, IItem, IAssessmentProps } from '../../../interfaces';
+import { IAssessmentProps, IGroup, IItem, ILandscape } from '../../../interfaces';
+import { Button, Link } from '@material-ui/core';
 
-export const getLinks = (element: IGroup | IItem) => {
+/**
+ * Find an item by its fully qualified identifier.
+ *
+ * @param landscape object containing groups
+ * @param fullyQualifiedIdentifier string to identify the item
+ */
+export const getItem = (landscape: ILandscape, fullyQualifiedIdentifier: string): IItem | null => {
+  let item: IItem | null = null;
+  for (const value of landscape.groups) {
+    for (let i = 0; i < value.items.length; i++) {
+      let value1 = value.items[i];
+      if (value1.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
+        item = value1;
+        break;
+      }
+    }
+  }
+
+  return item;
+};
+
+/**
+ * Find a group by its fully qualified identifier.
+ *
+ * @param landscape object
+ * @param fullyQualifiedIdentifier string to identify the group
+ */
+export const getGroup = (landscape: ILandscape, fullyQualifiedIdentifier: string): IGroup | null => {
+  let group: IGroup | null = null;
+  for (let i = 0; i < landscape.groups.length; i++){
+    let value = landscape.groups[i];
+    if (value.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
+      group = value;
+      break;
+    }
+  }
+
+  return group;
+};
+
+/**
+ * Renders the links of a component as buttons.
+ *
+ * @param element item/group/landscape
+ */
+export const getLinks = (element: IGroup | IItem): ReactElement[] => {
   let links: ReactElement[] = [];
   if (element?._links) {
     Object.keys(element._links).forEach((key) => {
       if (element && element._links && !key.startsWith('self')) {
-        const linkContent = (
-          <a
-            href={element._links[key].href}
+        links.push(
+          <Button
+            component={Link}
+            key={key}
             target='_blank'
             rel='noopener noreferrer'
-            className='link'
-            key={key}
+            href={element._links[key].href}
           >
             {key}
-          </a>
+          </Button>
         );
-        links.push(linkContent);
       }
     });
   }
@@ -29,88 +74,20 @@ export const getLabels = (element: IGroup | IItem) => {
   if (element?.labels) {
     Object.keys(element.labels).forEach((key) => {
       if (element && element.labels && element.labels[key]) {
-        if (!key.startsWith('icon') && !key.startsWith('status') && !key.startsWith('fill')) {
-          const labelContent = (
+        if (key.startsWith('icon') || key.startsWith('fill')) return;
+
+        labels.push(
+          <div key={key}>
             <span className='labelContent' key={key}>
-              <span className='label'>{key}: </span>
-              {element.labels[key]}
+              {key}
             </span>
-          );
-          labels.push(labelContent);
-        }
+            : <strong>{element.labels[key]}</strong>
+          </div>
+        );
       }
     });
   }
   return labels;
-};
-
-export const getRelations = (
-  item: IItem,
-  findItem?: (fullyQualifiedItemIdentifier: string) => void
-) => {
-  if (item.relations && item.relations.length) {
-    return item.relations.map((relation) => {
-      let relationName: string;
-      let groupNameStart: number;
-      if (relation.target.endsWith(item.identifier)) {
-        groupNameStart = relation.source.indexOf('/') + 1;
-        relationName = relation.source.substr(groupNameStart);
-        return (
-          <span
-            className='relation'
-            key={relation.source}
-            onClick={() => {
-              if (findItem) {
-                findItem(relation.source);
-              }
-            }}
-          >
-            {relationName}
-          </span>
-        );
-      }
-      groupNameStart = relation.target.indexOf('/') + 1;
-      relationName = relation.target.substr(groupNameStart);
-      return (
-        <span
-          className='relation'
-          key={relation.target}
-          onClick={() => {
-            if (findItem) {
-              findItem(relation.target);
-            }
-          }}
-        >
-          {relationName}
-        </span>
-      );
-    });
-  }
-  return [];
-};
-
-export const getGroupItems = (
-  group: IGroup,
-  findItem?: (fullyQualifiedItemIdentifier: string) => void
-) => {
-  if (group?.items) {
-    return group.items.map((item) => {
-      return (
-        <span
-          className='item'
-          key={item.fullyQualifiedIdentifier}
-          onClick={() => {
-            if (findItem) {
-              findItem(item.fullyQualifiedIdentifier);
-            }
-          }}
-        >
-          {item.identifier}
-        </span>
-      );
-    });
-  }
-  return [];
 };
 
 export const getAssessmentSummary = (
@@ -121,7 +98,7 @@ export const getAssessmentSummary = (
   let assessmentField = '';
 
   if (assessmentResults) {
-    const result = assessmentResults.find((assessmentResult) => assessmentResult.summary === true);
+    const result = assessmentResults.find((assessmentResult) => assessmentResult.summary);
 
     if (result) {
       if (result.status !== 'UNKNOWN') {
