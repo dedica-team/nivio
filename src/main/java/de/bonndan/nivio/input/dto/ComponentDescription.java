@@ -33,10 +33,20 @@ public interface ComponentDescription extends Labeled, Linked {
     void setDescription(String description);
 
     /**
-     * @return the owner of the item or null
+     * @return the owner or null
      */
     @Nullable
     String getOwner();
 
     void setOwner(String owner);
+
+    /**
+     * A email address or other means to contact a responsible person.
+     *
+     * @return the contact or null
+     */
+    @Nullable
+    String getContact();
+
+    void setContact(String contact);
 }

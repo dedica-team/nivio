@@ -7,6 +7,7 @@
 * **GITLAB_PASSWORD** GitLab OAuth login password (optional)
 * **GITLAB_PERSONAL_ACCESS_TOKEN** the personal token to access the GitLab API (optional)
 * **GITLAB_USERNAME** GitLab OAuth login username (optional, if used password is also required)
+* **KUBERNETES_MASTER** K8s master url (optional), all variables from https://github.com/fabric8io/kubernetes-client#configuring-the-client can be used
 * **NIVIO_BASE_URL** The base url of nivio to be used for frontends if running behind a proxy
 * **NIVIO_MAIL_HOST** The smtp mail host
 * **NIVIO_MAIL_PASSWORD** The smtp mail password
