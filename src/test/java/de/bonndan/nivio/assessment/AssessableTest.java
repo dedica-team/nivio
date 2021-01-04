@@ -12,6 +12,7 @@ import org.springframework.lang.NonNull;
 import java.util.*;
 
 import static de.bonndan.nivio.assessment.StatusValue.SUMMARY_LABEL;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AssessableTest {
@@ -138,6 +139,42 @@ class AssessableTest {
         assertEquals("something", statusValue.getMaxField());
     }
 
+    @Test
+    public void isSorted() {
+        Item item = new Item("foo", "bar");
+        item.setLabel(Label.key(Label.status, "foo", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
+        item.setLabel(Label.key(Label.status, "foo", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
+
+        item.setLabel(Label.key(Label.status, "bar", StatusValue.LABEL_SUFFIX_STATUS), Status.RED.getName());
+        item.setLabel(Label.key(Label.status, "bar", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
+
+        item.setLabel(Label.key(Label.status, "baz", StatusValue.LABEL_SUFFIX_STATUS), Status.ORANGE.getName());
+        item.setLabel(Label.key(Label.status, "baz", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
+
+        Map<String, KPI> kpis = new HashMap<>();
+        kpis.put("on", new AbstractKPI(component -> null, null) {
+            @Override
+            protected List<StatusValue> getStatusValues(String value, String message) {
+                return new ArrayList<>();
+            }
+        });
+
+        //when
+        Map<FullyQualifiedIdentifier, List<StatusValue>> statuses = item.applyKPIs(kpis);
+
+        //then
+        List<StatusValue> statusValues = statuses.get(item.getFullyQualifiedIdentifier());
+        assertNotNull(statusValues);
+        assertEquals(4, statusValues.size());
+        StatusValue summary = statusValues.get(0);
+        StatusValue s1 = statusValues.get(1);
+        StatusValue s2 = statusValues.get(2);
+        StatusValue s3 = statusValues.get(3);
+
+        assertThat(summary.getStatus().compareTo(s1.getStatus())).isEqualTo(0);
+        assertThat(s1.getStatus().compareTo(s2.getStatus())).isEqualTo(1);
+        assertThat(s2.getStatus().compareTo(s3.getStatus())).isEqualTo(1);
+    }
 
     class TestAssessable implements Assessable {
 

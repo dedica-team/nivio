@@ -73,6 +73,8 @@ public interface Assessable extends Component {
         childrenValues.addAll(map.get(fqi));
         map.get(fqi).add(StatusValue.summary(SUMMARY_LABEL + "." + getIdentifier(), getWorst(childrenValues)));
 
+        //sort in descending order, worst first
+        map.get(fqi).sort(Collections.reverseOrder(new StatusValue.Comparator()));
         return map;
     }
 

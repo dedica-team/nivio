@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './Events.scss';
-import TitleBar from '../TitleBar/TitleBar';
-import LevelChip from '../LevelChip/LevelChip';
 import { get } from '../../utils/API/APIClient';
+import {Box, Typography} from "@material-ui/core";
 
 interface Entry {
   type: string;
@@ -17,7 +15,7 @@ interface Entry {
  *
  *
  */
-const Events: React.FC<{}> = () => {
+const Events: React.FC = () => {
   const [data, setData] = useState<Entry[] | null>(null);
   const [loadData, setLoadData] = useState<boolean>(true);
 
@@ -34,18 +32,18 @@ const Events: React.FC<{}> = () => {
 
   const content = data?.map((m, i) => {
     return (
-      <div className='item' key={i}>
-        <span className='date'>{m.date}</span> <LevelChip level={m.level} title={m.landscape} />
-        <span className='type'>{m.type}</span> <span className='message'> {m.message}</span>
+      <div key={m.date + i}>
+        <span className='date'>{m.date}</span><br />
+        <strong>{m.level}</strong> <span className='message'>{m.landscape} {m.message}</span><br /><br />
       </div>
     );
   });
 
   return (
-    <div className='events'>
-      <TitleBar title={'Processing Event Log'} />
+    <Box m={2}>
+      <Typography variant={'h5'}>Processing Event Log</Typography>
       <div className='itemContainer'>{content}</div>
-    </div>
+    </Box>
   );
 };
 
