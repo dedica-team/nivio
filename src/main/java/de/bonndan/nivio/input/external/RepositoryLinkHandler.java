@@ -19,7 +19,7 @@ public interface RepositoryLinkHandler {
             s = StringUtils.trimTrailingCharacter(s, '/');
             return StringUtils.trimLeadingCharacter(s, '/');
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse github url " + link.getHref() + ": " + e.getMessage());
+            throw new RuntimeException(String.format("Failed to parse repository url %s: %s", link.getHref(), e.getMessage()));
         }
 
     }
