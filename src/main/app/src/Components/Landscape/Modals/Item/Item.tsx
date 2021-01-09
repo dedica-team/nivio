@@ -172,7 +172,9 @@ const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifi
             </span>
             <div className='tags'>
               {item
-                ? item.tags.map((value) => <Chip size='small' variant='outlined' label={value} />)
+                ? item.tags.map((value) => (
+                    <Chip size='small' variant='outlined' label={value} key={value} />
+                  ))
                 : null}
             </div>
 
