@@ -1,11 +1,8 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ComponentDescription;
-import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.Labeled;
-import org.springframework.util.StringUtils;
 
-import static de.bonndan.nivio.util.SafeAssign.assignSafe;
 import static de.bonndan.nivio.util.SafeAssign.assignSafeIfAbsent;
 
 public class ComponentDescriptionValues {
@@ -27,6 +24,9 @@ public class ComponentDescriptionValues {
         if (increment.getOwner() != null)
             existing.setOwner(increment.getOwner());
 
+        if (increment.getContact() != null)
+            existing.setContact(increment.getContact());
+
         if (increment.getLabels() != null) {
             increment.getLabels().forEach((s, s2) -> {
                 if (increment.getLabel(s) != null) {
@@ -41,20 +41,22 @@ public class ComponentDescriptionValues {
     /**
      * Writes the values of the increment (second object) to the first where first is null/absent.
      *
-     * @param item     target
+     * @param component     target
      * @param increment source
      */
-    public static void assignSafeNotNull(ComponentDescription item, ComponentDescription increment) {
+    public static void assignSafeNotNull(ComponentDescription component, ComponentDescription increment) {
 
-        assignSafeIfAbsent(increment.getName(), item.getName(), item::setName);
-        assignSafeIfAbsent(increment.getDescription(), item.getDescription(), item::setDescription);
-        assignSafeIfAbsent(increment.getOwner(), item.getOwner(), item::setOwner);
+        assignSafeIfAbsent(increment.getName(), component.getName(), component::setName);
 
-        Labeled.merge(increment, item);
+        assignSafeIfAbsent(increment.getDescription(), component.getDescription(), component::setDescription);
+        assignSafeIfAbsent(increment.getOwner(), component.getOwner(), component::setOwner);
+        assignSafeIfAbsent(increment.getContact(), component.getContact(), component::setContact);
+
+        Labeled.merge(increment, component);
 
         increment.getLinks().entrySet().stream()
-                .filter(entry -> !item.getLinks().containsKey(entry.getKey()))
-                .forEach(entry -> item.getLinks().put(entry.getKey(), entry.getValue()));
+                .filter(entry -> !component.getLinks().containsKey(entry.getKey()))
+                .forEach(entry -> component.getLinks().put(entry.getKey(), entry.getValue()));
     }
 
 }

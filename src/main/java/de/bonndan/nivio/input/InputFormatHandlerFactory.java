@@ -1,6 +1,5 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.SourceReference;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;

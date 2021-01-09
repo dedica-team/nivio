@@ -1,6 +1,6 @@
 package de.bonndan.nivio.assessment.kpi;
 
-import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.ProcessingException;
 import org.springframework.lang.NonNull;
 
 import java.util.HashMap;

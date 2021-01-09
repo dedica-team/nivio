@@ -1,6 +1,6 @@
 package de.bonndan.nivio.input.rancher1;
 
-import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
@@ -13,7 +13,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class InputFormatHandlerRancher1API implements InputFormatHandler {
@@ -49,9 +48,8 @@ public class InputFormatHandlerRancher1API implements InputFormatHandler {
             );
         }
         if (accessKey.contains("${")) {
-            String[] keys = System.getenv().keySet().toArray(String[]::new);
             throw new ProcessingException(reference.getLandscapeDescription(),
-                    "Rancher API access key is unresolved: " + accessKey + ", picked up env vars: " + StringUtils.arrayToCommaDelimitedString(keys)
+                    "Rancher API access key is unresolved: " + accessKey
             );
         }
         if (StringUtils.isEmpty(secretKey)) {
@@ -60,9 +58,8 @@ public class InputFormatHandlerRancher1API implements InputFormatHandler {
             );
         }
         if (secretKey.contains("${")) {
-            String[] keys = System.getenv().keySet().toArray(String[]::new);
             throw new ProcessingException(reference.getLandscapeDescription(),
-                    "Rancher API secret key is unresolved: " + secretKey + ", picked up env vars: " + StringUtils.arrayToCommaDelimitedString(keys)
+                    "Rancher API secret key is unresolved: " + secretKey
             );
         }
 

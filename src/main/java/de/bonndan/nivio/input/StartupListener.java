@@ -1,8 +1,6 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.IndexEvent;
-import de.bonndan.nivio.ProcessingErrorEvent;
-import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.config.ConfigurableEnvVars;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,15 +39,13 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
 
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent event) {
-        if (!StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
+        if (!StringUtils.isEmpty(ConfigurableEnvVars.DEMO.value().orElse(""))) {
             LOGGER.info("Running in demo mode");
         }
 
         getUrls(seed).stream()
                 .map(landscapeDescriptionFactory::from)
-                .forEach(description -> {
-                    publisher.publishEvent(new IndexEvent(this, description, "Initialising from SEED"));
-                });
+                .forEach(description -> publisher.publishEvent(new IndexEvent(this, description, "Initialising from SEED")));
     }
 
     private List<URL> getUrls(Seed seed) {

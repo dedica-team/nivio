@@ -4,7 +4,7 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.LabelToFieldResolver;

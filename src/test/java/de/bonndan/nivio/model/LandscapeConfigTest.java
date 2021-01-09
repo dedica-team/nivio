@@ -1,6 +1,5 @@
 package de.bonndan.nivio.model;
 
-import de.bonndan.nivio.LandscapeConfig;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

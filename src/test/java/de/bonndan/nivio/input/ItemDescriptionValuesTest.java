@@ -16,6 +16,34 @@ import static org.junit.jupiter.api.Assertions.*;
 class ItemDescriptionValuesTest {
 
     @Test
+    public void incrementAddsIcon() {
+
+        ItemDescription sd1 = new ItemDescription();
+        sd1.setIdentifier("sd1");
+
+        ItemDescription increment = new ItemDescription();
+        increment.setIdentifier("sd1");
+        increment.setIcon("foo");
+        ItemDescriptionValues.assignNotNull(sd1, increment);
+
+        assertEquals("foo", sd1.getIcon());
+    }
+
+    @Test
+    public void incrementAddsIconSafe() {
+
+        ItemDescription sd1 = new ItemDescription();
+        sd1.setIdentifier("sd1");
+
+        ItemDescription increment = new ItemDescription();
+        increment.setIdentifier("sd1");
+        increment.setIcon("foo");
+        ItemDescriptionValues.assignSafeNotNull(sd1, increment);
+
+        assertEquals("foo", sd1.getIcon());
+    }
+
+    @Test
     public void incrementAddsDataflow() {
 
         ItemDescription sd1 = new ItemDescription();

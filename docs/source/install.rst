@@ -72,6 +72,13 @@ Or you provide an URL that serves the yml files to nivio:
 
 then point your browser to the GUI at http://localhost:8080 or the API at http://localhost:8080/api/.
 
+Environment variables
+---------------------
+
+The following environment variables can be set to configure nivio:
+
+.. include:: env_config.rst
+
 
 Landscape configuration
 -----------------------
