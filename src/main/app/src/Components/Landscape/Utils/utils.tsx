@@ -81,7 +81,8 @@ export const getLabels = (element: IGroup | IItem) => {
           <ListItem key={key}>
             <ListItemText
                 primary={key}
-                secondary={element.labels[key]}
+                secondary={element.labels[key].substr(0,150)}
+                title={element.labels[key]}
             />
           </ListItem>
         );
