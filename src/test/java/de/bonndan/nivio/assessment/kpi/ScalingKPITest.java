@@ -118,12 +118,21 @@ class ScalingKPITest {
         assertEquals("Unscaled, but 2 items depend on it.", value.getMessage());
     }
 
+    @Test
+    public void greenIfNoRelations() {
+
+        item.setLabel(Label.scale, "1");
+
+        List<StatusValue> statusValues = scalingKPI.getStatusValues(item);
+        assertNotNull(statusValues);
+        assertEquals(1, statusValues.size());
+        StatusValue value = statusValues.get(0);
+        assertEquals(Status.GREEN, value.getStatus());
+    }
 
     @Test
-    public void testScale2IsGreen() {
-        ScalingKPI scalingKPI = new ScalingKPI();
-        scalingKPI.init(null);
-        Item item = new Item("test", "a");
+    public void greenWithRelations() {
+
         item.setLabel(Label.scale, "2");
 
         List<StatusValue> statusValues = scalingKPI.getStatusValues(item);

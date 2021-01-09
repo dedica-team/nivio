@@ -16,6 +16,12 @@ Built in KPIs
 -------------
 
 * scaling (warning is the scale label is exactly 0)
+* * red if 0 as provider for other items
+* * yellow if scaled to 0 without relations
+* * orange of scaled to 0 as data sink
+* * unknown if no label or not a number
+* * green if scaled higher than 1
+* * yellow if a bottleneck (more than 1 item depend on it)
 * health (examines the health label on items)
 * condition (K8s condition true/false evaluation)
 * custom (see below)
