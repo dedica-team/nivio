@@ -1,5 +1,17 @@
 import React, { useState, ReactElement, useEffect } from 'react';
-import { Card, CardActions, CardHeader, Paper, Typography } from '@material-ui/core';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Card,
+  CardActions,
+  CardHeader,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Typography,
+} from '@material-ui/core';
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../../interfaces';
@@ -7,8 +19,15 @@ import { getItemIcon, getLabels, getLinks } from '../../Utils/utils';
 import Button from '@material-ui/core/Button';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
-import { ArrowDownward, ArrowUpward, FilterCenterFocus, MoreVertSharp } from '@material-ui/icons';
+import {
+  ArrowDownward,
+  ArrowUpward,
+  ExpandMore,
+  FilterCenterFocus,
+  MoreVertSharp,
+} from '@material-ui/icons';
 import componentStyles from '../../../../Ressources/styling/ComponentStyles';
+import Chip from '@material-ui/core/Chip';
 
 interface Props {
   small?: boolean;
@@ -151,23 +170,42 @@ const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifi
               {item?.description ? `${item?.description}` : ''}
               <br />
             </span>
-            {item?.contact?.length ? (
-              <span className='contact item'>
-                <span className='label'>Contact: </span>
-                {item?.contact || 'No Contact provided'}
-                <br />
-              </span>
-            ) : null}
-            {item?.owner ?? (
-              <span className='owner item'>
-                <span className='label'>Owner: </span>
-                {item?.owner || 'No Contact provided'}
-                <br />
-              </span>
-            )}
-            <br />
-            <div className='labels'>{item ? getLabels(item) : null}</div>
+            <div className='tags'>
+              {item
+                ? item.tags.map((value) => <Chip size='small' variant='outlined' label={value} />)
+                : null}
+            </div>
+
+            <List dense={true}>
+              {item?.contact?.length ? (
+                <ListItem>
+                  <ListItemText
+                    primary={'Contact'}
+                    secondary={item?.contact || 'No contact provided'}
+                  />
+                </ListItem>
+              ) : null}
+
+              {item?.owner?.length ? (
+                <ListItem>
+                  <ListItemText primary={'Owner'} secondary={item?.owner || 'No owner provided'} />
+                </ListItem>
+              ) : null}
+            </List>
           </div>
+
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMore />}
+              aria-controls='panel1a-content'
+              id='panel1a-header'
+            >
+              more
+            </AccordionSummary>
+            <AccordionDetails>
+              <div className='labels'>{item ? getLabels(item) : null}</div>
+            </AccordionDetails>
+          </Accordion>
 
           {assessmentStatus.length > 0 ? (
             <div className={'status'}>
