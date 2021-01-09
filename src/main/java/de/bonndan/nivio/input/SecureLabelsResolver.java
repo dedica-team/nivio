@@ -1,9 +1,11 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.util.URIHelper;
 import de.bonndan.nivio.util.URLHelper;
 import org.springframework.util.StringUtils;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
 
@@ -26,7 +28,10 @@ public class SecureLabelsResolver extends Resolver {
 
         input.getItemDescriptions().all().forEach(itemDescription -> {
             Map<String, Object> cleaned = new HashMap<>();
-            itemDescription.getLabels().forEach((s, s2) -> getCleanedValue(s, s2).ifPresent(o -> cleaned.put(s, o)));
+            itemDescription.getLabels().forEach((s, s2) -> {
+                Optional<Object> cleanedValue = getCleanedValue(s, s2);
+                cleaned.put(s, cleanedValue.orElse(null));
+            });
             cleaned.forEach(itemDescription::setLabel);
         });
     }
@@ -50,7 +55,16 @@ public class SecureLabelsResolver extends Resolver {
         if (!(value instanceof String))
             return Optional.empty();
 
-        return URLHelper.getURL((String) value).map(this::replaceIfSecret);
+        Optional<URL> url = URLHelper.getURL((String) value);
+        if (url.isPresent()) {
+            return Optional.ofNullable(replaceIfSecret(url.get()));
+        }
+
+        Optional<URI> uri = URIHelper.getURI((String) value);
+        if (uri.isPresent()) {
+            return Optional.ofNullable(replaceIfSecret(uri.get()));
+        }
+        return Optional.of(value);
     }
 
     private String replaceIfSecret(URL url) {
@@ -72,6 +86,27 @@ public class SecureLabelsResolver extends Resolver {
             return s;
         }
         return url.toString();
+    }
+
+    private String replaceIfSecret(URI uri) {
+        String userInfo = uri.getUserInfo();
+        if (!StringUtils.isEmpty(userInfo)) {
+            String s = uri.getScheme() + "://*@" + uri.getHost();
+
+            if (uri.getPort() != -1) {
+                s += ":" + uri.getPort();
+            }
+
+            if (uri.getPath() != null) {
+                s += uri.getPath();
+            }
+
+            if (uri.getQuery() != null) {
+                s += "?" + uri.getQuery();
+            }
+            return s;
+        }
+        return uri.toString();
     }
 
     private static boolean inBlacklist(String key) {
