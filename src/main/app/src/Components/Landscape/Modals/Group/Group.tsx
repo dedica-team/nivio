@@ -164,7 +164,7 @@ const Group: React.FC<Props> = ({ group, assessments, locateItem, locateGroup })
           />
         </div>
 
-        {labels.length ? <div className='labels'>{labels}</div> : null}
+        <div className='labels'>{labels}</div>
 
         {links.length ? (
           <div className='linkContent'>
