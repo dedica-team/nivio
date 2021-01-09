@@ -71,24 +71,25 @@ export const getLinks = (element: IGroup | IItem): ReactElement[] => {
 
 export const getLabels = (element: IGroup | IItem) => {
   let labels: ReactElement[] = [];
-  if (element?.labels) {
-    Object.keys(element.labels).forEach((key) => {
-      if (element && element.labels && element.labels[key]) {
-        if (key.startsWith('icon') || key.startsWith('fill') || key.startsWith('tag')) return;
-        if (element.labels[key] === '*') return;
-
-        labels.push(
-          <ListItem key={key}>
-            <ListItemText
-                primary={key}
-                secondary={element.labels[key].substr(0,150)}
-                title={element.labels[key]}
-            />
-          </ListItem>
-        );
-      }
-    });
+  if (!element?.labels) {
+    return null;
   }
+  Object.keys(element.labels).forEach((key) => {
+    if (element && element.labels && element.labels[key]) {
+      if (key.startsWith('icon') || key.startsWith('fill') || key.startsWith('tag')) return;
+      if (element.labels[key] === '*') return;
+
+      labels.push(
+        <ListItem key={key}>
+          <ListItemText
+            primary={key}
+            secondary={element.labels[key].substr(0, 150)}
+            title={element.labels[key]}
+          />
+        </ListItem>
+      );
+    }
+  });
   return <List dense={true}>{labels}</List>;
 };
 
