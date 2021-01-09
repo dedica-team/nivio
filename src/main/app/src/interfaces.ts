@@ -100,7 +100,7 @@ export interface IItem {
   labels: ILabels;
   type: string;
   fullyQualifiedIdentifier: string;
-  tags: Array<String>;
+  tags: Array<string>;
   color?: string;
   icon: string;
   links?: Object;
