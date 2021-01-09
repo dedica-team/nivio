@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { IAssessmentProps, IGroup, IItem, ILandscape } from '../../../interfaces';
-import { Button, Link } from '@material-ui/core';
+import {Button, Link, List, ListItem, ListItemText} from '@material-ui/core';
 
 /**
  * Find an item by its fully qualified identifier.
@@ -74,20 +74,21 @@ export const getLabels = (element: IGroup | IItem) => {
   if (element?.labels) {
     Object.keys(element.labels).forEach((key) => {
       if (element && element.labels && element.labels[key]) {
-        if (key.startsWith('icon') || key.startsWith('fill')) return;
+        if (key.startsWith('icon') || key.startsWith('fill') || key.startsWith('tag')) return;
+        if (element.labels[key] === '*') return;
 
         labels.push(
-          <div key={key}>
-            <span className='labelContent' key={key}>
-              {key}
-            </span>
-            : <strong>{element.labels[key]}</strong>
-          </div>
+          <ListItem key={key}>
+            <ListItemText
+                primary={key}
+                secondary={element.labels[key]}
+            />
+          </ListItem>
         );
       }
     });
   }
-  return labels;
+  return <List dense={true}>{labels}</List>;
 };
 
 export const getAssessmentSummary = (
