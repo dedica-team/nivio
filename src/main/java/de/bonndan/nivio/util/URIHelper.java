@@ -7,7 +7,7 @@ import java.util.Optional;
 public class URIHelper {
 
     /**
-     * Returns an Optional of an URI object (not emtpy if the string is an URI and has host and scheme).
+     * Returns an Optional of an URI object (not empty if the string is an URI and has host and scheme).
      *
      * @param string uri
      */
