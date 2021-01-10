@@ -1,5 +1,4 @@
 import React from 'react';
-import './LevelChip.scss';
 import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
 
