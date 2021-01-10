@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,7 +35,7 @@ public class ScalingKPI extends AbstractKPI {
     public List<StatusValue> getStatusValues(Component component) {
 
         if (!(component instanceof Item)) {
-            return List.of();
+            return Collections.emptyList();
         }
 
         return getItemStatusValues((Item) component);
@@ -80,13 +81,13 @@ public class ScalingKPI extends AbstractKPI {
             return List.of(new StatusValue(Label.scale.name(), Status.GREEN));
         }
 
-        return List.of();
+        return Collections.emptyList();
     }
 
     @Override
     protected List<StatusValue> getStatusValues(String value, String message) {
         //unused
-        return List.of();
+        return Collections.emptyList();
     }
 
 }
