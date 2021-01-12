@@ -1,14 +1,30 @@
 import React, { useState, ReactElement, useEffect } from 'react';
-import { Card, CardActions, CardHeader, Paper, Typography } from '@material-ui/core';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Card,
+  CardActions,
+  CardHeader,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from '@material-ui/core';
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../../interfaces';
 import { getItemIcon, getLabels, getLinks } from '../../Utils/utils';
-import Button from '@material-ui/core/Button';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
-import { ArrowDownward, ArrowUpward, FilterCenterFocus, MoreVertSharp } from '@material-ui/icons';
+import {
+  ExpandMore,
+  FilterCenterFocus,
+  MoreVertSharp,
+} from '@material-ui/icons';
 import componentStyles from '../../../../Ressources/styling/ComponentStyles';
+import Chip from '@material-ui/core/Chip';
 
 interface Props {
   small?: boolean;
@@ -71,23 +87,24 @@ const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifi
     for (let key of Object.keys(item.relations)) {
       let relation = item.relations[key];
       const isInbound = relation.direction === 'inbound';
+      const primary = `${relation.name}`;
+      let secondary = `${relation.description || ''} (${relation.type} ${relation.direction})`;
+      if (relation.format) secondary += ', format: ' + relation.format;
       relations.push(
-        <Paper style={{ width: '100%', padding: 5, marginTop: 5 }} key={key}>
-          <Button
-            size={'small'}
-            fullWidth={true}
-            onClick={() => {
-              if (locateItem) {
-                locateItem(isInbound ? relation.source : relation.target);
-              }
-            }}
-          >
-            {isInbound ? <ArrowDownward /> : <ArrowUpward />}
-            {relation.name}
-          </Button>
-          {relation.direction} {relation.description?.length ? ', ' + relation.description : null}
-          {relation.format?.length ? ', format: ' + relation.format : null}
-        </Paper>
+        <ListItem key={relation.name}>
+          <ListItemIcon>
+            <IconButton
+              onClick={() => {
+                if (locateItem) {
+                  locateItem(isInbound ? relation.source : relation.target);
+                }
+              }}
+            >
+              <FilterCenterFocus />
+            </IconButton>
+          </ListItemIcon>
+          <ListItemText primary={primary} secondary={secondary} />
+        </ListItem>
       );
     }
   }
@@ -151,23 +168,44 @@ const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifi
               {item?.description ? `${item?.description}` : ''}
               <br />
             </span>
-            {item?.contact?.length ? (
-              <span className='contact item'>
-                <span className='label'>Contact: </span>
-                {item?.contact || 'No Contact provided'}
-                <br />
-              </span>
-            ) : null}
-            {item?.owner ?? (
-              <span className='owner item'>
-                <span className='label'>Owner: </span>
-                {item?.owner || 'No Contact provided'}
-                <br />
-              </span>
-            )}
-            <br />
-            <div className='labels'>{item ? getLabels(item) : null}</div>
+            <div className='tags'>
+              {item
+                ? item.tags.map((value) => (
+                    <Chip size='small' variant='outlined' label={value} key={value} />
+                  ))
+                : null}
+            </div>
+
+            <List dense={true}>
+              {item?.contact?.length ? (
+                <ListItem>
+                  <ListItemText
+                    primary={'Contact'}
+                    secondary={item?.contact || 'No contact provided'}
+                  />
+                </ListItem>
+              ) : null}
+
+              {item?.owner?.length ? (
+                <ListItem>
+                  <ListItemText primary={'Owner'} secondary={item?.owner || 'No owner provided'} />
+                </ListItem>
+              ) : null}
+            </List>
           </div>
+
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMore />}
+              aria-controls='panel1a-content'
+              id='panel1a-header'
+            >
+              more
+            </AccordionSummary>
+            <AccordionDetails>
+              <div className='labels'>{item ? getLabels(item) : null}</div>
+            </AccordionDetails>
+          </Accordion>
 
           {assessmentStatus.length > 0 ? (
             <div className={'status'}>
@@ -189,9 +227,9 @@ const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifi
       {!compact ? (
         <CardActions>
           {relations && relations.length ? (
-            <div style={{ width: '100%' }}>
+            <div>
               <Typography variant={'h6'}>Relations</Typography>
-              {relations}
+              <List>{relations}</List>
             </div>
           ) : (
             ''

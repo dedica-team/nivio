@@ -30,6 +30,8 @@ const useStyles = makeStyles((theme: Theme) =>
       width: 320,
       backgroundColor: 'transparent',
       border: 'none',
+      maxHeight: '100%',
+      height: 'inherit',
     },
     drawerContainer: {
       overflow: 'auto',

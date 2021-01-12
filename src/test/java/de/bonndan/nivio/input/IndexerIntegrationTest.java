@@ -85,13 +85,13 @@ public class IndexerIntegrationTest {
         assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
 
         Relation push = (Relation) blog.getRelations().stream()
-                .filter(d -> "push".equals(d.getDescription()))
+                .filter(d -> "hourly push KPI data".equals(d.getDescription()))
                 .findFirst()
                 .orElse(null);
 
         Assertions.assertNotNull(push);
 
-        assertEquals("push", push.getDescription());
+        assertEquals("hourly push KPI data", push.getDescription());
         assertEquals("json", push.getFormat());
         assertEquals(blog.getIdentifier(), push.getSource().getIdentifier());
         assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget().getFullyQualifiedIdentifier().toString());
@@ -124,13 +124,13 @@ public class IndexerIntegrationTest {
         assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
 
         Relation push = blog.getRelations().stream()
-                .filter(d -> "push".equals(d.getDescription()))
+                .filter(d -> "hourly push KPI data".equals(d.getDescription()))
                 .findFirst()
                 .orElse(null);
 
         Assertions.assertNotNull(push);
 
-        assertEquals("push", push.getDescription());
+        assertEquals("hourly push KPI data", push.getDescription());
         assertEquals("json", push.getFormat());
         assertEquals("nivio:example/content/blog-server", push.getSource().getFullyQualifiedIdentifier().toString());
         assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget().getFullyQualifiedIdentifier().toString());

@@ -47,7 +47,7 @@ const StatusChip: React.FC<Props> = ({ name, value, status, style }) => {
   if (status.toLowerCase() === 'brown') letter = '!!';
 
   let label = name;
-  if (value) {
+  if (value != null && value !== 'null') {
     label += ': ' + value;
   }
   return (
@@ -57,6 +57,7 @@ const StatusChip: React.FC<Props> = ({ name, value, status, style }) => {
       className={classes.chip}
       avatar={<Avatar className={classes[status.toLowerCase()]}>{letter}</Avatar>}
       label={label}
+      title={label}
     />
   );
 };
