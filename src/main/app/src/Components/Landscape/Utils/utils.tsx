@@ -90,7 +90,7 @@ export const getLabels = (element: IGroup | IItem) => {
       );
     }
   });
-  if (labels.length == 0) {
+  if (labels.length === 0) {
     return null;
   }
   return <List dense={true}>{labels}</List>;
