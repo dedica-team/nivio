@@ -142,6 +142,7 @@ const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifi
       </IconButton>
     ) : null;
 
+  const labels = item ? getLabels(item) : null;
   const extend = small ? (
     <IconButton onClick={() => setCompact(!compact)} className={classes.floatingButton}>
       <MoreVertSharp />
@@ -194,18 +195,21 @@ const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifi
             </List>
           </div>
 
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMore />}
-              aria-controls='panel1a-content'
-              id='panel1a-header'
-            >
-              more
-            </AccordionSummary>
-            <AccordionDetails>
-              <div className='labels'>{item ? getLabels(item) : null}</div>
-            </AccordionDetails>
-          </Accordion>
+          { labels ?
+              <Accordion>
+                <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls='panel1a-content'
+                    id='panel1a-header'
+                >
+                  more
+                </AccordionSummary>
+                <AccordionDetails>
+                  <div className='labels'>{labels}</div>
+                </AccordionDetails>
+              </Accordion>
+              : null
+          }
 
           {assessmentStatus.length > 0 ? (
             <div className={'status'}>
