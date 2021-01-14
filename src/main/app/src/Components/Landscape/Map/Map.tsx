@@ -23,6 +23,7 @@ import StatusBar from '../Dashboard/StatusBar';
 import { IAssessment, ILandscape } from '../../../interfaces';
 import { getGroup, getItem } from '../Utils/utils';
 import Group from '../Modals/Group/Group';
+import MapUtils from "./MapUtils";
 
 interface Props {
   setSidebarContent: Function;
@@ -59,6 +60,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
 
   const [isFirstRender, setIsFirstRender] = useState(true);
 
+
   const locateComponent = useCallback(
     (fullyQualifiedItemIdentifier: string) => {
       const element = document.getElementById(fullyQualifiedItemIdentifier);
@@ -66,10 +68,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
         let dataX = element.getAttribute('data-x');
         let dataY = element.getAttribute('data-y');
         if (dataX && dataY) {
-          const shift: number = 0;
-          const x = parseFloat(dataX) + shift;
-          const y = parseFloat(dataY) + shift / 2;
-          setValue(setPointOnViewerCenter(value, x, y, 1));
+          const coords = MapUtils.getCenterCoordinates(value, dataX, dataY);
+          setValue(setPointOnViewerCenter(value, coords.x, coords.y, 1));
           setRenderWithTransition(true);
           setHighlightElement(element);
         }
