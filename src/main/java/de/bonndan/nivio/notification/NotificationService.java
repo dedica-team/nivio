@@ -1,7 +1,7 @@
 package de.bonndan.nivio.notification;
 
-import de.bonndan.nivio.ProcessingErrorEvent;
-import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.ProcessingErrorEvent;
+import de.bonndan.nivio.input.ProcessingException;
 import org.springframework.context.ApplicationListener;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

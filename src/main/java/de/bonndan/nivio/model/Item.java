@@ -3,6 +3,7 @@ package de.bonndan.nivio.model;
 import com.fasterxml.jackson.annotation.*;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.input.ItemRelationProcessor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.StringUtils;
 
@@ -44,7 +45,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
     private String group;
 
     /**
-     * Can be both read and modified by {@link de.bonndan.nivio.input.ItemRelationResolver}
+     * Can be both read and modified by {@link ItemRelationProcessor}
      */
     @JsonManagedReference
     private final Set<Relation> relations = ConcurrentHashMap.newKeySet();
@@ -154,17 +155,45 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         this.description = description;
     }
 
+    @JsonIgnore
     @Override
     public Map<String, String> getLabels() {
         return labels;
+    }
+
+    /**
+     * Returns the labels without the internal ones (having prefixes).
+     *
+     * @return filtered labels
+     */
+    @JsonProperty("labels")
+    public Map<String, String> getJSONLabels() {
+
+        return Labeled.groupedByPrefixes(
+                Labeled.withoutPrefixes(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG),
+                ","
+        );
     }
 
     public void setLabels(Map<String, String> labels) {
         this.labels = labels;
     }
 
+    @JsonIgnore
     public Set<Relation> getRelations() {
         return relations;
+    }
+
+    @JsonProperty("relations")
+    public Map<String, Relation.ApiModel> getJSONRelations() {
+        Map<String, Relation.ApiModel> map = new HashMap<>();
+
+        relations.forEach(relation -> {
+            Relation.ApiModel apiModel = new Relation.ApiModel(relation, this);
+            map.put(apiModel.id, apiModel);
+        });
+
+        return map;
     }
 
     public Set<Relation> getRelations(RelationType type) {

@@ -1,6 +1,6 @@
 package de.bonndan.nivio.observation;
 
-import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.FileFetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

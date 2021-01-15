@@ -4,10 +4,10 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.InputFormatHandler;
-import de.bonndan.nivio.input.LabelToFieldProcessor;
+import de.bonndan.nivio.input.LabelToFieldResolver;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.observation.FileSourceReferenceObserver;
@@ -75,7 +75,7 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
                     return;
                 }
                 //relies on LabelToFieldProcessor running later
-                itemDescription.getLabels().put(LabelToFieldProcessor.NIVIO_LABEL_PREFIX + key, strings[colNum]);
+                itemDescription.getLabels().put(LabelToFieldResolver.NIVIO_LABEL_PREFIX + key, strings[colNum]);
             });
             itemDescriptions.add(itemDescription);
         });

@@ -6,7 +6,6 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { ISnackbarMessage } from '../../interfaces';
-import './Notification.scss';
 
 import { Link } from 'react-router-dom';
 

@@ -8,5 +8,5 @@ it('should render log component', () => {
     identifier: 'identifier',
   };
   const { getByText } = render(<Log landscape={landscape} />);
-  expect(getByText('TestLandscape Process Log')).toBeInTheDocument();
+  expect(getByText('Process Log of TestLandscape')).toBeInTheDocument();
 });

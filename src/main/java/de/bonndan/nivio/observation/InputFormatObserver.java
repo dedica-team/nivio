@@ -1,5 +1,7 @@
 package de.bonndan.nivio.observation;
 
+import de.bonndan.nivio.input.ProcessingException;
+
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -11,7 +13,7 @@ public interface InputFormatObserver {
 
     /**
      * @return a future of the observed whether it had a change
-     * @throws de.bonndan.nivio.ProcessingException on error
+     * @throws ProcessingException on error
      */
     CompletableFuture<String> hasChange();
 }

@@ -1,8 +1,6 @@
 import React, { ReactElement, useState, useEffect } from 'react';
 import Modal from 'react-modal';
 
-import './GenericModal.scss';
-
 interface IGenericModalProps {
   modalContent: string | ReactElement | ReactElement[] | null;
 }

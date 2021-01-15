@@ -95,12 +95,12 @@ export interface IItem {
   owner: string;
   description?: string;
   contact: string;
-  relations: Array<IRelations>;
+  relations: IRelations;
   interfaces?: Array<IInterfaces>;
   labels: ILabels;
   type: string;
   fullyQualifiedIdentifier: string;
-  tags: Array<String>;
+  tags: Array<string>;
   color?: string;
   icon: string;
   links?: Object;
@@ -115,11 +115,18 @@ export interface IInterfaces {
 }
 
 export interface IRelations {
+  [key: string]: IRelation;
+}
+
+export interface IRelation {
   source: string;
   target: string;
   type?: string;
   description?: string;
   format?: string;
+  name: string;
+  id: string;
+  direction: string;
 }
 
 export interface ILabels {

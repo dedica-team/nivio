@@ -1,12 +1,10 @@
 package de.bonndan.nivio.output;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.Indexer;
-import de.bonndan.nivio.input.InputFormatHandlerFactory;
-import de.bonndan.nivio.input.LandscapeDescriptionFactory;
+import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.HttpService;
+import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
@@ -45,8 +43,9 @@ public abstract class RenderingTest {
         factory = new LandscapeDescriptionFactory(fileFetcher);
 
         HttpService httpService = mock(HttpService.class);
+        LinkHandlerFactory linkHandlerFactory = mock(LinkHandlerFactory.class);
         IconService iconService = new IconService(new LocalIcons(), new VendorIcons(httpService));
-        indexer = new Indexer(landscapeRepository, formatFactory, mock(ApplicationEventPublisher.class), iconService);
+        indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class), iconService);
     }
 
     protected Landscape getLandscape(String path) {

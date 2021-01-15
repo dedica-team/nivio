@@ -1,8 +1,8 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.config.ConfigurableEnvVars;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -13,22 +13,19 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Evaluation of the SEED environment variable.
  */
 public class Seed {
 
-    public static final String DEMO = "DEMO";
     private static final Logger logger = LoggerFactory.getLogger(Seed.class);
-    @Value("${SEED:}")
-    private String seed;
 
-    public Seed() {
-    }
+    private final String seed;
 
-    public Seed(String seed) {
-        this.seed = seed;
+    public Seed(Optional<String> seed) {
+        this.seed = seed.orElse(null);
     }
 
     /**
@@ -36,7 +33,7 @@ public class Seed {
      */
     public List<URL> getDemoFiles() {
         List<URL> demoFiles = new ArrayList<>();
-        if (StringUtils.isEmpty(System.getenv(Seed.DEMO))) {
+        if (ConfigurableEnvVars.DEMO.value().isEmpty()) {
             return demoFiles;
         }
         Path currentRelativePath = Paths.get("");
@@ -63,9 +60,5 @@ public class Seed {
         List<String> list = new ArrayList<>(Arrays.asList(strings));
         logger.info("Using seeds: {}", list);
         return list;
-    }
-
-    public void setSeed(String seed) {
-        this.seed = seed;
     }
 }

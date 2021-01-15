@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import org.springframework.util.StringUtils;
@@ -16,7 +16,7 @@ import java.util.*;
 /**
  * This is representation of a service in the textual form as described in a source file.
  */
-public class ItemDescription implements Labeled, Linked, Tagged {
+public class ItemDescription implements ComponentDescription, Labeled, Linked, Tagged {
 
     private final Map<String, Link> links = new HashMap<>();
     @JsonDeserialize(contentAs = RelationDescription.class)
@@ -26,7 +26,6 @@ public class ItemDescription implements Labeled, Linked, Tagged {
     private String environment;
     @NotEmpty
     private String identifier;
-    @NotEmpty
     private String name;
     private String owner;
     private String description;
@@ -233,10 +232,20 @@ public class ItemDescription implements Labeled, Linked, Tagged {
     /**
      * Legacy setter for {@link StatusValue}.
      *
-     * @param statuses a list of key-value pairs, keys are "label", "status", "message"
+     * @param status a list of key-value pairs, keys are "label", "status", "message"
      */
-    public void setStatuses(List<LinkedHashMap<String, String>> statuses) {
-        statuses.forEach(map -> {
+    @Deprecated
+    public void setStatuses(List<LinkedHashMap<String, String>> status) {
+        setStatus(status);
+    }
+
+    /**
+     * Legacy setter for {@link StatusValue}.
+     *
+     * @param status a list of key-value pairs, keys are "label", "status", "message"
+     */
+    public void setStatus(List<LinkedHashMap<String, String>> status) {
+        status.forEach(map -> {
             String key = map.get("label");
             if (key != null) {
                 String value = map.get(StatusValue.LABEL_SUFFIX_STATUS);

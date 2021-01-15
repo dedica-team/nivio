@@ -1,6 +1,6 @@
 package de.bonndan.nivio.notification;
 
-import de.bonndan.nivio.ProcessingEvent;
+import de.bonndan.nivio.input.ProcessingEvent;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

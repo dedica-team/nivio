@@ -2,7 +2,7 @@ package de.bonndan.nivio.input.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.bonndan.nivio.LandscapeConfig;
+import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.input.ItemDescriptionValues;
 import de.bonndan.nivio.input.ItemDescriptions;
 import de.bonndan.nivio.model.*;
@@ -18,7 +18,7 @@ import java.util.*;
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
 @JsonIgnoreType
-public class LandscapeDescription implements Component, Linked {
+public class LandscapeDescription implements ComponentDescription {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeDescription.class);
 
@@ -228,5 +228,15 @@ public class LandscapeDescription implements Component, Linked {
 
     public void setLabels(Map<String, String> labels) {
         this.labels = labels;
+    }
+
+    @Override
+    public String getLabel(String key) {
+        return getLabels().get(key);
+    }
+
+    @Override
+    public void setLabel(String key, String value) {
+        getLabels().put(key, value);
     }
 }

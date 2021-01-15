@@ -1,88 +1,170 @@
-import React, { useEffect, useState } from 'react';
-import { get } from '../../../../utils/API/APIClient';
-import './Group.scss';
+import React from 'react';
 
-import { IAssessmentProps, IGroup } from '../../../../interfaces';
-import { getLabels, getLinks, getGroupItems, getAssessmentSummary } from '../../Utils/utils';
+import { IAssessment, IGroup } from '../../../../interfaces';
+import { getLabels, getLinks, getAssessmentSummary, getItemIcon } from '../../Utils/utils';
+import { Badge, Card, CardHeader, Theme, withStyles } from '@material-ui/core';
+import CardContent from '@material-ui/core/CardContent';
+import StatusChip from '../../../StatusChip/StatusChip';
+import componentStyles from '../../../../Ressources/styling/ComponentStyles';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import IconButton from "@material-ui/core/IconButton";
+import {FilterCenterFocus} from "@material-ui/icons";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    groupAvatar: {
+      width: 15,
+      height: 15,
+      display: 'inline-block',
+    },
+  })
+);
+
+const StyledBadge = withStyles((theme: Theme) =>
+  createStyles({
+    'badge': {
+      'boxShadow': `0 0 0 2px ${theme.palette.background.paper}`,
+      '&::after': {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        borderRadius: '50%',
+        //animation: '$ripple 1.2s infinite ease-in-out',
+        border: '1px solid currentColor',
+        backgroundColor: 'currentColor',
+        content: '""',
+      },
+    },
+    '@keyframes ripple': {
+      '0%': {
+        transform: 'scale(.8)',
+        opacity: 1,
+      },
+      '100%': {
+        transform: 'scale(2.4)',
+        opacity: 0,
+      },
+    },
+  })
+)(Badge);
 
 interface Props {
-  fullyQualifiedGroupIdentifier: string;
-  findItem?: (fullyQualifiedGroupIdentifier: string) => void;
-  findGroup?: (fullyQualifiedGroupIdentifier: string) => void;
-  onAssessmentClick?: (fullyQualifiedItemIdentifier: string) => void;
+  group: IGroup;
+  assessments: IAssessment;
+  locateItem?: (fullyQualifiedGroupIdentifier: string) => void;
+  locateGroup?: (fullyQualifiedGroupIdentifier: string) => void;
 }
 
 /**
- * Returns a choosen Landscape group if informations are available
+ * Returns a chosen group if information is available
  */
-const Group: React.FC<Props> = ({
-  fullyQualifiedGroupIdentifier,
-  findItem,
-  findGroup,
-  onAssessmentClick,
-}) => {
-  const [group, setGroup] = useState<IGroup | undefined>();
-  const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
+const Group: React.FC<Props> = ({ group, assessments, locateItem, locateGroup }) => {
+  const componentClasses = componentStyles();
+  const classes = useStyles();
 
-  useEffect(() => {
-    get(`/api/${fullyQualifiedGroupIdentifier}`).then((group) => {
-      setGroup(group);
-    });
-
-    const landscapeIdentifier = fullyQualifiedGroupIdentifier.split('/');
-    if (landscapeIdentifier[0]) {
-      get(`/assessment/${landscapeIdentifier[0]}`).then((response) => {
-        if (response) {
-          setAssessment(response.results[fullyQualifiedGroupIdentifier]);
-        }
-      });
-    }
-  }, [fullyQualifiedGroupIdentifier]);
-
-  if (group) {
-    const [assessmentColor] = getAssessmentSummary(assessment);
-    const labels = getLabels(group);
-    const links = getLinks(group);
-    const items = getGroupItems(group, findItem);
-
-    return (
-      <div className='groupContent'>
-        <div className='header'>
-          <span
-            className='title'
+  const getGroupItems = (
+    group: IGroup,
+    findItem?: (fullyQualifiedItemIdentifier: string) => void
+  ) => {
+    if (group?.items) {
+      return group.items.map((item) => {
+        const [status, ,] = getAssessmentSummary(
+          assessments.results[item.fullyQualifiedIdentifier]
+        );
+        return (
+          <Button
+            style={{ textAlign: 'left' }}
+            key={item.fullyQualifiedIdentifier}
             onClick={() => {
-              if (findGroup) {
-                findGroup(group.fullyQualifiedIdentifier);
+              if (findItem) {
+                findItem(item.fullyQualifiedIdentifier);
               }
             }}
           >
-            {group ? group.name || group.identifier : null}
-          </span>
-          <span
-            className='status'
-            style={{ backgroundColor: assessmentColor }}
-            onClick={() => {
-              if (onAssessmentClick) {
-                onAssessmentClick(group.fullyQualifiedIdentifier);
-              }
-            }}
-          ></span>
-        </div>
+            <StyledBadge
+              overlap='circle'
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              variant='dot'
+              style={{ color: status }}
+            >
+              <Avatar
+                imgProps={{ style: { objectFit: 'contain' } }}
+                src={getItemIcon(item)}
+                style={{ backgroundColor: 'white', border: '2px solid #' + group.color }}
+              />
+            </StyledBadge>
+            &nbsp;
+            {item.identifier}
+          </Button>
+        );
+      });
+    }
+    return [];
+  };
+  const items = getGroupItems(group, locateItem);
+
+  const [assessmentColor, message, field] = getAssessmentSummary(
+    assessments.results[group.fullyQualifiedIdentifier]
+  );
+  const labels = getLabels(group);
+  const links = getLinks(group);
+
+  const action = locateGroup ?
+      <IconButton onClick={ () => locateGroup(group.fullyQualifiedIdentifier)}><FilterCenterFocus /></IconButton>
+      : null;
+  return (
+    <Card className={componentClasses.card}>
+      <CardHeader
+        title={
+          <React.Fragment>
+            <Avatar
+              style={{ backgroundColor: '#' + group.color }}
+              className={classes.groupAvatar}
+              variant={'square'}
+            >
+              {' '}
+            </Avatar>
+            &nbsp;{group.name}
+          </React.Fragment>
+        }
+        action={action}
+        className={componentClasses.cardHeader}
+      />
+      <CardContent>
         <div className='information'>
           <span className='description group'>
             {group?.description ? `${group?.description}` : ''}
           </span>
-          { group?.contact ? (<span className='contact group'>
-            <span className='label'>Contact: </span>
-            {group?.contact || 'No Contact provided'}
-          </span>) : null}
+          {group?.contact ? (
+            <span className='contact group'>
+              <span className='label'>Contact: </span>
+              {group?.contact || 'No Contact provided'}
+            </span>
+          ) : null}
           <span className='owner group'>
             <span className='label'>Owner: </span>
             {group?.owner || 'No Owner provided'}
           </span>
         </div>
 
-        {labels.length ? <div className='labels'>{labels}</div> : null}
+        <div>
+          <Typography variant={'h6'}>Status</Typography>
+          <StatusChip
+            name={group.name || group.identifier}
+            status={assessmentColor}
+            value={field + ':' + message}
+          />
+        </div>
+
+        <div className='labels'>{labels}</div>
 
         {links.length ? (
           <div className='linkContent'>
@@ -93,19 +175,12 @@ const Group: React.FC<Props> = ({
 
         {items.length ? (
           <div className='itemsContent'>
-            <span className='itemsLabel'>Items</span>
-            <div className='items'>{items}</div>
+            <Typography variant={'h6'}>Items</Typography>
+            {items}
           </div>
         ) : null}
-      </div>
-    );
-  }
-
-  return (
-    <div className='groupError'>
-      <span className='errorMessage'>Error Loading Group</span>
-      <span className='errorIdentifier'>{fullyQualifiedGroupIdentifier} does not exist!</span>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

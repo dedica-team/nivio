@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LabeledTest {
@@ -37,5 +38,20 @@ class LabeledTest {
         assertTrue(itemDescription.getLabels().containsKey(Label.network + ".foo"));
         String label = itemDescription.getLabel(Label.network + ".foo");
         assertEquals("foo", label);
+    }
+
+    @Test
+    public void withoutPrefixes() {
+        ItemDescription itemDescription = new ItemDescription();
+        itemDescription.setLabel(Label.costs, "123");
+        itemDescription.setPrefixed(Label.network, "foo");
+        itemDescription.setPrefixed(Label.status, "bar");
+        itemDescription.setPrefixed(Label.condition, "bar");
+
+        Map<String, String> stringStringMap = Labeled.withoutPrefixes(itemDescription.getLabels(), Label.condition.name(), Label.status.name());
+        assertThat(stringStringMap).isNotNull();
+        assertThat(stringStringMap.size()).isEqualTo(2);
+        assertThat(stringStringMap.get(Label.costs.name())).isEqualTo("123");
+        assertThat(stringStringMap.get(Label.network.name()+".foo")).isEqualTo("foo");
     }
 }
