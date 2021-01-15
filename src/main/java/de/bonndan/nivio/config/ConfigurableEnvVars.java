@@ -5,7 +5,7 @@ import java.util.Optional;
 public enum ConfigurableEnvVars {
 
     DEMO("A non-empty value causes nivio to start in demo mode with prepared data."),
-    NIVIO_PORT("The port nivio runs on."),
+    PORT("The port nivio runs on."),
     NIVIO_BASE_URL("The base url of nivio to be used for frontends if running behind a proxy"),
     NIVIO_MAIL_HOST("The smtp mail host"),
     NIVIO_MAIL_PORT("The smtp mail port"),

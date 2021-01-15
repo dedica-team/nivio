@@ -13,7 +13,7 @@
 * **NIVIO_MAIL_PASSWORD** The smtp mail password
 * **NIVIO_MAIL_PORT** The smtp mail port
 * **NIVIO_MAIL_USERNAME** The smtp mail username
-* **NIVIO_PORT** The port nivio runs on.
+* **PORT** The port nivio runs on.
 * **SEED** A semicolon-separated list of file paths containing landscape configurations
 * **SONAR_LOGIN** Sonarqube login (username)
 * **SONAR_PASSWORD** Sonarqube password

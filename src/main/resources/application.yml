@@ -24,7 +24,7 @@ logging:
           output: INFO
 
 server:
-  port: ${NIVIO_PORT:8080}
+  port: ${PORT:8080}
 
 management:
   server:
