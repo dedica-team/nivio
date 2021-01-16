@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
     appBar: {
       zIndex: theme.zIndex.drawer + 1,
       position: 'relative',
-      backgroundColor: theme.palette.secondary.main,
+      backgroundColor: theme.palette.primary.main,
     },
     drawer: {
       flexShrink: 0,
@@ -74,6 +74,7 @@ const Layout: React.FC<Props> = ({
           classes={{
             paper: classes.drawerPaper,
           }}
+          color={'secondary'}
         >
           <Toolbar />
           {sidebarContent}

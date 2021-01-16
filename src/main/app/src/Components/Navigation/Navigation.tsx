@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 11,
       paddingLeft: 16,
       paddingRight: 16,
-      backgroundColor: darken(theme.palette.secondary.main, 0.2),
+      backgroundColor: darken(theme.palette.primary.main, 0.2),
     },
     menuIcon: {
       color: 'rgba(255, 255, 255, 0.75)',

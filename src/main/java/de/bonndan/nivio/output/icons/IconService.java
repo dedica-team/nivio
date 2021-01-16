@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.icons;
 
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Label;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
