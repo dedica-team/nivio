@@ -20,10 +20,6 @@ const componentStyles = makeStyles((theme: Theme) =>
     cardActions: {
       padding: 0,
     },
-    itemAvatar: {
-      width: theme.spacing(3),
-      height: theme.spacing(3),
-    },
   })
 );
 

@@ -24,6 +24,7 @@ import { ExpandMore, FilterCenterFocus, MoreVertSharp } from '@material-ui/icons
 import componentStyles from '../../../../Ressources/styling/ComponentStyles';
 import Chip from '@material-ui/core/Chip';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Avatar from "@material-ui/core/Avatar";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -160,7 +161,11 @@ const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifi
       <CardHeader
         title={item ? item.name || item.identifier : null}
         avatar={
-          item ? <img src={getItemIcon(item)} alt='Icon' className={classes.itemAvatar} /> : ''
+          item ? <Avatar
+              imgProps={{ style: { objectFit: 'contain' } }}
+              src={getItemIcon(item)}
+              style={{ backgroundColor: 'white', border: '2px solid #' + item.color }}
+          />  : ''
         }
         className={classes.cardHeader}
         action={
