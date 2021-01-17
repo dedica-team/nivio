@@ -72,7 +72,6 @@ const Search: React.FC<PropsInterface> = ({locateFunction, setSidebarContent, ..
             .replace(/[!'()]/g, escape)
             .replace(/\*/g, '%2A')
       ).then((result) => {
-        console.log(result)
         setResults(result);
       });
     },
