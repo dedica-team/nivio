@@ -43,7 +43,7 @@ interface ILabelValue {
   value: number;
 }
 
-const Search: React.FC<PropsInterface> = ({locateFunction, setSidebarContent, ...props}) => {
+const Search: React.FC<PropsInterface> = ({ locateFunction, setSidebarContent, ...props }) => {
   const match: { params?: { identifier?: string } } | null = matchPath(props.location.pathname, {
     path: Routes.MAP_ROUTE,
     exact: false,
@@ -60,32 +60,29 @@ const Search: React.FC<PropsInterface> = ({locateFunction, setSidebarContent, ..
   const componentClasses = componentStyles();
   const searchInput = React.useRef<HTMLDivElement>(null);
 
-  const search = useCallback(
-    (searchTerm: string, identifier: string) => {
-      if (searchTerm.length < 2) return;
-      setHasChange(false);
-      get(
-        '/api/landscape/' +
-          identifier +
-          '/search/' +
-          encodeURIComponent(searchTerm)
-            .replace(/[!'()]/g, escape)
-            .replace(/\*/g, '%2A')
-      ).then((result) => {
-        setResults(result);
-      });
-    },
-    []
-  );
+  const search = useCallback((searchTerm: string, identifier: string) => {
+    if (searchTerm.length < 2) return;
+    setHasChange(false);
+    get(
+      '/api/landscape/' +
+        identifier +
+        '/search/' +
+        encodeURIComponent(searchTerm)
+          .replace(/[!'()]/g, escape)
+          .replace(/\*/g, '%2A')
+    ).then((result) => {
+      setResults(result);
+    });
+  }, []);
 
   useEffect(() => {
     const searchResult = results.map((value1) => (
-        <Item
-            small={true}
-            key={value1.fullyQualifiedIdentifier}
-            useItem={value1}
-            locateItem={locateFunction}
-        />
+      <Item
+        small={true}
+        key={value1.fullyQualifiedIdentifier}
+        useItem={value1}
+        locateItem={locateFunction}
+      />
     ));
     setSidebarContent(searchResult);
   }, [results, setSidebarContent, locateFunction]);
