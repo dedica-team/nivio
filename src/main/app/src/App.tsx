@@ -17,6 +17,7 @@ interface Config {
   brandingForeground: string;
   brandingBackground: string;
   brandingSecondary: string;
+  brandingLogoUrl: string;
 }
 
 interface Index {
@@ -26,6 +27,7 @@ interface Index {
 const App: React.FC = () => {
   const [sidebarContent, setSidebarContent] = useState<ReactElement[]>([]);
   const [pageTitle, setPageTitle] = useState<string>('');
+  const [logo, setLogo] = useState<string>('');
   const [locateFunction, setLocateFunction] = useState<Function>();
   const [theme, setTheme] = useState<Theme>();
 
@@ -66,9 +68,13 @@ const App: React.FC = () => {
       tv.palette.primary.main = front;
       // @ts-ignore
       tv.palette.secondary.main = secondary;
+
+      if (index.config.brandingLogoUrl && index.config.brandingLogoUrl.length) {
+        setLogo(index.config.brandingLogoUrl);
+      }
       setTheme(createMuiTheme(tv));
     });
-  }, [setTheme]);
+  }, [setTheme, setLogo]);
 
   if (!theme) {
     return <Box>Loading ...</Box>;
@@ -83,6 +89,7 @@ const App: React.FC = () => {
             sidebarContent={sidebarContent}
             setSidebarContent={setSidebarContent}
             locateFunction={ff}
+            logo={logo}
             pageTitle={pageTitle}
           >
             <Route

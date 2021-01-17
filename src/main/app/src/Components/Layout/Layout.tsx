@@ -11,6 +11,7 @@ interface Props {
   setSidebarContent: Function;
   locateFunction: Function;
   pageTitle?: string;
+  logo?: string;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -54,6 +55,7 @@ const Layout: React.FC<Props> = ({
   setSidebarContent,
   locateFunction,
   pageTitle,
+  logo,
 }) => {
   const classes = useStyles();
 
@@ -61,6 +63,7 @@ const Layout: React.FC<Props> = ({
     <React.Fragment>
       <Navigation
         appBarClass={classes.appBar}
+        logo={logo}
         setSidebarContent={setSidebarContent}
         locateFunction={locateFunction}
         pageTitle={pageTitle}
