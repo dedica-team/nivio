@@ -1,5 +1,6 @@
 package de.bonndan.nivio.config;
 
+import org.hibernate.validator.constraints.URL;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
@@ -12,6 +13,7 @@ import javax.validation.constraints.Pattern;
 @Validated
 public class NivioConfigProperties {
 
+    @URL(message = "baseUrl must be a valid URL")
     private String baseUrl;
 
     private String version;
@@ -27,6 +29,9 @@ public class NivioConfigProperties {
 
     @Pattern(regexp = "#?[a-fA-F0-9]{6}", message = "brandingSecondary must be a hex color code")
     private String brandingSecondary;
+
+    @URL(message = "brandingLogoUrl must be a valid URL")
+    private String brandingLogoUrl;
     //iconFolder: /a/local/path
 
 
@@ -76,6 +81,14 @@ public class NivioConfigProperties {
 
     public void setBrandingSecondary(String brandingSecondary) {
         this.brandingSecondary = brandingSecondary;
+    }
+
+    public String getBrandingLogoUrl() {
+        return brandingLogoUrl;
+    }
+
+    public void setBrandingLogoUrl(String brandingLogoUrl) {
+        this.brandingLogoUrl = brandingLogoUrl;
     }
 
     public ApiModel getApiModel() {

@@ -1,6 +1,5 @@
 package de.bonndan.nivio.config;
 
-import de.bonndan.nivio.model.LandscapeRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -59,5 +58,29 @@ class NivioConfigPropertiesTest {
         assertThat(validate).isNotEmpty();
         ConstraintViolation<NivioConfigProperties>[] constraintViolations = (ConstraintViolation<NivioConfigProperties>[]) validate.toArray(ConstraintViolation[]::new);
         assertThat(constraintViolations[0].getMessage()).isEqualTo("brandingSecondary must be a hex color code");
+    }
+
+    @Test
+    void checksBaseUrl() {
+
+        NivioConfigProperties props = new NivioConfigProperties();
+        props.setBaseUrl("*!W13");
+        Set<ConstraintViolation<NivioConfigProperties>> validate = localValidatorFactoryBean.getValidator().validate(props);
+
+        assertThat(validate).isNotEmpty();
+        ConstraintViolation<NivioConfigProperties>[] constraintViolations = (ConstraintViolation<NivioConfigProperties>[]) validate.toArray(ConstraintViolation[]::new);
+        assertThat(constraintViolations[0].getMessage()).isEqualTo("baseUrl must be a valid URL");
+    }
+
+    @Test
+    void checksLogoUrl() {
+
+        NivioConfigProperties props = new NivioConfigProperties();
+        props.setBrandingLogoUrl("*!W13");
+        Set<ConstraintViolation<NivioConfigProperties>> validate = localValidatorFactoryBean.getValidator().validate(props);
+
+        assertThat(validate).isNotEmpty();
+        ConstraintViolation<NivioConfigProperties>[] constraintViolations = (ConstraintViolation<NivioConfigProperties>[]) validate.toArray(ConstraintViolation[]::new);
+        assertThat(constraintViolations[0].getMessage()).isEqualTo("brandingLogoUrl must be a valid URL");
     }
 }
