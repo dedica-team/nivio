@@ -188,7 +188,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
     if (locateComponent) {
       setLocateFunction(() => locateComponent);
     }
-  }, [value, setLocateFunction, locateComponent]);
+  }, [setLocateFunction, locateComponent]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
