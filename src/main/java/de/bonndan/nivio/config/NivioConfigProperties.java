@@ -2,16 +2,30 @@ package de.bonndan.nivio.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 
 @Configuration
 @ConfigurationProperties("nivio")
+@Validated
 public class NivioConfigProperties {
 
     private String baseUrl;
+
     private String version;
+
+    @Min(10000)
     private Integer pollingMilliseconds;
+
+    @Pattern(regexp = "#?[a-fA-F0-9]{6}", message = "brandingForeground must be a hex color code")
     private String brandingForeground;
+
+    @Pattern(regexp = "#?[a-fA-F0-9]{6}", message = "brandingBackground must be a hex color code")
     private String brandingBackground;
+
+    @Pattern(regexp = "#?[a-fA-F0-9]{6}", message = "brandingSecondary must be a hex color code")
     private String brandingSecondary;
     //iconFolder: /a/local/path
 
