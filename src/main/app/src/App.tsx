@@ -7,7 +7,7 @@ import Man from './Components/Manual/Man';
 import Layout from './Components/Layout/Layout';
 import { Routes } from './interfaces';
 import defaultThemeVariables from './Ressources/styling/theme';
-import { CssBaseline } from '@material-ui/core';
+import {Box, CssBaseline, Theme} from '@material-ui/core';
 import { createMuiTheme, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
 import { get } from './utils/API/APIClient';
 
@@ -27,11 +27,7 @@ const App: React.FC = () => {
   const [sidebarContent, setSidebarContent] = useState<ReactElement[]>([]);
   const [pageTitle, setPageTitle] = useState<string>('');
   const [locateFunction, setLocateFunction] = useState<Function>();
-
-  const [themeVariables, setThemeVariables] = React.useState<ThemeOptions>(defaultThemeVariables);
-  const theme = React.useMemo(() => {
-    return createMuiTheme(themeVariables);
-  }, [themeVariables]);
+  const [theme, setTheme] = useState<Theme>();
 
   const ff = useCallback(
     (args) => {
@@ -62,7 +58,7 @@ const App: React.FC = () => {
       const front = getColorSafely(index.config.brandingForeground, '#006868');
       const secondary = getColorSafely(index.config.brandingSecondary, '#eeeeee');
 
-      const tv: ThemeOptions = themeVariables;
+      const tv: ThemeOptions = defaultThemeVariables;
       if (!tv.palette) return;
       // @ts-ignore
       tv.palette.background.default = back;
@@ -70,9 +66,15 @@ const App: React.FC = () => {
       tv.palette.primary.main = front;
       // @ts-ignore
       tv.palette.secondary.main = secondary;
-      setThemeVariables(tv);
+      setTheme(
+        createMuiTheme(tv)
+      )
     });
-  }, [setThemeVariables, themeVariables]);
+  }, [setTheme]);
+
+  if (!theme) {
+    return <Box>Loading ...</Box>;
+  }
 
   return (
     <ThemeProvider theme={theme}>
