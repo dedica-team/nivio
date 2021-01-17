@@ -72,21 +72,24 @@ const Search: React.FC<PropsInterface> = ({locateFunction, setSidebarContent, ..
             .replace(/[!'()]/g, escape)
             .replace(/\*/g, '%2A')
       ).then((result) => {
+        console.log(result)
         setResults(result);
-        const searchResult = results.map((value1) => (
-          <Item
+      });
+    },
+    []
+  );
+
+  useEffect(() => {
+    const searchResult = results.map((value1) => (
+        <Item
             small={true}
             key={value1.fullyQualifiedIdentifier}
             useItem={value1}
             locateItem={locateFunction}
-          />
-        ));
-        setSidebarContent(searchResult);
-
-      });
-    },
-    [results, setSidebarContent, locateFunction]
-  );
+        />
+    ));
+    setSidebarContent(searchResult);
+  }, [results, setSidebarContent, locateFunction]);
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
