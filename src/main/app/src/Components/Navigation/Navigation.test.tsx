@@ -6,7 +6,7 @@ import { MemoryRouter } from 'react-router-dom';
 it('should render Navigation component', () => {
   const { getByText } = render(
     <MemoryRouter>
-      <Navigation />
+      <Navigation setSidebarContent={() => {}} appBarClass={'foo'} locateFunction={() => {}} />
     </MemoryRouter>
   );
   expect(getByText('nivio')).toBeInTheDocument();
@@ -15,7 +15,7 @@ it('should render Navigation component', () => {
 it('should link to manual on button click', () => {
   const { getByTestId } = render(
     <MemoryRouter>
-      <Navigation />
+      <Navigation setSidebarContent={() => {}} appBarClass={'foo'} locateFunction={() => {}} />
     </MemoryRouter>
   );
 

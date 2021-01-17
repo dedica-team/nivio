@@ -60,33 +60,32 @@ const Search: React.FC<PropsInterface> = ({ locateFunction, setSidebarContent, .
   const componentClasses = componentStyles();
   const searchInput = React.useRef<HTMLDivElement>(null);
 
-  const search = useCallback(
-    (searchTerm: string, identifier: string) => {
-      if (searchTerm.length < 2) return;
+  const search = useCallback((searchTerm: string, identifier: string) => {
+    if (searchTerm.length < 2) return;
+    setHasChange(false);
+    get(
+      '/api/landscape/' +
+        identifier +
+        '/search/' +
+        encodeURIComponent(searchTerm)
+          .replace(/[!'()]/g, escape)
+          .replace(/\*/g, '%2A')
+    ).then((result) => {
+      setResults(result);
+    });
+  }, []);
 
-      get(
-        '/api/landscape/' +
-          identifier +
-          '/search/' +
-          encodeURIComponent(searchTerm)
-            .replace(/[!'()]/g, escape)
-            .replace(/\*/g, '%2A')
-      ).then((result) => {
-        setResults(result);
-        const searchResult = results.map((value1) => (
-          <Item
-            small={true}
-            key={value1.fullyQualifiedIdentifier}
-            useItem={value1}
-            locateItem={locateFunction}
-          />
-        ));
-        setSidebarContent(searchResult);
-        setHasChange(false);
-      });
-    },
-    [results, setSidebarContent, locateFunction]
-  );
+  useEffect(() => {
+    const searchResult = results.map((value1) => (
+      <Item
+        small={true}
+        key={value1.fullyQualifiedIdentifier}
+        useItem={value1}
+        locateItem={locateFunction}
+      />
+    ));
+    setSidebarContent(searchResult);
+  }, [results, setSidebarContent, locateFunction]);
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {

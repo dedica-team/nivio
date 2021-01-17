@@ -23,7 +23,7 @@ import StatusBar from '../Dashboard/StatusBar';
 import { IAssessment, ILandscape } from '../../../interfaces';
 import { getGroup, getItem } from '../Utils/utils';
 import Group from '../Modals/Group/Group';
-import MapUtils from "./MapUtils";
+import MapUtils from './MapUtils';
 
 interface Props {
   setSidebarContent: Function;
@@ -60,7 +60,6 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
 
   const [isFirstRender, setIsFirstRender] = useState(true);
 
-
   const locateComponent = useCallback(
     (fullyQualifiedItemIdentifier: string) => {
       const element = document.getElementById(fullyQualifiedItemIdentifier);
@@ -75,7 +74,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
         }
       }
     },
-    [value]
+    [setValue, value]
   );
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
@@ -177,16 +176,19 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
       get(`/api/${identifier}`).then((response) => {
         setLandscape(response);
         setPageTitle(response.name);
-        if (locateComponent) {
-          setLocateFunction(() => locateComponent);
-        }
       });
 
       get(`/assessment/${identifier}`).then((response) => {
         setAssessments(response);
       });
     }
-  }, [identifier, setPageTitle, setLocateFunction, locateComponent, landscape]);
+  }, [identifier, setPageTitle, landscape]);
+
+  useEffect(() => {
+    if (locateComponent) {
+      setLocateFunction(() => locateComponent);
+    }
+  }, [setLocateFunction, locateComponent]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
