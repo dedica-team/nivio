@@ -63,7 +63,7 @@ const Search: React.FC<PropsInterface> = ({locateFunction, setSidebarContent, ..
   const search = useCallback(
     (searchTerm: string, identifier: string) => {
       if (searchTerm.length < 2) return;
-
+      setHasChange(false);
       get(
         '/api/landscape/' +
           identifier +
@@ -82,7 +82,7 @@ const Search: React.FC<PropsInterface> = ({locateFunction, setSidebarContent, ..
           />
         ));
         setSidebarContent(searchResult);
-        setHasChange(false);
+
       });
     },
     [results, setSidebarContent, locateFunction]
