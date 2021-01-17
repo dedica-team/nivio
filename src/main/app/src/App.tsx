@@ -7,7 +7,7 @@ import Man from './Components/Manual/Man';
 import Layout from './Components/Layout/Layout';
 import { Routes } from './interfaces';
 import defaultThemeVariables from './Ressources/styling/theme';
-import {Box, CssBaseline, Theme} from '@material-ui/core';
+import { Box, CssBaseline, Theme } from '@material-ui/core';
 import { createMuiTheme, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
 import { get } from './utils/API/APIClient';
 
@@ -66,9 +66,7 @@ const App: React.FC = () => {
       tv.palette.primary.main = front;
       // @ts-ignore
       tv.palette.secondary.main = secondary;
-      setTheme(
-        createMuiTheme(tv)
-      )
+      setTheme(createMuiTheme(tv));
     });
   }, [setTheme]);
 
