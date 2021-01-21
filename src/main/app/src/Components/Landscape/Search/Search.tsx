@@ -85,7 +85,7 @@ const Search: React.FC<PropsInterface> = ({ locateFunction, setSidebarContent, .
       />
     ));
     setSidebarContent(searchResult);
-  }, [results, setSidebarContent, locateFunction]);
+  }, [results, setSidebarContent]);
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
