@@ -152,7 +152,7 @@ public class ItemIndex {
      * @return query string
      */
     public String selectByIdentifierOrName(String term) {
-        return "SELECT * FROM items WHERE (identifier = '" + term + "' OR name = '" + term + "')";
+        return String.format("SELECT * FROM items WHERE (identifier = '%s' OR name = '%s')", term, term);
     }
 
     public Set<Item> all() {
