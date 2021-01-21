@@ -85,7 +85,7 @@ const Search: React.FC<PropsInterface> = ({ locateFunction, setSidebarContent, .
       />
     ));
     setSidebarContent(searchResult);
-  }, [results, setSidebarContent]);
+  }, [results, setSidebarContent]);// eslint-disable-line react-hooks/exhaustive-deps
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
