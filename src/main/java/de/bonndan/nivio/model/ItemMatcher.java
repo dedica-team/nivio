@@ -1,6 +1,5 @@
 package de.bonndan.nivio.model;
 
-import de.bonndan.nivio.input.dto.ItemDescription;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
