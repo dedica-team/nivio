@@ -37,6 +37,11 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     private String icon;
     private String color;
 
+    /**
+     * technical address, URI
+     */
+    private String address;
+
     public ItemDescription() {
     }
 
@@ -199,6 +204,14 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     public void addRelation(RelationDescription relationItem) {
         Objects.requireNonNull(relationItem);
         this.relations.add(relationItem);
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     @Override

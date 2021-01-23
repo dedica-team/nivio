@@ -34,6 +34,7 @@ public class ItemFactoryTest {
         landscapeItem.setPrefixed(Tagged.LABEL_PREFIX_TAG, new String[]{"a", "b"});
         landscapeItem.setLabel(Label.costs, "10000");
         landscapeItem.setLabel(Label.capability, "billing");
+        landscapeItem.setAddress("foobar.com");
     }
 
     @Test
@@ -62,5 +63,6 @@ public class ItemFactoryTest {
         assertEquals(landscapeItem.getLabel(Label.costs), created.getLabel(Label.costs));
         assertEquals(landscapeItem.getLabel(Label.capability), created.getLabel(Label.capability));
         assertEquals(landscapeItem.getLabel(Label.lifecycle), created.getLabel(Label.lifecycle));
+        assertEquals(landscapeItem.getAddress(), created.getAddress().toString());
     }
 }

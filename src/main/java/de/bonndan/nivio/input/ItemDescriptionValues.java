@@ -24,6 +24,8 @@ public class ItemDescriptionValues {
             existing.setIcon(increment.getIcon());
         if (increment.getGroup() != null)
             existing.setGroup(increment.getGroup());
+        if (increment.getAddress() != null)
+            existing.setAddress(increment.getAddress());
 
         assignSafe(increment.getRelations(), (rel) -> rel.forEach(existing::addRelation));
 
@@ -43,6 +45,7 @@ public class ItemDescriptionValues {
         assignSafeIfAbsent(template.getType(), item.getType(), item::setType);
         assignSafeIfAbsent(template.getGroup(), item.getGroup(), item::setGroup);
         assignSafeIfAbsent(template.getIcon(), item.getIcon(), item::setIcon);
+        assignSafeIfAbsent(template.getAddress(), item.getAddress(), item::setAddress);
 
         if (template.getProvidedBy() != null) {
             template.getProvidedBy().stream()
