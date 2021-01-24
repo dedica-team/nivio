@@ -3,7 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.model.ItemIndex;
+import de.bonndan.nivio.search.ItemIndex;
 import de.bonndan.nivio.model.RelationBuilder;
 import org.springframework.util.StringUtils;
 

@@ -1,4 +1,4 @@
-package de.bonndan.nivio.model;
+package de.bonndan.nivio.search;
 
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.IndexedCollection;
@@ -8,7 +8,8 @@ import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.search.SearchIndex;
+import de.bonndan.nivio.model.Component;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;

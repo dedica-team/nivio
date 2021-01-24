@@ -3,6 +3,8 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.search.ItemIndex;
+import de.bonndan.nivio.search.ItemMatcher;
 import org.springframework.util.StringUtils;
 
 import java.util.*;

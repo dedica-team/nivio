@@ -8,6 +8,7 @@ import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.ProcessLog;
+import de.bonndan.nivio.search.ItemIndex;
 import de.bonndan.nivio.search.SearchIndex;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;

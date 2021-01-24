@@ -1,5 +1,6 @@
-package de.bonndan.nivio.model;
+package de.bonndan.nivio.search;
 
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.search.SearchDocumentFactory;
 import org.apache.lucene.document.Document;
 import org.junit.jupiter.api.Test;

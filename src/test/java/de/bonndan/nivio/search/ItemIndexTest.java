@@ -1,6 +1,9 @@
-package de.bonndan.nivio.model;
+package de.bonndan.nivio.search;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

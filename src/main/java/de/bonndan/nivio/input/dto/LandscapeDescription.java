@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.input.ItemDescriptionValues;
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.search.ItemIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
