@@ -74,8 +74,7 @@ class ItemIndexTest {
 
     @Test
     public void searchStartingWithWildcard() {
-        int i = landscape.getItems().indexForSearch();
-        assertEquals(2, i);
+        landscape.getItems().indexForSearch();
         Set<Item> search = landscape.getItems().search("*oo");
         assertEquals(1, search.size());
     }

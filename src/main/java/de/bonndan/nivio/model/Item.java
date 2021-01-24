@@ -220,8 +220,8 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         return getLabel(Label.type);
     }
 
-    public URI getAddress() {
-        return address;
+    public String getAddress() {
+        return address != null ? address.toString() : null;
     }
 
     public void setAddress(URI address) {

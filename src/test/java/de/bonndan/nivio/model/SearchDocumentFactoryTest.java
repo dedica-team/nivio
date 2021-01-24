@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.search.SearchDocumentFactory;
 import org.apache.lucene.document.Document;
 import org.junit.jupiter.api.Test;
 
@@ -7,7 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import static de.bonndan.nivio.model.SearchDocumentFactory.*;
+import static de.bonndan.nivio.search.SearchDocumentFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SearchDocumentFactoryTest {

@@ -4,50 +4,30 @@ import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.support.SimpleFunction;
+import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.facet.FacetResult;
-import org.apache.lucene.facet.Facets;
-import org.apache.lucene.facet.FacetsCollector;
-import org.apache.lucene.facet.FacetsConfig;
-import org.apache.lucene.facet.taxonomy.FastTaxonomyFacetCounts;
-import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
-import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyReader;
-import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyWriter;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MatchAllDocsQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.IOUtils;
+import de.bonndan.nivio.search.SearchIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.googlecode.cqengine.query.QueryFactory.attribute;
+import static com.googlecode.cqengine.query.QueryFactory.in;
 import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
-import static de.bonndan.nivio.model.SearchDocumentFactory.*;
 
 /**
  * A queryable index on all landscape items.
  */
-public class ItemIndex {
+public class ItemIndex<T extends Component> {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ItemIndex.class);
     private static final String CQE_FIELD_FQI = "fqi";
 
@@ -58,10 +38,10 @@ public class ItemIndex {
      * class of the {@link SimpleFunction}, the generic types can be resolved without running into exceptions.
      */
     @SuppressWarnings({"Convert2Lambda"})
-    private static final Attribute<Item, String> CQE_ATTR_FQI = attribute("fqi", new SimpleFunction<>() {
+    private final Attribute<T, FullyQualifiedIdentifier> CQE_ATTR_FQI = attribute("fqi", new SimpleFunction<>() {
         @Override
-        public String apply(Item item) {
-            return item.getFullyQualifiedIdentifier().toString();
+        public FullyQualifiedIdentifier apply(T item) {
+            return item.getFullyQualifiedIdentifier();
         }
     });
 
@@ -69,10 +49,10 @@ public class ItemIndex {
      * See {@link #CQE_ATTR_FQI}
      */
     @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef"})
-    private static final Attribute<Item, String> CQE_ATTR_IDENTIFIER = attribute("identifier", new SimpleFunction<>() {
+    private final Attribute<T, String> CQE_ATTR_IDENTIFIER = attribute("identifier", new SimpleFunction<>() {
         @Override
-        public String apply(Item item) {
-            return item.getIdentifier();
+        public String apply(T item) {
+            return item.getIdentifier() != null ? item.getIdentifier().toLowerCase() : "";
         }
     });
 
@@ -80,47 +60,55 @@ public class ItemIndex {
      * See {@link #CQE_ATTR_FQI}
      */
     @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef"})
-    private static final Attribute<Item, String> CQE_ATTR_NAME = attribute("name", new SimpleFunction<>() {
+    private final Attribute<T, String> CQE_ATTR_NAME = attribute("name", new SimpleFunction<>() {
         @Override
-        public String apply(Item item) {
-            return item.getName();
+        public String apply(T item) {
+            return item.getName() != null ? item.getName().toLowerCase() : "";
         }
     });
 
-    private final SQLParser<Item> parser;
-    private final Directory searchIndex;
-    private final Directory taxoIndex;
+    /**
+     * See {@link #CQE_ATTR_FQI}
+     */
+    @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef"})
+    private final Attribute<T, String> CQE_ATTR_ADDRESS = attribute("address", new SimpleFunction<>() {
+        @Override
+        public String apply(T item) {
+            return item.getAddress() != null ? item.getAddress().toLowerCase() : "";
+        }
+    });
 
-    IndexedCollection<Item> index = new ConcurrentIndexedCollection<>();
+    private final SQLParser<T> parser;
+
+    /**
+     * The search index is only used for the final models, absent for item description objects.
+     */
+    private final Optional<SearchIndex> searchIndex;
+
+    private IndexedCollection<T> index = new ConcurrentIndexedCollection<>();
 
     /**
      * Creates a new empty index.
      */
-    public ItemIndex() {
+    public ItemIndex(@Nullable SearchIndex searchIndex, Class<T> tClass) {
 
         //init cq engine
-        parser = SQLParser.forPojoWithAttributes(Item.class,
+        parser = SQLParser.forPojoWithAttributes(tClass,
                 Map.of(
                         CQE_FIELD_FQI, CQE_ATTR_FQI,
                         "identifier", CQE_ATTR_IDENTIFIER,
-                        "name", CQE_ATTR_NAME)
+                        "name", CQE_ATTR_NAME,
+                        "address", CQE_ATTR_ADDRESS)
         );
 
-        //init lucene
-        searchIndex = new RAMDirectory();
-        taxoIndex = new RAMDirectory();
+        this.searchIndex = Optional.ofNullable(searchIndex);
     }
 
-    public ItemIndex(Set<Item> items) {
-        this();
-        setItems(items);
-    }
-
-    public Stream<Item> itemStream() {
+    public Stream<T> itemStream() {
         return index.stream();
     }
 
-    public void setItems(Set<Item> items) {
+    public void setItems(Set<T> items) {
         index = new ConcurrentIndexedCollection<>();
         index.addAll(items);
     }
@@ -131,12 +119,12 @@ public class ItemIndex {
      * @param term "*" as wildcard for all | {@link FullyQualifiedIdentifier} string pathes | identifier
      * @return all matching items.
      */
-    public Collection<Item> query(String term) {
+    public Collection<T> query(String term) {
         if ("*".equals(term)) {
             return all();
         }
 
-        if (term.contains("/")) {
+        if (term.contains("/") && !term.contains(" ")) {
             return findAll(ItemMatcher.forTarget(term));
         }
 
@@ -155,8 +143,12 @@ public class ItemIndex {
         return String.format("SELECT * FROM items WHERE (identifier = '%s' OR name = '%s')", term, term);
     }
 
-    public Set<Item> all() {
+    public Set<T> all() {
         return index;
+    }
+
+    public void add(T item) {
+        index.add(item);
     }
 
     /**
@@ -165,7 +157,7 @@ public class ItemIndex {
      * @param itemDescription item to search for
      * @return the sibling from the list
      */
-    public Item pick(final ItemDescription itemDescription) {
+    public T pick(final ItemDescription itemDescription) {
         return pick(itemDescription.getIdentifier(), itemDescription.getGroup());
     }
 
@@ -176,7 +168,7 @@ public class ItemIndex {
      * @param group      the group to search in
      * @return the sibling with the given identifier
      */
-    public Item pick(final String identifier, String group) {
+    public T pick(final String identifier, String group) {
         if (StringUtils.isEmpty(identifier)) {
             throw new IllegalArgumentException("Identifier to pick is empty");
         }
@@ -192,12 +184,12 @@ public class ItemIndex {
      * @param identifier the identifier
      * @return the item or null
      */
-    public Optional<Item> find(String identifier, String group) {
+    public Optional<T> find(String identifier, String group) {
         if (StringUtils.isEmpty(identifier)) {
             throw new IllegalArgumentException("Identifier to find is empty");
         }
 
-        List<Item> found = findAll(identifier, group);
+        List<T> found = findAll(identifier, group);
 
         if (found.size() > 1) {
             throw new RuntimeException("Ambiguous result for " + group + "/" + identifier + ": " + found + " in collection ");
@@ -212,8 +204,8 @@ public class ItemIndex {
      * @param itemMatcher the identifier
      * @return the or null
      */
-    public Optional<Item> find(ItemMatcher itemMatcher) {
-        List<Item> found = findAll(itemMatcher);
+    public Optional<T> find(ItemMatcher itemMatcher) {
+        List<T> found = findAll(itemMatcher);
 
         if (found.size() > 1) {
             throw new RuntimeException("Ambiguous result for " + itemMatcher + ": " + found + " in collection.");
@@ -225,104 +217,39 @@ public class ItemIndex {
     /**
      * Creates a search index based in a snapshot of current items state (later modifications won't be shown).
      *
-     * @return number of indexed items
      */
-    public int indexForSearch() {
-        int indexed = 0;
-        try {
-            FacetsConfig config = SearchDocumentFactory.getConfig();
-            TaxonomyWriter taxoWriter = new DirectoryTaxonomyWriter(taxoIndex, IndexWriterConfig.OpenMode.CREATE);
-            IndexWriter writer = new IndexWriter(searchIndex, new IndexWriterConfig(new StandardAnalyzer()));
-            writer.deleteAll();
-            for (Item item : index) {
-
-                Document doc = from(item);
-                writer.addDocument(config.build(taxoWriter, doc));
-                indexed++;
-            }
-            IOUtils.close(writer, taxoWriter); //, searchIndex, taxoIndex);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to update search index", e);
-        }
-
-        return indexed;
+    public void indexForSearch() {
+        searchIndex.ifPresent(searchIndex1 -> searchIndex1.indexForSearch(all()));
     }
 
-    public Set<Item> search(String queryString) {
-        try {
-            return documentSearch(queryString).stream()
-                    .map(doc ->
-                            //TODO this is ineffective, there must be a way (index?) to obtain the item directly
-                            cqnQueryOnIndex("SELECT * FROM items WHERE " + CQE_FIELD_FQI + " = '" + doc.get(LUCENE_FIELD_FQI) + "'").stream().findFirst().orElse(null)
-                    )
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toSet());
-        } catch (IOException | ParseException e) {
-            throw new RuntimeException("Failed to execute search for " + queryString);
-        }
-    }
-
-    /**
-     * Returns the facets for the given query.
-     *
-     * @return top 10 facets
-     */
-    public List<FacetResult> facets() {
-        try {
-            DirectoryReader ireader = DirectoryReader.open(searchIndex);
-            IndexSearcher searcher = new IndexSearcher(ireader);
-
-            DirectoryTaxonomyReader taxoReader = new DirectoryTaxonomyReader(taxoIndex);
-            FacetsCollector fc = new FacetsCollector();
-            FacetsConfig config = getConfig();
-            FacetsCollector.search(searcher, new MatchAllDocsQuery(), 10, fc);
-
-            Facets facets = new FastTaxonomyFacetCounts(taxoReader, config, fc);
-            ireader.close();
-            return facets.getAllDims(10);
-        } catch (IOException e) {
-            LOGGER.warn("Unable to get the facets for the given query error: ", e);
+    public Set<T> search(String queryString) {
+        if (searchIndex.isEmpty()) {
+            throw new IllegalStateException("No search index provided. Cannot execute search.");
         }
 
-        return null;
-    }
+        Set<FullyQualifiedIdentifier> search = searchIndex.get().search(queryString);
+        Query<T> nativeQuery = in(CQE_ATTR_FQI, search);
 
-    private List<Document> documentSearch(String queryString) throws IOException, ParseException {
-
-        DirectoryReader ireader = DirectoryReader.open(searchIndex);
-        IndexSearcher isearcher = new IndexSearcher(ireader);
-        // Parse a simple query that searches for "text":
-        QueryParser parser = new MultiFieldQueryParser(new String[]{LUCENE_FIELD_NAME, LUCENE_FIELD_DESCRIPTION}, new StandardAnalyzer());
-        parser.setAllowLeadingWildcard(true);
-        Query query = parser.parse(queryString);
-        ScoreDoc[] hits = isearcher.search(query, 10).scoreDocs;
-
-        List<Document> documents = new ArrayList<>();
-        // Iterate through the results:
-        for (ScoreDoc hit : hits) {
-            Document hitDoc = isearcher.doc(hit.doc);
-            documents.add(hitDoc);
-        }
-        ireader.close();
-
-        return documents;
+        return index.retrieve(nativeQuery).stream().collect(Collectors.toSet());
     }
 
 
-    public List<Item> cqnQueryOnIndex(String condition) {
-
-
-        ResultSet<Item> results = parser.retrieve(index, condition);
+    public List<T> cqnQueryOnIndex(String condition) {
+        ResultSet<T> results = parser.retrieve(index, condition);
         return results.stream().collect(Collectors.toList());
     }
 
-    private List<Item> findAll(final String identifier, final String group) {
+    private List<T> findAll(final String identifier, final String group) {
         return findAll(ItemMatcher.build(null, group, identifier));
     }
 
-    private List<Item> findAll(ItemMatcher itemMatcher) {
+    private List<T> findAll(ItemMatcher itemMatcher) {
         return itemStream()
                 .filter(item -> itemMatcher.isSimilarTo(item.getFullyQualifiedIdentifier()))
                 .collect(Collectors.toList());
+    }
+
+    public void remove(T item) {
+        index.remove(item);
     }
 }

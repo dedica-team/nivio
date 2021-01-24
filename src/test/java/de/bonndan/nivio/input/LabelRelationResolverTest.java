@@ -9,229 +9,88 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 class LabelRelationResolverTest {
 
-    public static final String IDENTIFIER = "anItemWithLabels";
-    private ItemDescription item;
-    private LandscapeDescription input;
     private LabelRelationResolver resolver;
     private HintFactory hintFactory;
 
     @BeforeEach
     public void setup() {
-        item = getItemWithLabels();
-        input = new LandscapeDescription();
-        input.getItemDescriptions().add(item);
-
         hintFactory = mock(HintFactory.class);
         resolver = new LabelRelationResolver(new ProcessLog(mock(Logger.class)), hintFactory);
-    }
-
-    @Test
-    @DisplayName("key contains url in name and is url with hostname matching a name")
-    public void findFromLabelUrlHostnameByName() {
-
-        //given
-        Item elastic = new Item(null, "elastic-server-as89");
-        elastic.setName("elastic");
-
-        Landscape landscape = getLandscapeWith(Collections.singleton(elastic));
-
-        //when
-        resolver.resolve(input);
-
-        //then
-        assertEquals(1, item.getRelations().size());
-        RelationDescription rel = item.getRelations().iterator().next();
-        assertEquals("elastic-server-as89", rel.getTarget());
-    }
-
-    @Test
-    @DisplayName("key contains url in name and is url with hostname matching an identifier")
-    public void findFromLabelUrlHostnameByIdentifier() {
-        //given
-        Item elastic = new Item(null, "elastic");
-        Landscape landscape = getLandscapeWith(Collections.singleton(elastic));
-
-        //when
-        resolver.resolve(input);
-
-        //then
-        assertEquals(1, item.getRelations().size());
-        RelationDescription rel = item.getRelations().iterator().next();
-        assertEquals("elastic", rel.getTarget());
-    }
-
-    @Test
-    @DisplayName("key has magic part but value is not a url")
-    public void findFromLabelValueByIdentifier() {
-        //given
-        Item api = new Item(null, "api-foo");
-        Landscape landscape = getLandscapeWith(Collections.singleton(api));
-
-        //when
-        resolver.resolve(input);
-
-        //then
-        assertEquals(1, item.getRelations().size());
-        RelationDescription rel = item.getRelations().iterator().next();
-        assertEquals("api-foo", rel.getTarget());
-    }
-
-    @Test
-    @DisplayName("key has magic part but value is not a url")
-    public void findFromLabelValueByName() {
-        //given
-        Item api = new Item(null, "api.foo.123");
-        api.setName("api-foo");
-
-        Landscape landscape = getLandscapeWith(Collections.singleton(api));
-
-        //when
-        resolver.resolve(input);
-
-        //then
-        assertEquals(1, item.getRelations().size());
-        RelationDescription rel = item.getRelations().iterator().next();
-        assertEquals("api.foo.123", rel.getTarget());
-    }
-
-    @Test
-    @DisplayName("does nothing with more than one match")
-    public void ifUncertainDoesNotLink() {
-        //given
-        Item api = new Item(null, "api.foo.123");
-        api.setName("api-foo");
-
-        Item api2 = new Item(null, "api.foo.234");
-        api2.setName("api-foo");
-
-        Landscape landscape = getLandscapeWith(Set.of(api, api2));
-
-        //when
-        resolver.resolve(input);
-
-        //then
-        assertEquals(0, item.getRelations().size());
-
-    }
-
-    @Test
-    @DisplayName("does nothing if the label value is a known identifier")
-    public void ifValueIsIdentiferDoesNotLink() {
-        //given
-        Item apiFoo = new Item(null, "api-foo");//this should match
-        Item foo = new Item(null, "foo"); //part of the label "FOO_API_URL", should not match
-        Item api = new Item(null, "api");//part of the label "FOO_API_URL", should not match
-
-        Landscape landscape = getLandscapeWith(Set.of(apiFoo, foo, api));
-
-        //when
-        resolver.resolve(input);
-
-        //then
-        assertEquals(2, item.getRelations().size()); // to api because of ABC_URL, to api-foo because of FOO_API_URL
-
-        boolean hasApiFoo = item.getRelations().stream().anyMatch(rel -> "api-foo".equals(rel.getTarget()));
-        assertTrue(hasApiFoo);
-    }
-
-    @Test
-    @DisplayName("a part of the key matches an identifier")
-    public void keyPartMatchesidentifier() {
-        //given
-        Item hihi = new Item(null, "baz");
-        Landscape landscape = getLandscapeWith(Collections.singleton(hihi));
-
-        //when
-        resolver.resolve(input);
-
-        //then
-        assertEquals(1, item.getRelations().size());
-        RelationDescription rel = item.getRelations().iterator().next();
-        assertEquals("baz", rel.getTarget());
     }
 
     @Test
     @DisplayName("label blacklist is used")
     public void blacklistPreventsRelations() {
         //given
-        Item hihi = new Item(null, "baz");
-        Landscape landscape = getLandscapeWith(Collections.singleton(hihi));
+        LandscapeDescription landscape = new LandscapeDescription();
         landscape.getConfig().getLabelBlacklist().add(".*COMPOSITION.*");
 
+        ItemDescription hihi = new ItemDescription( "bar");
+        hihi.setLabel("BAZ_COMPOSITION_URL", "http://baz-composition-service:80");
+
+        ItemDescription target = new ItemDescription( "baz");
+        target.setAddress("http://baz-composition-service:80");
+
+        landscape.setItems(List.of(hihi, target));
+
         //when
-        resolver.resolve(input);
+        resolver.resolve(landscape);
 
         //then
-        assertEquals(0, item.getRelations().size());
+        assertEquals(0, hihi.getRelations().size());
     }
 
     @Test
     @DisplayName("label blacklist is used case insensitive")
     public void blacklistPreventsRelationsCaseInsensitive() {
         //given
-        Item hihi = new Item(null, "baz");
-        Landscape landscape = getLandscapeWith(Collections.singleton(hihi));
-        landscape.getConfig().getLabelBlacklist().add(".*composition.*");
+        LandscapeDescription landscape = new LandscapeDescription();
+        landscape.getConfig().getLabelBlacklist().add(".*COMPOSITION.*");
+
+        ItemDescription hihi = new ItemDescription( "bar");
+        hihi.setLabel("BAZ_composition_URL", "http://baz-composition-service:80");
+
+        ItemDescription target = new ItemDescription( "baz");
+        target.setAddress("http://baz-composition-service:80");
+
+        landscape.setItems(List.of(hihi, target));
 
         //when
-        resolver.resolve(input);
+        resolver.resolve(landscape);
 
         //then
-        assertEquals(0, item.getRelations().size());
+        assertEquals(0, hihi.getRelations().size());
     }
 
     @Test
-    @DisplayName("does not link same service to itself")
-    public void doesNotLinkSame() {
-        //given
-        Item hihi = new Item(null, IDENTIFIER);
+    void ignoresLinks() {
 
-        item.getLabels().put("BASE_URL", IDENTIFIER);
-        Landscape landscape = getLandscapeWith(Collections.singleton(hihi));
+        //given
+        ItemDescription db = new ItemDescription("x.y.z");
+        db.setLabel(Linked.LINK_LABEL_PREFIX + "foo", "http://foo.bar.baz");
+        LandscapeDescription landscape = new LandscapeDescription();
+        landscape.setItems(List.of(db));
 
         //when
-        resolver.resolve(input);
+        resolver.resolve(landscape);
 
         //then
-        assertEquals(0, item.getRelations().size());
+        assertThat(landscape.getItemDescriptions().all().size()).isEqualTo(1);
+        verify(hintFactory, never()).createForLabel(eq(landscape), any(), any());
     }
 
-    @Test
-    public void hasProviderRelation() {
-        //given
-        Item db = new Item(null, "x.y.z");
-        Landscape landscape = getLandscapeWith(Collections.singleton(db));
-
-        //when
-        resolver.resolve(input);
-
-        //then
-        assertEquals(1, item.getRelations().size());
-        RelationDescription rel = item.getRelations().iterator().next();
-        assertEquals("x.y.z", rel.getSource());
-        assertEquals("x.y.z", rel.getSource());
-        assertEquals(RelationType.PROVIDER, rel.getType());
-    }
-
-
-    private Landscape getLandscapeWith(Set<Item> items) {
-        Landscape landscape = LandscapeFactory.create("test");
-        landscape.setItems(items);
-        return landscape;
-    }
 
     private ItemDescription getItemWithLabels() {
         ItemDescription itemDescription = new ItemDescription();
-        itemDescription.setIdentifier(IDENTIFIER);
+        itemDescription.setIdentifier("foo");
 
         itemDescription.getLabels().putAll(
                 Map.of(

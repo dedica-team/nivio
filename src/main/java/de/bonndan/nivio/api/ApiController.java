@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = ApiController.PATH)
@@ -144,9 +145,7 @@ public class ApiController {
         InputFormatHandler factory = formatFactory.getInputFormatHandler(sourceReference);
         Optional<URL> baseUrl = URLHelper.getParentPath(dto.getSource());
 
-        List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference, baseUrl.orElse(null));
-
-        dto.setItemDescriptions(itemDescriptions);
+        dto.setItemDescriptions(new HashSet<>(factory.getDescriptions(sourceReference, baseUrl.orElse(null))));
 
         return indexer.index(dto);
     }
@@ -190,7 +189,7 @@ public class ApiController {
             return ResponseEntity.notFound().build();
         }
 
-        return new ResponseEntity<>(landscape.getItems().facets(), HttpStatus.OK);
+        return new ResponseEntity<>(landscape.getSearchIndex().facets(), HttpStatus.OK);
     }
 
 

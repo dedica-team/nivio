@@ -97,11 +97,11 @@ public class Indexer {
         // mask any label containing secrets
         new SecureLabelsResolver(logger).resolve(input);
 
-        // create relation targets on the fly if the landscape is configured "greedy"
-        new InstantItemResolver(logger).resolve(input);
-
         // read special labels on items and assign the values to fields
         new LabelToFieldResolver(logger).resolve(input);
+
+        // create relation targets on the fly if the landscape is configured "greedy"
+        new InstantItemResolver(logger).resolve(input);
 
         // try to find "magic" relations by examining item labels for keywords and URIs
         new LabelRelationResolver(logger, new HintFactory()).resolve(input);

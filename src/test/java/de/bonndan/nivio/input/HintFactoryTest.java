@@ -158,6 +158,29 @@ class HintFactoryTest {
     }
 
     @Test
+    @DisplayName("address is compared without case")
+    public void linksByAddressCaseInsensitive() {
+        //given
+        ItemDescription hihi = new ItemDescription();
+        hihi.setIdentifier("something");
+        hihi.setAddress("http://FOO.bar.com");
+        landscapeDescription.addItems(List.of(hihi));
+
+        one.getLabels().put("FOO_URL", "http://foo.bar.com");
+
+        //when
+        Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "FOO_URL");
+
+        //then
+        assertThat(foo).isNotEmpty();
+        List<ItemDescription> createdOrModifiedDescriptions = foo.get().getCreatedOrModifiedDescriptions();
+        assertThat(createdOrModifiedDescriptions.size()).isEqualTo(2);
+
+        ItemDescription created = createdOrModifiedDescriptions.get(1);
+        assertThat(created).isEqualTo(hihi);
+    }
+
+    @Test
     @DisplayName("does not link same service to itself")
     public void doesNotLinkSame() {
         //given
@@ -165,6 +188,28 @@ class HintFactoryTest {
 
         //when
         Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "foo");
+
+        //then
+        assertThat(foo).isEmpty();
+    }
+
+    @Test
+    @DisplayName("does nothing with more than one match")
+    public void ifUncertainDoesNotLink() {
+        //given
+        ItemDescription hihi = new ItemDescription();
+        hihi.setIdentifier("foo");
+        hihi.setName("bar");
+
+        ItemDescription huhu = new ItemDescription();
+        huhu.setIdentifier("bar");
+        huhu.setName("bar");
+        landscapeDescription.addItems(List.of(hihi, huhu));
+
+        one.getLabels().put("FOO_HOST", "bar");
+
+        //when
+        Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "FOO_HOST");
 
         //then
         assertThat(foo).isEmpty();

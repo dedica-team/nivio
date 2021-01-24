@@ -3,7 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.model.ItemMatcher;
+import de.bonndan.nivio.model.ItemIndex;
 import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.util.URIHelper;
 import org.slf4j.Logger;
@@ -75,15 +75,22 @@ public class HintFactory {
             return Optional.empty();
         }
 
-        ItemDescription target = getTarget(landscape.getItemDescriptions(), value, optionalURI).orElseGet(() -> {
+        List<ItemDescription> targets = getTarget(landscape.getItemDescriptions(), value, optionalURI);
+        if (targets.size() > 1) {
+            return Optional.empty();
+        }
+        ItemDescription target;
+        if (targets.size() == 0) {
             ItemDescription createdTarget = new ItemDescription();
             createdTarget.setIdentifier(value);
             createdTarget.setName(value);
             optionalURI.ifPresent(uri -> {
                 createdTarget.setAddress(uri.toString());
             });
-            return createdTarget;
-        });
+            target = createdTarget;
+        } else {
+            target = targets.get(0);
+        }
 
 
         LOGGER.info(String.format("Found a target of relation from %s(%s) to target '%s' using '%s'", item.getIdentifier(), item.getName(), target, value));
@@ -104,21 +111,20 @@ public class HintFactory {
         return Optional.of(hint);
     }
 
-    private static Optional<ItemDescription> getTarget(ItemDescriptions itemDescriptions, String value, Optional<URI> optionalURI) {
+    private static List<ItemDescription> getTarget(ItemIndex<ItemDescription> itemDescriptions, String value, Optional<URI> optionalURI) {
 
+        List<ItemDescription> results = new ArrayList<>();
         if (optionalURI.isPresent()) {
             String query = String.format("address = '%s'", optionalURI.get());
-            return itemDescriptions.query(query).stream().findFirst();
+            itemDescriptions.query(query).stream().findFirst().ifPresent(results::add);
+            return results;
         }
 
         Collection<ItemDescription> query = itemDescriptions.query(value);
         if (query.size() != 1) {
-            LOGGER.debug("Found {} results for query for target {}", query, value);
-            return Optional.empty();
+            LOGGER.debug("Found ambiguous results {}  for query for target '{}'", query, value);
         }
-        if (query.iterator().hasNext()) {
-            return Optional.ofNullable(query.iterator().next());
-        }
-        return Optional.empty();
+        results.addAll(query);
+        return results;
     }
 }

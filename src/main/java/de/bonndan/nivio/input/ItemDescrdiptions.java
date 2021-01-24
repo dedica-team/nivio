@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import static com.googlecode.cqengine.query.QueryFactory.attribute;
 import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
 
-public class ItemDescriptions {
+public class ItemDescrdiptions {
 
     /**
      * The {@link com.googlecode.cqengine.query.QueryFactory#attribute(String, SimpleFunction)})} relies on a method
@@ -138,12 +138,12 @@ public class ItemDescriptions {
      * @param term wildcard, ItemMatcher as string, or sql-like query where-condition
      * @return matched items
      */
-    public Collection<? extends ItemDescription> query(String term) {
+    public Collection<ItemDescription> query(String term) {
 
         if ("*".equals(term))
             return index;
 
-        if (term.contains(ItemMatcher.SEPARATOR)) {
+        if (term.contains(ItemMatcher.SEPARATOR) && !term.contains(" ")) {
             return findAll(ItemMatcher.forTarget(term));
         }
 
@@ -156,7 +156,7 @@ public class ItemDescriptions {
         return "SELECT * FROM items WHERE (identifier = '" + term + "' OR name = '" + term + "')";
     }
 
-    private List<ItemDescription> cqnQueryOnIndex(String condition) {
+    public List<ItemDescription> cqnQueryOnIndex(String condition) {
         SQLParser<ItemDescription> parser = SQLParser.forPojoWithAttributes(ItemDescription.class,
                 Map.of("identifier", IDENTIFIER, "name", NAME, "address", ADDRESS)
         );
