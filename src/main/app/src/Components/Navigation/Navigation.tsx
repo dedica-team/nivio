@@ -9,6 +9,7 @@ import Search from '../Landscape/Search/Search';
 import { HelpOutlineRounded } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -19,10 +20,13 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 11,
       paddingLeft: 16,
       paddingRight: 16,
-      backgroundColor: darken(theme.palette.secondary.main, 0.2),
+      backgroundColor: darken(theme.palette.primary.main, 0.2),
     },
     menuIcon: {
       color: 'rgba(255, 255, 255, 0.75)',
+    },
+    logo: {
+      height: '1.5em',
     },
   })
 );
@@ -32,6 +36,7 @@ interface Props {
   setSidebarContent: Function;
   locateFunction: Function;
   pageTitle?: string;
+  logo?: string;
 }
 
 /**
@@ -42,6 +47,7 @@ const Navigation: React.FC<Props> = ({
   setSidebarContent,
   locateFunction,
   pageTitle,
+  logo,
 }) => {
   const classes = useStyles();
 
@@ -49,7 +55,7 @@ const Navigation: React.FC<Props> = ({
     <AppBar position='static' className={appBarClass}>
       <Toolbar variant='dense'>
         <Button component={Link} to={``} className={classes.menuIcon}>
-          nivio
+          {logo ? <Avatar className={classes.logo} imgProps={{ style: { objectFit: 'contain' } }} src={logo} /> : 'nivio'}
         </Button>
         <Box className={classes.pageTitle}>
           <Typography variant='h6'>{pageTitle}</Typography>

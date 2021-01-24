@@ -1,4 +1,4 @@
-import { Theme } from '@material-ui/core';
+import {darken, Theme} from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 const componentStyles = makeStyles((theme: Theme) =>
@@ -7,11 +7,11 @@ const componentStyles = makeStyles((theme: Theme) =>
       margin: 5,
       marginTop: 0,
       padding: 0,
-      backgroundColor: theme.palette.secondary.dark,
+      backgroundColor: darken(theme.palette.primary.main, 0.3),
       overflowY: 'auto',
     },
     cardHeader: {
-      backgroundColor: theme.palette.secondary.main,
+      backgroundColor: theme.palette.primary.main,
       padding: 10,
     },
     cardSubheader: {
@@ -19,16 +19,6 @@ const componentStyles = makeStyles((theme: Theme) =>
     },
     cardActions: {
       padding: 0,
-    },
-    icon: {
-      height: '2em',
-    },
-    itemAvatar: {
-      width: theme.spacing(3),
-      height: theme.spacing(3),
-    },
-    floatingButton: {
-      color: theme.palette.primary.contrastText,
     },
   })
 );

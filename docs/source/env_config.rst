@@ -9,6 +9,9 @@
 * **GITLAB_USERNAME** GitLab OAuth login username (optional, if used password is also required)
 * **KUBERNETES_MASTER** K8s master url (optional), all variables from https://github.com/fabric8io/kubernetes-client#configuring-the-client can be used
 * **NIVIO_BASE_URL** The base url of nivio to be used for frontends if running behind a proxy
+* **NIVIO_BRANDING_BACKGROUND** branding background color (hexadecimal only)
+* **NIVIO_BRANDING_FOREGROUND** branding foreground color (hexadecimal only)
+* **NIVIO_BRANDING_SECONDARY** accent color used for active elements (hexadecimal only)
 * **NIVIO_MAIL_HOST** The smtp mail host
 * **NIVIO_MAIL_PASSWORD** The smtp mail password
 * **NIVIO_MAIL_PORT** The smtp mail port

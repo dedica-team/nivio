@@ -11,6 +11,10 @@ public enum ConfigurableEnvVars {
     NIVIO_MAIL_PORT("The smtp mail port"),
     NIVIO_MAIL_USERNAME("The smtp mail username"),
     NIVIO_MAIL_PASSWORD("The smtp mail password"),
+    NIVIO_BRANDING_FOREGROUND("branding foreground color (hexadecimal only)"),
+    NIVIO_BRANDING_BACKGROUND("branding background color (hexadecimal only)"),
+    NIVIO_BRANDING_SECONDARY("accent color used for active elements (hexadecimal only)"),
+    NIVIO_BRANDING_LOGO_URL("A URL pointing to a logo"),
 
     /** see {@link org.kohsuke.github.GitHubBuilder} */
     GITHUB_LOGIN("GitHub user name (can also be used to connect as organisation with oauth"),

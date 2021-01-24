@@ -2,9 +2,10 @@ import React from 'react';
 import { Card, CardHeader } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import componentStyles from '../../../../Ressources/styling/ComponentStyles';
-import Button from '@material-ui/core/Button';
 import { IItem, IRelation } from '../../../../interfaces';
 import Typography from '@material-ui/core/Typography';
+import { FilterCenterFocus } from '@material-ui/icons';
+import IconButton from '@material-ui/core/IconButton';
 
 interface Props {
   source: IItem;
@@ -36,28 +37,27 @@ const MapRelation: React.FC<Props> = ({ source, target, relation, locateItem }) 
         <br />
         <Typography variant={'h6'}>Source</Typography>
         <div>
-          <Button
-            fullWidth={true}
-            key={source.fullyQualifiedIdentifier}
+          <IconButton
             onClick={() => {
               locateItem(source.fullyQualifiedIdentifier);
             }}
           >
-            {sourceTitle}
-          </Button>
+            <FilterCenterFocus />
+          </IconButton>
+          {sourceTitle}
         </div>
 
         <Typography variant={'h6'}>Target</Typography>
         <div>
-          <Button
-            fullWidth={true}
-            key={target.fullyQualifiedIdentifier}
+          <IconButton
             onClick={() => {
               locateItem(target.fullyQualifiedIdentifier);
             }}
           >
-            {targetTitle}
-          </Button>
+            <FilterCenterFocus />
+          </IconButton>
+
+          {targetTitle}
         </div>
       </CardContent>
     </Card>

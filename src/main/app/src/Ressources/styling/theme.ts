@@ -1,13 +1,16 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { ThemeOptions } from '@material-ui/core/styles';
 
-const theme = createMuiTheme({
+const defaultThemeVariables: ThemeOptions = {
   palette: {
     type: 'dark',
     background: {
       default: '#161618',
     },
+    text: {
+      primary: 'rgba(255, 255, 255, 0.75)'
+    },
     primary: {
-      main: 'rgb(0, 104, 104)',
+      main: 'rgb(0,104,104)',
       contrastText: 'rgba(255, 255, 255, 0.75)',
     },
     secondary: {
@@ -40,5 +43,5 @@ const theme = createMuiTheme({
       color: 'rgba(255, 255, 255, 0.75)',
     },
   },
-});
-export default theme;
+};
+export default defaultThemeVariables;
