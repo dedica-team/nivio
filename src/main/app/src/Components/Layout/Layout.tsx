@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, {ReactElement} from 'react';
 
 import Navigation from '../Navigation/Navigation';
 import Notification from '../Notification/Notification';
@@ -9,7 +9,6 @@ interface Props {
   children: string | ReactElement | ReactElement[];
   sidebarContent: string | ReactElement | ReactElement[];
   setSidebarContent: Function;
-  locateFunction: Function;
   pageTitle?: string;
 }
 
@@ -52,17 +51,14 @@ const Layout: React.FC<Props> = ({
   children,
   sidebarContent,
   setSidebarContent,
-  locateFunction,
   pageTitle,
 }) => {
   const classes = useStyles();
-
-  return (
+    return (
     <React.Fragment>
       <Navigation
         appBarClass={classes.appBar}
         setSidebarContent={setSidebarContent}
-        locateFunction={locateFunction}
         pageTitle={pageTitle}
       />
       <div className={classes.content}>

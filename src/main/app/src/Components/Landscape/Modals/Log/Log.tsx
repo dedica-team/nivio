@@ -4,7 +4,7 @@ import { get } from '../../../../utils/API/APIClient';
 
 import LevelChip from '../../../LevelChip/LevelChip';
 import { Card, CardHeader } from '@material-ui/core';
-import componentStyles from '../../../../Ressources/styling/ComponentStyles';
+import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import CardContent from '@material-ui/core/CardContent';
 
 interface Props {

@@ -30,7 +30,6 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   appBarClass: string;
   setSidebarContent: Function;
-  locateFunction: Function;
   pageTitle?: string;
 }
 
@@ -40,7 +39,6 @@ interface Props {
 const Navigation: React.FC<Props> = ({
   appBarClass,
   setSidebarContent,
-  locateFunction,
   pageTitle,
 }) => {
   const classes = useStyles();
@@ -55,7 +53,7 @@ const Navigation: React.FC<Props> = ({
           <Typography variant='h6'>{pageTitle}</Typography>
         </Box>
         <div className={classes.grow} />
-        <Search locateFunction={locateFunction} setSidebarContent={setSidebarContent} />{' '}
+        <Search setSidebarContent={setSidebarContent} />{' '}
         <IconButton
           className={classes.menuIcon}
           data-testid='ManualButton'

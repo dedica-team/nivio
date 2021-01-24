@@ -1,4 +1,4 @@
-import React, { useState, ReactElement, useEffect } from 'react';
+import React, {useState, ReactElement, useEffect, useContext} from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -16,20 +16,20 @@ import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../../interfaces';
 import { getItemIcon, getLabels, getLinks } from '../../Utils/utils';
-import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import {
   ExpandMore,
   FilterCenterFocus,
   MoreVertSharp,
 } from '@material-ui/icons';
-import componentStyles from '../../../../Ressources/styling/ComponentStyles';
 import Chip from '@material-ui/core/Chip';
+import {LocateFunctionContext} from '../../../../Context/LocateFunctionContext';
+import componentStyles from '../../../../Resources/styling/ComponentStyles';
+import StatusChip from '../../../StatusChip/StatusChip';
 
 interface Props {
   small?: boolean;
   useItem?: IItem;
-  locateItem?: Function;
   fullyQualifiedItemIdentifier?: string;
 }
 
@@ -38,10 +38,13 @@ interface Props {
  *
  *
  */
-const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifier, small }) => {
+const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small }) => {
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const [compact, setCompact] = useState<boolean>(false);
+
+  const locateFunctionContext = useContext(LocateFunctionContext);
+
   const classes = componentStyles();
   let relations: ReactElement[] = [];
 
@@ -95,8 +98,8 @@ const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifi
           <ListItemIcon>
             <IconButton
               onClick={() => {
-                if (locateItem) {
-                  locateItem(isInbound ? relation.source : relation.target);
+                if (locateFunctionContext.locateFunction) {
+                  locateFunctionContext.locateFunction(isInbound ? relation.source : relation.target);
                 }
               }}
             >
@@ -131,10 +134,10 @@ const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifi
   const links: ReactElement[] = item ? getLinks(item) : [];
 
   const findButton =
-    locateItem && item ? (
+      locateFunctionContext.locateFunction && item ? (
       <IconButton
         onClick={() => {
-          locateItem(item.fullyQualifiedIdentifier);
+          locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
         }}
         className={classes.floatingButton}
       >

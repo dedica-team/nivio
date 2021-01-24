@@ -1,27 +1,29 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { Card, CardHeader } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
-import componentStyles from '../../../../Ressources/styling/ComponentStyles';
+import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import Button from '@material-ui/core/Button';
 import { IItem, IRelation } from '../../../../interfaces';
 import Typography from '@material-ui/core/Typography';
+import {LocateFunctionContext} from "../../../../Context/LocateFunctionContext";
 
 interface Props {
   source: IItem;
   target: IItem;
   relation: IRelation;
-  locateItem: (fullyQualifiedItemIdentifier: string) => void;
 }
 
 /**
  * Returns a chosen Map Relation
  *
  */
-const MapRelation: React.FC<Props> = ({ source, target, relation, locateItem }) => {
+const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
   const classes = componentStyles();
   const sourceTitle = source.name || source.identifier;
   const targetTitle = target.name || target.identifier;
   const title = sourceTitle + ' -> ' + targetTitle;
+
+  const locateFunctionContext = useContext(LocateFunctionContext);
 
   return (
     <Card className={classes.card}>
@@ -40,7 +42,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation, locateItem }) 
             fullWidth={true}
             key={source.fullyQualifiedIdentifier}
             onClick={() => {
-              locateItem(source.fullyQualifiedIdentifier);
+              locateFunctionContext.locateFunction(source.fullyQualifiedIdentifier);
             }}
           >
             {sourceTitle}
@@ -53,7 +55,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation, locateItem }) 
             fullWidth={true}
             key={target.fullyQualifiedIdentifier}
             onClick={() => {
-              locateItem(target.fullyQualifiedIdentifier);
+              locateFunctionContext.locateFunction(target.fullyQualifiedIdentifier);
             }}
           >
             {targetTitle}

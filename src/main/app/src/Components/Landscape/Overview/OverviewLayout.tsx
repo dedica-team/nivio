@@ -11,7 +11,7 @@ import {Assignment, FormatListBulleted, MapOutlined} from '@material-ui/icons';
 import Log from '../Modals/Log/Log';
 import CardContent from '@material-ui/core/CardContent';
 import {createStyles, makeStyles} from '@material-ui/core/styles';
-import componentStyles from '../../../Ressources/styling/ComponentStyles';
+import componentStyles from '../../../Resources/styling/ComponentStyles';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

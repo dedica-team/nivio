@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 
 import { Card, CardHeader, TextField, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
@@ -12,7 +12,7 @@ import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import CardContent from '@material-ui/core/CardContent';
-import componentStyles from '../../../Ressources/styling/ComponentStyles';
+import componentStyles from '../../../Resources/styling/ComponentStyles';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -26,7 +26,6 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface PropsInterface extends RouteComponentProps {
-  locateFunction: Function;
   setSidebarContent: Function;
 }
 
@@ -43,7 +42,7 @@ interface ILabelValue {
   value: number;
 }
 
-const Search: React.FC<PropsInterface> = ({ locateFunction, setSidebarContent, ...props }) => {
+const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
   const match: { params?: { identifier?: string } } | null = matchPath(props.location.pathname, {
     path: Routes.MAP_ROUTE,
     exact: false,
@@ -81,11 +80,10 @@ const Search: React.FC<PropsInterface> = ({ locateFunction, setSidebarContent, .
         small={true}
         key={value1.fullyQualifiedIdentifier}
         useItem={value1}
-        locateItem={locateFunction}
       />
     ));
     setSidebarContent(searchResult);
-  }, [results, setSidebarContent]);// eslint-disable-line react-hooks/exhaustive-deps
+  }, [results, setSidebarContent]);
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
