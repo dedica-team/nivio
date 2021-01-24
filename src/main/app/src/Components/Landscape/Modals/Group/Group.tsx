@@ -99,7 +99,10 @@ const Group: React.FC<Props> = ({ group, assessments }) => {
               <Avatar
                 imgProps={{ style: { objectFit: 'contain' } }}
                 src={getItemIcon(item)}
-                style={{ backgroundColor: 'white', border: '2px solid #' + group.color }}
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.65)',
+                  border: '2px solid #' + group.color,
+                }}
               />
             </StyledBadge>
             &nbsp;
