@@ -7,14 +7,24 @@ import { get } from '../../utils/API/APIClient';
 import './Man.scss';
 import './pygments.scss';
 
+interface Props {
+  setSidebarContent: Function;
+  setPageTitle: Function;
+}
+
 /**
  * Renders nivio manual, depending on which url param is given
  */
-const Man: React.FC = () => {
+const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [html, setHtml] = useState<string>("<p>This manual page doesn't exist. :(</p>");
   let { usage } = useParams<{ usage: string }>();
   if (usage == null || typeof usage == 'undefined') usage = 'index';
   const [topic, setTopic] = useState<string>(usage + '');
+
+  useEffect(() => {
+    setSidebarContent(null);
+    setPageTitle('Manual');
+  });
 
   useEffect(() => {
     if (!usage?.includes('.html')) {

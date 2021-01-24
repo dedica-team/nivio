@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 5,
       position: 'fixed',
       width: '100%',
-      backgroundColor: darken(theme.palette.secondary.dark, 0.2),
+      backgroundColor: darken(theme.palette.primary.dark, 0.2),
     },
   })
 );

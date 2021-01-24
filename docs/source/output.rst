@@ -140,6 +140,11 @@ included. A logo is configured in the landscape config, too, and must be a URL p
    items:
      ...
 
+You can also apply custom colors to the user interface. Set the following environment variables to hex values (e.g. "#23423"):
+
+* NIVIO_BRANDING_FOREGROUND to set the primary color for interface elements
+* NIVIO_BRANDING_BACKGROUND for the background color (dark grey as is default)
+* NIVIO_BRANDING_SECONDARY to set the accent color used for active elements
 
 Graph Layout Tweaking
 =====================
