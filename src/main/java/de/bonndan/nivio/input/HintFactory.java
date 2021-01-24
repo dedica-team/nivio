@@ -58,16 +58,17 @@ public class HintFactory {
      *
      * @param landscape landscape description
      * @param item      the item the hint is created for
-     * @param key       label key
-     * @param value     label value
+     * @param labelKey  label key
      * @return a hint if any label part could be used
      */
-    public Optional<Hint> create(LandscapeDescription landscape, ItemDescription item, String key, String value) {
+    public Optional<Hint> createForLabel(LandscapeDescription landscape, ItemDescription item, String labelKey) {
 
-        List<String> keyParts = Arrays.stream(key.split(KEY_SEPARATOR))
+        List<String> keyParts = Arrays.stream(labelKey.split(KEY_SEPARATOR))
                 .map(String::toLowerCase)
                 .collect(Collectors.toList());
         boolean hasUrlLikeKey = URL_PARTS.stream().anyMatch(keyParts::contains);
+
+        String value = item.getLabel(labelKey);
         Optional<URI> optionalURI = URIHelper.getURIWithHostAndScheme(value);
 
         if (!hasUrlLikeKey && optionalURI.isEmpty()) {
@@ -105,12 +106,19 @@ public class HintFactory {
 
     private static Optional<ItemDescription> getTarget(ItemDescriptions itemDescriptions, String value, Optional<URI> optionalURI) {
 
-        return itemDescriptions.find(ItemMatcher.forTarget(value)).or(() -> {
-            if (optionalURI.isPresent()) {
-                String query = String.format("SELECT * WHERE address = '%s'", optionalURI.get());
-                return itemDescriptions.query(query).stream().findFirst();
-            }
+        if (optionalURI.isPresent()) {
+            String query = String.format("address = '%s'", optionalURI.get());
+            return itemDescriptions.query(query).stream().findFirst();
+        }
+
+        Collection<ItemDescription> query = itemDescriptions.query(value);
+        if (query.size() != 1) {
+            LOGGER.debug("Found {} results for query for target {}", query, value);
             return Optional.empty();
-        });
+        }
+        if (query.iterator().hasNext()) {
+            return Optional.ofNullable(query.iterator().next());
+        }
+        return Optional.empty();
     }
 }
