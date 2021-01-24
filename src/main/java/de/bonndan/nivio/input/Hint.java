@@ -1,104 +1,101 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.RelationType;
 
-import java.net.URI;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
+/**
+ * A hint to new relations or items based on label values.
+ *
+ * TODO consider to add more item descriptions, e.g. for db server vs db scheme
+ * TODO check if the "use(...)" approach is too generic, i.e. classes like DatabaseHint, VolumeHint could be more helpful
+ */
 class Hint {
 
-    private static final Map<String, Supplier<Hint>> uriHints = new HashMap<>();
+    private final String targetType;
+    private final RelationType relationType;
+    private final String software;
+    private final List<ItemDescription> itemDescriptions = new ArrayList<>();
 
-    static {
-        uriHints.put("mysql", () -> hintsTo(ItemType.DATABASE));
-        uriHints.put("mongodb", () -> hintsTo(ItemType.DATABASE));
-        uriHints.put("http", () -> hintsTo(RelationType.DATAFLOW));
-        uriHints.put("https", () -> hintsTo(RelationType.DATAFLOW));
-        uriHints.put("jdbc", () -> hintsTo(ItemType.DATABASE));
-        uriHints.put("redis", () -> hintsTo(ItemType.KEYVALUESTORE));
-        uriHints.put("rediss", () -> hintsTo(ItemType.KEYVALUESTORE));
-        uriHints.put("smb", () -> hintsTo(ItemType.VOLUME));
-    }
-
-    String targetType;
-    RelationType relationType;
-    private URI uri;
-    private String label;
-
-    public static Hint hintsTo(String targetType) {
-        return new Hint(targetType, null);
-    }
-
-    public static Hint hintsTo(RelationType relationType) {
-        return new Hint(null, relationType);
-    }
-
-    public Hint(String targetType, RelationType relationType) {
+    /**
+     * @param targetType   item.type of the target item description
+     * @param relationType relation.type of the relation
+     * @param software     software name, if known
+     */
+    public Hint(String targetType, RelationType relationType, String software) {
         this.targetType = targetType;
         this.relationType = relationType;
+        this.software = software;
     }
 
     public Hint() {
+        this.targetType = null;
+        this.relationType = null;
+        this.software = null;
     }
 
-    public void setUri(URI uri) {
-        this.uri = uri;
+    /**
+     * Returns all item descriptions that may have been created or modified
+     *
+     * @return list of items
+     */
+    public List<ItemDescription> getCreatedOrModifiedDescriptions() {
+        return itemDescriptions;
     }
 
-    public URI getUri() {
-        return uri;
-    }
+    /**
+     * Applies attributes that are certain to the given items and relations.
+     *
+     * @param item             the examined object
+     * @param target           the other relation end
+     * @param existingRelation the existing relation between item and target
+     */
+    public void use(ItemDescription item, ItemDescription target, Optional<RelationDescription> existingRelation) {
 
-    public void extendLandscape(Landscape landscape, ProcessLog processLog) {
-        //search for targets in the landscape, i.e. where name or identifier of an item matches the "possible targets"
-        labelMatch.possibleTargets.forEach(toFind -> {
-            String s = landscape.getItems().selectByIdentifierOrName(toFind);
-            Collection<? extends Item> possibleTargets = landscape.getItems().cqnQueryOnIndex(s);
+        itemDescriptions.add(item);
 
-            if (possibleTargets.size() != 1) {
-                processLog.debug("Found no target of magic relation from item " + item.getIdentifier() + " using '" + toFind + "'");
-                return;
-            }
+        if (software != null) {
+            target.setLabel(Label.software, software);
+        }
 
-            String source = item.getIdentifier();
-            String target = possibleTargets.iterator().next().getIdentifier();
-            processLog.info("Found a target of magic relation from "
-                    + item.getIdentifier() + "(" + item.getName() + ")"
-                    + " to target '" + target + "' using '" + toFind + "'");
-            boolean relationExists = item.getRelations().stream()
-                    .anyMatch(r -> hasRelation(source, target, r));
-            boolean isEqual = source.equalsIgnoreCase(target);
-            if (!relationExists && !isEqual) {
-                RelationDescription relation = new RelationDescription(source, target);
-                //inverse
-                if (isProvider(labelMatch)) {
-                    relation = new RelationDescription(target, source);
-                    relation.setType(RelationType.PROVIDER);
-                }
-                item.addRelation(relation);
-                return;
-            }
+        if (targetType != null) {
+            target.setType(targetType);
+        }
+        itemDescriptions.add(target);
 
-            processLog.debug("Relation between " + source + " and " + target + " already exists, not adding magic one.");
+        RelationDescription relationDescription = existingRelation.orElseGet(() -> {
+            RelationDescription relation = createRelation(item, target);
+            item.addRelation(relation);
+            return relation;
         });
+
+        if (relationType != null && relationDescription.getType() == null) {
+            relationDescription.setType(relationType);
+        }
     }
 
-    private boolean hasRelation(String source, String target, RelationDescription r) {
-        return r.getSource().equals(source) && r.getTarget().equals(target) ||
-                r.getSource().equals(target) && r.getTarget().equals(source);
-    }
+    /**
+     * Creates a new relation description with the correct direction.
+     *
+     * @param item   item that has the label
+     * @param target relation target (or relation source if provider)
+     * @return new relation description
+     */
+    private RelationDescription createRelation(ItemDescription item, ItemDescription target) {
+        RelationDescription relationDescription;
+        if (relationType == null || relationType != RelationType.PROVIDER) {
+            relationDescription = new RelationDescription(item.getIdentifier(), target.getIdentifier());
+        } else {
+            relationDescription = new RelationDescription(target.getIdentifier(), item.getIdentifier());
+        }
 
-    public void setLabel(String label) {
-        this.label = label;
-    }
+        Optional.ofNullable(relationType).ifPresent(relationDescription::setType);
 
-    public String getLabel() {
-        return label;
+        return relationDescription;
     }
 }

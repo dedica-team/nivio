@@ -44,6 +44,17 @@ public class ItemDescriptions {
         }
     });
 
+    /**
+     * See {@link #IDENTIFIER}
+     */
+    @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef"})
+    private static final Attribute<ItemDescription, String> ADDRESS = attribute("address", new SimpleFunction<>() {
+        @Override
+        public String apply(ItemDescription itemDescription) {
+            return itemDescription.getAddress();
+        }
+    });
+
     private ConcurrentIndexedCollection<ItemDescription> index = new ConcurrentIndexedCollection<>();
 
     /**
@@ -147,7 +158,7 @@ public class ItemDescriptions {
 
     private List<ItemDescription> cqnQueryOnIndex(String condition) {
         SQLParser<ItemDescription> parser = SQLParser.forPojoWithAttributes(ItemDescription.class,
-                Map.of("identifier", IDENTIFIER, "name", NAME)
+                Map.of("identifier", IDENTIFIER, "name", NAME, "address", ADDRESS)
         );
 
         ResultSet<ItemDescription> results = parser.retrieve(index, condition);

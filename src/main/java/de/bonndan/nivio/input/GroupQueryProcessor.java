@@ -1,6 +1,5 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Landscape;
@@ -20,7 +19,7 @@ public class GroupQueryProcessor extends Processor {
         input.getGroups().forEach((s, groupItem) -> {
             Group group = landscape.getGroups().get(groupItem.getIdentifier());
             if (group == null) {
-                processLog.warn("Could not resolve group with identifier " + groupItem.getIdentifier());
+                processLog.warn(String.format("Could not resolve group with identifier %s", groupItem.getIdentifier()));
                 return;
             }
             // run the query against all landscape items which match the condition

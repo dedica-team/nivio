@@ -16,12 +16,13 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-class MagicLabelRelationProcessorTest {
+class LabelRelationResolverTest {
 
     public static final String IDENTIFIER = "anItemWithLabels";
     private ItemDescription item;
     private LandscapeDescription input;
-    private MagicLabelRelationProcessor resolver;
+    private LabelRelationResolver resolver;
+    private HintFactory hintFactory;
 
     @BeforeEach
     public void setup() {
@@ -29,7 +30,8 @@ class MagicLabelRelationProcessorTest {
         input = new LandscapeDescription();
         input.getItemDescriptions().add(item);
 
-        resolver = new MagicLabelRelationProcessor(new ProcessLog(mock(Logger.class)));
+        hintFactory = mock(HintFactory.class);
+        resolver = new LabelRelationResolver(new ProcessLog(mock(Logger.class)), hintFactory);
     }
 
     @Test
@@ -43,7 +45,7 @@ class MagicLabelRelationProcessorTest {
         Landscape landscape = getLandscapeWith(Collections.singleton(elastic));
 
         //when
-        resolver.process(input, landscape);
+        resolver.resolve(input);
 
         //then
         assertEquals(1, item.getRelations().size());
@@ -59,7 +61,7 @@ class MagicLabelRelationProcessorTest {
         Landscape landscape = getLandscapeWith(Collections.singleton(elastic));
 
         //when
-        resolver.process(input, landscape);
+        resolver.resolve(input);
 
         //then
         assertEquals(1, item.getRelations().size());
@@ -75,7 +77,7 @@ class MagicLabelRelationProcessorTest {
         Landscape landscape = getLandscapeWith(Collections.singleton(api));
 
         //when
-        resolver.process(input, landscape);
+        resolver.resolve(input);
 
         //then
         assertEquals(1, item.getRelations().size());
@@ -93,7 +95,7 @@ class MagicLabelRelationProcessorTest {
         Landscape landscape = getLandscapeWith(Collections.singleton(api));
 
         //when
-        resolver.process(input, landscape);
+        resolver.resolve(input);
 
         //then
         assertEquals(1, item.getRelations().size());
@@ -114,7 +116,7 @@ class MagicLabelRelationProcessorTest {
         Landscape landscape = getLandscapeWith(Set.of(api, api2));
 
         //when
-        resolver.process(input, landscape);
+        resolver.resolve(input);
 
         //then
         assertEquals(0, item.getRelations().size());
@@ -132,7 +134,7 @@ class MagicLabelRelationProcessorTest {
         Landscape landscape = getLandscapeWith(Set.of(apiFoo, foo, api));
 
         //when
-        resolver.process(input, landscape);
+        resolver.resolve(input);
 
         //then
         assertEquals(2, item.getRelations().size()); // to api because of ABC_URL, to api-foo because of FOO_API_URL
@@ -149,7 +151,7 @@ class MagicLabelRelationProcessorTest {
         Landscape landscape = getLandscapeWith(Collections.singleton(hihi));
 
         //when
-        resolver.process(input, landscape);
+        resolver.resolve(input);
 
         //then
         assertEquals(1, item.getRelations().size());
@@ -166,7 +168,7 @@ class MagicLabelRelationProcessorTest {
         landscape.getConfig().getLabelBlacklist().add(".*COMPOSITION.*");
 
         //when
-        resolver.process(input, landscape);
+        resolver.resolve(input);
 
         //then
         assertEquals(0, item.getRelations().size());
@@ -181,7 +183,7 @@ class MagicLabelRelationProcessorTest {
         landscape.getConfig().getLabelBlacklist().add(".*composition.*");
 
         //when
-        resolver.process(input, landscape);
+        resolver.resolve(input);
 
         //then
         assertEquals(0, item.getRelations().size());
@@ -197,7 +199,7 @@ class MagicLabelRelationProcessorTest {
         Landscape landscape = getLandscapeWith(Collections.singleton(hihi));
 
         //when
-        resolver.process(input, landscape);
+        resolver.resolve(input);
 
         //then
         assertEquals(0, item.getRelations().size());
@@ -210,7 +212,7 @@ class MagicLabelRelationProcessorTest {
         Landscape landscape = getLandscapeWith(Collections.singleton(db));
 
         //when
-        resolver.process(input, landscape);
+        resolver.resolve(input);
 
         //then
         assertEquals(1, item.getRelations().size());

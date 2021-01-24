@@ -5,6 +5,7 @@ package de.bonndan.nivio.input;
  */
 public class ItemType {
     public static final String SERVER = "server";
+    public static final String SERVICE = "service";
     public static final String CONTAINER = "container";
     public static final String VOLUME = "volume";
     public static final String SECRET = "secret";
