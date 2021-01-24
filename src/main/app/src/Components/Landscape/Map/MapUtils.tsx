@@ -1,7 +1,6 @@
 import { Value } from 'react-svg-pan-zoom';
 
 const MapUtils = {
-
   /**
    * Calculates the proper center coordinates to focus an item.
    *

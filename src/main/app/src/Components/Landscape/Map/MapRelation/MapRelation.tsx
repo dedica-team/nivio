@@ -1,11 +1,11 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import { Card, CardHeader } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import Button from '@material-ui/core/Button';
 import { IItem, IRelation } from '../../../../interfaces';
 import Typography from '@material-ui/core/Typography';
-import {LocateFunctionContext} from '../../../../Context/LocateFunctionContext';
+import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 
 interface Props {
   source: IItem;

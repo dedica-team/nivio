@@ -1,4 +1,11 @@
-import React, {MouseEvent, ReactElement, useCallback, useContext, useEffect, useState} from 'react';
+import React, {
+  MouseEvent,
+  ReactElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { useParams } from 'react-router-dom';
 
 import { SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
@@ -24,7 +31,7 @@ import { IAssessment, ILandscape } from '../../../interfaces';
 import { getGroup, getItem } from '../Utils/utils';
 import Group from '../Modals/Group/Group';
 import MapUtils from './MapUtils';
-import {LocateFunctionContext} from '../../../Context/LocateFunctionContext';
+import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
 
 interface Props {
   setSidebarContent: Function;
@@ -83,10 +90,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
     if (fullyQualifiedItemIdentifier && landscape) {
       let item = getItem(landscape, fullyQualifiedItemIdentifier);
-      if (item)
-        setSidebarContent(
-          <Item key={fullyQualifiedItemIdentifier} useItem={item} />
-        );
+      if (item) setSidebarContent(<Item key={fullyQualifiedItemIdentifier} useItem={item} />);
     }
   };
 
@@ -95,12 +99,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     if (fullyQualifiedItemIdentifier && landscape) {
       let group = getGroup(landscape, fullyQualifiedItemIdentifier);
       if (group && assessments)
-        setSidebarContent(
-          <Group
-            group={group}
-            assessments={assessments}
-          />
-        );
+        setSidebarContent(<Group group={group} assessments={assessments} />);
     }
   };
 
@@ -148,13 +147,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
     if (source && target && dataTarget) {
       let relation = source.relations[dataTarget];
-      setSidebarContent(
-        <MapRelation
-          relation={relation}
-          source={source}
-          target={target}
-        />
-      );
+      setSidebarContent(<MapRelation relation={relation} source={source} target={target} />);
     }
   };
 
@@ -185,7 +178,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
   useEffect(() => {
     if (locateComponent) {
-      console.log('locateComponent')
+      console.log('locateComponent');
       locateFunctionContext.setLocateFunction(() => locateComponent);
     }
   }, [locateComponent, locateFunctionContext]);

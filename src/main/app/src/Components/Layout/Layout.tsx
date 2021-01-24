@@ -1,4 +1,4 @@
-import React, {ReactElement} from 'react';
+import React, { ReactElement } from 'react';
 
 import Navigation from '../Navigation/Navigation';
 import Notification from '../Notification/Notification';
@@ -47,14 +47,9 @@ const useStyles = makeStyles((theme: Theme) =>
  * Contains our site layout, Navigation on top, content below
  * @param param0
  */
-const Layout: React.FC<Props> = ({
-  children,
-  sidebarContent,
-  setSidebarContent,
-  pageTitle,
-}) => {
+const Layout: React.FC<Props> = ({ children, sidebarContent, setSidebarContent, pageTitle }) => {
   const classes = useStyles();
-    return (
+  return (
     <React.Fragment>
       <Navigation
         appBarClass={classes.appBar}

@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 
 import { IAssessment, IGroup } from '../../../../interfaces';
 import { getLabels, getLinks, getAssessmentSummary, getItemIcon } from '../../Utils/utils';
@@ -10,9 +10,9 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import IconButton from "@material-ui/core/IconButton";
-import {FilterCenterFocus} from "@material-ui/icons";
-import {LocateFunctionContext} from '../../../../Context/LocateFunctionContext';
+import IconButton from '@material-ui/core/IconButton';
+import { FilterCenterFocus } from '@material-ui/icons';
+import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -118,9 +118,13 @@ const Group: React.FC<Props> = ({ group, assessments }) => {
   const labels = getLabels(group);
   const links = getLinks(group);
 
-  const action = locateFunctionContext.locateFunction ?
-      <IconButton onClick={ () => locateFunctionContext.locateFunction(group.fullyQualifiedIdentifier)}><FilterCenterFocus /></IconButton>
-      : null;
+  const action = locateFunctionContext.locateFunction ? (
+    <IconButton
+      onClick={() => locateFunctionContext.locateFunction(group.fullyQualifiedIdentifier)}
+    >
+      <FilterCenterFocus />
+    </IconButton>
+  ) : null;
   return (
     <Card className={componentClasses.card}>
       <CardHeader

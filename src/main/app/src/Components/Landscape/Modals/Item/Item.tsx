@@ -1,4 +1,4 @@
-import React, {useState, ReactElement, useEffect, useContext} from 'react';
+import React, { useState, ReactElement, useEffect, useContext } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -17,13 +17,9 @@ import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../../interfaces';
 import { getItemIcon, getLabels, getLinks } from '../../Utils/utils';
 import IconButton from '@material-ui/core/IconButton';
-import {
-  ExpandMore,
-  FilterCenterFocus,
-  MoreVertSharp,
-} from '@material-ui/icons';
+import { ExpandMore, FilterCenterFocus, MoreVertSharp } from '@material-ui/icons';
 import Chip from '@material-ui/core/Chip';
-import {LocateFunctionContext} from '../../../../Context/LocateFunctionContext';
+import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import StatusChip from '../../../StatusChip/StatusChip';
 
@@ -99,7 +95,9 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
             <IconButton
               onClick={() => {
                 if (locateFunctionContext.locateFunction) {
-                  locateFunctionContext.locateFunction(isInbound ? relation.source : relation.target);
+                  locateFunctionContext.locateFunction(
+                    isInbound ? relation.source : relation.target
+                  );
                 }
               }}
             >
@@ -134,7 +132,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
   const links: ReactElement[] = item ? getLinks(item) : [];
 
   const findButton =
-      locateFunctionContext.locateFunction && item ? (
+    locateFunctionContext.locateFunction && item ? (
       <IconButton
         onClick={() => {
           locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
@@ -198,21 +196,20 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
             </List>
           </div>
 
-          { labels ?
-              <Accordion>
-                <AccordionSummary
-                    expandIcon={<ExpandMore />}
-                    aria-controls='panel1a-content'
-                    id='panel1a-header'
-                >
-                  more
-                </AccordionSummary>
-                <AccordionDetails>
-                  <div className='labels'>{labels}</div>
-                </AccordionDetails>
-              </Accordion>
-              : null
-          }
+          {labels ? (
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMore />}
+                aria-controls='panel1a-content'
+                id='panel1a-header'
+              >
+                more
+              </AccordionSummary>
+              <AccordionDetails>
+                <div className='labels'>{labels}</div>
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
 
           {assessmentStatus.length > 0 ? (
             <div className={'status'}>

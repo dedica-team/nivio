@@ -1,10 +1,10 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
 import StatusBarLayout from './StatusBarLayout';
 import { ILandscape, IAssessment, IItem, IGroup } from '../../../interfaces';
 import Group from '../Modals/Group/Group';
 import Item from '../Modals/Item/Item';
-import {LocateFunctionContext} from '../../../Context/LocateFunctionContext';
+import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
 
 /**
  * Logic Component to display all status of groups and items.
@@ -51,9 +51,7 @@ const StatusBar: React.FC<Props> = ({ setSidebarContent, landscape, assessments 
 
   const onGroupClick = (group: IGroup) => {
     findGroup(group.fullyQualifiedIdentifier);
-    setSidebarContent(
-      <Group group={group} assessments={assessments} />
-    );
+    setSidebarContent(<Group group={group} assessments={assessments} />);
   };
 
   if (landscape && assessments)

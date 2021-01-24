@@ -36,11 +36,7 @@ interface Props {
 /**
  * Header Component
  */
-const Navigation: React.FC<Props> = ({
-  appBarClass,
-  setSidebarContent,
-  pageTitle,
-}) => {
+const Navigation: React.FC<Props> = ({ appBarClass, setSidebarContent, pageTitle }) => {
   const classes = useStyles();
 
   return (

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Card, CardHeader, TextField, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
@@ -76,11 +76,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
 
   useEffect(() => {
     const searchResult = results.map((value1) => (
-      <Item
-        small={true}
-        key={value1.fullyQualifiedIdentifier}
-        useItem={value1}
-      />
+      <Item small={true} key={value1.fullyQualifiedIdentifier} useItem={value1} />
     ));
     setSidebarContent(searchResult);
   }, [results, setSidebarContent]);

@@ -5,15 +5,15 @@ import * as serviceWorker from './serviceWorker';
 import theme from './Resources/styling/theme';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { CssBaseline } from '@material-ui/core';
-import {LocateFunctionContextProvider} from './Context/LocateFunctionContext';
+import { LocateFunctionContextProvider } from './Context/LocateFunctionContext';
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>
-      <CssBaseline>
-          <LocateFunctionContextProvider>
-              <App />
-          </LocateFunctionContextProvider>
-      </CssBaseline>
+    <CssBaseline>
+      <LocateFunctionContextProvider>
+        <App />
+      </LocateFunctionContextProvider>
+    </CssBaseline>
   </ThemeProvider>,
   document.getElementById('root')
 );
