@@ -11,6 +11,9 @@ export const LocateFunctionContext = React.createContext<LocateFunctionContextTy
   setLocateFunction: () => {},
 });
 
+/**
+ * Visit https://reactjs.org/docs/context.html to read about how to implement and use the context in React.
+ */
 const LocateFunctionContextProvider: React.FC<{}> = (props) => {
   const [locateFunction, setLocateFunction] = useState<(fqi: string) => void>(
     initialLocateFunction
