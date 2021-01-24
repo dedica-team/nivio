@@ -164,7 +164,7 @@ const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifi
           item ? <Avatar
               imgProps={{ style: { objectFit: 'contain' } }}
               src={getItemIcon(item)}
-              style={{ backgroundColor: 'white', border: '2px solid #' + item.color }}
+              style={{ backgroundColor: 'rgba(255, 255, 255, 0.5)', border: '2px solid #' + item.color }}
           />  : ''
         }
         className={classes.cardHeader}
