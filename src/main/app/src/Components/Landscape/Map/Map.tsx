@@ -24,7 +24,7 @@ import { IAssessment, ILandscape } from '../../../interfaces';
 import { getGroup, getItem } from '../Utils/utils';
 import Group from '../Modals/Group/Group';
 import MapUtils from './MapUtils';
-import {LocateFunctionContext} from "../../../Context/LocateFunctionContext";
+import {LocateFunctionContext} from '../../../Context/LocateFunctionContext';
 
 interface Props {
   setSidebarContent: Function;
@@ -185,6 +185,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
   useEffect(() => {
     if (locateComponent) {
+      console.log('locateComponent')
       locateFunctionContext.setLocateFunction(() => locateComponent);
     }
   }, [locateComponent, locateFunctionContext]);

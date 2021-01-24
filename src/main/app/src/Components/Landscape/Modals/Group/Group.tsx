@@ -12,7 +12,7 @@ import Avatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from "@material-ui/core/IconButton";
 import {FilterCenterFocus} from "@material-ui/icons";
-import {LocateFunctionContext} from "../../../../Context/LocateFunctionContext";
+import {LocateFunctionContext} from '../../../../Context/LocateFunctionContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

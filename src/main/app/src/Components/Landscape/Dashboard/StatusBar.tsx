@@ -4,7 +4,7 @@ import StatusBarLayout from './StatusBarLayout';
 import { ILandscape, IAssessment, IItem, IGroup } from '../../../interfaces';
 import Group from '../Modals/Group/Group';
 import Item from '../Modals/Item/Item';
-import {LocateFunctionContext} from "../../../Context/LocateFunctionContext";
+import {LocateFunctionContext} from '../../../Context/LocateFunctionContext';
 
 /**
  * Logic Component to display all status of groups and items.

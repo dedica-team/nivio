@@ -5,7 +5,7 @@ import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import Button from '@material-ui/core/Button';
 import { IItem, IRelation } from '../../../../interfaces';
 import Typography from '@material-ui/core/Typography';
-import {LocateFunctionContext} from "../../../../Context/LocateFunctionContext";
+import {LocateFunctionContext} from '../../../../Context/LocateFunctionContext';
 
 interface Props {
   source: IItem;
