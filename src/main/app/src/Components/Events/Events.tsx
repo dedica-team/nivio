@@ -46,7 +46,7 @@ const Events: React.FC = () => {
   });
 
   return (
-    <Box m={2}>
+    <Box m={2} color={'secondary'}>
       <Typography variant={'h5'}>Processing Event Log</Typography>
       <div className='itemContainer'>{content}</div>
     </Box>

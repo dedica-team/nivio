@@ -104,6 +104,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
     setSearchTerm('');
     setHasChange(false);
     setResults([]);
+    setSidebarContent(null);
   }
 
   useEffect(() => {
@@ -153,6 +154,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
     <React.Fragment>
       <IconButton
         size={'small'}
+        color={'secondary'}
         onClick={() =>
           setSidebarContent(
             <React.Fragment>
@@ -189,7 +191,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
         className={'searchIcon'}
         size={'small'}
         onClick={() => clear()}
-        disabled={searchTerm.length === 0}
+        color={'secondary'}
       >
         <Backspace />
       </IconButton>

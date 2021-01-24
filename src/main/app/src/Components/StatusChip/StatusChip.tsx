@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: '100%',
       textShadow: 'none',
       fontFamily: 'monospace',
-      backgroundColor: theme.palette.secondary.dark,
+      backgroundColor: theme.palette.primary.dark,
       color: 'white',
     },
     green: {

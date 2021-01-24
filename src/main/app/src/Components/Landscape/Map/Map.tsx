@@ -178,7 +178,6 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
   useEffect(() => {
     if (locateComponent) {
-      console.log('locateComponent');
       locateFunctionContext.setLocateFunction(() => locateComponent);
     }
   }, [locateComponent, locateFunctionContext]);

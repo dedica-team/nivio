@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 
 import { Link } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-import { Box, Button, Card, CardHeader, CardMedia, Theme } from '@material-ui/core';
+import { Box, Button, Card, CardHeader, CardMedia, darken, Theme } from '@material-ui/core';
 import { ILandscape } from '../../../interfaces';
 import dateFormat from 'dateformat';
 import { withBasePath } from '../../../utils/API/BasePath';
@@ -20,11 +20,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     card: {
       marginBottom: 5,
-      backgroundColor: theme.palette.secondary.dark,
+      backgroundColor: darken(theme.palette.primary.main, 0.3),
       height: '100%',
       color: 'white',
     },
-
     link: {
       display: 'block',
       borderRadius: 5,
@@ -76,32 +75,26 @@ const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
               <React.Fragment>
                 <IconButton
                   aria-label='log'
-                  color={'secondary'}
                   title={'process log'}
                   onClick={() => setSidebarContent(<Log landscape={landscape} />)}
-                  className={componentClasses.floatingButton}
                 >
                   <FormatListBulleted />
                 </IconButton>
                 <IconButton
                   aria-label='map'
-                  color={'secondary'}
                   title={'SVG Export'}
                   rel='noopener noreferrer'
                   target={'_blank'}
                   href={withBasePath(`/render/${landscape.identifier}/map.svg`)}
-                  className={componentClasses.floatingButton}
                 >
                   <MapOutlined />
                 </IconButton>
                 <IconButton
                   aria-label='report'
-                  color={'secondary'}
                   title={'Printable Report'}
                   rel='noopener noreferrer'
                   target={'_blank'}
                   href={withBasePath(`/docs/${landscape.identifier}/report.html`)}
-                  className={componentClasses.floatingButton}
                 >
                   <Assignment />
                 </IconButton>

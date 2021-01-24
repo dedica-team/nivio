@@ -3,6 +3,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Card,
   CardActions,
   CardHeader,
@@ -10,18 +11,29 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Theme,
   Typography,
 } from '@material-ui/core';
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../../interfaces';
 import { getItemIcon, getLabels, getLinks } from '../../Utils/utils';
+import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import { ExpandMore, FilterCenterFocus, MoreVertSharp } from '@material-ui/icons';
 import Chip from '@material-ui/core/Chip';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Avatar from '@material-ui/core/Avatar';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
-import StatusChip from '../../../StatusChip/StatusChip';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    labels: {
+      backgroundColor: theme.palette.primary.main,
+    },
+  })
+);
 
 interface Props {
   small?: boolean;
@@ -42,6 +54,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
   const locateFunctionContext = useContext(LocateFunctionContext);
 
   const classes = componentStyles();
+  const extraClasses = useStyles();
   let relations: ReactElement[] = [];
 
   useEffect(() => {
@@ -137,7 +150,6 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
         onClick={() => {
           locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
         }}
-        className={classes.floatingButton}
       >
         <FilterCenterFocus />
       </IconButton>
@@ -145,7 +157,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
 
   const labels = item ? getLabels(item) : null;
   const extend = small ? (
-    <IconButton onClick={() => setCompact(!compact)} className={classes.floatingButton}>
+    <IconButton onClick={() => setCompact(!compact)}>
       <MoreVertSharp />
     </IconButton>
   ) : null;
@@ -153,7 +165,20 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
     <Card className={classes.card}>
       <CardHeader
         title={item ? item.name || item.identifier : null}
-        avatar={item ? <img src={getItemIcon(item)} alt='Icon' className={classes.icon} /> : ''}
+        avatar={
+          item ? (
+            <Avatar
+              imgProps={{ style: { objectFit: 'contain' } }}
+              src={getItemIcon(item)}
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.65)',
+                border: '2px solid #' + item.color,
+              }}
+            />
+          ) : (
+            ''
+          )
+        }
         className={classes.cardHeader}
         action={
           <React.Fragment>
@@ -197,7 +222,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
           </div>
 
           {labels ? (
-            <Accordion>
+            <Accordion className={extraClasses.labels}>
               <AccordionSummary
                 expandIcon={<ExpandMore />}
                 aria-controls='panel1a-content'
@@ -205,9 +230,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
               >
                 more
               </AccordionSummary>
-              <AccordionDetails>
-                <div className='labels'>{labels}</div>
-              </AccordionDetails>
+              <AccordionDetails>{labels}</AccordionDetails>
             </Accordion>
           ) : null}
 
@@ -231,10 +254,10 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
       {!compact ? (
         <CardActions>
           {relations && relations.length ? (
-            <div>
+            <Box m={1}>
               <Typography variant={'h6'}>Relations</Typography>
-              <List>{relations}</List>
-            </div>
+              <List dense={true}>{relations}</List>
+            </Box>
           ) : (
             ''
           )}

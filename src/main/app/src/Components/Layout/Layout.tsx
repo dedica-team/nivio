@@ -10,6 +10,7 @@ interface Props {
   sidebarContent: string | ReactElement | ReactElement[];
   setSidebarContent: Function;
   pageTitle?: string;
+  logo?: string;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
     appBar: {
       zIndex: theme.zIndex.drawer + 1,
       position: 'relative',
-      backgroundColor: theme.palette.secondary.main,
+      backgroundColor: theme.palette.primary.main,
     },
     drawer: {
       flexShrink: 0,
@@ -47,12 +48,20 @@ const useStyles = makeStyles((theme: Theme) =>
  * Contains our site layout, Navigation on top, content below
  * @param param0
  */
-const Layout: React.FC<Props> = ({ children, sidebarContent, setSidebarContent, pageTitle }) => {
+const Layout: React.FC<Props> = ({
+  children,
+  sidebarContent,
+  setSidebarContent,
+  pageTitle,
+  logo,
+}) => {
   const classes = useStyles();
+
   return (
     <React.Fragment>
       <Navigation
         appBarClass={classes.appBar}
+        logo={logo}
         setSidebarContent={setSidebarContent}
         pageTitle={pageTitle}
       />
@@ -65,6 +74,7 @@ const Layout: React.FC<Props> = ({ children, sidebarContent, setSidebarContent, 
           classes={{
             paper: classes.drawerPaper,
           }}
+          color={'secondary'}
         >
           <Toolbar />
           {sidebarContent}
