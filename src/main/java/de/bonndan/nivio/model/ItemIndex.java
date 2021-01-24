@@ -25,6 +25,9 @@ import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
 
 /**
  * A queryable index on all landscape items.
+ *
+ * TODO the API is too wide
+ * TODO cqengine based search could be replaced completely by lucene if SQL-like queries were not used and items were kept in a hashmap
  */
 public class ItemIndex<T extends Component> {
 
