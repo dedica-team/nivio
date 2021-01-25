@@ -30,7 +30,6 @@ class SVGDocumentTest  extends RenderingTest {
         Landscape landscape = getLandscape(path + ".yml");
         String svg = renderLandscape(path, landscape);
         assertTrue(svg.contains("svg version=\"1.1\""));
-        assertTrue(svg.contains("<image xlink:href=\"https://dedica.team/images/logo_orange_weiss.png\""));
         assertTrue(svg.contains("class=\"title\">Input and Output</text>"));
         assertTrue(svg.contains("<g data-identifier=\"inout/output/svg\" class=\"item\""));
         assertTrue(svg.contains(">Docker Compose files</text>"));

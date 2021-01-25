@@ -1,10 +1,12 @@
 package de.bonndan.nivio.output.icons;
 
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.util.URLHelper;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
@@ -47,6 +49,13 @@ public class IconService {
 
             Optional<String> iconUrl = localIcons.getIconUrl(icon);
             if(iconUrl.isPresent()) {
+                if (iconUrl.get().startsWith("http")) {
+                    try {
+                        return externalIcons.getUrl(new URL(iconUrl.get())).orElse(iconUrl.get());
+                    } catch (MalformedURLException ignored) {
+
+                    }
+                }
                 return iconUrl.get();
             }
         }
