@@ -3,11 +3,15 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.icons.IconService;
-import de.bonndan.nivio.output.icons.LocalIcons;
+import de.bonndan.nivio.output.icons.ExternalIcons;
+import de.bonndan.nivio.util.URLHelper;
 import org.springframework.util.StringUtils;
+
+import java.util.Optional;
 
 /**
  * Resolves color and icons for {@link de.bonndan.nivio.model.Component}
@@ -42,6 +46,12 @@ public class AppearanceProcessor extends Processor {
             item.setColor(group.getColor());
         }
         item.setIcon(iconService.getIconUrl(item));
+        String fill = item.getLabel(Label.fill);
+        if (!StringUtils.isEmpty(fill)) {
+            URLHelper.getURL(fill)
+                    .flatMap(iconService::getFillUrl)
+                    .ifPresent(s -> item.setLabel(Label.fill, s));
+        }
     }
 
 }

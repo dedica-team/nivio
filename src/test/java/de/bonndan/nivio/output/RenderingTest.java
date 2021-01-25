@@ -10,7 +10,7 @@ import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
-import de.bonndan.nivio.output.icons.VendorIcons;
+import de.bonndan.nivio.output.icons.ExternalIcons;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.layout.OrganicLayouter;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
@@ -44,7 +44,7 @@ public abstract class RenderingTest {
 
         HttpService httpService = mock(HttpService.class);
         LinkHandlerFactory linkHandlerFactory = mock(LinkHandlerFactory.class);
-        IconService iconService = new IconService(new LocalIcons(), new VendorIcons(httpService));
+        IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService));
         indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class), iconService);
     }
 

@@ -5,6 +5,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.net.URL;
 import java.util.Optional;
 
 
@@ -17,11 +18,11 @@ import java.util.Optional;
 public class IconService {
 
     private final LocalIcons localIcons;
-    private final VendorIcons vendorIcons;
+    private final ExternalIcons externalIcons;
 
-    public IconService(LocalIcons localIcons, VendorIcons vendorIcons) {
+    public IconService(LocalIcons localIcons, ExternalIcons externalIcons) {
         this.localIcons = localIcons;
-        this.vendorIcons = vendorIcons;
+        this.externalIcons = externalIcons;
     }
 
     /**
@@ -39,9 +40,9 @@ public class IconService {
         String icon = item.getIcon();
         if (!StringUtils.isEmpty(icon)) {
 
-            if (icon.startsWith(VendorIcons.VENDOR_PREFIX)) {
-                String key = icon.replace(VendorIcons.VENDOR_PREFIX, "").toLowerCase();
-                return vendorIcons.getUrl(key).orElse(localIcons.getDefaultIcon());
+            if (icon.startsWith(ExternalIcons.VENDOR_PREFIX)) {
+                String key = icon.replace(ExternalIcons.VENDOR_PREFIX, "").toLowerCase();
+                return externalIcons.getUrl(key).orElse(localIcons.getDefaultIcon());
             }
 
             Optional<String> iconUrl = localIcons.getIconUrl(icon);
@@ -59,5 +60,15 @@ public class IconService {
         //fallback to item.type
         String iconName = IconMapping.of(type.toLowerCase()).map(IconMapping::getIcon).orElseGet(type::toLowerCase);
         return localIcons.getIconUrl(iconName).orElse(localIcons.getDefaultIcon());
+    }
+
+    /**
+     * Returns a data url for the given url.
+     *
+     * @param url external url
+     * @return data-url
+     */
+    public Optional<String> getFillUrl(URL url) {
+        return externalIcons.getUrl(url);
     }
 }

@@ -16,14 +16,14 @@ import static org.mockito.Mockito.*;
 class IconServiceTest {
 
     private LocalIcons localIcons;
-    private VendorIcons vendorIcons;
+    private ExternalIcons externalIcons;
     private IconService iconService;
 
     @BeforeEach
     public void setup() {
-        vendorIcons = mock(VendorIcons.class);
+        externalIcons = mock(ExternalIcons.class);
         localIcons = new LocalIcons();
-        iconService = new IconService(localIcons, vendorIcons);
+        iconService = new IconService(localIcons, externalIcons);
     }
 
 
@@ -60,12 +60,21 @@ class IconServiceTest {
         item.setIcon("vendor://redis");
 
         URL url = new URL("http://foo.com/bar.png");
-        when(vendorIcons.getUrl(eq("redis"))).thenReturn(Optional.of(url.toString()));
+        when(externalIcons.getUrl(eq("redis"))).thenReturn(Optional.of(url.toString()));
 
         //when
         String s = iconService.getIconUrl(item);
-        verify(vendorIcons).getUrl(eq("redis"));
+        verify(externalIcons).getUrl(eq("redis"));
         assertEquals(url.toString(), s);
+    }
+
+    @Test
+    public void getFillUrl() throws MalformedURLException {
+        when(externalIcons.getUrl(any(URL.class))).thenReturn(Optional.empty());
+
+        Optional<String> fillUrl = iconService.getFillUrl(new URL("http://my.icon"));
+        assertThat(fillUrl).isEmpty();
+        verify(externalIcons).getUrl(any(URL.class));
     }
 
 }
