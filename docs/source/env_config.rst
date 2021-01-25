@@ -11,6 +11,7 @@
 * **NIVIO_BASE_URL** The base url of nivio to be used for frontends if running behind a proxy
 * **NIVIO_BRANDING_BACKGROUND** branding background color (hexadecimal only)
 * **NIVIO_BRANDING_FOREGROUND** branding foreground color (hexadecimal only)
+* **NIVIO_BRANDING_LOGO_URL** A URL pointing to a logo
 * **NIVIO_BRANDING_SECONDARY** accent color used for active elements (hexadecimal only)
 * **NIVIO_MAIL_HOST** The smtp mail host
 * **NIVIO_MAIL_PASSWORD** The smtp mail password
