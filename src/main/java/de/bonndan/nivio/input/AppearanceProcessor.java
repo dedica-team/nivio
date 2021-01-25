@@ -7,7 +7,6 @@ import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.icons.IconService;
-import de.bonndan.nivio.output.icons.ExternalIcons;
 import de.bonndan.nivio.util.URLHelper;
 import org.springframework.util.StringUtils;
 
@@ -28,6 +27,10 @@ public class AppearanceProcessor extends Processor {
     }
 
     public void process(LandscapeDescription input, Landscape landscape) {
+
+        Optional<String> logo = Optional.ofNullable(landscape.getConfig().getBranding().getMapLogo());
+        logo.ifPresent(s -> setLandscapeLogo(landscape, s));
+
         landscape.getGroupItems().forEach(groupItem -> {
             setItemAppearance(groupItem);
             groupItem.getItems().forEach(item -> setItemAppearance(item, groupItem));
@@ -49,9 +52,18 @@ public class AppearanceProcessor extends Processor {
         String fill = item.getLabel(Label.fill);
         if (!StringUtils.isEmpty(fill)) {
             URLHelper.getURL(fill)
-                    .flatMap(iconService::getFillUrl)
+                    .flatMap(iconService::getExternalUrl)
                     .ifPresent(s -> item.setLabel(Label.fill, s));
         }
+    }
+
+    private void setLandscapeLogo(Landscape landscape, String logo) {
+        if (StringUtils.isEmpty(logo)) {
+            return;
+        }
+        URLHelper.getURL(logo)
+                .flatMap(iconService::getExternalUrl)
+                .ifPresent(landscape::setIcon);
     }
 
 }

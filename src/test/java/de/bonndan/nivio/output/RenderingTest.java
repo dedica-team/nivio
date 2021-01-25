@@ -3,6 +3,7 @@ package de.bonndan.nivio.output;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.http.CachedResponse;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
@@ -22,7 +23,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,10 +41,15 @@ public abstract class RenderingTest {
     protected LandscapeDescriptionFactory factory;
     protected HttpService httpService;
 
-    public void setup() {
+    public void setup() throws URISyntaxException {
         landscapeRepository = new LandscapeRepository();
         formatFactory = InputFormatHandlerFactory.with(new InputFormatHandlerNivio(new FileFetcher(new HttpService())));
         httpService = mock(HttpService.class);
+
+        CachedResponse response = mock(CachedResponse.class);
+        when(response.getBytes()).thenReturn("foo".getBytes());
+        when(httpService.getResponse(any(URL.class))).thenReturn(response);
+
         FileFetcher fileFetcher = new FileFetcher(httpService);
         factory = new LandscapeDescriptionFactory(fileFetcher);
 

@@ -72,7 +72,7 @@ class IconServiceTest {
     public void getFillUrl() throws MalformedURLException {
         when(externalIcons.getUrl(any(URL.class))).thenReturn(Optional.empty());
 
-        Optional<String> fillUrl = iconService.getFillUrl(new URL("http://my.icon"));
+        Optional<String> fillUrl = iconService.getExternalUrl(new URL("http://my.icon"));
         assertThat(fillUrl).isEmpty();
         verify(externalIcons).getUrl(any(URL.class));
     }

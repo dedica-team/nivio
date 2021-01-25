@@ -13,6 +13,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,6 +63,8 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
      * all KPIs for the landscape, configured and initialized
      */
     private Map<String, KPI> kpis = new HashMap<>();
+
+    private String icon;
 
     public Landscape(@NonNull String identifier, @NonNull Group defaultGroup) {
         setIdentifier(identifier);
@@ -241,7 +244,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
     @Override
     public List<? extends Assessable> getChildren() {
-        return getGroups().values().stream().map(groupItem -> (Assessable)groupItem).collect(Collectors.toList());
+        return getGroups().values().stream().map(groupItem -> (Assessable) groupItem).collect(Collectors.toList());
     }
 
     @Schema(name = "_links")
@@ -261,7 +264,11 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
     @Override
     public String getIcon() {
-        return null;
+        return icon;
+    }
+
+    public void setIcon(String iconUrl) {
+        icon = iconUrl;
     }
 
     /**

@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 class SVGDocumentTest  extends RenderingTest {
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws URISyntaxException {
         super.setup();
     }
 
@@ -40,6 +40,24 @@ class SVGDocumentTest  extends RenderingTest {
     @Test
     public void renderCustomFill() throws IOException, URISyntaxException {
         String path = "/src/test/resources/example/dedica";
+
+
+        Landscape landscape = getLandscape(path + ".yml");
+
+        //when
+        String svg = renderLandscape(path, landscape);
+
+        //then
+        assertTrue(svg.contains("svg version=\"1.1\""));
+
+        //external icon
+        assertThat(svg).contains("fill=\"url(#Wm05dg==)\""); //pattern for "foo" response
+
+    }
+
+    @Test
+    public void embedsExternalImages() throws IOException, URISyntaxException {
+        String path = "/src/test/resources/example/dedica";
         CachedResponse response = mock(CachedResponse.class);
         when(response.getBytes()).thenReturn("foo".getBytes());
         when(httpService.getResponse(any(URL.class))).thenReturn(response);
@@ -50,9 +68,8 @@ class SVGDocumentTest  extends RenderingTest {
         String svg = renderLandscape(path, landscape);
 
         //then
-        assertTrue(svg.contains("svg version=\"1.1\""));
-        assertTrue(svg.contains("<image xlink:href=\"https://dedica.team/images/logo_orange_weiss.png\""));
-
+        assertThat(svg).doesNotContain("https://dedica.team/images/logo_orange_weiss.png"); //external image, to be replaced
+        assertThat(svg).doesNotContain("https://dedica.team/images/logo.png"); //map logo
         assertThat(svg).doesNotContain("danielpozzi.jpg"); //external image, to be replaced
         assertThat(svg).contains("fill=\"url(#Wm05dg==)\""); //pattern for "foo" response
 

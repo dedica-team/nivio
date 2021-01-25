@@ -68,7 +68,7 @@ public class IconService {
      * @param url external url
      * @return data-url
      */
-    public Optional<String> getFillUrl(URL url) {
+    public Optional<String> getExternalUrl(URL url) {
         return externalIcons.getUrl(url);
     }
 }

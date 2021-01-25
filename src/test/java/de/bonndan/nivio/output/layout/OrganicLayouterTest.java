@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ import static org.mockito.Mockito.mock;
 class OrganicLayouterTest extends RenderingTest {
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws URISyntaxException {
         super.setup();
     }
 
