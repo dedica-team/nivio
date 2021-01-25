@@ -17,6 +17,7 @@ import java.util.Optional;
  */
 public class SearchDocumentFactory {
 
+    public static final String LUCENE_FIELD_IDENTIFIER = "identifier";
     public static final String LUCENE_FIELD_NAME = "name";
     public static final String LUCENE_FIELD_DESCRIPTION = "description";
     public static final String LUCENE_FIELD_CONTACT = "contact";
@@ -47,6 +48,7 @@ public class SearchDocumentFactory {
         document.add(new TextField(LUCENE_FIELD_COMPONENT_TYPE, "item", Field.Store.YES));
         document.add(new TextField(LUCENE_FIELD_FQI, item.getFullyQualifiedIdentifier().toString(), Field.Store.YES));
 
+        document.add(new TextField(LUCENE_FIELD_IDENTIFIER, Optional.ofNullable(item.getIdentifier()).orElse(""), Field.Store.YES));
         document.add(new TextField(LUCENE_FIELD_NAME, Optional.ofNullable(item.getName()).orElse(""), Field.Store.YES));
         document.add(new TextField(LUCENE_FIELD_CONTACT, Optional.ofNullable(item.getContact()).orElse(""), Field.Store.YES));
         document.add(new TextField(LUCENE_FIELD_DESCRIPTION, Optional.ofNullable(item.getDescription()).orElse(""), Field.Store.YES));

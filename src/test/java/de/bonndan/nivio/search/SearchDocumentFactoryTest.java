@@ -31,6 +31,7 @@ class SearchDocumentFactoryTest {
 
         //then
         assertNotNull(document);
+        assertEquals(item.getIdentifier(), document.get(LUCENE_FIELD_IDENTIFIER));
         assertEquals(item.getName(), document.get(LUCENE_FIELD_NAME));
         assertEquals(item.getContact(), document.get(LUCENE_FIELD_CONTACT));
         assertEquals(item.getDescription(), document.get(LUCENE_FIELD_DESCRIPTION));
