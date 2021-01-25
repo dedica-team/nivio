@@ -110,7 +110,6 @@ public class ExternalIcons {
 
     private Optional<String> request(String vendor, URL url) {
 
-        String lowerCased = url.toString().toLowerCase();
         CachedResponse cachedResponse;
         try {
             cachedResponse = httpService.getResponse(url);
@@ -118,9 +117,9 @@ public class ExternalIcons {
             LOGGER.warn("Failed to load vendor icon: {}", e.getMessage());
             return Optional.empty();
         }
-        imageCache.put(lowerCased, cachedResponse);
+        imageCache.put(vendor, cachedResponse);
 
-        return responseToDataUrl(vendor, imageCache.get(lowerCased));
+        return responseToDataUrl(vendor, imageCache.get(vendor));
     }
 
     private Optional<String> responseToDataUrl(String vendor, CachedResponse cachedResponse) {
@@ -144,6 +143,9 @@ public class ExternalIcons {
     }
 
     private Optional<String> getHeader(CachedResponse cachedResponse, String headerName) {
+        if (cachedResponse.getAllHeaders() == null) {
+            return Optional.empty();
+        }
         return Arrays.stream(cachedResponse.getAllHeaders())
                 .filter(header -> header.getName().equalsIgnoreCase(headerName))
                 .findFirst()

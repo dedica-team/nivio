@@ -35,14 +35,15 @@ public abstract class RenderingTest {
     protected InputFormatHandlerFactory formatFactory;
     protected Indexer indexer;
     protected LandscapeDescriptionFactory factory;
+    protected HttpService httpService;
 
     public void setup() {
         landscapeRepository = new LandscapeRepository();
         formatFactory = InputFormatHandlerFactory.with(new InputFormatHandlerNivio(new FileFetcher(new HttpService())));
-        FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
+        httpService = mock(HttpService.class);
+        FileFetcher fileFetcher = new FileFetcher(httpService);
         factory = new LandscapeDescriptionFactory(fileFetcher);
 
-        HttpService httpService = mock(HttpService.class);
         LinkHandlerFactory linkHandlerFactory = mock(LinkHandlerFactory.class);
         IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService));
         indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class), iconService);
