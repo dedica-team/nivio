@@ -7,7 +7,7 @@ const defaultThemeVariables: ThemeOptions = {
       default: '#161618',
     },
     text: {
-      primary: 'rgba(255, 255, 255, 0.75)'
+      primary: 'rgba(255, 255, 255, 0.75)',
     },
     primary: {
       main: 'rgb(0,104,104)',

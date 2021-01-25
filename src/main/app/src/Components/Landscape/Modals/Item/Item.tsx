@@ -1,4 +1,4 @@
-import React, { useState, ReactElement, useEffect } from 'react';
+import React, { useState, ReactElement, useEffect, useContext } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -21,10 +21,11 @@ import { getItemIcon, getLabels, getLinks } from '../../Utils/utils';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import { ExpandMore, FilterCenterFocus, MoreVertSharp } from '@material-ui/icons';
-import componentStyles from '../../../../Ressources/styling/ComponentStyles';
 import Chip from '@material-ui/core/Chip';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Avatar from "@material-ui/core/Avatar";
+import Avatar from '@material-ui/core/Avatar';
+import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
+import componentStyles from '../../../../Resources/styling/ComponentStyles';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -37,7 +38,6 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   small?: boolean;
   useItem?: IItem;
-  locateItem?: Function;
   fullyQualifiedItemIdentifier?: string;
 }
 
@@ -46,10 +46,13 @@ interface Props {
  *
  *
  */
-const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifier, small }) => {
+const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small }) => {
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const [compact, setCompact] = useState<boolean>(false);
+
+  const locateFunctionContext = useContext(LocateFunctionContext);
+
   const classes = componentStyles();
   const extraClasses = useStyles();
   let relations: ReactElement[] = [];
@@ -104,8 +107,10 @@ const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifi
           <ListItemIcon>
             <IconButton
               onClick={() => {
-                if (locateItem) {
-                  locateItem(isInbound ? relation.source : relation.target);
+                if (locateFunctionContext.locateFunction) {
+                  locateFunctionContext.locateFunction(
+                    isInbound ? relation.source : relation.target
+                  );
                 }
               }}
             >
@@ -140,10 +145,10 @@ const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifi
   const links: ReactElement[] = item ? getLinks(item) : [];
 
   const findButton =
-    locateItem && item ? (
+    locateFunctionContext.locateFunction && item ? (
       <IconButton
         onClick={() => {
-          locateItem(item.fullyQualifiedIdentifier);
+          locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
         }}
       >
         <FilterCenterFocus />
@@ -161,11 +166,18 @@ const Item: React.FC<Props> = ({ useItem, locateItem, fullyQualifiedItemIdentifi
       <CardHeader
         title={item ? item.name || item.identifier : null}
         avatar={
-          item ? <Avatar
+          item ? (
+            <Avatar
               imgProps={{ style: { objectFit: 'contain' } }}
               src={getItemIcon(item)}
-              style={{ backgroundColor: 'rgba(255, 255, 255, 0.65)', border: '2px solid #' + item.color }}
-          />  : ''
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.65)',
+                border: '2px solid #' + item.color,
+              }}
+            />
+          ) : (
+            ''
+          )
         }
         className={classes.cardHeader}
         action={

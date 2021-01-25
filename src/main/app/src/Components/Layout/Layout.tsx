@@ -9,7 +9,6 @@ interface Props {
   children: string | ReactElement | ReactElement[];
   sidebarContent: string | ReactElement | ReactElement[];
   setSidebarContent: Function;
-  locateFunction: Function;
   pageTitle?: string;
   logo?: string;
 }
@@ -53,7 +52,6 @@ const Layout: React.FC<Props> = ({
   children,
   sidebarContent,
   setSidebarContent,
-  locateFunction,
   pageTitle,
   logo,
 }) => {
@@ -65,7 +63,6 @@ const Layout: React.FC<Props> = ({
         appBarClass={classes.appBar}
         logo={logo}
         setSidebarContent={setSidebarContent}
-        locateFunction={locateFunction}
         pageTitle={pageTitle}
       />
       <div className={classes.content}>
