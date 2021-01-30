@@ -30,7 +30,7 @@
     "react-modal": "^3.11.2",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.3",
-    "react-svg-pan-zoom": "^3.8.1",
+    "react-svg-pan-zoom": "^3.10.0",
     "react-svg-pan-zoom-loader": "^1.4.1",
     "react-transition-group": "^4.4.1",
     "svg-path-properties": "^1.0.10",
