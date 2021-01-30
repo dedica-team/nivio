@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ public class IndexEvent extends ProcessingEvent {
 
     private final String message;
     private final LandscapeDescription landscapeDescription;
+    private ProcessLog processLog;
 
     /**
      * @param source triggering class
@@ -58,5 +60,13 @@ public class IndexEvent extends ProcessingEvent {
     @Override
     public String getMessage() {
         return message;
+    }
+
+    public ProcessLog getProcessLog() {
+        return processLog;
+    }
+
+    public void setProcessLog(ProcessLog processLog) {
+        this.processLog = processLog;
     }
 }
