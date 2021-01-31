@@ -7,7 +7,6 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
@@ -52,7 +51,7 @@ class StartupListenerTest {
 
         IndexEvent first = captor.getValue();
         assertNotNull(first);
-        assertEquals("foo", first.getLandscape().getIdentifier());
+        assertEquals("foo", first.getLandscapeDescription().getIdentifier());
 
     }
 }
