@@ -1,5 +1,6 @@
 package de.bonndan.nivio.api;
 
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.IndexEvent;
 import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.*;

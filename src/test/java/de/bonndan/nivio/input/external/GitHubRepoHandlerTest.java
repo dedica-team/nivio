@@ -57,27 +57,7 @@ class GitHubRepoHandlerTest {
         assertThat(description.getLabel(GitHubRepoHandler.README)).isEqualTo("hihi");
     }
     @Test
-    void setsDescriptionifEmpty() throws IOException, ExecutionException, InterruptedException {
-        //given
-        Link link = new Link(new URL("https://github.com/dedica-team/nivio"), "github");
-        GHRepository ghr = mock(GHRepository.class);
-        when(gitHub.getRepository(eq("dedica-team/nivio"))).thenReturn(ghr);
-        when(ghr.getOpenIssueCount()).thenReturn(12);
-        when(ghr.getDescription()).thenReturn("A description");
-        when(ghr.getPullRequests(any())).thenReturn(List.of(mock(GHPullRequest.class)));
-        GHContent t = mock(GHContent.class);
-        InputStream inputStream = new ByteArrayInputStream("hihi".getBytes());
-        when(t.read()).thenReturn(inputStream);
-        when(ghr.getReadme()).thenReturn(t);
-
-        //when
-        ItemDescription description = (ItemDescription) handler.resolve(link).get();
-
-        assertThat(description.getDescription()).isEqualTo("A description");
-    }
-
-    @Test
-    void doesNotOverwriteExistingDescription() throws IOException, ExecutionException, InterruptedException {
+    void setsDescription() throws IOException, ExecutionException, InterruptedException {
         //given
         Link link = new Link(new URL("https://github.com/dedica-team/nivio"), "github");
         GHRepository ghr = mock(GHRepository.class);

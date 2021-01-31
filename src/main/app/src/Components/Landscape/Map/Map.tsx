@@ -1,4 +1,11 @@
-import React, { MouseEvent, ReactElement, useCallback, useEffect, useState } from 'react';
+import React, {
+  MouseEvent,
+  ReactElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { useParams } from 'react-router-dom';
 
 import { SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
@@ -23,10 +30,11 @@ import StatusBar from '../Dashboard/StatusBar';
 import { IAssessment, ILandscape } from '../../../interfaces';
 import { getGroup, getItem } from '../Utils/utils';
 import Group from '../Modals/Group/Group';
+import MapUtils from './MapUtils';
+import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
 
 interface Props {
   setSidebarContent: Function;
-  setLocateFunction: Function;
   setPageTitle: Function;
 }
 
@@ -43,7 +51,7 @@ interface SVGData {
  * @param setLocateFunction function to use to find an item. make sure to pass an anon func returning the actually used function
  * @param setPageTitle can be used to set the page title in parent state
  */
-const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTitle }) => {
+const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [tool, setTool] = useState<Tool>(TOOL_AUTO);
 
   // It wants a value or null but if we defined it as null it throws an error that shouldn't use null
@@ -59,6 +67,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
 
   const [isFirstRender, setIsFirstRender] = useState(true);
 
+  const locateFunctionContext = useContext(LocateFunctionContext);
+
   const locateComponent = useCallback(
     (fullyQualifiedItemIdentifier: string) => {
       const element = document.getElementById(fullyQualifiedItemIdentifier);
@@ -66,26 +76,21 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
         let dataX = element.getAttribute('data-x');
         let dataY = element.getAttribute('data-y');
         if (dataX && dataY) {
-          const shift: number = 0;
-          const x = parseFloat(dataX) + shift;
-          const y = parseFloat(dataY) + shift / 2;
-          setValue(setPointOnViewerCenter(value, x, y, 1));
+          const coords = MapUtils.getCenterCoordinates(value, dataX, dataY);
+          setValue(setPointOnViewerCenter(value, coords.x, coords.y, 1));
           setRenderWithTransition(true);
           setHighlightElement(element);
         }
       }
     },
-    [value]
+    [setValue, value]
   );
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
     if (fullyQualifiedItemIdentifier && landscape) {
       let item = getItem(landscape, fullyQualifiedItemIdentifier);
-      if (item)
-        setSidebarContent(
-          <Item key={fullyQualifiedItemIdentifier} useItem={item} locateItem={locateComponent} />
-        );
+      if (item) setSidebarContent(<Item key={fullyQualifiedItemIdentifier} useItem={item} />);
     }
   };
 
@@ -94,14 +99,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
     if (fullyQualifiedItemIdentifier && landscape) {
       let group = getGroup(landscape, fullyQualifiedItemIdentifier);
       if (group && assessments)
-        setSidebarContent(
-          <Group
-            group={group}
-            locateItem={locateComponent}
-            locateGroup={locateComponent}
-            assessments={assessments}
-          />
-        );
+        setSidebarContent(<Group group={group} assessments={assessments} />);
     }
   };
 
@@ -149,14 +147,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
 
     if (source && target && dataTarget) {
       let relation = source.relations[dataTarget];
-      setSidebarContent(
-        <MapRelation
-          relation={relation}
-          source={source}
-          target={target}
-          locateItem={locateComponent}
-        />
-      );
+      setSidebarContent(<MapRelation relation={relation} source={source} target={target} />);
     }
   };
 
@@ -177,16 +168,19 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
       get(`/api/${identifier}`).then((response) => {
         setLandscape(response);
         setPageTitle(response.name);
-        if (locateComponent) {
-          setLocateFunction(() => locateComponent);
-        }
       });
 
       get(`/assessment/${identifier}`).then((response) => {
         setAssessments(response);
       });
     }
-  }, [identifier, setPageTitle, setLocateFunction, locateComponent, landscape]);
+  }, [identifier, setPageTitle, landscape]);
+
+  useEffect(() => {
+    if (locateComponent) {
+      locateFunctionContext.setLocateFunction(() => locateComponent);
+    }
+  }, [locateComponent, locateFunctionContext]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -274,7 +268,6 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
         />
         {landscape && assessments && (
           <StatusBar
-            locateItem={locateComponent}
             setSidebarContent={setSidebarContent}
             landscape={landscape}
             assessments={assessments}

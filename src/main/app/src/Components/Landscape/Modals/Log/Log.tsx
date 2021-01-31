@@ -3,7 +3,9 @@ import { ILandscape } from '../../../../interfaces';
 import { get } from '../../../../utils/API/APIClient';
 
 import LevelChip from '../../../LevelChip/LevelChip';
-import {Box, Typography} from '@material-ui/core';
+import { Card, CardHeader } from '@material-ui/core';
+import componentStyles from '../../../../Resources/styling/ComponentStyles';
+import CardContent from '@material-ui/core/CardContent';
 
 interface Props {
   landscape: ILandscape;
@@ -22,6 +24,8 @@ interface Entry {
 const Log: React.FC<Props> = ({ landscape }) => {
   const [data, setData] = useState<Entry[] | null>(null);
   const [loadData, setLoadData] = useState<boolean>(true);
+  const classes = componentStyles();
+
   const getLog = useCallback(async () => {
     if (loadData) {
       const log: any = await get(`/api/landscape/${landscape.identifier}/log`);
@@ -37,19 +41,22 @@ const Log: React.FC<Props> = ({ landscape }) => {
   }, [getLog]);
 
   const content = data?.map((m, i) => {
+    if (m.level === 'DEBUG') return;
     return (
       <div key={i}>
-        <LevelChip level={m.level} title={m.date}/><br />
+        <LevelChip level={m.level} title={m.date} />
+        <br />
         <span className='logMessage'>{m.message}</span>
       </div>
     );
   });
 
+  let title = 'Process Log of ' + landscape.name;
   return (
-    <Box m={2}>
-      <Typography variant={'h5'}>Process Log of '{landscape.name}' </Typography>
-      {content}
-    </Box>
+    <Card className={classes.card}>
+      <CardHeader title={title} />
+      <CardContent>{content}</CardContent>
+    </Card>
   );
 };
 

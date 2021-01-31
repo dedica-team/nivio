@@ -1,10 +1,9 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.ComponentDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
-import de.bonndan.nivio.util.SafeAssign;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +36,7 @@ public class LinksResolver extends Resolver {
     @Override
     public void resolve(LandscapeDescription input) {
         List<CompletableFuture<ComponentDescription>> completableFutures = resolveLinks(input);
-        input.getGroups().forEach((s, groupItem) -> {
-            resolveLinks(groupItem);
-        });
+        input.getGroups().forEach((s, groupItem) -> resolveLinks(groupItem));
         input.getItemDescriptions().all().forEach(item -> completableFutures.addAll(resolveLinks(item)));
 
         try {
@@ -60,7 +57,11 @@ public class LinksResolver extends Resolver {
                                 .handleAsync((componentDescription, throwable) -> {
                                     if (componentDescription != null) {
                                         processLog.info(String.format("Successfully read link %s of %s", key, component));
-                                        ComponentDescriptionValues.assignSafeNotNull(component, componentDescription);
+                                        if (component instanceof ItemDescription) {
+                                            ItemDescriptionValues.assignSafeNotNull((ItemDescription) component, (ItemDescription) componentDescription);
+                                        } else {
+                                            ComponentDescriptionValues.assignSafeNotNull(component, componentDescription);
+                                        }
                                     } else {
                                         LOGGER.warn("Link resolving failure {} {}", key, component, throwable);
                                     }

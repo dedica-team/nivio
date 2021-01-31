@@ -141,4 +141,17 @@ class SecureLabelsResolverTest {
         assertEquals("http://foobar.com", item.getLabels().get("foo"));
     }
 
+    @Test
+    public void dsn() {
+        item.setLabel("mongodb_dsn", "mongodb://foo:somePw123@server.com:27017/adatabase");
+        secureLabelsResolver.resolve(landscapeDescription);
+        assertEquals("mongodb://*@server.com:27017/adatabase", item.getLabels().get("mongodb_dsn"));
+    }
+
+    @Test
+    public void dsnWithoutSecret() {
+        item.setLabel("mongodb_dsn", "mongodb://server.com:27017/adatabase");
+        secureLabelsResolver.resolve(landscapeDescription);
+        assertEquals("mongodb://server.com:27017/adatabase", item.getLabels().get("mongodb_dsn"));
+    }
 }

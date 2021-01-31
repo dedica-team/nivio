@@ -1,6 +1,6 @@
 package de.bonndan.nivio.observation;
 
-import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.ProcessingException;
 
 import java.util.ArrayList;
 import java.util.Collections;

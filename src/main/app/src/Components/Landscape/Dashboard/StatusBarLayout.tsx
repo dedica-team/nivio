@@ -7,7 +7,7 @@ import StatusChip from '../../StatusChip/StatusChip';
 import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import {darken, Theme} from '@material-ui/core';
+import { darken, Theme } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 5,
       position: 'fixed',
       width: '100%',
-      backgroundColor: darken(theme.palette.secondary.dark, 0.2),
+      backgroundColor: darken(theme.palette.primary.dark, 0.2),
     },
   })
 );

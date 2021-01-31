@@ -9,8 +9,8 @@ interface Props {
   children: string | ReactElement | ReactElement[];
   sidebarContent: string | ReactElement | ReactElement[];
   setSidebarContent: Function;
-  locateFunction: Function;
   pageTitle?: string;
+  logo?: string;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
     appBar: {
       zIndex: theme.zIndex.drawer + 1,
       position: 'relative',
-      backgroundColor: theme.palette.secondary.main,
+      backgroundColor: theme.palette.primary.main,
     },
     drawer: {
       flexShrink: 0,
@@ -30,6 +30,8 @@ const useStyles = makeStyles((theme: Theme) =>
       width: 320,
       backgroundColor: 'transparent',
       border: 'none',
+      maxHeight: '100%',
+      height: 'inherit',
     },
     drawerContainer: {
       overflow: 'auto',
@@ -50,8 +52,8 @@ const Layout: React.FC<Props> = ({
   children,
   sidebarContent,
   setSidebarContent,
-  locateFunction,
   pageTitle,
+  logo,
 }) => {
   const classes = useStyles();
 
@@ -59,8 +61,8 @@ const Layout: React.FC<Props> = ({
     <React.Fragment>
       <Navigation
         appBarClass={classes.appBar}
+        logo={logo}
         setSidebarContent={setSidebarContent}
-        locateFunction={locateFunction}
         pageTitle={pageTitle}
       />
       <div className={classes.content}>
@@ -72,6 +74,7 @@ const Layout: React.FC<Props> = ({
           classes={{
             paper: classes.drawerPaper,
           }}
+          color={'secondary'}
         >
           <Toolbar />
           {sidebarContent}

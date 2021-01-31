@@ -1,6 +1,5 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.IndexEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

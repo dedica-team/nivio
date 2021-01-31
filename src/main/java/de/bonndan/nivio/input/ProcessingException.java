@@ -1,4 +1,4 @@
-package de.bonndan.nivio;
+package de.bonndan.nivio.input;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.bonndan.nivio.input.dto.LandscapeDescription;

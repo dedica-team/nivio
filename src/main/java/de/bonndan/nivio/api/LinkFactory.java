@@ -1,17 +1,17 @@
 package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.assessment.AssessmentController;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.config.NivioConfigProperties;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.Link;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.docs.DocsController;
 import de.bonndan.nivio.output.map.MapController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.StreamSupport;
@@ -26,28 +26,13 @@ import static de.bonndan.nivio.model.Link.LinkBuilder.linkTo;
 public class LinkFactory {
 
     public static final String REL_SELF = "self";
-    private static final Logger LOGGER = LoggerFactory.getLogger(LinkFactory.class);
+
     private final LocalServer localServer;
+    private final NivioConfigProperties configProperties;
 
-    public LinkFactory(LocalServer localServer) {
+    public LinkFactory(LocalServer localServer, NivioConfigProperties configProperties) {
         this.localServer = localServer;
-    }
-
-    /**
-     * Creates a map of {@link Link}s from a string map.
-     *
-     * @param links string map
-     */
-    public static Map<String, Link> fromStringMap(Map<String, String> links) {
-        Map<String, Link> out = new HashMap<>(links.size());
-        links.forEach((s, s2) -> {
-            try {
-                out.put(s, linkTo(new URL(s2)).build());
-            } catch (MalformedURLException e) {
-                LOGGER.warn("Could not convert malformed URL {} to Link", s2);
-            }
-        });
-        return out;
+        this.configProperties = configProperties;
     }
 
     public Map<String, Link> getLandscapeLinks(Landscape landscape) {
@@ -126,7 +111,7 @@ public class LinkFactory {
      */
     Index getIndex(Iterable<Landscape> landscapes) {
 
-        Index index = new Index();
+        Index index = new Index(configProperties.getApiModel());
 
         StreamSupport.stream(landscapes.spliterator(), false)
                 .forEach((Landscape landscape) -> {

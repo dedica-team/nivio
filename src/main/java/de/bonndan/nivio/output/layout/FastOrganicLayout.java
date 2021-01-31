@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
-import de.bonndan.nivio.LandscapeConfig;
+import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.model.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

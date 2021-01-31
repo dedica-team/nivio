@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: '100%',
       textShadow: 'none',
       fontFamily: 'monospace',
-      backgroundColor: theme.palette.secondary.dark,
+      backgroundColor: theme.palette.primary.dark,
       color: 'white',
     },
     green: {
@@ -47,7 +47,7 @@ const StatusChip: React.FC<Props> = ({ name, value, status, style }) => {
   if (status.toLowerCase() === 'brown') letter = '!!';
 
   let label = name;
-  if (value) {
+  if (value != null && value !== 'null') {
     label += ': ' + value;
   }
   return (
@@ -57,6 +57,7 @@ const StatusChip: React.FC<Props> = ({ name, value, status, style }) => {
       className={classes.chip}
       avatar={<Avatar className={classes[status.toLowerCase()]}>{letter}</Avatar>}
       label={label}
+      title={label}
     />
   );
 };

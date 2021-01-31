@@ -20,9 +20,8 @@ public class ItemDescriptionValues {
 
         if (increment.getType() != null)
             existing.setType(increment.getType());
-        if (increment.getContact() != null)
-            existing.setContact(increment.getContact());
-
+        if (increment.getIcon() != null)
+            existing.setIcon(increment.getIcon());
         if (increment.getGroup() != null)
             existing.setGroup(increment.getGroup());
 
@@ -42,8 +41,8 @@ public class ItemDescriptionValues {
         ComponentDescriptionValues.assignSafeNotNull(item, template);
 
         assignSafeIfAbsent(template.getType(), item.getType(), item::setType);
-        assignSafeIfAbsent(template.getContact(), item.getContact(), item::setContact);
         assignSafeIfAbsent(template.getGroup(), item.getGroup(), item::setGroup);
+        assignSafeIfAbsent(template.getIcon(), item.getIcon(), item::setIcon);
 
         if (template.getProvidedBy() != null) {
             template.getProvidedBy().stream()

@@ -9,6 +9,7 @@ import Search from '../Landscape/Search/Search';
 import { HelpOutlineRounded } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -19,10 +20,13 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 11,
       paddingLeft: 16,
       paddingRight: 16,
-      backgroundColor: darken(theme.palette.secondary.main, 0.2),
+      backgroundColor: darken(theme.palette.primary.main, 0.2),
     },
     menuIcon: {
       color: 'rgba(255, 255, 255, 0.75)',
+    },
+    logo: {
+      height: '1.5em',
     },
   })
 );
@@ -30,32 +34,35 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   appBarClass: string;
   setSidebarContent: Function;
-  locateFunction: Function;
   pageTitle?: string;
+  logo?: string;
 }
 
 /**
  * Header Component
  */
-const Navigation: React.FC<Props> = ({
-  appBarClass,
-  setSidebarContent,
-  locateFunction,
-  pageTitle,
-}) => {
+const Navigation: React.FC<Props> = ({ appBarClass, setSidebarContent, pageTitle, logo }) => {
   const classes = useStyles();
 
   return (
     <AppBar position='static' className={appBarClass}>
       <Toolbar variant='dense'>
         <Button component={Link} to={``} className={classes.menuIcon}>
-          nivio
+          {logo ? (
+            <Avatar
+              className={classes.logo}
+              imgProps={{ style: { objectFit: 'contain' } }}
+              src={logo}
+            />
+          ) : (
+            'nivio'
+          )}
         </Button>
         <Box className={classes.pageTitle}>
           <Typography variant='h6'>{pageTitle}</Typography>
         </Box>
         <div className={classes.grow} />
-        <Search locateFunction={locateFunction} setSidebarContent={setSidebarContent} />{' '}
+        <Search setSidebarContent={setSidebarContent} />{' '}
         <IconButton
           className={classes.menuIcon}
           data-testid='ManualButton'

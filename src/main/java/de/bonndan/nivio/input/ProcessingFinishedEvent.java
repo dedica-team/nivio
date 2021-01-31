@@ -1,4 +1,4 @@
-package de.bonndan.nivio;
+package de.bonndan.nivio.input;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

@@ -1,4 +1,4 @@
-package de.bonndan.nivio;
+package de.bonndan.nivio.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

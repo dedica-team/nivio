@@ -5,10 +5,10 @@ spring:
     lazy-initialization: true
 
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: <login user to smtp server>
-    password: <login password to smtp server>
+    host: ${NIVIO_MAIL_HOST:}
+    port: ${NIVIO_MAIL_PORT:587}
+    username: ${NIVIO_MAIL_USERNAME:}
+    password: ${NIVIO_MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
@@ -43,6 +43,10 @@ nivio:
   version: #project.version#
   pollingMilliseconds: 30000 # 30 secs
   # iconFolder: /a/local/path
+  brandingForeground: ${NIVIO_BRANDING_FOREGROUND:006868}
+  brandingBackground: ${NIVIO_BRANDING_BACKGROUND:161618}
+  brandingSecondary: ${NIVIO_BRANDING_SECONDARY:eeeeee}
+  brandingLogoUrl: ${NIVIO_BRANDING_LOGO_URL:}
 
 ---
 spring:
