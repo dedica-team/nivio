@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 
 import LandscapeOverview from './Components/Landscape/Overview/Overview';
@@ -6,10 +6,10 @@ import LandscapeMap from './Components/Landscape/Map/Map';
 import Man from './Components/Manual/Man';
 import Layout from './Components/Layout/Layout';
 import { Routes } from './interfaces';
-import defaultThemeVariables from './Ressources/styling/theme';
 import { Box, CssBaseline, Theme } from '@material-ui/core';
 import { createMuiTheme, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
 import { get } from './utils/API/APIClient';
+import defaultThemeVariables from './Resources/styling/theme';
 
 interface Config {
   baseUrl: string;
@@ -28,16 +28,7 @@ const App: React.FC = () => {
   const [sidebarContent, setSidebarContent] = useState<ReactElement[]>([]);
   const [pageTitle, setPageTitle] = useState<string>('');
   const [logo, setLogo] = useState<string>('');
-  const [locateFunction, setLocateFunction] = useState<Function>();
   const [theme, setTheme] = useState<Theme>();
-
-  const ff = useCallback(
-    (args) => {
-      if (locateFunction) locateFunction(args);
-      else console.warn('locate function not set');
-    },
-    [locateFunction]
-  );
 
   useEffect(() => {
     const getColorSafely = (inputColor: string, defaultColor: string) => {
@@ -88,7 +79,6 @@ const App: React.FC = () => {
           <Layout
             sidebarContent={sidebarContent}
             setSidebarContent={setSidebarContent}
-            locateFunction={ff}
             logo={logo}
             pageTitle={pageTitle}
           >
@@ -109,7 +99,6 @@ const App: React.FC = () => {
               render={(props) => (
                 <LandscapeMap
                   setSidebarContent={setSidebarContent}
-                  setLocateFunction={setLocateFunction}
                   setPageTitle={setPageTitle}
                   {...props}
                 />

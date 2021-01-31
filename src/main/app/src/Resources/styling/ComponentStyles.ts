@@ -1,4 +1,4 @@
-import {darken, Theme} from '@material-ui/core';
+import { darken, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 const componentStyles = makeStyles((theme: Theme) =>

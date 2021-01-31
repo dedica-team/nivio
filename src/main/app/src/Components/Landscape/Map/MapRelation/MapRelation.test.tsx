@@ -28,13 +28,13 @@ it('should render mapRelation component', () => {
     fullyQualifiedIdentifier: 'abc/bar',
   };
 
-  const relation =  {
+  const relation = {
     source: source.fullyQualifiedIdentifier,
     target: target.fullyQualifiedIdentifier,
     type: 'PROVIDER',
     id: target.fullyQualifiedIdentifier,
     direction: 'outbound',
-    name: 'bar'
+    name: 'bar',
   };
   const { getByText } = render(
     <MapRelation source={source} target={target} relation={relation} locateItem={() => {}} />

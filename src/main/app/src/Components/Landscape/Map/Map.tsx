@@ -1,4 +1,11 @@
-import React, { MouseEvent, ReactElement, useCallback, useEffect, useState } from 'react';
+import React, {
+  MouseEvent,
+  ReactElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { useParams } from 'react-router-dom';
 
 import { SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
@@ -24,10 +31,10 @@ import { IAssessment, ILandscape } from '../../../interfaces';
 import { getGroup, getItem } from '../Utils/utils';
 import Group from '../Modals/Group/Group';
 import MapUtils from './MapUtils';
+import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
 
 interface Props {
   setSidebarContent: Function;
-  setLocateFunction: Function;
   setPageTitle: Function;
 }
 
@@ -44,7 +51,7 @@ interface SVGData {
  * @param setLocateFunction function to use to find an item. make sure to pass an anon func returning the actually used function
  * @param setPageTitle can be used to set the page title in parent state
  */
-const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTitle }) => {
+const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [tool, setTool] = useState<Tool>(TOOL_AUTO);
 
   // It wants a value or null but if we defined it as null it throws an error that shouldn't use null
@@ -59,6 +66,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
   const [assessments, setAssessments] = useState<IAssessment | undefined>(undefined);
 
   const [isFirstRender, setIsFirstRender] = useState(true);
+
+  const locateFunctionContext = useContext(LocateFunctionContext);
 
   const locateComponent = useCallback(
     (fullyQualifiedItemIdentifier: string) => {
@@ -81,10 +90,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
     if (fullyQualifiedItemIdentifier && landscape) {
       let item = getItem(landscape, fullyQualifiedItemIdentifier);
-      if (item)
-        setSidebarContent(
-          <Item key={fullyQualifiedItemIdentifier} useItem={item} locateItem={locateComponent} />
-        );
+      if (item) setSidebarContent(<Item key={fullyQualifiedItemIdentifier} useItem={item} />);
     }
   };
 
@@ -93,14 +99,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
     if (fullyQualifiedItemIdentifier && landscape) {
       let group = getGroup(landscape, fullyQualifiedItemIdentifier);
       if (group && assessments)
-        setSidebarContent(
-          <Group
-            group={group}
-            locateItem={locateComponent}
-            locateGroup={locateComponent}
-            assessments={assessments}
-          />
-        );
+        setSidebarContent(<Group group={group} assessments={assessments} />);
     }
   };
 
@@ -148,14 +147,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
 
     if (source && target && dataTarget) {
       let relation = source.relations[dataTarget];
-      setSidebarContent(
-        <MapRelation
-          relation={relation}
-          source={source}
-          target={target}
-          locateItem={locateComponent}
-        />
-      );
+      setSidebarContent(<MapRelation relation={relation} source={source} target={target} />);
     }
   };
 
@@ -187,9 +179,9 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
 
   useEffect(() => {
     if (locateComponent) {
-      setLocateFunction(() => locateComponent);
+      locateFunctionContext.setLocateFunction(() => locateComponent);
     }
-  }, [setLocateFunction, locateComponent]);
+  }, [locateComponent, locateFunctionContext]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -277,7 +269,6 @@ const Map: React.FC<Props> = ({ setSidebarContent, setLocateFunction, setPageTit
         />
         {landscape && assessments && (
           <StatusBar
-            locateItem={locateComponent}
             setSidebarContent={setSidebarContent}
             landscape={landscape}
             assessments={assessments}

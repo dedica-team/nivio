@@ -34,7 +34,6 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   appBarClass: string;
   setSidebarContent: Function;
-  locateFunction: Function;
   pageTitle?: string;
   logo?: string;
 }
@@ -42,26 +41,28 @@ interface Props {
 /**
  * Header Component
  */
-const Navigation: React.FC<Props> = ({
-  appBarClass,
-  setSidebarContent,
-  locateFunction,
-  pageTitle,
-  logo,
-}) => {
+const Navigation: React.FC<Props> = ({ appBarClass, setSidebarContent, pageTitle, logo }) => {
   const classes = useStyles();
 
   return (
     <AppBar position='static' className={appBarClass}>
       <Toolbar variant='dense'>
         <Button component={Link} to={``} className={classes.menuIcon}>
-          {logo ? <Avatar className={classes.logo} imgProps={{ style: { objectFit: 'contain' } }} src={logo} /> : 'nivio'}
+          {logo ? (
+            <Avatar
+              className={classes.logo}
+              imgProps={{ style: { objectFit: 'contain' } }}
+              src={logo}
+            />
+          ) : (
+            'nivio'
+          )}
         </Button>
         <Box className={classes.pageTitle}>
           <Typography variant='h6'>{pageTitle}</Typography>
         </Box>
         <div className={classes.grow} />
-        <Search locateFunction={locateFunction} setSidebarContent={setSidebarContent} />{' '}
+        <Search setSidebarContent={setSidebarContent} />{' '}
         <IconButton
           className={classes.menuIcon}
           data-testid='ManualButton'

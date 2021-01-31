@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 
 import { Link } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-import {Box, Button, Card, CardHeader, CardMedia, darken, Theme} from '@material-ui/core';
+import { Box, Button, Card, CardHeader, CardMedia, darken, Theme } from '@material-ui/core';
 import { ILandscape } from '../../../interfaces';
 import dateFormat from 'dateformat';
 import { withBasePath } from '../../../utils/API/BasePath';
@@ -11,7 +11,7 @@ import { Assignment, FormatListBulleted, MapOutlined } from '@material-ui/icons'
 import Log from '../Modals/Log/Log';
 import CardContent from '@material-ui/core/CardContent';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import componentStyles from '../../../Ressources/styling/ComponentStyles';
+import componentStyles from '../../../Resources/styling/ComponentStyles';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
