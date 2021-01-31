@@ -15,12 +15,13 @@ import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.RenderingTest;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
-import de.bonndan.nivio.output.icons.VendorIcons;
+import de.bonndan.nivio.output.icons.ExternalIcons;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ import static org.mockito.Mockito.mock;
 class OrganicLayouterTest extends RenderingTest {
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws URISyntaxException {
         super.setup();
     }
 
@@ -169,7 +170,7 @@ class OrganicLayouterTest extends RenderingTest {
     public void renderCSV() throws IOException {
 
         HttpService httpService = new HttpService();
-        IconService iconService = new IconService(new LocalIcons(), new VendorIcons(httpService));
+        IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService));
         formatFactory = InputFormatHandlerFactory.with(new InputFormatHandlerCSV(new FileFetcher(httpService)));
         LinkHandlerFactory linkHandlerFactory = mock(LinkHandlerFactory.class);
         indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class),  iconService);

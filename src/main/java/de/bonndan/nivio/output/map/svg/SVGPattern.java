@@ -23,7 +23,7 @@ class SVGPattern extends Component {
         return rawHtml(
                     "<pattern id=\"" + id + "\" patternUnits=\"objectBoundingBox\" x=\"0\" y=\"0\" width=\"100%\" height=\"100%\" >" +
                     "<rect height=\"100\" width=\"100\" fill=\"white\" />" +
-                    "<image xlink:href=\"" + link + "\" width=\"100\" height=\"100\" />" + //abs values are important for batik
+                    "<image xlink:href=\"" + link + "\" width=\"200\" height=\"200\" />" +
                     "</pattern>"
         );
     }

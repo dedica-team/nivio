@@ -123,7 +123,7 @@ public class SVGDocument extends Component {
     @Nullable
     private DomContent getLogo(SVGDimension dimension) {
         DomContent logo = null;
-        String logoUrl = landscape.getConfig().getBranding().getMapLogo();
+        String logoUrl = landscape.getIcon(); //has been set by appearance resolver
         if (!StringUtils.isEmpty(logoUrl)) {
             logo = SvgTagCreator.image()
                     .attr("xlink:href", logoUrl)
