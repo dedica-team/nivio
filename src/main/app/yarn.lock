@@ -9589,13 +9589,13 @@ react-svg-pan-zoom@>=3.0.0:
     prop-types "^15.7.2"
     transformation-matrix "^2.2.0"
 
-react-svg-pan-zoom@^3.8.1:
-  version "3.8.1"
-  resolved "https://registry.yarnpkg.com/react-svg-pan-zoom/-/react-svg-pan-zoom-3.8.1.tgz#4a9b793b39039e3b68db726c6e6f8125ce0fb7fa"
-  integrity sha512-DjhBTlwO+aS9KCerWqbTMaYoQodhz64Ej9pg3ihobabO+AtO2ZOQ0OZ9Gep9+YcDWGwhck//r3tUlcMvBdRmJQ==
+react-svg-pan-zoom@^3.10.0:
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/react-svg-pan-zoom/-/react-svg-pan-zoom-3.10.0.tgz#d27453fa0dcc777d3e942f67d37718c01639fb1c"
+  integrity sha512-sJt/ekGlC/VNypwcLeg5+EXNuwj8ag0geRT2D7MTFpDXVN7Oot/6oxyrYyJ8R1WsgV4A4s4BaowZ2LNF7tSjGQ==
   dependencies:
     prop-types "^15.7.2"
-    transformation-matrix "^2.2.0"
+    transformation-matrix "^2.6.0"
 
 react-svgmt@^1.1.7:
   version "1.1.11"
@@ -11162,6 +11162,11 @@ transformation-matrix@^2.2.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/transformation-matrix/-/transformation-matrix-2.4.0.tgz#9a63865c6f939c4abc4924d260242611101a5ee2"
   integrity sha512-cZyijcvmC+ms5M5dw5IzU7A27lKLR7SrRKtopdMK4KZ+cfTzOOKS2iT3vqFPOiKMM9cb81MyAQMxF/cihTbThA==
+
+transformation-matrix@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/transformation-matrix/-/transformation-matrix-2.6.0.tgz#5879f4b25eefa535b36e9244dfa2ed789a61d038"
+  integrity sha512-2VxseZ2BgdOkiEnD+o8ZnRheTXrZ5fDrxSZWELPkYDR0zmFI5NzB5qJtBfgaWl8bjeiMRzl+K9Fp9W2UyvMz6Q==
 
 trim-newlines@^1.0.0:
   version "1.0.0"
