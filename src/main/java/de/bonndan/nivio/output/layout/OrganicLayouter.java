@@ -21,12 +21,12 @@ public class OrganicLayouter implements Layouter<LayoutedComponent> {
 
         Map<String, SubLayout> subgraphs = new LinkedHashMap<>();
         landscape.getGroups().forEach((name, groupItem) ->  {
-            SubLayout subLayout = new SubLayout(groupItem, ((Group)groupItem).getItems(), landscape.getConfig().getItemLayoutConfig());
+            SubLayout subLayout = new SubLayout(groupItem, groupItem.getItems(), landscape.getConfig().getItemLayoutConfig());
             subgraphs.put(name, subLayout);
         });
 
         Map<String, Group> groupMap = new LinkedHashMap<>();
-        landscape.getGroups().forEach((s, groupItem) -> groupMap.put(s, (Group)groupItem));
+        landscape.getGroups().forEach(groupMap::put);
 
         AllGroupsLayout allGroupsLayout = new AllGroupsLayout(landscape, groupMap, subgraphs);
         return allGroupsLayout.getRendered();
