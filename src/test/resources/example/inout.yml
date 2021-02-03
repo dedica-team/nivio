@@ -64,6 +64,8 @@ items:
     group: input
     lifecycle: planned
     icon: vendor://prometheus
+    links:
+      github: https://github.com/prometheus/prometheus
 
   - identifier: csv
     shortName: CSV
@@ -81,6 +83,27 @@ items:
       - k8s
       - docker-compose
       - nivio-prop
+    links:
+      github: https://github.com/dedica-team/nivio
 
+#
+# links
+#
 
+  - identifier: gitlab
+    name: GitLab
+    description: Reads GitLab repository info from a link pointing to it
+    group: links
+    type: gitlab
+    relations:
+      - target: nivio
+        type: dataflow
 
+  - identifier: github
+    name: GitHub
+    type: github
+    description: Reads GitHub repository info from a link pointing to it
+    group: links
+    relations:
+      - target: nivio
+        type: dataflow

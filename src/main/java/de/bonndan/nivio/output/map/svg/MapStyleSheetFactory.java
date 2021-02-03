@@ -3,16 +3,11 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.ReadingException;
-import de.bonndan.nivio.LandscapeConfig;
+import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.util.URLHelper;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
 
 @Component
 public class MapStyleSheetFactory {

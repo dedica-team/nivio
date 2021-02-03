@@ -1,6 +1,7 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,7 +11,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.*;
 
-public class Group implements Labeled, Assessable {
+public class Group implements Labeled, Linked, Assessable {
 
     /**
      * Default group identifier (items are assigned to this group if no group is given
@@ -116,11 +117,27 @@ public class Group implements Labeled, Assessable {
         return Collections.unmodifiableSet(items);
     }
 
+    @JsonIgnore
     @Override
     @NonNull
     public Map<String, String> getLabels() {
         return labels;
     }
+
+    /**
+     * Returns the labels without the internal ones (having prefixes).
+     *
+     * @return filtered labels
+     */
+    @JsonProperty("labels")
+    public Map<String, String> getJSONLabels() {
+
+        return Labeled.groupedByPrefixes(
+                Labeled.withoutPrefixes(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG),
+                ","
+        );
+    }
+
 
     @Override
     @Nullable

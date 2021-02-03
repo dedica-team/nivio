@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
-import de.bonndan.nivio.LandscapeConfig;
+import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.Test;
 

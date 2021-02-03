@@ -39,7 +39,7 @@ class InstantItemResolverTest {
         landscapeDescription.getItemDescriptions().add(b);
         landscapeDescription.getConfig().setGreedy(true);
 
-        instantItemResolver.processTargets(landscapeDescription);
+        instantItemResolver.resolve(landscapeDescription);
         assertEquals(4, landscapeDescription.getItemDescriptions().all().size());
     }
 
@@ -68,7 +68,7 @@ class InstantItemResolverTest {
         landscapeDescription.getConfig().setGreedy(true);
 
 
-        instantItemResolver.processTargets(landscapeDescription);
+        instantItemResolver.resolve(landscapeDescription);
 
         //3 given plus 2 resolved (like above)
         assertEquals(5, landscapeDescription.getItemDescriptions().all().size());

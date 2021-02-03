@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * One specific property/kpi/key ... carrying a status.
  * <p>
- * Status (see {@link Status}) is an ordered set of statuses represented as colors
+ * Status (see {@link Status}) is an ordered set of status represented as colors
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StatusValue {

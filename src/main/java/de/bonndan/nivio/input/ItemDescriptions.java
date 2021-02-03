@@ -69,7 +69,7 @@ public class ItemDescriptions {
         }
 
         return find(identifier, group).orElseThrow(() ->
-                new RuntimeException("Element '" + identifier + "' not found  in collection ")
+                new RuntimeException(String.format("Element '%s' not found  in collection ", identifier))
         );
     }
 

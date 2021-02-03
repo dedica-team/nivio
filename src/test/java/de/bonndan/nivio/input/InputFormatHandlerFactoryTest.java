@@ -1,8 +1,6 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.compose2.InputFormatHandlerCompose2;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import org.junit.jupiter.api.BeforeEach;

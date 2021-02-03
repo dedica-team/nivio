@@ -1,7 +1,7 @@
 package de.bonndan.nivio.input;
 
 
-import de.bonndan.nivio.LandscapeConfig;
+import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.CustomKPI;
@@ -59,10 +59,13 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void readFails() throws IOException {
-        File file = new File(FILE_PATH_ENV);
-        String yaml = new String(Files.readAllBytes(file.toPath()));
-        assertThrows(ReadingException.class, () -> LandscapeDescriptionFactory.fromString("yaml", ""));
+    public void readsMinimalWithIdentifier() {
+        assertDoesNotThrow(() -> LandscapeDescriptionFactory.fromString("yaml", ""));
+    }
+
+    @Test
+    public void readFails() {
+        assertThrows(ReadingException.class, () -> LandscapeDescriptionFactory.fromString("", ""));
     }
 
     @Test
@@ -131,7 +134,7 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void readEnvVars() throws IOException, NoSuchFieldException, IllegalAccessException {
+    public void readEnvVars() throws IOException {
         final String FILE_PATH_ENVIRONMENT_VARS;
         final String user;
         if (SystemUtils.IS_OS_WINDOWS) {

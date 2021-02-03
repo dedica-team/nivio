@@ -1,20 +1,15 @@
 
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.ProcessingErrorEvent;
-import de.bonndan.nivio.ProcessingException;
-import de.bonndan.nivio.ProcessingFinishedEvent;
 import de.bonndan.nivio.assessment.kpi.KPIFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.IconService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-
-import java.util.*;
 
 /**
  * This component is a wrapper around all the steps to examine and index an landscape input dto.
@@ -28,16 +23,19 @@ public class Indexer {
 
     private final LandscapeRepository landscapeRepo;
     private final InputFormatHandlerFactory formatFactory;
+    private final LinkHandlerFactory linkHandlerFactory;
     private final ApplicationEventPublisher eventPublisher;
     private final IconService iconService;
 
     public Indexer(LandscapeRepository landscapeRepository,
                    InputFormatHandlerFactory formatFactory,
+                   LinkHandlerFactory linkHandlerFactory,
                    ApplicationEventPublisher eventPublisher,
                    IconService iconService
     ) {
         this.landscapeRepo = landscapeRepository;
         this.formatFactory = formatFactory;
+        this.linkHandlerFactory = linkHandlerFactory;
         this.eventPublisher = eventPublisher;
         this.iconService = iconService;
     }
@@ -87,42 +85,45 @@ public class Indexer {
         KPIFactory kpiFactory = new KPIFactory();
         landscape.setKpis(kpiFactory.getConfiguredKPIs(input.getConfig().getKPIs()));
 
-        Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
         // read all input sources
-        new SourceReferencesResolver(formatFactory, logger).resolve(input, templatesAndTargets);
+        new SourceReferencesResolver(formatFactory, logger).resolve(input);
 
-        // apply template values to the items
-        new TemplateResolver().processTemplates(input, templatesAndTargets);
+        // apply template values to items
+        new TemplateResolver(logger).resolve(input);
 
-        // read special labels on items and assign the values to fields
-        new LabelToFieldProcessor(logger).process(input, landscape);
+        // resolve links on components to gather more data.
+        new LinksResolver(logger, linkHandlerFactory).resolve(input);
 
         // mask any label containing secrets
-        new SecureLabelsProcessor().process(input);
+        new SecureLabelsResolver(logger).resolve(input);
 
         // create relation targets on the fly if the landscape is configured "greedy"
-        new InstantItemResolver(logger).processTargets(input);
+        new InstantItemResolver(logger).resolve(input);
+
+        // read special labels on items and assign the values to fields
+        new LabelToFieldResolver(logger).resolve(input);
 
         // find items for relation endpoints (which can be queries, identifiers...)
-        new RelationEndpointResolver(logger).processRelations(input);
+        // KEEP here (must run late after other resolvers)
+        new RelationEndpointResolver(logger).resolve(input);
 
         // add any missing groups
-        new GroupResolver(logger).process(input, landscape);
+        new GroupProcessor(logger).process(input, landscape);
 
         // compare landscape against input, add and remove items
-        new DiffResolver(logger).process(input, landscape);
+        new DiffProcessor(logger).process(input, landscape);
 
         // execute group "contains" queries
-        new GroupQueryResolver(logger).process(input, landscape);
+        new GroupQueryProcessor(logger).process(input, landscape);
 
         // try to find "magic" relations by examining item labels for keywords
-        new MagicLabelRelations(logger).process(input, landscape);
+        new MagicLabelRelationProcessor(logger).process(input, landscape);
 
         // create relations between items
-        new ItemRelationResolver(logger).process(input, landscape);
+        new ItemRelationProcessor(logger).process(input, landscape);
 
         // ensures that item have a resolved icon in the api
-        new AppearanceResolver(logger, iconService).process(input, landscape);
+        new AppearanceProcessor(logger, iconService).process(input, landscape);
 
         // this step must be final or very late to include all item modifications
         landscape.getItems().indexForSearch();

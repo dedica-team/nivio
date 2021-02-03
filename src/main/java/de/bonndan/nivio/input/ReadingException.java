@@ -2,7 +2,6 @@ package de.bonndan.nivio.input;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import de.bonndan.nivio.ProcessingException;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 
 import java.util.Arrays;

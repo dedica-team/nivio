@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input.rancher1;
 
+import de.bonndan.nivio.assessment.kpi.HealthKPI;
 import de.bonndan.nivio.input.ItemDescriptionValues;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
@@ -20,8 +21,6 @@ import java.util.*;
 public class PrometheusExporter {
 
     private static final Logger logger = LoggerFactory.getLogger(PrometheusExporter.class);
-    public static final String HEALTHY = "healthy";
-    public static final String UNHEALTHY = "unhealthy";
 
     private final String landscape;
     private File file;
@@ -90,11 +89,11 @@ public class PrometheusExporter {
 
             String health_state = null;
             if (metric.getLabels().getOrDefault("health_state", "").equals("healthy") && metric.getValue() > 0) {
-                health_state = HEALTHY;
+                health_state = HealthKPI.HEALTHY;
             }
 
             if (metric.getLabels().getOrDefault("health_state", "").equals("unhealthy") && metric.getValue() > 0) {
-                health_state = UNHEALTHY;
+                health_state = HealthKPI.UNHEALTHY;
             }
 
             if (health_state != null) {

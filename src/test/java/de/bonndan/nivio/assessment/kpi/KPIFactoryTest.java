@@ -1,7 +1,7 @@
 package de.bonndan.nivio.assessment.kpi;
 
-import de.bonndan.nivio.LandscapeConfig;
-import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.model.LandscapeConfig;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.model.LandscapeFactory;

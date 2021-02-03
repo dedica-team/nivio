@@ -36,7 +36,7 @@ Other fields:
 
 * **links** a map/dictionary of urls to more information
 * **lifecycle** life cycle phase. One of "planned", "integration", "production", "end of life" (abbrevs work)
-* **statuses** status objects, represented in colors
+* **status** status objects, represented in colors
     * label: stability, capability, health, security ....)
     * status: green, yellow, orange, red, brown
     * message: Everything ok.

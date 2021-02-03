@@ -1,7 +1,7 @@
 package de.bonndan.nivio.assessment.kpi;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import de.bonndan.nivio.ProcessingException;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Labeled;

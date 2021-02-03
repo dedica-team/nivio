@@ -1,61 +1,77 @@
 import React from 'react';
-// import Grid from '@material-ui/core/Grid';
-import { Button, Typography, AppBar, Theme, createStyles, ButtonGroup } from '@material-ui/core';
+import { Typography, AppBar, Theme, createStyles, Box, darken } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
 import Toolbar from '@material-ui/core/Toolbar';
-import './Navigation.scss';
-
-import FavoriteIcon from '@material-ui/icons/Favorite';
 
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Search from '../Landscape/Search/Search';
+import { HelpOutlineRounded } from '@material-ui/icons';
+import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     grow: {
       flexGrow: 1,
     },
-    title: {
-      marginRight: '20px',
+    pageTitle: {
+      padding: 11,
+      paddingLeft: 16,
+      paddingRight: 16,
+      backgroundColor: darken(theme.palette.primary.main, 0.2),
+    },
+    menuIcon: {
       color: 'rgba(255, 255, 255, 0.75)',
+    },
+    logo: {
+      height: '1.5em',
     },
   })
 );
 
+interface Props {
+  appBarClass: string;
+  setSidebarContent: Function;
+  pageTitle?: string;
+  logo?: string;
+}
+
 /**
  * Header Component
  */
-/*
-    value         |0px     600px    960px    1280px   1920px
-    key           |xs      sm       md       lg       xl
-    screen width  |--------|--------|--------|--------|-------->
-    range         |   xs   |   sm   |   md   |   lg   |   xl
-     */
-const Navigation: React.FC = () => {
+const Navigation: React.FC<Props> = ({ appBarClass, setSidebarContent, pageTitle, logo }) => {
   const classes = useStyles();
 
   return (
-    <AppBar position='static' className={'appBar'}>
-      <Toolbar className={'toolBar'}>
-        <Typography variant='h6' className={classes.title}>
-          <FavoriteIcon
-            alignmentBaseline={'central'}
-            style={{ verticalAlign: 'top', paddingTop: '7px', paddingRight: '3px' }}
-          />
-          Nivio
-        </Typography>
-        <ButtonGroup variant={'text'} aria-label='contained primary button group'>
-          <Button component={Link} to={``}>
-            Home
-          </Button>
-          <Button data-testid='ManualButton' component={Link} to={`/man/install.html`}>
-            Manual
-          </Button>
-          <Button data-testid='EventsButton' component={Link} to={`/events`}>
-            Events
-          </Button>
-        </ButtonGroup>
+    <AppBar position='static' className={appBarClass}>
+      <Toolbar variant='dense'>
+        <Button component={Link} to={``} className={classes.menuIcon}>
+          {logo ? (
+            <Avatar
+              className={classes.logo}
+              imgProps={{ style: { objectFit: 'contain' } }}
+              src={logo}
+            />
+          ) : (
+            'nivio'
+          )}
+        </Button>
+        <Box className={classes.pageTitle}>
+          <Typography variant='h6'>{pageTitle}</Typography>
+        </Box>
         <div className={classes.grow} />
+        <Search setSidebarContent={setSidebarContent} />{' '}
+        <IconButton
+          className={classes.menuIcon}
+          data-testid='ManualButton'
+          component={Link}
+          to={`/man/install.html`}
+          title={'Help / Manual'}
+        >
+          <HelpOutlineRounded />
+        </IconButton>
       </Toolbar>
     </AppBar>
   );

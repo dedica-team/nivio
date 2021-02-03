@@ -1,58 +1,68 @@
-import React from 'react';
-import './MapRelation.scss';
+import React, { useContext } from 'react';
+import { Card, CardHeader } from '@material-ui/core';
+import CardContent from '@material-ui/core/CardContent';
+import { IItem, IRelation } from '../../../../interfaces';
+import Typography from '@material-ui/core/Typography';
+import { FilterCenterFocus } from '@material-ui/icons';
+import IconButton from '@material-ui/core/IconButton';
+import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
+import componentStyles from '../../../../Resources/styling/ComponentStyles';
 
 interface Props {
-  sourceIdentifier: string;
-  targetIdentifier: string;
-  type: string | null;
-  findItem: (fullyQualifiedItemIdentifier: string) => void;
+  source: IItem;
+  target: IItem;
+  relation: IRelation;
 }
 
 /**
- * Returns a choosen Map Relation
- * @param element Choosen SVG Element from our Landscape Component
+ * Returns a chosen Map Relation
+ *
  */
-const MapRelation: React.FC<Props> = ({ sourceIdentifier, targetIdentifier, type, findItem }) => {
-  const sourceGroupNameStart = sourceIdentifier.indexOf('/') + 1;
-  const sourceRelation = sourceIdentifier.substr(sourceGroupNameStart);
+const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
+  const classes = componentStyles();
+  const sourceTitle = source.name || source.identifier;
+  const targetTitle = target.name || target.identifier;
+  const title = sourceTitle + ' -> ' + targetTitle;
 
-  const targetGroupNameStart = targetIdentifier.indexOf('/') + 1;
-  const targetRelation = targetIdentifier.substr(targetGroupNameStart);
-
-  const sourceTitle = sourceIdentifier.split('/').pop();
-  const targetTitle = targetIdentifier.split('/').pop();
+  const locateFunctionContext = useContext(LocateFunctionContext);
 
   return (
-    <div className='mapRelation'>
-      <div className='titleContainer'>
-        <span className='title'>
-          {sourceTitle} {'⇄'} {targetTitle}
-        </span>
-      </div>
-      <div className='mapRelationContent'>
-        <span className='type'>Type: {type}</span>
-        <div className='relationsContent'>
-          <span
-            className='relation'
-            key={sourceIdentifier}
+    <Card className={classes.card}>
+      <CardHeader title={title} className={classes.cardHeader} subheader={'Relation'} />
+      <CardContent>
+        <span>Type: {relation.type || '-'}</span>
+        <br />
+        <span>Format: {relation.format || '-'}</span>
+        <br />
+        <span>Description: {relation.description || '-'}</span>
+        <br />
+        <br />
+        <Typography variant={'h6'}>Source</Typography>
+        <div>
+          <IconButton
             onClick={() => {
-              findItem(sourceIdentifier);
+              locateFunctionContext.locateFunction(source.fullyQualifiedIdentifier);
             }}
           >
-            {sourceRelation}
-          </span>
-          <span
-            className='relation'
-            key={targetIdentifier}
-            onClick={() => {
-              findItem(targetIdentifier);
-            }}
-          >
-            {targetRelation}
-          </span>
+            <FilterCenterFocus />
+          </IconButton>
+          {sourceTitle}
         </div>
-      </div>
-    </div>
+
+        <Typography variant={'h6'}>Target</Typography>
+        <div>
+          <IconButton
+            onClick={() => {
+              locateFunctionContext.locateFunction(source.fullyQualifiedIdentifier);
+            }}
+          >
+            <FilterCenterFocus />
+          </IconButton>
+
+          {targetTitle}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

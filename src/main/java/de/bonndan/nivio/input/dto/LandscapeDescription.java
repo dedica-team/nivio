@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.bonndan.nivio.LandscapeConfig;
+import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.input.ItemDescriptionValues;
 import de.bonndan.nivio.input.ItemDescriptions;
 import de.bonndan.nivio.model.*;
@@ -22,7 +22,7 @@ import java.util.*;
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
 @JsonIgnoreType
-public class LandscapeDescription implements Component, Linked {
+public class LandscapeDescription implements ComponentDescription {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeDescription.class);
 
@@ -39,14 +39,12 @@ public class LandscapeDescription implements Component, Linked {
     /**
      * Human readable name.
      */
-    @NonNull
-    private final String name;
+    private String name;
 
     /**
      * Contact of the maintainer
      */
-    @Nullable
-    private final String contact;
+    private String contact;
     private String description;
     private String owner;
 
@@ -71,6 +69,11 @@ public class LandscapeDescription implements Component, Linked {
     private Map<String, GroupDescription> groups = new HashMap<>();
     private final Map<String, Link> links = new HashMap<>();
     private Map<String, String> labels = new HashMap<>();
+
+    @JsonCreator
+    public LandscapeDescription(@NonNull String identifier) {
+        this.identifier = identifier;
+    }
 
     @JsonCreator
     public LandscapeDescription(@JsonProperty("identifier") @NonNull String identifier,
@@ -106,9 +109,19 @@ public class LandscapeDescription implements Component, Linked {
         return name;
     }
 
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Nullable
     public String getContact() {
         return contact;
+    }
+
+    @Override
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 
     public String getDescription() {
@@ -232,5 +245,15 @@ public class LandscapeDescription implements Component, Linked {
 
     public void setLabels(Map<String, String> labels) {
         this.labels = labels;
+    }
+
+    @Override
+    public String getLabel(String key) {
+        return getLabels().get(key);
+    }
+
+    @Override
+    public void setLabel(String key, String value) {
+        getLabels().put(key, value);
     }
 }

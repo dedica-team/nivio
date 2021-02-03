@@ -1,7 +1,7 @@
 package de.bonndan.nivio.output.map;
 
-import de.bonndan.nivio.ProcessingFinishedEvent;
-import de.bonndan.nivio.input.AppearanceResolver;
+import de.bonndan.nivio.input.ProcessingFinishedEvent;
+import de.bonndan.nivio.input.AppearanceProcessor;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.HttpService;
@@ -47,8 +47,7 @@ class RenderCacheTest {
         String first = renderCache.getSVG(landscape, false);
         String second = renderCache.getSVG(landscape, false);
 
-        verify(stylesheetFactory, times(1))
-                .getMapStylesheet(any(), any());
+        verify(stylesheetFactory, times(1)).getMapStylesheet(any(), any());
     }
 
     @Test
@@ -98,8 +97,8 @@ class RenderCacheTest {
         test.info("foo");
         landscape.setProcessLog(test);
 
-        new AppearanceResolver(landscape.getLog(), mock(IconService.class))
-                .process(null, landscape);
+        HttpService httpService = mock(HttpService.class);
+        new AppearanceProcessor(landscape.getLog(), mock(IconService.class)).process(null, landscape);
         return landscape;
     }
 }

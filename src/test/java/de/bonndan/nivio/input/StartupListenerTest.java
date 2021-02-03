@@ -1,6 +1,5 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.IndexEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +9,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -21,7 +21,7 @@ class StartupListenerTest {
     private LandscapeDescriptionFactory factory;
     private ApplicationEventPublisher publisher;
     private StartupListener startupListener;
-    private Seed seed = new Seed(); // will use Seed.NIVIO_ENV_DIRECTORY
+    private Seed seed = new Seed(Optional.empty()); // will use Seed.NIVIO_ENV_DIRECTORY
 
     @BeforeEach
     public void setup() {
@@ -31,10 +31,11 @@ class StartupListenerTest {
     }
 
     @Test
-    public void fires() throws MalformedURLException {
+    public void fires() {
 
         //given
-        seed.setSeed("https://dedica.team");
+        seed = new Seed(Optional.of("https://dedica.team"));
+        startupListener = new StartupListener(factory, publisher, seed);
 
         LandscapeDescription landscapeDescription = new LandscapeDescription("foo", "bar", null);
         landscapeDescription.setSource("https://dedica.team");

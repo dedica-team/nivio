@@ -1,23 +1,23 @@
-import React, { useState, useEffect, useCallback, ReactElement, MouseEvent } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { ILandscape, ILandscapeLinks } from '../../../interfaces';
-import Log from '../Modals/Log/Log';
 import OverviewLayout from './OverviewLayout';
-import Slider from '../../Slider/Slider';
 import { get } from '../../../utils/API/APIClient';
+import Events from '../../Events/Events';
 
 /**
  * Logic Component to display all available landscapes
  */
 
-const Overview: React.FC = () => {
+interface Props {
+  setSidebarContent: Function;
+  setPageTitle: Function;
+}
+
+const Overview: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [landscapes, setLandscapes] = useState<ILandscape[]>([]);
   const [landscapeLinks, setLandscapeLinks] = useState<ILandscapeLinks | null>();
   const [loadLandscapes, setLoadLandscapes] = useState<boolean>(true);
-  const [sliderContent, setSliderContent] = useState<string | ReactElement | ReactElement[] | null>(
-    null
-  );
-  const [showSlider, setShowSlider] = useState(false);
 
   const getLandscapes = useCallback(async () => {
     if (loadLandscapes) {
@@ -36,28 +36,13 @@ const Overview: React.FC = () => {
     }
   }, [loadLandscapes, landscapeLinks]);
 
-  const closeSlider = () => {
-    setShowSlider(false);
-  };
-
-  const enterLog = (e: MouseEvent<HTMLButtonElement>, landscape: ILandscape) => {
-    const sliderContent = <Log landscape={landscape} />;
-    setSliderContent(<Slider sliderContent={sliderContent} closeSlider={closeSlider} />);
-    setShowSlider(true);
-  };
-
   useEffect(() => {
     getLandscapes();
-  }, [getLandscapes]);
+    setSidebarContent(<Events />);
+    setPageTitle('All Landscapes');
+  }, [getLandscapes, setSidebarContent, setPageTitle]);
 
-  return (
-    <OverviewLayout
-      sliderContent={sliderContent}
-      landscapes={landscapes}
-      enterLog={enterLog}
-      showSlider={showSlider}
-    />
-  );
+  return <OverviewLayout landscapes={landscapes} setSidebarContent={setSidebarContent} />;
 };
 
 export default Overview;

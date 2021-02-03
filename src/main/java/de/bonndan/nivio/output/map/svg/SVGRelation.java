@@ -51,7 +51,7 @@ class SVGRelation extends Component {
                     .attr("d", stringPath)
                     .attr("stroke", fillId);
             if (isPlanned) {
-                path.attr("stroke-dasharray", 10);
+                path.attr("stroke-dasharray", 30);
                 path.attr("opacity", 0.7);
             }
             return addAttributes(g(path, label(bezierPath, fillId)), relation);
@@ -110,7 +110,7 @@ class SVGRelation extends Component {
         return SvgTagCreator.text(text)
                 .attr("x", xOffset)
                 .attr("y", 0)
-                .attr("font-size", "3em")
+                .attr("font-size", "4em")
                 .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
                 .attr("transform", transform);
     }

@@ -1,7 +1,7 @@
 package de.bonndan.nivio.notification;
 
-import de.bonndan.nivio.ProcessingEvent;
-import de.bonndan.nivio.ProcessingFinishedEvent;
+import de.bonndan.nivio.input.ProcessingEvent;
+import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.LandscapeFactory;
 import org.junit.jupiter.api.BeforeEach;

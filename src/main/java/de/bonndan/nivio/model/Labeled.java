@@ -5,6 +5,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,25 @@ import java.util.stream.Collectors;
 public interface Labeled {
 
     String PREFIX_VALUE_DELIMITER = ";";
+
+    /**
+     * Removes all labels having a key starting with one of the prefixes
+     *
+     * @param labels   to filter
+     * @param prefixes filter criteria
+     * @return filtered labels
+     */
+    static Map<String, String> withoutPrefixes(Map<String, String> labels, String... prefixes) {
+        final List<String> strings = Arrays.asList(prefixes);
+        return labels.entrySet().stream()
+                .filter(stringStringEntry -> {
+                    String[] split = stringStringEntry.getKey().split("\\" + Label.DELIMITER);
+                    if (split.length > 1) {
+                        return !strings.contains(split[0]);
+                    }
+                    return true;
+                }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
 
     default String getLabel(Label key) {
         return getLabel(key.name().toLowerCase());
@@ -31,7 +51,6 @@ public interface Labeled {
 
     /**
      * Returns all labels with the given prefix.
-     *
      */
     default Map<String, String> getLabels(Label prefix) {
         return getLabels(prefix.name().toLowerCase());
@@ -47,7 +66,7 @@ public interface Labeled {
     /**
      * Sets the given label.
      *
-     * @param key key used in lowercase
+     * @param key   key used in lowercase
      * @param value value
      */
     default void setLabel(Label key, String value) {
@@ -63,7 +82,7 @@ public interface Labeled {
 
     /**
      * Reduces labels having the same prefix to one map field.
-     *
+     * <p>
      * The key is just the prefix and the value a semicolon separated string.
      *
      * @param all raw labels with prefixed
@@ -75,10 +94,10 @@ public interface Labeled {
 
     /**
      * Reduces labels having the same prefix to one map field.
-     *
+     * <p>
      * The key is just the prefix and the value a delimited string.
      *
-     * @param all raw labels with prefixed
+     * @param all       raw labels with prefixed
      * @param delimiter concatenation delimiter
      * @return prefix-unique map
      */
@@ -99,11 +118,12 @@ public interface Labeled {
 
     /**
      * Returns all values having a key starting with the prefix.
-     *
+     * <p>
      * Labels:
      * foo.bar.baz = hello
      * Returned is prefix is "foo"
      * bar.baz -> hello
+     *
      * @param prefix label enum
      * @return map
      */
@@ -125,10 +145,10 @@ public interface Labeled {
             }
             String key = parts[0];
             String statusOrMessage = parts[1];
-            if(statusOrMessage == null) {
+            if (statusOrMessage == null) {
                 return;
             }
-            if(labelValue == null) {
+            if (labelValue == null) {
                 labelValue = "";
             }
             byValue.putIfAbsent(key, new HashMap<>());
@@ -153,7 +173,7 @@ public interface Labeled {
     /**
      * Convenience method to set array-like labels.
      *
-     * @param prefix label prefix enum
+     * @param prefix         label prefix enum
      * @param suffixAndValue value (label suffix is the same as the value)
      */
     default void setPrefixed(Label prefix, String suffixAndValue) {
@@ -163,7 +183,7 @@ public interface Labeled {
     /**
      * Convenience method to set array-like labels.
      *
-     * @param prefix prefix, may contain a dot as delimiter
+     * @param prefix         prefix, may contain a dot as delimiter
      * @param suffixAndValue value (label suffix is the same as the value)
      */
     default void setPrefixed(String prefix, String suffixAndValue) {
@@ -177,7 +197,6 @@ public interface Labeled {
     }
 
     /**
-     *
      * @param prefix
      * @param suffixAndValue
      */

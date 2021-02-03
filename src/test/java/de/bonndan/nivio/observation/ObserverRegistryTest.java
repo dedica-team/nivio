@@ -1,6 +1,6 @@
 package de.bonndan.nivio.observation;
 
-import de.bonndan.nivio.ProcessingFinishedEvent;
+import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
