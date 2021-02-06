@@ -16,7 +16,7 @@ class SVGItemTest {
     @Test
     @DisplayName("ensure item uses proper fqi as id")
     public void regression184() {
-        Landscape landscape = LandscapeFactory.create("l1", "l1Landscape", null);
+        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
         // item has no group
         Item foo = new Item(null, "foo");
@@ -29,7 +29,7 @@ class SVGItemTest {
     @Test
     @DisplayName("contains x and y data")
     public void xyData() {
-        Landscape landscape = LandscapeFactory.create("l1", "l1Landscape", null);
+        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
         // item has no group
         Item foo = new Item(null, "foo");

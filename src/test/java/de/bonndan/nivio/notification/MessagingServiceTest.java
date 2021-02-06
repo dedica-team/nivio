@@ -29,7 +29,7 @@ class MessagingServiceTest {
     void onApplicationEvent() {
         ProcessingFinishedEvent processingFinishedEvent = new ProcessingFinishedEvent(
                 new LandscapeDescription("test", "testLandscape", null),
-                LandscapeFactory.create("test", "testLandscape", null)
+                LandscapeFactory.createForTesting("test", "testLandscape").build()
         );
         messagingService.onApplicationEvent(processingFinishedEvent);
 
@@ -41,7 +41,7 @@ class MessagingServiceTest {
 
         ProcessingFinishedEvent processingFinishedEvent = new ProcessingFinishedEvent(
                 new LandscapeDescription("test", "testLandscape", null),
-                LandscapeFactory.create("test", "testLandscape", null)
+                LandscapeFactory.createForTesting("test", "testLandscape").build()
         );
         messagingService.onApplicationEvent(processingFinishedEvent);
 

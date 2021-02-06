@@ -32,7 +32,7 @@ class LandscapeObserverPoolFactoryTest {
 
     @BeforeEach
     public void setup() {
-        landscape = LandscapeFactory.create("test", "testLandscape", null);
+        landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
         formatFactory = mock(InputFormatHandlerFactory.class);
         fileFetcher = mock(FileFetcher.class);
         observerPoolFactory = new LandscapeObserverPoolFactory(formatFactory, fileFetcher);
@@ -45,7 +45,9 @@ class LandscapeObserverPoolFactoryTest {
         File file = new File(source);
         LandscapeDescriptionFactory landscapeDescriptionFactory = new LandscapeDescriptionFactory(new FileFetcher(new HttpService()));
         LandscapeDescription description = landscapeDescriptionFactory.fromYaml(file);
-        landscape.setSource(source);
+        landscape = LandscapeFactory.createForTesting("test", "testLandscape")
+                .withSource(source)
+                .build();
 
         SourceReference ref1 = new SourceReference();
         ref1.setUrl("https://dedica.team");
@@ -78,7 +80,6 @@ class LandscapeObserverPoolFactoryTest {
         LandscapeDescriptionFactory landscapeDescriptionFactory = new LandscapeDescriptionFactory(new FileFetcher(new HttpService()));
         LandscapeDescription description = landscapeDescriptionFactory.fromYaml(file);
         description.setSource(null);
-        landscape.setSource(null);
 
         SourceReference ref1 = new SourceReference();
         ref1.setUrl("https://dedica.team");

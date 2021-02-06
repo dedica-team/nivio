@@ -9,7 +9,7 @@ public class ItemTest {
     @Test
     public void equalsWithGroup() {
 
-        Landscape landscape = LandscapeFactory.create("l1", "l1Landscape", null);
+        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
 
         Item s1 = new Item("g1","a");
@@ -35,7 +35,7 @@ public class ItemTest {
     @Test
     public void equalsWithoutGroup() {
 
-        Landscape landscape = LandscapeFactory.create("l1", "l1Landscape", null);
+        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
         Item s1 = new Item(null, "a");
         s1.setLandscape(landscape);
@@ -56,7 +56,7 @@ public class ItemTest {
     @Test
     public void equalsWithLandscape() {
 
-        Landscape landscape = LandscapeFactory.create("l1", "l1Landscape", null);
+        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
         Item s1 = new Item("g1", "a");
         s1.setLandscape(landscape);

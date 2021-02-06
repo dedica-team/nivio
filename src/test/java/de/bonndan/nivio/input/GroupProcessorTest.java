@@ -17,9 +17,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class GroupProcessorTest {
 
     private GroupProcessor groupProcessor;
+    private Landscape landscape;
 
     @BeforeEach
     public void setup() {
+        landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
         ProcessLog log = new ProcessLog(LoggerFactory.getLogger(GroupProcessorTest.class));
         groupProcessor = new GroupProcessor(log);
     }
@@ -28,7 +30,6 @@ class GroupProcessorTest {
     void process() {
 
         LandscapeDescription input = getLandscapeDescription();
-        Landscape landscape = LandscapeFactory.create("test", "testLandscape", null);
 
         groupProcessor.process(input, landscape);
 
@@ -44,9 +45,6 @@ class GroupProcessorTest {
         item.setIdentifier("abc");
         input.addItems(Arrays.asList(item));
 
-        Landscape landscape = LandscapeFactory.create("test", "testLandscape", null);
-
-
         groupProcessor.process(input, landscape);
 
         assertEquals(3, landscape.getGroups().size());
@@ -57,7 +55,6 @@ class GroupProcessorTest {
     public void testBlacklistOnGroups() {
         LandscapeDescription input = getLandscapeDescription();
         input.getConfig().getGroupBlacklist().add("test2");
-        Landscape landscape = LandscapeFactory.create("test", "testLandscape", null);
 
         groupProcessor.process(input, landscape);
         assertEquals(2, landscape.getGroups().size()); //COMMON is always present
@@ -69,7 +66,6 @@ class GroupProcessorTest {
     public void testBlacklistOnGroupsWithRegex() {
         LandscapeDescription input = getLandscapeDescription();
         input.getConfig().getGroupBlacklist().add("^test[0-9].*");
-        Landscape landscape = LandscapeFactory.create("test", "testLandscape", null);
 
         groupProcessor.process(input, landscape);
         assertEquals(1, landscape.getGroups().size()); //COMMON only
@@ -87,8 +83,6 @@ class GroupProcessorTest {
         test2item.setIdentifier("intest2");
         test2item.setGroup("test2");
         input.getItemDescriptions().add(test2item);
-
-        Landscape landscape = LandscapeFactory.create("test", "testLandscape", null);
 
         groupProcessor.process(input, landscape);
 

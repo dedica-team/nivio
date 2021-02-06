@@ -47,8 +47,10 @@ class ObserverRegistryTest {
         LandscapeDescriptionFactory landscapeDescriptionFactory = new LandscapeDescriptionFactory(new FileFetcher(new HttpService()));
         LandscapeDescription description = landscapeDescriptionFactory.fromYaml(file);
 
-        landscape = LandscapeFactory.create(description.getIdentifier(), description.getName(), description.getContact());
-        landscape.setSource(source);
+        landscape = LandscapeFactory.createForTesting(description.getIdentifier(), description.getName())
+                .withContact(description.getContact())
+                .withSource(source)
+                .build();
 
         ProcessingFinishedEvent event = new ProcessingFinishedEvent(description, landscape);
 

@@ -222,8 +222,9 @@ class MagicLabelRelationProcessorTest {
 
 
     private Landscape getLandscapeWith(Set<Item> items) {
-        Landscape landscape = LandscapeFactory.create("test", "testLandscape", null);
-        landscape.setItems(items);
+        Landscape landscape = LandscapeFactory.createForTesting("test", "testLandscape")
+                .withItems(items)
+                .build();
         return landscape;
     }
 

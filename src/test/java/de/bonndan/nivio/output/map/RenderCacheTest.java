@@ -58,7 +58,7 @@ class RenderCacheTest {
                 false
         );
         Landscape two = getLandscape("second", "two");
-        two.setProcessLog(one.getLog()); //sync last update
+        //two.setProcessLog(one.getLog()); //sync last update
         String second = renderCache.getSVG(two, false);
 
         verify(stylesheetFactory, times(2))
@@ -83,7 +83,13 @@ class RenderCacheTest {
     }
 
     private Landscape getLandscape(String identifier, String name) {
-        Landscape landscape = LandscapeFactory.create(identifier, name, null);
+
+        ProcessLog test = new ProcessLog(LoggerFactory.getLogger("test"));
+        test.info("foo");
+
+        Landscape landscape = LandscapeFactory.createForTesting(identifier, name)
+                .withProcessLog(test)
+                .build();
 
         Item item = new Item("bar", "foo");
         landscape.setItems(Set.of(item));
@@ -93,11 +99,6 @@ class RenderCacheTest {
         bar.addItem(item);
         landscape.getGroups().put("bar", bar);
 
-        ProcessLog test = new ProcessLog(LoggerFactory.getLogger("test"));
-        test.info("foo");
-        landscape.setProcessLog(test);
-
-        HttpService httpService = mock(HttpService.class);
         new AppearanceProcessor(landscape.getLog(), mock(IconService.class)).process(null, landscape);
         return landscape;
     }

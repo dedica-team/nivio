@@ -61,8 +61,7 @@ public class IndexerIntegrationTest {
 
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, applicationEventPublisher, iconService);
 
-        ProcessLog processLog = indexer.index(landscapeDescription);
-        return (Landscape) processLog.getLandscape();
+        return indexer.index(landscapeDescription);
     }
 
     @Test //first pass
@@ -171,7 +170,7 @@ public class IndexerIntegrationTest {
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, applicationEventPublisher, iconService);
 
         //created
-        landscape = (Landscape) indexer.index(landscapeDescription).getLandscape();
+        landscape = indexer.index(landscapeDescription);
         blog = (Item) landscape.getItems().pick("blog-server", "completelyNewGroup");
         assertEquals("completelyNewGroup", blog.getGroup());
         assertEquals(before + 1, landscape.getItems().all().size());

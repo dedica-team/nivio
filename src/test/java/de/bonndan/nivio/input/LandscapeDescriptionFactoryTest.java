@@ -98,10 +98,10 @@ class LandscapeDescriptionFactoryTest {
     public void readUrlFromDescription() throws IOException {
 
         File file = new File(FILE_PATH_ENV);
-        Landscape outdatedLandscape = new Landscape(
-                "test", new Group(Group.COMMON), "testLandscape", null
-        );
-        outdatedLandscape.setSource(file.toURI().toURL().toString());
+        Landscape outdatedLandscape = LandscapeFactory.createForTesting(
+                "test", "testLandscape")
+                .withSource(file.toURI().toURL().toString())
+                .build();
 
         //when
         LandscapeDescription landscapeDescription = factory.from(outdatedLandscape);

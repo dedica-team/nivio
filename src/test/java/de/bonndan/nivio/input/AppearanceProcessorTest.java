@@ -1,9 +1,6 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.DataUrlHelper;
 import de.bonndan.nivio.output.icons.IconService;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +28,7 @@ class AppearanceProcessorTest {
         iconService = mock(IconService.class);
         resolver = new AppearanceProcessor(new ProcessLog(LoggerFactory.getLogger(AppearanceProcessorTest.class)), iconService);
 
-        landscape = new Landscape("l1", new Group(Group.COMMON), "l1Landscape", null);
+        landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
         Group g1 = new Group("g1");
         landscape.addGroup(g1);

@@ -20,7 +20,7 @@ public class DiffProcessorTest {
     @BeforeEach
     public void setup() {
 
-        landscape = LandscapeFactory.create("l1", "l1name", null);
+        landscape = LandscapeFactory.createForTesting("l1", "l1name").build();
 
         items = new ArrayList<>();
 

@@ -1,9 +1,7 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
-import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +16,7 @@ import static org.mockito.Mockito.when;
 class SVGRendererTest {
 
     @Test
-    void testRendering() throws MalformedURLException {
+    void testRendering() {
 
         //given
         IconService iconService = mock(IconService.class);
@@ -44,7 +42,7 @@ class SVGRendererTest {
     }
 
     private LayoutedComponent getLayoutedLandscape() {
-        Landscape foo = LandscapeFactory.create("foo", "fooLandscape", null);
+        Landscape foo = LandscapeFactory.createForTesting("foo", "fooLandscape").build();
 
         LayoutedComponent lc = new LayoutedComponent(foo);
         lc.setChildren(new ArrayList<>());

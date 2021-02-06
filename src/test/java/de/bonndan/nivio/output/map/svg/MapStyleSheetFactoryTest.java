@@ -18,17 +18,18 @@ class MapStyleSheetFactoryTest {
 
     private FileFetcher fileFetcher;
     private MapStyleSheetFactory factory;
-    private final Landscape landscape  = LandscapeFactory.create("test", "testLandscape", null);
+    private Landscape landscape;
     private ProcessLog processLog;
 
     @BeforeEach
     void getMapStylesheet() {
         fileFetcher = mock(FileFetcher.class);
-        factory =new MapStyleSheetFactory(fileFetcher);
+        factory = new MapStyleSheetFactory(fileFetcher);
         processLog = mock(ProcessLog.class);
-
+        landscape = LandscapeFactory.createForTesting("test", "testLandscape")
+                .withProcessLog(processLog)
+                .build();
         landscape.getConfig().getBranding().setMapStylesheet("http://acme.com/test.css");
-        landscape.setProcessLog(processLog);
     }
 
     @Test

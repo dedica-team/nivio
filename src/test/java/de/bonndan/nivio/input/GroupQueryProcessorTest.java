@@ -25,15 +25,20 @@ class GroupQueryProcessorTest {
     @Mock
     private ProcessLog processLog;
 
+    private Landscape landscape;
+
     @BeforeEach
     public void setup() {
+
         groupResolver = new GroupQueryProcessor(processLog);
+        landscape = LandscapeFactory.createForTesting("test", "testLandscape")
+                .withProcessLog(processLog)
+                .build();
     }
 
     @Test
     void process_doesNotContainDuplicatedItemsInGroups() {
-        Landscape landscape = LandscapeFactory.create("test", "testLandscape", null);
-        landscape.setProcessLog(processLog);
+
         Item item = new Item("groupIdentifier", "itemIdentifier");
         landscape.setItems(Set.of(item));
         landscape.addGroup(new Group("groupIdentifier"));
@@ -52,8 +57,7 @@ class GroupQueryProcessorTest {
 
     @Test
     void process_findsItemsIfQueryConditionIsNotLowercase() {
-        Landscape landscape = LandscapeFactory.create("test", "testLandscape", null);
-        landscape.setProcessLog(processLog);
+
         Item item = new Item("groupIdentifier", "itemIdentifier");
         landscape.setItems(Set.of(item));
         landscape.addGroup(new Group("groupIdentifier"));
@@ -77,8 +81,7 @@ class GroupQueryProcessorTest {
          * I have removed the magic from landscape.getGroup() and made that LandscapeFactory creates the COMMON group
          * as default. I've also added a test, so this test is obsolete.
          */
-        Landscape landscape = LandscapeFactory.create("test", "testLandscape", null);
-        landscape.setProcessLog(processLog);
+
         Item item = new Item(null, "itemIdentifier");
 
         landscape.setItems(Set.of(item));
@@ -97,7 +100,6 @@ class GroupQueryProcessorTest {
 
     @Test
     void process_withLandscapeFromLandscapeFactory_containsCommonGroupIfNoGroupWasSet() {
-        Landscape landscape = LandscapeFactory.create("landscapeIdentifier", "testLandscape", null);
         Item item = new Item(null, "itemIdentifier");
 
         landscape.setItems(Set.of(item));

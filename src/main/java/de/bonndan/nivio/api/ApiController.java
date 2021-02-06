@@ -122,13 +122,17 @@ public class ApiController {
      * Creates a new landscape
      */
     @RequestMapping(path = "/landscape", method = RequestMethod.POST)
-    public ProcessLog create(@RequestBody String body) {
+    public ResponseEntity<Landscape> create(@RequestBody String body) {
         LandscapeDescription env = LandscapeDescriptionFactory.fromString(body, "request body");
-        return indexer.index(env);
+
+        Landscape landscape = indexer.index(env);
+        //TODO this modifies the landscape components by adding SELF links
+        linkFactory.setLandscapeLinksRecursive(landscape);
+        return new ResponseEntity<>(landscape, HttpStatus.OK);
     }
 
     @RequestMapping(path = "/landscape/{identifier}/items", method = RequestMethod.POST)
-    public ProcessLog indexLandscape(
+    public ResponseEntity<Landscape> indexLandscape(
             @PathVariable String identifier,
             @RequestHeader(name = "format") String format,
             @RequestBody String body
@@ -147,7 +151,10 @@ public class ApiController {
 
         dto.setItemDescriptions(itemDescriptions);
 
-        return indexer.index(dto);
+        Landscape landscape = indexer.index(dto);
+        //TODO this modifies the landscape components by adding SELF links
+        linkFactory.setLandscapeLinksRecursive(landscape);
+        return new ResponseEntity<>(landscape, HttpStatus.OK);
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
@@ -221,7 +228,7 @@ public class ApiController {
         File file = new File(landscape.getSource());
         if (file.exists()) {
             LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
-            return indexer.index(Objects.requireNonNull(landscapeDescription));
+            return indexer.index(Objects.requireNonNull(landscapeDescription)).getLog();
         }
 
         Optional<URL> url = URLHelper.getURL(landscape.getSource());

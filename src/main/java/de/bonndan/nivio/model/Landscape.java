@@ -9,6 +9,7 @@ import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.ProcessLog;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -43,38 +44,52 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
      * Maintainer email
      */
     @Nullable
-    private String contact;
+    private final String contact;
 
-    private String description;
+    @Nullable
+    private final String owner;
 
-    private String source;
+    private final String description;
+
+    private final String source;
 
     @JsonIgnore
     private final ItemIndex items = new ItemIndex();
 
-    private LandscapeConfig config;
+    private final LandscapeConfig config;
 
-    private final Map<String, Group> groups = new HashMap<>();
+    private final Map<String, Group> groups;
 
-    private ProcessLog processLog;
+    private final ProcessLog processLog;
 
     private final Map<String, String> labels = new HashMap<>();
     private final Map<String, Link> links = new HashMap<>();
-    private String owner;
 
     /**
      * all KPIs for the landscape, configured and initialized
      */
     private Map<String, KPI> kpis = new HashMap<>();
 
-    private String icon;
-
-    public Landscape(@NonNull String identifier, @NonNull Group defaultGroup,
-                     @NonNull String name, @Nullable String contact) {
+    public Landscape(@NonNull final String identifier,
+                     @NonNull final Map<String, Group> groups,
+                     @NonNull final String name,
+                     @Nullable final String contact,
+                     @Nullable final String owner,
+                     @Nullable final String description,
+                     @Nullable final String source,
+                     @Nullable final LandscapeConfig config,
+                     @Nullable final ProcessLog processLog
+    ) {
         this.identifier = validateIdentifier(Objects.requireNonNull(identifier));
-        this.addGroup(Objects.requireNonNull(defaultGroup));
-        this.name = Objects.requireNonNull(name);
+        this.groups = groups;
+        this.name = Objects. requireNonNull(name);
         this.contact = contact;
+
+        this.owner = owner;
+        this.description = description;
+        this.source = source;
+        this.config = config != null ? config : new LandscapeConfig();
+        this.processLog = processLog != null ? processLog : new ProcessLog(LoggerFactory.getLogger(Landscape.class));
     }
 
     @NonNull
@@ -112,10 +127,6 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return source;
     }
 
-    public void setSource(String source) {
-        this.source = source;
-    }
-
     @Override
     @Nullable
     public String getContact() {
@@ -123,9 +134,6 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     public LandscapeConfig getConfig() {
-        if (config == null) {
-            config = new LandscapeConfig();
-        }
         return config;
     }
 
@@ -137,10 +145,6 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     @JsonGetter("groups")
     public Collection<Group> getGroupItems() {
         return new ArrayList<>(groups.values());
-    }
-
-    public void setContact(String contact) {
-        this.contact = contact;
     }
 
     @Override
@@ -155,10 +159,6 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     @Override
     public int hashCode() {
         return Objects.hash(StringUtils.trimAllWhitespace(identifier));
-    }
-
-    public void setConfig(LandscapeConfig config) {
-        this.config = config;
     }
 
     public void addGroup(@NonNull Group group) {
@@ -184,17 +184,9 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return Optional.ofNullable(groups.get(group));
     }
 
-    public void setProcessLog(ProcessLog processLog) {
-        this.processLog = processLog;
-    }
-
     @JsonIgnore
     public ProcessLog getLog() {
         return processLog;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @Override
@@ -205,10 +197,6 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     @Override
     public String getOwner() {
         return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
     }
 
     @JsonIgnore
@@ -268,7 +256,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
     @Override
     public String getIcon() {
-        return icon;
+        return getLabel("icon");
     }
 
     /**

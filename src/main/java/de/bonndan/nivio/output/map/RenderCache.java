@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.map;
 
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
-import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.layout.Layouter;
@@ -64,12 +63,6 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
 
     private void createCacheEntry(Landscape landscape, boolean debug) {
         LayoutedComponent layout = layouter.layout(landscape);
-
-        if (landscape.getLog() == null) {
-            ProcessLog processLog = new ProcessLog(LOGGER);
-            processLog.setLandscape(landscape);
-            landscape.setProcessLog(processLog);
-        }
         LOGGER.info("Generating SVG rendering of landscape {} (debug: {})", landscape.getIdentifier(), debug);
         renderings.put(getKey(landscape, debug), svgRenderer.render(layout, debug));
     }
