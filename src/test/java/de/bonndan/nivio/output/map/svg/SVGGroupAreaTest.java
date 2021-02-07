@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SVGGroupAreaTest {
@@ -18,8 +19,8 @@ class SVGGroupAreaTest {
         Hex e1 = new Hex(1, 1, -2);
         Hex e2 = new Hex(3, 3, -6);
 
-        Item landscapeItem = new Item("group", "landscapeItem");
-        Item landscapeItem2 = new Item("group", "bar");
+        Item landscapeItem = getTestItem("group", "landscapeItem");
+        Item landscapeItem2 = getTestItem("group", "bar");
 
         Group group = new Group("group","foo");
         group.addItem(landscapeItem);
@@ -40,8 +41,8 @@ class SVGGroupAreaTest {
         Hex e1 = new Hex(1, 1, -2);
         Hex e2 = new Hex(3, 3, -6);
 
-        Item landscapeItem = new Item("group", "landscapeItem");
-        Item landscapeItem2 = new Item("group", "bar");
+        Item landscapeItem = getTestItem("group", "landscapeItem");
+        Item landscapeItem2 = getTestItem("group", "bar");
 
         Group group = new Group("group", "foo");
         group.addItem(landscapeItem);

@@ -7,22 +7,21 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SVGRelationTest {
 
     @Test
     @DisplayName("items without groups use proper fqi")
-    public void regression184() {
+    public void relationContainsBothEnds() {
 
         Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
         //both items have no group
-        Item foo = new Item(null, "foo");
-        foo.setLandscape(landscape);
+        Item foo = getTestItem(Group.COMMON, "foo", landscape);
 
-        Item bar = new Item(null, "bar");
-        bar.setLandscape(landscape);
+        Item bar = getTestItem(Group.COMMON, "bar", landscape);
 
         Relation itemRelationItem = new Relation(foo, bar);
         SVGRelation svgRelation = new SVGRelation(new HexPath(new ArrayList<>()), "aabbee", itemRelationItem);

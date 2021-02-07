@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.icons;
 
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
@@ -29,18 +31,18 @@ class IconServiceTest {
 
     @Test
     public void returnsServiceWithUnknownType() {
-        Item item = new Item("test", "a");
-        item.setType("asb");
+        Item item = getTestItem("test", "a");
+        item.setLabel(Label.type, "asb");
 
         String icon = localIcons.getIconUrl(IconMapping.DEFAULT_ICON.getIcon()).orElseThrow();
-        assertThat(iconService.getIconUrl(new Item("test", "a"))).isEqualTo(icon);
+        assertThat(iconService.getIconUrl(getTestItem("test", "a"))).isEqualTo(icon);
 
     }
 
     @Test
     public void returnsType() {
-        Item item = new Item("test", "a");
-        item.setType("account");
+        Item item = getTestItem("test", "a");
+        item.setLabel(Label.type, "account");
 
         String icon = localIcons.getIconUrl("account").orElseThrow();
         assertThat(iconService.getIconUrl(item)).isEqualTo(icon);
@@ -48,16 +50,16 @@ class IconServiceTest {
 
     @Test
     public void returnsCustomIcon() {
-        Item item = new Item("test", "a");
-        item.setIcon("http://my.icon");
+        Item item = getTestItem("test", "a");
+        item.setLabel(Label.icon, "http://my.icon");
 
         assertThat(iconService.getIconUrl(item)).isEqualTo("http://my.icon");
     }
 
     @Test
     public void returnsVendorIcon() throws MalformedURLException {
-        Item item = new Item("test", "a");
-        item.setIcon("vendor://redis");
+        Item item = getTestItem("test", "a");
+        item.setLabel(Label.icon, "vendor://redis");
 
         URL url = new URL("http://foo.com/bar.png");
         when(externalIcons.getUrl(eq("redis"))).thenReturn(Optional.of(url.toString()));

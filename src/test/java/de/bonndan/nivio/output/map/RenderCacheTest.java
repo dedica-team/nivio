@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.Set;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -90,7 +91,7 @@ class RenderCacheTest {
                 .withProcessLog(test)
                 .build();
 
-        Item item = new Item("bar", "foo");
+        Item item = getTestItem("bar", "foo");
         landscape.setItems(Set.of(item));
         landscape.setItems(Collections.singleton(item));
 

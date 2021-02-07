@@ -3,8 +3,10 @@ package de.bonndan.nivio.model;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.util.SafeAssign.assignSafe;
@@ -13,45 +15,85 @@ public class ItemFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ItemFactory.class);
 
-    public static Item fromDescription(ItemDescription item, Landscape landscape) {
-        if (item == null) {
-            throw new RuntimeException("landscape item is null");
-        }
+    public static Item getTestItem(String group, String identifier) {
+        Landscape landscape = LandscapeBuilder.aLandscape().withIdentifier("test").withName("test").build();
+        return getTestItem(group, identifier, landscape);
+    }
 
-        Item landscapeItemImpl = new Item(item.getGroup(), item.getIdentifier());
-        landscapeItemImpl.setLandscape(landscape);
-        assignAll(landscapeItemImpl, item);
-        return landscapeItemImpl;
+    public static Item getTestItem(String group, String identifier, Landscape landscape) {
+        return new Item(identifier, landscape, group, null,null,null, null, null, null);
+    }
+
+    public static ItemBuilder getTestItemBuilder(String group, String identifier) {
+        Landscape landscape = LandscapeBuilder.aLandscape().withIdentifier("test").withName("test").build();
+        return ItemBuilder.anItem().withGroup(group).withIdentifier(identifier).withLandscape(landscape);
+    }
+
+    public static Item fromDescription(@NonNull ItemDescription description, Landscape landscape) {
+        Objects.requireNonNull(description, "description is null");
+
+        ItemBuilder builder = ItemBuilder.anItem()
+                .withIdentifier(description.getIdentifier())
+                .withName(description.getName())
+                .withContact(description.getContact())
+                .withOwner(description.getOwner())
+                .withGroup(description.getGroup())
+                .withIcon(description.getIcon())
+                .withLandscape(landscape);
+
+
+        builder.withInterfaces(description.getInterfaces().stream()
+                .map(ServiceInterface::new)
+                .collect(Collectors.toSet()));
+
+        builder.withLinks(description.getLinks());
+        builder.withLabels(description.getLabels());
+
+        if (StringUtils.isEmpty(builder.getGroup())) {
+            builder.withGroup(Group.COMMON);
+        }
+        return builder.build();
     }
 
     /**
      * Assigns all values from the description except relations. Description values
      * overwrite all fields except the group
+     * @return
      */
-    public static void assignAll(Item item, ItemDescription description) {
+    public static Item assignAll(@NonNull Item item, ItemDescription description) {
+        Objects.requireNonNull(item, "Item is null");
         if (description == null) {
             logger.warn("ServiceDescription for service " + item.getIdentifier() + " is null in assignAllValues");
-            return;
+            return item;
         }
-        item.setName(description.getName());
-        item.setDescription(description.getDescription());
-        item.setOwner(description.getOwner());
-        item.setColor(description.getColor());
-        item.setIcon(description.getIcon());
-        item.setContact(description.getContact());
 
-        item.setInterfaces(description.getInterfaces().stream()
+        ItemBuilder builder = ItemBuilder.anItem()
+                .withIdentifier(item.getIdentifier())
+                .withName(item.getName())
+                .withContact(item.getContact())
+                .withOwner(item.getOwner())
+                .withGroup(item.getGroup())
+                .withIcon(item.getIcon())
+                .withLandscape(item.getLandscape())
+                .withRelations(item.getRelations())
+                .withInterfaces(item.getInterfaces())
+                .withLabels(item.getLabels())
+                .withLinks(item.getLinks());
+
+
+        builder.withInterfaces(description.getInterfaces().stream()
                 .map(ServiceInterface::new)
                 .collect(Collectors.toSet()));
 
-        item.getLinks().putAll(description.getLinks());
 
-        assignSafe(description.getGroup(), item::setGroup);
+        builder.withName(description.getName());
+        builder.withDescription(description.getDescription());
+        builder.withOwner(description.getOwner());
+        builder.withColor(description.getColor());
+        builder.withIcon(description.getIcon());
+        builder.withContact(description.getContact());
 
-        description.getLabels().forEach((key, value) -> {
-            if (item.getLabel(key) == null || !StringUtils.isEmpty(value)) {
-                item.setLabel(key, value);
-            }
-        });
+
+        return builder.build();
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.lang.NonNull;
 import java.util.*;
 
 import static de.bonndan.nivio.assessment.StatusValue.SUMMARY_LABEL;
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -70,7 +71,7 @@ class AssessableTest {
 
     @Test
     public void withItem() {
-        Item item = new Item("foo", "bar");
+        Item item = getTestItem("foo", "bar");
         item.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
         item.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
 
@@ -103,11 +104,11 @@ class AssessableTest {
 
     @Test
     public void groupSummary() {
-        Item item = new Item("foo", "bar");
+        Item item = getTestItem("foo", "bar");
         item.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
         item.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
 
-        Item item2 = new Item("foo", "baz");
+        Item item2 = getTestItem("foo", "baz");
         item2.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.RED.getName());
         item2.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
 
@@ -141,7 +142,7 @@ class AssessableTest {
 
     @Test
     public void isSorted() {
-        Item item = new Item("foo", "bar");
+        Item item = getTestItem("foo", "bar");
         item.setLabel(Label.key(Label.status, "foo", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
         item.setLabel(Label.key(Label.status, "foo", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
 

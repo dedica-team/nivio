@@ -2,6 +2,7 @@ package de.bonndan.nivio.model;
 
 import org.junit.jupiter.api.Test;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ItemTest {
@@ -12,17 +13,13 @@ public class ItemTest {
         Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
 
-        Item s1 = new Item("g1","a");
-        s1.setLandscape(landscape);
+        Item s1 = getTestItem("g1", "a", landscape);
 
-        Item s2 = new Item("g1","a");
-        s2.setLandscape(landscape);
+        Item s2 = getTestItem("g1", "a", landscape);
 
-        Item s3 = new Item("g2","a");
-        s3.setLandscape(landscape);
+        Item s3 = getTestItem("g2", "a", landscape);
 
-        Item s4 = new Item(null, "a");
-        s4.setLandscape(landscape);
+        Item s4 = getTestItem(Group.COMMON, "a", landscape);
 
         assertEquals(s1, s2);
         assertEquals(s2, s1);
@@ -33,55 +30,18 @@ public class ItemTest {
     }
 
     @Test
-    public void equalsWithoutGroup() {
-
-        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
-
-        Item s1 = new Item(null, "a");
-        s1.setLandscape(landscape);
-
-        Item s2 = new Item(null, "a");
-        s2.setLandscape(landscape);
-
-        assertEquals(s1, s2);
-        assertEquals(s2, s1);
-
-        Item s3 = new Item("g2", "a");
-        s3.setLandscape(landscape);
-
-        assertNotEquals(s1, s3);
-        assertNotEquals(s2, s3);
-    }
-
-    @Test
     public void equalsWithLandscape() {
 
         Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
-        Item s1 = new Item("g1", "a");
-        s1.setLandscape(landscape);
+        Item s1 = getTestItem("g1", "a", landscape);
 
-        Item s2 = new Item("g1", "a");
-        s2.setLandscape(landscape);
+        Item s2 = getTestItem("g1", "a", landscape);
 
         assertEquals(s1, s2);
 
-        Item s3 = new Item("g1", "a");
-        s3.setLandscape(null);
+        Item s3 = getTestItem("g1", "a");
 
         assertNotEquals(s1, s3);
-    }
-
-    @Test
-    void setGroupIfNull() {
-        Item a = new Item(null, "a");
-        a.setGroup("b");
-        assertEquals("b", a.getGroup());
-    }
-
-    @Test
-    void setGroupForbidden() {
-        Item a = new Item("b", "a");
-        assertThrows(IllegalArgumentException.class, ()->a.setGroup("c"));
     }
 }

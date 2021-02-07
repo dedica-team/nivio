@@ -91,14 +91,14 @@ public class Indexer {
         // KEEP here (must run late after other resolvers)
         new RelationEndpointResolver(logger).resolve(input);
 
-        // add any missing groups
-        new GroupProcessor(logger).process(input, landscape);
+        // execute group "contains" queries
+        new GroupQueryResolver(logger).resolve(input);
 
         // compare landscape against input, add and remove items
         new DiffProcessor(logger).process(input, landscape);
 
-        // execute group "contains" queries
-        new GroupQueryProcessor(logger).process(input, landscape);
+        // assign items to groups, add missing groups
+        new GroupProcessor(logger).process(input, landscape);
 
         // try to find "magic" relations by examining item labels for keywords
         new MagicLabelRelationProcessor(logger).process(input, landscape);

@@ -9,13 +9,14 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
  * Resolves the groups in the landscape by examining item.group names and adds missing (not pre-configured) groups.
- * <p>
+ *
  * Blacklists groups and removes items from the input which are part of a blacklisted group.
  */
 public class GroupProcessor extends Processor {
@@ -55,6 +56,14 @@ public class GroupProcessor extends Processor {
                 processLog.info("Removing item " + item.getIdentifier() + " because in blacklisted group " + group);
                 input.getItemDescriptions().remove(item);
             }
+        });
+
+        //assign each item to a group
+        landscape.getItems().all().forEach(item -> {
+            Group group = landscape.getGroup(item.getGroup()).orElseThrow(() ->
+                    new RuntimeException(String.format("item group '%s' not found.", item.getGroup()))
+            );
+            group.addItem(item);
         });
     }
 

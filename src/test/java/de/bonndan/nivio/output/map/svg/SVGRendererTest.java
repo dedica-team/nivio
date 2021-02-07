@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -58,7 +59,7 @@ class SVGRendererTest {
 
         lc.getChildren().add(glc);
 
-        Item baz = new Item(null,"baz");
+        Item baz = getTestItem("bar","baz");
 
         LayoutedComponent ilc = new LayoutedComponent(baz);
         glc.setWidth(50);

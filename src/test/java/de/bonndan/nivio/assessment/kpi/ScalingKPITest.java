@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Set;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ScalingKPITest {
@@ -23,7 +24,7 @@ class ScalingKPITest {
     public void setup() {
         scalingKPI = new ScalingKPI();
         scalingKPI.init(null);
-        item = new Item("test", "a");
+        item = getTestItem("test", "a");
     }
 
     @Test
@@ -61,7 +62,7 @@ class ScalingKPITest {
 
     @Test
     void redIfZeroAsProvider() {
-        Relation r1 = new Relation(item, new Item("foo", "bar"));
+        Relation r1 = new Relation(item, getTestItem("foo", "bar"));
         r1.setType(RelationType.PROVIDER);
 
         item.setLabel(Label.scale, "0");
@@ -80,7 +81,7 @@ class ScalingKPITest {
 
     @Test
     void orangeIfZeroAsDataTarget() {
-        Relation r1 = new Relation(new Item("foo", "bar"), item);
+        Relation r1 = new Relation(getTestItem("foo", "bar"), item);
         r1.setType(RelationType.DATAFLOW);
 
         item.setLabel(Label.scale, "0");
@@ -99,9 +100,9 @@ class ScalingKPITest {
 
     @Test
     void yellowIfBottleneck() {
-        Relation r1 = new Relation(item, new Item("foo", "bar"));
+        Relation r1 = new Relation(item, getTestItem("foo", "bar"));
         r1.setType(RelationType.PROVIDER);
-        Relation r2 = new Relation(item, new Item("foo", "baz"));
+        Relation r2 = new Relation(item, getTestItem("foo", "baz"));
         r2.setType(RelationType.PROVIDER);
 
         item.setLabel(Label.scale, "1");

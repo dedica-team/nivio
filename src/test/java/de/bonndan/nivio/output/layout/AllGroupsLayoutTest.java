@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -58,10 +59,10 @@ class AllGroupsLayoutTest {
 
     private SubLayout getSubLayout(Group group) {
 
-        Item bar = new Item(group.getIdentifier(), "bar" + group.getIdentifier());
+        Item bar = getTestItem(group.getIdentifier(), "bar" + group.getIdentifier());
         group.addItem(bar);
 
-        Item baz = new Item(group.getIdentifier(), "baz" + group.getIdentifier());
+        Item baz = getTestItem(group.getIdentifier(), "baz" + group.getIdentifier());
         group.addItem(baz);
         baz.getRelations().add(new Relation(baz, bar));
 

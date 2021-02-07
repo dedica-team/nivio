@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,14 +26,10 @@ class ItemIndexTest {
 
         items = new ArrayList<>();
 
-        Item s1 = new Item("g1", "s1");
-        s1.setName("foo");
-        s1.setLandscape(landscape);
+        Item s1 = getTestItemBuilder("g1", "s1").withName("foo").withLandscape(landscape).build();
         items.add(s1);
 
-        Item s2 = new Item("g1", "s2");
-        s2.setName("bar");
-        s2.setLandscape(landscape);
+        Item s2 = getTestItemBuilder("g1", "s2").withName("bar").withLandscape(landscape).build();
         items.add(s2);
 
         landscape.setItems(new HashSet<>(items));
@@ -40,8 +38,8 @@ class ItemIndexTest {
     @Test
     public void pickFails() {
 
-        assertThrows(RuntimeException.class,() -> landscape.getItems().pick("s1", "xxx"));
-        assertThrows(RuntimeException.class,() -> landscape.getItems().pick("s3", "g1"));
+        assertThrows(RuntimeException.class, () -> landscape.getItems().pick("s1", "xxx"));
+        assertThrows(RuntimeException.class, () -> landscape.getItems().pick("s3", "g1"));
     }
 
 
@@ -64,12 +62,11 @@ class ItemIndexTest {
     @Test
     public void pickGracefulFails() {
 
-        Item s2 = new Item("g2", "s2");
-        s2.setLandscape(landscape);
+        Item s2 = getTestItem("g2", "s2", landscape);
         items.add(s2);
         landscape.setItems(new HashSet<>(items));
 
-        assertThrows(RuntimeException.class,() -> landscape.getItems().pick("s2", null));
+        assertThrows(RuntimeException.class, () -> landscape.getItems().pick("s2", null));
     }
 
     @Test

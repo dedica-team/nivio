@@ -7,6 +7,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static de.bonndan.nivio.model.SearchDocumentFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,10 +17,11 @@ class SearchDocumentFactoryTest {
     @Test
     public void generatesDocument() throws MalformedURLException {
         //given
-        Item item = new Item(null, "foo");
-        item.setName("Hans");
-        item.setDescription("Lorem ipsum");
-        item.setContact("info@acme.com");
+        Item item = getTestItemBuilder("agroup", "foo")
+                .withName("Hans")
+                .withDescription("Lorem ipsum")
+                .withContact("info@acme.com")
+                .build();
         item.setLabel("foo", "bar");
         item.setLabel("foo2", "bar2");
         item.setLink("wiki", new URL("http://foo.bar.baz"));

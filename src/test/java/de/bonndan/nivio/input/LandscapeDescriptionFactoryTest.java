@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
@@ -301,7 +302,7 @@ class LandscapeDescriptionFactoryTest {
         CustomKPI costKPI = new CustomKPI();
         costKPI.init(monthlyCosts);
 
-        Item item = new Item("test", "a");
+        Item item = getTestItem("test", "a");
         item.setLabel(Label.costs, "200");
         StatusValue statusValue = costKPI.getStatusValues(item).get(0);
         assertNotNull(statusValue);

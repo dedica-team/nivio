@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -19,10 +20,10 @@ class SubLayoutTest {
         //given
         Group foo = new Group("foo", "landscapeIdentifier");
 
-        Item bar = new Item(foo.getIdentifier(), "bar");;
+        Item bar = getTestItem(foo.getIdentifier(), "bar");;
         foo.addItem(bar);
 
-        Item baz = new Item(foo.getIdentifier(), "baz");
+        Item baz = getTestItem(foo.getIdentifier(), "baz");
         foo.addItem(baz);
         baz.getRelations().add(new Relation(baz, bar));
 

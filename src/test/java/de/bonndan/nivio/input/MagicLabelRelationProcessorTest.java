@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
@@ -37,8 +39,7 @@ class MagicLabelRelationProcessorTest {
     public void findFromLabelUrlHostnameByName() {
 
         //given
-        Item elastic = new Item(null, "elastic-server-as89");
-        elastic.setName("elastic");
+        Item elastic = getTestItemBuilder("foo", "elastic-server-as89").withName("elastic").build();
 
         Landscape landscape = getLandscapeWith(Collections.singleton(elastic));
 
@@ -55,7 +56,7 @@ class MagicLabelRelationProcessorTest {
     @DisplayName("key contains url in name and is url with hostname matching an identifier")
     public void findFromLabelUrlHostnameByIdentifier() {
         //given
-        Item elastic = new Item(null, "elastic");
+        Item elastic = getTestItemBuilder("foo", "elastic-server-as89").build();
         Landscape landscape = getLandscapeWith(Collections.singleton(elastic));
 
         //when
@@ -71,7 +72,7 @@ class MagicLabelRelationProcessorTest {
     @DisplayName("key has magic part but value is not a url")
     public void findFromLabelValueByIdentifier() {
         //given
-        Item api = new Item(null, "api-foo");
+        Item api = getTestItem("hihi", "api-foo");
         Landscape landscape = getLandscapeWith(Collections.singleton(api));
 
         //when
@@ -87,8 +88,7 @@ class MagicLabelRelationProcessorTest {
     @DisplayName("key has magic part but value is not a url")
     public void findFromLabelValueByName() {
         //given
-        Item api = new Item(null, "api.foo.123");
-        api.setName("api-foo");
+        Item api = getTestItemBuilder("as", "api.foo.123").withName("api-foo").build();
 
         Landscape landscape = getLandscapeWith(Collections.singleton(api));
 
@@ -105,11 +105,9 @@ class MagicLabelRelationProcessorTest {
     @DisplayName("does nothing with more than one match")
     public void ifUncertainDoesNotLink() {
         //given
-        Item api = new Item(null, "api.foo.123");
-        api.setName("api-foo");
+        Item api = getTestItemBuilder("test", "api.foo.123").withName("api-foo").build();
 
-        Item api2 = new Item(null, "api.foo.234");
-        api2.setName("api-foo");
+        Item api2 = getTestItemBuilder("test", "api.foo.234").withName("api-foo").build();
 
         Landscape landscape = getLandscapeWith(Set.of(api, api2));
 
@@ -125,9 +123,9 @@ class MagicLabelRelationProcessorTest {
     @DisplayName("does nothing if the label value is a known identifier")
     public void ifValueIsIdentiferDoesNotLink() {
         //given
-        Item apiFoo = new Item(null, "api-foo");//this should match
-        Item foo = new Item(null, "foo"); //part of the label "FOO_API_URL", should not match
-        Item api = new Item(null, "api");//part of the label "FOO_API_URL", should not match
+        Item apiFoo = getTestItem("null", "api-foo");//this should match
+        Item foo = getTestItem("null", "foo"); //part of the label "FOO_API_URL", should not match
+        Item api = getTestItem("null", "api");//part of the label "FOO_API_URL", should not match
 
         Landscape landscape = getLandscapeWith(Set.of(apiFoo, foo, api));
 
@@ -145,7 +143,7 @@ class MagicLabelRelationProcessorTest {
     @DisplayName("a part of the key matches an identifier")
     public void keyPartMatchesidentifier() {
         //given
-        Item hihi = new Item(null, "baz");
+        Item hihi = getTestItem("foo", "baz");
         Landscape landscape = getLandscapeWith(Collections.singleton(hihi));
 
         //when
@@ -161,7 +159,7 @@ class MagicLabelRelationProcessorTest {
     @DisplayName("label blacklist is used")
     public void blacklistPreventsRelations() {
         //given
-        Item hihi = new Item(null, "baz");
+        Item hihi = getTestItem("foo", "baz");
         Landscape landscape = getLandscapeWith(Collections.singleton(hihi));
         landscape.getConfig().getLabelBlacklist().add(".*COMPOSITION.*");
 
@@ -176,7 +174,7 @@ class MagicLabelRelationProcessorTest {
     @DisplayName("label blacklist is used case insensitive")
     public void blacklistPreventsRelationsCaseInsensitive() {
         //given
-        Item hihi = new Item(null, "baz");
+        Item hihi = getTestItem("foo", "baz");
         Landscape landscape = getLandscapeWith(Collections.singleton(hihi));
         landscape.getConfig().getLabelBlacklist().add(".*composition.*");
 
@@ -191,7 +189,7 @@ class MagicLabelRelationProcessorTest {
     @DisplayName("does not link same service to itself")
     public void doesNotLinkSame() {
         //given
-        Item hihi = new Item(null, IDENTIFIER);
+        Item hihi = getTestItem("null", IDENTIFIER);
 
         item.getLabels().put("BASE_URL", IDENTIFIER);
         Landscape landscape = getLandscapeWith(Collections.singleton(hihi));
@@ -206,7 +204,7 @@ class MagicLabelRelationProcessorTest {
     @Test
     public void hasProviderRelation() {
         //given
-        Item db = new Item(null, "x.y.z");
+        Item db = getTestItem("foo", "x.y.z");
         Landscape landscape = getLandscapeWith(Collections.singleton(db));
 
         //when

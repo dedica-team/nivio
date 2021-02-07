@@ -193,15 +193,11 @@ public class Group implements Labeled, Linked, Assessable {
      * @throws IllegalArgumentException if the item group field mismatches
      */
     public void addItem(Item item) {
-        boolean canAdd = item.getGroup() == null || (item.getGroup().equals(identifier));
-
-        if (canAdd) {
-            item.setGroup(identifier);
-            items.add(item);
-            return;
+        if (!item.getGroup().equals(identifier)) {
+            throw new IllegalArgumentException(String.format("Item group '%s' cannot be added to group '%s'", item.getGroup(), identifier));
         }
 
-        throw new IllegalArgumentException(String.format("Item group '%s' cannot be added to group '%s'", item.getGroup(), identifier));
+        items.add(item);
     }
 
     public String getLandscapeIdentifier() {

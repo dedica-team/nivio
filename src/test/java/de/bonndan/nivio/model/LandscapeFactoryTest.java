@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -72,7 +73,7 @@ class LandscapeFactoryTest {
                 .withContact("foo")
                 .withOwner("bar")
                 .withGroups(Map.of("agroup", new Group("agroup", description.getIdentifier())))
-                .withItems(Set.of(new Item("agroup", "hihi")))
+                .withItems(Set.of(getTestItem("agroup", "hihi")))
                 .build();
 
         //when
@@ -108,7 +109,7 @@ class LandscapeFactoryTest {
                 .withContact("foo")
                 .withOwner("bar")
                 .withGroups(Map.of("agroup", new Group("agroup", description.getIdentifier())))
-                .withItems(Set.of(new Item("agroup", "hihi")))
+                .withItems(Set.of(getTestItem("agroup", "hihi")))
                 .build();
 
         //when

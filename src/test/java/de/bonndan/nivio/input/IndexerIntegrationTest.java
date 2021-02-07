@@ -246,7 +246,7 @@ public class IndexerIntegrationTest {
         Map<String, Group> groups = landscape1.getGroups();
         assertTrue(groups.containsKey("content"));
         Group content = groups.get("content");
-        assertFalse(content.getItems().isEmpty());
+        assertThat(content.getItems()).isNotEmpty();
         assertEquals(3, content.getItems().size());
 
         assertTrue(groups.containsKey("ingress"));

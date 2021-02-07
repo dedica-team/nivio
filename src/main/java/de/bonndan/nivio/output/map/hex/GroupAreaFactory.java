@@ -38,7 +38,7 @@ public class GroupAreaFactory {
         Set<Hex> inArea = new HashSet<>();
 
         if (!items.iterator().hasNext()) {
-            LOGGER.warn("Could not determine group area for group {}", group);
+            LOGGER.warn("Could not determine group area for group {} because of missing items.", group);
             return inArea;
         }
 

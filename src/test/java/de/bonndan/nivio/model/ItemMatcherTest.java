@@ -62,6 +62,16 @@ public class ItemMatcherTest {
     }
 
     @Test
+    public void testEqualsWithCommonGroupAndNoGroup() {
+        var fqi1 = ItemMatcher.build(null, Group.COMMON, "d1");
+
+        ItemDescription desc1 = new ItemDescription();
+        desc1.setIdentifier("d1");
+        desc1.setGroup(null);
+        assertTrue(fqi1.isSimilarTo(desc1.getFullyQualifiedIdentifier()));
+    }
+
+    @Test
     public void forTargetComplete() {
 
         String three = "a/b/c";

@@ -73,6 +73,9 @@ public class ItemMatcher {
     public static ItemMatcher forTarget(Item item) {
         return build("", item.getGroup(), item.getIdentifier());
     }
+    public static ItemMatcher forTarget(FullyQualifiedIdentifier fqi) {
+        return build(fqi.getLandscape(), fqi.getGroup(), fqi.getItem());
+    }
 
     @Override
     public String toString() {
@@ -121,6 +124,8 @@ public class ItemMatcher {
 
         boolean equalsGroup;
         if (StringUtils.isEmpty(group) || StringUtils.isEmpty(fullyQualifiedIdentifier.getGroup()))
+            equalsGroup = true;
+        else if (group.equalsIgnoreCase(Group.COMMON) && StringUtils.isEmpty(fullyQualifiedIdentifier.getGroup()))
             equalsGroup = true;
         else
             equalsGroup = this.group.equalsIgnoreCase(fullyQualifiedIdentifier.getGroup());

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SVGGroupAreaOutlineFactoryTest {
@@ -23,8 +24,8 @@ class SVGGroupAreaOutlineFactoryTest {
         Hex e2 = new Hex(0, 20, -20);
         Set<Hex> occupied = Set.of(e1, e2);
 
-        Item item1 = new Item("foo", "bar");
-        Item item2 = new Item("foo", "baz");
+        Item item1 = getTestItem("foo", "bar");
+        Item item2 = getTestItem("foo", "baz");
 
         Group foo = new Group("foo", "landscapeIdentifier", null, null, null, null, "005500");
         foo.addItem(item1);
