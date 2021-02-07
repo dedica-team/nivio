@@ -78,7 +78,7 @@ public class ItemRelationProcessor extends Processor {
                 relationDescription.getType()
         );
 
-        processLog.info(String.format("Adding relation %s between %s and %s", created.getType(), created.getSource(), created.getTarget()));
+        processLog.info(String.format("Adding between %s and %s", created.getSource(), created.getTarget()));
         return Optional.of(created);
     }
 }
