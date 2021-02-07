@@ -86,10 +86,11 @@ For instance
         labels:
           nivio.name: A nice name
           nivio.providedBy: ["foo", "bar"]
+          nivio.relaations: ["atarget", "anotherTarget"]
           nivio.link.wiki: http://mywiki.acme.com
 
 
-will set the related values (here: name and relations). Remember to escape URLs with double quotes.
+will set the related values (here: name, providers and relations). Remember to escape URLs with double quotes.
 
 Labels can be set using docker-compose files, too. However, docker labels not not allow arrays, so use comma separated strings:
 
@@ -101,6 +102,7 @@ Labels can be set using docker-compose files, too. However, docker labels not no
         labels:
           nivio.name: A nice name
           nivio.providedBy: "bar, baz"
+          nivio.relations: "atarget, anotherTarget"
           nivio.link.repo: https://github.com/foo/bar
 
 

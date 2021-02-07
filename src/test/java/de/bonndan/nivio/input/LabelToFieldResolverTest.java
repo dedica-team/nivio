@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Link;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,8 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LabelToFieldResolverTest {
@@ -66,6 +69,43 @@ class LabelToFieldResolverTest {
 
         //then
         assertEquals(1, item1.getLabels().size()); //"a" remains
+    }
+
+    @Test
+    @DisplayName("Ensure comma separated strings are parsed properly")
+    public void providedbyLowercase() {
+        ItemDescription item1 = new ItemDescription();
+        item1.getLabels().put("NIVIO.providedby", "baz ");
+
+        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
+        input.getItemDescriptions().add(item1);
+
+        //when
+        processor.resolve(input);
+
+        //then
+        assertEquals(1, item1.getProvidedBy().size());
+    }
+
+    @Test
+    @DisplayName("Ensure relations can be set via labels")
+    public void relations() {
+        ItemDescription item1 = new ItemDescription();
+        item1.getLabels().put("nivio.relations", "bar, baz");
+
+        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
+        input.getItemDescriptions().add(item1);
+
+        //when
+        processor.resolve(input);
+
+        //then
+        assertEquals(2, item1.getRelations().size());
+        RelationDescription[] actual = item1.getRelations().toArray(RelationDescription[]::new);
+        boolean matchesBar = Arrays.stream(actual).anyMatch(relationDescription -> relationDescription.getTarget().equals("bar"));
+        assertThat(matchesBar).isTrue();
+        boolean matchesBaz = Arrays.stream(actual).anyMatch(relationDescription -> relationDescription.getTarget().equals("baz"));
+        assertThat(matchesBaz).isTrue();
     }
 
     @Test
