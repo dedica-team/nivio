@@ -97,11 +97,14 @@ public class Indexer {
         // mask any label containing secrets
         new SecureLabelsResolver(logger).resolve(input);
 
+        // read special labels on items and assign the values to fields
+        new LabelToFieldResolver(logger).resolve(input);
+
         // create relation targets on the fly if the landscape is configured "greedy"
         new InstantItemResolver(logger).resolve(input);
 
-        // read special labels on items and assign the values to fields
-        new LabelToFieldResolver(logger).resolve(input);
+        // try to find "magic" relations by examining item labels for keywords and URIs
+        new LabelRelationResolver(logger, new HintFactory()).resolve(input);
 
         // find items for relation endpoints (which can be queries, identifiers...)
         // KEEP here (must run late after other resolvers)
@@ -115,9 +118,6 @@ public class Indexer {
 
         // execute group "contains" queries
         new GroupQueryProcessor(logger).process(input, landscape);
-
-        // try to find "magic" relations by examining item labels for keywords
-        new MagicLabelRelationProcessor(logger).process(input, landscape);
 
         // create relations between items
         new ItemRelationProcessor(logger).process(input, landscape);

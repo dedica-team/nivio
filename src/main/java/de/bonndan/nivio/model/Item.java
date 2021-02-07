@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -56,6 +57,11 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
     private Map<String, String> labels = new HashMap<>();
     private String color;
     private String icon;
+
+    /**
+     * technical address
+     */
+    private URI address;
 
     public Item(String group, String identifier) {
         this.group = group;
@@ -129,7 +135,6 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         return links;
     }
 
-    @JsonIgnore
     public String getGroup() {
         return group;
     }
@@ -212,6 +217,14 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
 
     public String getType() {
         return getLabel(Label.type);
+    }
+
+    public String getAddress() {
+        return address != null ? address.toString() : null;
+    }
+
+    public void setAddress(URI address) {
+        this.address = address;
     }
 
     /**

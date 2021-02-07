@@ -1,6 +1,7 @@
 package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.util.URIHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -39,6 +40,7 @@ public class ItemFactory {
         item.setColor(description.getColor());
         item.setIcon(description.getIcon());
         item.setContact(description.getContact());
+        URIHelper.getURI(description.getAddress()).ifPresent(item::setAddress);
 
         item.setInterfaces(description.getInterfaces().stream()
                 .map(ServiceInterface::new)

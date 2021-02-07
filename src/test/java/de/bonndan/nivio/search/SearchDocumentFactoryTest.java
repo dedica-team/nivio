@@ -1,5 +1,7 @@
-package de.bonndan.nivio.model;
+package de.bonndan.nivio.search;
 
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.search.SearchDocumentFactory;
 import org.apache.lucene.document.Document;
 import org.junit.jupiter.api.Test;
 
@@ -7,7 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import static de.bonndan.nivio.model.SearchDocumentFactory.*;
+import static de.bonndan.nivio.search.SearchDocumentFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SearchDocumentFactoryTest {
@@ -29,6 +31,7 @@ class SearchDocumentFactoryTest {
 
         //then
         assertNotNull(document);
+        assertEquals(item.getIdentifier(), document.get(LUCENE_FIELD_IDENTIFIER));
         assertEquals(item.getName(), document.get(LUCENE_FIELD_NAME));
         assertEquals(item.getContact(), document.get(LUCENE_FIELD_CONTACT));
         assertEquals(item.getDescription(), document.get(LUCENE_FIELD_DESCRIPTION));

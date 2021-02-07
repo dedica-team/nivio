@@ -8,6 +8,8 @@ import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.ProcessLog;
+import de.bonndan.nivio.search.ItemIndex;
+import de.bonndan.nivio.search.SearchIndex;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
@@ -25,6 +27,8 @@ import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Landscape implements Linked, Component, Labeled, Assessable {
+
+    private final SearchIndex searchIndex;
 
     /**
      * Immutable unique identifier. Maybe use an URN.
@@ -47,7 +51,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     private String source;
 
     @JsonIgnore
-    private final ItemIndex items = new ItemIndex();
+    private final ItemIndex<Item> items;
 
     private LandscapeConfig config;
 
@@ -69,6 +73,8 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     public Landscape(@NonNull String identifier, @NonNull Group defaultGroup) {
         setIdentifier(identifier);
         this.addGroup(defaultGroup);
+        this.searchIndex = new SearchIndex();
+        this.items = new ItemIndex<>(searchIndex, Item.class);
     }
 
     public String getIdentifier() {
@@ -97,7 +103,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     @JsonIgnore
-    public ItemIndex getItems() {
+    public ItemIndex<Item> getItems() {
         return items;
     }
 
@@ -137,6 +143,12 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getAddress() {
+        return null;
     }
 
     @Override
@@ -283,5 +295,10 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
     public void setKpis(Map<String, KPI> kpis) {
         this.kpis = kpis;
+    }
+
+    @JsonIgnore
+    public SearchIndex getSearchIndex() {
+        return searchIndex;
     }
 }

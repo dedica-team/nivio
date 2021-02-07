@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.search.ItemMatcher;
 
 import java.util.Iterator;
 
@@ -24,9 +25,9 @@ public class ItemRelationProcessor extends Processor {
             }
         });
 
-        input.getItemDescriptions().all().forEach(serviceDescription -> {
-            Item origin = landscape.getItems().pick(serviceDescription);
-            serviceDescription.getRelations().forEach(relationDescription -> {
+        input.getItemDescriptions().all().forEach(description -> {
+            Item origin = landscape.getItems().pick(description);
+            description.getRelations().forEach(relationDescription -> {
 
                 var fqiSource = ItemMatcher.forTarget(relationDescription.getSource());
                 var fqiTarget = ItemMatcher.forTarget(relationDescription.getTarget());

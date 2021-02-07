@@ -91,6 +91,7 @@ export interface IGroup {
 
 export interface IItem {
   identifier: string;
+  group: string;
   name: string;
   owner: string;
   description?: string;

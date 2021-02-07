@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.IconService;
+import de.bonndan.nivio.search.ItemIndex;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -119,7 +120,9 @@ public class IndexerIntegrationTest {
         assertEquals(3, blog.getProvidedBy().size());
 
         ArrayList<Item> landscapeItems = new ArrayList<>(blog.getProvidedBy());
-        Item webserver = new ItemIndex(new HashSet<>(landscapeItems)).pick("wordpress-web", null);
+        ItemIndex<Item> itemIndex = new ItemIndex<>(null, Item.class);
+        itemIndex.setItems(new HashSet<>(landscapeItems));
+        Item webserver = itemIndex.pick("wordpress-web", null);
         Assertions.assertNotNull(webserver);
         assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
 
@@ -259,7 +262,9 @@ public class IndexerIntegrationTest {
     public void readGroupsContains() {
         Landscape landscape1 = index("/src/test/resources/example/example_groups.yml");
         Group a = landscape1.getGroups().get("groupA");
-        ItemIndex index = new ItemIndex(new HashSet<>(a.getItems()));
+        ItemIndex<Item> index = new ItemIndex<>(null, Item.class);
+        index.setItems(new HashSet<>(a.getItems()));
+
         assertNotNull(index.pick("blog-server", null));
         assertNotNull(index.pick("crappy_dockername-234234", null));
     }
