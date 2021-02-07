@@ -43,7 +43,7 @@ public class FileFetcher {
         try {
             return Files.readString(Paths.get(source.toURI()), StandardCharsets.UTF_8);
         } catch (IOException | OutOfMemoryError | SecurityException e) {
-            LOGGER.error("Failed to read file " + source.getAbsolutePath(), e);
+            LOGGER.error(String.format("Failed to read file %s: %s", source.getAbsolutePath(), e.getMessage()));
             throw new ReadingException("Failed to read file " + source.getAbsolutePath(), e);
         }
     }
