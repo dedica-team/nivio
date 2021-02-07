@@ -98,6 +98,10 @@ public class LocalIcons {
             return Optional.ofNullable(iconDataUrls.get(path));
         }
 
+        if (path.startsWith(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64)) {
+            return Optional.of(path);
+        }
+
         Optional<String> dataUrl = DataUrlHelper.asBase64(path).map(s -> DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + s);
         dataUrl.ifPresentOrElse(
                 s -> iconDataUrls.put(path, s),
