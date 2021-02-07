@@ -124,8 +124,7 @@ public class LandscapeDescriptionFactory {
 
     @NonNull
     public LandscapeDescription fromBodyItems(String identifier, String format, String body) {
-        LandscapeDescription dto = new LandscapeDescription();
-        dto.setIdentifier(identifier);
+        LandscapeDescription dto = new LandscapeDescription(identifier);
         dto.setIsPartial(true);
 
         SourceReference sourceReference = new SourceReference();

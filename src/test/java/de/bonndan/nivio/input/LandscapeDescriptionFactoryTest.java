@@ -62,12 +62,14 @@ class LandscapeDescriptionFactoryTest {
 
     @Test
     public void readsMinimalWithIdentifier() {
-        assertDoesNotThrow(() -> LandscapeDescriptionFactory.fromString("yaml", ""));
+        assertDoesNotThrow(() -> new LandscapeDescriptionFactory(mock(FileFetcher.class))
+                .fromString("yaml", ""));
     }
 
     @Test
     public void readFails() {
-        assertThrows(ReadingException.class, () -> LandscapeDescriptionFactory.fromString("", ""));
+        assertThrows(ReadingException.class, () -> new LandscapeDescriptionFactory(mock(FileFetcher.class))
+                .fromString("", ""));
     }
 
     @Test
