@@ -41,18 +41,19 @@ public class GroupFactory {
         return builder.build();
     }
 
-    public static Group mergeWithGroupDescription(@NonNull final Group group,
-                                                  @Nullable final GroupDescription groupDescription
+    public static Group createFromDescription(@NonNull final String groupIdentifier,
+                                              @NonNull final String landscapeIdentifier,
+                                              @Nullable final GroupDescription description
     ) {
-        GroupBuilder builder = getBuilder(group);
+        GroupBuilder builder = getBuilder(new Group(groupIdentifier, landscapeIdentifier));
 
-        if (groupDescription != null) {
-            assignSafeIfAbsent(groupDescription.getColor(), group.getColor(), builder::withColor);
-            assignSafeIfAbsent(groupDescription.getContact(), group.getContact(), builder::withContact);
-            assignSafeIfAbsent(groupDescription.getDescription(), group.getDescription(), builder::withDescription);
-            assignSafeIfAbsent(groupDescription.getOwner(), group.getOwner(), builder::withOwner);
-            groupDescription.getLinks().forEach((s, url) -> builder.getLinks().putIfAbsent(s, url));
-            groupDescription.getLabels().forEach((s, val) -> builder.getLabels().putIfAbsent(s, val));
+        if (description != null) {
+            builder.withColor(description.getColor());
+            builder.withContact(description.getContact());
+            builder.withOwner(description.getOwner());
+            builder.withDescription(description.getDescription());
+            description.getLinks().forEach((s, url) -> builder.getLinks().putIfAbsent(s, url));
+            description.getLabels().forEach((s, val) -> builder.getLabels().putIfAbsent(s, val));
         }
 
 
