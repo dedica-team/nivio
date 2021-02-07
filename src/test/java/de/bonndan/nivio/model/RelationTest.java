@@ -12,8 +12,7 @@ class RelationTest {
     void toApiModel() {
         Item one = getTestItem("foo", "bar");
         Item two = getTestItem("foo", "baz");
-        Relation relation = new Relation(one, two);
-        relation.setType(RelationType.PROVIDER);
+        Relation relation = new Relation(one, two, null, null, RelationType.PROVIDER);
 
         Relation.ApiModel apiModel = new Relation.ApiModel(relation, one);
 

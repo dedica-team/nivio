@@ -40,7 +40,7 @@ class AllGroupsLayoutTest {
         item2.getRelations().add(new Relation(item2, item3));
 
         Map<String, Group> groupMap = new LinkedHashMap<>();
-        landscape.getGroups().forEach((s, groupItem) -> groupMap.put(s, (Group) groupItem));
+        landscape.getGroups().forEach(groupMap::put);
 
         //when
         AllGroupsLayout allGroupsLayout = new AllGroupsLayout(landscape, groupMap, map);

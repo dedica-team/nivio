@@ -1,8 +1,11 @@
 package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
+import org.springframework.lang.NonNull;
+
+import java.util.Objects;
+import java.util.Optional;
 
 public class RelationBuilder {
 
@@ -32,10 +35,7 @@ public class RelationBuilder {
     }
 
     public static Relation createProviderRelation(Item source, Item target) {
-        Relation relation = new Relation(source, target);
-        relation.setType(RelationType.PROVIDER);
-
-        return relation;
+        return new Relation(source, target, null, null, RelationType.PROVIDER);
     }
 
     public static RelationDescription provides(ItemDescription source, ItemDescription target) {
@@ -48,5 +48,11 @@ public class RelationBuilder {
         relationDescription.setTarget(target.getFullyQualifiedIdentifier().toString());
         relationDescription.setType(RelationType.PROVIDER);
         return relationDescription;
+    }
+
+    public static Relation update(@NonNull final Relation existing, @NonNull final RelationDescription description) {
+        Objects.requireNonNull(existing);
+        Objects.requireNonNull(description);
+        return new Relation(existing.getSource(), existing.getTarget(), description.getDescription(), description.getFormat(), existing.getType());
     }
 }
