@@ -3,8 +3,10 @@ package de.bonndan.nivio.input;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.util.Mappers;
+import de.bonndan.nivio.util.URLHelper;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookupFactory;
 import org.slf4j.Logger;
@@ -18,6 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * A static factory to create LandscapeDescription instances from files or strings.
@@ -81,7 +85,7 @@ public class LandscapeDescriptionFactory {
      * @throws ReadingException on error
      */
     @NonNull
-    public static LandscapeDescription fromString(String yaml, String origin) {
+    public LandscapeDescription fromString(String yaml, String origin) {
 
         if (StringUtils.isEmpty(yaml)) {
             throw new ReadingException("Failed to create an environment from empty yaml input string.", new IllegalArgumentException("Got an empty string."));
@@ -112,10 +116,40 @@ public class LandscapeDescriptionFactory {
      * @throws ReadingException on error
      */
     @NonNull
-    public static LandscapeDescription fromString(String yaml, URL url) {
+    public LandscapeDescription fromString(String yaml, URL url) {
         LandscapeDescription env = fromString(yaml, url.toString());
         env.setSource(url.toString());
         return env;
+    }
+
+    @NonNull
+    public LandscapeDescription fromBodyItems(String identifier, String format, String body) {
+        LandscapeDescription dto = new LandscapeDescription();
+        dto.setIdentifier(identifier);
+        dto.setIsPartial(true);
+
+        SourceReference sourceReference = new SourceReference();
+        sourceReference.setFormat(format);
+        sourceReference.setContent(body);
+        dto.setSources(List.of(sourceReference));
+
+        return dto;
+    }
+
+    public LandscapeDescription fromIncoming(LandscapeDescription landscape) {
+        if (landscape == null || StringUtils.isEmpty(landscape.getSource())) {
+            throw new ProcessingException(landscape, "Cannot process empty source.");
+        }
+
+        File file = new File(landscape.getSource());
+        if (file.exists()) {
+            return fromYaml(file);
+        }
+
+        Optional<URL> url = URLHelper.getURL(landscape.getSource());
+
+        return url.map(u -> from(u))
+                .orElseGet(() -> fromString(landscape.getSource(), landscape.getIdentifier() + " source"));
     }
 
     private static void sanitizeTemplates(LandscapeDescription landscapeDescription) {

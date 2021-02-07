@@ -154,7 +154,7 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-client</artifactId>
-            <version>4.11.0</version>
+            <version>4.13.0</version>
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
@@ -166,7 +166,7 @@
         <dependency>
             <groupId>com.googlecode.cqengine</groupId>
             <artifactId>cqengine</artifactId>
-            <version>3.5.0</version>
+            <version>3.6.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.xerial</groupId>
@@ -229,7 +229,7 @@
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.119</version>
+            <version>1.122</version>
         </dependency>
 
         <dependency>
