@@ -5,7 +5,6 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.GroupFactory;
-import de.bonndan.nivio.model.GroupedBy;
 import de.bonndan.nivio.model.Landscape;
 import org.springframework.util.StringUtils;
 
@@ -31,7 +30,7 @@ public class GroupProcessor extends Processor {
         List<Function<String, Boolean>> specs = getSpecs(input.getConfig().getGroupBlacklist());
 
         input.getGroups().forEach((identifier, groupDescription) -> {
-            Group g = getGroup(identifier, groupDescription);
+            Group g = getGroup(identifier, landscape.getIdentifier(), groupDescription);
 
             if (!isBlacklisted(g.getIdentifier(), specs)) {
                 processLog.info("Adding or updating group " + g.getIdentifier());
@@ -51,7 +50,7 @@ public class GroupProcessor extends Processor {
 
             if (!isBlacklisted(group, specs)) {
                 if (!landscape.getGroups().containsKey(group)) {
-                    landscape.addGroup(getGroup(group, null));
+                    landscape.addGroup(getGroup(group, landscape.getIdentifier(), null));
                 }
             } else {
                 processLog.info("Removing item " + item.getIdentifier() + " because in blacklisted group " + group);
@@ -77,10 +76,8 @@ public class GroupProcessor extends Processor {
         return specs.stream().anyMatch(spec -> spec.apply(group));
     }
 
-    private Group getGroup(String identifier, GroupDescription groupItem) {
-        Group g = new Group(identifier);
-        GroupFactory.mergeWithGroupDescription(g, groupItem);
-        return g;
+    private Group getGroup(String identifier, String landscapeIdentifier, GroupDescription groupItem) {
+        return GroupFactory.mergeWithGroupDescription(new Group(identifier, landscapeIdentifier), groupItem);
     }
 
 }

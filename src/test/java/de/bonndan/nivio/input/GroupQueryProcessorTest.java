@@ -41,7 +41,7 @@ class GroupQueryProcessorTest {
 
         Item item = new Item("groupIdentifier", "itemIdentifier");
         landscape.setItems(Set.of(item));
-        landscape.addGroup(new Group("groupIdentifier"));
+        landscape.addGroup(new Group("groupIdentifier", "landscapeIdentifier"));
 
         LandscapeDescription input = new LandscapeDescription("landscapeIdentifier", "testLandscape", null);
         GroupDescription groupDescription = new GroupDescription();
@@ -60,7 +60,7 @@ class GroupQueryProcessorTest {
 
         Item item = new Item("groupIdentifier", "itemIdentifier");
         landscape.setItems(Set.of(item));
-        landscape.addGroup(new Group("groupIdentifier"));
+        landscape.addGroup(new Group("groupIdentifier", "landscapeIdentifier"));
 
         LandscapeDescription input = new LandscapeDescription("landscapeIdentifier", "testLandscape", null);
         GroupDescription groupDescription = new GroupDescription();

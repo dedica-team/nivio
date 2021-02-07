@@ -21,7 +21,7 @@ class SVGGroupAreaTest {
         Item landscapeItem = new Item("group", "landscapeItem");
         Item landscapeItem2 = new Item("group", "bar");
 
-        Group group = new Group("group");
+        Group group = new Group("group","foo");
         group.addItem(landscapeItem);
         group.addItem(landscapeItem2);
 
@@ -32,7 +32,7 @@ class SVGGroupAreaTest {
         Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
         SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(group, area, false);
 
-        assertThat(svgGroupArea.render().render()).contains("<text x=\"650.0\" y=\"1177\" text-anchor=\"middle\" class=\"groupLabel\">group</text>");
+        assertThat(svgGroupArea.render().render()).contains("<text x=\"650.0\" y=\"1177\" fill=\"#5E0F67\" text-anchor=\"middle\" class=\"groupLabel\">group</text>");
     }
 
     @Test
@@ -43,7 +43,7 @@ class SVGGroupAreaTest {
         Item landscapeItem = new Item("group", "landscapeItem");
         Item landscapeItem2 = new Item("group", "bar");
 
-        Group group = new Group("group");
+        Group group = new Group("group", "foo");
         group.addItem(landscapeItem);
         group.addItem(landscapeItem2);
 

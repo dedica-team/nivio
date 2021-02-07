@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.output.Color;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -11,6 +12,11 @@ import org.springframework.util.StringUtils;
 
 import java.util.*;
 
+/**
+ * Group is a container for {@link Item}s.
+ *
+ * Each item can only be member of one group.
+ */
 public class Group implements Labeled, Linked, Assessable {
 
     /**
@@ -24,6 +30,7 @@ public class Group implements Labeled, Linked, Assessable {
 
     @NonNull
     private final Map<String, String> labels = new HashMap<>();
+
     /**
      * Items belonging to this group. Order is important for layouting (until items are ordered there).
      */
@@ -32,18 +39,38 @@ public class Group implements Labeled, Linked, Assessable {
 
     @NonNull
     private final String identifier;
-    private String owner;
-    private String description;
-    private String contact;
-    private String icon;
-    private String color;
-    private String landscapeIdentifier;
+    private final String landscapeIdentifier;
+    private final String owner;
+    private final String description;
+    private final String contact;
+    private final String icon;
+    private final String color;
 
-    public Group(String identifier) {
+    /**
+     * @param identifier          identifier of the group, should be unique
+     * @param landscapeIdentifier identifier of the landscape, will be part of fqi
+     * @param owner               owner
+     * @param description         description
+     * @param contact             contact
+     * @param icon                icon
+     * @param color               color, usually member items inherit it
+     */
+    public Group(String identifier, String landscapeIdentifier, String owner, String description, String contact, String icon, String color) {
         if (StringUtils.isEmpty(identifier)) {
             throw new IllegalArgumentException("Group identifier must not be empty");
         }
         this.identifier = identifier;
+
+        this.landscapeIdentifier = landscapeIdentifier;
+        this.owner = owner;
+        this.description = description;
+        this.contact = contact;
+        this.icon = icon;
+        this.color = color;
+    }
+
+    public Group(String identifier, String landscapeIdentifier) {
+        this(identifier, landscapeIdentifier, null, null, null, null, Color.getGroupColor(identifier));
     }
 
     @Override
@@ -69,18 +96,10 @@ public class Group implements Labeled, Linked, Assessable {
         return owner;
     }
 
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
     @Override
     @Nullable
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @Override
@@ -89,18 +108,10 @@ public class Group implements Labeled, Linked, Assessable {
         return contact;
     }
 
-    public void setContact(String contact) {
-        this.contact = contact;
-    }
-
     @Override
     @Nullable
     public String getColor() {
         return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     @Schema(name = "_links")
@@ -163,17 +174,9 @@ public class Group implements Labeled, Linked, Assessable {
         return new ArrayList<>(getItems());
     }
 
-    public void setLandscape(String landscapeIdentifier) {
-        this.landscapeIdentifier = landscapeIdentifier;
-    }
-
     @Override
     public String getIcon() {
         return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
     }
 
     @Override
@@ -199,5 +202,9 @@ public class Group implements Labeled, Linked, Assessable {
         }
 
         throw new IllegalArgumentException(String.format("Item group '%s' cannot be added to group '%s'", item.getGroup(), identifier));
+    }
+
+    public String getLandscapeIdentifier() {
+        return landscapeIdentifier;
     }
 }

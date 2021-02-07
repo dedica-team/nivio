@@ -16,9 +16,9 @@ class AllGroupsLayoutTest {
     @Test
     public void testWithARelation() {
 
-        Group a = new Group("a");
-        Group b = new Group("b");
-        Group c = new Group("c");
+        Group a = new Group("a", null);
+        Group b = new Group("b", null);
+        Group c = new Group("c", null);
 
         Landscape landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
 
@@ -39,7 +39,7 @@ class AllGroupsLayoutTest {
         item2.getRelations().add(new Relation(item2, item3));
 
         Map<String, Group> groupMap = new LinkedHashMap<>();
-        landscape.getGroups().forEach((s, groupItem) -> groupMap.put(s, (Group)groupItem));
+        landscape.getGroups().forEach((s, groupItem) -> groupMap.put(s, (Group) groupItem));
 
         //when
         AllGroupsLayout allGroupsLayout = new AllGroupsLayout(landscape, groupMap, map);

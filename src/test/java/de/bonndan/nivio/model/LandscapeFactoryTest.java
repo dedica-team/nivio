@@ -71,7 +71,7 @@ class LandscapeFactoryTest {
                 .withName("A Test")
                 .withContact("foo")
                 .withOwner("bar")
-                .withGroups(Map.of("agroup", new Group("agroup")))
+                .withGroups(Map.of("agroup", new Group("agroup", description.getIdentifier())))
                 .withItems(Set.of(new Item("agroup", "hihi")))
                 .build();
 
@@ -107,7 +107,7 @@ class LandscapeFactoryTest {
                 .withName("A Test")
                 .withContact("foo")
                 .withOwner("bar")
-                .withGroups(Map.of("agroup", new Group("agroup")))
+                .withGroups(Map.of("agroup", new Group("agroup", description.getIdentifier())))
                 .withItems(Set.of(new Item("agroup", "hihi")))
                 .build();
 

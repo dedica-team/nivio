@@ -83,7 +83,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     ) {
         this.identifier = validateIdentifier(Objects.requireNonNull(identifier));
         this.groups = groups;
-        this.name = Objects. requireNonNull(name);
+        this.name = Objects.requireNonNull(name);
         this.contact = contact;
 
         this.owner = owner;
@@ -168,12 +168,11 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
             throw new IllegalArgumentException("Trying to add null group");
         }
 
-        group.setLandscape(this.identifier);
+
         if (groups.containsKey(group.getIdentifier())) {
-            GroupFactory.merge(groups.get(group.getIdentifier()), group);
-        } else {
-            groups.put(group.getIdentifier(), group);
+            group = GroupFactory.merge(groups.get(group.getIdentifier()), group);
         }
+        groups.put(group.getIdentifier(), group);
     }
 
     /**

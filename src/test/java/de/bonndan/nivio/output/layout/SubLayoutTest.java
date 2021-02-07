@@ -17,7 +17,7 @@ class SubLayoutTest {
     public void testWithARelation() {
 
         //given
-        Group foo = new Group("foo");
+        Group foo = new Group("foo", "landscapeIdentifier");
 
         Item bar = new Item(foo.getIdentifier(), "bar");;
         foo.addItem(bar);

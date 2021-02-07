@@ -32,16 +32,9 @@ public class AppearanceProcessor extends Processor {
         logo.ifPresent(s -> setLandscapeLogo(landscape, s));
 
         landscape.getGroupItems().forEach(groupItem -> {
-            setItemAppearance(groupItem);
             groupItem.getItems().forEach(item -> setItemAppearance(item, groupItem));
         });
 
-    }
-
-    private void setItemAppearance(Group group) {
-        if (StringUtils.isEmpty(group.getColor())) {
-            group.setColor(Color.getGroupColor(group));
-        }
     }
 
     private void setItemAppearance(Item item, Group group) {

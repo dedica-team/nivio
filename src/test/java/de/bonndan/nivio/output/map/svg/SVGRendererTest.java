@@ -5,7 +5,6 @@ import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.Test;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,7 +46,7 @@ class SVGRendererTest {
         LayoutedComponent lc = new LayoutedComponent(foo);
         lc.setChildren(new ArrayList<>());
 
-        Group group = new Group("bar");
+        Group group = new Group("bar", "landscapeIdentifier");
         foo.addGroup(group);
 
         LayoutedComponent glc = new LayoutedComponent(group);

@@ -111,7 +111,7 @@ class AssessableTest {
         item2.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.RED.getName());
         item2.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
 
-        Group foo = new Group("foo");
+        Group foo = new Group("foo", "landscapeIdentifier");
         foo.addItem(item);
         foo.addItem(item2);
 

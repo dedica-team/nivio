@@ -30,7 +30,7 @@ class AppearanceProcessorTest {
 
         landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
-        Group g1 = new Group("g1");
+        Group g1 = new Group("g1", "landscapeIdentifier");
         landscape.addGroup(g1);
         List<Item> items = new ArrayList<>();
 

@@ -44,7 +44,7 @@ public class LandscapeFactory {
 
     private static Map<String, Group> getGroups() {
         Map<String, Group> groups = new HashMap<>();
-        groups.put(Group.COMMON, new Group(Group.COMMON));
+        groups.put(Group.COMMON, new Group(Group.COMMON, ""));
         return groups;
     }
 
@@ -62,7 +62,7 @@ public class LandscapeFactory {
         return LandscapeBuilder.aLandscape()
                 .withIdentifier(identifier)
                 .withName(name)
-                .withGroups(new HashMap<>(Map.of(Group.COMMON, new Group(Group.COMMON))));
+                .withGroups(new HashMap<>(Map.of(Group.COMMON, new Group(Group.COMMON, identifier))));
     }
 
     /**

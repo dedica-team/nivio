@@ -26,8 +26,7 @@ class SVGGroupAreaOutlineFactoryTest {
         Item item1 = new Item("foo", "bar");
         Item item2 = new Item("foo", "baz");
 
-        Group foo = new Group("foo");
-        foo.setColor("005500");
+        Group foo = new Group("foo", "landscapeIdentifier", null, null, null, null, "005500");
         foo.addItem(item1);
         foo.addItem(item2);
 

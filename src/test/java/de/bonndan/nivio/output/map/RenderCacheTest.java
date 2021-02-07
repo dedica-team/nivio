@@ -4,7 +4,6 @@ import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.AppearanceProcessor;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
@@ -95,7 +94,7 @@ class RenderCacheTest {
         landscape.setItems(Set.of(item));
         landscape.setItems(Collections.singleton(item));
 
-        Group bar = new Group("bar");
+        Group bar = new Group("bar", identifier);
         bar.addItem(item);
         landscape.getGroups().put("bar", bar);
 
