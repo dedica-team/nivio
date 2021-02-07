@@ -49,9 +49,7 @@ class GroupAreaFactoryTest {
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item target = getTestItem("group", "target");
 
-        Group group = new Group("group", "landscapeIdentifier");
-        group.addItem(landscapeItem);
-        group.addItem(target);
+        Group group = new Group("group", "landscapeIdentifier", Set.of(landscapeItem, target));
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
         hexesToItems.put(one, landscapeItem);
@@ -77,8 +75,7 @@ class GroupAreaFactoryTest {
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item target = getTestItem("group", "target");
 
-        Group group = new Group("group", "landscapeIdentifier");
-        group.addItem(landscapeItem);
+        Group group = new Group("group", "landscapeIdentifier", Set.of(landscapeItem));
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
         hexesToItems.put(one, landscapeItem);
@@ -100,8 +97,7 @@ class GroupAreaFactoryTest {
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item target = getTestItem("group", "target");
 
-        Group group = new Group("group", "landscapeIdentifier");
-        group.addItem(landscapeItem);
+        Group group = new Group("group", "landscapeIdentifier", Set.of(landscapeItem));
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
         hexesToItems.put(one, landscapeItem);
@@ -123,9 +119,7 @@ class GroupAreaFactoryTest {
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item target = getTestItem("group", "target");
 
-        Group group = new Group("group", "landscapeIdentifier");
-        group.addItem(landscapeItem);
-        group.addItem(target);
+        Group group = new Group("group", "landscapeIdentifier", Set.of(landscapeItem, target));
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
         hexesToItems.put(one, landscapeItem);
@@ -147,8 +141,7 @@ class GroupAreaFactoryTest {
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item target = getTestItem("group", "target");
 
-        Group group = new Group("group", "landscapeIdentifier");
-        group.addItem(landscapeItem);
+        Group group = new Group("group", "landscapeIdentifier", Set.of(landscapeItem));
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
         hexesToItems.put(one, landscapeItem);

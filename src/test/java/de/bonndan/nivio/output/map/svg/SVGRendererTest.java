@@ -6,6 +6,7 @@ import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,7 +48,7 @@ class SVGRendererTest {
         LayoutedComponent lc = new LayoutedComponent(foo);
         lc.setChildren(new ArrayList<>());
 
-        Group group = new Group("bar", "landscapeIdentifier");
+        Group group = new Group("bar", "landscapeIdentifier", Collections.emptySet());
         foo.addGroup(group);
 
         LayoutedComponent glc = new LayoutedComponent(group);

@@ -14,7 +14,7 @@ public class GroupQueryResolver extends Resolver {
     @Override
     public void resolve(LandscapeDescription input) {
         
-        input.getGroups().forEach((s, group) -> {
+        input.getGroupDescriptions().forEach((s, group) -> {
             // run the query against all landscape items which match the condition
             group.getContains().forEach(condition -> input.getItemDescriptions().query(condition)
                     .forEach(itemDescription -> itemDescription.setGroup(group.getIdentifier())));

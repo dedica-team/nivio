@@ -251,7 +251,7 @@ class LandscapeDescriptionFactoryTest {
         File file = new File(FILE_PATH_GROUPS);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
 
-        Map<String, GroupDescription> groups = landscapeDescription.getGroups();
+        Map<String, GroupDescription> groups = landscapeDescription.getGroupDescriptions();
         assertNotNull(groups);
         assertEquals(2, groups.size());
         GroupDescription groupDescription = groups.get("groupA");
@@ -269,7 +269,7 @@ class LandscapeDescriptionFactoryTest {
         File file = new File(FILE_PATH_GROUPS);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
 
-        Map<String, GroupDescription> groups = landscapeDescription.getGroups();
+        Map<String, GroupDescription> groups = landscapeDescription.getGroupDescriptions();
         assertNotNull(groups);
         assertEquals(2, groups.size());
         GroupDescription groupDescription = groups.get("groupA");

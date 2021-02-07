@@ -3,10 +3,6 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeFactory;
-import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +15,6 @@ import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
 
 @ExtendWith(MockitoExtension.class)
 class GroupQueryResolverTest {
@@ -39,7 +34,7 @@ class GroupQueryResolverTest {
         groupDescription = new GroupDescription();
         groupDescription.setIdentifier("groupIdentifier");
 
-        input.getGroups().put("group", groupDescription);
+        input.getGroupDescriptions().put("group", groupDescription);
 
     }
 

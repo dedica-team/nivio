@@ -5,6 +5,7 @@ import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +24,7 @@ class SVGBackgroundFactoryTest {
     @Test
     void getBackgroundTiles() {
 
-        Group g = new Group("a", "landscapeIdentifier");
+        Group g = new Group("a", "landscapeIdentifier", Collections.emptySet());
         Set<Hex> hexes = Set.of(new Hex(-3, -3), new Hex(10, 10));
         SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of());
         SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(svgGroupArea));

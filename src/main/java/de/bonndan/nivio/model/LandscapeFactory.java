@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ public class LandscapeFactory {
 
     private static Map<String, Group> getGroups() {
         Map<String, Group> groups = new HashMap<>();
-        groups.put(Group.COMMON, new Group(Group.COMMON, ""));
+        groups.put(Group.COMMON, new Group(Group.COMMON, "", Collections.emptySet()));
         return groups;
     }
 
@@ -62,7 +63,10 @@ public class LandscapeFactory {
         return LandscapeBuilder.aLandscape()
                 .withIdentifier(identifier)
                 .withName(name)
-                .withGroups(new HashMap<>(Map.of(Group.COMMON, new Group(Group.COMMON, identifier))));
+                .withGroups(new HashMap<>(Map.of(
+                        Group.COMMON,
+                        new Group(Group.COMMON, identifier, Collections.emptySet()))
+                ));
     }
 
     /**

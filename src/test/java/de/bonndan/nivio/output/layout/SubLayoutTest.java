@@ -7,6 +7,7 @@ import de.bonndan.nivio.model.Relation;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,14 +19,11 @@ class SubLayoutTest {
     public void testWithARelation() {
 
         //given
-        Group foo = new Group("foo", "landscapeIdentifier");
-
-        Item bar = getTestItem(foo.getIdentifier(), "bar");;
-        foo.addItem(bar);
-
-        Item baz = getTestItem(foo.getIdentifier(), "baz");
-        foo.addItem(baz);
+        Item bar = getTestItem("foo", "bar");
+        Item baz = getTestItem("foo", "baz");
         baz.getRelations().add(new Relation(baz, bar));
+
+        Group foo = new Group("foo", "landscapeIdentifier", Set.of(bar, baz));
 
         HashSet<Item> objects = new HashSet<>();
         objects.add(bar);

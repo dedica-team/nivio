@@ -4,15 +4,16 @@ import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
+import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GroupProcessorTest {
 
@@ -43,7 +44,7 @@ class GroupProcessorTest {
 
         ItemDescription item = new ItemDescription();
         item.setIdentifier("abc");
-        input.addItems(Arrays.asList(item));
+        input.addItems(Collections.singletonList(item));
 
         groupProcessor.process(input, landscape);
 
@@ -92,8 +93,8 @@ class GroupProcessorTest {
 
     private LandscapeDescription getLandscapeDescription() {
         LandscapeDescription input = new LandscapeDescription("test", "testLandscape", null);
-        input.getGroups().put("test1", new GroupDescription());
-        input.getGroups().put("test2", new GroupDescription());
+        input.getGroupDescriptions().put("test1", new GroupDescription());
+        input.getGroupDescriptions().put("test2", new GroupDescription());
         return input;
     }
 }

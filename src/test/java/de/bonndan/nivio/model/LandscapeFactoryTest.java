@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,7 +73,7 @@ class LandscapeFactoryTest {
                 .withName("A Test")
                 .withContact("foo")
                 .withOwner("bar")
-                .withGroups(Map.of("agroup", new Group("agroup", description.getIdentifier())))
+                .withGroups(Map.of("agroup", new Group("agroup", description.getIdentifier(), Collections.emptySet())))
                 .withItems(Set.of(getTestItem("agroup", "hihi")))
                 .build();
 
@@ -108,7 +109,7 @@ class LandscapeFactoryTest {
                 .withName("A Test")
                 .withContact("foo")
                 .withOwner("bar")
-                .withGroups(Map.of("agroup", new Group("agroup", description.getIdentifier())))
+                .withGroups(Map.of("agroup", new Group("agroup", description.getIdentifier(), Collections.emptySet())))
                 .withItems(Set.of(getTestItem("agroup", "hihi")))
                 .build();
 

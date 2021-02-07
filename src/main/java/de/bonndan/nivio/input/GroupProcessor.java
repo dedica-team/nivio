@@ -2,14 +2,13 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.GroupFactory;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.*;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -25,45 +24,44 @@ public class GroupProcessor extends Processor {
         super(processLog);
     }
 
-    public void process(LandscapeDescription input, Landscape landscape) {
+    public void process(LandscapeDescription landscapeDescription, Landscape landscape) {
+        List<Function<String, Boolean>> specs = getSpecs(landscapeDescription.getConfig().getGroupBlacklist());
 
-        List<Function<String, Boolean>> specs = getSpecs(input.getConfig().getGroupBlacklist());
+        landscapeDescription.getGroupDescriptions().forEach((groupIdentifier, groupDescription) -> {
 
-        input.getGroups().forEach((identifier, groupDescription) -> {
-            Group g = GroupFactory.createFromDescription(identifier, landscape.getIdentifier(), groupDescription);
-
-            if (!isBlacklisted(g.getIdentifier(), specs)) {
-                processLog.info("Adding or updating group " + g.getIdentifier());
-                landscape.addGroup(g);
+            if (isNotBlacklisted(groupIdentifier, specs)) {
+                processLog.info("Adding or updating group " + groupIdentifier);
+                Set<Item> items = landscape.getItems().all().stream()
+                        .filter(item -> item.getGroup().equals(groupIdentifier))
+                        .collect(Collectors.toUnmodifiableSet());
+                landscape.addGroup(GroupFactory.createFromDescription(
+                        groupIdentifier, landscape.getIdentifier(),
+                        groupDescription, items
+                ));
             } else {
-                processLog.info("Ignoring blacklisted group " + g.getIdentifier());
-            }
+                processLog.info("Ignoring blacklisted group " + groupIdentifier);
+           }
         });
 
-        ArrayList<ItemDescription> copy = new ArrayList<>(input.getItemDescriptions().all());
-        copy.forEach(item -> {
+        ArrayList<ItemDescription> copy = new ArrayList<>(landscapeDescription.getItemDescriptions().all());
+        copy.forEach(itemDescription -> {
 
-            String group = item.getGroup();
-            if (StringUtils.isEmpty(item.getGroup())) {
-                group = Group.COMMON;
+            String groupIdentifier = itemDescription.getGroup();
+            if (StringUtils.isEmpty(itemDescription.getGroup())) {
+                groupIdentifier = Group.COMMON;
             }
 
-            if (!isBlacklisted(group, specs)) {
-                if (!landscape.getGroups().containsKey(group)) {
-                    landscape.addGroup(GroupFactory.createFromDescription(group, landscape.getIdentifier(), null));
+            if (isNotBlacklisted(groupIdentifier, specs)) {
+                if (!landscape.getGroups().containsKey(groupIdentifier)) {
+                    landscape.addGroup(GroupFactory.createFromDescription(
+                            groupIdentifier, landscape.getIdentifier(), null,
+                            Set.of(ItemFactory.fromDescription(itemDescription, landscape))
+                    ));
                 }
             } else {
-                processLog.info("Removing item " + item.getIdentifier() + " because in blacklisted group " + group);
-                input.getItemDescriptions().remove(item);
+                processLog.info("Removing item " + itemDescription.getIdentifier() + " because in blacklisted group " + groupIdentifier);
+                landscapeDescription.getItemDescriptions().remove(itemDescription);
             }
-        });
-
-        //assign each item to a group
-        landscape.getItems().all().forEach(item -> {
-            Group group = landscape.getGroup(item.getGroup()).orElseThrow(() ->
-                    new RuntimeException(String.format("item group '%s' not found.", item.getGroup()))
-            );
-            group.addItem(item);
         });
     }
 
@@ -80,8 +78,8 @@ public class GroupProcessor extends Processor {
         }).collect(Collectors.toList());
     }
 
-    private boolean isBlacklisted(String group, List<Function<String, Boolean>> specs) {
-        return specs.stream().anyMatch(spec -> spec.apply(group));
+    private boolean isNotBlacklisted(String groupIdentifier, List<Function<String, Boolean>> specs) {
+        return specs.stream().noneMatch(spec -> spec.apply(groupIdentifier));
     }
 
 }

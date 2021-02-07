@@ -7,6 +7,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.util.Objects;
+import java.util.Set;
 
 import static de.bonndan.nivio.util.SafeAssign.assignSafeIfAbsent;
 
@@ -43,19 +44,24 @@ public class GroupFactory {
 
     public static Group createFromDescription(@NonNull final String groupIdentifier,
                                               @NonNull final String landscapeIdentifier,
-                                              @Nullable final GroupDescription description
-    ) {
-        GroupBuilder builder = getBuilder(new Group(groupIdentifier, landscapeIdentifier));
+                                              @Nullable final GroupDescription description,
+                                              @NonNull Set<Item> items) {
+        GroupBuilder builder = getBuilder(new Group(
+                Objects.requireNonNull(groupIdentifier),
+                Objects.requireNonNull(landscapeIdentifier),
+                items
+        ));
+
+        builder.withItems(items);
 
         if (description != null) {
-            builder.withColor(description.getColor());
-            builder.withContact(description.getContact());
-            builder.withOwner(description.getOwner());
-            builder.withDescription(description.getDescription());
+            builder.withColor(description.getColor())
+                    .withContact(description.getContact())
+                    .withOwner(description.getOwner())
+                    .withDescription(description.getDescription());
             description.getLinks().forEach((s, url) -> builder.getLinks().putIfAbsent(s, url));
             description.getLabels().forEach((s, val) -> builder.getLabels().putIfAbsent(s, val));
         }
-
 
         if (StringUtils.isEmpty(builder.getColor())) {
             builder.withColor(Color.getGroupColor(builder.getIdentifier()));

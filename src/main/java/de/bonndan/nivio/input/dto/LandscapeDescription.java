@@ -209,7 +209,7 @@ public class LandscapeDescription implements ComponentDescription {
         return config;
     }
 
-    public Map<String, GroupDescription> getGroups() {
+    public Map<String, GroupDescription> getGroupDescriptions() {
         return groups;
     }
 

@@ -22,9 +22,7 @@ class SVGGroupAreaTest {
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item landscapeItem2 = getTestItem("group", "bar");
 
-        Group group = new Group("group","foo");
-        group.addItem(landscapeItem);
-        group.addItem(landscapeItem2);
+        Group group = new Group("group","foo", Set.of(landscapeItem, landscapeItem2));
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
         hexesToItems.put(e1, landscapeItem);
@@ -44,9 +42,7 @@ class SVGGroupAreaTest {
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item landscapeItem2 = getTestItem("group", "bar");
 
-        Group group = new Group("group", "foo");
-        group.addItem(landscapeItem);
-        group.addItem(landscapeItem2);
+        Group group = new Group("group", "foo", Set.of(landscapeItem, landscapeItem2));
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
         hexesToItems.put(e1, landscapeItem);

@@ -36,7 +36,7 @@ public class LinksResolver extends Resolver {
     @Override
     public void resolve(LandscapeDescription input) {
         List<CompletableFuture<ComponentDescription>> completableFutures = resolveLinks(input);
-        input.getGroups().forEach((s, groupItem) -> resolveLinks(groupItem));
+        input.getGroupDescriptions().forEach((s, groupItem) -> resolveLinks(groupItem));
         input.getItemDescriptions().all().forEach(item -> completableFutures.addAll(resolveLinks(item)));
 
         try {

@@ -2,6 +2,8 @@ package de.bonndan.nivio.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,9 +12,9 @@ public class GroupFactoryTest {
 
     @Test
     public void testMerge() {
-        Group one = new Group("a", null, "Joe", "a", null, null, "#123123");
+        Group one = new Group("a", null, "Joe", "a", null, null, "#123123", Collections.emptySet());
 
-        Group two = new Group("a", null, "Matt", null, "mail", null, null);
+        Group two = new Group("a", null, "Matt", null, "mail", null, null, Collections.emptySet());
 
         Group merged = GroupFactory.merge(one, two);
 
@@ -24,7 +26,7 @@ public class GroupFactoryTest {
 
     @Test
     public void usesExistingValues() {
-        Group in = new Group("a", "foo", "Matt", "abc", "mail", "one", "00ffee");
+        Group in = new Group("a", "foo", "Matt", "abc", "mail", "one", "00ffee", Collections.emptySet());
 
         Group merge = GroupFactory.merge(in, null);
         assertThat(merge).isNotNull();
@@ -39,8 +41,8 @@ public class GroupFactoryTest {
 
     @Test
     public void mergeSetsDefaultColor() {
-        Group one = new Group("a", null, "Matt", null, "mail", null, null);
-        Group two = new Group("a", null, "Matt", null, "mail", null, null);
+        Group one = new Group("a", null, "Matt", null, "mail", null, null, Collections.emptySet());
+        Group two = new Group("a", null, "Matt", null, "mail", null, null, Collections.emptySet());
 
         Group merge = GroupFactory.merge(one, two);
         assertThat(merge).isNotNull();

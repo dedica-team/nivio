@@ -1,7 +1,9 @@
 package de.bonndan.nivio.model;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 final class GroupBuilder {
     private Map<String, Link> links = new HashMap<>();
@@ -13,6 +15,7 @@ final class GroupBuilder {
     private String icon;
     private String color;
     private Map<String, String> labels = new HashMap<>();
+    private Set<Item> items = new HashSet<>();
 
     private GroupBuilder() {
     }
@@ -66,8 +69,14 @@ final class GroupBuilder {
         return this;
     }
 
+
+    public GroupBuilder withItems(Set<Item> items) {
+        this.items = items;
+        return this;
+    }
+
     public Group build() {
-        Group group = new Group(identifier, landscapeIdentifier, owner, description, contact, icon, color);
+        Group group = new Group(identifier, landscapeIdentifier, owner, description, contact, icon, color, items);
         group.setLinks(links);
         group.getLabels().putAll(labels);
         return group;
@@ -88,4 +97,5 @@ final class GroupBuilder {
     public Map<String, String> getLabels() {
         return labels;
     }
+
 }

@@ -17,25 +17,25 @@ class AllGroupsLayoutTest {
     @Test
     public void testWithARelation() {
 
-        Group a = new Group("a", null);
-        Group b = new Group("b", null);
-        Group c = new Group("c", null);
+        Group groupA = new Group("a", null, getTestItems("a"));
+        Group groupB = new Group("b", null, getTestItems("b"));
+        Group groupC = new Group("c", null, getTestItems("c"));
 
         Landscape landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
 
-        landscape.getGroups().put("a", a);
-        landscape.getGroups().put("b", b);
-        landscape.getGroups().put("c", c);
+        landscape.getGroups().put("a", groupA);
+        landscape.getGroups().put("b", groupB);
+        landscape.getGroups().put("c", groupC);
 
-        Map<String, SubLayout> map = Map.of("a", getSubLayout(a),
-                "b", getSubLayout(b),
-                "c", getSubLayout(c)
+        Map<String, SubLayout> map = Map.of("a", getSubLayout(groupA),
+                "b", getSubLayout(groupB),
+                "c", getSubLayout(groupC)
         );
 
         //add some inter-group relations
-        Item item1 = a.getItems().iterator().next();
-        Item item2 = b.getItems().iterator().next();
-        Item item3 = c.getItems().iterator().next();
+        Item item1 = groupA.getItems().iterator().next();
+        Item item2 = groupB.getItems().iterator().next();
+        Item item3 = groupC.getItems().iterator().next();
         item1.getRelations().add(new Relation(item1, item2));
         item2.getRelations().add(new Relation(item2, item3));
 
@@ -58,14 +58,14 @@ class AllGroupsLayoutTest {
     }
 
     private SubLayout getSubLayout(Group group) {
-
-        Item bar = getTestItem(group.getIdentifier(), "bar" + group.getIdentifier());
-        group.addItem(bar);
-
-        Item baz = getTestItem(group.getIdentifier(), "baz" + group.getIdentifier());
-        group.addItem(baz);
-        baz.getRelations().add(new Relation(baz, bar));
-
-        return new SubLayout(group, Set.of(bar, baz), new LandscapeConfig.LayoutConfig());
+        return new SubLayout(group, group.getItems(), new LandscapeConfig.LayoutConfig());
     }
+
+    private Set<Item> getTestItems(String groupIdentifier) {
+        Item bar = getTestItem(groupIdentifier, "bar" + groupIdentifier);
+        Item baz = getTestItem(groupIdentifier, "baz" + groupIdentifier);
+        baz.getRelations().add(new Relation(baz, bar));
+        return Set.of(bar, baz);
+    }
+
 }

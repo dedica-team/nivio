@@ -79,7 +79,7 @@ class OrganicLayouterTest extends RenderingTest {
             GroupDescription gd = new GroupDescription();
             String groupIdentifier = "group" + g;
             gd.setIdentifier(groupIdentifier);
-            input.getGroups().put(groupIdentifier, gd);
+            input.getGroupDescriptions().put(groupIdentifier, gd);
             while (i < max) {
                 ItemDescription itemDescription = new ItemDescription();
                 itemDescription.setIdentifier(groupIdentifier + "_item_" + i);
@@ -110,7 +110,7 @@ class OrganicLayouterTest extends RenderingTest {
             GroupDescription gd = new GroupDescription();
             String groupIdentifier = "group" + g;
             gd.setIdentifier(groupIdentifier);
-            input.getGroups().put(groupIdentifier, gd);
+            input.getGroupDescriptions().put(groupIdentifier, gd);
             while (i < max) {
                 ItemDescription itemDescription = new ItemDescription();
                 itemDescription.setIdentifier(groupIdentifier + "_item_" + i);

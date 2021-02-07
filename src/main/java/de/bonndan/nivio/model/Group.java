@@ -35,7 +35,7 @@ public class Group implements Labeled, Linked, Assessable {
      * Items belonging to this group. Order is important for layouting (until items are ordered there).
      */
     @NonNull
-    private final Set<Item> items = new LinkedHashSet<>();
+    private final Set<Item> items;
 
     @NonNull
     private final String identifier;
@@ -55,7 +55,8 @@ public class Group implements Labeled, Linked, Assessable {
      * @param icon                icon
      * @param color               color, usually member items inherit it
      */
-    public Group(String identifier, String landscapeIdentifier, String owner, String description, String contact, String icon, String color) {
+    public Group(String identifier, String landscapeIdentifier, String owner, String description, String contact,
+                 String icon, String color, Set<Item> items) {
         if (StringUtils.isEmpty(identifier)) {
             throw new IllegalArgumentException("Group identifier must not be empty");
         }
@@ -67,10 +68,12 @@ public class Group implements Labeled, Linked, Assessable {
         this.contact = contact;
         this.icon = icon;
         this.color = color;
+        this.items = Collections.unmodifiableSet(items);
     }
 
-    public Group(String identifier, String landscapeIdentifier) {
-        this(identifier, landscapeIdentifier, null, null, null, null, Color.getGroupColor(identifier));
+    public Group(String identifier, String landscapeIdentifier, Set<Item> items) {
+        this(identifier, landscapeIdentifier, null, null, null, null,
+                Color.getGroupColor(identifier), items);
     }
 
     @Override
@@ -125,7 +128,7 @@ public class Group implements Labeled, Linked, Assessable {
      * @return immutable copy
      */
     public Set<Item> getItems() {
-        return Collections.unmodifiableSet(items);
+        return items;
     }
 
     @JsonIgnore
@@ -184,20 +187,6 @@ public class Group implements Labeled, Linked, Assessable {
         return "Group{" +
                 "identifier='" + identifier + '\'' +
                 '}';
-    }
-
-    /**
-     * Adds an item to this group.
-     *
-     * @param item the item to add.
-     * @throws IllegalArgumentException if the item group field mismatches
-     */
-    public void addItem(Item item) {
-        if (!item.getGroup().equals(identifier)) {
-            throw new IllegalArgumentException(String.format("Item group '%s' cannot be added to group '%s'", item.getGroup(), identifier));
-        }
-
-        items.add(item);
     }
 
     public String getLandscapeIdentifier() {

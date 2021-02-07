@@ -4,6 +4,7 @@ import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.output.map.hex.Hex;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -15,7 +16,7 @@ class SVGDimensionFactoryTest {
     void boundingBoxes() {
 
         //given
-        Group g = new Group("a", "landscapeIdentifier");
+        Group g = new Group("a", "landscapeIdentifier", Collections.emptySet());
         Hex one = new Hex(-3, -3);
         Hex two = new Hex(10, 10);
         Set<Hex> hexes = Set.of(one, two); //usually would be much more, but here it is sufficient

@@ -27,9 +27,8 @@ class SVGGroupAreaOutlineFactoryTest {
         Item item1 = getTestItem("foo", "bar");
         Item item2 = getTestItem("foo", "baz");
 
-        Group foo = new Group("foo", "landscapeIdentifier", null, null, null, null, "005500");
-        foo.addItem(item1);
-        foo.addItem(item2);
+        Group foo = new Group("foo", "landscapeIdentifier", null, null, null,
+                null, "005500", Set.of(item1, item2));
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
         hexesToItems.put(e1, item1);

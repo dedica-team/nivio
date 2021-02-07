@@ -5,11 +5,7 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.external.ExternalLinkHandler;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Link;
-import org.gitlab4j.api.GitLabApiException;
-import org.gitlab4j.api.models.Project;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,12 +13,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static de.bonndan.nivio.input.external.LinkHandlerFactory.GITHUB;
 import static java.util.Optional.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -40,7 +34,7 @@ class LinksResolverTest {
 
         landscapeDescription = new LandscapeDescription("foo", "foo", null);
         aGroup = new GroupDescription();
-        landscapeDescription.getGroups().put("foo", aGroup);
+        landscapeDescription.getGroupDescriptions().put("foo", aGroup);
     }
 
     @Test

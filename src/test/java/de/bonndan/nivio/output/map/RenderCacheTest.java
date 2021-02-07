@@ -95,8 +95,7 @@ class RenderCacheTest {
         landscape.setItems(Set.of(item));
         landscape.setItems(Collections.singleton(item));
 
-        Group bar = new Group("bar", identifier);
-        bar.addItem(item);
+        Group bar = new Group("bar", identifier, Set.of(item));
         landscape.getGroups().put("bar", bar);
 
         new AppearanceProcessor(landscape.getLog(), mock(IconService.class)).process(null, landscape);
