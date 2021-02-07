@@ -61,6 +61,10 @@ public class Color {
             return Color.DARKGRAY;
         }
         return Optional.ofNullable(group.getColor())
-                .orElse(Color.nameToRGB(group.getIdentifier(), Color.DARKGRAY));
+                .orElse(getGroupColor(group.getIdentifier()));
+    }
+
+    public static String getGroupColor(String groupIdentifier) {
+        return Color.nameToRGB(groupIdentifier, Color.DARKGRAY);
     }
 }

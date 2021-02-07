@@ -30,9 +30,9 @@ public class SubLayout {
     private final FastOrganicLayout layout;
     private final Component parent;
 
-    public SubLayout(Component parent, Set<Item> items, LandscapeConfig.LayoutConfig itemLayoutConfig) {
-        String name = parent.getName();
-        this.parent = parent;
+    public SubLayout(Component group, Set<Item> items, LandscapeConfig.LayoutConfig itemLayoutConfig) {
+        String name = group.getName();
+        this.parent = group;
 
         List<LayoutedComponent> list = new ArrayList<>();
         items.forEach(item -> {
@@ -53,7 +53,9 @@ public class SubLayout {
                 }
 
             });
-            list.add(new LayoutedComponent(item, relationTargets));
+            LayoutedComponent e = new LayoutedComponent(item, relationTargets);
+            e.setDefaultColor(group.getColor());
+            list.add(e);
         });
 
 

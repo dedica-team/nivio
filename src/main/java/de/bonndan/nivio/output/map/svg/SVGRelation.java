@@ -25,13 +25,15 @@ class SVGRelation extends Component {
     private final Relation relation;
 
     /**
-     * @param hexPath the calculated best path
-     * @param fill color
+     * @param hexPath  the calculated best path
+     * @param fill     color
      * @param relation graph edge, source is the item this relation belongs to
      */
     SVGRelation(@NonNull HexPath hexPath, @NonNull String fill, @NonNull Relation relation) {
         this.hexPath = hexPath;
-        Objects.requireNonNull(fill);
+        if (StringUtils.isEmpty(fill)) {
+            throw new RuntimeException("Fill color cannot be empty.");
+        }
         this.fill = fill;
         this.relation = relation;
     }

@@ -2,7 +2,7 @@ package de.bonndan.nivio.search;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.search.ItemMatcher;
+import de.bonndan.nivio.model.Group;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,6 +61,16 @@ public class ItemMatcherTest {
         var fqiNoGroup = ItemMatcher.build(null, null, "d1");
         assertTrue(fqiNoGroup.isSimilarTo(desc1.getFullyQualifiedIdentifier()));
         assertTrue(fqiNoGroup.isSimilarTo(otherGroup.getFullyQualifiedIdentifier()));
+    }
+
+    @Test
+    public void testEqualsWithCommonGroupAndNoGroup() {
+        var fqi1 = ItemMatcher.build(null, Group.COMMON, "d1");
+
+        ItemDescription desc1 = new ItemDescription();
+        desc1.setIdentifier("d1");
+        desc1.setGroup(null);
+        assertTrue(fqi1.isSimilarTo(desc1.getFullyQualifiedIdentifier()));
     }
 
     @Test

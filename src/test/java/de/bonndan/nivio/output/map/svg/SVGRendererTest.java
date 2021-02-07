@@ -1,15 +1,13 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
-import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.Test;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -18,7 +16,7 @@ import static org.mockito.Mockito.when;
 class SVGRendererTest {
 
     @Test
-    void testRendering() throws MalformedURLException {
+    void testRendering() {
 
         //given
         IconService iconService = mock(IconService.class);
@@ -44,12 +42,12 @@ class SVGRendererTest {
     }
 
     private LayoutedComponent getLayoutedLandscape() {
-        Landscape foo = LandscapeFactory.create("foo");
+        Landscape foo = LandscapeFactory.createForTesting("foo", "fooLandscape").build();
 
         LayoutedComponent lc = new LayoutedComponent(foo);
         lc.setChildren(new ArrayList<>());
 
-        Group group = new Group("bar");
+        Group group = new Group("bar", "landscapeIdentifier");
         foo.addGroup(group);
 
         LayoutedComponent glc = new LayoutedComponent(group);
@@ -61,7 +59,7 @@ class SVGRendererTest {
 
         lc.getChildren().add(glc);
 
-        Item baz = new Item(null,"baz");
+        Item baz = getTestItem("bar","baz");
 
         LayoutedComponent ilc = new LayoutedComponent(baz);
         glc.setWidth(50);

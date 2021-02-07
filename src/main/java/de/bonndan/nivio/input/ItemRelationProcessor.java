@@ -1,10 +1,12 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.search.ItemMatcher;
 
 import java.util.Iterator;
+import java.util.Optional;
 
 /**
  * Creates {@link Relation}s between {@link Item}s.
@@ -25,54 +27,58 @@ public class ItemRelationProcessor extends Processor {
             }
         });
 
-        input.getItemDescriptions().all().forEach(description -> {
-            Item origin = landscape.getItems().pick(description);
-            description.getRelations().forEach(relationDescription -> {
+        input.getItemDescriptions().all().forEach(itemDescription -> {
+            Item origin = landscape.getItems().pick(itemDescription);
 
-                var fqiSource = ItemMatcher.forTarget(relationDescription.getSource());
-                var fqiTarget = ItemMatcher.forTarget(relationDescription.getTarget());
-                Item source = landscape.getItems().find(fqiSource).orElse(null);
-                if (source == null) {
-                    processLog.warn(String.format("Relation source %s not found", relationDescription.getSource()));
-                    return;
-                }
-                Item target = landscape.getItems().find(fqiTarget).orElse(null);
-
-                if (target == null) {
-                    processLog.warn(String.format("Relation target %s not found", relationDescription.getTarget()));
-                    return;
-                }
-
-                Iterator<Relation> iterator = origin.getRelations().iterator();
-                Relation existing = null;
-                Relation created = new Relation(source, target);
-                while (iterator.hasNext()) {
-                    existing = iterator.next();
-                    if (existing.equals(created)) {
-                        processLog.info(String.format("Updating relation between %s and %s", existing.getSource(), existing.getTarget()));
-                        existing.setDescription(relationDescription.getDescription());
-                        existing.setFormat(relationDescription.getFormat());
-                        break;
+            for (RelationDescription relationDescription : itemDescription.getRelations()) {
+                Optional<Relation> update = update(relationDescription, landscape, origin);
+                update.ifPresent(relation -> {
+                    origin.getRelations().add(relation);
+                    if (relation.getSource() == origin) {
+                        relation.getTarget().getRelations().add(relation);
+                    } else {
+                        relation.getSource().getRelations().add(relation);
                     }
-                    existing = null; //no break: no hit, will be created below
-                }
-
-                if (existing == null) {
-                    created.setDescription(relationDescription.getDescription());
-                    created.setFormat(relationDescription.getFormat());
-                    created.setType(relationDescription.getType());
-
-                    origin.getRelations().add(created);
-                    if (source == origin)
-                        target.getRelations().add(created);
-                    else
-                        source.getRelations().add(created);
-
-                    processLog.info(
-                            String.format("Adding relation %s between %s and %s", created.getType(), created.getSource(), created.getTarget())
-                    );
-                }
-            });
+                });
+            }
         });
+    }
+
+    private Optional<Relation> update(RelationDescription relationDescription, Landscape landscape, Item origin) {
+
+        var fqiSource = ItemMatcher.forTarget(relationDescription.getSource());
+        var fqiTarget = ItemMatcher.forTarget(relationDescription.getTarget());
+        Item source = landscape.getItems().find(fqiSource).orElse(null);
+        if (source == null) {
+            processLog.warn(String.format("Relation source %s not found", relationDescription.getSource()));
+            return Optional.empty();
+        }
+        Item target = landscape.getItems().find(fqiTarget).orElse(null);
+
+        if (target == null) {
+            processLog.warn(String.format("Relation target %s not found", relationDescription.getTarget()));
+            return Optional.empty();
+        }
+
+        Iterator<Relation> iterator = origin.getRelations().iterator();
+        Relation existing = null;
+        Relation created = new Relation(source, target);
+        while (iterator.hasNext()) {
+            existing = iterator.next();
+            if (existing.equals(created)) {
+                processLog.info(String.format("Updating relation between %s and %s", existing.getSource(), existing.getTarget()));
+                return Optional.of(RelationBuilder.update(existing, relationDescription));
+            }
+        }
+
+        created = new Relation(created.getSource(),
+                created.getTarget(),
+                relationDescription.getDescription(),
+                relationDescription.getFormat(),
+                relationDescription.getType()
+        );
+
+        processLog.info(String.format("Adding relation %s between %s and %s", created.getType(), created.getSource(), created.getTarget()));
+        return Optional.of(created);
     }
 }

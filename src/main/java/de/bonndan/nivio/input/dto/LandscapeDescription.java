@@ -1,7 +1,9 @@
 package de.bonndan.nivio.input.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.input.ItemDescriptionValues;
@@ -9,6 +11,8 @@ import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.search.ItemIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -23,17 +27,15 @@ public class LandscapeDescription implements ComponentDescription {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeDescription.class);
 
-    public static final LandscapeDescription NONE = new LandscapeDescription();
-
-    static {
-        NONE.contact = "";
-        NONE.identifier = "unknown landscape";
-    }
+    public static final LandscapeDescription NONE = new LandscapeDescription(
+            "unknown landscape", "", ""
+    );
 
     /**
      * Immutable unique identifier. Maybe use an URN.
      */
-    private String identifier;
+    @NonNull
+    private final String identifier;
 
     /**
      * Human readable name.
@@ -69,6 +71,20 @@ public class LandscapeDescription implements ComponentDescription {
     private final Map<String, Link> links = new HashMap<>();
     private Map<String, String> labels = new HashMap<>();
 
+    @JsonCreator
+    public LandscapeDescription(@NonNull String identifier) {
+        this.identifier = identifier;
+    }
+
+    @JsonCreator
+    public LandscapeDescription(@JsonProperty("identifier") @NonNull String identifier,
+                                @JsonProperty("name") @NonNull String name,
+                                @JsonProperty("contact") @Nullable String contact) {
+        this.identifier = Objects.requireNonNull(identifier);
+        this.name = Objects.requireNonNull(name);
+        this.contact = contact;
+    }
+
     public void setIsPartial(boolean isPartial) {
         this.isPartial = isPartial;
     }
@@ -80,6 +96,7 @@ public class LandscapeDescription implements ComponentDescription {
         return isPartial;
     }
 
+    @NonNull
     public String getIdentifier() {
         return identifier;
     }
@@ -88,22 +105,22 @@ public class LandscapeDescription implements ComponentDescription {
         return FullyQualifiedIdentifier.build(identifier, null, null);
     }
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
+    @NonNull
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Nullable
     public String getContact() {
         return contact;
     }
 
+    @Override
     public void setContact(String contact) {
         this.contact = contact;
     }
@@ -148,10 +165,6 @@ public class LandscapeDescription implements ComponentDescription {
     @Override
     public String getAddress() {
         return null;
-    }
-
-    public void setItemDescriptions(Set<ItemDescription> itemDescriptions) {
-        this.itemDescriptions.setItems(itemDescriptions);
     }
 
     public ItemIndex<ItemDescription> getItemDescriptions() {

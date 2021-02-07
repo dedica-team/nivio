@@ -24,7 +24,7 @@ class InstantItemResolverTest {
     @Test
     public void addsNewItems() {
 
-        landscapeDescription = new LandscapeDescription();
+        landscapeDescription = new LandscapeDescription("identifier", "name", null);
         ItemDescription a = new ItemDescription();
         a.setIdentifier("a");
         a.setGroup("a");
@@ -46,7 +46,7 @@ class InstantItemResolverTest {
     @Test
     public void addsNewItemsOnlyOnce() {
 
-        landscapeDescription = new LandscapeDescription();
+        landscapeDescription = new LandscapeDescription("identifier", "name", null);
         ItemDescription a = new ItemDescription();
         a.setIdentifier("a");
         a.setGroup("a");

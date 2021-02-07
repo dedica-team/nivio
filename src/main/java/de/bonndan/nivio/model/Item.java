@@ -31,19 +31,27 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
     @NotNull
     @JsonIgnore
     @Schema(hidden = true)
-    private Landscape landscape;
+    private final Landscape landscape;
 
-    private String name;
+    private final String name;
 
-    private String owner;
+    private final String owner;
 
-    private String contact;
+    private final String contact;
+
+    private final String description;
+
+    private final String group;
+
+    private final String color;
+
+    /**
+     * technical address
+     */
+    private URI address;
 
     private final Map<String, Link> links = new HashMap<>();
-
-    private String description;
-
-    private String group;
+    private final Map<String, String> labels = new HashMap<>();
 
     /**
      * Can be both read and modified by {@link ItemRelationProcessor}
@@ -54,21 +62,35 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
     @JsonManagedReference
     private Set<ServiceInterface> interfaces = new HashSet<>();
 
-    private Map<String, String> labels = new HashMap<>();
-    private String color;
-    private String icon;
-
-    /**
-     * technical address
-     */
-    private URI address;
-
-    public Item(String group, String identifier) {
-        this.group = group;
+    public Item(@NotNull String identifier,
+                @NotNull Landscape landscape,
+                @NotNull String group,
+                String name,
+                String owner,
+                String contact,
+                String description,
+                String color,
+                String icon,
+                URI address
+    ) {
         if (StringUtils.isEmpty(identifier)) {
             throw new RuntimeException("Identifier must not be empty");
         }
         this.identifier = identifier.toLowerCase();
+
+        this.landscape = Objects.requireNonNull(landscape, "Landscape must not be null");
+        if (StringUtils.isEmpty(group)) {
+            throw new RuntimeException("Group identifier must not be empty");
+        }
+        this.group = group;
+
+        this.name = name;
+        this.owner = owner;
+        this.contact = contact;
+        this.description = description;
+        this.color = color;
+        this.setLabel(Label.icon, icon);
+        this.address = address;
     }
 
     public String getIdentifier() {
@@ -84,16 +106,8 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         return landscape;
     }
 
-    public void setLandscape(Landscape landscape) {
-        this.landscape = landscape;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getOwner() {
@@ -102,11 +116,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
 
     @Override
     public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
+        return getLabel(Label.icon);
     }
 
     @Override
@@ -114,20 +124,8 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
     public String getContact() {
         return contact;
-    }
-
-    public void setContact(String contact) {
-        this.contact = contact;
     }
 
     @Schema(name = "_links")
@@ -135,29 +133,14 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         return links;
     }
 
+    @JsonIgnore
     public String getGroup() {
         return group;
-    }
-
-    /**
-     * Sets the group name IF not set previously.
-     *
-     * @param group name
-     */
-    void setGroup(String group) {
-        if (this.group != null && group != null && !this.group.equals(group)) {
-            throw new IllegalArgumentException(String.format("A once set item group ('%s') cannot be overwritten with ('%s').", this.group, group));
-        }
-        this.group = group;
     }
 
     @Override
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @JsonIgnore
@@ -178,10 +161,6 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
                 Labeled.withoutPrefixes(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG),
                 ","
         );
-    }
-
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
     }
 
     @JsonIgnore
@@ -211,20 +190,12 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         relations.addAll(outgoing);
     }
 
-    public void setType(String type) {
-        this.setLabel(Label.type, type);
-    }
-
     public String getType() {
         return getLabel(Label.type);
     }
 
     public String getAddress() {
         return address != null ? address.toString() : null;
-    }
-
-    public void setAddress(URI address) {
-        this.address = address;
     }
 
     /**

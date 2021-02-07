@@ -39,7 +39,7 @@ public class ItemFactoryTest {
 
     @Test
     public void testCreate() {
-        Landscape l = LandscapeFactory.create("testLandscape");
+        Landscape l = LandscapeFactory.createForTesting("testLandscape", "testLandscape").build();
 
         Item created = ItemFactory.fromDescription(landscapeItem, l);
         assertNotNull(created);
@@ -63,6 +63,6 @@ public class ItemFactoryTest {
         assertEquals(landscapeItem.getLabel(Label.costs), created.getLabel(Label.costs));
         assertEquals(landscapeItem.getLabel(Label.capability), created.getLabel(Label.capability));
         assertEquals(landscapeItem.getLabel(Label.lifecycle), created.getLabel(Label.lifecycle));
-        assertEquals(landscapeItem.getAddress(), created.getAddress().toString());
+        assertEquals(landscapeItem.getAddress(), created.getAddress());
     }
 }

@@ -40,7 +40,7 @@ public class SearchDocumentFactory {
     /**
      * Creates a new lucene document containing item fields and labels.
      *
-     * @param item the item to idnex
+     * @param item the item to index
      * @return searchable document
      */
     public static Document from(Item item) {

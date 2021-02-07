@@ -1,11 +1,9 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.util.URLHelper;
 import org.springframework.util.StringUtils;
@@ -31,24 +29,12 @@ public class AppearanceProcessor extends Processor {
         Optional<String> logo = Optional.ofNullable(landscape.getConfig().getBranding().getMapLogo());
         logo.ifPresent(s -> setLandscapeLogo(landscape, s));
 
-        landscape.getGroupItems().forEach(groupItem -> {
-            setItemAppearance(groupItem);
-            groupItem.getItems().forEach(item -> setItemAppearance(item, groupItem));
-        });
-
+        landscape.getGroupItems().forEach(groupItem -> groupItem.getItems().forEach(this::setItemAppearance));
     }
 
-    private void setItemAppearance(Group group) {
-        if (StringUtils.isEmpty(group.getColor())) {
-            group.setColor(Color.getGroupColor(group));
-        }
-    }
+    private void setItemAppearance(Item item) {
 
-    private void setItemAppearance(Item item, Group group) {
-        if (StringUtils.isEmpty(item.getColor())) {
-            item.setColor(group.getColor());
-        }
-        item.setIcon(iconService.getIconUrl(item));
+        item.setLabel(Label.icon, iconService.getIconUrl(item));
         String fill = item.getLabel(Label.fill);
         if (!StringUtils.isEmpty(fill)) {
             URLHelper.getURL(fill)
@@ -63,7 +49,7 @@ public class AppearanceProcessor extends Processor {
         }
         URLHelper.getURL(logo)
                 .flatMap(iconService::getExternalUrl)
-                .ifPresent(landscape::setIcon);
+                .ifPresent(s -> landscape.setLabel("logo", s));
     }
 
 }

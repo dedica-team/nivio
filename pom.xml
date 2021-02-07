@@ -20,6 +20,7 @@
         <maven.compiler.release>11</maven.compiler.release>
         <junit-jupiter.version>5.4.0</junit-jupiter.version>
         <mockito.version>2.24.0</mockito.version>
+        <jacoco.version>0.8.6</jacoco.version>
         <frontend-src-dir>${project.basedir}/src/main/app</frontend-src-dir>
         <node.version>v12.18.2</node.version>
         <yarnVersion>v1.22.4</yarnVersion>
@@ -214,7 +215,7 @@
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>5.3</version>
+            <version>5.0</version>
         </dependency>
 
         <!-- swagger documentation -->
@@ -272,26 +273,47 @@
                 </executions>
             </plugin>
 
+            <!-- Collect code coverage with Jacoco: https://www.baeldung.com/jacoco -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.1</version>
-                <configuration>
+                <version>2.22.2</version>
+                <!--<configuration-->
                     <!-- https://github.com/junit-team/junit5/issues/1469#issuecomment-397853653 -->
-                    <forkCount>0</forkCount>
+                    <!--forkCount>0</forkCount>
                     <reuseForks>true</reuseForks>
                     <threadCount>1</threadCount>
 
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
-                </configuration>
+                </configuration> -->
 
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-logger-api</artifactId>
-                        <version>2.21.0</version>
+                        <version>2.22.2</version>
                         <!-- to get around bug https://github.com/junit-team/junit5/issues/1367 -->
                         <optional>true</optional>
                     </dependency>

@@ -1,7 +1,7 @@
 package de.bonndan.nivio.observation;
 
-import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.StringUtils;
 
@@ -20,8 +20,9 @@ class LandscapeObserverPoolTest {
         URLObserver urlObserver2 = mock(URLObserver.class);
         when(urlObserver1.hasChange()).thenReturn(CompletableFuture.completedFuture("hello"));
         when(urlObserver2.hasChange()).thenReturn(CompletableFuture.completedFuture("world"));
-        Landscape landscape = new Landscape("test", new Group(Group.COMMON));
-        LandscapeObserverPool landscapeObserverPool = new LandscapeObserverPool(landscape, List.of(urlObserver1, urlObserver2));
+        Landscape landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
+        LandscapeObserverPool landscapeObserverPool =
+                new LandscapeObserverPool(landscape, List.of(urlObserver1, urlObserver2));
 
         //when
         ObservedChange change = landscapeObserverPool.getChange();

@@ -36,8 +36,7 @@ class StartupListenerTest {
         seed = new Seed(Optional.of("https://dedica.team"));
         startupListener = new StartupListener(factory, publisher, seed);
 
-        LandscapeDescription landscapeDescription = new LandscapeDescription();
-        landscapeDescription.setIdentifier("foo");
+        LandscapeDescription landscapeDescription = new LandscapeDescription("foo", "bar", null);
         landscapeDescription.setSource("https://dedica.team");
         when(factory.from(any(URL.class))).thenReturn(landscapeDescription);
 

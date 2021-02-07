@@ -1,25 +1,20 @@
 
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.assessment.kpi.KPIFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeFactory;
+import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.icons.IconService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 /**
  * This component is a wrapper around all the steps to examine and index an landscape input dto.
- *
- *
  */
 @Component
 public class Indexer {
-
-    private static final Logger _logger = LoggerFactory.getLogger(Indexer.class);
 
     private final LandscapeRepository landscapeRepo;
     private final InputFormatHandlerFactory formatFactory;
@@ -44,46 +39,35 @@ public class Indexer {
      * Indexes the given input and creates a landscape or updates an existing one.
      *
      * @param input dto
-     * @return the log of the operation
+     * @return the new landscape object (replaced or created)
      */
-    public ProcessLog index(final LandscapeDescription input) {
+    public Landscape index(final LandscapeDescription input) {
 
-        ProcessLog logger = new ProcessLog(_logger);
-
-        Landscape landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier()).orElseGet(() -> {
-            logger.info("Creating new landscape " + input.getIdentifier());
-            Landscape landscape1 = LandscapeFactory.create(input);
-            landscapeRepo.save(landscape1);
-            return landscape1;
-        });
-        LandscapeFactory.assignAll(input, landscape);
-        logger.setLandscape(landscape);
-        if (landscape.getLog() == null) {
-            landscape.setProcessLog(logger);
-        }
+        Landscape landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier())
+                .map(landscape1 -> LandscapeFactory.recreate(landscape1, input))
+                .orElseGet(() -> {
+                    Landscape created = LandscapeFactory.createFromInput(input);
+                    landscapeRepo.save(created);
+                    return created;
+                });
 
         try {
             runResolvers(input, landscape);
             landscapeRepo.save(landscape);
         } catch (ProcessingException e) {
             final String msg = "Error while reindexing landscape " + input.getIdentifier();
-            logger.warn(msg, e);
+            landscape.getLog().warn(msg, e);
             eventPublisher.publishEvent(new ProcessingErrorEvent(this, e));
         }
 
         eventPublisher.publishEvent(new ProcessingFinishedEvent(input, landscape));
-        logger.info("Reindexed landscape " + input.getIdentifier());
-        landscape.setProcessLog(logger);
-        return logger;
+        landscape.getLog().info("Reindexed landscape " + input.getIdentifier());
+        return landscape;
     }
 
     private void runResolvers(LandscapeDescription input, Landscape landscape) {
 
         ProcessLog logger = landscape.getLog();
-
-        //initialize KPIs
-        KPIFactory kpiFactory = new KPIFactory();
-        landscape.setKpis(kpiFactory.getConfiguredKPIs(input.getConfig().getKPIs()));
 
         // read all input sources
         new SourceReferencesResolver(formatFactory, logger).resolve(input);
@@ -110,14 +94,14 @@ public class Indexer {
         // KEEP here (must run late after other resolvers)
         new RelationEndpointResolver(logger).resolve(input);
 
-        // add any missing groups
-        new GroupProcessor(logger).process(input, landscape);
+        // execute group "contains" queries
+        new GroupQueryResolver(logger).resolve(input);
 
         // compare landscape against input, add and remove items
         new DiffProcessor(logger).process(input, landscape);
 
-        // execute group "contains" queries
-        new GroupQueryProcessor(logger).process(input, landscape);
+        // assign items to groups, add missing groups
+        new GroupProcessor(logger).process(input, landscape);
 
         // create relations between items
         new ItemRelationProcessor(logger).process(input, landscape);

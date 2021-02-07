@@ -62,8 +62,7 @@ public class IndexerIntegrationTest {
 
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, applicationEventPublisher, iconService);
 
-        ProcessLog processLog = indexer.index(landscapeDescription);
-        return (Landscape) processLog.getLandscape();
+        return indexer.index(landscapeDescription);
     }
 
     @Test //first pass
@@ -156,8 +155,9 @@ public class IndexerIntegrationTest {
         Item blog = landscape.getItems().pick("blog-server", null);
         int before = landscape.getItems().all().size();
 
-        LandscapeDescription landscapeDescription = new LandscapeDescription();
-        landscapeDescription.setIdentifier(landscape.getIdentifier());
+        LandscapeDescription landscapeDescription = new LandscapeDescription(
+                landscape.getIdentifier(), landscape.getName(), null
+        );
         landscapeDescription.setIsPartial(true);
 
         ItemDescription newItem = new ItemDescription();
@@ -173,7 +173,7 @@ public class IndexerIntegrationTest {
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, applicationEventPublisher, iconService);
 
         //created
-        landscape = (Landscape) indexer.index(landscapeDescription).getLandscape();
+        landscape = indexer.index(landscapeDescription);
         blog = (Item) landscape.getItems().pick("blog-server", "completelyNewGroup");
         assertEquals("completelyNewGroup", blog.getGroup());
         assertEquals(before + 1, landscape.getItems().all().size());
@@ -249,7 +249,7 @@ public class IndexerIntegrationTest {
         Map<String, Group> groups = landscape1.getGroups();
         assertTrue(groups.containsKey("content"));
         Group content = groups.get("content");
-        assertFalse(content.getItems().isEmpty());
+        assertThat(content.getItems()).isNotEmpty();
         assertEquals(3, content.getItems().size());
 
         assertTrue(groups.containsKey("ingress"));
@@ -326,26 +326,6 @@ public class IndexerIntegrationTest {
         assertTrue(List.of(match.getTags()).contains("cms"));
         assertTrue(List.of(match.getTags()).contains("ui"));
     }
-
-    /**
-     * Ensures that KPIs are inited early
-     */
-    @Test
-    public void testKpisInitialisedEarly() {
-
-        //when
-        index("/src/test/resources/example/example_kpis_broken.yml");
-
-        //then
-        ArgumentCaptor<ProcessingErrorEvent> captor = ArgumentCaptor.forClass(ProcessingErrorEvent.class);
-        verify(applicationEventPublisher, times(2)).publishEvent(captor.capture());
-
-        List<ProcessingErrorEvent> allValues = captor.getAllValues();
-        ProcessingErrorEvent value = allValues.get(0);
-        assertNotNull(value);
-        assertEquals("Failed to parse KPI 'costs' range: 0,abc", value.getMessage());
-    }
-
 
     private String getRootPath() {
         Path currentRelativePath = Paths.get("");

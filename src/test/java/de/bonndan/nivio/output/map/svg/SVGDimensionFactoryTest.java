@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class SVGDimensionFactoryTest {
 
@@ -16,7 +15,7 @@ class SVGDimensionFactoryTest {
     void boundingBoxes() {
 
         //given
-        Group g = new Group("a");
+        Group g = new Group("a", "landscapeIdentifier");
         Hex one = new Hex(-3, -3);
         Hex two = new Hex(10, 10);
         Set<Hex> hexes = Set.of(one, two); //usually would be much more, but here it is sufficient

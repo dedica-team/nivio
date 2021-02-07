@@ -2,6 +2,7 @@ package de.bonndan.nivio.search;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -75,6 +76,9 @@ public class ItemMatcher {
     public static ItemMatcher forTarget(Item item) {
         return build("", item.getGroup(), item.getIdentifier());
     }
+    public static ItemMatcher forTarget(FullyQualifiedIdentifier fqi) {
+        return build(fqi.getLandscape(), fqi.getGroup(), fqi.getItem());
+    }
 
     public static ItemMatcher forTarget(ItemDescription item) {
         return build("", item.getGroup(), item.getIdentifier());
@@ -127,6 +131,8 @@ public class ItemMatcher {
 
         boolean equalsGroup;
         if (StringUtils.isEmpty(group) || StringUtils.isEmpty(fullyQualifiedIdentifier.getGroup()))
+            equalsGroup = true;
+        else if (group.equalsIgnoreCase(Group.COMMON) && StringUtils.isEmpty(fullyQualifiedIdentifier.getGroup()))
             equalsGroup = true;
         else
             equalsGroup = this.group.equalsIgnoreCase(fullyQualifiedIdentifier.getGroup());

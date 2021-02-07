@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CustomKPITest {
@@ -169,7 +170,7 @@ class CustomKPITest {
     }
 
     private Item getComponent(String value) {
-        Item item = new Item("test", "a");
+        Item item = getTestItem("test", "a");
         item.setLabel(LABEL, value);
         return item;
     }

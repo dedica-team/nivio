@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -16,11 +17,11 @@ class AllGroupsLayoutTest {
     @Test
     public void testWithARelation() {
 
-        Group a = new Group("a");
-        Group b = new Group("b");
-        Group c = new Group("c");
+        Group a = new Group("a", null);
+        Group b = new Group("b", null);
+        Group c = new Group("c", null);
 
-        Landscape landscape = LandscapeFactory.create("test");
+        Landscape landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
 
         landscape.getGroups().put("a", a);
         landscape.getGroups().put("b", b);
@@ -39,7 +40,7 @@ class AllGroupsLayoutTest {
         item2.getRelations().add(new Relation(item2, item3));
 
         Map<String, Group> groupMap = new LinkedHashMap<>();
-        landscape.getGroups().forEach((s, groupItem) -> groupMap.put(s, (Group)groupItem));
+        landscape.getGroups().forEach(groupMap::put);
 
         //when
         AllGroupsLayout allGroupsLayout = new AllGroupsLayout(landscape, groupMap, map);
@@ -58,10 +59,10 @@ class AllGroupsLayoutTest {
 
     private SubLayout getSubLayout(Group group) {
 
-        Item bar = new Item(group.getIdentifier(), "bar" + group.getIdentifier());
+        Item bar = getTestItem(group.getIdentifier(), "bar" + group.getIdentifier());
         group.addItem(bar);
 
-        Item baz = new Item(group.getIdentifier(), "baz" + group.getIdentifier());
+        Item baz = getTestItem(group.getIdentifier(), "baz" + group.getIdentifier());
         group.addItem(baz);
         baz.getRelations().add(new Relation(baz, bar));
 

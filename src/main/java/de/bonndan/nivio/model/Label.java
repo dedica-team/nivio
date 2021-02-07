@@ -18,6 +18,7 @@ public enum Label {
     costs("Running costs of the item."),
 
     fill("Background image (for displaying purposes)"),
+    icon("Icon/image (for displaying purposes)"),
 
     health("description of the item's health status"),
 

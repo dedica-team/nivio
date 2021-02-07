@@ -2,16 +2,17 @@ package de.bonndan.nivio.model;
 
 import org.junit.jupiter.api.Test;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RelationTest {
 
     @Test
     void toApiModel() {
-        Item one = new Item("foo", "bar");
-        Item two = new Item("foo", "baz");
-        Relation relation = new Relation(one, two);
-        relation.setType(RelationType.PROVIDER);
+        Item one = getTestItem("foo", "bar");
+        Item two = getTestItem("foo", "baz");
+        Relation relation = new Relation(one, two, null, null, RelationType.PROVIDER);
 
         Relation.ApiModel apiModel = new Relation.ApiModel(relation, one);
 
@@ -27,8 +28,8 @@ class RelationTest {
 
     @Test
     void inbound() {
-        Item one = new Item("foo", "bar");
-        Item two = new Item("foo", "baz");
+        Item one = getTestItem("foo", "bar");
+        Item two = getTestItem("foo", "baz");
         Relation relation = new Relation(one, two);
 
         Relation.ApiModel apiModel = new Relation.ApiModel(relation, two);
@@ -40,9 +41,8 @@ class RelationTest {
 
     @Test
     void inboundName() {
-        Item one = new Item("foo", "bar");
-        one.setName("huhu");
-        Item two = new Item("foo", "baz");
+        Item one = getTestItemBuilder("foo", "bar").withName("huhu").build();
+        Item two = getTestItem("foo", "baz");
         Relation relation = new Relation(one, two);
 
         Relation.ApiModel apiModel = new Relation.ApiModel(relation, two);

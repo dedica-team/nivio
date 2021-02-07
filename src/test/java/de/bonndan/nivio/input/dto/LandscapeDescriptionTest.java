@@ -11,7 +11,7 @@ class LandscapeDescriptionTest {
 
     @Test
     void addItemsAddsEnv() {
-        LandscapeDescription landscapeDescription = new LandscapeDescription();
+        LandscapeDescription landscapeDescription = new LandscapeDescription("identifier", "name", null);
         ItemDescription d = new ItemDescription();
         d.setIdentifier("foo");
         List<ItemDescription> items = new ArrayList<>();

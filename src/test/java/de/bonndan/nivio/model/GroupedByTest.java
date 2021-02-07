@@ -6,26 +6,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GroupsTest {
+public class GroupedByTest {
 
     @Test
     public void testBy() {
         List<Item> items = new ArrayList<>();
-        Item item1 = new Item(null,"1");
-        item1.setOwner("A");
+        Item item1 = getTestItemBuilder("1","1").withOwner("A").build();
         items.add(item1);
 
-        Item item2 = new Item(null,"2");
-        item2.setOwner("A");
+        Item item2 = getTestItemBuilder("2","2").withOwner("A").build();
         items.add(item2);
 
-        Item item3 = new Item(null,"3");
-        item3.setOwner("B");
+        Item item3 = getTestItemBuilder("3","3").withOwner("B").build();
         items.add(item3);
 
-        Groups ownerGroups = Groups.by(Item::getOwner, items);
+        GroupedBy ownerGroups = GroupedBy.by(Item::getOwner, items);
         Map<String, List<Item>> all = ownerGroups.getAll();
         assertNotNull(all);
         assertFalse(all.isEmpty());
@@ -40,18 +39,16 @@ public class GroupsTest {
     @Test
     public void testByDefault() {
         List<Item> services = new ArrayList<>();
-        Item item1 = new Item(null,"1");
+        Item item1 = getTestItem("1","1");
         services.add(item1);
 
-        Item item2 = new Item(null,"2");
-        item2.setOwner("A");
+        Item item2 = getTestItemBuilder("2","2").withOwner("A").build();
         services.add(item2);
 
-        Item item3 = new Item(null,"3");
-        item3.setOwner("B");
+        Item item3 = getTestItemBuilder("3","3").withOwner("B").build();
         services.add(item3);
 
-        Groups ownerGroups = Groups.by(Item::getOwner, services);
+        GroupedBy ownerGroups = GroupedBy.by(Item::getOwner, services);
         Map<String, List<Item>> all = ownerGroups.getAll();
         assertNotNull(all);
         assertFalse(all.isEmpty());
@@ -69,43 +66,19 @@ public class GroupsTest {
     @Test
     public void testByNotUsingGroupField() {
         List<Item> services = new ArrayList<>();
-        Item item1 = new Item(null,"1");
-        item1.setOwner("A");
-        item1.setGroup("content");
+        Item item1 = getTestItemBuilder("content","1").withOwner("A").build();
         services.add(item1);
 
-        Item item2 = new Item(null,"2");
-        item2.setOwner("A");
-        item2.setGroup("content");
+        Item item2 = getTestItemBuilder("content","2").withOwner("A").build();
         services.add(item2);
 
-        Item item3 = new Item(null,"3");
-        item3.setOwner("B");
+        Item item3 = getTestItemBuilder("null","3").withOwner("B").build();
         services.add(item3);
 
-        Groups ownerGroups = Groups.by(Item::getOwner, services);
+        GroupedBy ownerGroups = GroupedBy.by(Item::getOwner, services);
         Map<String, List<Item>> all = ownerGroups.getAll();
         assertEquals(2, all.size());
         assertFalse(all.containsKey(Group.COMMON));
         assertFalse(all.containsKey("content"));
-    }
-
-    @Test
-    public void testMerge() {
-        Group one = new Group("a");
-        one.setColor("#123123");
-        one.setDescription("a");
-        one.setOwner("Joe");
-
-        Group two = new Group("a");
-        two.setOwner("Matt");
-        two.setContact("mail");
-
-        Groups.merge(one, two);
-
-        assertEquals("Joe", one.getOwner());
-        assertEquals("a", one.getDescription());
-        assertEquals("mail", one.getContact());
-        assertEquals("#123123", one.getColor());
     }
 }

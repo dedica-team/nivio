@@ -4,13 +4,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaggedTest {
 
     @Test
     public void setsNonEmpty() {
-        Item item = new Item("test", "a");
+        Item item = getTestItem("test", "a");
         item.setTags(new String[]{null, "", "foo", "bar"});
 
         //when
@@ -26,7 +27,7 @@ class TaggedTest {
 
     @Test
     public void setsOnlyLowerCase() {
-        Item item = new Item("test", "a");
+        Item item = getTestItem("test", "a");
         item.setTags(new String[]{"foo", "Foo"});
 
         //when

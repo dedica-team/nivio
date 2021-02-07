@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SVGGroupAreaTest {
@@ -18,10 +19,10 @@ class SVGGroupAreaTest {
         Hex e1 = new Hex(1, 1, -2);
         Hex e2 = new Hex(3, 3, -6);
 
-        Item landscapeItem = new Item("group", "landscapeItem");
-        Item landscapeItem2 = new Item("group", "bar");
+        Item landscapeItem = getTestItem("group", "landscapeItem");
+        Item landscapeItem2 = getTestItem("group", "bar");
 
-        Group group = new Group("group");
+        Group group = new Group("group","foo");
         group.addItem(landscapeItem);
         group.addItem(landscapeItem2);
 
@@ -32,7 +33,7 @@ class SVGGroupAreaTest {
         Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
         SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(group, area, false);
 
-        assertThat(svgGroupArea.render().render()).contains("<text x=\"650.0\" y=\"1177\" text-anchor=\"middle\" class=\"groupLabel\">group</text>");
+        assertThat(svgGroupArea.render().render()).contains("<text x=\"650.0\" y=\"1177\" fill=\"#5E0F67\" text-anchor=\"middle\" class=\"groupLabel\">group</text>");
     }
 
     @Test
@@ -40,10 +41,10 @@ class SVGGroupAreaTest {
         Hex e1 = new Hex(1, 1, -2);
         Hex e2 = new Hex(3, 3, -6);
 
-        Item landscapeItem = new Item("group", "landscapeItem");
-        Item landscapeItem2 = new Item("group", "bar");
+        Item landscapeItem = getTestItem("group", "landscapeItem");
+        Item landscapeItem2 = getTestItem("group", "bar");
 
-        Group group = new Group("group");
+        Group group = new Group("group", "foo");
         group.addItem(landscapeItem);
         group.addItem(landscapeItem2);
 

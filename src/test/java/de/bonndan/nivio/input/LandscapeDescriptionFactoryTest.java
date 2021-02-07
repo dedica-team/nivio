@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -60,10 +61,15 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void readFails() throws IOException {
-        File file = new File(FILE_PATH_ENV);
-        String yaml = new String(Files.readAllBytes(file.toPath()));
-        assertThrows(ReadingException.class, () -> factory.fromString("yaml", ""));
+    public void readsMinimalWithIdentifier() {
+        assertDoesNotThrow(() -> new LandscapeDescriptionFactory(mock(FileFetcher.class))
+                .fromString("yaml", ""));
+    }
+
+    @Test
+    public void readFails() {
+        assertThrows(ReadingException.class, () -> new LandscapeDescriptionFactory(mock(FileFetcher.class))
+                .fromString("", ""));
     }
 
     @Test
@@ -96,8 +102,10 @@ class LandscapeDescriptionFactoryTest {
     public void readUrlFromDescription() throws IOException {
 
         File file = new File(FILE_PATH_ENV);
-        Landscape outdatedLandscape = new Landscape("test", new Group(Group.COMMON));
-        outdatedLandscape.setSource(file.toURI().toURL().toString());
+        Landscape outdatedLandscape = LandscapeFactory.createForTesting(
+                "test", "testLandscape")
+                .withSource(file.toURI().toURL().toString())
+                .build();
 
         //when
         LandscapeDescription landscapeDescription = factory.from(outdatedLandscape);
@@ -297,7 +305,7 @@ class LandscapeDescriptionFactoryTest {
         CustomKPI costKPI = new CustomKPI();
         costKPI.init(monthlyCosts);
 
-        Item item = new Item("test", "a");
+        Item item = getTestItem("test", "a");
         item.setLabel(Label.costs, "200");
         StatusValue statusValue = costKPI.getStatusValues(item).get(0);
         assertNotNull(statusValue);
