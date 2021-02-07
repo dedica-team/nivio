@@ -8,6 +8,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -16,11 +18,11 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class VendorIconsTest {
+class ExternalIconsTest {
 
     public static final String FAKED_LOGO_PATH = "/logocontest/82.png";
     private WireMockServer wireMockServer;
-    private VendorIcons vendorIcons;
+    private ExternalIcons externalIcons;
 
     @BeforeEach
     public void setup() {
@@ -28,8 +30,8 @@ class VendorIconsTest {
         wireMockServer.start();
         WireMock.configureFor("localhost", wireMockServer.port());
 
-        vendorIcons = new VendorIcons(new HttpService());
-        vendorIcons.add("redis", "http://localhost:" + wireMockServer.port() + FAKED_LOGO_PATH);
+        externalIcons = new ExternalIcons(new HttpService());
+        externalIcons.add("redis", "http://localhost:" + wireMockServer.port() + FAKED_LOGO_PATH);
     }
 
     @AfterEach
@@ -39,7 +41,7 @@ class VendorIconsTest {
 
     @Test
     public void returnsEmpty() {
-        Optional<String> s = vendorIcons.getUrl("foo");
+        Optional<String> s = externalIcons.getUrl("foo");
         assertThat(s).isEmpty();
     }
 
@@ -47,7 +49,7 @@ class VendorIconsTest {
     public void usesVendorIcon() {
 
         wireMockServer.stubFor(get(FAKED_LOGO_PATH).willReturn(ok("somedata")));
-        Optional<String> s = vendorIcons.getUrl("redis");
+        Optional<String> s = externalIcons.getUrl("redis");
         assertThat(s).isNotEmpty();
         assertThat(s.get()).contains("c29tZWRhdGE=");
         assertThat(s.get()).doesNotContain("Optional");
@@ -58,12 +60,28 @@ class VendorIconsTest {
 
         wireMockServer.stubFor(get(FAKED_LOGO_PATH).willReturn(ok("somedata")));
 
-        Optional<String> s = vendorIcons.getUrl("redis");
+        Optional<String> s = externalIcons.getUrl("redis");
         assertThat(s).isNotEmpty();
         assertThat(s.get()).contains("c29tZWRhdGE=");
 
         //2nd call
-        vendorIcons.getUrl("redis");
+        externalIcons.getUrl("redis");
+
+        wireMockServer.verify(1, RequestPatternBuilder.newRequestPattern().withUrl(FAKED_LOGO_PATH));
+    }
+
+    @Test
+    public void loadUrl() throws MalformedURLException {
+
+        wireMockServer.stubFor(get(FAKED_LOGO_PATH).willReturn(ok("somedata")));
+
+        URL url = new URL("http://localhost:" + wireMockServer.port() + FAKED_LOGO_PATH);
+        Optional<String> s = externalIcons.getUrl(url);
+        assertThat(s).isNotEmpty();
+        assertThat(s.get()).contains("c29tZWRhdGE=");
+
+        //2nd call
+        externalIcons.getUrl(url);
 
         wireMockServer.verify(1, RequestPatternBuilder.newRequestPattern().withUrl(FAKED_LOGO_PATH));
     }

@@ -3,6 +3,7 @@ package de.bonndan.nivio.output;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.http.CachedResponse;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
@@ -10,7 +11,7 @@ import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
-import de.bonndan.nivio.output.icons.VendorIcons;
+import de.bonndan.nivio.output.icons.ExternalIcons;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.layout.OrganicLayouter;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
@@ -22,7 +23,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -35,16 +39,22 @@ public abstract class RenderingTest {
     protected InputFormatHandlerFactory formatFactory;
     protected Indexer indexer;
     protected LandscapeDescriptionFactory factory;
+    protected HttpService httpService;
 
-    public void setup() {
+    public void setup() throws URISyntaxException {
         landscapeRepository = new LandscapeRepository();
         formatFactory = InputFormatHandlerFactory.with(new InputFormatHandlerNivio(new FileFetcher(new HttpService())));
-        FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
+        httpService = mock(HttpService.class);
+
+        CachedResponse response = mock(CachedResponse.class);
+        when(response.getBytes()).thenReturn("foo".getBytes());
+        when(httpService.getResponse(any(URL.class))).thenReturn(response);
+
+        FileFetcher fileFetcher = new FileFetcher(httpService);
         factory = new LandscapeDescriptionFactory(fileFetcher);
 
-        HttpService httpService = mock(HttpService.class);
         LinkHandlerFactory linkHandlerFactory = mock(LinkHandlerFactory.class);
-        IconService iconService = new IconService(new LocalIcons(), new VendorIcons(httpService));
+        IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService));
         indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class), iconService);
     }
 

@@ -2,18 +2,18 @@ package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.assessment.AssessmentController;
 import de.bonndan.nivio.config.NivioConfigProperties;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.Link;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.docs.DocsController;
 import de.bonndan.nivio.output.map.MapController;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.StreamSupport;
 
 import static de.bonndan.nivio.model.Link.LinkBuilder.linkTo;
@@ -37,7 +37,7 @@ public class LinkFactory {
 
     public Map<String, Link> getLandscapeLinks(Landscape landscape) {
         Map<String, Link> links = new HashMap<>();
-        links.put(REL_SELF, generateSelfLink(landscape));
+        links.put(REL_SELF, generateComponentLink(landscape.getFullyQualifiedIdentifier()));
 
         localServer.getUrl(ApiController.PATH, "reindex", landscape.getIdentifier()).ifPresent(url -> {
             links.put("reindex", linkTo(url)
@@ -94,8 +94,15 @@ public class LinkFactory {
         return links;
     }
 
-    private Link generateSelfLink(de.bonndan.nivio.model.Component component) {
-        return localServer.getUrl(ApiController.PATH, component.getFullyQualifiedIdentifier().jsonValue())
+    /**
+     * Generates a link to a {@link de.bonndan.nivio.model.Component}
+     *
+     * @param fullyQualifiedIdentifier the component's fqi
+     * @return link based on the {@link FullyQualifiedIdentifier}
+     */
+    @Nullable
+    public Link generateComponentLink(@NonNull FullyQualifiedIdentifier fullyQualifiedIdentifier) {
+        return localServer.getUrl(ApiController.PATH, Objects.requireNonNull(fullyQualifiedIdentifier).jsonValue())
                 .map(url -> linkTo(url)
                         .withMedia(MediaType.APPLICATION_JSON_VALUE)
                         .withTitle("JSON representation")
@@ -144,14 +151,14 @@ public class LinkFactory {
 
     void setGroupLinksRecursive(Group groupItem) {
         if (!groupItem.getLinks().containsKey(REL_SELF)) {
-            groupItem.getLinks().put(REL_SELF, generateSelfLink(groupItem));
+            groupItem.getLinks().put(REL_SELF, generateComponentLink(groupItem.getFullyQualifiedIdentifier()));
         }
         groupItem.getItems().forEach(this::setItemSelfLink);
     }
 
     void setItemSelfLink(Item item) {
         if (!item.getLinks().containsKey(REL_SELF)) {
-            item.getLinks().put(REL_SELF, generateSelfLink(item));
+            item.getLinks().put(REL_SELF, generateComponentLink(item.getFullyQualifiedIdentifier()));
         }
     }
 }

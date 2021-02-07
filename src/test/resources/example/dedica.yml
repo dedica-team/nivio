@@ -1,12 +1,12 @@
 identifier: dedica.team
 name: dedica
 contact: info@dedica.team
-description: Das IT Consulting Team
+description: The IT consulting team.
 
 config:
   branding:
     mapStylesheet: http://localhost:8080/css/dedica_map.css
-    mapLogo: https://dedica.team/images/logo_orange_weiss.png
+    mapLogo: https://dedica.team/images/logo.png
 
 groups:
   dedica:
@@ -15,11 +15,15 @@ groups:
 items:
   - identifier: dedica
     name: ""
+    description: The IT consulting team.
+    links:
+      homepage: https://dedica.team
     group: dedica
     icon: https://dedica.team/images/logo_orange_weiss.png
 
   - identifier: matthias
     name: Matthias Molitor
+    contact: matthias@dedica.team
     group: dedica
     fill: https://dedica.team/images/matthiasmolitor.jpg
     providedBy:
@@ -27,6 +31,7 @@ items:
 
   - identifier: daniel
     name: Daniel Pozzi
+    contact: daniel@dedica.team
     group: dedica
     fill: https://dedica.team/images/danielpozzi.jpg
     providedBy:
