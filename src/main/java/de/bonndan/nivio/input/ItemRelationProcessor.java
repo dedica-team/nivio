@@ -33,6 +33,7 @@ public class ItemRelationProcessor extends Processor {
             for (RelationDescription relationDescription : itemDescription.getRelations()) {
                 Optional<Relation> update = update(relationDescription, landscape, origin);
                 update.ifPresent(relation -> {
+                    origin.getRelations().remove(relation);
                     origin.getRelations().add(relation);
                     if (relation.getSource() == origin) {
                         relation.getTarget().getRelations().add(relation);
@@ -78,7 +79,7 @@ public class ItemRelationProcessor extends Processor {
                 relationDescription.getType()
         );
 
-        processLog.info(String.format("Adding between %s and %s", created.getSource(), created.getTarget()));
+        processLog.info(String.format("Adding relation from %s to %s", created.getSource(), created.getTarget()));
         return Optional.of(created);
     }
 }
