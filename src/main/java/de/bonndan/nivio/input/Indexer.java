@@ -1,7 +1,6 @@
 
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.assessment.kpi.KPIFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.model.Landscape;
@@ -69,10 +68,6 @@ public class Indexer {
     private void runResolvers(LandscapeDescription input, Landscape landscape) {
 
         ProcessLog logger = landscape.getLog();
-
-        //initialize KPIs
-        KPIFactory kpiFactory = new KPIFactory();
-        landscape.setKpis(kpiFactory.getConfiguredKPIs(input.getConfig().getKPIs()));
 
         // read all input sources
         new SourceReferencesResolver(formatFactory, logger).resolve(input);

@@ -1,7 +1,7 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.assessment.kpi.KPIFactory;
 import de.bonndan.nivio.input.ProcessLog;
-import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -12,12 +12,15 @@ import java.util.Map;
 
 public class LandscapeFactory {
 
+    private static final KPIFactory kpiFactory = new KPIFactory();
+
     /**
      * Creates a new landscape impl.
      *
      * @param input the description
      */
     public static Landscape createFromInput(@NonNull LandscapeDescription input) {
+
         Landscape landscape = new Landscape(
                 input.getIdentifier(),
                 getGroups(),
@@ -27,7 +30,8 @@ public class LandscapeFactory {
                 input.getDescription(),
                 input.getSource(),
                 input.getConfig(),
-                getProcessLog()
+                getProcessLog(),
+                kpiFactory.getConfiguredKPIs(input.getConfig().getKPIs())
         );
         input.getLabels().forEach((s, s2) -> landscape.getLabels().put(s, s2));
         input.getLinks().forEach((s, link) -> landscape.getLinks().put(s, link));
@@ -88,6 +92,7 @@ public class LandscapeFactory {
         builder.withConfig(input.getConfig());
         builder.withDescription(input.getDescription());
         builder.withOwner(input.getOwner());
+        builder.withKpis(kpiFactory.getConfiguredKPIs(input.getConfig().getKPIs()));
 
         //merge labels
         Map<String, String> labels = existing.getLabels();

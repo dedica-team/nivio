@@ -68,7 +68,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     /**
      * all KPIs for the landscape, configured and initialized
      */
-    private Map<String, KPI> kpis = new HashMap<>();
+    private final Map<String, KPI> kpis;
 
     public Landscape(@NonNull final String identifier,
                      @NonNull final Map<String, Group> groups,
@@ -78,7 +78,8 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
                      @Nullable final String description,
                      @Nullable final String source,
                      @Nullable final LandscapeConfig config,
-                     @Nullable final ProcessLog processLog
+                     @Nullable final ProcessLog processLog,
+                     @NonNull final Map<String, KPI> kpis
     ) {
         this.identifier = validateIdentifier(Objects.requireNonNull(identifier));
         this.groups = groups;
@@ -90,6 +91,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         this.source = source;
         this.config = config != null ? config : new LandscapeConfig();
         this.processLog = processLog != null ? processLog : new ProcessLog(LoggerFactory.getLogger(Landscape.class));
+        this.kpis = kpis;
     }
 
     @NonNull
@@ -267,9 +269,5 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     @JsonIgnore
     public Map<String, KPI> getKpis() {
         return kpis;
-    }
-
-    public void setKpis(Map<String, KPI> kpis) {
-        this.kpis = kpis;
     }
 }

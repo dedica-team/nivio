@@ -322,26 +322,6 @@ public class IndexerIntegrationTest {
         assertTrue(List.of(match.getTags()).contains("ui"));
     }
 
-    /**
-     * Ensures that KPIs are inited early
-     */
-    @Test
-    public void testKpisInitialisedEarly() {
-
-        //when
-        index("/src/test/resources/example/example_kpis_broken.yml");
-
-        //then
-        ArgumentCaptor<ProcessingErrorEvent> captor = ArgumentCaptor.forClass(ProcessingErrorEvent.class);
-        verify(applicationEventPublisher, times(2)).publishEvent(captor.capture());
-
-        List<ProcessingErrorEvent> allValues = captor.getAllValues();
-        ProcessingErrorEvent value = allValues.get(0);
-        assertNotNull(value);
-        assertEquals("Failed to parse KPI 'costs' range: 0,abc", value.getMessage());
-    }
-
-
     private String getRootPath() {
         Path currentRelativePath = Paths.get("");
         return currentRelativePath.toAbsolutePath().toString();

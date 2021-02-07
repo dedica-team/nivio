@@ -90,4 +90,31 @@ class LandscapeFactoryTest {
         assertEquals("https://dedica.team",  landscape.getLinks().get("home").getHref().toString());
     }
 
+    @Test
+    void fromInputAddsKPIs() {
+
+        //when
+        Landscape landscape = LandscapeFactory.createFromInput(description);
+
+        assertThat(landscape.getKpis()).isNotEmpty();
+        assertThat(landscape.getKpis()).hasSize(4);
+    }
+
+    @Test
+    void recreateAddsKPIs() {
+        Landscape existing = LandscapeBuilder.aLandscape()
+                .withIdentifier(description.getIdentifier())
+                .withName("A Test")
+                .withContact("foo")
+                .withOwner("bar")
+                .withGroups(Map.of("agroup", new Group("agroup")))
+                .withItems(Set.of(new Item("agroup", "hihi")))
+                .build();
+
+        //when
+        Landscape landscape = LandscapeFactory.recreate(existing, description);
+
+        assertThat(landscape.getKpis()).isNotEmpty();
+        assertThat(landscape.getKpis()).hasSize(4);
+    }
 }

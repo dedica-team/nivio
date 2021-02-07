@@ -95,10 +95,9 @@ public final class LandscapeBuilder {
     public Landscape build() {
         Objects.requireNonNull(identifier, "The landscape identifier cannot be null");
 
-        Landscape landscape = new Landscape(identifier, groups, name, contact, owner, description, source, config, processLog);
-        landscape.setItems(items);
-        landscape.setLinks(links); //TODO
-        landscape.setKpis(kpis);
+        Landscape landscape = new Landscape(identifier, groups, name, contact, owner, description, source, config, processLog, kpis);
+        landscape.setItems(items); //TODO
+        landscape.setLinks(links);
 
         labels.forEach((s, s2) -> landscape.getLabels().put(s, s2));
         return landscape;
