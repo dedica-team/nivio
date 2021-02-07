@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
@@ -73,7 +74,7 @@ class LandscapeDescriptionFactoryTest {
     public void readYamlStr() throws IOException {
         File file = new File(FILE_PATH_ENV);
         String yaml = new String(Files.readAllBytes(file.toPath()));
-        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromString(yaml, file.toString());
+        LandscapeDescription landscapeDescription = factory.fromString(yaml, file.toString());
         assertEquals("Landscape example", landscapeDescription.getName());
         assertEquals("nivio:example", landscapeDescription.getIdentifier());
         assertEquals("mail@acme.org", landscapeDescription.getContact());
@@ -91,7 +92,7 @@ class LandscapeDescriptionFactoryTest {
 
         File file = new File(FILE_PATH_ENV);
         String yaml = new String(Files.readAllBytes(file.toPath()));
-        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromString(yaml, file.toURI().toURL());
+        LandscapeDescription landscapeDescription = factory.fromString(yaml, file.toURI().toURL());
         assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource());
     }
 
@@ -148,7 +149,7 @@ class LandscapeDescriptionFactoryTest {
 
         File file = new File(FILE_PATH_ENVIRONMENT_VARS);
         String read = new String(Files.readAllBytes(file.toPath()));
-        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromString(read, file.toString());
+        LandscapeDescription landscapeDescription = factory.fromString(read, file.toString());
         assertNotNull(landscapeDescription);
         assertEquals(user, landscapeDescription.getSourceReferences().get(0).getHeaderTokenValue());
     }
@@ -307,5 +308,19 @@ class LandscapeDescriptionFactoryTest {
         StatusValue statusValue = costKPI.getStatusValues(item).get(0);
         assertNotNull(statusValue);
         assertEquals(Status.RED, statusValue.getStatus());
+    }
+
+    @Test
+    public void fromBodyItem() {
+
+        //when
+        LandscapeDescription landscapeDescription = factory.fromBodyItems("foo", "nivio", "body");
+
+        assertNotNull(landscapeDescription);
+        assertThat(landscapeDescription.getIdentifier()).isEqualTo("foo");
+        assertThat(landscapeDescription.getSourceReferences().size()).isEqualTo(1);
+        SourceReference sourceReference = landscapeDescription.getSourceReferences().get(0);
+        assertThat(sourceReference.getFormat()).isEqualTo("nivio");
+        assertThat(sourceReference.getContent()).isEqualTo("body");
     }
 }
