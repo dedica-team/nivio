@@ -31,10 +31,10 @@ public class IndexEvent extends ProcessingEvent {
     }
 
     /**
-     * @return the {@link LandscapeDescription}, not the landscape! //TODO: remove comment
+     * @return the {@link LandscapeDescription}, not the landscape!
      */
     @JsonSerialize(using = PLS.class)
-    public LandscapeDescription getLandscape() {
+    public LandscapeDescription getLandscapeDescription() {
         return landscapeDescription;
     }
 
