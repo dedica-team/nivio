@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -44,6 +45,11 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
 
     private final String color;
 
+    /**
+     * technical address
+     */
+    private URI address;
+
     private final Map<String, Link> links = new HashMap<>();
     private final Map<String, String> labels = new HashMap<>();
 
@@ -64,7 +70,8 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
                 String contact,
                 String description,
                 String color,
-                String icon
+                String icon,
+                URI address
     ) {
         if (StringUtils.isEmpty(identifier)) {
             throw new RuntimeException("Identifier must not be empty");
@@ -83,6 +90,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         this.description = description;
         this.color = color;
         this.setLabel(Label.icon, icon);
+        this.address = address;
     }
 
     public String getIdentifier() {
@@ -184,6 +192,10 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
 
     public String getType() {
         return getLabel(Label.type);
+    }
+
+    public String getAddress() {
+        return address != null ? address.toString() : null;
     }
 
     /**

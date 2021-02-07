@@ -1,6 +1,7 @@
 package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.util.URIHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -80,6 +81,8 @@ public class ItemFactory {
                 .withLabels(item.getLabels())
                 .withLinks(item.getLinks());
 
+        URIHelper.getURI(description.getAddress())
+                .ifPresent(address -> builder.withAddress(address));
 
         builder.withInterfaces(description.getInterfaces().stream()
                 .map(ServiceInterface::new)

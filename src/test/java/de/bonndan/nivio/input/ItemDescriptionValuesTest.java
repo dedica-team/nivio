@@ -30,7 +30,7 @@ class ItemDescriptionValuesTest {
     }
 
     @Test
-    public void incrementAddsIconSafe() {
+    public void incrementAddsIconSafely() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -41,6 +41,37 @@ class ItemDescriptionValuesTest {
         ItemDescriptionValues.assignSafeNotNull(sd1, increment);
 
         assertEquals("foo", sd1.getIcon());
+    }
+
+    @Test
+    public void incrementAddsAddress() {
+
+        ItemDescription sd1 = new ItemDescription();
+        sd1.setIdentifier("sd1");
+
+        ItemDescription increment = new ItemDescription();
+        increment.setIdentifier("sd1");
+        increment.setAddress("foo");
+        ItemDescriptionValues.assignNotNull(sd1, increment);
+
+        assertEquals("foo", sd1.getAddress());
+    }
+
+    @Test
+    public void incrementAddsAddressSafely() {
+
+        ItemDescription sd1 = new ItemDescription();
+        sd1.setIdentifier("sd1");
+        sd1.setAddress("sd1A");
+
+        ItemDescription increment = new ItemDescription();
+        increment.setIdentifier("sd1");
+        increment.setAddress("foo");
+
+
+        ItemDescriptionValues.assignSafeNotNull(sd1, increment);
+
+        assertEquals("sd1A", sd1.getAddress());
     }
 
     @Test

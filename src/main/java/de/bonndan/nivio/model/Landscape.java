@@ -8,6 +8,8 @@ import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.ProcessLog;
+import de.bonndan.nivio.search.ItemIndex;
+import de.bonndan.nivio.search.SearchIndex;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -26,6 +28,8 @@ import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Landscape implements Linked, Component, Labeled, Assessable {
+
+    private final SearchIndex searchIndex;
 
     /**
      * Immutable unique identifier. Maybe use an URN.
@@ -54,7 +58,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     private final String source;
 
     @JsonIgnore
-    private final ItemIndex items = new ItemIndex();
+    private final ItemIndex<Item> items;
 
     private final LandscapeConfig config;
 
@@ -83,6 +87,8 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     ) {
         this.identifier = validateIdentifier(Objects.requireNonNull(identifier));
         this.groups = groups;
+        this.searchIndex = new SearchIndex();
+        this.items = new ItemIndex<>(searchIndex, Item.class);
         this.name = Objects.requireNonNull(name);
         this.contact = contact;
 
@@ -117,7 +123,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     @JsonIgnore
-    public ItemIndex getItems() {
+    public ItemIndex<Item> getItems() {
         return items;
     }
 
@@ -147,6 +153,12 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     @JsonGetter("groups")
     public Collection<Group> getGroupItems() {
         return new ArrayList<>(groups.values());
+    }
+
+    @JsonIgnore
+    @Override
+    public String getAddress() {
+        return null;
     }
 
     @Override
@@ -268,5 +280,10 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     @JsonIgnore
     public Map<String, KPI> getKpis() {
         return kpis;
+    }
+
+    @JsonIgnore
+    public SearchIndex getSearchIndex() {
+        return searchIndex;
     }
 }
