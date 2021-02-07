@@ -18,6 +18,7 @@ import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.output.icons.ExternalIcons;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.IOException;
@@ -131,7 +132,12 @@ class OrganicLayouterTest extends RenderingTest {
         indexer.index(input);
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
-        debugRenderLandscape("/src/test/resources/example/large", landscape);
+        try {
+            debugRenderLandscape("/src/test/resources/example/large", landscape);
+        } catch (RuntimeException e) {
+            LoggerFactory.getLogger(OrganicLayouterTest.class).error(e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Test
@@ -167,7 +173,7 @@ class OrganicLayouterTest extends RenderingTest {
         IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService));
         formatFactory = InputFormatHandlerFactory.with(new InputFormatHandlerCSV(new FileFetcher(httpService)));
         LinkHandlerFactory linkHandlerFactory = mock(LinkHandlerFactory.class);
-        indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class),  iconService);
+        indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class), iconService);
 
         debugRender("/src/test/resources/example/example_csv", false);
     }
