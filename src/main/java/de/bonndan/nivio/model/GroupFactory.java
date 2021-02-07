@@ -11,28 +11,15 @@ import java.util.function.Function;
 import static de.bonndan.nivio.util.SafeAssign.assignSafeIfAbsent;
 import static org.springframework.util.StringUtils.isEmpty;
 
-public class Groups {
-
-    private final Map<String, List<Item>> groups = new HashMap<>();
-
-    /**
-     * Default grouping by group field.
-     *
-     * @param landscape landscape containing the item
-     * @return groups
-     */
-    public static Groups from(Landscape landscape) {
-        Groups groups = new Groups();
-        landscape.getItems().itemStream().forEach(groups::add);
-        return groups;
-    }
+public class GroupFactory {
 
     /**
      * Merges all absent values from the second param into the first.
      */
     public static void merge(final Group group, Group groupItem) {
-        if (groupItem == null)
+        if (groupItem == null) {
             return;
+        }
 
         assignSafeIfAbsent(groupItem.getColor(), group.getColor(), group::setColor);
         assignSafeIfAbsent(groupItem.getContact(), group.getContact(), group::setContact);
@@ -52,53 +39,6 @@ public class Groups {
         assignSafeIfAbsent(groupDescription.getOwner(), group.getOwner(), group::setOwner);
         groupDescription.getLinks().forEach((s, url) -> group.getLinks().putIfAbsent(s, url));
         Labeled.merge(groupDescription, group);
-    }
-
-    /**
-     * Add a service into a group by a custom field
-     *
-     * @param groupKey the group key
-     * @param service  service to add
-     */
-    @Deprecated
-    public void add(String groupKey, Item service) {
-
-        String key = isEmpty(groupKey) ? Group.COMMON : groupKey;
-
-        if (!groups.containsKey(key)) {
-            groups.put(key, new ArrayList<>());
-        }
-        groups.get(key).add(service);
-    }
-
-    /**
-     * Returns the services sorted by group.
-     *
-     * @return map with keys naming the groups
-     */
-    public Map<String, List<Item>> getAll() {
-        return groups;
-    }
-
-    /**
-     * Groups services by any string field (e.g. owner).
-     *
-     * @param supplier function providing the group key for each item
-     * @param items    services
-     * @return grouped services
-     */
-    public static Groups by(Function<Item, String> supplier, List<Item> items) {
-        var groups = new Groups();
-        items.forEach(serviceItem -> {
-            String key = supplier.apply(serviceItem);
-            groups.add(key, serviceItem);
-        });
-
-        return groups;
-    }
-
-    private void add(Item service) {
-        add(service.getGroup(), service);
     }
 
 }

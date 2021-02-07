@@ -4,9 +4,9 @@ import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Groups;
+import de.bonndan.nivio.model.GroupFactory;
+import de.bonndan.nivio.model.GroupedBy;
 import de.bonndan.nivio.model.Landscape;
-import org.apache.tomcat.jni.Proc;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -79,7 +79,7 @@ public class GroupProcessor extends Processor {
 
     private Group getGroup(String identifier, GroupDescription groupItem) {
         Group g = new Group(identifier);
-        Groups.mergeWithGroupDescription(g, groupItem);
+        GroupFactory.mergeWithGroupDescription(g, groupItem);
         return g;
     }
 

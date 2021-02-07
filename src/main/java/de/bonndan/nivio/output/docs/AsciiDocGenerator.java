@@ -37,11 +37,11 @@ public class AsciiDocGenerator {
         builder.append("Identifier:: " + landscape.getIdentifier() + NL);
         builder.append("Contact:: " + landscape.getContact() + NL);
 
-        builder.append(writeGroups(Groups.from(landscape)));
+        builder.append(writeGroups(GroupedBy.from(landscape)));
         return builder.toString();
     }
 
-    private String writeGroups(Groups groups) {
+    private String writeGroups(GroupedBy groups) {
         final StringBuilder builder = new StringBuilder();
         groups.getAll().forEach((s, landscapeItems) -> {
             builder.append(NL + "== Group: " + s + NL);

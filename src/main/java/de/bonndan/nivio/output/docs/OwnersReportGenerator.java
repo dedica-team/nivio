@@ -5,7 +5,6 @@ import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
-import de.bonndan.nivio.output.icons.LocalIcons;
 import j2html.tags.ContainerTag;
 
 import java.util.ArrayList;
@@ -32,24 +31,24 @@ public class OwnersReportGenerator extends HtmlGenerator {
                 body(
                         h1("Owner Report: " + landscape.getName()),
                         br(),
-                        rawHtml(writeOwnerGroups(Groups.by(Component::getOwner, new ArrayList<>(landscape.getItems().all()))))
+                        rawHtml(writeOwnerGroups(GroupedBy.by(Component::getOwner, new ArrayList<>(landscape.getItems().all()))))
                 )
         ).renderFormatted();
     }
 
-    private String writeOwnerGroups(Groups ownerGroups) {
+    private String writeOwnerGroups(GroupedBy ownerGroups) {
         final StringBuilder builder = new StringBuilder();
         ownerGroups.getAll().forEach((owner, landscapeItems) -> {
             builder.append(
                     h2(rawHtml(owner)).attr("class", "rounded").render()
             );
-            builder.append(writeGroups(Groups.by(Item::getGroup, landscapeItems)).render());
+            builder.append(writeGroups(GroupedBy.by(Item::getGroup, landscapeItems)).render());
         });
 
         return builder.toString();
     }
 
-    private ContainerTag writeGroups(Groups groups) {
+    private ContainerTag writeGroups(GroupedBy groups) {
         List<ContainerTag> collect = new ArrayList<>();
         groups.getAll().entrySet().forEach(entry -> collect.add(writeGroup(entry)));
         return ul().with(collect);

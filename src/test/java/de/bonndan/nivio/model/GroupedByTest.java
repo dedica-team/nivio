@@ -8,7 +8,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GroupsTest {
+public class GroupedByTest {
 
     @Test
     public void testBy() {
@@ -25,7 +25,7 @@ public class GroupsTest {
         item3.setOwner("B");
         items.add(item3);
 
-        Groups ownerGroups = Groups.by(Item::getOwner, items);
+        GroupedBy ownerGroups = GroupedBy.by(Item::getOwner, items);
         Map<String, List<Item>> all = ownerGroups.getAll();
         assertNotNull(all);
         assertFalse(all.isEmpty());
@@ -51,7 +51,7 @@ public class GroupsTest {
         item3.setOwner("B");
         services.add(item3);
 
-        Groups ownerGroups = Groups.by(Item::getOwner, services);
+        GroupedBy ownerGroups = GroupedBy.by(Item::getOwner, services);
         Map<String, List<Item>> all = ownerGroups.getAll();
         assertNotNull(all);
         assertFalse(all.isEmpty());
@@ -83,29 +83,10 @@ public class GroupsTest {
         item3.setOwner("B");
         services.add(item3);
 
-        Groups ownerGroups = Groups.by(Item::getOwner, services);
+        GroupedBy ownerGroups = GroupedBy.by(Item::getOwner, services);
         Map<String, List<Item>> all = ownerGroups.getAll();
         assertEquals(2, all.size());
         assertFalse(all.containsKey(Group.COMMON));
         assertFalse(all.containsKey("content"));
-    }
-
-    @Test
-    public void testMerge() {
-        Group one = new Group("a");
-        one.setColor("#123123");
-        one.setDescription("a");
-        one.setOwner("Joe");
-
-        Group two = new Group("a");
-        two.setOwner("Matt");
-        two.setContact("mail");
-
-        Groups.merge(one, two);
-
-        assertEquals("Joe", one.getOwner());
-        assertEquals("a", one.getDescription());
-        assertEquals("mail", one.getContact());
-        assertEquals("#123123", one.getColor());
     }
 }

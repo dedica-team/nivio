@@ -170,7 +170,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
         group.setLandscape(this.identifier);
         if (groups.containsKey(group.getIdentifier())) {
-            Groups.merge(groups.get(group.getIdentifier()), group);
+            GroupFactory.merge(groups.get(group.getIdentifier()), group);
         } else {
             groups.put(group.getIdentifier(), group);
         }
