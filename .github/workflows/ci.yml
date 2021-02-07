@@ -58,6 +58,8 @@ jobs:
           restore-keys: ${{runner.os}}-yarn-
 
       - name: Test with Maven
+        env:
+          MAVEN_OPTS: -Xss1024k
         # The --no-transfer-progress flag ensures that dependency downloads are not logged.
         # Reference: https://maven.apache.org/ref/3.6.3/maven-embedder/cli.html
         # This is useful as the tests run in fresh containers and, therefore, dependencies are *always* downloaded.
