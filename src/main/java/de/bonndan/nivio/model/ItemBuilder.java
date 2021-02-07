@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -19,6 +20,7 @@ public final class ItemBuilder {
     private String group;
     private String color;
     private String icon;
+    private URI address;
     private Map<String, String> labels = new HashMap<>();
 
     private ItemBuilder() {
@@ -88,8 +90,14 @@ public final class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder withAddress(URI address) {
+        this.address = address;
+        return this;
+    }
+
     public Item build() {
-        Item item = new Item(identifier, landscape, group, name, owner, contact, description, color, icon);
+        Item item = new Item(identifier, landscape, group, name, owner, contact,
+                description, color, icon, address);
         item.setLinks(links);
         item.getLabels().putAll(labels);
         item.setRelations(relations);

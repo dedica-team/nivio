@@ -30,7 +30,7 @@ class LabelRelationResolverTest {
     @DisplayName("label blacklist is used")
     public void blacklistPreventsRelations() {
         //given
-        LandscapeDescription landscape = new LandscapeDescription();
+        LandscapeDescription landscape = new LandscapeDescription("identifier");
         landscape.getConfig().getLabelBlacklist().add(".*COMPOSITION.*");
 
         ItemDescription hihi = new ItemDescription( "bar");
@@ -52,7 +52,7 @@ class LabelRelationResolverTest {
     @DisplayName("label blacklist is used case insensitive")
     public void blacklistPreventsRelationsCaseInsensitive() {
         //given
-        LandscapeDescription landscape = new LandscapeDescription();
+        LandscapeDescription landscape = new LandscapeDescription("identifier");
         landscape.getConfig().getLabelBlacklist().add(".*COMPOSITION.*");
 
         ItemDescription hihi = new ItemDescription( "bar");
@@ -76,7 +76,7 @@ class LabelRelationResolverTest {
         //given
         ItemDescription db = new ItemDescription("x.y.z");
         db.setLabel(Linked.LINK_LABEL_PREFIX + "foo", "http://foo.bar.baz");
-        LandscapeDescription landscape = new LandscapeDescription();
+        LandscapeDescription landscape = new LandscapeDescription("identifier");
         landscape.setItems(List.of(db));
 
         //when

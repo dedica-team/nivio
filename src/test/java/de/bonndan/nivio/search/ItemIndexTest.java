@@ -1,9 +1,9 @@
 package de.bonndan.nivio.search;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,9 +13,7 @@ import java.util.Set;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ItemIndexTest {
 

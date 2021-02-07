@@ -167,10 +167,6 @@ public class LandscapeDescription implements ComponentDescription {
         return null;
     }
 
-    public void setItemDescriptions(List<ItemDescription> itemDescriptions) {
-        this.itemDescriptions.set(itemDescriptions);
-    }
-
     public ItemIndex<ItemDescription> getItemDescriptions() {
         return itemDescriptions;
     }
