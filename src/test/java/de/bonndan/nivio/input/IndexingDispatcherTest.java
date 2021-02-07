@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.util.Collections;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -31,7 +34,7 @@ class IndexingDispatcherTest {
     @Test
     void createFromBody() {
 
-        LandscapeDescription dto = new LandscapeDescription();
+        LandscapeDescription dto = new LandscapeDescription("identifier");
         when(landscapeDescriptionFactory.fromString(eq("foo"), anyString())).thenReturn(dto);
         //when
         dispatcher.createFromBody("foo");
@@ -46,7 +49,7 @@ class IndexingDispatcherTest {
 
     @Test
     void createFromBodyItems() {
-        LandscapeDescription dto = new LandscapeDescription();
+        LandscapeDescription dto = new LandscapeDescription("identifier");
         when(landscapeDescriptionFactory.fromBodyItems("foo", "nivio", "body")).thenReturn(dto);
         //when
         dispatcher.createFromBodyItems("foo", "nivio", "body");
@@ -61,9 +64,11 @@ class IndexingDispatcherTest {
 
     @Test
     void fromIncoming() {
-        Landscape existing = new Landscape("foobar", new Group("agroup"));
-        existing.setSource("foo");
-        LandscapeDescription dto = new LandscapeDescription();
+        Landscape existing = new Landscape(
+                "foobar",
+                Map.of("agroup",new Group("agroup", "foobar", Collections.emptySet())),
+                "foobar", null, null, null, "foo", null, null, Collections.emptyMap());
+        LandscapeDescription dto = new LandscapeDescription("foobar");
         when(landscapeDescriptionFactory.fromString(eq(existing.getSource()), anyString())).thenReturn(dto);
 
         //when
