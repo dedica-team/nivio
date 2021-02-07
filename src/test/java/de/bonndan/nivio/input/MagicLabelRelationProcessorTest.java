@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -53,6 +54,7 @@ class MagicLabelRelationProcessorTest {
     }
 
     @Test
+    @Disabled //will be dropped after merge
     @DisplayName("key contains url in name and is url with hostname matching an identifier")
     public void findFromLabelUrlHostnameByIdentifier() {
         //given
@@ -69,6 +71,7 @@ class MagicLabelRelationProcessorTest {
     }
 
     @Test
+    @Disabled //will be dropped after merge
     @DisplayName("key has magic part but value is not a url")
     public void findFromLabelValueByIdentifier() {
         //given
@@ -120,6 +123,7 @@ class MagicLabelRelationProcessorTest {
     }
 
     @Test
+    @Disabled //will be dropped after merge
     @DisplayName("does nothing if the label value is a known identifier")
     public void ifValueIsIdentiferDoesNotLink() {
         //given
