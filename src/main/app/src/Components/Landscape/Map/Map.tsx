@@ -159,8 +159,9 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       const width = doc.firstElementChild.width.baseVal.value;
       const height = doc.firstElementChild.height.baseVal.value;
       setData({ width: width, height: height, xml: svg });
+      setSidebarContent(null);
     });
-  }, [identifier]);
+  }, [identifier, setSidebarContent]);
 
   //load landscape
   useEffect(() => {

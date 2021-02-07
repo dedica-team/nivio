@@ -2,7 +2,8 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.search.ItemIndex;
+import de.bonndan.nivio.search.ItemMatcher;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -29,12 +30,12 @@ public class InstantItemResolver extends Resolver {
         landscape.addItems(newItems);
     }
 
-    private List<ItemDescription> resolveTargets(ItemDescription description, ItemDescriptions allItems) {
+    private List<ItemDescription> resolveTargets(ItemDescription description, ItemIndex<ItemDescription> allItems) {
 
         List<ItemDescription> newItems = new ArrayList<>();
         //providers
         description.getProvidedBy().forEach(term -> {
-            Optional<? extends ItemDescription> provider = allItems.query(term.toLowerCase()).stream().findFirst();
+            Optional<ItemDescription> provider = allItems.query(term.toLowerCase()).stream().findFirst();
 
             if (provider.isEmpty()) {
                 processLog.info("Creating a new provider landscape item for term '" + term + "' instantly.");
@@ -68,9 +69,9 @@ public class InstantItemResolver extends Resolver {
         return itemDescription;
     }
 
-    private boolean hasTarget(String term, ItemDescriptions allItems) {
+    private boolean hasTarget(String term, ItemIndex<ItemDescription> allItems) {
 
-        Collection<? extends ItemDescription> result = allItems.query(term);
+        Collection<ItemDescription> result = allItems.query(term);
         if (result.size() > 1) {
             processLog.warn("Found ambiguous sources matching " + term);
             return true;

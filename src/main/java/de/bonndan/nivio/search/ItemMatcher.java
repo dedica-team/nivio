@@ -1,6 +1,9 @@
-package de.bonndan.nivio.model;
+package de.bonndan.nivio.search;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
@@ -75,6 +78,10 @@ public class ItemMatcher {
     }
     public static ItemMatcher forTarget(FullyQualifiedIdentifier fqi) {
         return build(fqi.getLandscape(), fqi.getGroup(), fqi.getItem());
+    }
+
+    public static ItemMatcher forTarget(ItemDescription item) {
+        return build("", item.getGroup(), item.getIdentifier());
     }
 
     @Override

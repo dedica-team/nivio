@@ -117,6 +117,12 @@ public class Group implements Labeled, Linked, Assessable {
         return color;
     }
 
+    @JsonIgnore
+    @Override
+    public String getAddress() {
+        return null;
+    }
+
     @Schema(name = "_links")
     public Map<String, Link> getLinks() {
         return links;

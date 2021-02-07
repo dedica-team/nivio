@@ -1,15 +1,15 @@
 package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.util.URIHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
+import java.net.URI;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import static de.bonndan.nivio.util.SafeAssign.assignSafe;
 
 public class ItemFactory {
 
@@ -21,7 +21,8 @@ public class ItemFactory {
     }
 
     public static Item getTestItem(String group, String identifier, Landscape landscape) {
-        return new Item(identifier, landscape, group, null,null,null, null, null, null);
+        return new Item(identifier, landscape, group, null,null,null,
+                null, null, null, null);
     }
 
     public static ItemBuilder getTestItemBuilder(String group, String identifier) {
@@ -41,6 +42,9 @@ public class ItemFactory {
                 .withIcon(description.getIcon())
                 .withLandscape(landscape);
 
+        if (description.getAddress() != null) {
+            builder.withAddress(URI.create(description.getAddress()));
+        }
 
         builder.withInterfaces(description.getInterfaces().stream()
                 .map(ServiceInterface::new)
@@ -80,6 +84,8 @@ public class ItemFactory {
                 .withLabels(item.getLabels())
                 .withLinks(item.getLinks());
 
+        URIHelper.getURI(description.getAddress())
+                .ifPresent(builder::withAddress);
 
         builder.withInterfaces(description.getInterfaces().stream()
                 .map(ServiceInterface::new)

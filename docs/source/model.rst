@@ -34,6 +34,7 @@ A item should have the following attributes:
 
 Other fields:
 
+* **address** a technical address like an URI
 * **links** a map/dictionary of urls to more information
 * **lifecycle** life cycle phase. One of "planned", "integration", "production", "end of life" (abbrevs work)
 * **status** status objects, represented in colors

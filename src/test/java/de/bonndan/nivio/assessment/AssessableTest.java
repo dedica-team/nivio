@@ -1,5 +1,6 @@
 package de.bonndan.nivio.assessment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
@@ -230,6 +231,11 @@ class AssessableTest {
 
         @Override
         public String getColor() {
+            return null;
+        }
+
+        @Override
+        public String getAddress() {
             return null;
         }
 

@@ -1,13 +1,14 @@
 package de.bonndan.nivio.input.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.input.ItemDescriptionValues;
-import de.bonndan.nivio.input.ItemDescriptions;
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.search.ItemIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -60,7 +61,7 @@ public class LandscapeDescription implements ComponentDescription {
     /**
      * descriptions of items fetched and parsed from sources
      */
-    private final ItemDescriptions itemDescriptions = new ItemDescriptions();
+    private final ItemIndex<ItemDescription> itemDescriptions = new ItemIndex<>(null, ItemDescription.class);
 
     private final LandscapeConfig config = new LandscapeConfig();
 
@@ -160,11 +161,13 @@ public class LandscapeDescription implements ComponentDescription {
         this.source = source;
     }
 
-    public void setItemDescriptions(List<ItemDescription> itemDescriptions) {
-        this.itemDescriptions.set(itemDescriptions);
+    @JsonIgnore
+    @Override
+    public String getAddress() {
+        return null;
     }
 
-    public ItemDescriptions getItemDescriptions() {
+    public ItemIndex<ItemDescription> getItemDescriptions() {
         return itemDescriptions;
     }
 

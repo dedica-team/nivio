@@ -24,6 +24,8 @@ public class ItemDescriptionValues {
             existing.setIcon(increment.getIcon());
         if (increment.getGroup() != null)
             existing.setGroup(increment.getGroup());
+        if (increment.getAddress() != null)
+            existing.setAddress(increment.getAddress());
 
         assignSafe(increment.getRelations(), (rel) -> rel.forEach(existing::addRelation));
 
@@ -33,25 +35,26 @@ public class ItemDescriptionValues {
     /**
      * Writes the values of the template (second object) to the first where first is null.
      *
-     * @param item     target
-     * @param template source
+     * @param target     target
+     * @param source source
      */
-    public static void assignSafeNotNull(ItemDescription item, ItemDescription template) {
+    public static void assignSafeNotNull(ItemDescription target, ItemDescription source) {
 
-        ComponentDescriptionValues.assignSafeNotNull(item, template);
+        ComponentDescriptionValues.assignSafeNotNull(target, source);
 
-        assignSafeIfAbsent(template.getType(), item.getType(), item::setType);
-        assignSafeIfAbsent(template.getGroup(), item.getGroup(), item::setGroup);
-        assignSafeIfAbsent(template.getIcon(), item.getIcon(), item::setIcon);
+        assignSafeIfAbsent(source.getType(), target.getType(), target::setType);
+        assignSafeIfAbsent(source.getGroup(), target.getGroup(), target::setGroup);
+        assignSafeIfAbsent(source.getIcon(), target.getIcon(), target::setIcon);
+        assignSafeIfAbsent(source.getAddress(), target.getAddress(), target::setAddress);
 
-        if (template.getProvidedBy() != null) {
-            template.getProvidedBy().stream()
-                    .filter(s -> !StringUtils.isEmpty(s) && !item.getProvidedBy().contains(s))
-                    .forEach(s -> item.getProvidedBy().add(s));
+        if (source.getProvidedBy() != null) {
+            source.getProvidedBy().stream()
+                    .filter(s -> !StringUtils.isEmpty(s) && !target.getProvidedBy().contains(s))
+                    .forEach(s -> target.getProvidedBy().add(s));
         }
 
-        template.getRelations().forEach(item::addRelation);
+        source.getRelations().forEach(target::addRelation);
 
-        item.getInterfaces().addAll(template.getInterfaces());
+        target.getInterfaces().addAll(source.getInterfaces());
     }
 }

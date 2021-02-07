@@ -173,7 +173,7 @@ public class ApiController {
             return ResponseEntity.notFound().build();
         }
 
-        return new ResponseEntity<>(landscape.getItems().facets(), HttpStatus.OK);
+        return new ResponseEntity<>(landscape.getSearchIndex().facets(), HttpStatus.OK);
     }
 
 

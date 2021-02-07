@@ -1,6 +1,8 @@
-package de.bonndan.nivio.model;
+package de.bonndan.nivio.search;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.Group;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

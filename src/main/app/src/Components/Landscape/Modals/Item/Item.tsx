@@ -32,6 +32,9 @@ const useStyles = makeStyles((theme: Theme) =>
     labels: {
       backgroundColor: theme.palette.primary.main,
     },
+    tag: {
+      backgroundColor: theme.palette.primary.main,
+    },
   })
 );
 
@@ -165,13 +168,14 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
     <Card className={classes.card}>
       <CardHeader
         title={item ? item.name || item.identifier : null}
+        titleTypographyProps={{title: 'ID: ' + item?.fullyQualifiedIdentifier}}
         avatar={
           item ? (
             <Avatar
               imgProps={{ style: { objectFit: 'contain' } }}
               src={getItemIcon(item)}
               style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.65)',
+                backgroundColor: 'rgba(255, 255, 255, 0.75)',
                 border: '2px solid #' + item.color,
               }}
             />
@@ -198,12 +202,18 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
             <div className='tags'>
               {item
                 ? item.tags.map((value) => (
-                    <Chip size='small' variant='outlined' label={value} key={value} />
+                    <Chip size='small' label={value} key={value} className={extraClasses.tag}/>
                   ))
                 : null}
             </div>
 
             <List dense={true}>
+              <ListItem>
+                <ListItemText
+                    primary={'Group'}
+                    secondary={item?.group}
+                />
+              </ListItem>
               {item?.contact?.length ? (
                 <ListItem>
                   <ListItemText

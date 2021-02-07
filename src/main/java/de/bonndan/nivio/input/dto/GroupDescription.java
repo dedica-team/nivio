@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.model.Link;
@@ -44,6 +45,18 @@ public class GroupDescription implements ComponentDescription {
 
     public String getOwner() {
         return owner;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getIcon() {
+        return null;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getAddress() {
+        return null;
     }
 
     public void setOwner(String owner) {
