@@ -165,7 +165,7 @@
         <dependency>
             <groupId>com.googlecode.cqengine</groupId>
             <artifactId>cqengine</artifactId>
-            <version>3.5.0</version>
+            <version>3.6.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.xerial</groupId>
