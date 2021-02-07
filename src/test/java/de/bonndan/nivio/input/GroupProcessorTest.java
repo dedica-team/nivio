@@ -91,6 +91,12 @@ class GroupProcessorTest {
         assertEquals(1, input.getItemDescriptions().all().size());
     }
 
+    @Test
+    void itemsAreAddedToGroups() {
+        //group.addItem(item) has been deleted without proper replacement
+        assertTrue(false);
+    }
+
     private LandscapeDescription getLandscapeDescription() {
         LandscapeDescription input = new LandscapeDescription("test", "testLandscape", null);
         input.getGroupDescriptions().put("test1", new GroupDescription());
