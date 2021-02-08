@@ -85,7 +85,7 @@ public class HintFactory {
         if (targets.size() == 0) {
             LOGGER.info("Creating new relation target from value {}", value);
             ItemDescription createdTarget = new ItemDescription();
-            createdTarget.setIdentifier(value);
+            createdTarget.setIdentifier(optionalURI.map(uri1 -> (uri1.getHost() + uri1.getPath()).replace("/", "_")).orElse(value));
             createdTarget.setName(value);
             createdTarget.setGroup(item.getGroup());
             createdTarget.setLabel(Label.note, String.format("Created from label %s of %s", labelKey, item));

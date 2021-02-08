@@ -51,6 +51,8 @@ class HintFactoryTest {
         ItemDescription created = createdOrModifiedDescriptions.get(1);
         assertThat(created.getType()).isEqualTo(ItemType.DATABASE);
         assertThat(created.getGroup()).isEqualTo(one.getGroup());
+        assertThat(created.getIdentifier()).isEqualTo("somehost_abc");
+
         RelationDescription next = one.getRelations().iterator().next();
         assertThat(next.getType()).isEqualTo(RelationType.PROVIDER);
     }
@@ -68,6 +70,9 @@ class HintFactoryTest {
         assertThat(foo).isNotEmpty();
         List<ItemDescription> createdOrModifiedDescriptions = foo.get().getCreatedOrModifiedDescriptions();
         assertThat(createdOrModifiedDescriptions.size()).isEqualTo(2);
+
+        ItemDescription created = createdOrModifiedDescriptions.get(1);
+        assertThat(created.getIdentifier()).isEqualTo("foo.bar.baz");
 
         RelationDescription next = one.getRelations().iterator().next();
         assertThat(next.getType()).isEqualTo(RelationType.DATAFLOW);
