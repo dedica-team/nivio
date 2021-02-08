@@ -5,6 +5,8 @@ import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.*;
 import org.apache.lucene.facet.FacetResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,8 @@ import java.util.Set;
 @RestController
 @RequestMapping(path = ApiController.PATH)
 public class ApiController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApiController.class);
 
     public static final String PATH = "/api";
 
@@ -158,7 +162,8 @@ public class ApiController {
 
         try {
             return new ResponseEntity<>(landscape.getItems().search(query), HttpStatus.OK);
-        } catch (RuntimeException ignored) {
+        } catch (RuntimeException error) {
+            LOGGER.error("Search query '{}' in landscape {} failed: {}", query, landscape, error.getMessage(), error);
             return ResponseEntity.badRequest().build();
         }
 
