@@ -10,6 +10,7 @@ import com.googlecode.cqengine.resultset.ResultSet;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
@@ -120,12 +121,17 @@ public class ItemIndex<T extends Component> {
     /**
      * Returns all items matching the given term.
      *
-     * @param term "*" as wildcard for all | {@link FullyQualifiedIdentifier} string pathes | identifier
+     * @param term "*" as wildcard for all | {@link FullyQualifiedIdentifier} string paths | identifier | url
      * @return all matching items.
+     * @todo refactor param, too ambiguous
      */
     public Collection<T> query(String term) {
         if ("*".equals(term)) {
             return all();
+        }
+
+        if (URLHelper.getURL(term).isPresent()) {
+            term = "address = '" + term + "'";
         }
 
         if (term.contains("/") && !term.contains(" ")) {
@@ -220,7 +226,6 @@ public class ItemIndex<T extends Component> {
 
     /**
      * Creates a search index based in a snapshot of current items state (later modifications won't be shown).
-     *
      */
     public void indexForSearch() {
         searchIndex.ifPresent(searchIndex1 -> searchIndex1.indexForSearch(all()));
