@@ -133,7 +133,6 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         return links;
     }
 
-    @JsonIgnore
     public String getGroup() {
         return group;
     }
