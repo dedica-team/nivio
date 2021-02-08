@@ -63,12 +63,10 @@ public class LabelToFieldResolver extends Resolver {
         }
 
         Optional<PropertyDescriptor> descriptor = getDescriptor(name);
-        if (descriptor.isEmpty()) {
-            processLog.debug(String.format("Failed to write field '%s' via label: unknown", name));
-            return;
+        if (descriptor.isPresent()) {
+            name = descriptor.get().getName();
         }
 
-        name = descriptor.get().getName();
         PropertyAccessor myAccessor = PropertyAccessorFactory.forBeanPropertyAccess(item);
         Class<?> propertyType = myAccessor.getPropertyType(name);
 
