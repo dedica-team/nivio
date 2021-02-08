@@ -48,6 +48,28 @@ Nivio proprietary format
 
 Nivio provides an own format, which allows to set all model properties manually (see Model and Syntax section).
 
+Reading from csv
+-----------------------------
+
+Nivio can parse csv files regarding one row as landscape item. The order of the columns in the file is important, since
+headers are ignored and not mapping automatically. Instead, each column number (starting at zero) can be assigned to an
+item property in the "mapping" configuration. Additionally, the csv separator char and the number of lines to
+skip (usually 1 for the header row) can be set.
+
+.. code-block:: yaml
+   :linenos:
+
+    sources:
+     - url: "./services/test.csv"
+       format: csv
+       mapping:
+         identifier: 1
+         name: 0
+         description: 2
+         providedBy: 3
+       separator: ";"
+       skipLines: 1
+
 
 External data
 -------------
@@ -59,6 +81,7 @@ data to landscape components, use links having special known identifiers like "g
 This is work in progress. Currently supported link identifiers are:
 
 * 'github' for GitHub repositories
+* 'gitlab' for GitLab repositories
 * 'spring.health' for Spring Boot health actuators https://docs.spring.io/spring-boot/docs/current/actuator-api/htmlsingle/#health
 
 .. code-block:: yaml

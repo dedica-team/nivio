@@ -76,22 +76,6 @@ You can set labels (string:string) to items which are evaluated as model fields 
 * the key contains "nivio." AND
 * the rest of the key equals a field name.
 
-For instance
-
-.. code-block:: yaml
-   :linenos:
-
-    items:
-      - identifier: theservice
-        labels:
-          nivio.name: A nice name
-          nivio.providedBy: ["foo", "bar"]
-          nivio.relations: ["atarget", "anotherTarget"]
-          nivio.link.wiki: http://mywiki.acme.com
-
-
-will set the related values (here: name, providers and relations). Remember to escape URLs with double quotes.
-
 Labels can be set using docker-compose files, too. However, docker labels not not allow arrays, so use comma separated strings:
 
 .. code-block:: yaml
@@ -103,26 +87,24 @@ Labels can be set using docker-compose files, too. However, docker labels not no
           nivio.name: A nice name
           nivio.providedBy: "bar, baz"
           nivio.relations: "atarget, anotherTarget"
-          nivio.link.repo: https://github.com/foo/bar
+          nivio.link.repo: "https://github.com/foo/bar"
 
+ Remember to escape URLs with double quotes.
 
 Relations between landscape items
 ---------------------------------
 
 Usually environments such as Docker, K8s provide few to none information on the relation between landscape items (e.g.
 which database a service uses). However, in 12-factor apps there is configuration through environment variables (https://12factor.net/config)
-and these can be parsed hopefully. Nivio provides an experimental feature which regards these env vars as DSL. Env vars
+and these can be parsed. Nivio provides an experimental feature which regards these env vars as DSL. Env vars
 are read and assigned as item labels, then examined:
 
 * The key is split using the underscore character.
-* If it contains parts like **"url", "uri", "host"** etc. the label is taken into account.
+* If it contains parts like **"url", "uri", "host"** etc. the label is taken into account as **identifier**, i.e. nivio looks for a target having the identifier, name or address equal to the value
 
-Then the label is examined:
+Labels are examined as follows:
 
-* If the value matches a landscape item identifier, the corresponding item is used as target and detection ends
-* In the case of being an URL, the host and name path components are extracted and used as names or identifiers.
-* Otherwise, the **key** of the label is split using the underscore "_" characters and the resulting parts are used as names
-or identifier. For instance FOO_API_URL would look for landscape items like "foo" and "api".
+* In the case of being an URI, the host and name path components are extracted and used as names or identifiers.
 
 
 To prevent false positives certain label can be omitted:
@@ -131,13 +113,12 @@ To prevent false positives certain label can be omitted:
    :linenos:
 
     identifier: some-landscape
-    config:
-      labelBlacklist: [".*data.*"]
 
     items:
       - identifier: foo
         labels:
-          BAR_URL: http://bar.local
+          HOST: bar
+          SOME_LABEL: mysql://ahost/foobar
 
       - identifier: bar
-        ...
+        type: database
