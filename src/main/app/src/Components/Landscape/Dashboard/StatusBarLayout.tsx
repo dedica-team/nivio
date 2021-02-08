@@ -47,6 +47,7 @@ const StatusBarLayout: React.FC<Props> = ({
       );
 
       if (field === '') return null;
+      if (assessmentColor === 'GREEN') return null;
 
       return (
         <Button key={item.fullyQualifiedIdentifier} onClick={() => onItemClick(item)}>
