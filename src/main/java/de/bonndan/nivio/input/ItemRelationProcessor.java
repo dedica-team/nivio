@@ -36,8 +36,10 @@ public class ItemRelationProcessor extends Processor {
                     origin.getRelations().remove(relation);
                     origin.getRelations().add(relation);
                     if (relation.getSource() == origin) {
+                        relation.getTarget().getRelations().remove(relation);
                         relation.getTarget().getRelations().add(relation);
                     } else {
+                        relation.getSource().getRelations().remove(relation);
                         relation.getSource().getRelations().add(relation);
                     }
                 });
