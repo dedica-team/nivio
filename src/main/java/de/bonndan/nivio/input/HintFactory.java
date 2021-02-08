@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.search.ItemIndex;
 import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.util.URIHelper;
@@ -87,6 +88,7 @@ public class HintFactory {
             createdTarget.setIdentifier(value);
             createdTarget.setName(value);
             createdTarget.setGroup(item.getGroup());
+            createdTarget.setLabel(Label.note, String.format("Created from label %s of %s", labelKey, item));
             optionalURI.ifPresent(uri -> {
                 createdTarget.setAddress(uri.toString());
             });
