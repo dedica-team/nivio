@@ -2,20 +2,18 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.Link;
 import de.bonndan.nivio.model.Linked;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.StringUtils;
 
+import java.beans.PropertyDescriptor;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -49,12 +47,28 @@ public class LabelToFieldResolver extends Resolver {
         });
     }
 
+    private Optional<PropertyDescriptor> getDescriptor(String name) {
+        PropertyDescriptor[] propertyDescriptors = BeanUtils.getPropertyDescriptors(ItemDescription.class);
+        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+            if (propertyDescriptor.getName().equalsIgnoreCase(name))
+                return Optional.of(propertyDescriptor);
+        }
+        return Optional.empty();
+    }
+
     private void setValue(ItemDescription item, String name, String value) {
 
         if (StringUtils.isEmpty(value)) {
             return;
         }
 
+        Optional<PropertyDescriptor> descriptor = getDescriptor(name);
+        if (descriptor.isEmpty()) {
+            processLog.debug(String.format("Failed to write field '%s' via label: unknown", name));
+            return;
+        }
+
+        name = descriptor.get().getName();
         PropertyAccessor myAccessor = PropertyAccessorFactory.forBeanPropertyAccess(item);
         Class<?> propertyType = myAccessor.getPropertyType(name);
 

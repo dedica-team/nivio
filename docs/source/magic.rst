@@ -86,7 +86,7 @@ For instance
         labels:
           nivio.name: A nice name
           nivio.providedBy: ["foo", "bar"]
-          nivio.relaations: ["atarget", "anotherTarget"]
+          nivio.relations: ["atarget", "anotherTarget"]
           nivio.link.wiki: http://mywiki.acme.com
 
 

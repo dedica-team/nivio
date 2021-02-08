@@ -72,7 +72,7 @@ class LabelToFieldResolverTest {
     }
 
     @Test
-    @DisplayName("Ensure comma separated strings are parsed properly")
+    @DisplayName("Ensure providedBy label is case insensitive")
     public void providedbyLowercase() {
         ItemDescription item1 = new ItemDescription();
         item1.getLabels().put("NIVIO.providedby", "baz ");
