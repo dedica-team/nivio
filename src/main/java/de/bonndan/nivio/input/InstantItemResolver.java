@@ -62,9 +62,10 @@ public class InstantItemResolver extends Resolver {
      */
     private ItemDescription createItem(String term) {
         ItemDescription itemDescription = new ItemDescription();
-        ItemMatcher fqi = ItemMatcher.forTarget(term);
-        itemDescription.setGroup(fqi.getGroup());
-        itemDescription.setIdentifier(fqi.getItem());
+        ItemMatcher.forTarget(term).ifPresent(itemMatcher -> {
+            itemDescription.setGroup(itemMatcher.getGroup());
+            itemDescription.setIdentifier(itemMatcher.getItem());
+        });
 
         return itemDescription;
     }

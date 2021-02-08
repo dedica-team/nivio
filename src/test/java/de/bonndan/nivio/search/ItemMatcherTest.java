@@ -77,7 +77,7 @@ public class ItemMatcherTest {
     public void forTargetComplete() {
 
         String three = "a/b/c";
-        ItemMatcher fqi = ItemMatcher.forTarget(three);
+        ItemMatcher fqi = ItemMatcher.forTarget(three).get();
         assertEquals("a", fqi.getLandscape());
         assertEquals("b", fqi.getGroup());
         assertEquals("c", fqi.getItem());
@@ -86,7 +86,7 @@ public class ItemMatcherTest {
     @Test
     public void forTargetGroupAndItem() {
         String two = "b/c";
-        ItemMatcher fqi = ItemMatcher.forTarget(two);
+        ItemMatcher fqi = ItemMatcher.forTarget(two).get();
         assertEquals("", fqi.getLandscape());
         assertEquals("b", fqi.getGroup());
         assertEquals("c", fqi.getItem());
@@ -94,7 +94,7 @@ public class ItemMatcherTest {
     @Test
     public void forItem() {
         String one = "c";
-        ItemMatcher fqi = ItemMatcher.forTarget(one);
+        ItemMatcher fqi = ItemMatcher.forTarget(one).get();
         assertEquals("", fqi.getLandscape());
         assertEquals(null, fqi.getGroup());
         assertEquals("c", fqi.getItem());

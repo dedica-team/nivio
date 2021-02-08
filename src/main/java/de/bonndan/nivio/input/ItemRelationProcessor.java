@@ -49,23 +49,21 @@ public class ItemRelationProcessor extends Processor {
 
     private Optional<Relation> update(RelationDescription relationDescription, Landscape landscape, Item origin) {
 
-        var fqiSource = ItemMatcher.forTarget(relationDescription.getSource());
-        var fqiTarget = ItemMatcher.forTarget(relationDescription.getTarget());
-        Item source = landscape.getItems().find(fqiSource).orElse(null);
-        if (source == null) {
+        Optional<Item> source = findBy(relationDescription.getSource(), landscape);
+        if (source.isEmpty()) {
             processLog.warn(String.format("Relation source %s not found", relationDescription.getSource()));
             return Optional.empty();
         }
-        Item target = landscape.getItems().find(fqiTarget).orElse(null);
 
-        if (target == null) {
+        Optional<Item> target = findBy(relationDescription.getTarget(), landscape);
+        if (target.isEmpty()) {
             processLog.warn(String.format("Relation target %s not found", relationDescription.getTarget()));
             return Optional.empty();
         }
 
         Iterator<Relation> iterator = origin.getRelations().iterator();
         Relation existing = null;
-        Relation created = new Relation(source, target);
+        Relation created = new Relation(source.get(), target.get());
         while (iterator.hasNext()) {
             existing = iterator.next();
             if (existing.equals(created)) {
@@ -83,5 +81,11 @@ public class ItemRelationProcessor extends Processor {
 
         processLog.info(String.format("Adding relation from %s to %s", created.getSource(), created.getTarget()));
         return Optional.of(created);
+    }
+
+    private Optional<Item> findBy(String term, Landscape landscape) {
+        return ItemMatcher.forTarget(term)
+                .map(itemMatcher -> landscape.getItems().find(itemMatcher))
+                .orElseGet(() -> landscape.getItems().query(term).stream().findFirst());
     }
 }

@@ -77,10 +77,12 @@ public class HintFactory {
 
         List<ItemDescription> targets = getTarget(landscape.getItemDescriptions(), value, optionalURI);
         if (targets.size() > 1) {
+            LOGGER.info("Found ambiguous results searching for target {}", value);
             return Optional.empty();
         }
         ItemDescription target;
         if (targets.size() == 0) {
+            LOGGER.info("Creating new relation target from value {}", value);
             ItemDescription createdTarget = new ItemDescription();
             createdTarget.setIdentifier(value);
             createdTarget.setName(value);

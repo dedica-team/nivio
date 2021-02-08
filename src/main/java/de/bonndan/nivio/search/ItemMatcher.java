@@ -4,10 +4,15 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.util.URLHelper;
+import org.apache.juli.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Expression to search for items in a landscape.
@@ -15,6 +20,8 @@ import java.util.Objects;
  *
  */
 public class ItemMatcher {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemMatcher.class);
 
     private String landscape;
     private String group;
@@ -52,25 +59,32 @@ public class ItemMatcher {
      * @param string group/identifier
      * @return fqi
      */
-    public static ItemMatcher forTarget(String string) {
+    public static Optional<ItemMatcher> forTarget(String string) {
         if (StringUtils.isEmpty(string)) {
-            throw new IllegalArgumentException("identifier must not be empty");
+            LOGGER.warn("identifier must not be empty");
+            return Optional.empty();
+        }
+
+        if (URLHelper.getURL(string).isPresent()) {
+            LOGGER.debug(String.format("ItemMatcher does not work with URLs: %s", string));
+            return Optional.empty();
         }
 
         String[] split = string.split(SEPARATOR);
         if (split.length == 1) {
-            return ItemMatcher.build(null, null, split[0]);
+            return Optional.of(ItemMatcher.build(null, null, split[0]));
         }
 
         if (split.length == 2) {
-            return ItemMatcher.build(null, split[0], split[1]);
+            return Optional.of(ItemMatcher.build(null, split[0], split[1]));
         }
 
         if (split.length == 3) {
-            return ItemMatcher.build(split[0], split[1], split[2]);
+            return Optional.of(ItemMatcher.build(split[0], split[1], split[2]));
         }
 
-        throw new IllegalArgumentException("Given string '" + string + "' contains too many parts to build an item matcher.");
+        LOGGER.debug(String.format("Given string '%s' contains too many parts to build an item matcher.", string));
+        return Optional.empty();
     }
 
     public static ItemMatcher forTarget(Item item) {

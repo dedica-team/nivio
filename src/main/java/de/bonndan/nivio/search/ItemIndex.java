@@ -5,6 +5,7 @@ import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.support.SimpleFunction;
 import com.googlecode.cqengine.query.Query;
+import com.googlecode.cqengine.query.parser.common.InvalidQueryException;
 import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
 import de.bonndan.nivio.input.dto.ItemDescription;
@@ -123,19 +124,26 @@ public class ItemIndex<T extends Component> {
      *
      * @param term "*" as wildcard for all | {@link FullyQualifiedIdentifier} string paths | identifier | url
      * @return all matching items.
-     * @todo refactor param, too ambiguous
+     * @todo refactor, test
      */
     public Collection<T> query(String term) {
         if ("*".equals(term)) {
             return all();
         }
 
-        if (URLHelper.getURL(term).isPresent()) {
-            term = "address = '" + term + "'";
-        }
+        if (term.contains("/")) {
 
-        if (term.contains("/") && !term.contains(" ")) {
-            return findAll(ItemMatcher.forTarget(term));
+            if (URLHelper.getURL(term).isPresent()) {
+                term = "address = '" + term + "'";
+            } else if (!term.contains(" ")) {
+                Optional<ItemMatcher> itemMatcher = ItemMatcher.forTarget(term);
+                if (itemMatcher.isPresent()) {
+                    return findAll(itemMatcher.get());
+                }
+
+                //something else that is not an url nor identifier nor where-condition
+                term = String.format("(identifier = '%s' OR name = '%s')", term, term);
+            }
         }
 
         //single word compared against identifier
@@ -244,8 +252,12 @@ public class ItemIndex<T extends Component> {
 
 
     public List<T> cqnQueryOnIndex(String condition) {
-        ResultSet<T> results = parser.retrieve(index, condition);
-        return results.stream().collect(Collectors.toList());
+        try {
+            ResultSet<T> results = parser.retrieve(index, condition);
+            return results.stream().collect(Collectors.toList());
+        } catch (InvalidQueryException e) {
+            throw new RuntimeException(String.format("Failed to run query '%s'", condition), e);
+        }
     }
 
     private List<T> findAll(final String identifier, final String group) {

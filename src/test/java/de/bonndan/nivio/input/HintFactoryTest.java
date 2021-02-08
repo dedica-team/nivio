@@ -25,7 +25,7 @@ class HintFactoryTest {
 
     @BeforeEach
     void setUp() {
-        landscapeDescription = new LandscapeDescription("identifier");
+        landscapeDescription = new LandscapeDescription("landscape");
         one = new ItemDescription();
         one.setIdentifier("one");
         landscapeDescription.addItems(List.of(one));
