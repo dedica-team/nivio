@@ -13,7 +13,7 @@ import java.util.*;
 public class AllGroupsLayout {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AllGroupsLayout.class);
-    public static final int FORCE_CONSTANT = 350;
+    public static final int FORCE_CONSTANT = 300;
     public static final int MAX_DISTANCE_LIMIT = 1000;
 
     private final Map<Group, LayoutedComponent> groupNodes = new LinkedHashMap<>();
