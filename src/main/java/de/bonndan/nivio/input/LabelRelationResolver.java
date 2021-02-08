@@ -14,9 +14,6 @@ import java.util.stream.Collectors;
 
 /**
  * Examines the labels of an item for parts that might be an url and could point to targets in the landscape.
- *
- *
- *
  */
 public class LabelRelationResolver extends Resolver {
 
@@ -61,7 +58,7 @@ public class LabelRelationResolver extends Resolver {
 
         List<String> blacklist = new ArrayList<>();
         blacklist.add(Label.fill.name());
-        blacklist.add(Linked.LINK_LABEL_PREFIX +"*");
+        blacklist.add(Linked.LINK_LABEL_PREFIX + "*");
         blacklist.addAll(configuredBlacklist);
 
         return blacklist.stream().map(s -> {
