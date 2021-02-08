@@ -21,7 +21,15 @@ public class RelationEndpointResolver extends Resolver {
 
     @Override
     public void resolve(LandscapeDescription landscape) {
-        landscape.getItemDescriptions().all().forEach(itemDescription -> resolveRelations(itemDescription, landscape.getItemDescriptions()));
+        landscape.getItemDescriptions().all().forEach(itemDescription -> {
+            try {
+                resolveRelations(itemDescription, landscape.getItemDescriptions());
+            } catch (Exception e) {
+                processLog.error(
+                        new ProcessingException(String.format("Failed to resolve relation for item description %s", itemDescription), e)
+                );
+            }
+        });
     }
 
     private void resolveRelations(ItemDescription description, ItemIndex<ItemDescription> allItems) {
