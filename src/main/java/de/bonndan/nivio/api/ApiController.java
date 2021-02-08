@@ -148,7 +148,7 @@ public class ApiController {
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/landscape/{identifier}/search/{query}", method = RequestMethod.GET)
+    @RequestMapping(path = "/landscape/{identifier}/search/{query}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Set<Item>> search(@PathVariable String identifier, @PathVariable String query) {
 
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
