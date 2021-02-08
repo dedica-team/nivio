@@ -28,6 +28,7 @@ class HintFactoryTest {
         landscapeDescription = new LandscapeDescription("landscape");
         one = new ItemDescription();
         one.setIdentifier("one");
+        one.setGroup("foo");
         landscapeDescription.addItems(List.of(one));
 
         hintFactory = new HintFactory();
@@ -49,6 +50,7 @@ class HintFactoryTest {
 
         ItemDescription created = createdOrModifiedDescriptions.get(1);
         assertThat(created.getType()).isEqualTo(ItemType.DATABASE);
+        assertThat(created.getGroup()).isEqualTo(one.getGroup());
         RelationDescription next = one.getRelations().iterator().next();
         assertThat(next.getType()).isEqualTo(RelationType.PROVIDER);
     }

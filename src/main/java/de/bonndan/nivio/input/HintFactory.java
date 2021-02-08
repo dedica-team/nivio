@@ -86,6 +86,7 @@ public class HintFactory {
             ItemDescription createdTarget = new ItemDescription();
             createdTarget.setIdentifier(value);
             createdTarget.setName(value);
+            createdTarget.setGroup(item.getGroup());
             optionalURI.ifPresent(uri -> {
                 createdTarget.setAddress(uri.toString());
             });
