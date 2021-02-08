@@ -3,9 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.LandscapeFactory;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -75,18 +73,28 @@ class GroupProcessorTest {
     public void testBlacklistOnItems() {
         LandscapeDescription input = getLandscapeDescription();
         input.getConfig().getGroupBlacklist().add("test2");
+
         ItemDescription test1item = new ItemDescription();
         test1item.setIdentifier("intest1");
         test1item.setGroup("test1");
         input.getItemDescriptions().add(test1item);
+
         ItemDescription test2item = new ItemDescription();
         test2item.setIdentifier("intest2");
         test2item.setGroup("test2");
         input.getItemDescriptions().add(test2item);
 
+        Item item = ItemFactory.getTestItem("test2", "foo");
+        landscape.getItems().add(item);
+        assertEquals(1, landscape.getItems().all().size());
+
+        //when
         groupProcessor.process(input, landscape);
 
         assertEquals(2, landscape.getGroups().size()); //incl COMMON
+
+        //deletes item of blacklisted group
+        assertEquals(0, landscape.getItems().all().size());
         assertEquals(1, input.getItemDescriptions().all().size());
     }
 

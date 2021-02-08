@@ -60,10 +60,17 @@ public class GroupProcessor extends Processor {
 
         //assign each item to a group
         landscape.getItems().all().forEach(item -> {
-            Group group = landscape.getGroup(item.getGroup()).orElseThrow(() ->
-                    new RuntimeException(String.format("item group '%s' not found.", item.getGroup()))
-            );
-            group.addItem(item);
+            Optional<Group> group = landscape.getGroup(item.getGroup());
+            if (group.isPresent()) {
+                group.get().addItem(item);
+                return;
+            }
+            if (isBlacklisted(item.getGroup(), specs)) {
+                processLog.info(String.format("Deleting item of blacklisted group %s", item.getGroup()));
+                landscape.getItems().remove(item);
+                return;
+            }
+            throw new RuntimeException(String.format("item group '%s' not found.", item.getGroup()));
         });
     }
 
