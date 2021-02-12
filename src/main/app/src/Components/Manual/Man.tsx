@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, {useState, useEffect, Fragment, useCallback} from 'react';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import ReactHtmlParser, { domToReact } from 'html-react-parser';
@@ -40,13 +40,53 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [topic, setTopic] = useState<string>(usage + '');
   const [side, setSide] = useState<any>(null);
 
-  const handleSphinxSidebar = (domNode: DomElement) => {
+
+
+
+  const handleSphinxSidebar = useCallback((domNode: DomElement) => {
+    const replaceSphinx = (domNode: DomElement) => {
+      // Handle Links
+      if (domNode.name === 'a' && domNode.attribs && domNode.children && domNode.children[0]) {
+        let href = domNode.attribs['href'];
+        const linkText = domNode.children[0].data;
+        if (href.indexOf('http') !== -1 && href.indexOf('http-api') === -1) {
+          return;
+        }
+
+        // Remove anchors
+        if (href.indexOf('#') !== -1) {
+          if (
+              (href.includes('#custom-er-branding') ||
+                  href.includes('#graph') ||
+                  href.includes('#http-api')) &&
+              usage !== 'output.html' // Have to handle output.html abit different for our sidebar
+          ) {
+            href = 'output.html';
+          } else {
+            return <span>{linkText}</span>; // Convert to span if page is opened
+          }
+        }
+
+        return (
+            <Link
+                className={classes.link}
+                to={`/man/${href}`}
+                onClick={(e) => {
+                  setTopic(href);
+                }}
+            >
+              {linkText}
+            </Link>
+        );
+      }
+    };
     // @ts-ignore
     const domToReact1: JSX.Element = domToReact([domNode]);
     const html = renderToString(domToReact1);
     const reactHtmlParser = ReactHtmlParser(html, { replace: replaceSphinx });
     setSide(reactHtmlParser);
-  };
+  },[usage, classes]);
+
   useEffect(() => {
     setSidebarContent(null);
     setPageTitle('Manual');
@@ -61,44 +101,6 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   useEffect(() => {
     setSidebarContent(side);
   }, [side, setSidebarContent]);
-
-  const replaceSphinx = (domNode: DomElement) => {
-    // Handle Links
-    if (domNode.name === 'a' && domNode.attribs && domNode.children && domNode.children[0]) {
-      let href = domNode.attribs['href'];
-      const linkText = domNode.children[0].data;
-      if (href.indexOf('http') !== -1 && href.indexOf('http-api') === -1) {
-        return;
-      }
-
-      // Remove anchors
-      if (href.indexOf('#') !== -1) {
-        if (
-          (href.includes('#custom-er-branding') ||
-            href.includes('#graph') ||
-            href.includes('#http-api')) &&
-          usage !== 'output.html' // Have to handle output.html abit different for our sidebar
-        ) {
-          href = 'output.html';
-        } else {
-          return <span>{linkText}</span>; // Convert to span if page is opened
-        }
-      }
-
-      return (
-        <Link
-          className={classes.link}
-          to={`/man/${href}`}
-          onClick={(e) => {
-            setTopic(href);
-          }}
-        >
-          {linkText}
-        </Link>
-      );
-    }
-  };
-
 
 
   useEffect(() => {
@@ -120,10 +122,10 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
           // Remove anchors
           if (href.indexOf('#') !== -1) {
             if (
-                (href.includes('#custom-er-branding') ||
-                    href.includes('#graph') ||
-                    href.includes('#http-api')) &&
-                usage !== 'output.html' // Have to handle output.html abit different for our sidebar
+              (href.includes('#custom-er-branding') ||
+                href.includes('#graph') ||
+                href.includes('#http-api')) &&
+              usage !== 'output.html' // Have to handle output.html abit different for our sidebar
             ) {
               href = 'output.html';
             } else {
@@ -132,15 +134,14 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
           }
 
           return (
-              <Link
-                  className={classes.link}
-                  to={`/man/${href}`}
-                  onClick={(e) => {
-                    setTopic(href);
-                  }}
-              >
-                {linkText}
-              </Link>
+            <Link
+              to={`/man/${href}`}
+              onClick={(e) => {
+                setTopic(href);
+              }}
+            >
+              {linkText}
+            </Link>
           );
         }
 
@@ -152,9 +153,9 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
         // Remove Anchors in titles, wont work with HashRouter
         if (domNode.name && domNode.name.includes('h') && domNode.children && domNode.children[1]) {
           if (
-              domNode.children[1].children &&
-              domNode.children[1].children[0].data &&
-              domNode.children[1].children[0].data === '¶'
+            domNode.children[1].children &&
+            domNode.children[1].children[0].data &&
+            domNode.children[1].children[0].data === '¶'
           ) {
             domNode.children[1] = <Fragment />;
           }
@@ -171,7 +172,7 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
         setHtml(reactHtmlParser);
       }
     });
-  }, [topic]);
+  }, [topic, usage, handleSphinxSidebar]);
 
   return <Box className={classes.manualContainer}>{html}</Box>;
 };
