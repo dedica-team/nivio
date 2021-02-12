@@ -9,6 +9,8 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Box, Theme } from '@material-ui/core';
 import { renderToString } from 'react-dom/server';
 
+import './Man.css';
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     manualContainer: {
@@ -39,9 +41,6 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   if (usage == null || typeof usage == 'undefined') usage = 'index';
   const [topic, setTopic] = useState<string>(usage + '');
   const [side, setSide] = useState<any>(null);
-
-
-
 
   const handleSphinxSidebar = useCallback((domNode: DomElement) => {
     const replaceSphinx = (domNode: DomElement) => {
