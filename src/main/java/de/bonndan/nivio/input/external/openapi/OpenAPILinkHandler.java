@@ -17,11 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 /**
@@ -45,11 +42,13 @@ public class OpenAPILinkHandler implements ExternalLinkHandler {
 
     @Override
     public CompletableFuture<ComponentDescription> resolve(Link link) {
+        LOGGER.info("Resolving OpenAPI link {}", link.getHref());
 
         try {
             String s = httpService.get(link.getHref());
             return CompletableFuture.completedFuture(from(mapper.readValue(s, OpenAPI.class)));
         } catch (Exception e) {
+            LOGGER.error("Failed", e);
             return CompletableFuture.failedFuture(e);
         }
 
@@ -94,7 +93,9 @@ public class OpenAPILinkHandler implements ExternalLinkHandler {
             }
         }
         desc.setLabel(NAMESPACE + "_version", openAPI.getInfo().getVersion());
-        desc.setLabel(NAMESPACE + "_license", openAPI.getInfo().getLicense().getName());
+        if (openAPI.getInfo().getLicense() != null) {
+            desc.setLabel(NAMESPACE + "_license", openAPI.getInfo().getLicense().getName());
+        }
         desc.setLabel(NAMESPACE + "_terms", openAPI.getInfo().getTermsOfService());
         // TODO ? desc.setName( openAPI.getInfo().getTitle());
 
