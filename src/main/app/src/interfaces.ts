@@ -113,6 +113,12 @@ export interface IInterfaces {
   format?: string;
   url?: string;
   protection?: string;
+  deprecated?: boolean;
+  name?: string;
+  payload?: string;
+  path?: string;
+  summary?: string;
+  parameters?: string;
 }
 
 export interface IRelations {
@@ -184,5 +190,5 @@ export interface ISnackbarMessage {
   message: string;
   key: number;
   landscape: string;
-  level: 'success' | 'info' | 'warning' | 'error' | undefined;
+  level: "success" | "info" | "warning" | "error" | undefined;
 }
