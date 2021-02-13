@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.bonndan.nivio.input.external.openapi.OpenAPILinkHandler;
 import org.springframework.util.StringUtils;
 
 import java.net.MalformedURLException;
@@ -12,9 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A http link.
- * <p>
- * Replaces org.springframework.hateoas.Link
+ * A link.
+ *
+ * Used in hateoas as well as in the models.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Link {
@@ -140,6 +141,10 @@ public class Link {
         props.put(key, value);
     }
 
+    @Override
+    public String toString() {
+        return "Link{" + "href=" + href + '}';
+    }
 
     public static final class LinkBuilder {
         private String rel;
