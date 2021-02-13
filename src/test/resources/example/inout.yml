@@ -85,6 +85,7 @@ items:
       - nivio-prop
     links:
       github: https://github.com/dedica-team/nivio
+      openapi: http://localhost:8080/v3/api-docs/
 
 #
 # links
