@@ -37,6 +37,7 @@ public class GitHubRepoHandler implements ExternalLinkHandler, RepositoryLinkHan
         ItemDescription itemDescription = new ItemDescription();
         try {
             GHRepository repository = gitHub.getRepository(repoName);
+            LOGGER.info("Reading GitHub repo {} {}", repoName, repository.getId());
 
             int openIssues = repository.getOpenIssueCount();
             itemDescription.setLabel(OPEN_ISSUES, String.valueOf(openIssues));

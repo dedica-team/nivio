@@ -4,6 +4,8 @@ package de.bonndan.nivio.input.external;
 import de.bonndan.nivio.input.external.github.GitHubRepoHandler;
 import de.bonndan.nivio.input.external.sonar.SonarLinkHandler;
 import de.bonndan.nivio.input.external.springboot.SpringBootHealthHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.lang.NonNull;
@@ -17,6 +19,8 @@ import java.util.Optional;
  */
 @Component
 public class LinkHandlerFactory {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LinkHandlerFactory.class);
 
     public static final String GITHUB = "github";
     private static final String SONAR = "sonar";
@@ -37,17 +41,17 @@ public class LinkHandlerFactory {
     }
 
     public Optional<ExternalLinkHandler> getResolver(final String key) {
-
         return Optional.ofNullable(KNOWN_RESOLVERS.get(key.toLowerCase()))
-                .map(aClass -> createHandler(key, aClass));
+                .flatMap(aClass -> createHandler(key, aClass));
     }
 
     @NonNull
-    private ExternalLinkHandler createHandler(String key, Class<? extends ExternalLinkHandler> aClass) {
+    private Optional<ExternalLinkHandler> createHandler(String key, Class<? extends ExternalLinkHandler> aClass) {
         try {
-            return beanFactory.createBean(aClass);
+            return Optional.of(beanFactory.createBean(aClass));
         } catch (BeansException e) {
-            throw new RuntimeException(String.format("Failed to create external link handler of type %s", key));
+            LOGGER.error(String.format("Failed to create external link handler of type %s. Please check the handler is properly configured.", key));
+            return Optional.empty();
         }
     }
 }
