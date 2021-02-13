@@ -66,17 +66,14 @@ public class HttpService {
         return executeRequest(client, request);
     }
 
-    private String executeRequest(CloseableHttpClient client, HttpGet request) throws IOException {
-        try (CloseableHttpResponse response = client.execute(request)) {
+    private String executeRequest(CloseableHttpClient client, HttpGet request) {
+        try (client; CloseableHttpResponse response = client.execute(request)) {
             if (response.getStatusLine().getStatusCode() == 200) {
                 return EntityUtils.toString(response.getEntity());
-            } else {
-                throw new RuntimeException("Got " + response.getStatusLine().getStatusCode() + " while reading");
             }
+            throw new RuntimeException(String.format("Got %d while reading", response.getStatusLine().getStatusCode()));
         } catch (IOException ex) {
-            throw new RuntimeException("Failed to fetch " + request.getURI(), ex);
-        } finally {
-            client.close();
+            throw new RuntimeException(String.format("Failed to fetch %s", request.getURI()), ex);
         }
     }
 
