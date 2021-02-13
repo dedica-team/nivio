@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.bonndan.nivio.input.external.openapi.OpenAPILinkHandler;
 import org.springframework.util.StringUtils;
 
 import java.net.MalformedURLException;
