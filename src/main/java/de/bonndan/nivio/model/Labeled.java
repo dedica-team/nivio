@@ -23,13 +23,12 @@ public interface Labeled {
      * @param prefixes filter criteria
      * @return filtered labels
      */
-    static Map<String, String> withoutPrefixes(Map<String, String> labels, String... prefixes) {
-        final List<String> strings = Arrays.asList(prefixes);
+    static Map<String, String> withoutKeys(Map<String, String> labels, String... prefixes) {
         return labels.entrySet().stream()
-                .filter(stringStringEntry -> {
-                    String[] split = stringStringEntry.getKey().split("\\" + Label.DELIMITER);
-                    if (split.length > 1) {
-                        return !strings.contains(split[0]);
+                .filter(entry -> {
+                    for (String prefix : prefixes) {
+                        if (entry.getKey().startsWith(prefix))
+                            return false;
                     }
                     return true;
                 }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

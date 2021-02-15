@@ -227,7 +227,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     public Map<String, String> getJSONLabels() {
 
         return Labeled.groupedByPrefixes(
-                Labeled.withoutPrefixes(labels, Label.status.name(), Tagged.LABEL_PREFIX_TAG),
+                Labeled.withoutKeys(labels, Label.status.name(), Tagged.LABEL_PREFIX_TAG),
                 ","
         );
     }

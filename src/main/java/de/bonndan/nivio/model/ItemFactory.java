@@ -35,6 +35,7 @@ public class ItemFactory {
 
         ItemBuilder builder = ItemBuilder.anItem()
                 .withIdentifier(description.getIdentifier())
+                .withDescription(description.getDescription())
                 .withName(description.getName())
                 .withContact(description.getContact())
                 .withOwner(description.getOwner())
@@ -74,6 +75,7 @@ public class ItemFactory {
         ItemBuilder builder = ItemBuilder.anItem()
                 .withIdentifier(item.getIdentifier())
                 .withName(item.getName())
+                .withDescription(item.getDescription())
                 .withContact(item.getContact())
                 .withOwner(item.getOwner())
                 .withGroup(item.getGroup())

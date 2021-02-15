@@ -150,7 +150,7 @@ public class Group implements Labeled, Linked, Assessable {
     public Map<String, String> getJSONLabels() {
 
         return Labeled.groupedByPrefixes(
-                Labeled.withoutPrefixes(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG),
+                Labeled.withoutKeys(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG),
                 ","
         );
     }

@@ -48,7 +48,7 @@ class LabeledTest {
         itemDescription.setPrefixed(Label.status, "bar");
         itemDescription.setPrefixed(Label.condition, "bar");
 
-        Map<String, String> stringStringMap = Labeled.withoutPrefixes(itemDescription.getLabels(), Label.condition.name(), Label.status.name());
+        Map<String, String> stringStringMap = Labeled.withoutKeys(itemDescription.getLabels(), Label.condition.name(), Label.status.name());
         assertThat(stringStringMap).isNotNull();
         assertThat(stringStringMap.size()).isEqualTo(2);
         assertThat(stringStringMap.get(Label.costs.name())).isEqualTo("123");
