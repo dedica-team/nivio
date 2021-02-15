@@ -1,6 +1,5 @@
 export class Routes {
   static MAP_ROUTE: string = '/landscape/:identifier';
-  static DASHBOARD_ROUTE: string = '/landscape/:identifier/dashboard';
 }
 
 export interface ILandscape {
@@ -190,5 +189,5 @@ export interface ISnackbarMessage {
   message: string;
   key: number;
   landscape: string;
-  level: "success" | "info" | "warning" | "error" | undefined;
+  level: 'success' | 'info' | 'warning' | 'error' | undefined;
 }
