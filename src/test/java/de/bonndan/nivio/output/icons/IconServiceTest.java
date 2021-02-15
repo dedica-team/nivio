@@ -49,6 +49,15 @@ class IconServiceTest {
     }
 
     @Test
+    public void doesNotResolvesIconTwice() {
+        Item item = getTestItem("test", "a");
+        item.setLabel(Label.icon, DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foobar");
+
+        verify(externalIcons, never()).getUrl(any(String.class));
+        verify(externalIcons, never()).getUrl(any(URL.class));
+    }
+
+    @Test
     public void returnsCustomIcon() {
         Item item = getTestItem("test", "a");
         item.setLabel(Label.icon, "http://my.icon");
