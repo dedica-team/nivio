@@ -23,17 +23,17 @@ import {
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../../interfaces';
-import { getInterfaces, getItemIcon, getLabels } from "../../Utils/utils";
+import { getItemIcon, getLabels } from "../../Utils/utils";
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import {
+  Details,
   ExpandMore,
   FilterCenterFocus,
   Info,
-  LinkOutlined,
   MoreVertSharp,
-  Wifi,
-} from '@material-ui/icons';
+  Wifi
+} from "@material-ui/icons";
 import Chip from '@material-ui/core/Chip';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
@@ -46,6 +46,9 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.primary.main,
     },
     tag: {
+      backgroundColor: theme.palette.primary.main,
+    },
+    interfaces: {
       backgroundColor: theme.palette.primary.main,
     },
   })
@@ -72,6 +75,37 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
   const classes = componentStyles();
   const extraClasses = useStyles();
   let relations: ReactElement[] = [];
+
+  const getInterfaces = (element: IItem): ReactElement | null => {
+    if (!element?.interfaces) return null;
+    let ifaceElements: ReactElement[] = [];
+    element.interfaces.forEach((iface, key) => {
+      ifaceElements.push(
+        <Accordion key={key} className={extraClasses.interfaces}>
+          <AccordionSummary
+            expandIcon={<ExpandMore />}
+            aria-controls={'panel_ifaces' + key + 'bh-content'}
+            id={'panel_ifaces' + key + 'bh-header'}
+          >
+            <span title={iface.name || iface.path} style={{width: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace:'nowrap'}}>{iface.name || iface.path}</span>
+          </AccordionSummary>
+          <AccordionDetails>
+            {iface.summary ? (<div>{iface.summary}<br /><br /></div>): null}
+            {iface.description ? (<div>{iface.description}<br /><br /></div>): null}
+            Path: {iface.path || '-'}<br /><br />
+            Params: {iface.parameters || '-'}<br /><br />
+            Format: {iface.format || '-'}<br /><br />
+            Payload: {iface.payload || '-'}<br /><br />
+            Protection: {iface.protection || '-'}<br /><br />
+            Deprecated: {iface.deprecated ? 'Yes' : '-'}<br /><br />
+          </AccordionDetails>
+        </Accordion>
+      );
+    });
+
+    return <List dense={true}>{ifaceElements}</List>;
+  }
+
 
   useEffect(() => {
     const loadAssessment = (item: IItem) => {
@@ -253,7 +287,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
               <Tab icon={<Info />} label={'info'} style={{ minWidth: 50 }} title={'Info'} {...a11yProps(0)} />
               <Tab icon={<Wifi />} label={'relations'} style={{ minWidth: 50 }} title={'Relations'} {...a11yProps(1)} />
               <Tab
-                icon={<LinkOutlined />} label={'API'}
+                icon={<Details />} label={'Details'}
                 title={'API / Interfaces'}
                 style={{ minWidth: 50 }}
                 {...a11yProps(2)}
@@ -262,11 +296,11 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
           </AppBar>
           <CardContent>
             <TabPanel value={value} index={0}>
-              <Table aria-label='info table' style={{maxWidth: '100%'}}>
+              <Table aria-label={'info table'} style={{ tableLayout: 'fixed'}}>
                 <TableBody>
                   {item?.group ? (
                     <TableRow key={'group'} >
-                      <TableCell>Group</TableCell>
+                      <TableCell style={{width: '33%'}}>Group</TableCell>
                       <TableCell>{item?.group}</TableCell>
                     </TableRow>
                   ) : null}
@@ -278,7 +312,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
                   ) : null}
                   {item?.description ? (
                     <TableRow key={'description'}>
-                      <TableCell>Description</TableCell>
+                      <TableCell>Info</TableCell>
                       <TableCell>{item?.description}</TableCell>
                     </TableRow>
                   ) : null}
@@ -323,8 +357,8 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
                 <Accordion className={extraClasses.labels}>
                   <AccordionSummary
                     expandIcon={<ExpandMore />}
-                    aria-controls='panel1a-content'
-                    id='panel1a-header'
+                    aria-controls='panel_labels-content'
+                    id='panel_labels-header'
                   >
                     more
                   </AccordionSummary>
@@ -351,13 +385,6 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
               ) : null}
             </TabPanel>
 
-            <div className='information'>
-              <span className='description item'>
-                {item?.description ? `${item?.description}` : ''}
-                <br />
-              </span>
-
-            </div>
           </CardContent>
         </div>
       ) : null}

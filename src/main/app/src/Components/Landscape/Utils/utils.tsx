@@ -1,17 +1,12 @@
 import React, { ReactElement } from 'react';
 import { IAssessmentProps, IGroup, IItem, ILandscape } from "../../../interfaces";
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Button,
   Link,
   List,
   ListItem,
   ListItemText,
 } from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
-import Typography from '@material-ui/core/Typography';
 
 /**
  * Find an item by its fully qualified identifier.
@@ -81,32 +76,6 @@ export const getLinks = (element: IGroup | IItem): ReactElement[] => {
     });
   }
   return links;
-};
-
-export const getInterfaces = (element: IItem): ReactElement | null => {
-  if (!element?.interfaces) return null;
-  let ifaceElements: ReactElement[] = [];
-  element.interfaces.forEach((iface, key) => {
-    ifaceElements.push(
-      <Accordion expanded={false} key={key}>
-        <AccordionSummary
-          expandIcon={<ExpandMore />}
-          aria-controls={'panel' + key + 'bh-content'}
-          id={'panel' + key + 'bh-header'}
-        >
-          {iface.name || iface.path}
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>{iface.summary}</Typography><br />
-          <Typography>{iface.description}</Typography>
-          <Typography>Path: {iface.path}</Typography>
-          <Typography>Params: {iface.parameters}</Typography>
-        </AccordionDetails>
-      </Accordion>
-    );
-  });
-
-  return <List dense={true}>{ifaceElements}</List>;
 };
 
 export const getLabels = (element: IGroup | IItem) => {
