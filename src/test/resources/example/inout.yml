@@ -108,3 +108,12 @@ items:
     relations:
       - target: nivio
         type: dataflow
+
+  - identifier: openapi
+    name: OpenAPI
+    type: api
+    description: Reads OpenAPI V3 / Swagger specs
+    group: links
+    relations:
+      - target: nivio
+        type: dataflow
