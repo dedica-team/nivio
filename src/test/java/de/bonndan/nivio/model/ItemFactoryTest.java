@@ -46,6 +46,7 @@ public class ItemFactoryTest {
         assertEquals(l, created.getLandscape());
 
         assertEquals(landscapeItem.getName(), created.getName());
+        assertEquals(landscapeItem.getDescription(), created.getDescription());
         assertEquals(landscapeItem.getLabel(Label.shortname), created.getLabel(Label.shortname));
         assertEquals(landscapeItem.getType(), created.getType());
         assertEquals(landscapeItem.getOwner(), created.getOwner());
