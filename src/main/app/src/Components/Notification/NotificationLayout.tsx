@@ -43,21 +43,20 @@ const NotificationLayout: React.FC<Props> = ({
         onClose={handleClose}
         severity={messageInfo?.level}
         action={
-          messageInfo?.landscape !== 'unknown' ? (
             <React.Fragment>
-              <Button
+              {messageInfo?.landscape !== '' ? (<Button
                 component={Link}
                 className={'mapButton'}
                 data-testid='MapButton'
                 to={`/landscape/${messageInfo?.landscape}`}
               >
                 Show Map
-              </Button>
+            </Button>) : null}
               <IconButton aria-label='close' color='inherit' onClick={handleClose}>
                 <CloseIcon />
               </IconButton>
             </React.Fragment>
-          ) : undefined
+
         }
       >
         {messageInfo ? messageInfo.message : undefined}
