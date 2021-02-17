@@ -21,7 +21,7 @@ it('should remove show map button when landscape is unknown', () => {
   const handleExited = () => {};
   const open = true;
   const snackPackCloseDelay = 2000;
-  const messageInfo = { message: 'Test Message', key: 123, landscape: 'unknown', level: undefined };
+  const messageInfo = { message: 'Test Message', key: 123, landscape: '', level: undefined };
 
   const { queryByText } = render(
     <MemoryRouter>
