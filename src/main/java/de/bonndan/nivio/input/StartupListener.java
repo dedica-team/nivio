@@ -45,23 +45,12 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
 
         getUrls(seed).stream()
                 .map(landscapeDescriptionFactory::from)
-                .forEach(description -> publisher.publishEvent(new IndexEvent(this, description, "Initialising from SEED")));
+                .forEach(description -> publisher.publishEvent(new IndexEvent(description, "Initialising from SEED")));
     }
 
     private List<URL> getUrls(Seed seed) {
         List<URL> landscapeDescriptionLocations = new ArrayList<>(seed.getDemoFiles());
-        for (String s : seed.getLocations()) {
-            Optional<URL> tmpURL = URLHelper.getURL(s);
-            if (tmpURL.isPresent()) {
-                landscapeDescriptionLocations.add(tmpURL.get());
-                continue;
-            }
-            ProcessingException processingException = new ProcessingException(
-                    "Failed to initialize watchers from seed",
-                    new MalformedURLException("Failed to create URL from " + s)
-            );
-            publisher.publishEvent(new ProcessingErrorEvent(this, processingException));
-        }
+        landscapeDescriptionLocations.addAll(seed.getLocations());
         return landscapeDescriptionLocations;
     }
 }

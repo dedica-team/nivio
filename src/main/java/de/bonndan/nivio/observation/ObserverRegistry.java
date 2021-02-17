@@ -50,15 +50,8 @@ public class ObserverRegistry implements ApplicationListener<ProcessingFinishedE
      */
     @Override
     public void onApplicationEvent(ProcessingFinishedEvent event) {
-        LandscapeDescription landscapeDescription = (LandscapeDescription) event.getSource();
-        Landscape landscape = Objects.requireNonNull(event.getLandscape());
-
-        if (landscapeDescription == null) {
-            String msg = "No landscape description (input) available. Landscape " + landscape.getIdentifier() + "could not be registered for observation";
-            landscape.getLog().warn(msg);
-            LOGGER.warn(msg);
-            return;
-        }
+        LandscapeDescription landscapeDescription = event.getInput();
+        Landscape landscape = event.getLandscape();
 
         observerMap.put(landscape.getIdentifier(), landscapeObserverPoolFactory.getPoolFor(landscape, landscapeDescription));
         LOGGER.info("Registered landscape {} for observation.", landscapeDescription);
@@ -95,7 +88,7 @@ public class ObserverRegistry implements ApplicationListener<ProcessingFinishedE
             LandscapeDescription updated = landscapeDescriptionFactory.from(stored);
             LOGGER.info("Detected change '{}' in landscape {}", s, stored.getIdentifier());
             if (updated != null) {
-                publisher.publishEvent(new IndexEvent(this, updated, "Source change: " + s));
+                publisher.publishEvent(new IndexEvent(updated, "Source change: " + s));
             }
         }
 

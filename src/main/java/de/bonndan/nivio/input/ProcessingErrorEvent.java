@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 
 import java.io.IOException;
 
@@ -17,8 +18,8 @@ public class ProcessingErrorEvent extends ProcessingEvent {
 
     private final ProcessingException exception;
 
-    public ProcessingErrorEvent(Object source, ProcessingException exception) {
-        super(source);
+    public ProcessingErrorEvent(FullyQualifiedIdentifier fqi, ProcessingException exception) {
+        super(fqi);
         this.exception = exception;
     }
 

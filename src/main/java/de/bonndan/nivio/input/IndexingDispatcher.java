@@ -25,16 +25,13 @@ public class IndexingDispatcher {
 
     public LandscapeDescription createFromBody(String body) {
         LandscapeDescription env = landscapeDescriptionFactory.fromString(body, "request body");
-        IndexEvent event = new IndexEvent(this, env, "create landscape");
-        publisher.publishEvent(event);
+        publisher.publishEvent(new IndexEvent(env, "Creating landscape from request body"));
         return env;
     }
 
     public LandscapeDescription createFromBodyItems(String identifier, String format, String body) {
         LandscapeDescription dto = landscapeDescriptionFactory.fromBodyItems(identifier, format, body);
-
-        IndexEvent event = new IndexEvent(this, dto, "index landscape");
-        publisher.publishEvent(event);
+        publisher.publishEvent(new IndexEvent(dto, "index landscape"));
         return dto;
     }
 
@@ -43,8 +40,7 @@ public class IndexingDispatcher {
                 existing.getSource(),
                 existing.getIdentifier() + " source"
         );
-        IndexEvent event = new IndexEvent(this, dto, "index landscape");
-        publisher.publishEvent(event);
+        publisher.publishEvent(new IndexEvent(dto, "index landscape"));
         return dto;
     }
 }
