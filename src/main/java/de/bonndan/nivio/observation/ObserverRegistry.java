@@ -27,11 +27,11 @@ public class ObserverRegistry {
 
     private final Map<String, LandscapeObserverPool> observerMap = new ConcurrentHashMap<>();
 
-    private final LandscapeObserverFactory landscapeObserverPoolFactory;
+    private final LandscapeObserverPoolFactory landscapeObserverPoolFactory;
     private final ThreadPoolTaskScheduler taskScheduler;
     private final IndexingDispatcher indexingDispatcher;
 
-    public ObserverRegistry(LandscapeObserverFactory landscapeObserverPoolFactory,
+    public ObserverRegistry(LandscapeObserverPoolFactory landscapeObserverPoolFactory,
                             ThreadPoolTaskScheduler taskScheduler,
                             IndexingDispatcher indexingDispatcher
     ) {

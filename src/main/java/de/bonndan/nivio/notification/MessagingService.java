@@ -22,8 +22,7 @@ public class MessagingService implements ApplicationListener<ProcessingEvent> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingService.class);
 
-    //TODO check: events contain references to landscapes. Might result in high memory usage later when landscape change.
-    private final Queue<ProcessingEvent> fifo = new CircularFifoQueue<>(1000);
+    private final Queue<EventNotification> fifo = new CircularFifoQueue<>(1000);
     private final SimpMessagingTemplate template;
 
     public MessagingService(SimpMessagingTemplate template) {
@@ -32,15 +31,16 @@ public class MessagingService implements ApplicationListener<ProcessingEvent> {
 
     @Override
     public void onApplicationEvent(ProcessingEvent processingEvent) {
-        fifo.add(processingEvent);
+        EventNotification eventNotification = EventNotification.from(processingEvent);
+        fifo.add(eventNotification);
         LOGGER.info("Broadcasting processing event: " + processingEvent.getType());
-        this.template.convertAndSend(WebSocketConfig.TOPIC + EVENTS, processingEvent);
+        this.template.convertAndSend(WebSocketConfig.TOPIC + EVENTS, eventNotification);
     }
 
     /**
      * @return the last 1000 processing events
      */
-    public ProcessingEvent[] getLast() {
-        return fifo.toArray(ProcessingEvent[]::new);
+    public EventNotification[] getLast() {
+        return fifo.toArray(EventNotification[]::new);
     }
 }
