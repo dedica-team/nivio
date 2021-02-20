@@ -16,7 +16,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,14 +26,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InputFormatHandlerNivioTest {
 
-    private FileFetcher fileFetcher;
-
     private InputFormatHandlerNivio descriptionFactory;
+    private LandscapeDescription landscapeDescription;
 
     @BeforeEach
     public void setup() {
-        fileFetcher = new FileFetcher(new HttpService());
+        FileFetcher fileFetcher = new FileFetcher(new HttpService());
         descriptionFactory = new InputFormatHandlerNivio(fileFetcher);
+        landscapeDescription = new LandscapeDescription("test");
     }
 
     @Test
@@ -39,8 +41,8 @@ class InputFormatHandlerNivioTest {
 
         SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/wordpress.yml");
 
-        List<ItemDescription> services = descriptionFactory.getDescriptions(file, null);
-        ItemDescription service = services.get(0);
+        descriptionFactory.applyData(file, null, landscapeDescription);
+        ItemDescription service = landscapeDescription.getItemDescriptions().pick("blog-server", null);
         assertEquals("Demo Blog", service.getName());
         assertEquals("to be replaced", service.getLabel(Label.note));
         assertEquals("blog-server", service.getIdentifier());
@@ -75,7 +77,7 @@ class InputFormatHandlerNivioTest {
             }
         });
 
-        ItemDescription web = services.get(2);
+        ItemDescription web = landscapeDescription.getItemDescriptions().pick("wordpress-web", null);
         assertEquals(Item.LAYER_INGRESS, web.getLabel("layer"));
         assertEquals("wordpress-web", web.getIdentifier());
         assertEquals("Webserver", web.getDescription());
@@ -87,16 +89,35 @@ class InputFormatHandlerNivioTest {
         assertEquals("docker", web.getLabel("hosttype"));
     }
 
+
     @Test
-    public void readIngress() {
+    public void mergeGroups() {
 
         SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/dashboard.yml");
 
-        List<ItemDescription> services = descriptionFactory.getDescriptions(file, null);
-        ItemDescription service = services.get(0);
-        assertEquals(Item.LAYER_INGRESS, service.getGroup());
-        assertEquals("Keycloak SSO", service.getName());
-        assertEquals("keycloak", service.getIdentifier());
+        //when
+        descriptionFactory.applyData(file, null, landscapeDescription);
+
+        //then
+        Map<String, GroupDescription> groups = landscapeDescription.getGroups();
+        assertThat(groups).isNotEmpty();
+
+        GroupDescription ingress = groups.get("ingress");
+        assertThat(ingress).isNotNull();
+        assertThat(ingress.getDescription()).isEqualTo("This group provides authentication.");
+    }
+
+    @Test
+    public void mergeTemplates() {
+
+        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/dashboard.yml");
+
+        //when
+        descriptionFactory.applyData(file, null, landscapeDescription);
+
+        //then
+        Map<String, ItemDescription> templates = landscapeDescription.getTemplates();
+        assertThat(templates).hasSize(1);
     }
 
     @Test
