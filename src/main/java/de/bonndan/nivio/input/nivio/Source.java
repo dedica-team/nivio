@@ -15,7 +15,7 @@ public class Source {
 
     public List<ItemDescription> items = new ArrayList<>();
 
-    public List<GroupDescription> groups = new ArrayList<>();
+    public Map<String, GroupDescription> groups = new HashMap<>();
 
     public Map<String, ItemDescription> templates = new HashMap<>();
 }

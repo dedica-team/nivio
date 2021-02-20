@@ -1,10 +1,12 @@
 package de.bonndan.nivio.input.compose2;
 
 import de.bonndan.nivio.input.FileFetcher;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.search.ItemIndex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,10 +31,17 @@ class InputFormatHandlerCompose2Test {
     public void readCompose() {
         SourceReference file = new SourceReference(new File(getRootPath() + "/src/test/resources/example/services/docker-compose.yml").toURI().toString());
         String yml = fileFetcher.get(file);
+        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/docker-compose.yml");
         InputFormatHandlerCompose2 factoryCompose2 = new InputFormatHandlerCompose2(fileFetcher);
-        List<ItemDescription> services = factoryCompose2.getDescriptions(file, null);
-        assertEquals(3, services.size());
-        ItemDescription service = services.get(0);
+        LandscapeDescription landscapeDescription = new LandscapeDescription("test");
+
+        //when
+       factoryCompose2.applyData(file, null, landscapeDescription);
+
+        //then
+        ItemIndex<ItemDescription> services = landscapeDescription.getItemDescriptions();
+        assertEquals(3, services.all().size());
+        ItemDescription service = services.pick("web", null);
         assertNotNull(service);
 
         assertEquals("web", service.getIdentifier());

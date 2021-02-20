@@ -58,13 +58,8 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
             return;
         }
 
-        if (source.items != null) {
-            description.mergeItems(descriptions);
-        }
-
-        if (source.groups != null) {
-            description.mergeGroups(source.groups);
-        }
+        description.mergeItems(source.items);
+        description.mergeGroups(source.groups);
 
         if (source.templates != null) {
             source.templates.forEach((s, template) -> description.getTemplates().put(s, template));

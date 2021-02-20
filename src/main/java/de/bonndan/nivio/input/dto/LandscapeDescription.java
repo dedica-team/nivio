@@ -187,9 +187,10 @@ public class LandscapeDescription implements ComponentDescription {
      * Already existing ones are updated.
      * @param incoming new data
      */
-    public void mergeItems(Collection<ItemDescription> incoming) {
-        if (incoming == null)
+    public void mergeItems(@Nullable Collection<ItemDescription> incoming) {
+        if (incoming == null) {
             return;
+        }
 
         incoming.forEach(desc -> {
             desc.setEnvironment(this.identifier);
@@ -209,18 +210,19 @@ public class LandscapeDescription implements ComponentDescription {
      * Already existing ones are updated.
      * @param incoming new data
      */
-    public void mergeGroups(Collection<GroupDescription> incoming) {
-        if (incoming == null)
+    public void mergeGroups(@Nullable Map<String, GroupDescription> incoming) {
+        if (incoming == null) {
             return;
+        }
 
-        incoming.forEach(desc -> {
-            desc.setEnvironment(this.identifier);
+        incoming.forEach( (identifier, groupDescription) -> {
+            groupDescription.setEnvironment(this.identifier);
 
-            GroupDescription existing = groups.get(desc.getIdentifier());
+            GroupDescription existing = groups.get(identifier);
             if (existing != null) {
-                ComponentDescriptionValues.assignNotNull(existing, desc);
+                ComponentDescriptionValues.assignNotNull(existing, groupDescription);
             } else {
-                this.groups.put(desc.getIdentifier(), desc);
+                this.groups.put(identifier, groupDescription);
             }
         });
     }
