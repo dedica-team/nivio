@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.bonndan.nivio.input.ComponentDescriptionValues;
 import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.input.ItemDescriptionValues;
 import de.bonndan.nivio.model.*;
@@ -180,7 +181,13 @@ public class LandscapeDescription implements ComponentDescription {
         this.templates = templates;
     }
 
-    public void addItems(Collection<ItemDescription> incoming) {
+    /**
+     * Merges the incoming items with existing ones.
+     *
+     * Already existing ones are updated.
+     * @param incoming new data
+     */
+    public void mergeItems(Collection<ItemDescription> incoming) {
         if (incoming == null)
             return;
 
@@ -197,10 +204,32 @@ public class LandscapeDescription implements ComponentDescription {
     }
 
     /**
+     * Merges the incoming groups with existing ones.
+     *
+     * Already existing ones are updated.
+     * @param incoming new data
+     */
+    public void mergeGroups(Collection<GroupDescription> incoming) {
+        if (incoming == null)
+            return;
+
+        incoming.forEach(desc -> {
+            desc.setEnvironment(this.identifier);
+
+            GroupDescription existing = groups.get(desc.getIdentifier());
+            if (existing != null) {
+                ComponentDescriptionValues.assignNotNull(existing, desc);
+            } else {
+                this.groups.put(desc.getIdentifier(), desc);
+            }
+        });
+    }
+
+    /**
      * For compatibility with source references, items can be added directly to the env description.
      */
     public void setItems(List<ItemDescription> items) {
-        addItems(items);
+        mergeItems(items);
     }
 
     @Override
