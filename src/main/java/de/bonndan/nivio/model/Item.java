@@ -155,11 +155,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
      */
     @JsonProperty("labels")
     public Map<String, String> getJSONLabels() {
-
-        return Labeled.groupedByPrefixes(
-                Labeled.withoutKeys(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG, Label.type.name(), Label.icon.name()),
-                ","
-        );
+        return Labeled.withoutKeys(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG, Label.type.name(), Label.icon.name());
     }
 
     @JsonIgnore

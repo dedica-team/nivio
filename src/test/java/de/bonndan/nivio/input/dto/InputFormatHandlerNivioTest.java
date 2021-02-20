@@ -76,8 +76,8 @@ class InputFormatHandlerNivioTest {
         });
 
         ItemDescription web = services.get(2);
-        assertEquals(Item.LAYER_INGRESS, web.getLabel("layer"));
         assertEquals("wordpress-web", web.getIdentifier());
+        assertEquals(Item.LAYER_INGRESS, web.getLabel("layer"));
         assertEquals("Webserver", web.getDescription());
         assertEquals("Apache", web.getLabel(Label.software));
         assertEquals("2.4", web.getLabel(Label.version));
@@ -85,6 +85,8 @@ class InputFormatHandlerNivioTest {
         assertEquals("ops guys", web.getLabel(Label.team));
         assertEquals("content", web.getLabels(Label.network).values().toArray()[0]);
         assertEquals("docker", web.getLabel("hosttype"));
+        assertEquals("Host(`test.localhost`) && PathPrefix(`/test`)", web.getLabel("traefik.http.routers.router0.rule"));
+        assertEquals("auth", web.getLabel("traefik.http.routers.router0.middlewares"));
     }
 
     @Test
