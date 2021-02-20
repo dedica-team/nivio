@@ -3,14 +3,11 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.RelationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +26,7 @@ class HintFactoryTest {
         one = new ItemDescription();
         one.setIdentifier("one");
         one.setGroup("foo");
-        landscapeDescription.addItems(List.of(one));
+        landscapeDescription.mergeItems(List.of(one));
 
         hintFactory = new HintFactory();
     }
@@ -84,7 +81,7 @@ class HintFactoryTest {
         //given
         ItemDescription hihi = new ItemDescription();
         hihi.setIdentifier("something");
-        landscapeDescription.addItems(List.of(hihi));
+        landscapeDescription.mergeItems(List.of(hihi));
 
         one.getLabels().put("BASE_URL", hihi.getIdentifier());
 
@@ -107,7 +104,7 @@ class HintFactoryTest {
         ItemDescription hihi = new ItemDescription();
         hihi.setIdentifier("foo");
         hihi.setName("bar");
-        landscapeDescription.addItems(List.of(hihi));
+        landscapeDescription.mergeItems(List.of(hihi));
 
         one.getLabels().put("FOO_HOST", hihi.getName());
 
@@ -130,7 +127,7 @@ class HintFactoryTest {
         ItemDescription hihi = new ItemDescription();
         hihi.setIdentifier("foo");
         hihi.setName("bar");
-        landscapeDescription.addItems(List.of(hihi));
+        landscapeDescription.mergeItems(List.of(hihi));
 
         one.getLabels().put("FOO", hihi.getName());
 
@@ -148,7 +145,7 @@ class HintFactoryTest {
         ItemDescription hihi = new ItemDescription();
         hihi.setIdentifier("something");
         hihi.setAddress("http://foo.bar.com");
-        landscapeDescription.addItems(List.of(hihi));
+        landscapeDescription.mergeItems(List.of(hihi));
 
         one.getLabels().put("FOO_URL", hihi.getAddress());
 
@@ -171,7 +168,7 @@ class HintFactoryTest {
         ItemDescription hihi = new ItemDescription();
         hihi.setIdentifier("something");
         hihi.setAddress("http://FOO.bar.com");
-        landscapeDescription.addItems(List.of(hihi));
+        landscapeDescription.mergeItems(List.of(hihi));
 
         one.getLabels().put("FOO_URL", "http://foo.bar.com");
 
@@ -211,7 +208,7 @@ class HintFactoryTest {
         ItemDescription huhu = new ItemDescription();
         huhu.setIdentifier("bar");
         huhu.setName("bar");
-        landscapeDescription.addItems(List.of(hihi, huhu));
+        landscapeDescription.mergeItems(List.of(hihi, huhu));
 
         one.getLabels().put("FOO_HOST", "bar");
 

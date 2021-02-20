@@ -26,10 +26,9 @@ public class SourceReferencesResolver {
         URL baseUrl = URLHelper.getParentPath(landscapeDescription.getSource()).orElse(null);
         landscapeDescription.getSourceReferences().forEach(ref -> {
             try {
-                InputFormatHandler factory = formatFactory.getInputFormatHandler(ref);
-                landscapeDescription.addItems(factory.getDescriptions(ref, baseUrl));
+                formatFactory.getInputFormatHandler(ref).applyData(ref, baseUrl, landscapeDescription);
             } catch (ProcessingException ex) {
-                log.warn("Failed to resolve source reference '" + ref.getUrl() + "' (" + ref.getFormat() + ")", ex);
+                log.warn(String.format("Failed to resolve source reference '%s' (%s)", ref.getUrl(), ref.getFormat()), ex);
                 landscapeDescription.setIsPartial(true);
             }
         });

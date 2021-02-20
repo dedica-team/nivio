@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.rancher1;
 
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import de.bonndan.nivio.util.URLHelper;
@@ -26,7 +27,7 @@ public class InputFormatHandlerRancher1 implements InputFormatHandler {
     }
 
     @Override
-    public List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl) {
+    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
 
         String landscape = reference.getLandscapeDescription().getIdentifier();
 
@@ -34,10 +35,9 @@ public class InputFormatHandlerRancher1 implements InputFormatHandler {
         try {
             URL url = new URL(combine);
             PrometheusExporter prometheusExporter = new PrometheusExporter(landscape, url);
-            return prometheusExporter.getDescriptions();
+            landscapeDescription.mergeItems(prometheusExporter.getDescriptions());
         } catch (MalformedURLException e) {
             logger.error("Could not work on prometheus url {}", combine);
-            return new ArrayList<>();
         }
     }
 

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.observation.InputFormatObserver;
@@ -54,7 +55,8 @@ public class InputFormatHandlerCompose2 implements InputFormatHandler {
         return Collections.singletonList("docker-compose-v2");
     }
 
-    public List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl) {
+    @Override
+    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
 
         List<ItemDescription> itemDescriptions = new ArrayList<>();
         String yml = fileFetcher.get(reference, baseUrl);
@@ -66,7 +68,7 @@ public class InputFormatHandlerCompose2 implements InputFormatHandler {
         }
         if (source == null) {
             logger.warn("Got null out of yml string " + yml);
-            return itemDescriptions;
+            return;
         }
 
         source.services.forEach((identifier, composeService) -> {
@@ -74,8 +76,7 @@ public class InputFormatHandlerCompose2 implements InputFormatHandler {
             itemDescriptions.add(composeService.getDescription());
         });
 
-        return itemDescriptions;
-
+        landscapeDescription.mergeItems(itemDescriptions);
     }
 
     @Override

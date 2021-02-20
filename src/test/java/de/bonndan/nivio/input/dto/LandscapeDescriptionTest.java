@@ -18,7 +18,7 @@ class LandscapeDescriptionTest {
         items.add(d);
 
         //when
-        landscapeDescription.addItems(items);
+        landscapeDescription.mergeItems(items);
 
         //then
         assertEquals(1, landscapeDescription.getItemDescriptions().all().size());
