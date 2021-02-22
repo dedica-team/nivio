@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -86,10 +87,37 @@ public class SourceReferencesResolverTest {
         sourceReferencesResolver.resolve(landscapeDescription);
 
         //then
-        var last = log.getMessages().get(log.getMessages().size() -1);
-        assertEquals("WARN", last.level);
+        var last = log.getMessages().get(log.getMessages().size() - 1);
+        assertEquals("ERROR", last.level);
         assertFalse(StringUtils.isEmpty(last.message));
         assertTrue(landscapeDescription.isPartial());
     }
 
+    @Test
+    public void misconfiguredYaml() {
+
+        //given
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_readingerror.yml");
+        LandscapeDescription landscapeDescription = factory.fromYaml(file);
+        assertFalse(landscapeDescription.getSourceReferences().isEmpty());
+        assertFalse(landscapeDescription.isPartial());
+
+        sourceReferencesResolver = new SourceReferencesResolver(
+                new InputFormatHandlerFactory(
+                        new ArrayList<>(Arrays.asList(
+                                new InputFormatHandlerNivio(new FileFetcher(new HttpService())),
+                                InputFormatHandlerCompose2.forTesting())
+                        )
+                )
+                , log
+        );
+
+        //when
+        sourceReferencesResolver.resolve(landscapeDescription);
+
+        //then
+        var last = log.getMessages().get(log.getMessages().size() - 1);
+        assertEquals("ERROR", last.level);
+        assertThat(last.message).contains("mapping values are not allowed here");
+    }
 }
