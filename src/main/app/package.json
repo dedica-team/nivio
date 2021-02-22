@@ -26,7 +26,7 @@
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^3.4.3",
+    "react-scripts": "^4.0.0",
     "react-svg-pan-zoom": "^3.10.0",
     "react-svg-pan-zoom-loader": "^1.4.1",
     "react-transition-group": "^4.4.1",
