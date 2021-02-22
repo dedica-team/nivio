@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
 import java.util.*;
@@ -104,7 +105,7 @@ class RelationEndpointResolverTest {
                 new ArrayList<>(Arrays.asList(new InputFormatHandlerNivio(new FileFetcher(new HttpService())), InputFormatHandlerCompose2.forTesting()))
         );
         ProcessLog logger = new ProcessLog(mock(Logger.class));
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(formatFactory, logger);
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(formatFactory, logger, mock(ApplicationEventPublisher.class));
         sourceReferencesResolver.resolve(landscapeDescription);
 
         new TemplateResolver(logger).resolve(landscapeDescription);

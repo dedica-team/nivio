@@ -2,8 +2,11 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.util.URLHelper;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 
 import java.net.URL;
+import java.util.Objects;
 
 
 /**
@@ -13,10 +16,15 @@ public class SourceReferencesResolver {
 
     private final InputFormatHandlerFactory formatFactory;
     private final ProcessLog log;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public SourceReferencesResolver(InputFormatHandlerFactory formatFactory, ProcessLog logger) {
-        this.formatFactory = formatFactory;
-        this.log = logger;
+    public SourceReferencesResolver(@NonNull final InputFormatHandlerFactory formatFactory,
+                                    @NonNull final ProcessLog logger,
+                                    @NonNull final ApplicationEventPublisher eventPublisher
+    ) {
+        this.formatFactory = Objects.requireNonNull(formatFactory);
+        this.log = Objects.requireNonNull(logger);
+        this.eventPublisher = Objects.requireNonNull(eventPublisher);
     }
 
     public void resolve(final LandscapeDescription landscapeDescription) {
@@ -28,6 +36,7 @@ public class SourceReferencesResolver {
                 factory = formatFactory.getInputFormatHandler(ref);
             } catch (ProcessingException ex) {
                 log.error(ex.getMessage());
+                eventPublisher.publishEvent(new ProcessingErrorEvent(landscapeDescription, ex));
                 landscapeDescription.setIsPartial(true);
                 return;
             } catch (RuntimeException ex) {
@@ -45,6 +54,7 @@ public class SourceReferencesResolver {
                     message += ": " + getCauseMessage(ex.getCause());
                 }
                 log.error(message);
+                eventPublisher.publishEvent(new ProcessingErrorEvent(landscapeDescription, ex));
                 landscapeDescription.setIsPartial(true);
             } catch (RuntimeException ex) {
                 log.warn(ex.getMessage());
