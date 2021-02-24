@@ -1,4 +1,4 @@
-import React, {useState, useEffect, Fragment, useCallback} from 'react';
+import React, { useState, useEffect, Fragment, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import ReactHtmlParser, { domToReact } from 'html-react-parser';
@@ -6,7 +6,7 @@ import ReactHtmlParser, { domToReact } from 'html-react-parser';
 import { get } from '../../utils/API/APIClient';
 import { DomElement } from 'htmlparser2';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Box, Theme } from '@material-ui/core';
+import { Box, Theme, Typography } from '@material-ui/core';
 import { renderToString } from 'react-dom/server';
 
 import './Man.css';
@@ -21,6 +21,9 @@ const useStyles = makeStyles((theme: Theme) =>
     link: {
       color: theme.palette.primary.contrastText,
     },
+    emptyManualContainer: {
+      flexGrow: 1,
+    }
   })
 );
 
@@ -35,12 +38,13 @@ interface Props {
 const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const classes = useStyles();
   const [html, setHtml] = useState<JSX.Element | JSX.Element[]>(
-    <React.Fragment>This manual page doesn't exist. :(</React.Fragment>
+    <React.Fragment><Typography align="center">This manual page doesn't exist. :(</Typography></React.Fragment>
   );
   let { usage } = useParams<{ usage: string }>();
   if (usage == null || typeof usage == 'undefined') usage = 'index';
   const [topic, setTopic] = useState<string>(usage + '');
   const [side, setSide] = useState<any>(null);
+  const [emptyManual, setemptyManual] = useState<boolean>(false);
 
   const handleSphinxSidebar = useCallback((domNode: DomElement) => {
     const replaceSphinx = (domNode: DomElement) => {
@@ -55,10 +59,10 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
         // Remove anchors
         if (href.indexOf('#') !== -1) {
           if (
-              (href.includes('#custom-er-branding') ||
-                  href.includes('#graph') ||
-                  href.includes('#http-api')) &&
-              usage !== 'output.html' // Have to handle output.html abit different for our sidebar
+            (href.includes('#custom-er-branding') ||
+              href.includes('#graph') ||
+              href.includes('#http-api')) &&
+            usage !== 'output.html' // Have to handle output.html abit different for our sidebar
           ) {
             href = 'output.html';
           } else {
@@ -67,15 +71,15 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
         }
 
         return (
-            <Link
-                className={classes.link}
-                to={`/man/${href}`}
-                onClick={(e) => {
-                  setTopic(href);
-                }}
-            >
-              {linkText}
-            </Link>
+          <Link
+            className={classes.link}
+            to={`/man/${href}`}
+            onClick={(e) => {
+              setTopic(href);
+            }}
+          >
+            {linkText}
+          </Link>
         );
       }
     };
@@ -84,7 +88,7 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     const html = renderToString(domToReact1);
     const reactHtmlParser = ReactHtmlParser(html, { replace: replaceSphinx });
     setSide(reactHtmlParser);
-  },[usage, classes]);
+  }, [usage, classes]);
 
   useEffect(() => {
     setSidebarContent(null);
@@ -169,11 +173,12 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
           replace: replaceFunc,
         });
         setHtml(reactHtmlParser);
+        setemptyManual(true);
       }
     });
   }, [topic, usage, handleSphinxSidebar]);
 
-  return <Box className={classes.manualContainer}>{html}</Box>;
+  return <Box className={emptyManual ? classes.manualContainer : classes.emptyManualContainer}>{html}</Box>;
 };
 
 export default Man;
