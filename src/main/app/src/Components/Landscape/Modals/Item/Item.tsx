@@ -100,10 +100,11 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
 
   if (item) {
     for (let key of Object.keys(item.relations)) {
+
       let relation = item.relations[key];
       const isInbound = relation.direction === 'inbound';
       const primary = `${relation.name}`;
-      let secondary = `${relation.description || ''} (${relation.type} ${relation.direction})`;
+      let secondary = `${relation.description || ''} (${relation.type ? relation.type : ''} ${relation.direction})`;
       if (relation.format) secondary += ', format: ' + relation.format;
       relations.push(
         <ListItem key={relation.name}>
@@ -168,7 +169,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
     <Card className={classes.card}>
       <CardHeader
         title={item ? item.name || item.identifier : null}
-        titleTypographyProps={{title: 'ID: ' + item?.fullyQualifiedIdentifier}}
+        titleTypographyProps={{ title: 'ID: ' + item?.fullyQualifiedIdentifier }}
         avatar={
           item ? (
             <Avatar
@@ -180,8 +181,8 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
               }}
             />
           ) : (
-            ''
-          )
+              ''
+            )
         }
         className={classes.cardHeader}
         action={
@@ -202,16 +203,16 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
             <div className='tags'>
               {item
                 ? item.tags.map((value) => (
-                    <Chip size='small' label={value} key={value} className={extraClasses.tag}/>
-                  ))
+                  <Chip size='small' label={value} key={value} className={extraClasses.tag} />
+                ))
                 : null}
             </div>
 
             <List dense={true}>
               <ListItem>
                 <ListItemText
-                    primary={'Group'}
-                    secondary={item?.group}
+                  primary={'Group'}
+                  secondary={item?.group}
                 />
               </ListItem>
               {item?.contact?.length ? (
@@ -269,8 +270,8 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
               <List dense={true}>{relations}</List>
             </Box>
           ) : (
-            ''
-          )}
+              ''
+            )}
         </CardActions>
       ) : null}
     </Card>
