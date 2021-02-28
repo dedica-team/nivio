@@ -74,7 +74,7 @@ Nivio can be reached at http://localhost:3000
 
 # Styling
 
-We use [Material-UI](https://material-ui.com/) for most of our styling combined with our own .scss files for clean, easy and less CSS. [Learn More](https://sass-lang.com/)
+We use [Material-UI](https://material-ui.com/) for most of our styling.
 
 # Environment Variables
 

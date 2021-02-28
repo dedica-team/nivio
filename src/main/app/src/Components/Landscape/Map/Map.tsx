@@ -19,7 +19,7 @@ import {
   Value,
 } from 'react-svg-pan-zoom';
 
-import './Map.scss';
+import './Map.css';
 
 import MapRelation from './MapRelation/MapRelation';
 import { withBasePath } from '../../../utils/API/BasePath';
