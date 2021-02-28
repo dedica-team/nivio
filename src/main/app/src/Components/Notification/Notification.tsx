@@ -19,44 +19,34 @@ const Notification: React.FC = () => {
   const [messageInfo, setMessageInfo] = useState<ISnackbarMessage | undefined>(undefined);
   const [open, setOpen] = useState(false);
   const [socketUrl] = useState(protocol + `://${backendUrl.replace(/^https?:\/\//i, '')}`);
-  const [connected, setConnected] = useState<boolean>(false);
-  const [subscription, setSubscription] = useState<StompSubscription>();
+  const [subscriptions, setSubscriptions] = useState<StompSubscription[]>([]);
 
-  const [client, setClient] = useState<Client>();
-
-  useEffect(() => {
-    const client1 = new Client({
+  const [client] = useState(
+    new Client({
       brokerURL: socketUrl,
       onConnect: () => {
-        setConnected(true);
-      },
-    });
-    client1.activate();
-    setClient(client1);
-  }, [socketUrl]);
+        const subscriptions: StompSubscription[] = [];
+        const eventSubscription = client.subscribe('/topic/events', (message) => {
+          const notificationMessage: INotificationMessage = JSON.parse(message.body);
+          if (notificationMessage.type !== 'ProcessingFinishedEvent') {
+            const snackPackMessage = {
+              message: notificationMessage.landscape
+                ? `Change in ${notificationMessage.landscape}, ${notificationMessage.message || ''}`
+                : `${notificationMessage.message || 'Event Error: No message received'}`,
+              key: new Date().getTime(),
+              landscape: notificationMessage.landscape,
+              level: notificationMessage.level,
+            };
+            setSnackPack((prevArray) => [...prevArray, snackPackMessage]);
+            setOpen(true);
+          }
+        });
 
-  useEffect(() => {
-    if (!client || subscription)
-      return;
-    if (!connected)
-      return;
-    const stompSubscription = client.subscribe('/topic/events', (message) => {
-      const notificationMessage: INotificationMessage = JSON.parse(message.body);
-      if (notificationMessage.type === 'ProcessingFinishedEvent') {
-        const snackPackMessage = {
-          message: notificationMessage.landscape
-            ? `Change in landscape '${notificationMessage.landscape}', ${notificationMessage.message || ''}`
-            : `${notificationMessage.message || 'Event Error: No message received'}`,
-          key: new Date().getTime(),
-          landscape: notificationMessage.landscape,
-          level: notificationMessage.level,
-        };
-        setSnackPack((prevArray) => [...prevArray, snackPackMessage]);
-        setOpen(true);
-      }
-    });
-    setSubscription(stompSubscription);
-  }, [client, connected, subscription])
+        subscriptions.push(eventSubscription);
+        setSubscriptions(subscriptions);
+      },
+    })
+  );
 
   useEffect(() => {
     if (snackPack.length && !messageInfo) {
@@ -71,6 +61,15 @@ const Notification: React.FC = () => {
       }
     }
   }, [snackPack, messageInfo, open]);
+
+  useEffect(() => {
+    client.activate();
+    return () => {
+      subscriptions.forEach((subscription) => {
+        subscription.unsubscribe();
+      });
+    };
+  }, [client, subscriptions]);
 
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') {
