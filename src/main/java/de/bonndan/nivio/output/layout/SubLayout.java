@@ -22,7 +22,7 @@ public class SubLayout {
     public static final int FORCE_CONSTANT = 150;
 
     //distance when repulsion has no more effect
-    public static final int MAX_DISTANCE_LIMIT = 275;
+    public static final int MAX_DISTANCE_LIMIT = 300;
 
     //affects iterations, think of cooling down
     private static final int INITIAL_TEMP = 300;
