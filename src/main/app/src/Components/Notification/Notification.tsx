@@ -27,8 +27,7 @@ const Notification: React.FC = () => {
   useEffect(() => {
     const client1 = new Client({
       brokerURL: socketUrl,
-      //debug: (msg) => console.log(msg),
-      onConnect: (receipt) => {
+      onConnect: () => {
         setConnected(true);
       },
     });
@@ -43,7 +42,6 @@ const Notification: React.FC = () => {
       return;
     const stompSubscription = client.subscribe('/topic/events', (message) => {
       const notificationMessage: INotificationMessage = JSON.parse(message.body);
-      console.log(notificationMessage);
       if (notificationMessage.type === 'ProcessingFinishedEvent') {
         const snackPackMessage = {
           message: notificationMessage.landscape
