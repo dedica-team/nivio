@@ -33,7 +33,7 @@ const Notification: React.FC = () => {
     });
     client1.activate();
     setClient(client1);
-  }, [socketUrl, setClient, setConnected]);
+  }, [socketUrl]);
 
   useEffect(() => {
     if (!client || subscription)
@@ -56,7 +56,7 @@ const Notification: React.FC = () => {
       }
     });
     setSubscription(stompSubscription);
-  }, [client, connected, subscription, setSubscription])
+  }, [client, connected, subscription])
 
   useEffect(() => {
     if (snackPack.length && !messageInfo) {
