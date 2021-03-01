@@ -24,7 +24,7 @@ Rancher 1 Cluster Inspection
 ----------------------------
 
 Rancher clusters can be indexed one project (aka environment in the GUI speak) at a time. Access credentials can be read
-from environment variables. To exclude internal stacks (like those responsible for internal networking), blacklist them.
+from environment variables. To exclude internal stacks, like those responsible for internal networking, blacklist them.
 
 .. code-block:: yaml
    :linenos:
@@ -46,14 +46,14 @@ from environment variables. To exclude internal stacks (like those responsible f
 Nivio proprietary format
 ------------------------
 
-Nivio provides an own format, which allows to set all model properties manually (see Model and Syntax section).
+Nivio provides its own format which allows to set all model properties manually (see Model and Syntax section).
 
-Reading from csv
+Reading from CSV
 -----------------------------
 
-Nivio can parse csv files regarding one row as landscape item. The order of the columns in the file is important, since
-headers are ignored and not mapping automatically. Instead, each column number (starting at zero) can be assigned to an
-item property in the "mapping" configuration. Additionally, the csv separator char and the number of lines to
+Nivio can parse CSV files regarding rows as landscape items. The order of the columns in the file is important because
+headers are ignored and not mapped automatically. Instead, each column number, starting at zero, can be assigned to an
+item property in the "mapping" configuration. Additionally, the CSV separator char and the number of lines to
 skip (usually 1 for the header row) can be set.
 
 .. code-block:: yaml
@@ -74,7 +74,7 @@ skip (usually 1 for the header row) can be set.
 External data
 -------------
 
-Nivio can load external data that cannot be used directly to build landscapes, but is still valuable. For example, the
+Nivio can load external data that cannot be used directly to build landscapes but is still valuable. For example, the
 number of GitHub issues might be interesting to see on a landscape item that is an open source component. To attach such
 data to landscape components, use links having special known identifiers like "github" or "sonar".
 
