@@ -31,7 +31,7 @@
     "react-svg-pan-zoom-loader": "^1.4.1",
     "react-transition-group": "^4.4.1",
     "svg-path-properties": "^1.0.10",
-    "typescript": "~3.9.7"
+    "typescript": "~3.9.9"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.1",
