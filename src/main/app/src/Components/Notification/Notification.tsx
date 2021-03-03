@@ -29,6 +29,7 @@ const Notification: React.FC = () => {
         const eventSubscription = client.subscribe('/topic/events', (message) => {
           const notificationMessage: INotificationMessage = JSON.parse(message.body);
           if (notificationMessage.type !== 'ProcessingFinishedEvent') {
+            console.log(notificationMessage);
             const snackPackMessage = {
               message: notificationMessage.landscape
                 ? `Change in ${notificationMessage.landscape}, ${notificationMessage.message || ''}`
@@ -37,6 +38,7 @@ const Notification: React.FC = () => {
               landscape: notificationMessage.landscape,
               level: notificationMessage.level,
             };
+
             setSnackPack((prevArray) => [...prevArray, snackPackMessage]);
             setOpen(true);
           }

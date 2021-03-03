@@ -8,6 +8,7 @@ import de.bonndan.nivio.model.Label;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -26,7 +27,7 @@ class InputFormatHandlerCompose2Test {
 
     @Test
     public void readCompose() {
-        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/docker-compose.yml");
+        SourceReference file = new SourceReference(new File(getRootPath() + "/src/test/resources/example/services/docker-compose.yml").toURI().toString());
         String yml = fileFetcher.get(file);
         InputFormatHandlerCompose2 factoryCompose2 = new InputFormatHandlerCompose2(fileFetcher);
         List<ItemDescription> services = factoryCompose2.getDescriptions(file, null);

@@ -42,7 +42,7 @@ public class InputFormatHandlerRancher1 implements InputFormatHandler {
     }
 
     @Override
-    public InputFormatObserver getObserver(SourceReference reference, URL baseUrl) {
+    public InputFormatObserver getObserver(InputFormatObserver inner, SourceReference sourceReference) {
         //TODO add observer
         return null;
     }

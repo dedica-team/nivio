@@ -2,8 +2,12 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.util.URLHelper;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 /**
  * Triggers landscape indexing.
@@ -38,11 +42,18 @@ public class IndexingDispatcher {
         return dto;
     }
 
-    public LandscapeDescription fromIncoming(Landscape existing) {
-        LandscapeDescription dto = landscapeDescriptionFactory.fromString(
-                existing.getSource(),
-                existing.getIdentifier() + " source"
-        );
+    /**
+     * Trigger an {@link IndexEvent} using an existing landscape model
+     *
+     * @param existing the current landscape model
+     * @return a generated landscape description
+     */
+    public LandscapeDescription fromIncoming(@NonNull final Landscape existing) {
+        Objects.requireNonNull(existing, "Landscape is null.");
+        LandscapeDescription dto = URLHelper.getURL(existing.getSource())
+                .map(landscapeDescriptionFactory::from)
+                .orElse(landscapeDescriptionFactory.fromString(existing.getSource(), existing.getIdentifier() + " source"));
+
         IndexEvent event = new IndexEvent(this, dto, "index landscape");
         publisher.publishEvent(event);
         return dto;

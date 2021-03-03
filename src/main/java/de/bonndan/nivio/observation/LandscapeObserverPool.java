@@ -1,15 +1,16 @@
 package de.bonndan.nivio.observation;
 
-import de.bonndan.nivio.input.ProcessingException;
-import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.task.TaskRejectedException;
+import org.springframework.lang.NonNull;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  * A wrapper around observers to reduce the async results to a single boolean.
@@ -18,54 +19,37 @@ public class LandscapeObserverPool {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeObserverPool.class);
 
-    private final Landscape landscape;
-    private final List<InputFormatObserver> observers;
+    private final ThreadPoolTaskScheduler taskScheduler;
+    private final Map<InputFormatObserver, ScheduledFuture<?>> scheduledTasks = new IdentityHashMap<>();
+    private final long delay;
 
-    public LandscapeObserverPool(Landscape landscape, List<InputFormatObserver> observers) {
-        this.landscape = landscape;
-        this.observers = observers;
+    public LandscapeObserverPool(@NonNull final ThreadPoolTaskScheduler taskScheduler, long delay) {
+        this.taskScheduler = Objects.requireNonNull(taskScheduler);
+        this.delay = delay;
     }
 
     /**
-     * @return the change
+     * Replace the current observers with new ones.
+     *
+     * Current observers are stopped
+     *
+     * @param observers new observers
      */
-    public ObservedChange getChange() {
+    public void updateObservers(List<InputFormatObserver> observers) {
 
-        LOGGER.info("Detecting changes in {} observers for landscape {}.", observers.size(), landscape.getIdentifier());
+        LOGGER.info("Received {} observers", observers.size());
+        for (Map.Entry<InputFormatObserver, ScheduledFuture<?>> futureEntry : scheduledTasks.entrySet()) {
+            futureEntry.getValue().cancel(true);
+        }
+        scheduledTasks.clear();
 
-        ObservedChange change = new ObservedChange();
-        CompletableFuture<String>[] futures = observers.stream()
-                .filter(Objects::nonNull)
-                .map(observer -> { //TODO: resolve unchecked assignment
-                    try {
-                        return observer.hasChange();
-                    } catch (ProcessingException e) {
-                        change.addError(e);
-                        LOGGER.warn("Failed to get change: " + e.getMessage(), e);
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .toArray(CompletableFuture[]::new);
-        CompletableFuture<Void> allDoneFuture = CompletableFuture.allOf(futures);
-
-        CompletableFuture<List<String>> listCompletableFuture = allDoneFuture.thenApply(
-                v -> Stream.of(futures)
-                        .map(CompletableFuture::join)
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList())
-        );
-
-        List<String> changes = listCompletableFuture.join();
-        change.setChanges(changes);
-        return change;
-    }
-
-    Landscape getLandscape() {
-        return landscape;
-    }
-
-    List<InputFormatObserver> getObservers() {
-        return observers;
+        observers.forEach(inputFormatObserver -> {
+            try {
+                ScheduledFuture<?> scheduledFuture = taskScheduler.scheduleWithFixedDelay(inputFormatObserver, delay);
+                scheduledTasks.put(inputFormatObserver, scheduledFuture);
+            } catch (TaskRejectedException e) {
+                LOGGER.error("Failed to schedule observer: " + e.getMessage(), e);
+            }
+        });
     }
 }

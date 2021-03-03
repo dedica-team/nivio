@@ -1,9 +1,6 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.*;
 import org.springframework.util.StringUtils;
 
 import java.net.MalformedURLException;
@@ -37,6 +34,10 @@ public class Link {
     private final Map<String, Object> props = new HashMap<>();
 
     public Link(String href) {
+        if (StringUtils.isEmpty(href)) {
+            this.href = null;
+            return;
+        }
         try {
             this.href = new URL(href);
         } catch (MalformedURLException e) {
@@ -95,6 +96,7 @@ public class Link {
         return basicAuthUsername;
     }
 
+    @JsonSetter
     public void setBasicAuthUsername(String basicAuthUsername) {
         this.basicAuthUsername = basicAuthUsername;
     }
@@ -104,6 +106,7 @@ public class Link {
         return basicAuthPassword;
     }
 
+    @JsonSetter
     public void setBasicAuthPassword(String basicAuthPassword) {
         this.basicAuthPassword = basicAuthPassword;
     }
@@ -117,6 +120,7 @@ public class Link {
         return headerTokenName;
     }
 
+    @JsonSetter
     public void setHeaderTokenName(String headerTokenName) {
         this.headerTokenName = headerTokenName;
     }
@@ -126,6 +130,7 @@ public class Link {
         return headerTokenValue;
     }
 
+    @JsonSetter
     public void setHeaderTokenValue(String headerTokenValue) {
         this.headerTokenValue = headerTokenValue;
     }

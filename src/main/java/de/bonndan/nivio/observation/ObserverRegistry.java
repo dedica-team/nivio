@@ -1,18 +1,15 @@
 package de.bonndan.nivio.observation;
 
-import de.bonndan.nivio.input.IndexEvent;
-import de.bonndan.nivio.input.ProcessingException;
-import de.bonndan.nivio.input.ProcessingFinishedEvent;
-import de.bonndan.nivio.input.LandscapeDescriptionFactory;
+import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.Map;
 import java.util.Objects;
@@ -24,23 +21,23 @@ import java.util.stream.Collectors;
  * Service to register landscapes to observe description source changes.
  */
 @Service
-public class ObserverRegistry implements ApplicationListener<ProcessingFinishedEvent> {
+public class ObserverRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObserverRegistry.class);
 
     private final Map<String, LandscapeObserverPool> observerMap = new ConcurrentHashMap<>();
 
-    private final LandscapeObserverPoolFactory landscapeObserverPoolFactory;
-    private final LandscapeDescriptionFactory landscapeDescriptionFactory;
-    private final ApplicationEventPublisher publisher;
+    private final LandscapeObserverFactory landscapeObserverPoolFactory;
+    private final ThreadPoolTaskScheduler taskScheduler;
+    private final IndexingDispatcher indexingDispatcher;
 
-    public ObserverRegistry(LandscapeObserverPoolFactory landscapeObserverPoolFactory,
-                            LandscapeDescriptionFactory landscapeDescriptionFactory,
-                            ApplicationEventPublisher publisher
+    public ObserverRegistry(LandscapeObserverFactory landscapeObserverPoolFactory,
+                            ThreadPoolTaskScheduler taskScheduler,
+                            IndexingDispatcher indexingDispatcher
     ) {
         this.landscapeObserverPoolFactory = landscapeObserverPoolFactory;
-        this.landscapeDescriptionFactory = landscapeDescriptionFactory;
-        this.publisher = publisher;
+        this.taskScheduler = taskScheduler;
+        this.indexingDispatcher = indexingDispatcher;
     }
 
     /**
@@ -48,29 +45,32 @@ public class ObserverRegistry implements ApplicationListener<ProcessingFinishedE
      * <p>
      * On processing success, {@link ProcessingFinishedEvent} is fired and read here to register the landscape.
      */
-    @Override
-    public void onApplicationEvent(ProcessingFinishedEvent event) {
+    @EventListener(ProcessingFinishedEvent.class)
+    public void onProcessingFinishedEvent(ProcessingFinishedEvent event) {
         LandscapeDescription landscapeDescription = (LandscapeDescription) event.getSource();
         Landscape landscape = Objects.requireNonNull(event.getLandscape());
 
         if (landscapeDescription == null) {
-            String msg = "No landscape description (input) available. Landscape " + landscape.getIdentifier() + "could not be registered for observation";
+            String msg = "No landscape description (input) available. Landscape " + landscape.getIdentifier() + " could not be registered for observation";
             landscape.getLog().warn(msg);
             LOGGER.warn(msg);
             return;
         }
 
-        observerMap.put(landscape.getIdentifier(), landscapeObserverPoolFactory.getPoolFor(landscape, landscapeDescription));
-        LOGGER.info("Registered landscape {} for observation.", landscapeDescription);
+        LandscapeObserverPool pool = observerMap.computeIfAbsent(landscape.getIdentifier(), s -> {
+            LOGGER.info("Registered landscape {} for observation.", landscapeDescription);
+            return new LandscapeObserverPool(taskScheduler, 30 * 1000);
+        });
+        pool.updateObservers(landscapeObserverPoolFactory.getObserversFor(landscape, landscapeDescription));
     }
 
-    /**
-     * Polls for changes in landscapes.
-     */
-    @Scheduled(fixedDelayString = "${nivio.pollingMilliseconds}", initialDelay = 5000)
-    public void poll() {
-        LOGGER.info("Polling {} landscapes for changes.", observerMap.size());
-        observerMap.entrySet().parallelStream().forEach(e -> check(e.getValue()));
+    @EventListener(InputChangedEvent.class)
+    public void onInputChangedEvent(InputChangedEvent event) {
+        ObservedChange observedChange = event.getSource();
+        Landscape landscape = observedChange.getLandscape();
+        LOGGER.info("Observed change in landscape {}: {}", landscape.getIdentifier(), String.join("; ", observedChange.getChanges()));
+        indexingDispatcher.fromIncoming(landscape);
+        LOGGER.info("Triggered new IndexingEvent for landscape {}", landscape.getIdentifier());
     }
 
     /**
@@ -80,24 +80,4 @@ public class ObserverRegistry implements ApplicationListener<ProcessingFinishedE
         return observerMap.keySet();
     }
 
-    private void check(LandscapeObserverPool observerPool) {
-        ObservedChange change = observerPool.getChange();
-        if (change.getErrors().size() > 0) {
-            String errors = change.getErrors().stream().map(ProcessingException::getMessage).collect(Collectors.joining(";"));
-            LOGGER.info("Errors occurred while scanning landscape {} for changes:  {}", observerPool.getLandscape(), errors);
-        }
-
-        Landscape stored = observerPool.getLandscape();
-        LOGGER.debug("Detected {} changes in landscape {}", change.getChanges().size(), stored.getIdentifier());
-
-        if (change.getChanges().size() > 0) {
-            String s = StringUtils.collectionToDelimitedString(change.getChanges(), ";");
-            LandscapeDescription updated = landscapeDescriptionFactory.from(stored);
-            LOGGER.info("Detected change '{}' in landscape {}", s, stored.getIdentifier());
-            if (updated != null) {
-                publisher.publishEvent(new IndexEvent(this, updated, "Source change: " + s));
-            }
-        }
-
-    }
 }

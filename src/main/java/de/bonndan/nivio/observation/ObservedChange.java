@@ -1,6 +1,7 @@
 package de.bonndan.nivio.observation;
 
 import de.bonndan.nivio.input.ProcessingException;
+import de.bonndan.nivio.model.Landscape;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,9 +12,19 @@ import java.util.List;
  */
 class ObservedChange {
 
+    private final Landscape landscape;
     private final List<ProcessingException> errors = new ArrayList<>();
     private List<String> changes;
     private boolean error;
+
+    ObservedChange(final Landscape landscape, final String change) {
+        this.landscape = landscape;
+        this.changes = List.of(change);
+    }
+
+    public Landscape getLandscape() {
+        return landscape;
+    }
 
     public void setChanges(List<String> changes) {
         this.changes = changes;
