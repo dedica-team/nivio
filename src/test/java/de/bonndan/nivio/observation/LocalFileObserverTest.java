@@ -1,8 +1,8 @@
 package de.bonndan.nivio.observation;
 
 import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeBuilder;
 import de.bonndan.nivio.model.LandscapeFactory;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
@@ -14,7 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -40,9 +40,13 @@ class LocalFileObserverTest {
         LocalFileObserver localFileObserver = new LocalFileObserver(landscape, publisher, tempFile.toFile());
         Thread thread = new Thread(localFileObserver);
         thread.start();
-        Thread.sleep(1000);
+
+        //mac os x does not use native events, acc. to stackoverflow polling is used
+        int factor = SystemUtils.IS_OS_MAC_OSX ? 3 : 1;
+
+        Thread.sleep(1000 * factor);
         Files.write(tempFile, "foo".getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE);
-        Thread.sleep(4000);
+        Thread.sleep(4000 * factor);
 
         thread.interrupt();
         tempFile.toFile().deleteOnExit();
