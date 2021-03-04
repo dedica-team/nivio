@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Box, Button, Card, CardHeader, CardMedia, darken, Theme } from '@material-ui/core';
 import { ILandscape } from '../../../interfaces';
@@ -40,86 +40,93 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   landscapes: ILandscape[] | null | undefined;
   setSidebarContent: Function;
+  landscapesCount: Number | null | undefined;
 }
 
 /**
  * Displays all available landscapes and provides all needed navigation
  */
 
-const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
+const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent, landscapesCount }) => {
   const classes = useStyles();
   const componentClasses = componentStyles();
+  const history = useHistory();
   let content: ReactElement[] = [<Box>Loading landscapes...</Box>];
 
-  if (Array.isArray(landscapes) && landscapes.length) {
-    content = landscapes.map((landscape) => {
-      let itemCount = 0;
-      landscape.groups?.forEach((group) => (itemCount += group.items.length));
-      let stats =
-        itemCount +
-        ' items in ' +
-        (landscape.groups ? Object.keys(landscape.groups).length : 0) +
-        ' groups';
+  if (Array.isArray(landscapes) && landscapes.length && landscapesCount) {
+    if (landscapesCount > 1) {
+      content = landscapes.map((landscape) => {
+        let itemCount = 0;
+        landscape.groups?.forEach((group) => (itemCount += group.items.length));
+        let stats =
+          itemCount +
+          ' items in ' +
+          (landscape.groups ? Object.keys(landscape.groups).length : 0) +
+          ' groups';
 
-      if (landscape.lastUpdate)
-        stats += ', updated: ' + dateFormat(landscape.lastUpdate, 'dd-mm-yyyy hh:MM:ss TT');
+        if (landscape.lastUpdate)
+          stats += ', updated: ' + dateFormat(landscape.lastUpdate, 'dd-mm-yyyy hh:MM:ss TT');
 
-      return (
-        <Card key={landscape.identifier} className={classes.card}>
-          <CardHeader
-            title={landscape.name}
-            subheader={stats}
-            className={componentClasses.cardHeader}
-            classes={{ subheader: componentClasses.cardSubheader }}
-            action={
-              <React.Fragment>
-                <IconButton
-                  aria-label='log'
-                  title={'process log'}
-                  onClick={() => setSidebarContent(<Log landscape={landscape} />)}
-                >
-                  <FormatListBulleted />
-                </IconButton>
-                <IconButton
-                  aria-label='map'
-                  title={'SVG Export'}
-                  rel='noopener noreferrer'
-                  target={'_blank'}
-                  href={withBasePath(`/render/${landscape.identifier}/map.svg`)}
-                >
-                  <MapOutlined />
-                </IconButton>
-                <IconButton
-                  aria-label='report'
-                  title={'Printable Report'}
-                  rel='noopener noreferrer'
-                  target={'_blank'}
-                  href={withBasePath(`/docs/${landscape.identifier}/report.html`)}
-                >
-                  <Assignment />
-                </IconButton>
-              </React.Fragment>
-            }
-          />
-          <CardContent>
-            <Button
-              aria-label={'map'}
-              component={Link}
-              to={`/landscape/${landscape.identifier}`}
-              className={classes.link}
-              title={'Landscape map'}
-            >
-              <CardMedia
-                className={classes.cardMedia}
-                image={withBasePath(`/render/${landscape.identifier}/map.svg`)}
-              />
-            </Button>
-            <br />
-            {landscape.description}
-          </CardContent>
-        </Card>
-      );
-    });
+        return (
+          <Card key={landscape.identifier} className={classes.card}>
+            <CardHeader
+              title={landscape.name}
+              subheader={stats}
+              className={componentClasses.cardHeader}
+              classes={{ subheader: componentClasses.cardSubheader }}
+              action={
+                <React.Fragment>
+                  <IconButton
+                    aria-label='log'
+                    title={'process log'}
+                    onClick={() => setSidebarContent(<Log landscape={landscape} />)}
+                  >
+                    <FormatListBulleted />
+                  </IconButton>
+                  <IconButton
+                    aria-label='map'
+                    title={'SVG Export'}
+                    rel='noopener noreferrer'
+                    target={'_blank'}
+                    href={withBasePath(`/render/${landscape.identifier}/map.svg`)}
+                  >
+                    <MapOutlined />
+                  </IconButton>
+                  <IconButton
+                    aria-label='report'
+                    title={'Printable Report'}
+                    rel='noopener noreferrer'
+                    target={'_blank'}
+                    href={withBasePath(`/docs/${landscape.identifier}/report.html`)}
+                  >
+                    <Assignment />
+                  </IconButton>
+                </React.Fragment>
+              }
+            />
+            <CardContent>
+              <Button
+                aria-label={'map'}
+                component={Link}
+                to={`/landscape/${landscape.identifier}`}
+                className={classes.link}
+                title={'Landscape map'}
+              >
+                <CardMedia
+                  className={classes.cardMedia}
+                  image={withBasePath(`/render/${landscape.identifier}/map.svg`)}
+                />
+              </Button>
+              <br />
+              {landscape.description}
+            </CardContent>
+          </Card>
+        );
+      });
+    }
+    else {
+      history.push(`/landscape/${landscapes[0].identifier}`);
+    }
   }
 
   return (
