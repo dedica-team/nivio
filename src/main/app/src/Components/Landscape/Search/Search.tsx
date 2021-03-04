@@ -85,7 +85,6 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
-      console.debug('identifier missing');
       return;
     }
 

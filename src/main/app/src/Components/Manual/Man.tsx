@@ -175,7 +175,7 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
         setHtml(reactHtmlParser);
         setemptyManual(true);
       }
-    });
+    }).catch(reason => console.error(reason));
   }, [topic, usage, handleSphinxSidebar]);
 
   return <Box className={emptyManual ? classes.manualContainer : classes.emptyManualContainer}>{html}</Box>;
