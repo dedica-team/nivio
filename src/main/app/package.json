@@ -26,8 +26,7 @@
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^3.4.3",
-    "react-svg-pan-zoom": "^3.10.0",
+    "react-scripts": "^4.0.3",
     "react-svg-pan-zoom-loader": "^1.4.1",
     "react-transition-group": "^4.4.1",
     "svg-path-properties": "^1.0.10",
@@ -37,7 +36,6 @@
     "@testing-library/jest-dom": "^5.11.1",
     "@testing-library/react": "^10.4.7",
     "@testing-library/user-event": "^12.0.11",
-    "eslint": "^6.6.0",
     "prettier": "^2.0.5"
   },
   "scripts": {
