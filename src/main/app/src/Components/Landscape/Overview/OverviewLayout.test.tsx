@@ -38,11 +38,11 @@ const landscapes: ILandscape = {
     fullyQualifiedIdentifier: 'fullTestIdentifier',
 };
 it('should render LandscapeOverview component', () => {
-    const landscapesCount = 2;
+
 
     const { getByText } = render(
         <MemoryRouter>
-            <OverviewLayout landscapes={[landscapes]} setSidebarContent={() => { }} landscapesCount={landscapesCount} />
+            <OverviewLayout landscapes={[landscapes]} setSidebarContent={() => { }} />
         </MemoryRouter>
     );
     expect(getByText('landscapeTestName')).toBeInTheDocument();
@@ -50,13 +50,3 @@ it('should render LandscapeOverview component', () => {
 
 
 
-it('should render LandscapeOverview component', () => {
-    const landscapesCount = 1;
-
-    const { getByText } = render(
-        <MemoryRouter>
-            <OverviewLayout landscapes={[landscapes]} setSidebarContent={() => { }} landscapesCount={landscapesCount} />
-        </MemoryRouter>
-    );
-    expect(getByText('Loading landscapes...')).toBeInTheDocument();
-});
