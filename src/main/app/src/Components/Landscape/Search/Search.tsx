@@ -71,11 +71,13 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
           .replace(/\*/g, '%2A')
     ).then((result) => {
       setResults(result);
+    }).catch(reason => {
+      console.warn(reason);
     });
   }, []);
 
   useEffect(() => {
-    const searchResult = results.map((value1) => (
+    const searchResult = results.map((value1: IItem) => (
       <Item small={true} key={value1.fullyQualifiedIdentifier} useItem={value1} />
     ));
     setSidebarContent(searchResult);
@@ -87,7 +89,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
       return;
     }
 
-    const result: IFacet[] | null = await get('/api/landscape/' + identifier + '/facets/');
+    const result: IFacet[] | null = await get('/api/landscape/' + identifier + '/facets/').catch(reason => console.warn(reason));
 
     if (!result) return;
     setFacets(result);
@@ -127,7 +129,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
     setCurrentLandscape(identifier);
   }
 
-  const facetsHtml = facets.map((facet) => (
+  const facetsHtml = facets.map((facet: IFacet) => (
     <Card className={componentClasses.card} key={facet.dim}>
       <CardContent>
         <Typography variant={'h6'}>{facet.dim}</Typography>
