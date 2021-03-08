@@ -41,7 +41,7 @@ Nivio expects a seed configuration at start time (unless you want to run the dem
 *SEED* to a path or URL nivio can read from. If you want to use files on the host, modify the `docker-compose.yml` to
 bind to the corresponding folder, e.g:
 
-.. code-block:: docker-compose
+.. code-block:: docker
 
    version: '3.2'
 
@@ -121,7 +121,7 @@ Deleting items
 
 Items not referenced anymore in the descriptions will be deleted automatically on a complete and successful re-index run.
 If an error occurs fetching the source while indexing, the behaviour of the indexer changes to treat the available data as
- partial input. This means only upserts will happen, and no deletion.
+partial input. This means only upserts will happen, and no deletion.
 
 
 
