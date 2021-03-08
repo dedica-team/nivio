@@ -55,7 +55,7 @@ Other fields:
 
 Plus, there are labels having a special meaning:
 
-.. include:: labels.rst
+.. include:: inc_labels.rst
 
 
 You can also store **custom properties** as labels, but keep in mind that

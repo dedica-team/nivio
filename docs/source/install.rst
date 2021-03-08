@@ -77,7 +77,7 @@ Environment variables
 
 The following environment variables can be set to configure nivio:
 
-.. include:: env_config.rst
+.. include:: inc_env_config.rst
 
 
 Landscape configuration
