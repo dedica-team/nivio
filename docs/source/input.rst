@@ -46,7 +46,7 @@ from environment variables. To exclude internal stacks, like those responsible f
 Nivio proprietary format
 ------------------------
 
-Nivio provides its own format which allows to set all model properties manually (see Model and Syntax section).
+Nivio provides its own format which allows to set all model properties manually (see :ref:`Model and Syntax` section).
 
 Reading from CSV
 -----------------------------

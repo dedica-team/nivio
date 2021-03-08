@@ -24,7 +24,7 @@ Built in KPIs
 * * yellow if a bottleneck (more than 1 item depends on it)
 * health (examines the health label on items)
 * condition (K8s condition true/false evaluation)
-* custom (see below)
+* custom (see :ref:`Custom KPIs`)
 
 By default all shipped KPIs are enabled. Set "enabled" to false in the config to disable them.
 

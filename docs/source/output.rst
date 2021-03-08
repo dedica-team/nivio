@@ -17,7 +17,7 @@ Searching
 ---------
 
 Nivio indexes all landscape items in an in-memory search engine called Lucene. You can build sophisticated queries on
-various item fields (see Model). For further information see https://www.lucenetutorial.com/lucene-query-syntax.html
+various item fields (see :ref:`Model and Syntax`). For further information see https://www.lucenetutorial.com/lucene-query-syntax.html
 
 
 Modifying Item Appearance
@@ -79,7 +79,7 @@ a valid URL.
 External Images
 ^^^^^^^^^^^^^^^
 
-To include external images in the map, just set the icon (or fill, see below) property to a valid URL.
+To include external images in the map, just set the icon (or fill, see :ref:`Background fill`) property to a valid URL.
 
 .. code-block:: yaml
    :linenos:
@@ -92,8 +92,8 @@ To include external images in the map, just set the icon (or fill, see below) pr
 Background fill
 ^^^^^^^^^^^^^^^
 
-While icon is rendered as centered image on the node, fill is used to paint the entire background and is more suitable
-to be used with images, photos, and so on.
+While icon (see :ref:`External Images`) is rendered as centered image on the node, fill is used to paint the entire
+background and is more suitable to be used with images, photos, and so on.
 
 .. code-block:: yaml
    :linenos:
