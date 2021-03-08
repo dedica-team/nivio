@@ -129,7 +129,7 @@ Behind a proxy
 --------------
 
 If you deploy Nivio to run under a different path than root (:file:`/`), make sure to set the environment variables
-:envvar:`SERVER_CONTEXT_PATH` and :envvar:`NIVIO_BASE_URL` to the path.
+:envvar:`SERVER_SERVLET_CONTEXT_PATH` and :envvar:`NIVIO_BASE_URL` to the path.
 
 .. code-block:: bash
 
