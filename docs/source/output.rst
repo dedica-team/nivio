@@ -6,12 +6,12 @@ HTTP API
 
 The API offers three types of output:
 
-* JSON under /api
-* rendered maps under /render
-* generated landscape documentation under /docs
-* search under /api/{landscape}/search/{lucene style query}
+* JSON under :file:`/api`
+* rendered maps under :file:`/render`
+* generated landscape documentation under :file:`/docs`
+* search under :file:`/api/{landscape}/search/{lucene style query}`
 
-Please see the swagger documentation under /v2/api-docs (JSON) or /swagger-ui.html (HTML GUI) for details.
+Please see the swagger documentation under :file:`/v2/api-docs` (JSON) or :file:`/swagger-ui.html` (HTML GUI) for details.
 
 Searching
 ---------
@@ -62,7 +62,7 @@ The following types are translated icons to maintain backward compatibility:
 
 Vendor Logos
 ^^^^^^^^^^^^^
-The *icon* property can also work with a predefined vendor name, like "redis", prefixed with "vendor://" as scheme.
+The *icon* property can also work with a predefined vendor name, like "redis", prefixed with ``vendor://`` as scheme.
 
 Vendor icons are work in progress.
 
@@ -73,13 +73,13 @@ Vendor icons are work in progress.
       - identifier: bar
         icon: vendor://redis
 
-To change the appearance of an item to a vendor logo the *icon* or *fill* property can be set. Both properties take
-a valid URL.
+To change the appearance of an item to a vendor logo the ``icon`` or ``fill`` properties can be set.
+Both properties take a valid URL.
 
 External Images
 ^^^^^^^^^^^^^^^
 
-To include external images in the map, just set the icon (or fill, see :ref:`Background fill` below) property to a valid URL.
+To include external images in the map, just set the ``icon`` property (or :ref:`fill <Background fill>`) to a valid URL.
 
 .. code-block:: yaml
    :linenos:
@@ -106,7 +106,7 @@ UTF-8 Symbols and shortname as Icons
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If **NO** icon, type, or fill value is set, but a shortname value is given, the value is displayed on the icon. The first
-example would display "FOOBAR" on the item and the second an enlarged unicorn symbol (shortnames less than three characters are
+example would display ``FOOBAR`` on the item and the second an enlarged unicorn symbol (shortnames less than three characters are
 enlarged).
 
 .. code-block:: yaml
@@ -140,11 +140,11 @@ included. A logo is configured in the landscape config and must be a URL pointin
    items:
      ...
 
-You can also apply custom colors to the user interface. Set the following environment variables to hex values (e.g. "#23423"):
+You can also apply custom colors to the user interface. Set the following environment variables to hex values (e.g. :samp:`#234234`):
 
-* NIVIO_BRANDING_FOREGROUND to set the primary color for interface elements
-* NIVIO_BRANDING_BACKGROUND for the background color (dark grey is default)
-* NIVIO_BRANDING_SECONDARY to set the accent color used for active elements
+* :envvar:`NIVIO_BRANDING_FOREGROUND` to set the primary color for interface elements
+* :envvar:`NIVIO_BRANDING_BACKGROUND` for the background color (dark grey is default)
+* :envvar:`NIVIO_BRANDING_SECONDARY` to set the accent color used for active elements
 
 Graph Layout Tweaking
 =====================

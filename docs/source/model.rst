@@ -12,10 +12,10 @@ infrastructure. Both landscapes could have items in common (like a database, loa
 
 A landscape can/must have the following attributes:
 
-* **identifier**: A unique identifier. Use a name or an URN, validated against ``^[a-z0-9\\.\\:_-]{3,256}$``
-* **name** Human readable, displayed name
-* **contact** E.g. an email
-* **description** A short text describing the landscape
+* ``identifier``: A unique identifier. Use a name or an URN, validated against :regexp:`^[a-z0-9\\.\\:_-]{3,256}$`.
+* ``name`` Human readable, displayed name.
+* ``contact`` E.g. an email address.
+* ``description`` A short text describing the landscape.
 
 Landscape Items
 ---------------
@@ -24,33 +24,33 @@ An item represents anything that has a meaning in the landscape. It can be a ser
 
 A item should have the following attributes:
 
-* **identifier**: A unique identifier in the landscape. Use a name or a URN, validated against ``^[a-z0-9\\.\\:_-]{3,256}$``
-* **group** Name of the group (optional). If a group is given, it becomes part of the global identifier. All items can only be part of one group.
-* **name** Human readable, displayed name
-* **contact** Support/notification contact (email). May be addressed in case of errors.
-* **description** A short description
-* **icon** An icon URL
-* **color** An HTML color
+* ``identifier``: A unique identifier in the landscape. Use a name or a URN, validated against :regexp:`^[a-z0-9\\.\\:_-]{3,256}$`.
+* ``group`` Name of the group (optional). If a group is given, it becomes part of the global identifier. All items can only be part of one group.
+* ``name`` Human readable, displayed name.
+* ``contact`` Support/notification contact (email). May be addressed in case of errors.
+* ``description`` A short description.
+* ``icon`` An icon URL.
+* ``color`` An HTML color.
 
 Other fields:
 
-* **address** A technical address like a URI
-* **links** A map/dictionary of URLs to more information
-* **lifecycle** Life cycle phase. One of "planned", "integration", "production", "end of life" (abbreviations work).
-* **status** Status objects, represented in colors
-    * label: Stability, capability, health, security, ...
-    * status: Green, yellow, orange, red, brown
-    * message: Everything OK.
-* **interfaces** An array of provided interfaces or endpoints
-    * description: Description
-    * format: Media type or binary format
-    * url: A URL pointing to the interface
-* **relations** Connections to other items
-    * type: Provider (hard dependency) or data flow (soft dependency)
-    * description: Description
-    * target: An item identifier
-    * format: Media type or binary format
-* **providedBy** Array of references to other items (identifiers)
+* ``address`` A technical address like a URI.
+* ``links`` A map/dictionary of URLs to more information.
+* ``lifecycle`` Life cycle phase. One of ``planned``, ``integration``, ``production``, ``end of life`` (abbreviations work).
+* ``status`` Status objects, represented in colors.
+    * ``label``: ``stability``, ``capability``, ``health``, ``security``, ...
+    * ``status``: ``green``, ``yellow``, ``orange``, ``red``, ``brown``.
+    * ``message``: Everything OK.
+* ``interfaces`` An array of provided interfaces or endpoints.
+    * ``description``: Description.
+    * ``format``: Media type or binary format.
+    * ``url``: A URL pointing to the interface.
+* ``relations`` Connections to other items.
+    * ``type``: ``provider`` (hard dependency) or ``dataflow`` (soft dependency).
+    * ``description``: Description.
+    * ``target``: An item identifier.
+    * ``format``: Media type or binary format.
+* ``providedBy`` Array of references to other items (identifiers).
 
 
 Plus, there are labels having a special meaning:
@@ -91,14 +91,14 @@ Item Groups
 -----------
 Groups can have the following attributes:
 
-* **identifier**: A unique identifier in the landscape. Provided automatically via the dictionary key, so do not set it
-* **contains** Array of references to other items (identifiers and CQN queries)
-* **owner** Owning party (e.g. marketing)
-* **description** A short description
-* **team** Technical owner
-* **contact** Support/notification contact (email). May be addressed in case of errors
-* **color** A hex color code for rendering
-* **links** A map/dictionary of URLs to more information
+* ``identifier``: A unique identifier in the landscape. Provided automatically via the dictionary key, so do not set it.
+* ``contains`` Array of references to other items (identifiers and CQN queries).
+* ``owner`` Owning party (e.g. marketing).
+* ``description`` A short description.
+* ``team`` Technical owner.
+* ``contact`` Support/notification contact (email). May be addressed in case of errors.
+* ``color`` A hex color code for rendering.
+* ``links`` A map/dictionary of URLs to more information.
 
 **Group configuration**
 
@@ -123,11 +123,11 @@ Item Identification and Referencing
 ------------------------------------
 
 An item can be uniquely identified by its landscape, its group, and its identifier. A fully qualified
-identifier is composed of these three: **mylandscape/agroup/theitem**. Since the group is optional, items with unique
-identifier can also be addressed using **mylandscape/theitem** or just **theitem**. Nivio tries to resolve the correct item and raises
+identifier is composed of these three: ``mylandscape``, ``agroup``, and ``theitem``. Since the group is optional, items with unique
+identifier can also be addressed using ``mylandscape`` and ``theitem``, or just ``theitem``. Nivio tries to resolve the correct item and raises
 an error if it cannot be found or the result is ambiguous.
 
-Service references are required to describe a provider relation or data flows.
+Service references are required to describe a ``provider`` relation or ``dataflow``.
 
 .. code-block:: yaml
    :linenos:

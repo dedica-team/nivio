@@ -6,7 +6,7 @@ Kubernetes cluster inspection
 -----------------------------
 
 Kubernetes clusters are inspected using Fabric8.io's Java client. See https://github.com/fabric8io/kubernetes-client#configuring-the-client
-for configuration. Parsing can be configured via an URL, i.e. the examined namespace can be given (otherwise all namespaces
+for configuration. Parsing can be configured via a URL, i.e. the examined namespace can be given (otherwise all namespaces
 are scanned) and a label for building groups can be named. Both parameters and even the whole URL are optional.
 
 .. code-block:: yaml
@@ -53,7 +53,7 @@ Reading from CSV
 
 Nivio can parse CSV files regarding rows as landscape items. The order of the columns in the file is important because
 headers are ignored and not mapped automatically. Instead, each column number, starting at zero, can be assigned to an
-item property in the "mapping" configuration. Additionally, the CSV separator char and the number of lines to
+item property in the ``mapping`` configuration. Additionally, the CSV separator char and the number of lines to
 skip (usually 1 for the header row) can be set.
 
 .. code-block:: yaml
@@ -74,15 +74,15 @@ skip (usually 1 for the header row) can be set.
 External data
 -------------
 
-Nivio can load external data that cannot be used directly to build landscapes but is still valuable. For example, the
+Nivio can load external data that cannot be used directly to build landscapes, but is still valuable. For example, the
 number of GitHub issues might be interesting to see on a landscape item that is an open source component. To attach such
-data to landscape components, use links having special known identifiers like "github" or "sonar".
+data to landscape components, use links having special known identifiers like "*github*" or "*sonar*".
 
 This is work in progress. Currently supported link identifiers are:
 
-* 'github' for GitHub repositories
-* 'gitlab' for GitLab repositories
-* 'spring.health' for Spring Boot health actuators https://docs.spring.io/spring-boot/docs/current/actuator-api/htmlsingle/#health
+* ``github`` for GitHub repositories
+* ``gitlab`` for GitLab repositories
+* ``spring.health`` for Spring Boot health actuators https://docs.spring.io/spring-boot/docs/current/actuator-api/htmlsingle/#health
 
 .. code-block:: yaml
    :linenos:

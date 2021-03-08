@@ -73,7 +73,7 @@ Using Labels to assign data
 
 You can set labels (string:string) to items which are evaluated as model fields if
 
-* the key contains "nivio." AND
+* the key contains ``nivio.`` **AND**
 * the rest of the key equals a field name.
 
 Labels can be set using docker-compose files too. However, docker labels do not allow arrays, so use comma separated strings:
@@ -96,11 +96,11 @@ Relations between landscape items
 
 Usually environments such as Docker or K8s provide few to none information on the relation between landscape items (e.g.
 which database a service uses). However, in 12-factor apps there is configuration through environment variables (https://12factor.net/config)
-and these can be parsed. Nivio provides an experimental feature which regards these variables as DSL. They
+and these can be parsed. Nivio provides an experimental feature which regards these variables as :abbr:`DSL (???)`. They
 are read and assigned as item labels, then examined:
 
 * The key is split using the underscore character.
-* If it contains parts like **"url", "uri", "host"** etc., the label is taken into account as **identifier**, i.e. Nivio looks for a target having the identifier, name, or address equal to the value
+* If it contains parts like ``url``, ``uri``, ``host`` etc., the label is taken into account as **identifier**, i.e. Nivio looks for a target having the identifier, name, or address equal to the value.
 
 Labels are examined as follows:
 

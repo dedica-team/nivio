@@ -16,24 +16,31 @@ Built in KPIs
 -------------
 
 * scaling (warning if the scale label is exactly 0)
-* * red if 0 as provider for other items
-* * yellow if scaled to 0 without relations
-* * orange of scaled to 0 as data sink
-* * unknown if no label or not a number
-* * green if scaled higher than 1
-* * yellow if a bottleneck (more than 1 item depends on it)
+
+  * red if 0 as provider for other items
+
+  * yellow if scaled to 0 without relations
+
+  * orange if scaled to 0 as data sink
+
+  * unknown if no label or not a number
+
+  * green if scaled higher than 1
+
+  * yellow if a bottleneck (more than 1 item depends on it)
+
 * health (examines the health label on items)
 * condition (K8s condition true/false evaluation)
 * custom (see :ref:`Custom KPIs` below)
 
-By default all shipped KPIs are enabled. Set "enabled" to false in the config to disable them.
+By default all shipped KPIs are enabled. Set ``enabled`` to false in the config to disable them.
 
 Custom KPIs
 -----------
 
 Custom KPIs can be configured in the landscape config using ranges and/or matchers (regular expressions) and applied to everything having labels.
-In the example below a KPI "monthlyCosts" is defined, using ranges on the label "costs", and the KPI "myEval" evaluates a
-label "foo". Both ranges (inclusive lower and upper limits) and matchers are separated by semicolon.
+In the example below a KPI ``monthlyCosts`` is defined, using ranges on the label ``costs``, and the KPI ``myEval`` evaluates a
+label ``foo``. Both ranges (inclusive lower and upper limits) and matchers are separated by semicolon.
 
 .. code-block:: yaml
    :linenos:
