@@ -12,6 +12,6 @@
 * **software** Software/OS name
 * **stability** Description of the item's stability
 * **team** Name of the responsible team (e.g. technical owner)
-* **type** The type (service, database, queue, load balancer, etc)
+* **type** The type (service, database, queue, load balancer, etc.)
 * **version** The version (e.g. software version or protocol version)
 * **visibility** Visibility to other items
