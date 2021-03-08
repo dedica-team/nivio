@@ -79,7 +79,7 @@ a valid URL.
 External Images
 ^^^^^^^^^^^^^^^
 
-To include external images in the map, just set the icon (or fill, see :ref:`Background fill`) property to a valid URL.
+To include external images in the map, just set the icon (or fill, see :ref:`Background fill` below) property to a valid URL.
 
 .. code-block:: yaml
    :linenos:
@@ -92,7 +92,7 @@ To include external images in the map, just set the icon (or fill, see :ref:`Bac
 Background fill
 ^^^^^^^^^^^^^^^
 
-While icon (see :ref:`External Images`) is rendered as centered image on the node, fill is used to paint the entire
+While icon (see :ref:`External Images` above) is rendered as centered image on the node, fill is used to paint the entire
 background and is more suitable to be used with images, photos, and so on.
 
 .. code-block:: yaml
