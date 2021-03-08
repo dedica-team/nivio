@@ -1,7 +1,7 @@
 Data Assessment using KPIs
 ==========================
 
-KPIs (Key Performance Indicators) can be used to evaluate landscape components (typically items, but also groups) based on
+:abbr:`KPIs (Key Performance Indicators)` can be used to evaluate landscape components (typically items, but also groups) based on
 their properties. The result is a status represented by colors (ordinal):
 
 * UNKNOWN (order 0): status could not be determined
@@ -33,7 +33,7 @@ Built in KPIs
 * condition (K8s condition true/false evaluation)
 * custom (see :ref:`Custom KPIs` below)
 
-By default all shipped KPIs are enabled. Set ``enabled`` to false in the config to disable them.
+By default all shipped `KPIs (Key Performance Indicators)` are enabled. Set ``enabled`` to false in the config to disable them.
 
 Custom KPIs
 -----------
