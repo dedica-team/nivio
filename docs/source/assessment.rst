@@ -1,7 +1,7 @@
 Data Assessment using KPIs
 ==========================
 
-KPIs (Key Performance Indicator) can be used to evaluate landscape components (typically items, but also groups) based on
+KPIs (Key Performance Indicators) can be used to evaluate landscape components (typically items, but also groups) based on
 their properties. The result is a status represented by colors (ordinal):
 
 * UNKNOWN (order 0): status could not be determined
@@ -15,24 +15,24 @@ their properties. The result is a status represented by colors (ordinal):
 Built in KPIs
 -------------
 
-* scaling (warning is the scale label is exactly 0)
+* scaling (warning if the scale label is exactly 0)
 * * red if 0 as provider for other items
 * * yellow if scaled to 0 without relations
 * * orange of scaled to 0 as data sink
 * * unknown if no label or not a number
 * * green if scaled higher than 1
-* * yellow if a bottleneck (more than 1 item depend on it)
+* * yellow if a bottleneck (more than 1 item depends on it)
 * health (examines the health label on items)
 * condition (K8s condition true/false evaluation)
 * custom (see below)
 
-By default all shipped KPIs are enabled. To disable them, set "enabled" to false in the config.
+By default all shipped KPIs are enabled. Set "enabled" to false in the config to disable them.
 
 Custom KPIs
 -----------
 
 Custom KPIs can be configured in the landscape config using ranges and/or matchers (regular expressions) and applied to everything having labels.
-In the example below a KPI "monthlyCosts" is defined using ranges on the label "costs" and the KPI "myEval" evaluates a
+In the example below a KPI "monthlyCosts" is defined, using ranges on the label "costs", and the KPI "myEval" evaluates a
 label "foo". Both ranges (inclusive lower and upper limits) and matchers are separated by semicolon.
 
 .. code-block:: yaml
