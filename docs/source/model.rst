@@ -12,7 +12,7 @@ infrastructure. Both landscapes could have items in common (like a database, loa
 
 A landscape can/must have the following attributes:
 
-* **identifier**: A unique identifier. Use a name or an URN, validated against ^[a-z0-9\\.\\:_-]{3,256}$
+* **identifier**: A unique identifier. Use a name or an URN, validated against ``^[a-z0-9\\.\\:_-]{3,256}$``
 * **name** Human readable, displayed name
 * **contact** E.g. an email
 * **description** A short text describing the landscape
@@ -24,7 +24,7 @@ An item represents anything that has a meaning in the landscape. It can be a ser
 
 A item should have the following attributes:
 
-* **identifier**: A unique identifier in the landscape. Use a name or a URN, validated against ^[a-z0-9\\.\\:_-]{3,256}$
+* **identifier**: A unique identifier in the landscape. Use a name or a URN, validated against ``^[a-z0-9\\.\\:_-]{3,256}$``
 * **group** Name of the group (optional). If a group is given, it becomes part of the global identifier. All items can only be part of one group.
 * **name** Human readable, displayed name
 * **contact** Support/notification contact (email). May be addressed in case of errors.
