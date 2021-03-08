@@ -157,7 +157,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'nivio', u'nivio Documentation',
-     author, 'nivio', 'One line description of project.',
+     author, 'nivio', 'An application landscape management for teams.',
      'Miscellaneous'),
 ]
 
