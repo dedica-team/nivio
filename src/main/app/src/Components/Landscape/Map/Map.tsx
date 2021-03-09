@@ -83,7 +83,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
         }
       }
     },
-    [setValue, value]
+    []
   );
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
