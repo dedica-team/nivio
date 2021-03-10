@@ -53,7 +53,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
         <div>
           <IconButton
             onClick={() => {
-              locateFunctionContext.locateFunction(source.fullyQualifiedIdentifier);
+              locateFunctionContext.locateFunction(target.fullyQualifiedIdentifier);
             }}
           >
             <FilterCenterFocus />

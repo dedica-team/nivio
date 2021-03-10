@@ -50,35 +50,38 @@
 }
 @-o-keyframes highlightLabel {
     0% {
-        fill: #fff;
+        stroke-width: 5px;
     }
     50% {
-        fill: #ff4081;
+        stroke-width: 20px;
+        stroke: white;
     }
     to {
-        fill: #fff;
+        stroke-width: 5px;
     }
 }
 @-webkit-keyframes highlightLabel {
     0% {
-        fill: #fff;
+        stroke-width: 5px;
     }
     50% {
-        fill: #ff4081;
+        stroke-width: 20px;
+        stroke: white;
     }
     to {
-        fill: #fff;
+        stroke-width: 5px;
     }
 }
 @keyframes highlightLabel {
     0% {
-        fill: #fff;
+        stroke-width: 5px;
     }
     50% {
-        fill: #ff4081;
+        stroke-width: 20px;
+        stroke: white;
     }
     to {
-        fill: #fff;
+        stroke-width: 5px;
     }
 }
 @-o-keyframes highlightRelation {
