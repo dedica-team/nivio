@@ -2,6 +2,7 @@ package de.bonndan.nivio.observation;
 
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,11 +28,11 @@ public class ObserverRegistry {
 
     private final Map<String, LandscapeObserverPool> observerMap = new ConcurrentHashMap<>();
 
-    private final LandscapeObserverPoolFactory landscapeObserverPoolFactory;
+    private final LandscapeObserverFactory landscapeObserverPoolFactory;
     private final ThreadPoolTaskScheduler taskScheduler;
     private final IndexingDispatcher indexingDispatcher;
 
-    public ObserverRegistry(LandscapeObserverPoolFactory landscapeObserverPoolFactory,
+    public ObserverRegistry(LandscapeObserverFactory landscapeObserverPoolFactory,
                             ThreadPoolTaskScheduler taskScheduler,
                             IndexingDispatcher indexingDispatcher
     ) {
@@ -42,16 +43,16 @@ public class ObserverRegistry {
 
     /**
      * Landscape are registered for observation here.
-     * <p>
+     *
      * On processing success, {@link ProcessingFinishedEvent} is fired and read here to register the landscape.
      */
     @EventListener(ProcessingFinishedEvent.class)
     public void onProcessingFinishedEvent(ProcessingFinishedEvent event) {
-        LandscapeDescription landscapeDescription = (LandscapeDescription) event.getSource();
+        LandscapeDescription landscapeDescription = event.getInput();
         Landscape landscape = Objects.requireNonNull(event.getLandscape());
 
         if (landscapeDescription == null) {
-            String msg = "No landscape description (input) available. Landscape " + landscape.getIdentifier() + " could not be registered for observation";
+            String msg = String.format("No landscape description (input) available. Landscape %s could not be registered for observation", landscape.getIdentifier());
             landscape.getLog().warn(msg);
             LOGGER.warn(msg);
             return;
