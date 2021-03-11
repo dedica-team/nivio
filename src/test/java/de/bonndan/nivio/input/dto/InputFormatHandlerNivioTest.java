@@ -89,6 +89,8 @@ class InputFormatHandlerNivioTest {
         assertEquals("ops guys", web.getLabel(Label.team));
         assertEquals("content", web.getLabels(Label.network).values().toArray()[0]);
         assertEquals("docker", web.getLabel("hosttype"));
+        assertEquals("Host(`test.localhost`) && PathPrefix(`/test`)", web.getLabel("traefik.http.routers.router0.rule"));
+        assertEquals("auth", web.getLabel("traefik.http.routers.router0.middlewares"));
     }
 
 

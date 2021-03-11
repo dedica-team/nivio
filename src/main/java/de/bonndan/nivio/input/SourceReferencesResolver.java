@@ -36,7 +36,7 @@ public class SourceReferencesResolver {
                 factory = formatFactory.getInputFormatHandler(ref);
             } catch (ProcessingException ex) {
                 log.error(ex.getMessage());
-                eventPublisher.publishEvent(new ProcessingErrorEvent(landscapeDescription, ex));
+                eventPublisher.publishEvent(new ProcessingErrorEvent(landscapeDescription.getFullyQualifiedIdentifier(), ex));
                 landscapeDescription.setIsPartial(true);
                 return;
             } catch (RuntimeException ex) {
@@ -54,7 +54,7 @@ public class SourceReferencesResolver {
                     message += ": " + getCauseMessage(ex.getCause());
                 }
                 log.error(message);
-                eventPublisher.publishEvent(new ProcessingErrorEvent(landscapeDescription, ex));
+                eventPublisher.publishEvent(new ProcessingErrorEvent(landscapeDescription.getFullyQualifiedIdentifier(), ex));
                 landscapeDescription.setIsPartial(true);
             } catch (RuntimeException ex) {
                 log.warn(ex.getMessage());
