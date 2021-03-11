@@ -30,8 +30,6 @@ class InputFormatHandlerCompose2Test {
     @Test
     public void readCompose() {
         SourceReference file = new SourceReference(new File(getRootPath() + "/src/test/resources/example/services/docker-compose.yml").toURI().toString());
-        String yml = fileFetcher.get(file);
-        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/docker-compose.yml");
         InputFormatHandlerCompose2 factoryCompose2 = new InputFormatHandlerCompose2(fileFetcher);
         LandscapeDescription landscapeDescription = new LandscapeDescription("test");
 

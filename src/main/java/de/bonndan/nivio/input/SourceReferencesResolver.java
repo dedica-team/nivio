@@ -47,7 +47,7 @@ public class SourceReferencesResolver {
             }
 
             try {
-                landscapeDescription.applyData(ref, baseUrl, landscapeDescription);
+                factory.applyData(ref, baseUrl, landscapeDescription);
             } catch (ProcessingException ex) {
                 String message = ex.getMessage();
                 if (ex instanceof ReadingException) {
