@@ -20,16 +20,21 @@ import java.util.Map;
 public class SourceReference extends Link {
 
     /**
-     * can be a relative path, used since Link cannot use relative paths as href
+     * used since Link cannot use relative paths as href
      */
+    @Schema(description = "A URL, but can also be a relative path", example = "./a/items.yaml")
     private String url;
 
+    @Schema(hidden = true)
     private LandscapeDescription landscapeDescription;
 
+    @Schema(description = "The input format.", allowableValues = "nivio,csv,k8s,rancher,docker-compose-v2")
     private String format;
 
+    @Schema(description = "A map with template identifier as key and item identifier matchers as value", example = "endOfLife: [web, \"java6*\"]" )
     private Map<String, List<String>> assignTemplates = new HashMap<>();
 
+    @Schema(hidden = true)
     private String content;
 
     /**

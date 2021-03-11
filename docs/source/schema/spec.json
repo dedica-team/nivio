@@ -175,10 +175,6 @@
           "fullyQualifiedIdentifier" : {
             "type" : "string"
           },
-          "lifecycle" : {
-            "type" : "string",
-            "writeOnly" : true
-          },
           "statuses" : {
             "type" : "array",
             "writeOnly" : true,
@@ -189,6 +185,10 @@
                 "type" : "string"
               }
             }
+          },
+          "lifecycle" : {
+            "type" : "string",
+            "writeOnly" : true
           },
           "tags" : {
             "type" : "array",
@@ -371,6 +371,9 @@
           "icon" : {
             "type" : "string"
           },
+          "color" : {
+            "type" : "string"
+          },
           "partial" : {
             "type" : "boolean",
             "description" : "marks that the landscape is not complete, but an update"
@@ -380,9 +383,6 @@
             "items" : {
               "$ref" : "#/components/schemas/SourceReference"
             }
-          },
-          "color" : {
-            "type" : "string"
           },
           "links" : {
             "type" : "object",
@@ -454,47 +454,105 @@
           "name" : {
             "type" : "string",
             "description" : "HateOAS / OpenAPI name"
+          },
+          "basicAuthUsername" : {
+            "type" : "string",
+            "writeOnly" : true
+          },
+          "basicAuthPassword" : {
+            "type" : "string",
+            "writeOnly" : true
+          },
+          "headerTokenName" : {
+            "type" : "string",
+            "writeOnly" : true
+          },
+          "headerTokenValue" : {
+            "type" : "string",
+            "writeOnly" : true
           }
         },
         "description" : "A link to an external resource. Contains a href (URL) plus various attributes for authentication and/or hateoas."
       },
       "SourceReference" : {
+        "required" : [ "href" ],
         "type" : "object",
         "properties" : {
-          "url" : {
+          "rel" : {
+            "type" : "string",
+            "description" : "hateoas relation type"
+          },
+          "href" : {
+            "type" : "string",
+            "description" : "The link target.",
+            "format" : "url"
+          },
+          "hreflang" : {
+            "type" : "string",
+            "description" : "hateoas language"
+          },
+          "media" : {
+            "type" : "string",
+            "description" : "hateoas media type"
+          },
+          "title" : {
+            "type" : "string",
+            "description" : "hateoas title"
+          },
+          "type" : {
             "type" : "string"
           },
-          "landscapeDescription" : {
-            "$ref" : "#/components/schemas/LandscapeDescription"
+          "deprecation" : {
+            "type" : "string",
+            "description" : "deprecation info (typically used in OpenAPI specs)"
           },
-          "format" : {
-            "type" : "string"
+          "name" : {
+            "type" : "string",
+            "description" : "HateOAS / OpenAPI name"
           },
           "basicAuthUsername" : {
-            "type" : "string"
+            "type" : "string",
+            "writeOnly" : true
           },
           "basicAuthPassword" : {
-            "type" : "string"
+            "type" : "string",
+            "writeOnly" : true
           },
           "headerTokenName" : {
-            "type" : "string"
+            "type" : "string",
+            "writeOnly" : true
           },
           "headerTokenValue" : {
-            "type" : "string"
+            "type" : "string",
+            "writeOnly" : true
+          },
+          "url" : {
+            "type" : "string",
+            "description" : "A URL, but can also be a relative path",
+            "example" : "./a/items.yaml"
+          },
+          "format" : {
+            "type" : "string",
+            "description" : "The input format.",
+            "enum" : [ "nivio,csv,k8s,rancher,docker-compose-v2" ]
           },
           "assignTemplates" : {
             "type" : "object",
             "additionalProperties" : {
               "type" : "array",
+              "description" : "A map with template identifier as key and item identifier matchers as value",
+              "example" : "endOfLife: [web, \"java6*\"]",
               "items" : {
-                "type" : "string"
+                "type" : "string",
+                "description" : "A map with template identifier as key and item identifier matchers as value",
+                "example" : "endOfLife: [web, \"java6*\"]"
               }
-            }
-          },
-          "content" : {
-            "type" : "string"
+            },
+            "description" : "A map with template identifier as key and item identifier matchers as value",
+            "example" : "endOfLife: [web, \"java6*\"]"
           }
-        }
+        },
+        "description" : "This is a reference to a configuration file."
       }
     }
   }
