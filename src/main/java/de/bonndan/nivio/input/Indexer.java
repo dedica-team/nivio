@@ -70,7 +70,7 @@ public class Indexer {
         ProcessLog logger = landscape.getLog();
 
         // read all input sources
-        new SourceReferencesResolver(formatFactory, logger).resolve(input);
+        new SourceReferencesResolver(formatFactory, logger, eventPublisher).resolve(input);
 
         // apply template values to items
         new TemplateResolver(logger).resolve(input);

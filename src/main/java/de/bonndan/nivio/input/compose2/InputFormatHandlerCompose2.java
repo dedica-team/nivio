@@ -4,28 +4,21 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.observation.InputFormatObserver;
-import de.bonndan.nivio.observation.URLObserver;
-import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static io.swagger.v3.oas.integration.StringOpenApiConfigurationLoader.LOGGER;
 
 @Service
 public class InputFormatHandlerCompose2 implements InputFormatHandler {
@@ -79,15 +72,8 @@ public class InputFormatHandlerCompose2 implements InputFormatHandler {
     }
 
     @Override
-    @Nullable
-    public InputFormatObserver getObserver(SourceReference reference, URL baseUrl) {
-        try {
-            URL url = new URL(URLHelper.combine(baseUrl, reference.getUrl()));
-            return new URLObserver(fileFetcher, url);
-        } catch (MalformedURLException e) {
-            LOGGER.error("Failed to create observer for url {}", reference.getUrl(), e);
-            return null;
-        }
+    public InputFormatObserver getObserver(InputFormatObserver inner, SourceReference sourceReference) {
+        return inner;
     }
 
 }

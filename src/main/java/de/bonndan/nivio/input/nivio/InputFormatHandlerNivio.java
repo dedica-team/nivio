@@ -6,7 +6,6 @@ import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.ReadingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.observation.FileSourceReferenceObserver;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import de.bonndan.nivio.util.Mappers;
 import org.slf4j.Logger;
@@ -22,8 +21,6 @@ import java.util.List;
 
 /**
  * Handler for nivio's custom input format (yaml).
- *
- *
  */
 @Service
 public class InputFormatHandlerNivio implements InputFormatHandler {
@@ -70,7 +67,7 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
 
     @Override
     @Nullable
-    public InputFormatObserver getObserver(SourceReference reference, URL baseUrl) {
-        return new FileSourceReferenceObserver(fileFetcher, reference, baseUrl);
+    public InputFormatObserver getObserver(InputFormatObserver inner, SourceReference sourceReference) {
+        return inner;
     }
 }

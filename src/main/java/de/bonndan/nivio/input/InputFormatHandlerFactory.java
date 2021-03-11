@@ -50,8 +50,10 @@ public class InputFormatHandlerFactory {
         if (factories.isEmpty()) {
             List<String> knownFormats = new ArrayList<>();
             factoryListMap.values().forEach(knownFormats::addAll);
-            String msg = "Unknown source reference format: '" + reference.getFormat() + "', known formats are: "
-                    + StringUtils.collectionToDelimitedString(knownFormats, ", ");
+            String msg = String.format("Unknown source reference format: '%s', known formats are: %s",
+                    reference.getFormat(),
+                    StringUtils.collectionToDelimitedString(knownFormats, ", ")
+            );
             if (reference.getLandscapeDescription() != null) {
                 throw new ProcessingException(reference.getLandscapeDescription(), msg);
             } else {

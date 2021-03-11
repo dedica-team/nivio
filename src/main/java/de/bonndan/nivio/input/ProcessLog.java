@@ -52,6 +52,11 @@ public class ProcessLog {
         messages.add(new Entry("WARN", msg));
     }
 
+    public void error(String msg) {
+        logger.error(msg);
+        messages.add(new Entry("ERROR", msg));
+    }
+
     public void error(ProcessingException e) {
         messages.add(new Entry("ERROR", e));
         logger.error(e.getMessage(), e);

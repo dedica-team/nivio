@@ -6,9 +6,9 @@ import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
-import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.observation.FileSourceReferenceObserver;
-import de.bonndan.nivio.observation.InputFormatObserver;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.Lifecycle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,9 +17,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class InputFormatHandlerNivioTest {
@@ -97,14 +95,6 @@ class InputFormatHandlerNivioTest {
         assertEquals(Item.LAYER_INGRESS, service.getGroup());
         assertEquals("Keycloak SSO", service.getName());
         assertEquals("keycloak", service.getIdentifier());
-    }
-
-    @Test
-    public void getObserver() {
-        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/dashboard.yml");
-        InputFormatObserver observer = descriptionFactory.getObserver(file, null);
-        assertNotNull(observer);
-        assertTrue(observer instanceof FileSourceReferenceObserver);
     }
 
     private String getRootPath() {
