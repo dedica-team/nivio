@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.dto;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import de.bonndan.nivio.model.Link;
 import de.bonndan.nivio.util.URLHelper;
 import org.springframework.util.StringUtils;
@@ -15,6 +16,7 @@ import java.util.Map;
 /**
  * This is a reference to a configuration file.
  */
+@Schema(description = "This is a reference to a configuration file.")
 public class SourceReference extends Link {
 
     /**

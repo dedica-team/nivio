@@ -248,7 +248,7 @@ public class LandscapeDescription implements ComponentDescription {
         this.description = description;
     }
 
-    @JsonProperty("links")
+    @JsonProperty("links") //this override is for DTO documentation, hateoas is not relevant here
     public Map<String, Link> getLinks() {
         return links;
     }

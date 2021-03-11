@@ -9,6 +9,9 @@ import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.core.util.ObjectMapperFactory;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Schema;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,15 +44,20 @@ public class SchemaGenerationTest {
 
     @Test
     void generateDocs() {
+        Components components = new Components();
         Map<String, Schema> schema = converters.readAll(new AnnotatedType(LandscapeDescription.class));
-        schema.forEach((s, schema1) -> {
+        components.setSchemas(schema);
+        OpenAPI openAPI = new OpenAPI();
+        openAPI.setComponents(components);
+        openAPI.setInfo(new Info());
+        openAPI.getInfo().setTitle("Nivio Input Models");
+        openAPI.getInfo().setDescription("The models used to generated landscapes and their components.");
             try {
-                String s1 = Json.pretty(schema1);
-                Files.write(new File(String.format("docs/source/schema/%s.json", s)).toPath(), s1.getBytes(StandardCharsets.UTF_8));
+                String s1 = Json.pretty(openAPI);
+                Files.write(new File(String.format("docs/source/schema/%s.json", "spec")).toPath(), s1.getBytes(StandardCharsets.UTF_8));
 
             } catch (IOException e) {
-                throw new RuntimeException("Failed to generate model for " + s, e);
+                throw new RuntimeException("Failed to generate model specs.", e);
             }
-        });
     }
 }

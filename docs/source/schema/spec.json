@@ -1,0 +1,501 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "Nivio Input Models",
+    "description" : "The models used to generated landscapes and their components."
+  },
+  "components" : {
+    "schemas" : {
+      "Branding" : {
+        "type" : "object",
+        "properties" : {
+          "mapStylesheet" : {
+            "type" : "string",
+            "description" : "A resolvable URL pointing to a CSS stylesheet. This stylesheet is included in the generated SVG map. Use is to style the appearance of the map.",
+            "example" : "https://acme.com/css/acme.css"
+          },
+          "mapLogo" : {
+            "type" : "string",
+            "description" : "A resolvable URL pointing to an image. This image is included (embedded as data-url) in the generated SVG map.",
+            "example" : "https://acme.com/images/logo.png"
+          }
+        },
+        "description" : "Map branding (tweaks visuals)"
+      },
+      "GroupDescription" : {
+        "required" : [ "identifier", "name" ],
+        "type" : "object",
+        "properties" : {
+          "labels" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string",
+              "description" : "labels related to the group"
+            },
+            "description" : "labels related to the group"
+          },
+          "identifier" : {
+            "type" : "string",
+            "description" : "A unique identifier for the group (also used as name). Descriptions are merged based on the identifier",
+            "example" : "shipping"
+          },
+          "owner" : {
+            "type" : "string",
+            "description" : "The business owner of the group."
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "A brief description."
+          },
+          "contact" : {
+            "type" : "string",
+            "description" : "A contact method, preferably email."
+          },
+          "color" : {
+            "type" : "string",
+            "description" : "The HTML (hexcode only!) color used to draw the group and its items. If no color is given, one is computed.",
+            "example" : "05ffaa"
+          },
+          "contains" : {
+            "type" : "array",
+            "description" : "A list of item identifiers or sql-like queries to easily assign items to this group.",
+            "example" : "identifier LIKE 'DB1'",
+            "items" : {
+              "type" : "string",
+              "description" : "A list of item identifiers or sql-like queries to easily assign items to this group.",
+              "example" : "identifier LIKE 'DB1'"
+            }
+          },
+          "environment" : {
+            "type" : "string",
+            "writeOnly" : true
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "_links" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Link"
+            }
+          },
+          "links" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Link"
+            }
+          }
+        },
+        "description" : "A group of items. Could be used as bounded context, for instance."
+      },
+      "InterfaceDescription" : {
+        "type" : "object",
+        "properties" : {
+          "description" : {
+            "type" : "string"
+          },
+          "format" : {
+            "type" : "string"
+          },
+          "url" : {
+            "type" : "string",
+            "format" : "url"
+          },
+          "protection" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ItemDescription" : {
+        "required" : [ "environment", "fullyQualifiedIdentifier", "identifier", "name" ],
+        "type" : "object",
+        "properties" : {
+          "labels" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "environment" : {
+            "type" : "string"
+          },
+          "identifier" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "owner" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "contact" : {
+            "type" : "string"
+          },
+          "group" : {
+            "type" : "string"
+          },
+          "interfaces" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/InterfaceDescription"
+            }
+          },
+          "providedBy" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "icon" : {
+            "type" : "string"
+          },
+          "color" : {
+            "type" : "string"
+          },
+          "address" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "array",
+            "writeOnly" : true,
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          },
+          "fullyQualifiedIdentifier" : {
+            "type" : "string"
+          },
+          "lifecycle" : {
+            "type" : "string",
+            "writeOnly" : true
+          },
+          "statuses" : {
+            "type" : "array",
+            "writeOnly" : true,
+            "deprecated" : true,
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          },
+          "tags" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "_links" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Link"
+            }
+          },
+          "links" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Link"
+            }
+          }
+        }
+      },
+      "ItemIndexItemDescription" : {
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "writeOnly" : true,
+            "items" : {
+              "$ref" : "#/components/schemas/ItemDescription"
+            }
+          }
+        },
+        "description" : "List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc."
+      },
+      "KPIConfig" : {
+        "type" : "object",
+        "properties" : {
+          "description" : {
+            "type" : "string"
+          },
+          "label" : {
+            "type" : "string"
+          },
+          "messageLabel" : {
+            "type" : "string"
+          },
+          "ranges" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "matches" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "enabled" : {
+            "type" : "boolean"
+          }
+        },
+        "description" : "Key performance indicator configs. Each KPI must have a unique identifier."
+      },
+      "LandscapeConfig" : {
+        "type" : "object",
+        "properties" : {
+          "greedy" : {
+            "type" : "boolean",
+            "description" : "Flag that enables instant creation items based relation targets that cannot be found in the sources."
+          },
+          "groupLayoutConfig" : {
+            "$ref" : "#/components/schemas/LayoutConfig"
+          },
+          "itemLayoutConfig" : {
+            "$ref" : "#/components/schemas/LayoutConfig"
+          },
+          "groupBlacklist" : {
+            "type" : "array",
+            "description" : "Names or patterns of groups that should be excluded from the landscape. Used to improve automatic scanning results.",
+            "example" : ".*infra.*",
+            "items" : {
+              "type" : "string",
+              "description" : "Names or patterns of groups that should be excluded from the landscape. Used to improve automatic scanning results.",
+              "example" : ".*infra.*"
+            }
+          },
+          "labelBlacklist" : {
+            "type" : "array",
+            "description" : "Names or patterns of labels that should be ignored. Used to improve automatic scanning results.",
+            "example" : ".*COMPOSITION.*",
+            "items" : {
+              "type" : "string",
+              "description" : "Names or patterns of labels that should be ignored. Used to improve automatic scanning results.",
+              "example" : ".*COMPOSITION.*"
+            }
+          },
+          "branding" : {
+            "$ref" : "#/components/schemas/Branding"
+          },
+          "kpis" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/KPIConfig"
+            },
+            "description" : "Key performance indicator configs. Each KPI must have a unique identifier."
+          }
+        },
+        "description" : "Configuration of key performance indicators (i.e. status indicators) and layouting tweaks"
+      },
+      "LandscapeDescription" : {
+        "required" : [ "identifier", "name" ],
+        "type" : "object",
+        "properties" : {
+          "identifier" : {
+            "pattern" : "^[a-zA-Z0-9\\.\\:_-]{2,256}$",
+            "type" : "string",
+            "description" : "Immutable unique identifier. Maybe use an URN."
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Human readable name."
+          },
+          "contact" : {
+            "type" : "string",
+            "description" : "Primary contact method, preferably an email address"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "A brief description of the landscape"
+          },
+          "owner" : {
+            "type" : "string",
+            "description" : "The business owner (person or team), preferably an email address"
+          },
+          "templates" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/ItemDescription"
+            },
+            "description" : "Item descriptions to be used as templates. All values excepted identifier and name will be applied to the assigned items."
+          },
+          "sources" : {
+            "type" : "array",
+            "writeOnly" : true,
+            "items" : {
+              "$ref" : "#/components/schemas/SourceReference"
+            }
+          },
+          "items" : {
+            "type" : "array",
+            "writeOnly" : true,
+            "items" : {
+              "$ref" : "#/components/schemas/ItemDescription"
+            }
+          },
+          "config" : {
+            "$ref" : "#/components/schemas/LandscapeConfig"
+          },
+          "isPartial" : {
+            "type" : "boolean",
+            "writeOnly" : true
+          },
+          "groups" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/GroupDescription"
+            },
+            "description" : "Description of item groups (optional, can also be given in sources)."
+          },
+          "labels" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string",
+              "description" : "Additional labels for the landscape."
+            },
+            "description" : "Additional labels for the landscape."
+          },
+          "icon" : {
+            "type" : "string"
+          },
+          "partial" : {
+            "type" : "boolean",
+            "description" : "marks that the landscape is not complete, but an update"
+          },
+          "sourceReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SourceReference"
+            }
+          },
+          "color" : {
+            "type" : "string"
+          },
+          "links" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Link"
+            },
+            "description" : "Additional links related to the landscape."
+          }
+        }
+      },
+      "LayoutConfig" : {
+        "type" : "object",
+        "properties" : {
+          "maxIterations" : {
+            "type" : "integer",
+            "description" : "The maximum number of iterations. More iterations theoretically lead to better results.",
+            "format" : "int32"
+          },
+          "forceConstantFactor" : {
+            "type" : "number",
+            "description" : "A factor to influence the attracting and repulsive forces in a layout.",
+            "format" : "float"
+          },
+          "maxDistanceLimitFactor" : {
+            "type" : "number",
+            "description" : "A factor to influence maximum distance where forces are applied.",
+            "format" : "float"
+          },
+          "minDistanceLimitFactor" : {
+            "type" : "number",
+            "description" : "A factor to influence minimum distance where forces are applied.",
+            "format" : "float"
+          }
+        },
+        "description" : "Layout configuration. See https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxFastOrganicLayout.html"
+      },
+      "Link" : {
+        "required" : [ "href" ],
+        "type" : "object",
+        "properties" : {
+          "rel" : {
+            "type" : "string",
+            "description" : "hateoas relation type"
+          },
+          "href" : {
+            "type" : "string",
+            "description" : "The link target.",
+            "format" : "url"
+          },
+          "hreflang" : {
+            "type" : "string",
+            "description" : "hateoas language"
+          },
+          "media" : {
+            "type" : "string",
+            "description" : "hateoas media type"
+          },
+          "title" : {
+            "type" : "string",
+            "description" : "hateoas title"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "deprecation" : {
+            "type" : "string",
+            "description" : "deprecation info (typically used in OpenAPI specs)"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "HateOAS / OpenAPI name"
+          }
+        },
+        "description" : "A link to an external resource. Contains a href (URL) plus various attributes for authentication and/or hateoas."
+      },
+      "SourceReference" : {
+        "type" : "object",
+        "properties" : {
+          "url" : {
+            "type" : "string"
+          },
+          "landscapeDescription" : {
+            "$ref" : "#/components/schemas/LandscapeDescription"
+          },
+          "format" : {
+            "type" : "string"
+          },
+          "basicAuthUsername" : {
+            "type" : "string"
+          },
+          "basicAuthPassword" : {
+            "type" : "string"
+          },
+          "headerTokenName" : {
+            "type" : "string"
+          },
+          "headerTokenValue" : {
+            "type" : "string"
+          },
+          "assignTemplates" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          },
+          "content" : {
+            "type" : "string"
+          }
+        }
+      }
+    }
+  }
+}
