@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input.rancher1;
 
 import de.bonndan.nivio.input.InputFormatHandler;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
