@@ -12,6 +12,7 @@ import io.swagger.v3.oas.integration.IntegrationObjectMapperFactory;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
@@ -97,11 +98,8 @@ public class OpenAPILinkHandler implements ExternalLinkHandler {
             desc.setLabel(NAMESPACE + "_license", openAPI.getInfo().getLicense().getName());
         }
         desc.setLabel(NAMESPACE + "_terms", openAPI.getInfo().getTermsOfService());
-        // TODO ? desc.setName( openAPI.getInfo().getTitle());
-
-        //TODO components (business objects / payload) interesting or too much detail?
-
-        //TODO openAPI.getTags() are they useful?
+        desc.setLabel(NAMESPACE + "_title", openAPI.getInfo().getTitle());
+        desc.setLabel(NAMESPACE + "_tags", openAPI.getTags().stream().map(Tag::getName).collect(Collectors.joining(", ")));
 
         return desc;
     }
