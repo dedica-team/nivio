@@ -57,7 +57,7 @@ public class Indexer {
         } catch (ProcessingException e) {
             final String msg = "Error while reindexing landscape " + input.getIdentifier();
             landscape.getLog().warn(msg, e);
-            eventPublisher.publishEvent(new ProcessingErrorEvent(this, e));
+            eventPublisher.publishEvent(new ProcessingErrorEvent(input.getFullyQualifiedIdentifier(), e));
         }
 
         eventPublisher.publishEvent(new ProcessingFinishedEvent(input, landscape));
@@ -70,7 +70,7 @@ public class Indexer {
         ProcessLog logger = landscape.getLog();
 
         // read all input sources
-        new SourceReferencesResolver(formatFactory, logger).resolve(input);
+        new SourceReferencesResolver(formatFactory, logger, eventPublisher).resolve(input);
 
         // apply template values to items
         new TemplateResolver(logger).resolve(input);

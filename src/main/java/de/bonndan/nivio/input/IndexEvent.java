@@ -1,12 +1,8 @@
 package de.bonndan.nivio.input;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 
-import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Event is fired to (re)index a landscape.
@@ -17,15 +13,12 @@ public class IndexEvent extends ProcessingEvent {
     private final LandscapeDescription landscapeDescription;
 
     /**
-     * @param source triggering class
      * @param landscapeDescription landscape description
      * @param message message for the UI
      */
-    public IndexEvent(Object source, LandscapeDescription landscapeDescription, String message) {
-        super(source);
-        if (landscapeDescription == null) {
-            throw new IllegalArgumentException("The IndexEvent must contain a landscape description.");
-        }
+    public IndexEvent(LandscapeDescription landscapeDescription, String message) {
+        super(Objects.requireNonNull(landscapeDescription, "The IndexEvent must contain a landscape description.").getFullyQualifiedIdentifier());
+
         this.landscapeDescription = landscapeDescription;
         this.message = message;
     }
@@ -33,16 +26,8 @@ public class IndexEvent extends ProcessingEvent {
     /**
      * @return the {@link LandscapeDescription}, not the landscape!
      */
-    @JsonSerialize(using = PLS.class)
     public LandscapeDescription getLandscapeDescription() {
         return landscapeDescription;
-    }
-
-    private static class PLS extends JsonSerializer<LandscapeDescription> {
-        @Override
-        public void serialize(LandscapeDescription value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            gen.writeString(value.getIdentifier());
-        }
     }
 
     @Override

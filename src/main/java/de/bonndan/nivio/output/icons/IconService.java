@@ -42,6 +42,10 @@ public class IconService {
         String icon = item.getIcon();
         if (!StringUtils.isEmpty(icon)) {
 
+            if (icon.startsWith(DataUrlHelper.DATA_IMAGE)) {
+                return icon;
+            }
+
             if (icon.startsWith(ExternalIcons.VENDOR_PREFIX)) {
                 String key = icon.replace(ExternalIcons.VENDOR_PREFIX, "").toLowerCase();
                 return externalIcons.getUrl(key).orElse(localIcons.getDefaultIcon());

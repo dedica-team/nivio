@@ -1,35 +1,55 @@
 package de.bonndan.nivio.observation;
 
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.util.StringUtils;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledFuture;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class LandscapeObserverPoolTest {
 
+    private ThreadPoolTaskScheduler scheduler;
+    private LandscapeObserverPool landscapeObserverPool;
+    private ScheduledFuture scheduledFuture;
+
+    @BeforeEach
+    void setup() {
+        scheduler = mock(ThreadPoolTaskScheduler.class);
+        scheduledFuture = mock(ScheduledFuture.class);
+        when(scheduler.scheduleWithFixedDelay(any(Runnable.class), anyLong())).thenReturn(scheduledFuture);
+
+        landscapeObserverPool = new LandscapeObserverPool(scheduler, 1);
+    }
+
     @Test
-    public void hasChange() {
-        URLObserver urlObserver1 = mock(URLObserver.class);
-        URLObserver urlObserver2 = mock(URLObserver.class);
-        when(urlObserver1.hasChange()).thenReturn(CompletableFuture.completedFuture("hello"));
-        when(urlObserver2.hasChange()).thenReturn(CompletableFuture.completedFuture("world"));
-        Landscape landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
-        LandscapeObserverPool landscapeObserverPool =
-                new LandscapeObserverPool(landscape, List.of(urlObserver1, urlObserver2));
+    public void schedulesRunnables() {
+        InputFormatObserver observer1 = mock(InputFormatObserver.class);
+        InputFormatObserver observer2 = mock(InputFormatObserver.class);
+        InputFormatObserver observer3 = mock(InputFormatObserver.class);
 
         //when
-        ObservedChange change = landscapeObserverPool.getChange();
+        landscapeObserverPool.updateObservers(List.of(observer1, observer2, observer3));
 
         //then
-        assertEquals(2, change.getChanges().size());
-        assertEquals("hello;world", StringUtils.collectionToDelimitedString(change.getChanges(), ";"));
+        verify(scheduler, times(3)).scheduleWithFixedDelay(any(Runnable.class), eq(1L));
+    }
+
+    @Test
+    public void stopsScheduledTasks() {
+        InputFormatObserver observer1 = mock(InputFormatObserver.class);
+        InputFormatObserver observer2 = mock(InputFormatObserver.class);
+        landscapeObserverPool.updateObservers(List.of(observer1, observer2));
+
+        //when
+        InputFormatObserver observer3 = mock(InputFormatObserver.class);
+        InputFormatObserver observer4 = mock(InputFormatObserver.class);
+        landscapeObserverPool.updateObservers(List.of(observer3, observer4));
+
+        //then
+        verify(scheduledFuture, times(2)).cancel(eq(true));
     }
 
 }

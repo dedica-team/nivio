@@ -1,7 +1,7 @@
 package de.bonndan.nivio.input.rancher1;
 
-import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.InputFormatHandler;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.observation.InputFormatObserver;
@@ -32,7 +32,7 @@ public class InputFormatHandlerRancher1API implements InputFormatHandler {
     }
 
     @Override
-    public InputFormatObserver getObserver(SourceReference reference, URL baseUrl) {
+    public InputFormatObserver getObserver(InputFormatObserver inner, SourceReference reference) {
         Rancher.Config config = getConfig(reference);
         //TODO add observer
         return null;

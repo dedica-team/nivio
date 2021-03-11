@@ -3,8 +3,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  AppBar,
-  Box,
+  AppBar, Box,
   Card,
   CardHeader, Link,
   List,
@@ -147,10 +146,11 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
 
   if (item) {
     for (let key of Object.keys(item.relations)) {
+
       let relation = item.relations[key];
       const isInbound = relation.direction === 'inbound';
       const primary = `${relation.name}`;
-      let secondary = `${relation.description || ''} (${relation.type} ${relation.direction})`;
+      let secondary = `${relation.description || ''} (${relation.type ? relation.type : ''} ${relation.direction})`;
       if (relation.format) secondary += ', format: ' + relation.format;
       relations.push(
         <ListItem key={relation.name}>
@@ -263,8 +263,8 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
               }}
             />
           ) : (
-            ''
-          )
+              ''
+            )
         }
         className={classes.cardHeader}
         action={

@@ -7,27 +7,28 @@ import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.util.URLHelper;
+import de.bonndan.nivio.model.LandscapeFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class LandscapeObserverPoolFactoryTest {
+class LandscapeObserverFactoryTest {
 
     private Landscape landscape;
     private InputFormatHandlerFactory formatFactory;
-    private LandscapeObserverPoolFactory observerPoolFactory;
+    private LandscapeObserverFactory observerPoolFactory;
     private FileFetcher fileFetcher;
 
     @BeforeEach
@@ -35,12 +36,13 @@ class LandscapeObserverPoolFactoryTest {
         landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
         formatFactory = mock(InputFormatHandlerFactory.class);
         fileFetcher = mock(FileFetcher.class);
-        observerPoolFactory = new LandscapeObserverPoolFactory(formatFactory, fileFetcher);
+        ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
+        observerPoolFactory = new LandscapeObserverFactory(formatFactory, fileFetcher, publisher);
     }
 
     @Test
-    @DisplayName("creates a pool with correct base url")
-    public void getPool() {
+    @DisplayName("creates a list of observers with correct base url")
+    public void getObservers() {
         String source = getRootPath() + "/src/test/resources/example/example_env.yml";
         File file = new File(source);
         LandscapeDescriptionFactory landscapeDescriptionFactory = new LandscapeDescriptionFactory(new FileFetcher(new HttpService()));
@@ -54,52 +56,53 @@ class LandscapeObserverPoolFactoryTest {
         description.getSourceReferences().add(ref1);
 
         InputFormatHandler handler = mock(InputFormatHandler.class);
-        when(handler.getObserver(any(SourceReference.class), any())).thenReturn(mock(InputFormatObserver.class));
+        InputFormatObserver mockObserver = mock(InputFormatObserver.class);
+        when(handler.getObserver(any(InputFormatObserver.class), any(SourceReference.class))).thenReturn(mockObserver);
         when(formatFactory.getInputFormatHandler(any(SourceReference.class))).thenReturn(handler);
 
         when(fileFetcher.get(any(URL.class))).thenReturn("");
 
         //when
-        LandscapeObserverPool pool = observerPoolFactory.getPoolFor(landscape, description);
+        List<InputFormatObserver> observers = observerPoolFactory.getObserversFor(landscape, description);
 
 
         //then
-        assertNotNull(pool);
-        assertFalse(pool.getObservers().isEmpty());
-        assertEquals(4, pool.getObservers().size());
+        assertNotNull(observers);
+        assertFalse(observers.isEmpty());
+        assertEquals(4, observers.size());
+
 
         verify(formatFactory).getInputFormatHandler(eq(ref1));
-        verify(handler).getObserver(eq(ref1), eq(URLHelper.getURL(getRootPath() + "/src/test/resources/example/").get()));
+        verify(handler).getObserver(any(InputFormatObserver.class), eq(ref1));
     }
 
     @Test
     @DisplayName("Landscape pushed through API wont have a source url, but still source references")
     public void withoutSourceUrl() {
-        String source = getRootPath() + "/src/test/resources/example/example_env.yml";
-        File file = new File(source);
         LandscapeDescriptionFactory landscapeDescriptionFactory = new LandscapeDescriptionFactory(new FileFetcher(new HttpService()));
-        LandscapeDescription description = landscapeDescriptionFactory.fromYaml(file);
+        LandscapeDescription description = landscapeDescriptionFactory.fromYaml(new File(getRootPath() + "/src/test/resources/example/example_env.yml"));
         description.setSource(null);
 
+        description.getSourceReferences().clear();
         SourceReference ref1 = new SourceReference();
         ref1.setUrl("https://dedica.team");
         description.getSourceReferences().add(ref1);
 
         InputFormatHandler handler = mock(InputFormatHandler.class);
-        when(handler.getObserver(any(SourceReference.class), any())).thenReturn(mock(InputFormatObserver.class));
+        when(handler.getObserver(any(InputFormatObserver.class), any(SourceReference.class))).thenReturn(mock(InputFormatObserver.class));
         when(formatFactory.getInputFormatHandler(any(SourceReference.class))).thenReturn(handler);
 
         //when
-        LandscapeObserverPool pool = observerPoolFactory.getPoolFor(landscape, description);
+        List<InputFormatObserver> observers = observerPoolFactory.getObserversFor(landscape, description);
 
 
         //then
-        assertNotNull(pool);
-        assertFalse(pool.getObservers().isEmpty());
-        assertEquals(3, pool.getObservers().size());
+        assertNotNull(observers);
+        assertFalse(observers.isEmpty());
+        assertEquals(1, observers.size());
 
         verify(formatFactory).getInputFormatHandler(eq(ref1));
-        verify(handler).getObserver(eq(ref1), eq(null));
+        verify(handler).getObserver(any(InputFormatObserver.class), eq(ref1));
     }
 
     private String getRootPath() {

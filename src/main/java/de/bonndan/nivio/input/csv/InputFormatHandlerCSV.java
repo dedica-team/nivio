@@ -4,13 +4,12 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.LabelToFieldResolver;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.observation.FileSourceReferenceObserver;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -85,8 +84,8 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
 
     @Override
     @Nullable
-    public InputFormatObserver getObserver(SourceReference reference, URL baseUrl) {
-        return new FileSourceReferenceObserver(fileFetcher, reference, baseUrl);
+    public InputFormatObserver getObserver(InputFormatObserver inner, SourceReference sourceReference) {
+        return inner;
     }
 
     private CSVReader getReader(SourceReference reference, String content) {

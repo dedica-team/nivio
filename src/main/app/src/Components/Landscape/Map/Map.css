@@ -1,0 +1,148 @@
+.landscapeMapContainer {
+    overflow: hidden;
+}
+.landscapeMapContainer .map {
+    text-shadow: none;
+}
+.landscapeMapContainer .map .title {
+    fill: rgba(255, 255, 255, 0.75);
+}
+.landscapeMapContainer .map .details {
+    border: 1px solid #3f51b5;
+    border-radius: 10px;
+    background-color: white;
+}
+.landscapeMapContainer .map .item {
+    cursor: pointer;
+}
+.landscapeMapContainer .map g circle {
+    stroke-width: 0.4em;
+}
+.landscapeMapContainer .map g .group {
+    stroke-width: 0.1em;
+    fill-opacity: 0.4;
+    transition: fill-opacity 0.2s;
+    stroke: #3f51b5;
+    stroke-width: 0em;
+}
+.landscapeMapContainer .map g polygon {
+    stroke-width: 0.2;
+    transition: fill-opacity 0.2s;
+}
+.landscapeMapContainer .map g .label text {
+    fill: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+}
+.landscapeMapContainer .map g .label rect {
+    fill-opacity: 1;
+    stroke-width: 0.1em;
+}
+.landscapeMapContainer .map g .item_shortName {
+    fill: #000;
+}
+.landscapeMapContainer .map path {
+    stroke-opacity: 0.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.landscapeMapContainer .ReactSVGPanZoom svg g rect {
+    fill: transparent;
+}
+@-o-keyframes highlightLabel {
+    0% {
+        stroke-width: 5px;
+    }
+    50% {
+        stroke-width: 20px;
+        stroke: white;
+    }
+    to {
+        stroke-width: 5px;
+    }
+}
+@-webkit-keyframes highlightLabel {
+    0% {
+        stroke-width: 5px;
+    }
+    50% {
+        stroke-width: 20px;
+        stroke: white;
+    }
+    to {
+        stroke-width: 5px;
+    }
+}
+@keyframes highlightLabel {
+    0% {
+        stroke-width: 5px;
+    }
+    50% {
+        stroke-width: 20px;
+        stroke: white;
+    }
+    to {
+        stroke-width: 5px;
+    }
+}
+@-o-keyframes highlightRelation {
+    0% {
+        stroke: #fff;
+    }
+    50% {
+        stroke: #ff4081;
+    }
+    to {
+        stroke: #fff;
+    }
+}
+@-webkit-keyframes highlightRelation {
+    0% {
+        stroke: #fff;
+    }
+    50% {
+        stroke: #ff4081;
+    }
+    to {
+        stroke: #fff;
+    }
+}
+@keyframes highlightRelation {
+    0% {
+        stroke: #fff;
+    }
+    50% {
+        stroke: #ff4081;
+    }
+    to {
+        stroke: #fff;
+    }
+}
+.landscapeMapContainer .highlightLabel {
+    /* box-shadow: 0 0 0 2px #FF4081;
+     */
+    -webkit-animation: highlightLabel 1s linear;
+    -o-animation: highlightLabel 1s linear;
+    animation: highlightLabel 1s linear;
+    -webkit-animation-iteration-count: 2;
+    -o-animation-iteration-count: 2;
+    animation-iteration-count: 2;
+}
+.landscapeMapContainer .highlightRelation {
+    /* box-shadow: 0 0 0 2px #FF4081;
+     */
+    -webkit-animation: highlightRelation 1s linear;
+    -o-animation: highlightRelation 1s linear;
+    animation: highlightRelation 1s linear;
+    -webkit-animation-iteration-count: 2;
+    -o-animation-iteration-count: 2;
+    animation-iteration-count: 2;
+}
+.landscapeMapContainer .with-transition {
+    z-index: 2;
+}
+.landscapeMapContainer .with-transition svg > g {
+    transition: transform 1s ease-out;
+}
+.landscapeMapContainer .showHighlight {
+    z-index: 2;
+}
