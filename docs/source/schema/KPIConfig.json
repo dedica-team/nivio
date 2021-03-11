@@ -1,0 +1,29 @@
+{
+  "type" : "object",
+  "properties" : {
+    "description" : {
+      "type" : "string"
+    },
+    "label" : {
+      "type" : "string"
+    },
+    "messageLabel" : {
+      "type" : "string"
+    },
+    "ranges" : {
+      "type" : "object",
+      "additionalProperties" : {
+        "type" : "string"
+      }
+    },
+    "matches" : {
+      "type" : "object",
+      "additionalProperties" : {
+        "type" : "string"
+      }
+    },
+    "enabled" : {
+      "type" : "boolean"
+    }
+  }
+}

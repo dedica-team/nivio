@@ -1,0 +1,14 @@
+{
+  "type" : "object",
+  "properties" : {
+    "items" : {
+      "uniqueItems" : true,
+      "type" : "array",
+      "writeOnly" : true,
+      "items" : {
+        "$ref" : "#/components/schemas/ItemDescription"
+      }
+    }
+  },
+  "description" : "List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc."
+}

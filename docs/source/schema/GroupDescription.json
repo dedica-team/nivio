@@ -1,0 +1,56 @@
+{
+  "required" : [ "fullyQualifiedIdentifier", "identifier", "name" ],
+  "type" : "object",
+  "properties" : {
+    "labels" : {
+      "type" : "object",
+      "additionalProperties" : {
+        "type" : "string"
+      }
+    },
+    "identifier" : {
+      "type" : "string"
+    },
+    "owner" : {
+      "type" : "string"
+    },
+    "description" : {
+      "type" : "string"
+    },
+    "contact" : {
+      "type" : "string"
+    },
+    "color" : {
+      "type" : "string"
+    },
+    "contains" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
+      }
+    },
+    "environment" : {
+      "type" : "string",
+      "writeOnly" : true
+    },
+    "name" : {
+      "type" : "string"
+    },
+    "fullyQualifiedIdentifier" : {
+      "type" : "string"
+    },
+    "_links" : {
+      "type" : "object",
+      "additionalProperties" : {
+        "$ref" : "#/components/schemas/Link"
+      }
+    },
+    "links" : {
+      "type" : "object",
+      "additionalProperties" : {
+        "$ref" : "#/components/schemas/Link"
+      }
+    }
+  },
+  "description" : "Description of item groups (optional, can also be given in sources)."
+}

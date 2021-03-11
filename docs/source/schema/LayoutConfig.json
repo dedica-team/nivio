@@ -1,0 +1,21 @@
+{
+  "type" : "object",
+  "properties" : {
+    "maxIterations" : {
+      "type" : "integer",
+      "format" : "int32"
+    },
+    "forceConstantFactor" : {
+      "type" : "number",
+      "format" : "float"
+    },
+    "maxDistanceLimitFactor" : {
+      "type" : "number",
+      "format" : "float"
+    },
+    "minDistanceLimitFactor" : {
+      "type" : "number",
+      "format" : "float"
+    }
+  }
+}

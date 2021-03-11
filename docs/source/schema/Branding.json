@@ -1,0 +1,11 @@
+{
+  "type" : "object",
+  "properties" : {
+    "mapStylesheet" : {
+      "type" : "string"
+    },
+    "mapLogo" : {
+      "type" : "string"
+    }
+  }
+}

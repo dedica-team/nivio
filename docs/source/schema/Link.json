@@ -1,0 +1,31 @@
+{
+  "type" : "object",
+  "properties" : {
+    "rel" : {
+      "type" : "string"
+    },
+    "href" : {
+      "type" : "string",
+      "format" : "url"
+    },
+    "hreflang" : {
+      "type" : "string"
+    },
+    "media" : {
+      "type" : "string"
+    },
+    "title" : {
+      "type" : "string"
+    },
+    "type" : {
+      "type" : "string"
+    },
+    "deprecation" : {
+      "type" : "string"
+    },
+    "name" : {
+      "type" : "string"
+    }
+  },
+  "description" : "Additional links related to the landscape."
+}

@@ -9,6 +9,7 @@ import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.input.ItemDescriptionValues;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.search.ItemIndex;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -31,44 +32,54 @@ public class LandscapeDescription implements ComponentDescription {
             "unknown landscape", "", ""
     );
 
-    /**
-     * Immutable unique identifier. Maybe use an URN.
-     */
     @NonNull
+    @Schema(required = true,
+            description = "Immutable unique identifier. Maybe use an URN.",
+            pattern = Item.IDENTIFIER_VALIDATION)
     private final String identifier;
 
-    /**
-     * Human readable name.
-     */
+    @Schema(required = true,
+            description = "Human readable name."
+    )
     private String name;
 
-    /**
-     * Contact of the maintainer
-     */
+    @Schema(description = "Primary contact method, preferably an email address")
     private String contact;
+
+    @Schema(description = "A brief description of the landscape")
     private String description;
+
+    @Schema(description = "The business owner (person or team), preferably an email address")
     private String owner;
 
+    @Schema(description = "Item descriptions to be used as templates. All values excepted identifier and name will be applied to the assigned items.")
     private Map<String, ItemDescription> templates = new HashMap<>();
 
+    @Schema(hidden = true)
     private String source;
 
-    /**
-     * List of configuration sources.
-     */
+    @Schema(description = "List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc.")
     private List<SourceReference> sources = new ArrayList<>();
 
     /**
      * descriptions of items fetched and parsed from sources
      */
+    @Schema(name = "items", description = "List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc.")
     private final ItemIndex<ItemDescription> itemDescriptions = new ItemIndex<>(null, ItemDescription.class);
 
+    @Schema(description = "Configuration of key performance indicators (i.e. status indicators) and layouting tweaks")
     private final LandscapeConfig config = new LandscapeConfig();
 
+    @Schema(hidden = true)
     private boolean isPartial = false;
 
+    @Schema(description = "Description of item groups (optional, can also be given in sources).")
     private Map<String, GroupDescription> groups = new HashMap<>();
+
+    @Schema(description = "Additional links related to the landscape.")
     private final Map<String, Link> links = new HashMap<>();
+
+    @Schema(description = "Additional labels for the landscape.")
     private Map<String, String> labels = new HashMap<>();
 
     @JsonCreator
@@ -89,9 +100,7 @@ public class LandscapeDescription implements ComponentDescription {
         this.isPartial = isPartial;
     }
 
-    /**
-     * flags that the environment is not complete, but an update
-     */
+    @Schema(description = "marks that the landscape is not complete, but an update")
     public boolean isPartial() {
         return isPartial;
     }
@@ -101,6 +110,7 @@ public class LandscapeDescription implements ComponentDescription {
         return identifier;
     }
 
+    @Schema(hidden = true)
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(identifier, null, null);
     }
@@ -238,6 +248,7 @@ public class LandscapeDescription implements ComponentDescription {
         this.description = description;
     }
 
+    @JsonProperty("links")
     public Map<String, Link> getLinks() {
         return links;
     }
@@ -259,4 +270,6 @@ public class LandscapeDescription implements ComponentDescription {
     public void setLabel(String key, String value) {
         getLabels().put(key, value);
     }
+
+
 }

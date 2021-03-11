@@ -1,0 +1,18 @@
+{
+  "type" : "object",
+  "properties" : {
+    "description" : {
+      "type" : "string"
+    },
+    "format" : {
+      "type" : "string"
+    },
+    "url" : {
+      "type" : "string",
+      "format" : "url"
+    },
+    "protection" : {
+      "type" : "string"
+    }
+  }
+}
