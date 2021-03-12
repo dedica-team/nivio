@@ -3,8 +3,6 @@ Link
 
 A link to an external resource. Contains a href (URL) plus various attributes for authentication and/or hateoas.
 
-Properties
-==========
 
 .. list-table::
    :header-rows: 1

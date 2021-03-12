@@ -3,8 +3,6 @@ ItemDescription
 
 List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc.
 
-Properties
-==========
 
 .. list-table::
    :header-rows: 1
@@ -80,9 +78,9 @@ Properties
      - The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.
      - optional, defaults to null
      - service|database|volume
-   * - lifecycle
-     - String(string.rst)
-     - The lifecycle state of an item.
+   * - status
+     - List(map.rst)
+     - 
      - optional, defaults to null
      - null
    * - statuses
@@ -90,9 +88,9 @@ Properties
      - A list of statuses that works like hardcoded KPIs.
      - optional, defaults to null
      - null
-   * - status
-     - List(map.rst)
-     - 
+   * - lifecycle
+     - String(string.rst)
+     - The lifecycle state of an item.
      - optional, defaults to null
      - null
    * - tags

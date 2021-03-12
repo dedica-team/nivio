@@ -3,8 +3,6 @@ GroupDescription
 
 A group of items. Could be used as bounded context, for instance.
 
-Properties
-==========
 
 .. list-table::
    :header-rows: 1

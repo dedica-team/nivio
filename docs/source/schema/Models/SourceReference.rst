@@ -3,8 +3,6 @@ SourceReference
 
 This is a reference to a configuration file.
 
-Properties
-==========
 
 .. list-table::
    :header-rows: 1

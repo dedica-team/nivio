@@ -182,11 +182,15 @@
             "description" : "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
             "example" : "service|database|volume"
           },
-          "lifecycle" : {
-            "type" : "string",
-            "description" : "The lifecycle state of an item.",
+          "status" : {
+            "type" : "array",
             "writeOnly" : true,
-            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
           },
           "statuses" : {
             "type" : "array",
@@ -201,15 +205,11 @@
               "description" : "A list of statuses that works like hardcoded KPIs."
             }
           },
-          "status" : {
-            "type" : "array",
+          "lifecycle" : {
+            "type" : "string",
+            "description" : "The lifecycle state of an item.",
             "writeOnly" : true,
-            "items" : {
-              "type" : "object",
-              "additionalProperties" : {
-                "type" : "string"
-              }
-            }
+            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
           },
           "tags" : {
             "type" : "array",
@@ -378,21 +378,21 @@
               "$ref" : "#/components/schemas/ItemDescription"
             }
           },
-          "sourceReferences" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/SourceReference"
-            }
-          },
-          "color" : {
-            "type" : "string"
-          },
           "partial" : {
             "type" : "boolean",
             "description" : "marks that the landscape is not complete, but an update"
           },
           "icon" : {
             "type" : "string"
+          },
+          "color" : {
+            "type" : "string"
+          },
+          "sourceReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SourceReference"
+            }
           },
           "links" : {
             "type" : "object",

@@ -3,8 +3,6 @@ Branding
 
 Map branding (tweaks visuals)
 
-Properties
-==========
 
 .. list-table::
    :header-rows: 1

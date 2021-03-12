@@ -3,8 +3,6 @@ InterfaceDescription
 
 Describes a low-level interface of an item.
 
-Properties
-==========
 
 .. list-table::
    :header-rows: 1

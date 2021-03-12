@@ -3,8 +3,6 @@ KPIConfig
 
 The configuration of landscape specific key performance indicators that derive status information from landscape components. Usually the KPIs work on labels
 
-Properties
-==========
 
 .. list-table::
    :header-rows: 1

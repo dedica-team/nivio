@@ -3,8 +3,6 @@ LayoutConfig
 
 Layout configuration. See https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxFastOrganicLayout.html
 
-Properties
-==========
 
 .. list-table::
    :header-rows: 1
