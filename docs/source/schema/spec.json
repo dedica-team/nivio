@@ -2,8 +2,10 @@
   "openapi" : "3.0.1",
   "info" : {
     "title" : "Nivio Input Models",
-    "description" : "The models used to generated landscapes and their components."
+    "description" : "The models used to generated landscapes and their components.",
+    "version" : "0.4.0"
   },
+  "paths" : { },
   "components" : {
     "schemas" : {
       "Branding" : {
@@ -23,7 +25,7 @@
         "description" : "Map branding (tweaks visuals)"
       },
       "GroupDescription" : {
-        "required" : [ "identifier", "name" ],
+        "required" : [ "identifier" ],
         "type" : "object",
         "properties" : {
           "labels" : {
@@ -66,10 +68,6 @@
               "example" : "identifier LIKE 'DB1'"
             }
           },
-          "environment" : {
-            "type" : "string",
-            "writeOnly" : true
-          },
           "name" : {
             "type" : "string"
           },
@@ -108,7 +106,7 @@
         "description" : "Describes a low-level interface of an item."
       },
       "ItemDescription" : {
-        "required" : [ "fullyQualifiedIdentifier", "identifier", "name" ],
+        "required" : [ "identifier" ],
         "type" : "object",
         "properties" : {
           "labels" : {
@@ -184,16 +182,6 @@
             "description" : "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
             "example" : "service|database|volume"
           },
-          "status" : {
-            "type" : "array",
-            "writeOnly" : true,
-            "items" : {
-              "type" : "object",
-              "additionalProperties" : {
-                "type" : "string"
-              }
-            }
-          },
           "fullyQualifiedIdentifier" : {
             "type" : "string"
           },
@@ -208,6 +196,16 @@
                 "description" : "A list of statuses that works like hardcoded KPIs."
               },
               "description" : "A list of statuses that works like hardcoded KPIs."
+            }
+          },
+          "status" : {
+            "type" : "array",
+            "writeOnly" : true,
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
             }
           },
           "lifecycle" : {
@@ -360,10 +358,6 @@
           "config" : {
             "$ref" : "#/components/schemas/LandscapeConfig"
           },
-          "isPartial" : {
-            "type" : "boolean",
-            "writeOnly" : true
-          },
           "groups" : {
             "type" : "object",
             "additionalProperties" : {
@@ -379,8 +373,15 @@
             },
             "description" : "Additional labels for the landscape."
           },
+          "color" : {
+            "type" : "string"
+          },
           "icon" : {
             "type" : "string"
+          },
+          "partial" : {
+            "type" : "boolean",
+            "description" : "marks that the landscape is not complete, but an update"
           },
           "items" : {
             "type" : "array",
@@ -395,13 +396,6 @@
             "items" : {
               "$ref" : "#/components/schemas/SourceReference"
             }
-          },
-          "color" : {
-            "type" : "string"
-          },
-          "partial" : {
-            "type" : "boolean",
-            "description" : "marks that the landscape is not complete, but an update"
           },
           "links" : {
             "type" : "object",
