@@ -9,16 +9,10 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Schema;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.openapitools.codegen.ClientOptInput;
 import org.openapitools.codegen.DefaultGenerator;
-import org.openapitools.codegen.languages.MarkdownDocumentationCodegen;
 import org.openapitools.codegen.languages.OpenAPIGenerator;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,11 +46,12 @@ public class SchemaGenerationTest {
         openAPIGenerator.setOpenAPI(openAPI);
 
         DefaultGenerator defaultGenerator = new DefaultGenerator();
-        MarkdownDocumentationCodegen markdownDocumentationCodegen = new MarkdownDocumentationCodegen();
-        markdownDocumentationCodegen.setOutputDir("docs/source/schema/");
+        RstDocCodegen rstDocCodegen = new RstDocCodegen();
+        rstDocCodegen.setTemplateDir("docs/source/schema/rst-documentation/");
+        rstDocCodegen.setOutputDir("docs/source/schema/");
         ClientOptInput config = new ClientOptInput()
                 .openAPI(openAPI)
-                .config(markdownDocumentationCodegen);
+                .config(rstDocCodegen);
         defaultGenerator.opts(config);
         defaultGenerator.generate();
     }

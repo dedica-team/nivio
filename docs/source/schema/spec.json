@@ -185,6 +185,16 @@
           "fullyQualifiedIdentifier" : {
             "type" : "string"
           },
+          "status" : {
+            "type" : "array",
+            "writeOnly" : true,
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          },
           "statuses" : {
             "type" : "array",
             "description" : "A list of statuses that works like hardcoded KPIs.",
@@ -196,16 +206,6 @@
                 "description" : "A list of statuses that works like hardcoded KPIs."
               },
               "description" : "A list of statuses that works like hardcoded KPIs."
-            }
-          },
-          "status" : {
-            "type" : "array",
-            "writeOnly" : true,
-            "items" : {
-              "type" : "object",
-              "additionalProperties" : {
-                "type" : "string"
-              }
             }
           },
           "lifecycle" : {
@@ -373,16 +373,6 @@
             },
             "description" : "Additional labels for the landscape."
           },
-          "color" : {
-            "type" : "string"
-          },
-          "icon" : {
-            "type" : "string"
-          },
-          "partial" : {
-            "type" : "boolean",
-            "description" : "marks that the landscape is not complete, but an update"
-          },
           "items" : {
             "type" : "array",
             "description" : "List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc.",
@@ -396,6 +386,16 @@
             "items" : {
               "$ref" : "#/components/schemas/SourceReference"
             }
+          },
+          "icon" : {
+            "type" : "string"
+          },
+          "color" : {
+            "type" : "string"
+          },
+          "partial" : {
+            "type" : "boolean",
+            "description" : "marks that the landscape is not complete, but an update"
           },
           "links" : {
             "type" : "object",
