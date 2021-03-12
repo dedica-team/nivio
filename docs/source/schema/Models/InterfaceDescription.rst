@@ -14,22 +14,22 @@ Describes a low-level interface of an item.
      - Example
 
    * - description
-     - String(string.rst)
+     - String
      - A brief description.
      - optional, defaults to null
      - null
    * - format
-     - String(string.rst)
+     - String
      - The payload format.
      - optional, defaults to null
      - null
    * - url
-     - String(string.rst)
+     - String
      - A URL describing the endpoint.
      - optional, defaults to null
      - null
    * - protection
-     - String(string.rst)
+     - String
      - A description of the interface protection method.
      - optional, defaults to null
      - null

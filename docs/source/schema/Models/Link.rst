@@ -14,62 +14,62 @@ A link to an external resource. Contains a href (URL) plus various attributes fo
      - Example
 
    * - rel
-     - String(string.rst)
+     - String
      - hateoas relation type
      - optional, defaults to null
      - null
    * - href
-     - String(string.rst)
+     - String
      - The link target.
      - **required**, defaults to null
      - null
    * - hreflang
-     - String(string.rst)
+     - String
      - hateoas language
      - optional, defaults to null
      - null
    * - media
-     - String(string.rst)
+     - String
      - hateoas media type
      - optional, defaults to null
      - null
    * - title
-     - String(string.rst)
+     - String
      - hateoas title
      - optional, defaults to null
      - null
    * - type
-     - String(string.rst)
+     - String
      - 
      - optional, defaults to null
      - null
    * - deprecation
-     - String(string.rst)
+     - String
      - deprecation info (typically used in OpenAPI specs)
      - optional, defaults to null
      - null
    * - name
-     - String(string.rst)
+     - String
      - HateOAS / OpenAPI name
      - optional, defaults to null
      - null
    * - basicAuthUsername
-     - String(string.rst)
+     - String
      - 
      - optional, defaults to null
      - null
    * - basicAuthPassword
-     - String(string.rst)
+     - String
      - 
      - optional, defaults to null
      - null
    * - headerTokenName
-     - String(string.rst)
+     - String
      - 
      - optional, defaults to null
      - null
    * - headerTokenValue
-     - String(string.rst)
+     - String
      - 
      - optional, defaults to null
      - null

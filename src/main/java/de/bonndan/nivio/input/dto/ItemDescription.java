@@ -51,7 +51,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     @Schema(description = "The primary way to contact a responsible person or team . Preferably use an email address.", example = "johnson@acme.com")
     private String contact;
 
-    @Schema(description = "The identifier of the group this item belongs in. Every requires a group internally, so if nothing is given, the value is set to '" + Group.COMMON + "'",
+    @Schema(description = "The identifier of the group this item belongs in. Every item requires to be member a group internally, so if nothing is given, the value is set to " + Group.COMMON,
             example = "shipping")
     private String group;
 

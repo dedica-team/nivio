@@ -18,7 +18,7 @@
 {{#parent}}
 {{#parentVars}}
    * - {{name}}
-     - {{#isPrimitiveType}}{{dataType}}{{/isPrimitiveType}}{{^isPrimitiveType}}{{dataType}}({{complexType}}.rst){{/isPrimitiveType}}
+     - {{#isPrimitiveType}}{{dataType}}{{/isPrimitiveType}}{{^isPrimitiveType}}{{dataType}}<{{complexType}}>){{/isPrimitiveType}}
      - {{description}}
      - {{#required}}**required**{{/required}}{{^required}}optional{{/required}}{{#readOnly}}, readonly{{/readOnly}}{{#defaultValue}}, defaults to {{{.}}}{{/defaultValue}}
      - {{#example}}{{{.}}}{{/example}}
@@ -26,7 +26,7 @@
 {{/parent}}
 {{#vars}}
    * - {{name}}
-     - {{#isPrimitiveType}}{{dataType}}{{/isPrimitiveType}}{{^isPrimitiveType}}{{dataType}}({{complexType}}.rst){{/isPrimitiveType}}
+     - {{#isPrimitiveType}}{{dataType}}{{/isPrimitiveType}}{{^isPrimitiveType}}{{dataType}}<{{complexType}}>{{/isPrimitiveType}}
      - {{description}}
      - {{#required}}**required**{{/required}}{{^required}}optional{{/required}}{{#readOnly}}, readonly{{/readOnly}}{{#defaultValue}}, defaults to {{{.}}}{{/defaultValue}}
      - {{#example}}{{{.}}}{{/example}}

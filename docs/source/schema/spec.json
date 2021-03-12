@@ -143,7 +143,7 @@
           },
           "group" : {
             "type" : "string",
-            "description" : "The identifier of the group this item belongs in. Every requires a group internally, so if nothing is given, the value is set to 'common'",
+            "description" : "The identifier of the group this item belongs in. Every item requires to be member a group internally, so if nothing is given, the value is set to common",
             "example" : "shipping"
           },
           "interfaces" : {
@@ -378,6 +378,12 @@
               "$ref" : "#/components/schemas/ItemDescription"
             }
           },
+          "sourceReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SourceReference"
+            }
+          },
           "partial" : {
             "type" : "boolean",
             "description" : "marks that the landscape is not complete, but an update"
@@ -387,12 +393,6 @@
           },
           "color" : {
             "type" : "string"
-          },
-          "sourceReferences" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/SourceReference"
-            }
           },
           "links" : {
             "type" : "object",
