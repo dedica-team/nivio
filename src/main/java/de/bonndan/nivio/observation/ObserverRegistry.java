@@ -1,12 +1,11 @@
 package de.bonndan.nivio.observation;
 
-import de.bonndan.nivio.input.*;
+import de.bonndan.nivio.input.IndexingDispatcher;
+import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * Service to register landscapes to observe description source changes.
@@ -42,16 +40,16 @@ public class ObserverRegistry {
 
     /**
      * Landscape are registered for observation here.
-     * <p>
+     *
      * On processing success, {@link ProcessingFinishedEvent} is fired and read here to register the landscape.
      */
     @EventListener(ProcessingFinishedEvent.class)
     public void onProcessingFinishedEvent(ProcessingFinishedEvent event) {
-        LandscapeDescription landscapeDescription = (LandscapeDescription) event.getSource();
+        LandscapeDescription landscapeDescription = event.getInput();
         Landscape landscape = Objects.requireNonNull(event.getLandscape());
 
         if (landscapeDescription == null) {
-            String msg = "No landscape description (input) available. Landscape " + landscape.getIdentifier() + " could not be registered for observation";
+            String msg = String.format("No landscape description (input) available. Landscape %s could not be registered for observation", landscape.getIdentifier());
             landscape.getLog().warn(msg);
             LOGGER.warn(msg);
             return;

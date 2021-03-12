@@ -170,6 +170,18 @@ public interface Labeled {
     }
 
     /**
+     * Map-setter that prevents overwriting existing labels.
+     *
+     * @param labels map of labels
+     */
+    default void setLabels(@Nullable Map<String, String> labels) {
+        if (labels == null) {
+            return;
+        }
+        labels.forEach((s, s2) -> getLabels().put(s, s2));
+    }
+
+    /**
      * Convenience method to set array-like labels.
      *
      * @param prefix         label prefix enum

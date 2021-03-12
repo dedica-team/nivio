@@ -2,7 +2,10 @@ package de.bonndan.nivio.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ItemTest {
@@ -43,5 +46,19 @@ public class ItemTest {
         Item s3 = getTestItem("g1", "a");
 
         assertNotEquals(s1, s3);
+    }
+
+    @Test
+    public void labelsAreNotGroupedInApi() {
+
+        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
+
+        Item s1 = getTestItem("g1", "a", landscape);
+        s1.getLabels().put("foo.one", "one");
+        s1.getLabels().put("foo.two", "two");
+
+        Map<String, String> labels = s1.getJSONLabels();
+        assertThat(labels).containsKey("foo.one");
+        assertThat(labels).containsKey("foo.two");
     }
 }

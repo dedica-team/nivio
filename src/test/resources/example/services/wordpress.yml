@@ -90,6 +90,9 @@ items:
   hostType: docker
   group: content
   lifecycle: production
+  labels:
+    traefik.http.routers.router0.rule: Host(`test.localhost`) && PathPrefix(`/test`)
+    traefik.http.routers.router0.middlewares: auth
 
 - description: Database for Wordpress
   software: MariaDB

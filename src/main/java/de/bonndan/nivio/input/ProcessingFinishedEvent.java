@@ -1,43 +1,37 @@
 package de.bonndan.nivio.input;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Landscape;
+import org.springframework.lang.NonNull;
 
-import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Event is fired after successful indexing of a landscape.
- *
- *
- *
  */
 public class ProcessingFinishedEvent extends ProcessingEvent {
 
+    private final LandscapeDescription input;
     private final Landscape landscape;
 
     /**
-     * @param source the LandscapeDescription
+     * @param input     the LandscapeDescription input which has been processed
      * @param landscape out
      */
-    public ProcessingFinishedEvent(LandscapeDescription source, Landscape landscape) {
-        super(source);
-        this.landscape = landscape;
+    public ProcessingFinishedEvent(@NonNull final LandscapeDescription input, @NonNull final Landscape landscape) {
+        super(Objects.requireNonNull(input).getFullyQualifiedIdentifier());
+        this.input = input;
+        this.landscape = Objects.requireNonNull(landscape);
     }
 
-    @JsonSerialize(using = PLS.class)
+    @NonNull
     public Landscape getLandscape() {
         return landscape;
     }
 
-    private static class PLS extends JsonSerializer<Landscape> {
-        @Override
-        public void serialize(Landscape value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            gen.writeString(value.getIdentifier());
-        }
+    @NonNull
+    public LandscapeDescription getInput() {
+        return input;
     }
 
     @Override
