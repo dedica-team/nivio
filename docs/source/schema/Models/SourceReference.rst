@@ -1,22 +1,93 @@
 SourceReference
 ---------------
+
+This is a reference to a configuration file.
+
 Properties
 ==========
 
+.. list-table::
+   :header-rows: 1
 
-*  **rel** | [**String**](string.rst) | hateoas relation type | [optional] [default to null]
-*  **href** | [**String**](string.rst) | The link target. | [default to null]
-*  **hreflang** | [**String**](string.rst) | hateoas language | [optional] [default to null]
-*  **media** | [**String**](string.rst) | hateoas media type | [optional] [default to null]
-*  **title** | [**String**](string.rst) | hateoas title | [optional] [default to null]
-*  **type** | [**String**](string.rst) |  | [optional] [default to null]
-*  **deprecation** | [**String**](string.rst) | deprecation info (typically used in OpenAPI specs) | [optional] [default to null]
-*  **name** | [**String**](string.rst) | HateOAS / OpenAPI name | [optional] [default to null]
-*  **basicAuthUsername** | [**String**](string.rst) |  | [optional] [default to null]
-*  **basicAuthPassword** | [**String**](string.rst) |  | [optional] [default to null]
-*  **headerTokenName** | [**String**](string.rst) |  | [optional] [default to null]
-*  **headerTokenValue** | [**String**](string.rst) |  | [optional] [default to null]
-*  **url** | [**String**](string.rst) | A URL, but can also be a relative path | [optional] [default to null]
-*  **format** | [**String**](string.rst) | The input format. | [optional] [default to null]
-*  **assignTemplates** | [**Map**](array.rst) | A map with template identifier as key and item identifier matchers as value | [optional] [default to null]
+   * - Name
+     - Type
+     - Description
+     - Remarks
+     - Example
+
+   * - rel
+     - String(string.rst)
+     - hateoas relation type
+     - optional, defaults to null
+     - null
+   * - href
+     - String(string.rst)
+     - The link target.
+     - **required**, defaults to null
+     - null
+   * - hreflang
+     - String(string.rst)
+     - hateoas language
+     - optional, defaults to null
+     - null
+   * - media
+     - String(string.rst)
+     - hateoas media type
+     - optional, defaults to null
+     - null
+   * - title
+     - String(string.rst)
+     - hateoas title
+     - optional, defaults to null
+     - null
+   * - type
+     - String(string.rst)
+     - 
+     - optional, defaults to null
+     - null
+   * - deprecation
+     - String(string.rst)
+     - deprecation info (typically used in OpenAPI specs)
+     - optional, defaults to null
+     - null
+   * - name
+     - String(string.rst)
+     - HateOAS / OpenAPI name
+     - optional, defaults to null
+     - null
+   * - basicAuthUsername
+     - String(string.rst)
+     - 
+     - optional, defaults to null
+     - null
+   * - basicAuthPassword
+     - String(string.rst)
+     - 
+     - optional, defaults to null
+     - null
+   * - headerTokenName
+     - String(string.rst)
+     - 
+     - optional, defaults to null
+     - null
+   * - headerTokenValue
+     - String(string.rst)
+     - 
+     - optional, defaults to null
+     - null
+   * - url
+     - String(string.rst)
+     - A URL, but can also be a relative path
+     - optional, defaults to null
+     - ./a/items.yaml
+   * - format
+     - String(string.rst)
+     - The input format.
+     - optional, defaults to null
+     - null
+   * - assignTemplates
+     - Map(array.rst)
+     - A map with template identifier as key and item identifier matchers as value
+     - optional, defaults to null
+     - endOfLife: [web, "java6*"]
 

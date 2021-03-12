@@ -2,17 +2,36 @@
 {{#model}}
 {{{classname}}}
 ---------------
+
+{{{description}}}
+
 Properties
 ==========
 
+.. list-table::
+   :header-rows: 1
+
+   * - Name
+     - Type
+     - Description
+     - Remarks
+     - Example
 
 {{#parent}}
 {{#parentVars}}
-* **{{name}}** | {{#isPrimitiveType}}**{{dataType}}**{{/isPrimitiveType}}{{^isPrimitiveType}}[**{{dataType}}**]({{complexType}}.rst){{/isPrimitiveType}} | {{description}} | {{^required}}[optional] {{/required}}{{#readOnly}}[readonly] {{/readOnly}}{{#defaultValue}}[default to {{{.}}}]{{/defaultValue}}
+   * - {{name}}
+     - {{#isPrimitiveType}}{{dataType}}{{/isPrimitiveType}}{{^isPrimitiveType}}{{dataType}}({{complexType}}.rst){{/isPrimitiveType}}
+     - {{description}}
+     - {{#required}}**required**{{/required}}{{^required}}optional{{/required}}{{#readOnly}}, readonly{{/readOnly}}{{#defaultValue}}, defaults to {{{.}}}{{/defaultValue}}
+     - {{#example}}{{{.}}}{{/example}}
 {{/parentVars}}
 {{/parent}}
 {{#vars}}
-*  **{{name}}** | {{#isPrimitiveType}}**{{dataType}}**{{/isPrimitiveType}}{{^isPrimitiveType}}[**{{dataType}}**]({{complexType}}.rst){{/isPrimitiveType}} | {{description}} | {{^required}}[optional] {{/required}}{{#readOnly}}[readonly] {{/readOnly}}{{#defaultValue}}[default to {{{.}}}]{{/defaultValue}}
+   * - {{name}}
+     - {{#isPrimitiveType}}{{dataType}}{{/isPrimitiveType}}{{^isPrimitiveType}}{{dataType}}({{complexType}}.rst){{/isPrimitiveType}}
+     - {{description}}
+     - {{#required}}**required**{{/required}}{{^required}}optional{{/required}}{{#readOnly}}, readonly{{/readOnly}}{{#defaultValue}}, defaults to {{{.}}}{{/defaultValue}}
+     - {{#example}}{{{.}}}{{/example}}
 {{/vars}}
 
     {{/model}}

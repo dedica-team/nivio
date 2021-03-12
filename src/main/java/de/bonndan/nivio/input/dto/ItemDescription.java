@@ -91,6 +91,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.identifier = StringUtils.trimAllWhitespace(identifier);
     }
 
+    @Schema(hidden = true)
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(environment, group, identifier);
     }

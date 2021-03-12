@@ -182,18 +182,11 @@
             "description" : "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
             "example" : "service|database|volume"
           },
-          "fullyQualifiedIdentifier" : {
-            "type" : "string"
-          },
-          "status" : {
-            "type" : "array",
+          "lifecycle" : {
+            "type" : "string",
+            "description" : "The lifecycle state of an item.",
             "writeOnly" : true,
-            "items" : {
-              "type" : "object",
-              "additionalProperties" : {
-                "type" : "string"
-              }
-            }
+            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
           },
           "statuses" : {
             "type" : "array",
@@ -208,11 +201,15 @@
               "description" : "A list of statuses that works like hardcoded KPIs."
             }
           },
-          "lifecycle" : {
-            "type" : "string",
-            "description" : "The lifecycle state of an item.",
+          "status" : {
+            "type" : "array",
             "writeOnly" : true,
-            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
           },
           "tags" : {
             "type" : "array",
@@ -387,15 +384,15 @@
               "$ref" : "#/components/schemas/SourceReference"
             }
           },
-          "icon" : {
-            "type" : "string"
-          },
           "color" : {
             "type" : "string"
           },
           "partial" : {
             "type" : "boolean",
             "description" : "marks that the landscape is not complete, but an update"
+          },
+          "icon" : {
+            "type" : "string"
           },
           "links" : {
             "type" : "object",
