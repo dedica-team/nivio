@@ -1,10 +1,8 @@
 package de.bonndan.nivio.input.dto;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import de.bonndan.nivio.model.Link;
 import de.bonndan.nivio.util.URLHelper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -28,10 +26,10 @@ public class SourceReference extends Link {
     @Schema(hidden = true)
     private LandscapeDescription landscapeDescription;
 
-    @Schema(description = "The input format.", allowableValues = "nivio,csv,k8s,rancher,docker-compose-v2")
+    @Schema(description = "The input format.", allowableValues = {"nivio", "csv", "k8s", "rancher", "docker-compose-v2"})
     private String format;
 
-    @Schema(description = "A map with template identifier as key and item identifier matchers as value", example = "endOfLife: [web, \"java6*\"]" )
+    @Schema(description = "A map with template identifier as key and item identifier matchers as value", example = "endOfLife: [web, \"java6*\"]")
     private Map<String, List<String>> assignTemplates = new HashMap<>();
 
     @Schema(hidden = true)

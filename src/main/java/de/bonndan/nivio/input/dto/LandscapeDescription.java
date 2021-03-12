@@ -64,7 +64,7 @@ public class LandscapeDescription implements ComponentDescription {
     /**
      * descriptions of items fetched and parsed from sources
      */
-    @Schema(name = "items", description = "List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc.")
+    @Schema(hidden = true)
     private final ItemIndex<ItemDescription> itemDescriptions = new ItemIndex<>(null, ItemDescription.class);
 
     @Schema(description = "Configuration of key performance indicators (i.e. status indicators) and layouting tweaks")
@@ -209,6 +209,7 @@ public class LandscapeDescription implements ComponentDescription {
     /**
      * For compatibility with source references, items can be added directly to the env description.
      */
+    @Schema(name = "items", description = "List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc.")
     public void setItems(List<ItemDescription> items) {
         addItems(items);
     }

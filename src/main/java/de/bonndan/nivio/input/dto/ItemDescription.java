@@ -4,10 +4,12 @@ package de.bonndan.nivio.input.dto;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
@@ -19,27 +21,54 @@ import java.util.*;
 public class ItemDescription implements ComponentDescription, Labeled, Linked, Tagged {
 
     private final Map<String, Link> links = new HashMap<>();
+
+    @Schema(description = "Relations to other landscape items.")
     @JsonDeserialize(contentAs = RelationDescription.class)
     private final Set<RelationDescription> relations = new HashSet<>();
+
+    @Schema(description = "Key-value pair labels for an item.")
     private final Map<String, String> labels = new HashMap<>();
+
+    @Schema(hidden = true)
     @NotEmpty
     private String environment;
+
+    @Schema(required = true,
+            description = "Immutable unique identifier (maybe use an URN). Primary means to identify items in searches.",
+            pattern = Item.IDENTIFIER_VALIDATION)
     @NotEmpty
     private String identifier;
+
+    @Schema(description = "A human readable name/title. The name is considered when items are searched", example = "my beautiful service")
     private String name;
+
+    @Schema(description = "The business owner of the item. Preferably use an email address.", example = "johnson@acme.com")
     private String owner;
+
+    @Schema(description = "A brief description")
     private String description;
+
+    @Schema(description = "The primary way to contact a responsible person or team . Preferably use an email address.", example = "johnson@acme.com")
     private String contact;
+
+    @Schema(description = "The identifier of the group this item belongs in. Every requires a group internally, so if nothing is given, the value is set to '" + Group.COMMON + "'",
+            example = "shipping")
     private String group;
+
+    @Schema(description = "A collection of low level interfaces. Can be used to describe Http API endpoints for instance.")
     @JsonDeserialize(contentAs = InterfaceDescription.class)
     private Set<InterfaceDescription> interfaces = new HashSet<>();
+
+    @Schema(description = "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience fields to build relations.", example = "shipping-mysqldb")
     private List<String> providedBy = new ArrayList<>();
+
+    @Schema(description = "An icon name or url to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work).")
     private String icon;
+
+    @Schema(description = "Overrides the group color. Use a HTML hex color code without leading hash.", example = "4400FF")
     private String color;
 
-    /**
-     * technical address, URI
-     */
+    @Schema(description = "The technical address of the item (should be an URI). Taken into account when matching relation endpoints.")
     private String address;
 
     public ItemDescription() {
@@ -74,6 +103,8 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.environment = environment;
     }
 
+    @Schema(description = "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
+            example = "service|database|volume")
     public String getType() {
         return getLabel(Label.type);
     }
@@ -130,6 +161,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.contact = contact;
     }
 
+    @JsonProperty("links") //this override is for DTO documentation, hateoas is not relevant here
     @Override
     public Map<String, Link> getLinks() {
         return links;
@@ -143,6 +175,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.group = group;
     }
 
+    @Schema(description = "The lifecycle state of an item." , allowableValues = {"PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL"})
     public void setLifecycle(String lifecycle) {
 
         //try to standardize using enum values
@@ -247,7 +280,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
      *
      * @param status a list of key-value pairs, keys are "label", "status", "message"
      */
-    @Deprecated
+    @Schema(name = "statuses", description = "A list of statuses that works like hardcoded KPIs.")
     public void setStatuses(List<LinkedHashMap<String, String>> status) {
         setStatus(status);
     }

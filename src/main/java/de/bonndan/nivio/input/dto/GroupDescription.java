@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.model.Link;
@@ -107,6 +108,8 @@ public class GroupDescription implements ComponentDescription {
         this.color = color;
     }
 
+    @JsonProperty("links") //this override is for DTO documentation, hateoas is not relevant here
+    @Override
     public Map<String, Link> getLinks() {
         return links;
     }
