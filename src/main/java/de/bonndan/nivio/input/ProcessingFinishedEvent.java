@@ -46,6 +46,6 @@ public class ProcessingFinishedEvent extends ProcessingEvent {
 
     @Override
     public String getMessage() {
-        return null;
+        return "Processing of input data has finished.";
     }
 }
