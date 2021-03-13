@@ -21,6 +21,12 @@ public class LocalFileObserver extends BaseObserver {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalFileObserver.class);
 
     private final File file;
+    private long lastModified = 0;
+
+    /**
+     * grace period (2s) to ignore multiple (duplicate) events
+     */
+    private static final long gracePeriod = 2000;
 
     public LocalFileObserver(@NonNull final Landscape landscape,
                              @NonNull final ApplicationEventPublisher eventPublisher,
@@ -56,8 +62,14 @@ public class LocalFileObserver extends BaseObserver {
                 WatchKey key = watchService.take();
                 for (WatchEvent<?> event : key.pollEvents()) {
                     final Path changed = (Path) event.context();
-                    if (changed.endsWith(file.getName())) {
+                    long lastModified = path.toFile().lastModified();
+                    boolean isWatchedFile = changed.endsWith(file.getName());
+                    boolean triggersEvent = (path.toFile().length() > 0) && (lastModified - this.lastModified) > gracePeriod;
+                    if (isWatchedFile && triggersEvent) {
+                        this.lastModified = lastModified;
                         triggerChange();
+                    } else {
+                        LOGGER.debug("Ignoring event");
                     }
                 }
                 poll = key.reset();
@@ -65,10 +77,12 @@ public class LocalFileObserver extends BaseObserver {
         } catch (IOException e) {
             LOGGER.error("Failed to poll using watch service", e);
         } catch (InterruptedException e) {
-            LOGGER.info("Interrupted");
+            Thread.currentThread().interrupt();
+            LOGGER.debug("Interrupted");
         } finally {
             try {
                 if (watchService != null) {
+                    LOGGER.debug("Closing watchservice for {}", path);
                     watchService.close();
                 }
             } catch (IOException e) {

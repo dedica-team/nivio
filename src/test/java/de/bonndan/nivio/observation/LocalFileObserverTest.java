@@ -55,6 +55,27 @@ class LocalFileObserverTest {
     }
 
     @Test
+    void ignoresChangesWithinGracePeriod() throws IOException, InterruptedException {
+        Path tempFile = Files.createTempFile("foo", "bar");
+        LocalFileObserver localFileObserver = new LocalFileObserver(landscape, publisher, tempFile.toFile());
+        Thread thread = new Thread(localFileObserver);
+        thread.start();
+
+        //mac os x does not use native events, acc. to stackoverflow polling is used
+        int factor = SystemUtils.IS_OS_MAC_OSX ? 3 : 1;
+
+        Thread.sleep(1000 * factor);
+        Files.write(tempFile, "foo".getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE);
+        Files.write(tempFile, "bar".getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE);
+        Thread.sleep(4000 * factor);
+
+        thread.interrupt();
+        tempFile.toFile().deleteOnExit();
+
+        verify(publisher, times(1)).publishEvent(any(InputChangedEvent.class));
+    }
+
+    @Test
     void doesNotCareAboutOtherFileChange() throws IOException, InterruptedException {
         Path tempFile = Files.createTempFile("foo", "bar");
         Path tempFile2 = Files.createTempFile("foo", "baz");
