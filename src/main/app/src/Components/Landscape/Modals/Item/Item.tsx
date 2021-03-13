@@ -197,17 +197,6 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
   const assessmentStatus = assessment ? getItemAssessments(assessment) : [];
   const interfaces: ReactElement | null = item ? getInterfaces(item) : null;
 
-  const findButton =
-    locateFunctionContext.locateFunction && item ? (
-      <IconButton
-        onClick={() => {
-          locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
-        }}
-      >
-        <FilterCenterFocus />
-      </IconButton>
-    ) : null;
-
   const a11yProps = (index: any) => {
     return {
       'id': `simple-tab-${index}`,
@@ -254,14 +243,23 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
         titleTypographyProps={{ title: 'ID: ' + item?.fullyQualifiedIdentifier }}
         avatar={
           item ? (
-            <Avatar
-              imgProps={{ style: { objectFit: 'contain' } }}
-              src={getItemIcon(item)}
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                border: '2px solid #' + item.color,
-              }}
-            />
+              <IconButton
+                onClick={() => {
+                  locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
+                }}
+                size={'small'}
+                title={'Click to locate'}
+              >
+                <Avatar
+                  imgProps={{ style: { objectFit: 'contain' } }}
+                  src={getItemIcon(item)}
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                    border: '2px solid #' + item.color,
+                  }}
+                />
+              </IconButton>
+
           ) : (
               ''
             )
@@ -270,7 +268,6 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
         action={
           <React.Fragment>
             {extend}
-            {findButton}
           </React.Fragment>
         }
       />
