@@ -190,7 +190,9 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
    * Reload map on notification messages.
    */
   useEffect(() => {
-    if (notificationContext.notification?.landscape === landscape?.identifier) {
+    if (notificationContext.notification?.type === 'ProcessingFinishedEvent'
+      && notificationContext.notification?.landscape === landscape?.identifier
+    ) {
       loadMap();
       let msg = 'The landscape has changed. ';
       if (notificationContext.notification?.message)
