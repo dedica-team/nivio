@@ -1,25 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { INotificationMessage, ISnackbarMessage } from '../../interfaces';
+import React, { useState, useEffect, useContext } from "react";
+import { INotificationMessage } from '../../interfaces';
 import { Client, StompSubscription } from '@stomp/stompjs';
-
-import NotificationLayout from './NotificationLayout';
-
 import { withBasePath } from '../../utils/API/BasePath';
+import { NotificationContext } from "../../Context/NotificationContext";
 
 /**
- * Logic component for notifications
+ * Logic component for notifications. Subscribes via websockets to server events.
+ *
+ *
  */
 const Notification: React.FC = () => {
-  const snackPackCloseDelay = 20000;
 
   const backendUrl = withBasePath('/subscribe');
   const protocol = window.location.protocol !== 'https:' ? 'ws' : 'wss';
 
-  const [snackPack, setSnackPack] = useState<ISnackbarMessage[]>([]);
-  const [messageInfo, setMessageInfo] = useState<ISnackbarMessage | undefined>(undefined);
-  const [open, setOpen] = useState(false);
   const [socketUrl] = useState(protocol + `://${backendUrl.replace(/^https?:\/\//i, '')}`);
   const [subscriptions, setSubscriptions] = useState<StompSubscription[]>([]);
+  const notificationContext = useContext(NotificationContext);
 
   const [client] = useState(
     new Client({
@@ -28,19 +25,8 @@ const Notification: React.FC = () => {
         const subscriptions: StompSubscription[] = [];
         const eventSubscription = client.subscribe('/topic/events', (message) => {
           const notificationMessage: INotificationMessage = JSON.parse(message.body);
-          if (notificationMessage.type !== 'ProcessingFinishedEvent') {
-            console.log(notificationMessage);
-            const snackPackMessage = {
-              message: notificationMessage.landscape
-                ? `Change in ${notificationMessage.landscape}, ${notificationMessage.message || ''}`
-                : `${notificationMessage.message || 'Event Error: No message received'}`,
-              key: new Date().getTime(),
-              landscape: notificationMessage.landscape,
-              level: notificationMessage.level,
-            };
-
-            setSnackPack((prevArray) => [...prevArray, snackPackMessage]);
-            setOpen(true);
+          if (notificationMessage.type === 'ProcessingFinishedEvent') {
+            notificationContext.next(notificationMessage);
           }
         });
 
@@ -51,20 +37,6 @@ const Notification: React.FC = () => {
   );
 
   useEffect(() => {
-    if (snackPack.length && !messageInfo) {
-      // Set a new snack when we don't have an active one
-      setMessageInfo({ ...snackPack[0] });
-      setSnackPack((prev) => prev.slice(1));
-      setOpen(true);
-    } else if (snackPack.length && messageInfo && open) {
-      // Close an active snack when a new one is added and the close delay is over
-      if (new Date().getTime() - messageInfo.key > snackPackCloseDelay) {
-        setOpen(false);
-      }
-    }
-  }, [snackPack, messageInfo, open]);
-
-  useEffect(() => {
     client.activate();
     return () => {
       subscriptions.forEach((subscription) => {
@@ -73,29 +45,7 @@ const Notification: React.FC = () => {
     };
   }, [client, subscriptions]);
 
-  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setOpen(false);
-  };
-
-  const handleExited = () => {
-    setMessageInfo(undefined);
-  };
-
-  return (
-    <div className={'notification'} data-testid='notification'>
-      <NotificationLayout
-        handleClose={handleClose}
-        handleExited={handleExited}
-        messageInfo={messageInfo}
-        open={open}
-        snackPackCloseDelay={snackPackCloseDelay}
-      />
-    </div>
-  );
+  return null;
 };
 
 export default Notification;
