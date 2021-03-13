@@ -164,7 +164,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
   useEffect(() => {
     loadMap();
-  }, [identifier, loadMap]);
+    setSidebarContent(null);
+  }, [identifier, loadMap, setSidebarContent]);
 
   //load landscape
   useEffect(() => {
@@ -194,12 +195,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       && notificationContext.notification?.landscape === landscape?.identifier
     ) {
       loadMap();
-      let msg = 'The landscape has changed. ';
-      if (notificationContext.notification?.message)
-        msg += notificationContext.notification?.message;
-      setSidebarContent(msg);
     }
-  }, [notificationContext.notification, landscape?.identifier, loadMap, setSidebarContent]);
+  }, [notificationContext.notification, landscape?.identifier, loadMap]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
