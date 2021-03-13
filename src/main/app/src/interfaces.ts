@@ -1,6 +1,5 @@
 export class Routes {
   static MAP_ROUTE: string = '/landscape/:identifier';
-  static DASHBOARD_ROUTE: string = '/landscape/:identifier/dashboard';
 }
 
 export interface ILandscape {
@@ -113,6 +112,12 @@ export interface IInterfaces {
   format?: string;
   url?: string;
   protection?: string;
+  deprecated?: boolean;
+  name?: string;
+  payload?: string;
+  path?: string;
+  summary?: string;
+  parameters?: string;
 }
 
 export interface IRelations {

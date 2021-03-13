@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  name: string;
+  name?: string;
   value?: string;
   status: string;
   style?: any;
@@ -46,9 +46,11 @@ const StatusChip: React.FC<Props> = ({ name, value, status, style }) => {
   if (status.toLowerCase() === 'red') letter = '!';
   if (status.toLowerCase() === 'brown') letter = '!!';
 
-  let label = name;
+  let label = name || '';
   if (value != null && value !== 'null') {
-    label += ': ' + value;
+    if (label.length > 0)
+    label += ': ';
+    label += value;
   }
   return (
     <Chip

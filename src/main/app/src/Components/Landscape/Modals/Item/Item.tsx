@@ -3,24 +3,36 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
+  AppBar, Box,
   Card,
-  CardActions,
-  CardHeader,
+  CardHeader, Link,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  Tabs,
   Theme,
-  Typography,
-} from '@material-ui/core';
+  Typography
+} from "@material-ui/core";
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../../interfaces';
-import { getItemIcon, getLabels, getLinks } from '../../Utils/utils';
+import { getItemIcon, getLabels } from "../../Utils/utils";
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
-import { ExpandMore, FilterCenterFocus, MoreVertSharp } from '@material-ui/icons';
+import {
+  Details,
+  ExpandMore,
+  FilterCenterFocus,
+  Info,
+  MoreVertSharp,
+  Wifi
+} from "@material-ui/icons";
 import Chip from '@material-ui/core/Chip';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
@@ -33,6 +45,9 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.primary.main,
     },
     tag: {
+      backgroundColor: theme.palette.primary.main,
+    },
+    interfaces: {
       backgroundColor: theme.palette.primary.main,
     },
   })
@@ -53,12 +68,43 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const [compact, setCompact] = useState<boolean>(false);
-
+  const [value, setValue] = React.useState(0);
   const locateFunctionContext = useContext(LocateFunctionContext);
 
   const classes = componentStyles();
   const extraClasses = useStyles();
   let relations: ReactElement[] = [];
+
+  const getInterfaces = (element: IItem): ReactElement | null => {
+    if (!element?.interfaces) return null;
+    let ifaceElements: ReactElement[] = [];
+    element.interfaces.forEach((iface, key) => {
+      ifaceElements.push(
+        <Accordion key={key} className={extraClasses.interfaces}>
+          <AccordionSummary
+            expandIcon={<ExpandMore />}
+            aria-controls={'panel_ifaces' + key + 'bh-content'}
+            id={'panel_ifaces' + key + 'bh-header'}
+          >
+            <span title={iface.name || iface.path} style={{width: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace:'nowrap'}}>{iface.name || iface.path}</span>
+          </AccordionSummary>
+          <AccordionDetails>
+            {iface.summary ? (<div>{iface.summary}<br /><br /></div>): null}
+            {iface.description ? (<div>{iface.description}<br /><br /></div>): null}
+            Path: {iface.path || '-'}<br /><br />
+            Params: {iface.parameters || '-'}<br /><br />
+            Format: {iface.format || '-'}<br /><br />
+            Payload: {iface.payload || '-'}<br /><br />
+            Protection: {iface.protection || '-'}<br /><br />
+            Deprecated: {iface.deprecated ? 'Yes' : '-'}<br /><br />
+          </AccordionDetails>
+        </Accordion>
+      );
+    });
+
+    return <List dense={true}>{ifaceElements}</List>;
+  }
+
 
   useEffect(() => {
     const loadAssessment = (item: IItem) => {
@@ -133,12 +179,15 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
         .filter((item) => !item.field.includes('summary.'))
         .map((item) => {
           return (
-            <StatusChip
-              name={item.field}
-              value={item.message}
-              status={item.status}
-              key={item.field}
-            />
+            <TableRow key={item.field} >
+              <TableCell>{item.field}</TableCell>
+              <TableCell><StatusChip
+                status={item.status}
+                key={item.field}
+                value={item.message}
+              />
+              </TableCell>
+            </TableRow>
           );
         });
     }
@@ -146,7 +195,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
   };
 
   const assessmentStatus = assessment ? getItemAssessments(assessment) : [];
-  const links: ReactElement[] = item ? getLinks(item) : [];
+  const interfaces: ReactElement | null = item ? getInterfaces(item) : null;
 
   const findButton =
     locateFunctionContext.locateFunction && item ? (
@@ -158,6 +207,39 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
         <FilterCenterFocus />
       </IconButton>
     ) : null;
+
+  const a11yProps = (index: any) => {
+    return {
+      'id': `simple-tab-${index}`,
+      'aria-controls': `simple-tabpanel-${index}`,
+    };
+  };
+
+  const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setValue(newValue);
+  };
+
+  interface TabPanelProps {
+    children?: React.ReactNode;
+    index: any;
+    value: any;
+  }
+
+  function TabPanel(props: TabPanelProps) {
+    const { children, value, index, ...other } = props;
+
+    return (
+      <div
+        role='tabpanel'
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+        {...other}
+      >
+        {value === index && <Box>{children}</Box>}
+      </div>
+    );
+  }
 
   const labels = item ? getLabels(item) : null;
   const extend = small ? (
@@ -194,85 +276,117 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
       />
 
       {!compact ? (
-        <CardContent>
-          <div className='information'>
-            <span className='description item'>
-              {item?.description ? `${item?.description}` : ''}
-              <br />
-            </span>
-            <div className='tags'>
-              {item
-                ? item.tags.map((value) => (
-                  <Chip size='small' label={value} key={value} className={extraClasses.tag} />
-                ))
-                : null}
-            </div>
+        <div>
+          <AppBar position='static'>
+            <Tabs
+              value={value}
+              onChange={changeTab}
+              variant={'fullWidth'}
+              aria-label='simple tabs example'
+            >
+              <Tab icon={<Info />} label={'info'} style={{ minWidth: 50 }} title={'Info'} {...a11yProps(0)} />
+              <Tab icon={<Wifi />} label={'relations'} style={{ minWidth: 50 }} title={'Relations'} {...a11yProps(1)} />
+              <Tab
+                icon={<Details />} label={'Details'}
+                title={'API / Interfaces'}
+                style={{ minWidth: 50 }}
+                {...a11yProps(2)}
+              />
+            </Tabs>
+          </AppBar>
+          <CardContent>
+            <TabPanel value={value} index={0}>
+              <Table aria-label={'info table'} style={{ tableLayout: 'fixed'}}>
+                <TableBody>
+                  {item?.group ? (
+                    <TableRow key={'group'} >
+                      <TableCell style={{width: '33%'}}>Group</TableCell>
+                      <TableCell>{item?.group}</TableCell>
+                    </TableRow>
+                  ) : null}
+                  {item?.type ? (
+                    <TableRow key={'type'}>
+                      <TableCell>Type</TableCell>
+                      <TableCell>{item?.type}</TableCell>
+                    </TableRow>
+                  ) : null}
+                  {item?.description ? (
+                    <TableRow key={'description'}>
+                      <TableCell>Info</TableCell>
+                      <TableCell>{item?.description}</TableCell>
+                    </TableRow>
+                  ) : null}
+                  {item?.owner ? (
+                    <TableRow key={'owner'}>
+                      <TableCell>Owner</TableCell>
+                      <TableCell>{item?.owner}</TableCell>
+                    </TableRow>
+                  ) : null}
+                  {item?.contact ? (
+                    <TableRow key={'contact'}>
+                      <TableCell>Contact</TableCell>
+                      <TableCell>{item?.contact}</TableCell>
+                    </TableRow>
+                  ) : null}
+                  { (item?.tags && item?.tags.length) ? (
+                    <TableRow key={'tags'}>
+                      <TableCell>Tags</TableCell>
+                      <TableCell>{item.tags.map((value) => (
+                        <Chip size='small' label={value} key={value} className={extraClasses.tag} />
+                      ))}</TableCell>
+                    </TableRow>
+                  ) : null}
 
-            <List dense={true}>
-              <ListItem>
-                <ListItemText
-                  primary={'Group'}
-                  secondary={item?.group}
-                />
-              </ListItem>
-              {item?.contact?.length ? (
-                <ListItem>
-                  <ListItemText
-                    primary={'Contact'}
-                    secondary={item?.contact || 'No contact provided'}
-                  />
-                </ListItem>
+                  { (item && item?._links) ?
+                    Object.entries(item?._links).map((data) => {
+                      if (data[0] === 'self') return null;
+                      return <TableRow key={'link_' + data[0]}>
+                        <TableCell>{data[0]}</TableCell>
+                        <TableCell><Link href={data[1].href}>{data[1].href}</Link></TableCell>
+                      </TableRow>
+
+                    }) : null
+                  }
+
+                  {assessmentStatus.length > 0 ? assessmentStatus : null}
+
+                </TableBody>
+              </Table>
+
+              {labels ? (
+                <Accordion className={extraClasses.labels}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls='panel_labels-content'
+                    id='panel_labels-header'
+                  >
+                    more
+                  </AccordionSummary>
+                  <AccordionDetails>{labels}</AccordionDetails>
+                </Accordion>
               ) : null}
 
-              {item?.owner?.length ? (
-                <ListItem>
-                  <ListItemText primary={'Owner'} secondary={item?.owner || 'No owner provided'} />
-                </ListItem>
+            </TabPanel>
+
+            <TabPanel value={value} index={1}>
+              {relations && relations.length ? (
+                  <List dense={true}>{relations}</List>
+              ) : (
+                ''
+              )}
+            </TabPanel>
+
+            <TabPanel value={value} index={2}>
+              {interfaces ? (
+                <div className='interfaces'>
+                  <Typography variant={'h6'}>Interfaces</Typography>
+                  {interfaces}
+                </div>
               ) : null}
-            </List>
-          </div>
+            </TabPanel>
 
-          {labels ? (
-            <Accordion className={extraClasses.labels}>
-              <AccordionSummary
-                expandIcon={<ExpandMore />}
-                aria-controls='panel1a-content'
-                id='panel1a-header'
-              >
-                more
-              </AccordionSummary>
-              <AccordionDetails>{labels}</AccordionDetails>
-            </Accordion>
-          ) : null}
-
-          {assessmentStatus.length > 0 ? (
-            <div className={'status'}>
-              <Typography variant={'h6'}>Status</Typography>
-              {assessmentStatus ? <div>{assessmentStatus}</div> : '-'}
-            </div>
-          ) : null}
-
-          {links.length > 0 ? (
-            <div className='links'>
-              <Typography variant={'h6'}>Links</Typography>
-              <br />
-              {links}
-            </div>
-          ) : null}
-        </CardContent>
-      ) : null}
-
-      {!compact ? (
-        <CardActions>
-          {relations && relations.length ? (
-            <Box m={1}>
-              <Typography variant={'h6'}>Relations</Typography>
-              <List dense={true}>{relations}</List>
-            </Box>
-          ) : (
-              ''
-            )}
-        </CardActions>
+          </CardContent>
+        </div>
       ) : null}
     </Card>
   );

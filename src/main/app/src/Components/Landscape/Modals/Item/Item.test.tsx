@@ -34,7 +34,8 @@ it('should avoid displaying undefined and null value', () => {
     const { queryByText } = render(<Item useItem={useItem} fullyQualifiedItemIdentifier={"foo"} />);
 
     expect(queryByText('foo (undefined foo), format: foo')).toBeNull();
-    expect(queryByText('foo ( foo), format: foo')).toBeInTheDocument();
+    expect(queryByText('undefined')).toBeNull();
+    expect(queryByText('null')).toBeNull();
 
 
 });
