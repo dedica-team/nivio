@@ -3,10 +3,13 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { LocateFunctionContextProvider } from './Context/LocateFunctionContext';
+import { NotificationContextProvider } from './Context/NotificationContext';
 
 ReactDOM.render(
   <LocateFunctionContextProvider>
-    <App />
+    <NotificationContextProvider>
+      <App />
+    </NotificationContextProvider>
   </LocateFunctionContextProvider>,
   document.getElementById('root')
 );

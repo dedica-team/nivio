@@ -32,6 +32,7 @@ import { getGroup, getItem } from '../Utils/utils';
 import Group from '../Modals/Group/Group';
 //import MapUtils from './MapUtils';
 import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
+import { NotificationContext } from '../../../Context/NotificationContext';
 
 interface Props {
   setSidebarContent: Function;
@@ -68,23 +69,21 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [isFirstRender, setIsFirstRender] = useState(true);
 
   const locateFunctionContext = useContext(LocateFunctionContext);
+  const notificationContext = useContext(NotificationContext);
 
-  const locateComponent = useCallback(
-    (fullyQualifiedItemIdentifier: string) => {
-      const element = document.getElementById(fullyQualifiedItemIdentifier);
-      if (element) {
-        let dataX = element.getAttribute('data-x');
-        let dataY = element.getAttribute('data-y');
-        if (dataX && dataY) {
-          //const coords = MapUtils.getCenterCoordinates(value, dataX, dataY);
-          //setValue(setPointOnViewerCenter(value, coords.x, coords.y, 1));
-          setRenderWithTransition(true);
-          setHighlightElement(element);
-        }
+  const locateComponent = useCallback((fullyQualifiedItemIdentifier: string) => {
+    const element = document.getElementById(fullyQualifiedItemIdentifier);
+    if (element) {
+      let dataX = element.getAttribute('data-x');
+      let dataY = element.getAttribute('data-y');
+      if (dataX && dataY) {
+        //const coords = MapUtils.getCenterCoordinates(value, dataX, dataY);
+        //setValue(setPointOnViewerCenter(value, coords.x, coords.y, 1));
+        setRenderWithTransition(true);
+        setHighlightElement(element);
       }
-    },
-    []
-  );
+    }
+  }, []);
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
@@ -151,7 +150,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     }
   };
 
-  useEffect(() => {
+  const loadMap = useCallback(() => {
+    console.debug('loading map');
     const route = withBasePath(`/render/${identifier}/map.svg`);
     get(route).then((svg) => {
       const parser = new DOMParser();
@@ -159,9 +159,13 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       const width = doc.firstElementChild.width.baseVal.value;
       const height = doc.firstElementChild.height.baseVal.value;
       setData({ width: width, height: height, xml: svg });
-      setSidebarContent(null);
     });
-  }, [identifier, setSidebarContent]);
+  }, [identifier, setData]);
+
+  useEffect(() => {
+    loadMap();
+    setSidebarContent(null);
+  }, [identifier, loadMap, setSidebarContent]);
 
   //load landscape
   useEffect(() => {
@@ -182,6 +186,17 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       locateFunctionContext.setLocateFunction(() => locateComponent);
     }
   }, [locateComponent, locateFunctionContext]);
+
+  /**
+   * Reload map on notification messages.
+   */
+  useEffect(() => {
+    if (notificationContext.notification?.type === 'ProcessingFinishedEvent'
+      && notificationContext.notification?.landscape === landscape?.identifier
+    ) {
+      loadMap();
+    }
+  }, [notificationContext.notification, landscape?.identifier, loadMap]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;

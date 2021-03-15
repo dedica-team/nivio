@@ -10,14 +10,14 @@ import java.util.List;
 /**
  * Result containing changes sources and errors while scanning.
  */
-class ObservedChange {
+public class ObservedChange {
 
     private final Landscape landscape;
     private final List<ProcessingException> errors = new ArrayList<>();
     private List<String> changes;
     private boolean error;
 
-    ObservedChange(final Landscape landscape, final String change) {
+    public ObservedChange(final Landscape landscape, final String change) {
         this.landscape = landscape;
         this.changes = List.of(change);
     }
@@ -49,4 +49,5 @@ class ObservedChange {
     public List<String> getChanges() {
         return changes;
     }
+
 }

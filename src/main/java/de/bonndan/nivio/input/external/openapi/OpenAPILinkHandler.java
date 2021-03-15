@@ -99,7 +99,9 @@ public class OpenAPILinkHandler implements ExternalLinkHandler {
         }
         desc.setLabel(NAMESPACE + "_terms", openAPI.getInfo().getTermsOfService());
         desc.setLabel(NAMESPACE + "_title", openAPI.getInfo().getTitle());
-        desc.setLabel(NAMESPACE + "_tags", openAPI.getTags().stream().map(Tag::getName).collect(Collectors.joining(", ")));
+        if (openAPI.getTags() != null) {
+            desc.setLabel(NAMESPACE + "_tags", openAPI.getTags().stream().map(Tag::getName).collect(Collectors.joining(", ")));
+        }
 
         return desc;
     }
