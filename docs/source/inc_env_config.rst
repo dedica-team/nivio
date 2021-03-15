@@ -2,9 +2,9 @@
 
 A non-empty value causes Nivio to start in demo mode with prepared data.
 
-.. envvar:: GITHUB_JWTg
+.. envvar:: GITHUB_JWT
 
-To connect via JWT token as a GitHub App.
+GitHub JSON Web Token (JWT) to connect to GitHub as a GitHub App.
 
 .. envvar:: GITHUB_LOGIN
 
@@ -12,7 +12,7 @@ GitHub user name. Can also be used to connect as organization with OAuth.
 
 .. envvar:: GITHUB_OAUTH
 
-To connect to GitHub via personal access token.
+GitHUb OAuth Token to connect to GitHub via personal access token.
 
 .. envvar:: GITHUB_PASSWORD
 
@@ -20,7 +20,7 @@ GitHub password (for username/password login).
 
 .. envvar:: GITLAB_HOST_URL
 
-The full URL to the GitLab API, e.g. http://your.gitlab.server.com.
+The full URL to the GitLab API, e.g. http://your.gitlab.server.com/api/v4.
 
 .. envvar:: GITLAB_PASSWORD
 
@@ -28,19 +28,19 @@ GitLab OAuth login password (optional).
 
 .. envvar:: GITLAB_PERSONAL_ACCESS_TOKEN
 
-Personal token to access the GitLab API (optional).
+Personal token to access the GitLab API at :envvar:`GITLAB_HOST_URL` (optional).
 
 .. envvar:: GITLAB_USERNAME
 
-GitLab OAuth login username (optional, if used password is also required).
+GitLab OAuth login username (optional). If used, :envvar:`GITLAB_PASSWORD` is also required).
 
 .. envvar:: KUBERNETES_MASTER
 
-K8s master URURLoptional). All variables from https://github.com/fabric8io/kubernetes-client#configuring-the-client can be used.
+K8s master URL (optional). All variables from https://github.com/fabric8io/kubernetes-client#configuring-the-client can be used.
 
 .. envvar:: NIVIO_BASE_URL
 
-The base URL of Nivio to be used for frontends if running behind a proxy
+The base URL of Nivio to be used for frontends if running behind a proxy.
 
 .. envvar:: NIVIO_BRANDING_BACKGROUND
 
@@ -84,20 +84,20 @@ A semicolon-separated list of file paths containing landscape configurations.
 
 .. envvar:: SONAR_LOGIN
 
-Sonarqube login (username).
+SonarQube login (username).
 
 .. envvar:: SONAR_PASSWORD
 
-Sonarqube password.
+SonarQube password.
 
 .. envvar:: SONAR_PROXY_HOST
 
-Sonarqube proxy host (optional).
+SonarQube proxy host (optional).
 
 .. envvar:: SONAR_PROXY_PORT
 
-Sonarqube proxy port (optional).
+SonarQube proxy port (optional).
 
 .. envvar:: SONAR_SERVER_URL
 
-Sonarqube server URL.
+SonarQube server URL.
