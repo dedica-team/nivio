@@ -62,7 +62,8 @@ public class IndexerIntegrationTest {
 
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, applicationEventPublisher, iconService);
 
-        return indexer.index(landscapeDescription);
+        indexer.index(landscapeDescription);
+        return landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
     }
 
     @Test //first pass
@@ -173,13 +174,14 @@ public class IndexerIntegrationTest {
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, applicationEventPublisher, iconService);
 
         //created
-        landscape = indexer.index(landscapeDescription);
-        blog = (Item) landscape.getItems().pick("blog-server", "completelyNewGroup");
+        indexer.index(landscapeDescription);
+        landscape = landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
+        blog = landscape.getItems().pick("blog-server", "completelyNewGroup");
         assertEquals("completelyNewGroup", blog.getGroup());
         assertEquals(before + 1, landscape.getItems().all().size());
 
         //updated
-        Item wordpress = (Item) landscape.getItems().pick("wordpress-web", "content");
+        Item wordpress = landscape.getItems().pick("wordpress-web", "content");
         assertEquals("Other name", wordpress.getName());
         assertEquals("content", wordpress.getGroup());
 
