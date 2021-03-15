@@ -20,13 +20,13 @@ public enum ConfigurableEnvVars {
 
     /** see {@link org.kohsuke.github.GitHubBuilder} */
     GITHUB_LOGIN("GitHub user name. Can also be used to connect as organization with OAuth."),
-    GITHUB_PASSWORD("GitHub user name. Can also be used to connect as organization with OAuth."),
+    GITHUB_PASSWORD("GitHub password (for username/password login)."),
     GITHUB_OAUTH("GitHUb OAuth Token to connect to GitHub via personal access token."),
     GITHUB_JWT("GitHub JSON Web Token (JWT) to connect to GitHub as a GitHub App."),
 
     GITLAB_HOST_URL("The full URL to the GitLab API, e.g. http://your.gitlab.server.com/api/v4."),
     GITLAB_PERSONAL_ACCESS_TOKEN("Personal token to access the GitLab API at :envvar:`GITLAB_HOST_URL` (optional)."),
-    GITLAB_USERNAME("GitLab OAuth login username (optional. If used, :envvar:`GITLAB_PASSWORD` is also required)."),
+    GITLAB_USERNAME("GitLab OAuth login username (optional). If used, :envvar:`GITLAB_PASSWORD` is also required)."),
     GITLAB_PASSWORD("GitLab OAuth login password (optional)."),
 
     KUBERNETES_MASTER("K8s master URL (optional). All variables from https://github.com/fabric8io/kubernetes-client#configuring-the-client can be used."),
