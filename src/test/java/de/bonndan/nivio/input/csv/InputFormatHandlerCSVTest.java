@@ -9,6 +9,7 @@ import de.bonndan.nivio.observation.InputFormatObserver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ class InputFormatHandlerCSVTest {
     @Test
     public void read() {
 
-        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/test.csv");
+        SourceReference file =  SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test.csv"));
 
         Map<String, String> mapping = new HashMap<>();
         mapping.put("identifier", "1");
@@ -75,7 +76,7 @@ class InputFormatHandlerCSVTest {
     @Test
     public void failsWithoutMapping() {
 
-        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/test.csv");
+        SourceReference file = SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test.csv"));
         InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
 
         assertThrows(ProcessingException.class, () -> {
@@ -86,7 +87,7 @@ class InputFormatHandlerCSVTest {
     @Test
     public void failsWithoutIdentifierInMapping() {
 
-        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/test.csv");
+        SourceReference file = SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test.csv"));
         Map<String, String> mapping = new HashMap<>();
         mapping.put("name", "0");
         file.setProperty("mapping", mapping);
@@ -96,22 +97,6 @@ class InputFormatHandlerCSVTest {
         assertThrows(ProcessingException.class, () -> {
             factoryCSV.getDescriptions(file, null);
         });
-    }
-
-    @Test
-    public void returnsUrlObserver() {
-        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/test.csv");
-        Map<String, String> mapping = new HashMap<>();
-        mapping.put("name", "0");
-        file.setProperty("mapping", mapping);
-
-        InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
-
-        //when
-        InputFormatObserver observer = factoryCSV.getObserver(file, null);
-
-        //then
-        assertNotNull(observer);
     }
 
     private String getRootPath() {

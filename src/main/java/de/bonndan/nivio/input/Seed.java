@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.config.ConfigurableEnvVars;
+import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Evaluation of the SEED environment variable.
@@ -22,10 +24,37 @@ public class Seed {
 
     private static final Logger logger = LoggerFactory.getLogger(Seed.class);
 
-    private final String seed;
+    private final List<URL> seed;
 
+    /**
+     * @param seed comma separated urls
+     * @throw RuntimeException to fail early on wrong config
+     */
     public Seed(Optional<String> seed) {
-        this.seed = seed.orElse(null);
+        if (seed.isEmpty()) {
+            this.seed = new ArrayList<>();
+            return;
+        }
+        String[] strings = StringUtils.commaDelimitedListToStringArray(seed.get());
+        this.seed = Arrays.stream(strings)
+                .map(s -> asURL(s))
+                .collect(Collectors.toList());
+    }
+
+    private URL asURL(String s) {
+        return URLHelper.getURL(s)
+                .or(() -> {
+                    try {
+                        File file = new File(s);
+                        if (file.exists()) {
+                            return Optional.of(file.toURI().toURL());
+                        }
+                    } catch (MalformedURLException ignored) {
+                    }
+                    return Optional.empty();
+                })
+                .orElseThrow(() -> new RuntimeException(String.format("SEED part is not a URL: '%s'", s)));
+
     }
 
     /**
@@ -55,10 +84,8 @@ public class Seed {
      *
      * @return list of configs
      */
-    public List<String> getLocations() {
-        String[] strings = StringUtils.commaDelimitedListToStringArray(seed);
-        List<String> list = new ArrayList<>(Arrays.asList(strings));
-        logger.info("Using seeds: {}", list);
-        return list;
+    public List<URL> getLocations() {
+        logger.info("Using seeds: {}", seed);
+        return seed;
     }
 }

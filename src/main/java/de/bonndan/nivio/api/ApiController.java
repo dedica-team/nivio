@@ -44,7 +44,7 @@ public class ApiController {
      * Overview on all landscapes.
      */
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(path = "/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Index index() {
         return linkFactory.getIndex(landscapeRepository.findAll());
     }
@@ -56,7 +56,7 @@ public class ApiController {
      * @return response entity of landscape
      */
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/{landscapeIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(path = "/{landscapeIdentifier}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Landscape> landscape(@PathVariable String landscapeIdentifier) {
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
         if (landscape == null) {
@@ -72,7 +72,7 @@ public class ApiController {
      * This resource serves  a group in a landscape and can be addressed by using a {@link FullyQualifiedIdentifier}
      */
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/{landscapeIdentifier}/{groupIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(path = "/{landscapeIdentifier}/{groupIdentifier}", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Group> group(@PathVariable String landscapeIdentifier,
                                        @PathVariable String groupIdentifier
     ) {
@@ -95,7 +95,7 @@ public class ApiController {
      * This resource serves an item in a landscape and can be addressed by using a {@link FullyQualifiedIdentifier}
      */
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/{landscapeIdentifier}/{groupIdentifier}/{itemIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(path = "/{landscapeIdentifier}/{groupIdentifier}/{itemIdentifier}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Item> item(@PathVariable String landscapeIdentifier,
                                      @PathVariable String groupIdentifier,
                                      @PathVariable String itemIdentifier

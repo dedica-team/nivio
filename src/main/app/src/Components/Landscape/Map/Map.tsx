@@ -13,7 +13,7 @@ import {
   fitSelection,
   fitToViewer,
   ReactSVGPanZoom,
-  setPointOnViewerCenter,
+  //setPointOnViewerCenter,
   Tool,
   TOOL_AUTO,
   Value,
@@ -30,7 +30,7 @@ import StatusBar from '../Dashboard/StatusBar';
 import { IAssessment, ILandscape } from '../../../interfaces';
 import { getGroup, getItem } from '../Utils/utils';
 import Group from '../Modals/Group/Group';
-import MapUtils from './MapUtils';
+//import MapUtils from './MapUtils';
 import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
 
 interface Props {
@@ -76,14 +76,14 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
         let dataX = element.getAttribute('data-x');
         let dataY = element.getAttribute('data-y');
         if (dataX && dataY) {
-          const coords = MapUtils.getCenterCoordinates(value, dataX, dataY);
-          setValue(setPointOnViewerCenter(value, coords.x, coords.y, 1));
+          //const coords = MapUtils.getCenterCoordinates(value, dataX, dataY);
+          //setValue(setPointOnViewerCenter(value, coords.x, coords.y, 1));
           setRenderWithTransition(true);
           setHighlightElement(element);
         }
       }
     },
-    [setValue, value]
+    []
   );
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {

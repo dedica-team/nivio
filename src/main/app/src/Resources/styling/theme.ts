@@ -43,5 +43,12 @@ const defaultThemeVariables: ThemeOptions = {
       color: 'rgba(255, 255, 255, 0.75)',
     },
   },
+  overrides: {
+    MuiTableCell: {
+      root: {  //This can be referred from Material UI API documentation.
+        padding: '5px',
+      },
+    },
+  }
 };
 export default defaultThemeVariables;

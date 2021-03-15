@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.external;
 
 
 import de.bonndan.nivio.input.external.github.GitHubRepoHandler;
+import de.bonndan.nivio.input.external.openapi.OpenAPILinkHandler;
 import de.bonndan.nivio.input.external.sonar.SonarLinkHandler;
 import de.bonndan.nivio.input.external.springboot.SpringBootHealthHandler;
 import org.slf4j.Logger;
@@ -31,7 +32,8 @@ public class LinkHandlerFactory {
     static Map<String, Class<? extends ExternalLinkHandler>> KNOWN_RESOLVERS = Map.of(
             GITHUB, GitHubRepoHandler.class,
             SONAR, SonarLinkHandler.class,
-            SPRING_HEALTH, SpringBootHealthHandler.class
+            SPRING_HEALTH, SpringBootHealthHandler.class,
+            OpenAPILinkHandler.NAMESPACE, OpenAPILinkHandler.class
     );
 
     private final AutowireCapableBeanFactory beanFactory;

@@ -85,6 +85,7 @@ items:
       - nivio-prop
     links:
       github: https://github.com/dedica-team/nivio
+      openapi: http://localhost:8080/v3/api-docs/
 
 #
 # links
@@ -103,6 +104,15 @@ items:
     name: GitHub
     type: github
     description: Reads GitHub repository info from a link pointing to it
+    group: links
+    relations:
+      - target: nivio
+        type: dataflow
+
+  - identifier: openapi
+    name: OpenAPI
+    type: api
+    description: Reads OpenAPI V3 / Swagger specs
     group: links
     relations:
       - target: nivio

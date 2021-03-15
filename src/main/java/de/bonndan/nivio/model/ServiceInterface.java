@@ -1,24 +1,35 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 
 import java.net.URL;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ServiceInterface {
 
-    @JsonBackReference
-    private Item item;
-
-    private String description;
-    private String format;
-    private URL url;
-    private String protection;
+    private final String description;
+    private final String format;
+    private final URL url;
+    private final String protection;
+    private final boolean deprecated;
+    private final String name;
+    private final String payload;
+    private final String path;
+    private final String summary;
+    private final String parameters;
 
     public ServiceInterface(InterfaceDescription interfaceItem) {
-        this.description = interfaceItem.getDescription();
-        this.format = interfaceItem.getFormat();
-        this.url = interfaceItem.getUrl();
+        description = interfaceItem.getDescription();
+        format = interfaceItem.getFormat();
+        url = interfaceItem.getUrl();
+        deprecated = interfaceItem.getDeprecated() != null && interfaceItem.getDeprecated();
+        name = interfaceItem.getName();
+        payload = interfaceItem.getPayload();
+        path = interfaceItem.getPath();
+        summary = interfaceItem.getSummary();
+        parameters = interfaceItem.getParameters();
+        protection = interfaceItem.getProtection();
     }
 
     public String getDescription() {
@@ -37,27 +48,27 @@ public class ServiceInterface {
         return protection;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public boolean isDeprecated() {
+        return deprecated;
     }
 
-    public void setFormat(String format) {
-        this.format = format;
+    public String getParameters() {
+        return parameters;
     }
 
-    public void setUrl(URL url) {
-        this.url = url;
+    public String getName() {
+        return name;
     }
 
-    public Item getItem() {
-        return item;
+    public String getPath() {
+        return path;
     }
 
-    public void setItem(Item item) {
-        this.item = item;
+    public String getPayload() {
+        return payload;
     }
 
-    public void setProtection(String protection) {
-        this.protection = protection;
+    public String getSummary() {
+        return summary;
     }
 }

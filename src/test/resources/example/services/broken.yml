@@ -1,0 +1,12 @@
+items:
+- identifier: blog-server
+  name: Demo Blog
+  type: webservice
+  shortName: blog
+  icon: https://s.w.org/style/images/about/WordPress-logotype-wmark.png
+  version: 1.0
+  software: Wordpress
+  owner: Marketing
+  description: Company blog
+    team: alphateam
+  contact: alphateam@acme.io

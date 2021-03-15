@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,7 +41,7 @@ public class DockerComposeFileTest {
     public void fromYaml() throws IOException {
 
 
-        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/docker-compose.yml");
+        SourceReference file = SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/docker-compose.yml"));
         String yml = fileFetcher.get(file);
         DockerComposeFile source = mapper.readValue(yml, DockerComposeFile.class);
         assertNotNull(source);
