@@ -71,4 +71,14 @@ public class ServiceInterface {
     public String getSummary() {
         return summary;
     }
+
+    @Override
+    public String toString() {
+        return "ServiceInterface{" +
+                "description='" + description + '\'' +
+                ", format='" + format + '\'' +
+                ", url=" + url +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
