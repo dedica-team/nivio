@@ -3,10 +3,11 @@ import { Card, CardHeader } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import { IItem, IRelation } from '../../../../interfaces';
 import Typography from '@material-ui/core/Typography';
-import { FilterCenterFocus } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
+import Avatar from "@material-ui/core/Avatar";
+import { getItemIcon } from "../../Utils/utils";
 
 interface Props {
   source: IItem;
@@ -43,9 +44,19 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
             onClick={() => {
               locateFunctionContext.locateFunction(source.fullyQualifiedIdentifier);
             }}
+            size={'small'}
+            title={'Click to locate'}
           >
-            <FilterCenterFocus />
+            <Avatar
+              imgProps={{ style: { objectFit: 'contain' } }}
+              src={getItemIcon(source)}
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                border: '2px solid #' + source.color,
+              }}
+            />
           </IconButton>
+
           {sourceTitle}
         </div>
 
@@ -55,8 +66,17 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
             onClick={() => {
               locateFunctionContext.locateFunction(target.fullyQualifiedIdentifier);
             }}
+            size={'small'}
+            title={'Click to locate'}
           >
-            <FilterCenterFocus />
+            <Avatar
+              imgProps={{ style: { objectFit: 'contain' } }}
+              src={getItemIcon(target)}
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                border: '2px solid #' + target.color,
+              }}
+            />
           </IconButton>
 
           {targetTitle}

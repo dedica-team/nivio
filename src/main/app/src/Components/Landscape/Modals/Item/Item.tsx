@@ -21,14 +21,13 @@ import {
 } from "@material-ui/core";
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
-import { IAssessmentProps, IItem } from '../../../../interfaces';
-import { getItemIcon, getLabels } from "../../Utils/utils";
+import { IAssessmentProps, IItem, ILandscape } from "../../../../interfaces";
+import { getItem, getItemIcon, getLabels } from "../../Utils/utils";
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import {
   Details,
   ExpandMore,
-  FilterCenterFocus,
   Info,
   MoreVertSharp,
   Wifi
@@ -57,6 +56,7 @@ interface Props {
   small?: boolean;
   useItem?: IItem;
   fullyQualifiedItemIdentifier?: string;
+  landscape?: ILandscape;
 }
 
 /**
@@ -64,7 +64,7 @@ interface Props {
  *
  *
  */
-const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small }) => {
+const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , landscape}) => {
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const [compact, setCompact] = useState<boolean>(false);
@@ -144,7 +144,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
     }
   }, [item, fullyQualifiedItemIdentifier, useItem, small, assessment]);
 
-  if (item) {
+  if (item && landscape) {
     for (let key of Object.keys(item.relations)) {
 
       let relation = item.relations[key];
@@ -152,9 +152,13 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
       const primary = `${relation.name}`;
       let secondary = `${relation.description || ''} (${relation.type ? relation.type : ''} ${relation.direction})`;
       if (relation.format) secondary += ', format: ' + relation.format;
+      let other = getItem(landscape, isInbound ? relation.source : relation.target);
+      if (!other)
+        continue;
       relations.push(
         <ListItem key={relation.name}>
           <ListItemIcon>
+
             <IconButton
               onClick={() => {
                 if (locateFunctionContext.locateFunction) {
@@ -163,8 +167,17 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
                   );
                 }
               }}
+              size={'small'}
+              title={'Click to locate'}
             >
-              <FilterCenterFocus />
+              <Avatar
+                imgProps={{ style: { objectFit: 'contain' } }}
+                src={getItemIcon(other)}
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                  border: '2px solid #' + other.color,
+                }}
+              />
             </IconButton>
           </ListItemIcon>
           <ListItemText primary={primary} secondary={secondary} />
@@ -196,17 +209,6 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
 
   const assessmentStatus = assessment ? getItemAssessments(assessment) : [];
   const interfaces: ReactElement | null = item ? getInterfaces(item) : null;
-
-  const findButton =
-    locateFunctionContext.locateFunction && item ? (
-      <IconButton
-        onClick={() => {
-          locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
-        }}
-      >
-        <FilterCenterFocus />
-      </IconButton>
-    ) : null;
 
   const a11yProps = (index: any) => {
     return {
@@ -254,14 +256,23 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
         titleTypographyProps={{ title: 'ID: ' + item?.fullyQualifiedIdentifier }}
         avatar={
           item ? (
-            <Avatar
-              imgProps={{ style: { objectFit: 'contain' } }}
-              src={getItemIcon(item)}
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                border: '2px solid #' + item.color,
-              }}
-            />
+              <IconButton
+                onClick={() => {
+                  locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
+                }}
+                size={'small'}
+                title={'Click to locate'}
+              >
+                <Avatar
+                  imgProps={{ style: { objectFit: 'contain' } }}
+                  src={getItemIcon(item)}
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                    border: '2px solid #' + item.color,
+                  }}
+                />
+              </IconButton>
+
           ) : (
               ''
             )
@@ -270,7 +281,6 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
         action={
           <React.Fragment>
             {extend}
-            {findButton}
           </React.Fragment>
         }
       />
