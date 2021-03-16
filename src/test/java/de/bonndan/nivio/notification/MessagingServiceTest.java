@@ -1,5 +1,6 @@
 package de.bonndan.nivio.notification;
 
+import de.bonndan.nivio.input.ProcessingChangelog;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.LandscapeFactory;
@@ -29,12 +30,13 @@ class MessagingServiceTest {
     }
 
     @Test
-    void onProcessingEvent() {
+    void onProcessingFinishedEvent() {
         ProcessingFinishedEvent processingFinishedEvent = new ProcessingFinishedEvent(
                 new LandscapeDescription("test", "testLandscape", null),
-                LandscapeFactory.createForTesting("test", "testLandscape").build()
+                LandscapeFactory.createForTesting("test", "testLandscape").build(),
+                new ProcessingChangelog()
         );
-        messagingService.onProcessingEvent(processingFinishedEvent);
+        messagingService.onProcessingFinishedEvent(processingFinishedEvent);
 
         ArgumentCaptor<EventNotification> captor = ArgumentCaptor.forClass(EventNotification.class);
         verify(tpl).convertAndSend(eq(WebSocketConfig.TOPIC + WebSocketConfig.EVENTS), captor.capture());
@@ -69,9 +71,10 @@ class MessagingServiceTest {
 
         ProcessingFinishedEvent processingFinishedEvent = new ProcessingFinishedEvent(
                 new LandscapeDescription("test", "testLandscape", null),
-                LandscapeFactory.createForTesting("test", "testLandscape").build()
+                LandscapeFactory.createForTesting("test", "testLandscape").build(),
+                new ProcessingChangelog()
         );
-        messagingService.onProcessingEvent(processingFinishedEvent);
+        messagingService.onProcessingFinishedEvent(processingFinishedEvent);
 
         EventNotification[] last = messagingService.getLast();
         assertNotNull(last);

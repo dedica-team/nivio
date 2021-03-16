@@ -192,7 +192,7 @@ public class IndexerIntegrationTest {
         assertThat(value).isNotNull();
         ProcessingChangelog changelog = value.getChangelog();
         assertThat(changelog).isNotNull();
-        assertThat(changelog.changes).hasSize(2);
+        assertThat(changelog.changes).hasSize(3);
         assertThat(changelog.changes).containsKey("nivio:example/content/wordpress-web");
     }
 

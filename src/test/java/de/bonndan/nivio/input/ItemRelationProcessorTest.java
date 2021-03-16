@@ -61,7 +61,26 @@ class ItemRelationProcessorTest {
         ProcessingChangelog process = processor.process(input, landscape);
 
         //then
-        assertThat(process.changes).hasSize(3); //two updates, one created
+        assertThat(process.changes).hasSize(1); //no updates, one created
+    }
+
+    //only changes are counted as updates
+    @Test
+    void processAddsUpdates() {
+
+        ItemDescription description = new ItemDescription("foo");
+        description.setGroup("a");
+        RelationDescription relationItem = new RelationDescription("foo", "bar");
+        relationItem.setFormat("JSON");
+        description.addRelation(relationItem);
+        description.addRelation(new RelationDescription("foo", "baz"));
+        input.addItems(List.of(description));
+
+        //when
+        ProcessingChangelog process = processor.process(input, landscape);
+
+        //then
+        assertThat(process.changes).hasSize(1); //one update
     }
 
     @Test
@@ -76,7 +95,7 @@ class ItemRelationProcessorTest {
         ProcessingChangelog process = processor.process(input, landscape);
 
         //then
-        assertThat(process.changes).hasSize(2); //one update, one delete
+        assertThat(process.changes).hasSize(1); //no update, one delete
         assertThat(process.changes).containsKey("test/a/foo;test/a/baz");
         assertThat(process.changes.get("test/a/foo;test/a/baz").getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.DELETED.name());
     }

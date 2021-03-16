@@ -56,7 +56,8 @@ public class ProcessingChangelog {
 
     public void addEntry(
             @NonNull final Relation relation,
-            @NonNull final ChangeType changeType
+            @NonNull final ChangeType changeType,
+            @Nullable final String message
     ) {
         Objects.requireNonNull(relation);
         final String id = getRelationKey(relation);
@@ -66,7 +67,7 @@ public class ProcessingChangelog {
         Entry entry = new Entry(
                 relation.getClass().getSimpleName(),
                 Objects.requireNonNull(changeType),
-                null
+                message
         );
         changes.put(id, entry);
     }

@@ -60,7 +60,7 @@ class ProcessingChangelogTest {
         //when
         Item bar = ItemFactory.getTestItem("foo", "bar");
         Relation relation = new Relation(this.testItem, bar);
-        changelog.addEntry(relation, ProcessingChangelog.ChangeType.DELETED);
+        changelog.addEntry(relation, ProcessingChangelog.ChangeType.DELETED, null);
 
         //then
         Map<String, ProcessingChangelog.Entry> changes = changelog.changes;
