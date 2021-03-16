@@ -5,6 +5,7 @@ import de.bonndan.nivio.model.Relation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,10 @@ public class ProcessingChangelog {
             @NonNull final ChangeType changeType,
             @Nullable final String message
     ) {
-        String id = Objects.requireNonNull(component).getFullyQualifiedIdentifier().jsonValue();
+        String id = Objects.requireNonNull(component).getFullyQualifiedIdentifier().toString();
+        if (StringUtils.isEmpty(id)) {
+            throw new RuntimeException("Could not create a changelog entry id for " + component);
+        }
         Entry entry = new Entry(
                 component.getClass().getSimpleName(),
                 Objects.requireNonNull(changeType),
@@ -56,6 +60,9 @@ public class ProcessingChangelog {
     ) {
         Objects.requireNonNull(relation);
         final String id = getRelationKey(relation);
+        if (StringUtils.isEmpty(id)) {
+            throw new RuntimeException("Could not create a changelog entry id for " + relation);
+        }
         Entry entry = new Entry(
                 relation.getClass().getSimpleName(),
                 Objects.requireNonNull(changeType),
@@ -118,6 +125,15 @@ public class ProcessingChangelog {
         @Nullable
         public String getMessage() {
             return message;
+        }
+
+        @Override
+        public String toString() {
+            return "Entry{" +
+                    "componentType='" + componentType + '\'' +
+                    ", changeType='" + changeType + '\'' +
+                    ", message='" + message + '\'' +
+                    '}';
         }
     }
 
