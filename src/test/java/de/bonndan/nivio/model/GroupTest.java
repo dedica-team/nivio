@@ -2,7 +2,10 @@ package de.bonndan.nivio.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GroupTest {
@@ -31,5 +34,25 @@ class GroupTest {
         Group g = new Group("foo", null);
         Item item = getTestItem("a", "b");
         assertThrows(IllegalArgumentException.class, () -> g.addItem(item));
+    }
+
+    @Test
+    void hasNoChanges() {
+        Group g1 = new Group("foo", "bar", "John", null, null, null, null);
+        Group g2 = new Group("foo", "bar", "John", null, null, null, null);
+
+        //when
+        List<String> changes = g1.getChanges(g2);
+        assertThat(changes).isEmpty();
+    }
+
+    @Test
+    void hasChanges() {
+        Group g1 = new Group("foo", "bar", "John", null, null, null, null);
+        Group g2 = new Group("foo", "bar", "Doe", null, null, null, null);
+
+        //when
+        List<String> changes = g1.getChanges(g2);
+        assertThat(changes).hasSize(1);
     }
 }

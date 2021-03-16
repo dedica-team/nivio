@@ -42,7 +42,8 @@ public class GroupProcessor extends Processor {
                     changelog.addEntry(added, ProcessingChangelog.ChangeType.CREATED);
                 } else {
                     processLog.info("Updating group " + g.getIdentifier());
-                    changelog.addEntry(added, ProcessingChangelog.ChangeType.UPDATED);
+                    String updates = String.join("; ", existing.get().getChanges(added));
+                    changelog.addEntry(added, ProcessingChangelog.ChangeType.UPDATED, updates);
                 }
             } else {
                 processLog.info("Ignoring blacklisted group " + g.getIdentifier());
