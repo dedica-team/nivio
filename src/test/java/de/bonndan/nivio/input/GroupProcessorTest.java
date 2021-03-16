@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GroupProcessorTest {
@@ -27,11 +29,32 @@ class GroupProcessorTest {
     @Test
     void process() {
 
+        //given
         LandscapeDescription input = getLandscapeDescription();
 
-        groupProcessor.process(input, landscape);
+        //when
+        ProcessingChangelog process = groupProcessor.process(input, landscape);
 
+        //then
         assertEquals(3, landscape.getGroups().size());
+    }
+
+    @Test
+    void withNewGroupChangelog() {
+
+        //given
+        LandscapeDescription input = getLandscapeDescription();
+        ItemDescription itemDescription = new ItemDescription("a");
+        itemDescription.setGroup("foobar");
+        input.addItems(List.of(itemDescription));
+
+        //when
+        ProcessingChangelog process = groupProcessor.process(input, landscape);
+
+        //then
+        assertEquals(4, landscape.getGroups().size());
+        assertThat(process.changes).hasSize(1);
+        assertThat(process.changes).containsKey("test/foobar");
     }
 
     @Test
