@@ -27,7 +27,7 @@ public class InstantItemResolver extends Resolver {
         HashSet<ItemDescription> newItems = new HashSet<>();
         landscape.getItemDescriptions().all().forEach(itemDescription -> newItems.addAll(resolveTargets(itemDescription, landscape.getItemDescriptions())));
 
-        landscape.addItems(newItems);
+        landscape.mergeItems(newItems);
     }
 
     private List<ItemDescription> resolveTargets(ItemDescription description, ItemIndex<ItemDescription> allItems) {

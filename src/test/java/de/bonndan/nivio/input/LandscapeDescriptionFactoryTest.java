@@ -285,6 +285,11 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
+    public void testUnknownProperty() {
+        factory.fromYaml(new File(FILE_PATH + "example_typo.yml"));
+    }
+
+    @Test
     public void readCustomKPIs() {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_kpis.yml");
         LandscapeDescription landscapeDescription = factory.fromYaml(file);

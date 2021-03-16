@@ -9,6 +9,7 @@ import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.LabelToFieldResolver;
 import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import org.springframework.lang.Nullable;
@@ -21,7 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
+/**
+ * Reads csv files to {@link ItemDescription}s.
+ *
+ *
+ */
 @Service
 public class InputFormatHandlerCSV implements InputFormatHandler {
 
@@ -39,7 +44,7 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
     }
 
     @Override
-    public List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl) {
+    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
         List<ItemDescription> itemDescriptions = new ArrayList<>();
         String content = fileFetcher.get(reference, baseUrl);
         CSVReader reader = getReader(reference, content);
@@ -79,7 +84,7 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
             itemDescriptions.add(itemDescription);
         });
 
-        return itemDescriptions;
+        landscapeDescription.mergeItems(itemDescriptions);
     }
 
     @Override

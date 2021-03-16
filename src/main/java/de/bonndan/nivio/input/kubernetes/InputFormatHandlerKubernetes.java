@@ -4,6 +4,7 @@ import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.ItemType;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.Label;
@@ -57,7 +58,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
      * Created Items: service -> pod -> containers
      */
     @Override
-    public List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl) {
+    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
 
         try {
             if (!StringUtils.isEmpty(reference.getUrl())) {
@@ -92,7 +93,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
                 .filter(service -> namespace == null || namespace.equals(service.getMetadata().getNamespace()))
                 .forEach(service -> descriptions.add(createDescriptionFromService(service, pods)));
 
-        return descriptions;
+        landscapeDescription.mergeItems(descriptions);
     }
 
     @Override
