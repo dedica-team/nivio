@@ -34,8 +34,16 @@ public class GroupProcessor extends Processor {
             Group g = GroupFactory.createFromDescription(identifier, landscape.getIdentifier(), groupDescription);
 
             if (!isBlacklisted(g.getIdentifier(), specs)) {
-                processLog.info("Adding or updating group " + g.getIdentifier());
-                landscape.addGroup(g);
+
+                Optional<Group> existing = landscape.getGroup(g.getIdentifier());
+                Group added = landscape.addGroup(g);
+                if (existing.isEmpty()) {
+                    processLog.info("Adding group " + g.getIdentifier());
+                    changelog.addEntry(added, ProcessingChangelog.ChangeType.CREATED);
+                } else {
+                    processLog.info("Updating group " + g.getIdentifier());
+                    changelog.addEntry(added, ProcessingChangelog.ChangeType.UPDATED);
+                }
             } else {
                 processLog.info("Ignoring blacklisted group " + g.getIdentifier());
             }

@@ -175,16 +175,23 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return Objects.hash(StringUtils.trimAllWhitespace(identifier));
     }
 
-    public void addGroup(@NonNull Group group) {
+    /**
+     * Add a group.
+     *
+     * @param group the group to add
+     * @return the added or merged group
+     */
+    public Group addGroup(@NonNull Group group) {
         if (group == null) {
             throw new IllegalArgumentException("Trying to add null group");
         }
-
 
         if (groups.containsKey(group.getIdentifier())) {
             group = GroupFactory.merge(groups.get(group.getIdentifier()), group);
         }
         groups.put(group.getIdentifier(), group);
+
+        return group;
     }
 
     /**

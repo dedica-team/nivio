@@ -53,8 +53,9 @@ class GroupProcessorTest {
 
         //then
         assertEquals(4, landscape.getGroups().size());
-        assertThat(process.changes).hasSize(1);
+        assertThat(process.changes).hasSize(3);
         assertThat(process.changes).containsKey("test/foobar");
+        assertThat(process.changes.get("test/foobar").getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.CREATED.name());
     }
 
     @Test
