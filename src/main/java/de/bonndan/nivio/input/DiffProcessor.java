@@ -20,9 +20,9 @@ public class DiffProcessor extends Processor {
     }
 
     @Override
-    public void process(LandscapeDescription input, Landscape landscape) {
+    public ProcessingChangelog process(LandscapeDescription input, Landscape landscape) {
         Set<Item> existingItems = landscape.getItems().all();
-
+        ProcessingChangelog changelog = new ProcessingChangelog();
         //insert new ones
         List<ItemDescription> newItems = added(input.getItemDescriptions().all(), existingItems, landscape);
         Set<Item> inLandscape = new HashSet<>();
@@ -30,6 +30,7 @@ public class DiffProcessor extends Processor {
         newItems.forEach(
                 newItem -> {
                     processLog.info(String.format("Creating new item %s in env %s", newItem.getIdentifier(), input.getIdentifier()));
+                    changelog.addEntry(newItem, ProcessingChangelog.ChangeType.CREATED);
                     inLandscape.add(ItemFactory.fromDescription(newItem, landscape));
                 }
         );
@@ -55,15 +56,25 @@ public class DiffProcessor extends Processor {
                         }
                     }
 
-                    processLog.info("Updating item " + item.getIdentifier() + " in landscape " + input.getIdentifier());
+                    processLog.info(String.format("Updating item %s in landscape %s", item.getIdentifier(), input.getIdentifier()));
+                    Item newWithAssignedValues = ItemFactory.assignAll(item, description);
+                    inLandscape.add(newWithAssignedValues);
 
-                    inLandscape.add(ItemFactory.assignAll(item, description));
+                    List<String> changes = item.getChanges(newWithAssignedValues);
+                    if (!changes.isEmpty()) {
+                        changelog.addEntry(newWithAssignedValues, ProcessingChangelog.ChangeType.UPDATED, String.join("; ", changes));
+                    }
                 }
         );
-
         landscape.setItems(inLandscape);
+
         deleteUnreferenced(input, inLandscape, existingItems, processLog)
-                .forEach(item -> landscape.getItems().all().remove(item));
+                .forEach(item -> {
+                    changelog.addEntry(item, ProcessingChangelog.ChangeType.DELETED);
+                    landscape.getItems().all().remove(item);
+                });
+
+        return changelog;
     }
 
     private List<Item> deleteUnreferenced(
@@ -102,6 +113,7 @@ public class DiffProcessor extends Processor {
 
     /**
      * Returns all elements which are not in the second list
+     *
      * @return
      */
     static List<ItemDescription> added(Collection<ItemDescription> itemDescriptions, Collection<Item> existingItems, Landscape landscape) {

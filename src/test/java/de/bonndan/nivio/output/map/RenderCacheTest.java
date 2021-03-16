@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.map;
 
+import de.bonndan.nivio.input.ProcessingChangelog;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.AppearanceProcessor;
 import de.bonndan.nivio.input.ProcessLog;
@@ -76,7 +77,8 @@ class RenderCacheTest {
     void onProcessingFinishedEvent() {
         renderCache.onApplicationEvent(new ProcessingFinishedEvent(
                 new LandscapeDescription("test", "testLandscape", null),
-                getLandscape("test", "testLandscape")
+                getLandscape("test", "testLandscape"),
+                new ProcessingChangelog()
         ));
 
         verify(stylesheetFactory, times(1)).getMapStylesheet(any(), any());

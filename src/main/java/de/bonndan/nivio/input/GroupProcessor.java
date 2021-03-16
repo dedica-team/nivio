@@ -25,7 +25,7 @@ public class GroupProcessor extends Processor {
         super(processLog);
     }
 
-    public void process(LandscapeDescription input, Landscape landscape) {
+    public ProcessingChangelog process(LandscapeDescription input, Landscape landscape) {
 
         List<Function<String, Boolean>> specs = getSpecs(input.getConfig().getGroupBlacklist());
 
@@ -72,6 +72,8 @@ public class GroupProcessor extends Processor {
             }
             throw new RuntimeException(String.format("item group '%s' not found.", item.getGroup()));
         });
+
+        return new ProcessingChangelog();
     }
 
     private List<Function<String, Boolean>> getSpecs(List<String> blacklist) {

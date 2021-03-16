@@ -51,22 +51,25 @@ public class Indexer {
                 });
 
         try {
-            runResolvers(input, landscape);
+            ProcessingChangelog processingChangelog = runResolvers(input, landscape);
             landscapeRepo.save(landscape);
+            eventPublisher.publishEvent(new ProcessingFinishedEvent(input, landscape, processingChangelog));
+            landscape.getLog().info("Reindexed landscape " + input.getIdentifier());
+
         } catch (ProcessingException e) {
             final String msg = "Error while reindexing landscape " + input.getIdentifier();
             landscape.getLog().warn(msg, e);
             eventPublisher.publishEvent(new ProcessingErrorEvent(input.getFullyQualifiedIdentifier(), e));
-            return;
         }
-
-        eventPublisher.publishEvent(new ProcessingFinishedEvent(input, landscape));
-        landscape.getLog().info("Reindexed landscape " + input.getIdentifier());
     }
 
-    private void runResolvers(LandscapeDescription input, Landscape landscape) {
+    private ProcessingChangelog runResolvers(LandscapeDescription input, Landscape landscape) {
 
+        //a detailed textual lgo
         ProcessLog logger = landscape.getLog();
+
+        //a structured log on component level
+        ProcessingChangelog changelog = new ProcessingChangelog();
 
         // read all input sources
         new SourceReferencesResolver(formatFactory, logger, eventPublisher).resolve(input);
@@ -97,19 +100,21 @@ public class Indexer {
         new GroupQueryResolver(logger).resolve(input);
 
         // compare landscape against input, add and remove items
-        new DiffProcessor(logger).process(input, landscape);
+        changelog.merge(new DiffProcessor(logger).process(input, landscape));
 
         // assign items to groups, add missing groups
-        new GroupProcessor(logger).process(input, landscape);
+        changelog.merge(new GroupProcessor(logger).process(input, landscape));
 
         // create relations between items
-        new ItemRelationProcessor(logger).process(input, landscape);
+        changelog.merge(new ItemRelationProcessor(logger).process(input, landscape));
 
         // ensures that item have a resolved icon in the api
         new AppearanceProcessor(logger, iconService).process(input, landscape);
 
         // this step must be final or very late to include all item modifications
         landscape.getItems().indexForSearch();
+
+        return changelog;
     }
 
 }

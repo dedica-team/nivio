@@ -25,12 +25,15 @@ public class AppearanceProcessor extends Processor {
         this.iconService = iconService;
     }
 
-    public void process(LandscapeDescription input, Landscape landscape) {
+    @Override
+    public ProcessingChangelog process(LandscapeDescription input, Landscape landscape) {
 
         Optional<String> logo = Optional.ofNullable(landscape.getConfig().getBranding().getMapLogo());
         logo.ifPresent(s -> setLandscapeLogo(landscape, s));
 
         landscape.getGroupItems().forEach(group -> group.getItems().forEach(item -> setItemAppearance(group, item)));
+
+        return new ProcessingChangelog();
     }
 
     private void setItemAppearance(Group group, Item item) {

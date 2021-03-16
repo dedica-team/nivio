@@ -18,7 +18,7 @@ public class ItemRelationProcessor extends Processor {
     }
 
     @Override
-    public void process(LandscapeDescription input, Landscape landscape) {
+    public ProcessingChangelog process(LandscapeDescription input, Landscape landscape) {
         input.getItemDescriptions().all().forEach(serviceDescription -> {
             Item origin = landscape.getItems().pick(serviceDescription);
             if (!input.isPartial()) {
@@ -45,6 +45,8 @@ public class ItemRelationProcessor extends Processor {
                 });
             }
         });
+
+        return new ProcessingChangelog();
     }
 
     private Optional<Relation> update(RelationDescription relationDescription, Landscape landscape, Item origin) {
