@@ -31,9 +31,9 @@ public class SourceReferencesResolver {
 
         URL baseUrl = URLHelper.getParentPath(landscapeDescription.getSource()).orElse(null);
         landscapeDescription.getSourceReferences().forEach(ref -> {
-            InputFormatHandler factory;
+            InputFormatHandler formatHandler;
             try {
-                factory = formatFactory.getInputFormatHandler(ref);
+                formatHandler = formatFactory.getInputFormatHandler(ref);
             } catch (ProcessingException ex) {
                 log.error(ex.getMessage());
                 eventPublisher.publishEvent(new ProcessingErrorEvent(landscapeDescription.getFullyQualifiedIdentifier(), ex));
@@ -47,7 +47,7 @@ public class SourceReferencesResolver {
             }
 
             try {
-                factory.applyData(ref, baseUrl, landscapeDescription);
+                formatHandler.applyData(ref, baseUrl, landscapeDescription);
             } catch (ProcessingException ex) {
                 String message = ex.getMessage();
                 if (ex instanceof ReadingException) {
