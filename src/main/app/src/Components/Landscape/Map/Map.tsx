@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom';
 
 import { SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
 import {
-  fitSelection,
+  //fitSelection,
   fitToViewer,
   ReactSVGPanZoom,
   //setPointOnViewerCenter,
@@ -127,21 +127,24 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       }
     }
 
+      setHighlightElement(e.currentTarget.children);
+      setRenderWithTransition(true);
     if (sourceX && sourceY && targetX && targetY) {
       sourceX = parseFloat(sourceX) / 2;
       targetX = parseFloat(targetX) / 2;
       sourceY = parseFloat(sourceY) / 2;
       targetY = parseFloat(targetY) / 2;
 
+      /*
       const x = (sourceX + targetX) / 2;
       const y = (sourceY + targetY) / 2;
 
       const zoomWidth = Math.abs(Math.min(sourceX, targetX)) + window.innerWidth;
       const zoomHeight = Math.abs(Math.min(sourceY, targetY)) + window.innerHeight * 0.92;
 
-      setHighlightElement(e.currentTarget.children);
-      setRenderWithTransition(true);
-      setValue(fitSelection(value, x - 500, y, zoomWidth, zoomHeight));
+       */
+
+      //setValue(fitSelection(value, x - 500, y, zoomWidth, zoomHeight));
     }
 
     if (source && target && dataTarget) {
