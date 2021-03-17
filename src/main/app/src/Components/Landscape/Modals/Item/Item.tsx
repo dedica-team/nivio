@@ -22,7 +22,7 @@ import {
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem, ILandscape } from "../../../../interfaces";
-import { getItem, getItemIcon, getLabels } from "../../Utils/utils";
+import { getItem, getLabels } from "../../Utils/utils";
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import {
@@ -34,9 +34,9 @@ import {
 } from "@material-ui/icons";
 import Chip from '@material-ui/core/Chip';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Avatar from '@material-ui/core/Avatar';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
+import ItemAvatar from "./ItemAvatar";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -73,7 +73,8 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , 
 
   const classes = componentStyles();
   const extraClasses = useStyles();
-  let relations: ReactElement[] = [];
+  let inboundRelations: ReactElement[] = [];
+  let outboundRelations: ReactElement[] = [];
 
   const getInterfaces = (element: IItem): ReactElement | null => {
     if (!element?.interfaces) return null;
@@ -150,12 +151,12 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , 
       let relation = item.relations[key];
       const isInbound = relation.direction === 'inbound';
       const primary = `${relation.name}`;
-      let secondary = `${relation.description || ''} (${relation.type ? relation.type : ''} ${relation.direction})`;
+      let secondary = `${relation.description || ''} (${relation.type ? relation.type : ''})`;
       if (relation.format) secondary += ', format: ' + relation.format;
       let other = getItem(landscape, isInbound ? relation.source : relation.target);
       if (!other)
         continue;
-      relations.push(
+      const listItem =
         <ListItem key={relation.name}>
           <ListItemIcon>
 
@@ -168,21 +169,18 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , 
                 }
               }}
               size={'small'}
-              title={'Click to locate'}
+              title={'Click to locate ' + other.name}
             >
-              <Avatar
-                imgProps={{ style: { objectFit: 'contain' } }}
-                src={getItemIcon(other)}
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                  border: '2px solid #' + other.color,
-                }}
-              />
+              <ItemAvatar item={other} statusColor={''} />
             </IconButton>
           </ListItemIcon>
           <ListItemText primary={primary} secondary={secondary} />
         </ListItem>
-      );
+      ;
+      if (isInbound)
+        inboundRelations.push(listItem);
+      else
+        outboundRelations.push(listItem)
     }
   }
 
@@ -263,14 +261,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , 
                 size={'small'}
                 title={'Click to locate'}
               >
-                <Avatar
-                  imgProps={{ style: { objectFit: 'contain' } }}
-                  src={getItemIcon(item)}
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                    border: '2px solid #' + item.color,
-                  }}
-                />
+                <ItemAvatar item={item} statusColor={''} />
               </IconButton>
 
           ) : (
@@ -379,8 +370,19 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , 
             </TabPanel>
 
             <TabPanel value={value} index={1}>
-              {relations && relations.length ? (
-                  <List dense={true}>{relations}</List>
+              {inboundRelations && inboundRelations.length ? (
+                <div>
+                  <Typography variant={'h6'}>Inbound</Typography>
+                  <List dense={true}>{inboundRelations}</List>
+                </div>
+              ) : (
+                ''
+              )}
+              {outboundRelations && outboundRelations.length ? (
+                <div>
+                  <Typography variant={'h6'}>Outbound</Typography>
+                  <List dense={true}>{outboundRelations}</List>
+                </div>
               ) : (
                 ''
               )}
