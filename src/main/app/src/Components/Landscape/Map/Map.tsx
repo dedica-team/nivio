@@ -253,9 +253,9 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
           xml={data.xml}
           proxy={
             <>
-              <SvgLoaderSelectElement selector='.item' onClick={onItemClick} />
-              <SvgLoaderSelectElement selector='.relation' onClick={onRelationClick} />
-              <SvgLoaderSelectElement selector='.groupArea' onClick={onGroupClick} />
+              <SvgLoaderSelectElement selector='.item' onMouseUp={onItemClick} onTouchEnd={onItemClick} />
+              <SvgLoaderSelectElement selector='.relation' onMouseUp={onRelationClick} onTouchEnd={onRelationClick} />
+              <SvgLoaderSelectElement selector='.groupArea' onMouseUp={onGroupClick} onTouchEnd={onGroupClick} />
             </>
           }
           render={(content: ReactElement[]) => (
