@@ -3,9 +3,11 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  AppBar, Box,
+  AppBar,
+  Box,
   Card,
-  CardHeader, Link,
+  CardHeader,
+  Link,
   List,
   ListItem,
   ListItemIcon,
@@ -17,26 +19,20 @@ import {
   TableRow,
   Tabs,
   Theme,
-  Typography
-} from "@material-ui/core";
+  Typography,
+} from '@material-ui/core';
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
-import { IAssessmentProps, IItem, ILandscape } from "../../../../interfaces";
-import { getItem, getLabels } from "../../Utils/utils";
+import { IAssessmentProps, IItem, ILandscape } from '../../../../interfaces';
+import { getItem, getLabels } from '../../Utils/utils';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
-import {
-  Details,
-  ExpandMore,
-  Info,
-  MoreVertSharp,
-  Wifi
-} from "@material-ui/icons";
+import { Details, ExpandMore, Info, MoreVertSharp, Wifi } from '@material-ui/icons';
 import Chip from '@material-ui/core/Chip';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
-import ItemAvatar from "./ItemAvatar";
+import ItemAvatar from './ItemAvatar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -64,7 +60,7 @@ interface Props {
  *
  *
  */
-const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , landscape}) => {
+const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small, landscape }) => {
   const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const [compact, setCompact] = useState<boolean>(false);
@@ -87,25 +83,58 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , 
             aria-controls={'panel_ifaces' + key + 'bh-content'}
             id={'panel_ifaces' + key + 'bh-header'}
           >
-            <span title={iface.name || iface.path} style={{width: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace:'nowrap'}}>{iface.name || iface.path}</span>
+            <span
+              title={iface.name || iface.path}
+              style={{
+                width: 200,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {iface.name || iface.path}
+            </span>
           </AccordionSummary>
           <AccordionDetails>
-            {iface.summary ? (<div>{iface.summary}<br /><br /></div>): null}
-            {iface.description ? (<div>{iface.description}<br /><br /></div>): null}
-            Path: {iface.path || '-'}<br /><br />
-            Params: {iface.parameters || '-'}<br /><br />
-            Format: {iface.format || '-'}<br /><br />
-            Payload: {iface.payload || '-'}<br /><br />
-            Protection: {iface.protection || '-'}<br /><br />
-            Deprecated: {iface.deprecated ? 'Yes' : '-'}<br /><br />
+            {iface.summary ? (
+              <div>
+                {iface.summary}
+                <br />
+                <br />
+              </div>
+            ) : null}
+            {iface.description ? (
+              <div>
+                {iface.description}
+                <br />
+                <br />
+              </div>
+            ) : null}
+            Path: {iface.path || '-'}
+            <br />
+            <br />
+            Params: {iface.parameters || '-'}
+            <br />
+            <br />
+            Format: {iface.format || '-'}
+            <br />
+            <br />
+            Payload: {iface.payload || '-'}
+            <br />
+            <br />
+            Protection: {iface.protection || '-'}
+            <br />
+            <br />
+            Deprecated: {iface.deprecated ? 'Yes' : '-'}
+            <br />
+            <br />
           </AccordionDetails>
         </Accordion>
       );
     });
 
     return <List dense={true}>{ifaceElements}</List>;
-  }
-
+  };
 
   useEffect(() => {
     const loadAssessment = (item: IItem) => {
@@ -147,19 +176,18 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , 
 
   if (item && landscape) {
     for (let key of Object.keys(item.relations)) {
-
       let relation = item.relations[key];
       const isInbound = relation.direction === 'inbound';
       const primary = `${relation.name}`;
-      let secondary = `${relation.description || ''} (${relation.type ? relation.type : ''})`;
+      let secondary = `${relation.description || ''} ${
+        relation.type ? '(' + relation.type + ')' : ''
+      }`;
       if (relation.format) secondary += ', format: ' + relation.format;
       let other = getItem(landscape, isInbound ? relation.source : relation.target);
-      if (!other)
-        continue;
-      const listItem =
+      if (!other) continue;
+      const listItem = (
         <ListItem key={relation.name}>
           <ListItemIcon>
-
             <IconButton
               onClick={() => {
                 if (locateFunctionContext.locateFunction) {
@@ -169,18 +197,16 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , 
                 }
               }}
               size={'small'}
-              title={'Click to locate ' + other.name}
+              title={'Click to locate'}
             >
               <ItemAvatar item={other} statusColor={''} />
             </IconButton>
           </ListItemIcon>
           <ListItemText primary={primary} secondary={secondary} />
         </ListItem>
-      ;
-      if (isInbound)
-        inboundRelations.push(listItem);
-      else
-        outboundRelations.push(listItem)
+      );
+      if (isInbound) inboundRelations.push(listItem);
+      else outboundRelations.push(listItem);
     }
   }
 
@@ -190,13 +216,10 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , 
         .filter((item) => !item.field.includes('summary.'))
         .map((item) => {
           return (
-            <TableRow key={item.field} >
+            <TableRow key={item.field}>
               <TableCell>{item.field}</TableCell>
-              <TableCell><StatusChip
-                status={item.status}
-                key={item.field}
-                value={item.message}
-              />
+              <TableCell>
+                <StatusChip status={item.status} key={item.field} value={item.message} />
               </TableCell>
             </TableRow>
           );
@@ -254,41 +277,44 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , 
         titleTypographyProps={{ title: 'ID: ' + item?.fullyQualifiedIdentifier }}
         avatar={
           item ? (
-              <IconButton
-                onClick={() => {
-                  locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
-                }}
-                size={'small'}
-                title={'Click to locate'}
-              >
-                <ItemAvatar item={item} statusColor={''} />
-              </IconButton>
-
+            <IconButton
+              onClick={() => {
+                locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
+              }}
+              size={'small'}
+              title={'Click to locate'}
+            >
+              <ItemAvatar item={item} statusColor={''} />
+            </IconButton>
           ) : (
-              ''
-            )
+            ''
+          )
         }
         className={classes.cardHeader}
-        action={
-          <React.Fragment>
-            {extend}
-          </React.Fragment>
-        }
+        action={<React.Fragment>{extend}</React.Fragment>}
       />
 
       {!compact ? (
         <div>
-          <AppBar position='static'>
-            <Tabs
-              value={value}
-              onChange={changeTab}
-              variant={'fullWidth'}
-              aria-label='simple tabs example'
-            >
-              <Tab icon={<Info />} label={'info'} style={{ minWidth: 50 }} title={'Info'} {...a11yProps(0)} />
-              <Tab icon={<Wifi />} label={'relations'} style={{ minWidth: 50 }} title={'Relations'} {...a11yProps(1)} />
+          <AppBar position={'static'}>
+            <Tabs value={value} onChange={changeTab} variant={'fullWidth'} aria-label={'item tabs'}>
               <Tab
-                icon={<Details />} label={'Details'}
+                icon={<Info />}
+                label={'info'}
+                style={{ minWidth: 50 }}
+                title={'Info'}
+                {...a11yProps(0)}
+              />
+              <Tab
+                icon={<Wifi />}
+                label={'relations'}
+                style={{ minWidth: 50 }}
+                title={'Relations'}
+                {...a11yProps(1)}
+              />
+              <Tab
+                icon={<Details />}
+                label={'Details'}
                 title={'API / Interfaces'}
                 style={{ minWidth: 50 }}
                 {...a11yProps(2)}
@@ -297,11 +323,11 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , 
           </AppBar>
           <CardContent>
             <TabPanel value={value} index={0}>
-              <Table aria-label={'info table'} style={{ tableLayout: 'fixed'}}>
+              <Table aria-label={'info table'} style={{ tableLayout: 'fixed' }}>
                 <TableBody>
                   {item?.group ? (
-                    <TableRow key={'group'} >
-                      <TableCell style={{width: '33%'}}>Group</TableCell>
+                    <TableRow key={'group'}>
+                      <TableCell style={{ width: '33%' }}>Group</TableCell>
                       <TableCell>{item?.group}</TableCell>
                     </TableRow>
                   ) : null}
@@ -329,28 +355,37 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , 
                       <TableCell>{item?.contact}</TableCell>
                     </TableRow>
                   ) : null}
-                  { (item?.tags && item?.tags.length) ? (
+                  {item?.tags && item?.tags.length ? (
                     <TableRow key={'tags'}>
                       <TableCell>Tags</TableCell>
-                      <TableCell>{item.tags.map((value) => (
-                        <Chip size='small' label={value} key={value} className={extraClasses.tag} />
-                      ))}</TableCell>
+                      <TableCell>
+                        {item.tags.map((value) => (
+                          <Chip
+                            size={'small'}
+                            label={value}
+                            key={value}
+                            className={extraClasses.tag}
+                          />
+                        ))}
+                      </TableCell>
                     </TableRow>
                   ) : null}
 
-                  { (item && item?._links) ?
-                    Object.entries(item?._links).map((data) => {
-                      if (data[0] === 'self') return null;
-                      return <TableRow key={'link_' + data[0]}>
-                        <TableCell>{data[0]}</TableCell>
-                        <TableCell><Link href={data[1].href}>{data[1].href}</Link></TableCell>
-                      </TableRow>
-
-                    }) : null
-                  }
+                  {item && item?._links
+                    ? Object.entries(item?._links).map((data) => {
+                        if (data[0] === 'self') return null;
+                        return (
+                          <TableRow key={'link_' + data[0]}>
+                            <TableCell>{data[0]}</TableCell>
+                            <TableCell>
+                              <Link href={data[1].href}>{data[1].href}</Link>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    : null}
 
                   {assessmentStatus.length > 0 ? assessmentStatus : null}
-
                 </TableBody>
               </Table>
 
@@ -366,7 +401,6 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , 
                   <AccordionDetails>{labels}</AccordionDetails>
                 </Accordion>
               ) : null}
-
             </TabPanel>
 
             <TabPanel value={value} index={1}>
@@ -396,7 +430,6 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small , 
                 </div>
               ) : null}
             </TabPanel>
-
           </CardContent>
         </div>
       ) : null}
