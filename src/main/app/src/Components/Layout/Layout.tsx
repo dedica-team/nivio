@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 
 import Navigation from '../Navigation/Navigation';
 import Notification from '../Notification/Notification';
-import { Drawer, Theme, Toolbar } from '@material-ui/core';
+import { Drawer, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 interface Props {
@@ -18,16 +18,14 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       display: 'flex',
     },
-    appBar: {
-      zIndex: theme.zIndex.drawer + 1,
-      position: 'relative',
-      backgroundColor: theme.palette.primary.main,
-    },
+
     drawer: {
       flexShrink: 0,
+      marginTop: '5em',
     },
     drawerPaper: {
       width: 320,
+      marginTop: '5em',
       backgroundColor: 'transparent',
       border: 'none',
       maxHeight: '100%',
@@ -60,7 +58,6 @@ const Layout: React.FC<Props> = ({
   return (
     <React.Fragment>
       <Navigation
-        appBarClass={classes.appBar}
         logo={logo}
         setSidebarContent={setSidebarContent}
         pageTitle={pageTitle}
@@ -76,7 +73,6 @@ const Layout: React.FC<Props> = ({
           }}
           color={'secondary'}
         >
-          <Toolbar />
           {sidebarContent}
         </Drawer>
       </div>
