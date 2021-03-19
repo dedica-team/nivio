@@ -18,14 +18,13 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       display: 'flex',
     },
-
     drawer: {
-      flexShrink: 0,
-      marginTop: '5em',
+      flexShrink: 0
     },
     drawerPaper: {
       width: 320,
-      marginTop: '5em',
+      marginTop: '4.2em',
+      marginRight: 20,
       backgroundColor: 'transparent',
       border: 'none',
       maxHeight: '100%',

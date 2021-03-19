@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Card, CardHeader, TextField, Theme } from '@material-ui/core';
+import { Box, Card, Input, InputAdornment, Theme, Tooltip } from "@material-ui/core";
 import { get } from '../../../utils/API/APIClient';
 import { IItem, Routes } from '../../../interfaces';
 import { withRouter, RouteComponentProps, matchPath } from 'react-router-dom';
 import Item from '../Modals/Item/Item';
-import { Backspace, MoreVertSharp } from '@material-ui/icons';
+import { Backspace, SearchOutlined } from "@material-ui/icons";
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
@@ -16,12 +16,21 @@ import componentStyles from '../../../Resources/styling/ComponentStyles';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    searchField: {
+    search: {
       margin: 0,
       padding: 0,
-      borderRadius: 5,
-      backgroundColor: theme.palette.primary.dark,
+      borderRadius: 50,
+      height: '2.5em',
+      width: 310,
+      marginRight: 2,
+      paddingLeft: 10,
+      border: '1px solid ',
+      borderColor: theme.palette.primary.dark,
     },
+    searchField: {
+      marginTop: 2,
+      width: 290
+    }
   })
 );
 
@@ -129,8 +138,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
   }
 
   const facetsHtml = facets.map((facet: IFacet) => (
-    <Card className={componentClasses.card} key={facet.dim}>
-      <CardContent>
+    <Box key={facet.dim}>
         <Typography variant={'h6'}>{facet.dim}</Typography>
         {facet.labelValues.map((lv) => (
           <Chip
@@ -147,56 +155,52 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
             avatar={<Avatar>{lv.value}</Avatar>}
           />
         ))}
-      </CardContent>
-    </Card>
+    </Box>
   ));
 
+
+  const searchSupport = <React.Fragment>
+    <Card className={componentClasses.card}>
+      <CardContent>
+          {facetsHtml}
+      </CardContent>
+    </Card>
+
+  </React.Fragment>;
+
+  const help = <div>
+    <strong>Hint: You can use the Lucene query syntax:</strong><br /><em>'foo*'</em><br /><em>'*press'</em><br /><em>'tag:cms'</em>
+  </div>;
+
   return (
-    <React.Fragment>
-      <IconButton
-        size={'small'}
-        color={'secondary'}
-        onClick={() =>
-          setSidebarContent(
-            <React.Fragment>
-              <Card className={componentClasses.card}>
-                <CardHeader title={'Search'} className={componentClasses.cardHeader} />
-                <CardContent>
-                  <strong>{'You can use the Lucene query syntax.'}</strong>
-                  <br />
-                  <em>{'foo*'}</em>
-                  <br />
-                  <em>{'*press'}</em>
-                  <br />
-                  <em>{'tag:cms'}</em>
-                </CardContent>
-              </Card>
-              {facetsHtml}
-            </React.Fragment>
-          )
-        }
-      >
-        <MoreVertSharp />
-      </IconButton>
-      <TextField
+    <Box className={classes.search}>
+      <Input
+        disableUnderline={true}
         className={classes.searchField}
+        type={'text'}
         value={searchTerm}
-        onChange={(event) => setSearchTermSafely(event.target.value)}
         ref={searchInput}
-        variant={'outlined'}
-        margin={'dense'}
         placeholder={'Search'}
+        onChange={(event) => setSearchTermSafely(event.target.value)}
+        onFocus={event => setSidebarContent(searchSupport)}
+        startAdornment={
+          <Tooltip disableFocusListener title={help}>
+            <SearchOutlined  />
+          </Tooltip>
+        }
+        endAdornment={
+          searchTerm.length ? <InputAdornment position="end">
+             <IconButton
+              size={'small'}
+              onClick={() => clear()}
+            >
+              <Backspace />
+            </IconButton>
+          </InputAdornment> : null
+        }
       />
 
-      <IconButton
-        className={'searchIcon'}
-        size={'small'}
-        onClick={() => clear()}
-        color={'secondary'}
-      >
-        <Backspace />
-      </IconButton>
-    </React.Fragment>
+    </Box>
   );
 };
 

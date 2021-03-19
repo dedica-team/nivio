@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Theme, createStyles, Box, Menu, MenuItem } from "@material-ui/core";
+import { Typography, Theme, createStyles, Box, Menu, MenuItem, withStyles, MenuProps } from "@material-ui/core";
 import { Link } from 'react-router-dom';
 
 import Toolbar from '@material-ui/core/Toolbar';
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
       zIndex: theme.zIndex.drawer + 1,
       position: 'relative',
       backgroundColor: 'transparent',
-    },
+    }
   })
 );
 
@@ -60,6 +60,20 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo }) => 
     setAnchorEl(null);
   };
 
+  const StyledMenu = withStyles((theme: Theme) => createStyles({
+    paper: {
+      backgroundColor: theme.palette.primary.main,
+      marginTop: 5
+    },
+  }))((props: MenuProps) => (
+    <Menu
+      elevation={0}
+      getContentAnchorEl={null}
+      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      transformOrigin={{ vertical: "top", horizontal: "center" }}
+      {...props}
+    />
+  ));
   return (
       <Toolbar >
         <IconButton size={'small'} edge="start" color="inherit" aria-controls="simple-menu" aria-haspopup="true" onClick={openMenu} className={classes.menuIcon}>
@@ -78,19 +92,15 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo }) => 
           )}
         </IconButton>
 
-        <Menu
-          id="simple-menu"
+        <StyledMenu
           anchorEl={anchorEl}
           keepMounted
           open={Boolean(anchorEl)}
           onClose={handleClose}
-          getContentAnchorEl={null}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-          transformOrigin={{ vertical: "top", horizontal: "center" }}
         >
           <MenuItem component={Link} to={``} onClick={handleClose}>Home</MenuItem>
           <MenuItem component={Link} to={`/man/install.html`} onClick={handleClose}>Help</MenuItem>
-        </Menu>
+        </StyledMenu>
         <Box className={classes.pageTitle}>
           <Typography variant='h6'>{pageTitle}</Typography>
         </Box>
