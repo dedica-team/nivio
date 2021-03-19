@@ -1,0 +1,36 @@
+{{#models}}
+{{#model}}
+{{{classname}}}
+---------------
+
+{{{description}}}
+
+
+.. list-table::
+   :header-rows: 1
+
+   * - Name
+     - Type
+     - Description
+     - Remarks
+     - Example
+
+{{#parent}}
+{{#parentVars}}
+   * - {{name}}
+     - {{#isPrimitiveType}}{{dataType}}{{/isPrimitiveType}}{{^isPrimitiveType}}{{dataType}}<{{complexType}}>){{/isPrimitiveType}}
+     - {{description}}
+     - {{#required}}**required**{{/required}}{{^required}}optional{{/required}}{{#readOnly}}, readonly{{/readOnly}}{{#defaultValue}}, defaults to {{{.}}}{{/defaultValue}}
+     - {{#example}}{{{.}}}{{/example}}
+{{/parentVars}}
+{{/parent}}
+{{#vars}}
+   * - {{name}}
+     - {{#isPrimitiveType}}{{dataType}}{{/isPrimitiveType}}{{^isPrimitiveType}}{{dataType}}<{{complexType}}>{{/isPrimitiveType}}
+     - {{description}}
+     - {{#required}}**required**{{/required}}{{^required}}optional{{/required}}{{#readOnly}}, readonly{{/readOnly}}{{#defaultValue}}, defaults to {{{.}}}{{/defaultValue}}
+     - {{#example}}{{{.}}}{{/example}}
+{{/vars}}
+
+    {{/model}}
+{{/models}}

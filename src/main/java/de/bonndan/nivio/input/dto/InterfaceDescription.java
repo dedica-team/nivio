@@ -1,14 +1,23 @@
 package de.bonndan.nivio.input.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.io.Serializable;
 import java.net.URL;
 
-
+@Schema(description = "Describes a low-level interface of an item.")
 public class InterfaceDescription implements Serializable {
 
+    @Schema(description = "A brief description.")
     private String description;
+
+    @Schema(description = "The payload format.")
     private String format;
+
+    @Schema(description = "A URL describing the endpoint.")
     private URL url;
+
+    @Schema(description = "A description of the interface protection method.")
     private String protection;
     private Boolean deprecated;
     private String name;

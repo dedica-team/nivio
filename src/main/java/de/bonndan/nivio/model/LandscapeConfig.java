@@ -2,6 +2,7 @@ package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPIConfig;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,18 +16,27 @@ import java.util.Map;
  */
 public class LandscapeConfig {
 
+    @Schema(description = "Flag that enables instant creation items based relation targets that cannot be found in the sources.")
     private boolean greedy = true;
 
+    @Schema(description = "Settings to tweak the positioning of groups in the map")
     private LayoutConfig groupLayoutConfig = new LayoutConfig();
+
+    @Schema(description = "Settings to tweak the positioning of items in a group in the map")
     private LayoutConfig itemLayoutConfig = new LayoutConfig();
 
+    @Schema(description = "Names or patterns of groups that should be excluded from the landscape. Used to improve automatic scanning results.",
+    example = ".*infra.*")
     private final List<String> groupBlacklist = new ArrayList<>();
+
+    @Schema(description = "Names or patterns of labels that should be ignored. Used to improve automatic scanning results.",
+            example = ".*COMPOSITION.*")
     private final List<String> labelBlacklist = new ArrayList<>();
+
+    @Schema(description = "Map branding (tweaks visuals)")
     private final Branding branding = new Branding();
 
-    /**
-     * KPI configs by their unique identifier.
-     */
+    @Schema(description = "Key performance indicator configs. Each KPI must have a unique identifier.")
     private final Map<String, KPIConfig> kpis = new HashMap<>();
 
     public LayoutConfig getGroupLayoutConfig() {
@@ -75,13 +85,20 @@ public class LandscapeConfig {
         return itemLayoutConfig;
     }
 
-    /**
-     * @link https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxFastOrganicLayout.html
-     */
+
+    @Schema(description = "Layout configuration. See https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxFastOrganicLayout.html")
     public static class LayoutConfig {
+
+        @Schema(description = "The maximum number of iterations. More iterations theoretically lead to better results.")
         private Integer maxIterations;
+
+        @Schema(description = "A factor to influence the attracting and repulsive forces in a layout.")
         private Float forceConstantFactor = 1f;
+
+        @Schema(description = "A factor to influence maximum distance where forces are applied.")
         private Float maxDistanceLimitFactor = 1f;
+
+        @Schema(description = "A factor to influence minimum distance where forces are applied.")
         private Float minDistanceLimitFactor = 1f;
 
         public Integer getMaxIterations() {
@@ -131,7 +148,12 @@ public class LandscapeConfig {
      */
     public static class Branding {
 
+        @Schema(description = "A resolvable URL pointing to a CSS stylesheet. This stylesheet is included in the generated SVG map. Use is to style the appearance of the map.",
+                example = "https://acme.com/css/acme.css")
         private String mapStylesheet;
+
+        @Schema(description = "A resolvable URL pointing to an image. This image is included (embedded as data-url) in the generated SVG map.",
+                example = "https://acme.com/images/logo.png")
         private String mapLogo;
 
         public String getMapStylesheet() {
