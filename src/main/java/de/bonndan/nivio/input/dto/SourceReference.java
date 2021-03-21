@@ -1,51 +1,75 @@
 package de.bonndan.nivio.input.dto;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
+import de.bonndan.nivio.model.Link;
+import de.bonndan.nivio.util.URLHelper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * This is a reference to a configuration file.
- *
- * TODO extend {@link de.bonndan.nivio.model.Link} but allow relative paths.
  */
-public class SourceReference {
+@Schema(description = "This is a reference to a configuration file.")
+public class SourceReference extends Link {
 
+    /**
+     * used since Link cannot use relative paths as href
+     */
+    @Schema(description = "A URL, but can also be a relative path", example = "./a/items.yaml")
     private String url;
 
+    @Schema(hidden = true)
     private LandscapeDescription landscapeDescription;
 
+    @Schema(description = "The input format.", allowableValues = {"nivio", "csv", "k8s", "rancher", "docker-compose-v2"})
     private String format;
 
-    private String basicAuthUsername;
-    private String basicAuthPassword;
-
-    private String headerTokenName;
-    private String headerTokenValue;
-
+    @Schema(description = "A map with template identifier as key and item identifier matchers as value", example = "endOfLife: [web, \"java6*\"]")
     private Map<String, List<String>> assignTemplates = new HashMap<>();
+
+    @Schema(hidden = true)
     private String content;
 
-    private final Map<String, Object> props = new HashMap<>();
-
-    public SourceReference() {
+    /**
+     * For testing.
+     */
+    public static SourceReference of(File file) {
+        return new SourceReference(file.toPath().toString());
     }
 
-    public SourceReference(String url) {
-        this.url = url;
+    /**
+     * Constructor for deserialization.
+     */
+    public SourceReference() {
+        super("");
+    }
+
+    /**
+     * Constructor for deserialization.
+     *
+     * @param href path, url or partial path.
+     */
+    public SourceReference(String href) {
+        super(URLHelper.getURL(href).map(URL::toString).orElse(""));
+        if (StringUtils.isEmpty(this.getHref())) {
+            this.url = href;
+        }
     }
 
     public SourceReference(String url, String format) {
-        this.url = url;
+        super(url);
         this.format = format;
     }
 
     public String getUrl() {
-        return url;
+        if (this.url != null)
+            return url;
+        return getHref().toString();
     }
 
     public void setUrl(String url) {
@@ -56,6 +80,11 @@ public class SourceReference {
         this.landscapeDescription = landscapeDescription;
     }
 
+    /**
+     * see {@link de.bonndan.nivio.input.InputFormatHandler}
+     *
+     * @return the input format type
+     */
     public String getFormat() {
         return format;
     }
@@ -66,46 +95,6 @@ public class SourceReference {
 
     public LandscapeDescription getLandscapeDescription() {
         return landscapeDescription;
-    }
-
-    public boolean hasBasicAuth() {
-        return !StringUtils.isEmpty(basicAuthUsername) && !StringUtils.isEmpty(basicAuthPassword);
-    }
-
-    public String getBasicAuthUsername() {
-        return basicAuthUsername;
-    }
-
-    public void setBasicAuthUsername(String basicAuthUsername) {
-        this.basicAuthUsername = basicAuthUsername;
-    }
-
-    public String getBasicAuthPassword() {
-        return basicAuthPassword;
-    }
-
-    public void setBasicAuthPassword(String basicAuthPassword) {
-        this.basicAuthPassword = basicAuthPassword;
-    }
-
-    public boolean hasHeaderToken() {
-        return !StringUtils.isEmpty(headerTokenName) && !StringUtils.isEmpty(headerTokenValue);
-    }
-
-    public String getHeaderTokenName() {
-        return headerTokenName;
-    }
-
-    public void setHeaderTokenName(String headerTokenName) {
-        this.headerTokenName = headerTokenName;
-    }
-
-    public String getHeaderTokenValue() {
-        return headerTokenValue;
-    }
-
-    public void setHeaderTokenValue(String headerTokenValue) {
-        this.headerTokenValue = headerTokenValue;
     }
 
     public Map<String, List<String>> getAssignTemplates() {
@@ -125,15 +114,5 @@ public class SourceReference {
      */
     public String getContent() {
         return content;
-    }
-
-    @JsonAnyGetter
-    public Object getProperty(String key) {
-        return props.get(key);
-    }
-
-    @JsonAnySetter
-    public void setProperty(String key, Object value) {
-        props.put(key, value);
     }
 }

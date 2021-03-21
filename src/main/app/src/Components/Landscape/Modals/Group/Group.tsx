@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 
 import { IAssessment, IGroup } from '../../../../interfaces';
-import { getLabels, getLinks, getAssessmentSummary, getItemIcon } from '../../Utils/utils';
-import { Badge, Card, CardHeader, Theme, withStyles } from '@material-ui/core';
+import { getLabels, getLinks, getAssessmentSummary } from '../../Utils/utils';
+import { Card, CardHeader, Theme } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import StatusChip from '../../../StatusChip/StatusChip';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
@@ -11,8 +11,8 @@ import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
-import { FilterCenterFocus } from '@material-ui/icons';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
+import ItemAvatar from "../Item/ItemAvatar";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,36 +23,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
-
-const StyledBadge = withStyles((theme: Theme) =>
-  createStyles({
-    'badge': {
-      'boxShadow': `0 0 0 2px ${theme.palette.background.paper}`,
-      '&::after': {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        borderRadius: '50%',
-        //animation: '$ripple 1.2s infinite ease-in-out',
-        border: '1px solid currentColor',
-        backgroundColor: 'currentColor',
-        content: '""',
-      },
-    },
-    '@keyframes ripple': {
-      '0%': {
-        transform: 'scale(.8)',
-        opacity: 1,
-      },
-      '100%': {
-        transform: 'scale(2.4)',
-        opacity: 0,
-      },
-    },
-  })
-)(Badge);
 
 interface Props {
   group: IGroup;
@@ -87,24 +57,7 @@ const Group: React.FC<Props> = ({ group, assessments }) => {
               }
             }}
           >
-            <StyledBadge
-              overlap='circle'
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              variant='dot'
-              style={{ color: status }}
-            >
-              <Avatar
-                imgProps={{ style: { objectFit: 'contain' } }}
-                src={getItemIcon(item)}
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.65)',
-                  border: '2px solid #' + group.color,
-                }}
-              />
-            </StyledBadge>
+            <ItemAvatar item={item} statusColor={status} />
             &nbsp;
             {item.identifier}
           </Button>
@@ -121,29 +74,32 @@ const Group: React.FC<Props> = ({ group, assessments }) => {
   const labels = getLabels(group);
   const links = getLinks(group);
 
-  const action = locateFunctionContext.locateFunction ? (
-    <IconButton
-      onClick={() => locateFunctionContext.locateFunction(group.fullyQualifiedIdentifier)}
-    >
-      <FilterCenterFocus />
-    </IconButton>
-  ) : null;
   return (
     <Card className={componentClasses.card}>
       <CardHeader
         title={
           <React.Fragment>
-            <Avatar
-              style={{ backgroundColor: '#' + group.color }}
-              className={classes.groupAvatar}
-              variant={'square'}
+            <IconButton
+              onClick={() => locateFunctionContext.locateFunction(group.fullyQualifiedIdentifier)}
+              size={'small'}
             >
-              {' '}
-            </Avatar>
+              <Avatar
+                className={classes.groupAvatar}
+                title={'Click to highlight the group.'}
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                  border: '2px solid #' + group.color,
+                  height: '2rem',
+                  width: '2rem'
+                }}
+              >
+                {' '}
+              </Avatar>
+            </IconButton>
+
             &nbsp;{group.name}
           </React.Fragment>
         }
-        action={action}
         className={componentClasses.cardHeader}
       />
       <CardContent>

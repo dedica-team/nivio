@@ -41,7 +41,7 @@ class GroupProcessorTest {
 
         ItemDescription item = new ItemDescription();
         item.setIdentifier("abc");
-        input.addItems(Arrays.asList(item));
+        input.mergeItems(Arrays.asList(item));
 
         groupProcessor.process(input, landscape);
 

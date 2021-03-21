@@ -4,6 +4,12 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.util.StringUtils;
 
 import java.net.MalformedURLException;
@@ -17,15 +23,29 @@ import java.util.Map;
  * Used in hateoas as well as in the models.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(description = "A link to an external resource. Contains a href (URL) plus various attributes for authentication and/or hateoas.")
 public class Link {
 
+    @Schema(description = "hateoas relation type")
     private String rel;
+
+    @Schema(required = true, description = "The link target.")
     private final URL href;
+
+    @Schema(description = "hateoas language")
     private String hreflang;
+
+    @Schema(description = "hateoas media type")
     private String media;
+
+    @Schema(description = "hateoas title")
     private String title;
     private String type;
+
+    @Schema(description = "deprecation info (typically used in OpenAPI specs)")
     private String deprecation;
+
+    @Schema(description = "HateOAS / OpenAPI name")
     private String name;
 
     private String basicAuthUsername;
@@ -34,9 +54,14 @@ public class Link {
     private String headerTokenName;
     private String headerTokenValue;
 
+    @Schema(description = "A map of arbitrary properties.")
     private final Map<String, Object> props = new HashMap<>();
 
     public Link(String href) {
+        if (StringUtils.isEmpty(href)) {
+            this.href = null;
+            return;
+        }
         try {
             this.href = new URL(href);
         } catch (MalformedURLException e) {
@@ -95,6 +120,7 @@ public class Link {
         return basicAuthUsername;
     }
 
+    @JsonSetter
     public void setBasicAuthUsername(String basicAuthUsername) {
         this.basicAuthUsername = basicAuthUsername;
     }
@@ -104,6 +130,7 @@ public class Link {
         return basicAuthPassword;
     }
 
+    @JsonSetter
     public void setBasicAuthPassword(String basicAuthPassword) {
         this.basicAuthPassword = basicAuthPassword;
     }
@@ -117,6 +144,7 @@ public class Link {
         return headerTokenName;
     }
 
+    @JsonSetter
     public void setHeaderTokenName(String headerTokenName) {
         this.headerTokenName = headerTokenName;
     }
@@ -126,6 +154,7 @@ public class Link {
         return headerTokenValue;
     }
 
+    @JsonSetter
     public void setHeaderTokenValue(String headerTokenValue) {
         this.headerTokenValue = headerTokenValue;
     }

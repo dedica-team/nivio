@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Landscape;
@@ -29,10 +30,10 @@ public class AppearanceProcessor extends Processor {
         Optional<String> logo = Optional.ofNullable(landscape.getConfig().getBranding().getMapLogo());
         logo.ifPresent(s -> setLandscapeLogo(landscape, s));
 
-        landscape.getGroupItems().forEach(groupItem -> groupItem.getItems().forEach(this::setItemAppearance));
+        landscape.getGroupItems().forEach(group -> group.getItems().forEach(item -> setItemAppearance(group, item)));
     }
 
-    private void setItemAppearance(Item item) {
+    private void setItemAppearance(Group group, Item item) {
 
         item.setLabel(Label.icon, iconService.getIconUrl(item));
         String fill = item.getLabel(Label.fill);
@@ -40,6 +41,10 @@ public class AppearanceProcessor extends Processor {
             URLHelper.getURL(fill)
                     .flatMap(iconService::getExternalUrl)
                     .ifPresent(s -> item.setLabel(Label.fill, s));
+        }
+
+        if (StringUtils.isEmpty(item.getColor())) {
+            item.setLabel(Label.color, group.getColor());
         }
     }
 

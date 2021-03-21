@@ -41,7 +41,7 @@ const Log: React.FC<Props> = ({ landscape }) => {
   }, [getLog]);
 
   const content = data?.map((m, i) => {
-    if (m.level === 'DEBUG') return;
+    if (m.level === 'DEBUG') return [];
     return (
       <div key={i}>
         <LevelChip level={m.level} title={m.date} />

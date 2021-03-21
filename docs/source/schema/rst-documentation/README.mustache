@@ -1,0 +1,17 @@
+Documentation for {{appName}}
+-----------------------------
+
+{{#generateModelDocs}}
+<a name="documentation-for-models"></a>
+Documentation for Models
+========================
+
+{{#modelPackage}}
+{{#models}}
+*  {{#model}} - [{{{classname}}}](./{{{modelPackage}}}/{{modelDocPath}}{{{classname}}}.rst){{/model}}
+{{/models}}
+{{/modelPackage}}
+{{^modelPackage}}
+No model defined in this package
+{{/modelPackage}}
+{{/generateModelDocs}}

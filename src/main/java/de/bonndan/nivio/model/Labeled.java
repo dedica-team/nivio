@@ -31,7 +31,9 @@ public interface Labeled {
                             return false;
                     }
                     return true;
-                }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                })
+                .filter(stringStringEntry -> stringStringEntry.getValue() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     default String getLabel(Label key) {
@@ -167,6 +169,18 @@ public interface Labeled {
                 .filter(entry -> entry.getValue() != null)
                 .filter(entry -> target.getLabel(entry.getKey()) == null)
                 .forEach(entry -> target.setLabel(entry.getKey(), entry.getValue()));
+    }
+
+    /**
+     * Map-setter that prevents overwriting existing labels.
+     *
+     * @param labels map of labels
+     */
+    default void setLabels(@Nullable Map<String, String> labels) {
+        if (labels == null) {
+            return;
+        }
+        labels.forEach((s, s2) -> getLabels().put(s, s2));
     }
 
     /**

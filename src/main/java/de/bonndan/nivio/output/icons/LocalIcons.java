@@ -105,7 +105,9 @@ public class LocalIcons {
         Optional<String> dataUrl = DataUrlHelper.asBase64(path).map(s -> DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + s);
         dataUrl.ifPresentOrElse(
                 s -> iconDataUrls.put(path, s),
-                () -> LOGGER.warn("Failed to load svg icon {}", path)
+                () -> {
+                    LOGGER.warn("Failed to load svg icon {}", path);
+                }
         );
         return dataUrl;
     }

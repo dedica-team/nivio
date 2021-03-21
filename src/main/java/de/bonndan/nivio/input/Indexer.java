@@ -39,9 +39,8 @@ public class Indexer {
      * Indexes the given input and creates a landscape or updates an existing one.
      *
      * @param input dto
-     * @return the new landscape object (replaced or created)
      */
-    public Landscape index(final LandscapeDescription input) {
+    public void index(final LandscapeDescription input) {
 
         Landscape landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier())
                 .map(landscape1 -> LandscapeFactory.recreate(landscape1, input))
@@ -57,12 +56,12 @@ public class Indexer {
         } catch (ProcessingException e) {
             final String msg = "Error while reindexing landscape " + input.getIdentifier();
             landscape.getLog().warn(msg, e);
-            eventPublisher.publishEvent(new ProcessingErrorEvent(this, e));
+            eventPublisher.publishEvent(new ProcessingErrorEvent(input.getFullyQualifiedIdentifier(), e));
+            return;
         }
 
         eventPublisher.publishEvent(new ProcessingFinishedEvent(input, landscape));
         landscape.getLog().info("Reindexed landscape " + input.getIdentifier());
-        return landscape;
     }
 
     private void runResolvers(LandscapeDescription input, Landscape landscape) {
@@ -70,7 +69,7 @@ public class Indexer {
         ProcessLog logger = landscape.getLog();
 
         // read all input sources
-        new SourceReferencesResolver(formatFactory, logger).resolve(input);
+        new SourceReferencesResolver(formatFactory, logger, eventPublisher).resolve(input);
 
         // apply template values to items
         new TemplateResolver(logger).resolve(input);

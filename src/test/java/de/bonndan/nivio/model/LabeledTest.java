@@ -41,6 +41,18 @@ class LabeledTest {
     }
 
     @Test
+    public void setLabelsDoesNotOverwriteExistingOnes() {
+        ItemDescription itemDescription = new ItemDescription();
+        itemDescription.setLabel("foo", "bar");
+
+        //when
+        itemDescription.setLabels(Map.of("one", "two"));
+
+        assertEquals(2, itemDescription.getLabels().size());
+        assertTrue(itemDescription.getLabels().containsKey( "foo"));
+    }
+
+    @Test
     public void withoutPrefixes() {
         ItemDescription itemDescription = new ItemDescription();
         itemDescription.setLabel(Label.costs, "123");

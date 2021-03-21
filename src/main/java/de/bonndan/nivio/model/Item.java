@@ -43,8 +43,6 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
 
     private final String group;
 
-    private final String color;
-
     /**
      * technical address
      */
@@ -88,9 +86,11 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         this.owner = owner;
         this.contact = contact;
         this.description = description;
-        this.color = color;
-        this.setLabel(Label.icon, icon);
         this.address = address;
+
+        //these are effectively mutable
+        this.setLabel(Label.color, color);
+        this.setLabel(Label.icon, icon);
     }
 
     public String getIdentifier() {
@@ -121,7 +121,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
 
     @Override
     public String getColor() {
-        return color;
+        return getLabel(Label.color);
     }
 
     public String getContact() {
@@ -155,11 +155,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
      */
     @JsonProperty("labels")
     public Map<String, String> getJSONLabels() {
-
-        return Labeled.groupedByPrefixes(
-                Labeled.withoutKeys(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG, Label.type.name(), Label.icon.name()),
-                ","
-        );
+        return Labeled.withoutKeys(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG, Label.type.name(), Label.icon.name());
     }
 
     @JsonIgnore

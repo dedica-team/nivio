@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
 import java.util.*;
@@ -115,7 +116,7 @@ class TemplateResolverTest {
         InputFormatHandlerFactory formatFactory = new InputFormatHandlerFactory(
                 new ArrayList<>(Arrays.asList(new InputFormatHandlerNivio(new FileFetcher(new HttpService())), InputFormatHandlerCompose2.forTesting()))
         );
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(formatFactory, new ProcessLog(mock(Logger.class)));
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(formatFactory, new ProcessLog(mock(Logger.class)), mock(ApplicationEventPublisher.class));
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
         sourceReferencesResolver.resolve(landscapeDescription);
         return landscapeDescription;

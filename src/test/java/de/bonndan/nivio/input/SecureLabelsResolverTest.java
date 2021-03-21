@@ -23,7 +23,7 @@ class SecureLabelsResolverTest {
         item.setIdentifier("foo");
 
         landscapeDescription = new LandscapeDescription("foo");
-        landscapeDescription.addItems(List.of(item));
+        landscapeDescription.mergeItems(List.of(item));
 
         secureLabelsResolver = new SecureLabelsResolver(new ProcessLog(mock(Logger.class)));
     }

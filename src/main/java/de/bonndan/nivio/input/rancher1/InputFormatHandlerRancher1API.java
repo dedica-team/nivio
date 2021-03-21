@@ -1,8 +1,10 @@
 package de.bonndan.nivio.input.rancher1;
 
-import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.InputFormatHandler;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import io.rancher.Rancher;
@@ -26,13 +28,13 @@ public class InputFormatHandlerRancher1API implements InputFormatHandler {
     }
 
     @Override
-    public List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl) {
+    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
         APIWalker apiWalker = new APIWalker(reference, getConfig(reference));
-        return apiWalker.getDescriptions();
+        landscapeDescription.mergeItems(apiWalker.getDescriptions());
     }
 
     @Override
-    public InputFormatObserver getObserver(SourceReference reference, URL baseUrl) {
+    public InputFormatObserver getObserver(InputFormatObserver inner, SourceReference reference) {
         Rancher.Config config = getConfig(reference);
         //TODO add observer
         return null;

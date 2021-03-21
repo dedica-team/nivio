@@ -41,5 +41,6 @@ it('should render mapRelation component', () => {
   );
   expect(getByText('fooName')).toBeInTheDocument();
   expect(getByText('barName')).toBeInTheDocument();
-  expect(getByText('Type: PROVIDER')).toBeInTheDocument();
+  expect(getByText('Type')).toBeInTheDocument();
+  expect(getByText('PROVIDER')).toBeInTheDocument();
 });
