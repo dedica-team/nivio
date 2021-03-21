@@ -16,7 +16,7 @@ import {
   //setPointOnViewerCenter,
   Tool,
   TOOL_AUTO,
-  Value,
+  Value
 } from 'react-svg-pan-zoom';
 
 import './Map.css';
@@ -33,6 +33,27 @@ import Group from '../Modals/Group/Group';
 //import MapUtils from './MapUtils';
 import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
 import { NotificationContext } from '../../../Context/NotificationContext';
+import ZoomOutIcon from '@material-ui/icons/ZoomOut';
+import IconButton from '@material-ui/core/IconButton';
+import { Theme, createStyles, darken } from '@material-ui/core';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+
+
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+
+    menuIcon: {
+      position: 'absolute',
+      cursor: 'pointer',
+      bottom: '10%',
+
+      zIndex: 1000,
+      backgroundColor: darken(theme.palette.primary.main, 0.2),
+    }
+
+  })
+);
 
 interface Props {
   setSidebarContent: Function;
@@ -54,7 +75,7 @@ interface SVGData {
  */
 const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [tool, setTool] = useState<Tool>(TOOL_AUTO);
-
+  const classes = useStyles();
   // It wants a value or null but if we defined it as null it throws an error that shouldn't use null
   // In their own documentation, they initialize it with {}, but that will invoke a typescript error
   // @ts-ignore
@@ -67,6 +88,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [assessments, setAssessments] = useState<IAssessment | undefined>(undefined);
 
   const [isFirstRender, setIsFirstRender] = useState(true);
+  const [isZoomed, setISZommed] = useState<Boolean>(false);
 
   const locateFunctionContext = useContext(LocateFunctionContext);
   const notificationContext = useContext(NotificationContext);
@@ -89,7 +111,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
     if (fullyQualifiedItemIdentifier && landscape) {
       let item = getItem(landscape, fullyQualifiedItemIdentifier);
-      if (item) setSidebarContent(<Item key={fullyQualifiedItemIdentifier} useItem={item} landscape={landscape}/>);
+      if (item) setSidebarContent(<Item key={fullyQualifiedItemIdentifier} useItem={item} landscape={landscape} />);
     }
   };
 
@@ -127,8 +149,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       }
     }
 
-      setHighlightElement(e.currentTarget.children);
-      setRenderWithTransition(true);
+    setHighlightElement(e.currentTarget.children);
+    setRenderWithTransition(true);
     if (sourceX && sourceY && targetX && targetY) {
       sourceX = parseFloat(sourceX) / 2;
       targetX = parseFloat(targetX) / 2;
@@ -249,6 +271,17 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
     return (
       <div className='landscapeMapContainer'>
+        {isZoomed && <IconButton
+          className={classes.menuIcon}
+          title={'Click to Reset View'}
+          onClick={() => {
+            // @ts-ignore  
+            setValue(fitToViewer(value, 'center', 'center'));
+            setISZommed(false)
+          }}
+          size={'small'}
+        >
+          <ZoomOutIcon ></ZoomOutIcon></IconButton>}
         <ReactSvgPanZoomLoaderXML
           xml={data.xml}
           proxy={
@@ -273,6 +306,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
               preventPanOutside={false}
               toolbarProps={{ position: 'none' }}
               detectAutoPan={false}
+              onZoom={() => { setISZommed(true) }}
               tool={tool}
               onChangeTool={(newTool) => setTool(newTool)}
               value={value}
