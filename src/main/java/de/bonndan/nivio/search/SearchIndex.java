@@ -86,6 +86,13 @@ public class SearchIndex {
         return indexed;
     }
 
+    /**
+     * Searches using the given queryString and returns a set of {@link FullyQualifiedIdentifier}s that can be used to retrieve
+     * items from the {@link ItemIndex}.
+     *
+     * @param queryString a lucene query string. Whitespaces are treated as "AND".
+     * @return the {@link FullyQualifiedIdentifier}s of the matched documents
+     */
     public Set<FullyQualifiedIdentifier> search(String queryString) {
         try {
             return documentSearch(queryString).stream()
@@ -129,6 +136,8 @@ public class SearchIndex {
         // Parse a simple query that searches for "text":
         QueryParser parser = new MultiFieldQueryParser(new String[]{LUCENE_FIELD_IDENTIFIER, LUCENE_FIELD_NAME, LUCENE_FIELD_DESCRIPTION}, new StandardAnalyzer());
         parser.setAllowLeadingWildcard(true);
+        parser.setSplitOnWhitespace(true);
+        parser.setDefaultOperator(QueryParser.Operator.AND);
         Query query = parser.parse(queryString);
         ScoreDoc[] hits = isearcher.search(query, 10).scoreDocs;
 
