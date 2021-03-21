@@ -16,7 +16,7 @@ import {
   //setPointOnViewerCenter,
   Tool,
   TOOL_AUTO,
-  Value,
+  Value
 } from 'react-svg-pan-zoom';
 
 import './Map.css';
@@ -33,6 +33,7 @@ import Group from '../Modals/Group/Group';
 //import MapUtils from './MapUtils';
 import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
 import { NotificationContext } from '../../../Context/NotificationContext';
+import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 
 interface Props {
   setSidebarContent: Function;
@@ -67,6 +68,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [assessments, setAssessments] = useState<IAssessment | undefined>(undefined);
 
   const [isFirstRender, setIsFirstRender] = useState(true);
+  const [isZoomed, setISZommed] = useState<Boolean>(false);
 
   const locateFunctionContext = useContext(LocateFunctionContext);
   const notificationContext = useContext(NotificationContext);
@@ -89,7 +91,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
     if (fullyQualifiedItemIdentifier && landscape) {
       let item = getItem(landscape, fullyQualifiedItemIdentifier);
-      if (item) setSidebarContent(<Item key={fullyQualifiedItemIdentifier} useItem={item} landscape={landscape}/>);
+      if (item) setSidebarContent(<Item key={fullyQualifiedItemIdentifier} useItem={item} landscape={landscape} />);
     }
   };
 
@@ -127,8 +129,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       }
     }
 
-      setHighlightElement(e.currentTarget.children);
-      setRenderWithTransition(true);
+    setHighlightElement(e.currentTarget.children);
+    setRenderWithTransition(true);
     if (sourceX && sourceY && targetX && targetY) {
       sourceX = parseFloat(sourceX) / 2;
       targetX = parseFloat(targetX) / 2;
@@ -249,6 +251,14 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
     return (
       <div className='landscapeMapContainer'>
+        {isZoomed && <span style={{ position: 'absolute', cursor: 'pointer', bottom: '10%', right: '5%', zIndex: 1000 }}
+          onClick={() => {
+            // @ts-ignore  
+            setValue(fitToViewer(value, 'center', 'center'));
+            setISZommed(false)
+          }}
+        >
+          <ZoomOutIcon fontSize="large"></ZoomOutIcon></span>}
         <ReactSvgPanZoomLoaderXML
           xml={data.xml}
           proxy={
@@ -273,6 +283,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
               preventPanOutside={false}
               toolbarProps={{ position: 'none' }}
               detectAutoPan={false}
+              onZoom={() => { setISZommed(true) }}
               tool={tool}
               onChangeTool={(newTool) => setTool(newTool)}
               value={value}
