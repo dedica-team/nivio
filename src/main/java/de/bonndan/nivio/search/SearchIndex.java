@@ -13,24 +13,21 @@ import org.apache.lucene.facet.taxonomy.FastTaxonomyFacetCounts;
 import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyReader;
 import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyWriter;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MatchAllDocsQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,6 +40,9 @@ import static de.bonndan.nivio.search.SearchDocumentFactory.*;
 public class SearchIndex {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SearchIndex.class);
+    public static final String WILDCARD = "*";
+    public static final String WHITESPACE = " ";
+    public static final String FACET_DELIMITER = ":";
 
     private final Directory searchIndex;
     private final Directory taxoIndex;
@@ -78,7 +78,7 @@ public class SearchIndex {
                     indexed++;
                 }
             }
-            IOUtils.close(writer, taxoWriter); //, searchIndex, taxoIndex);
+            IOUtils.close(writer, taxoWriter);
         } catch (IOException e) {
             throw new RuntimeException("Failed to update search index", e);
         }
@@ -95,13 +95,32 @@ public class SearchIndex {
      */
     public Set<FullyQualifiedIdentifier> search(String queryString) {
         try {
-            return documentSearch(queryString).stream()
-                    .map(doc -> FullyQualifiedIdentifier.from(doc.get(LUCENE_FIELD_FQI))
-                    )
+            return documentSearch(rewriteQuery(queryString)).stream()
+                    .map(doc -> FullyQualifiedIdentifier.from(doc.get(LUCENE_FIELD_FQI)))
                     .collect(Collectors.toSet());
         } catch (IOException | ParseException e) {
-            throw new RuntimeException(String.format("Failed to execute search for %s", queryString));
+            throw new RuntimeException(String.format("Failed to execute search for '%s'", queryString));
         }
+    }
+
+    /**
+     * TODO there might be a away in lucene to rewrite the query terms, e.g. in {@link MultiFieldQueryParser}
+     */
+    private String rewriteQuery(final String query) {
+        return Arrays.stream(query.split(WHITESPACE))
+                .map(s -> {
+                    if (StringUtils.isEmpty(s) || "or".equalsIgnoreCase(s)) {
+                        return s;
+                    }
+                    if (s.endsWith(FACET_DELIMITER)) {
+                        return s + WILDCARD;
+                    }
+                    if (s.contains(FACET_DELIMITER)) {
+                        return s;
+                    }
+                    return s + WILDCARD;
+                })
+                .collect(Collectors.joining(WHITESPACE));
     }
 
     /**

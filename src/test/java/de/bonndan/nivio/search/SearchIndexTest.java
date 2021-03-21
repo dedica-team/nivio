@@ -62,4 +62,20 @@ class SearchIndexTest {
         Set<FullyQualifiedIdentifier> strong = searchIndex.search("tag:strong");
         assertThat(strong).hasSize(2);
     }
+
+    @Test
+    void caseInsensitive() {
+
+        //when
+        Set<FullyQualifiedIdentifier> strong = searchIndex.search("aRnolD");
+        assertThat(strong).hasSize(1);
+    }
+
+    @Test
+    void partial() {
+
+        //when
+        Set<FullyQualifiedIdentifier> strong = searchIndex.search("aRn");
+        assertThat(strong).hasSize(1);
+    }
 }
