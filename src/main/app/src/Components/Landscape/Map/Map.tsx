@@ -34,6 +34,26 @@ import Group from '../Modals/Group/Group';
 import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
 import { NotificationContext } from '../../../Context/NotificationContext';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
+import IconButton from '@material-ui/core/IconButton';
+import { Theme, createStyles, darken } from '@material-ui/core';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+
+
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+
+    menuIcon: {
+      position: 'absolute',
+      cursor: 'pointer',
+      bottom: '10%',
+
+      zIndex: 1000,
+      backgroundColor: darken(theme.palette.primary.main, 0.2),
+    }
+
+  })
+);
 
 interface Props {
   setSidebarContent: Function;
@@ -55,7 +75,7 @@ interface SVGData {
  */
 const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [tool, setTool] = useState<Tool>(TOOL_AUTO);
-
+  const classes = useStyles();
   // It wants a value or null but if we defined it as null it throws an error that shouldn't use null
   // In their own documentation, they initialize it with {}, but that will invoke a typescript error
   // @ts-ignore
@@ -251,14 +271,17 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
     return (
       <div className='landscapeMapContainer'>
-        {isZoomed && <span style={{ position: 'absolute', cursor: 'pointer', bottom: '10%', right: '5%', zIndex: 1000 }}
+        {isZoomed && <IconButton
+          className={classes.menuIcon}
+          title={'Click to Reset View'}
           onClick={() => {
             // @ts-ignore  
             setValue(fitToViewer(value, 'center', 'center'));
             setISZommed(false)
           }}
+          size={'small'}
         >
-          <ZoomOutIcon fontSize="large"></ZoomOutIcon></span>}
+          <ZoomOutIcon ></ZoomOutIcon></IconButton>}
         <ReactSvgPanZoomLoaderXML
           xml={data.xml}
           proxy={
