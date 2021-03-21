@@ -109,7 +109,7 @@ public class SearchIndex {
     private String rewriteQuery(final String query) {
         return Arrays.stream(query.split(WHITESPACE))
                 .map(s -> {
-                    if (StringUtils.isEmpty(s) || "or".equalsIgnoreCase(s)) {
+                    if (StringUtils.isEmpty(s) || "or".equalsIgnoreCase(s) || "and".equalsIgnoreCase(s)) {
                         return s;
                     }
                     if (s.endsWith(FACET_DELIMITER)) {

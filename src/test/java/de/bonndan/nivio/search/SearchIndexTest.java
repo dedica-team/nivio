@@ -53,6 +53,10 @@ class SearchIndexTest {
         //when
         Set<FullyQualifiedIdentifier> orQuery = searchIndex.search("Arnold OR Sylvester");
         assertThat(orQuery).hasSize(2);
+
+        //when
+        Set<FullyQualifiedIdentifier> andQuery = searchIndex.search("Arnold AND Sylvester");
+        assertThat(andQuery).hasSize(0);
     }
 
     @Test
