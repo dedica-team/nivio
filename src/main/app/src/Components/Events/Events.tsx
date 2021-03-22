@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { get } from '../../utils/API/APIClient';
-import { Box, Card, CardHeader, Typography } from '@material-ui/core';
+import { Card, CardHeader } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import componentStyles from '../../Resources/styling/ComponentStyles';
 import LevelChip from '../LevelChip/LevelChip';
