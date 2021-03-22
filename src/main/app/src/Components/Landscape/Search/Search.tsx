@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
-import { Box, Card, Input, InputAdornment, Theme, Tooltip } from '@material-ui/core';
+import { Box, Card, Input, InputAdornment, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import { IItem, Routes } from '../../../interfaces';
 import { matchPath, RouteComponentProps, withRouter } from 'react-router-dom';
@@ -13,6 +13,7 @@ import Avatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import CardContent from '@material-ui/core/CardContent';
 import componentStyles from '../../../Resources/styling/ComponentStyles';
+import HelpTooltip from '../../Help/HelpTooltip';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -64,6 +65,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
   const [facets, setFacets] = useState<IFacet[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchSupport, setSearchSupport] = useState<any>(null);
+  const [render, setRender] = useState<boolean>(false);
   const classes = useStyles();
   const componentClasses = componentStyles();
   const searchInput = React.useRef<HTMLDivElement>(null);
@@ -94,7 +96,6 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
    * Initial loading of facets
    */
   useEffect(() => {
-
     const facetsHtml = facets.map((facet: IFacet) => (
       <Box key={facet.dim}>
         <Typography variant={'h6'}>{facet.dim}</Typography>
@@ -104,7 +105,8 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
               let current = searchInput.current;
               if (!current) return;
               if (searchTerm.indexOf(facet.dim + ':' + lv.label) === -1) {
-                  setSearchTerm(searchTerm + ' ' + facet.dim + ':' + lv.label);
+                setSearchTerm(searchTerm + ' ' + facet.dim + ':' + lv.label);
+                setRender(true);
               }
               current.focus();
             }}
@@ -118,12 +120,35 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
       </Box>
     ));
 
-    setSearchSupport( <React.Fragment>
+    const help = (
+      <div>
+        <h3>Search</h3>
+        Start typing to match items having name parts or description starting with the given term.
+        Find everything starting with 'foo':
+        <br />
+        <pre>foo</pre>
+        <br />
+        Use whitespaces as AND condition (default). Search in name and description for both words:
+        <br />
+        <pre>MyService outdated</pre>
+        <pre>MyService OR outdated</pre>
+        <br />
+        You can use the Lucene query syntax.
+        <br />
+        <pre>*foo</pre>
+        <br />
+        Apply facets (tags etc.) using a colon:
+        <pre>'tag:cms'</pre>
+      </div>
+    );
+
+    setSearchSupport(
       <Card className={componentClasses.card}>
+        <HelpTooltip style={{ float: 'right', padding: 2, color: '#222'}} content={help} />
         <CardContent>{facetsHtml}</CardContent>
       </Card>
-    </React.Fragment>);
-  },[setSearchSupport, searchTerm, facets, componentClasses.card])
+    );
+  }, [setSearchSupport, searchTerm, facets, componentClasses.card]);
 
   /**
    * Update rendered search results
@@ -132,19 +157,22 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
     const searchResult = results.map((value1: IItem) => (
       <Item small={true} key={value1.fullyQualifiedIdentifier} useItem={value1} />
     ));
-    setSidebarContent(
-      <>
-        {searchSupport}
-        {searchResult}
-      </>
-    );
-  }, [results, setSidebarContent, searchSupport]);
+    if (render)
+      setSidebarContent(
+        <>
+          {searchSupport}
+          {searchResult}
+        </>
+      );
+  }, [results, setSidebarContent, searchSupport, render]);
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
       return;
     }
-    const result: IFacet[] | null = await get('/api/landscape/' + identifier + '/facets/').catch(reason => console.warn(reason));
+    const result: IFacet[] | null = await get(
+      '/api/landscape/' + identifier + '/facets/'
+    ).catch((reason) => console.warn(reason));
 
     if (!result) return;
     setFacets(result);
@@ -173,27 +201,6 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
     setCurrentLandscape(identifier);
   }
 
-  const help = (
-    <div>
-      <strong>Start typing to match items having name parts or description starting with the given term. Find everything starting with 'foo':</strong>
-      <br />
-      <em>'foo'</em>
-      <strong>You can use the Lucene query syntax. </strong>
-      <br />
-      <em>'*foo'</em>
-      <br />
-      <em>Use whitespaces as AND condition (default). Search in name and description for both words:</em>
-      <br />
-      <em>'MyService outdated'</em>
-      <br />
-      <em>'MyService OR outdated'</em>
-      <br />
-      <em>Apply facets (tags etc.) using a colon:</em>
-      <br />
-      <em>'tag:cms'</em>
-    </div>
-  );
-
   return (
     <Box className={classes.search}>
       <Input
@@ -204,12 +211,13 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
         ref={searchInput}
         placeholder={'Search'}
         onChange={(event) => setSearchTerm(event.target.value)}
-        onFocus={(event) => setSearchSupport(searchSupport)}
-        startAdornment={
-          <Tooltip disableFocusListener title={help}>
-            <SearchOutlined />
-          </Tooltip>
-        }
+        onFocus={(event) => {
+          setRender(true);
+        }}
+        onBlur={(event) => {
+          setRender(false);
+        }}
+        startAdornment={<SearchOutlined />}
         endAdornment={
           searchTerm.length ? (
             <InputAdornment position='end'>
