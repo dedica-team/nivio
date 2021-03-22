@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
     },
     drawer: {
-      flexShrink: 0
+      flexShrink: 0,
     },
     drawerPaper: {
       width: 320,
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: 20,
       backgroundColor: 'transparent',
       border: 'none',
-      maxHeight: '100%',
+      maxHeight: 'calc(100vh - 140px)',
       height: 'inherit',
     },
     drawerContainer: {
