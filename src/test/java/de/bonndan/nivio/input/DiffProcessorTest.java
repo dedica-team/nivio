@@ -1,36 +1,48 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 public class DiffProcessorTest {
 
-    private ArrayList<Item> items;
+    private Set<Item> items;
     private Landscape landscape;
+    private Group g1;
 
     @BeforeEach
     public void setup() {
 
-        landscape = LandscapeFactory.createForTesting("test", "l1name").build();
+        g1 = new Group("g1", "test");
+        landscape = LandscapeFactory.createForTesting("test", "l1name")
+                .withGroups(Map.of("g1", g1))
+                .build();
 
-        items = new ArrayList<>();
+        items = new HashSet<>();
 
-        Item s1 = getTestItem("g1","s1",landscape);
+        Item s1 = getTestItem("g1", "s1", landscape);
         items.add(s1);
 
-        Item s2 = getTestItem("g1","s2",landscape);
+        Item s2 = getTestItem("g1", "s2", landscape);
         items.add(s2);
+        landscape.setItems(items);
+
+        g1.addItem(s1);
+        g1.addItem(s2);
     }
 
     @Test
@@ -144,5 +156,22 @@ public class DiffProcessorTest {
 
         List<Item> kept = DiffProcessor.kept(items1, items2, landscape);
         assertEquals(0, kept.size());
+    }
+
+    @Test
+    void regression439() {
+
+        DiffProcessor diffProcessor = new DiffProcessor(new ProcessLog(LoggerFactory.getLogger(DiffProcessorTest.class)));
+
+        LandscapeDescription input = new LandscapeDescription(landscape.getIdentifier());
+        ItemDescription description = new ItemDescription("s1");
+        description.setGroup("g1");
+        input.setItems(List.of(description));
+
+        //when
+        diffProcessor.process(input, landscape);
+
+        //then
+        assertThat(g1.getItems()).hasSize(1);
     }
 }

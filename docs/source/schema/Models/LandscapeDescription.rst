@@ -85,7 +85,7 @@ LandscapeDescription
      - null
    * - color
      - String
-     - 
+     -
      - optional, defaults to null
      - null
    * - links
