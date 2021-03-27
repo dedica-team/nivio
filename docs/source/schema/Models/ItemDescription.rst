@@ -78,11 +78,6 @@ List of configuration sources. Handled in the given order, latter extended/overw
      - The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.
      - optional, defaults to null
      - service|database|volume
-   * - lifecycle
-     - String
-     - The lifecycle state of an item.
-     - optional, defaults to null
-     - null
    * - status
      - List<map>
      - 
@@ -91,6 +86,11 @@ List of configuration sources. Handled in the given order, latter extended/overw
    * - statuses
      - List<map>
      - A list of statuses that works like hardcoded KPIs.
+     - optional, defaults to null
+     - null
+   * - lifecycle
+     - String
+     - The lifecycle state of an item.
      - optional, defaults to null
      - null
    * - tags
