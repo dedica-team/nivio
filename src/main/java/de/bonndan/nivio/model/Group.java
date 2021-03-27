@@ -206,6 +206,19 @@ public class Group implements Labeled, Linked, Assessable {
         items.add(item);
     }
 
+    /**
+     * Removes an item from a group.
+     *
+     * @param item the item to remove
+     * @return true if the item could be removed
+     */
+    public boolean removeItem(@Nullable Item item) {
+        if (item == null) {
+            return false;
+        }
+        return items.remove(item);
+    }
+
     public String getLandscapeIdentifier() {
         return landscapeIdentifier;
     }

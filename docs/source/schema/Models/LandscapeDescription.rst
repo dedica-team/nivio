@@ -63,19 +63,14 @@ LandscapeDescription
      - Additional labels for the landscape.
      - optional, defaults to null
      - null
-   * - items
-     - List<ItemDescription>
-     - List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc.
-     - optional, defaults to null
-     - null
    * - sourceReferences
      - List<SourceReference>
      - 
      - optional, defaults to null
      - null
-   * - partial
-     - Boolean
-     - marks that the landscape is not complete, but an update
+   * - color
+     - String
+     - 
      - optional, defaults to null
      - null
    * - icon
@@ -83,9 +78,14 @@ LandscapeDescription
      - 
      - optional, defaults to null
      - null
-   * - color
-     - String
-     - 
+   * - items
+     - List<ItemDescription>
+     - List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc.
+     - optional, defaults to null
+     - null
+   * - partial
+     - Boolean
+     - marks that the landscape is not complete, but an update
      - optional, defaults to null
      - null
    * - links
