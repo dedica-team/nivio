@@ -71,7 +71,7 @@ public class DiffProcessor extends Processor {
         //remove references left over in groups
         List<Item> toDelete = getUnreferenced(input, inLandscape, existingItems, processLog);
         toDelete.forEach(item -> {
-            processLog.info("Removing item " + item + " from landscape");
+            processLog.info(String.format("Removing item %s from landscape", item));
             landscape.getGroup(item.getGroup()).ifPresent(group -> {
                 boolean removed = group.removeItem(item);
                 if (!removed) {
@@ -116,7 +116,6 @@ public class DiffProcessor extends Processor {
     /**
      * Returns all elements which are not in the second list
      *
-     * @return
      */
     static List<ItemDescription> added(Collection<ItemDescription> itemDescriptions, Collection<Item> existingItems, Landscape landscape) {
         return itemDescriptions.stream()
