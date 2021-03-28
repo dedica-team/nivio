@@ -14,7 +14,7 @@ import java.util.Objects;
 @Schema(description = "Changelog for a single landscape processing run (update of landscape from different sources).")
 public class ProcessingChangelog {
 
-    @Schema(description = "The key FullyQualifiedIdentifier of a component")
+    @Schema(description = "The key is the FullyQualifiedIdentifier of a component")
     final Map<String, Entry> changes = new HashMap<>();
 
     /**

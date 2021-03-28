@@ -65,7 +65,7 @@ public class Indexer {
 
     private ProcessingChangelog runResolvers(LandscapeDescription input, Landscape landscape) {
 
-        //a detailed textual lgo
+        //a detailed textual log
         ProcessLog logger = landscape.getLog();
 
         //a structured log on component level
