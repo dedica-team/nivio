@@ -1,12 +1,6 @@
 import React, { ReactElement } from 'react';
-import { IAssessmentProps, IGroup, IItem, ILandscape } from "../../../interfaces";
-import {
-  Button,
-  Link,
-  List,
-  ListItem,
-  ListItemText,
-} from '@material-ui/core';
+import { IAssessmentProps, IGroup, IItem, ILandscape } from '../../../interfaces';
+import { Button, Link, List, ListItem, ListItemText } from '@material-ui/core';
 
 /**
  * Find an item by its fully qualified identifier.
@@ -85,7 +79,13 @@ export const getLabels = (element: IGroup | IItem) => {
   }
   Object.keys(element.labels).forEach((key) => {
     if (element && element.labels && element.labels[key]) {
-      if (key.startsWith('icon') || key.startsWith('fill') || key.startsWith('tag')) return;
+      if (
+        key.startsWith('icon') ||
+        key.startsWith('fill') ||
+        key.startsWith('tag') ||
+        key === 'color'
+      )
+        return;
       if (element.labels[key] === '*') return;
 
       labels.push(
@@ -105,6 +105,11 @@ export const getLabels = (element: IGroup | IItem) => {
   return <List dense={true}>{labels}</List>;
 };
 
+/**
+ * Returns the summary field from a subset of assessments.
+ * @param assessmentResults
+ * @todo refactor to return IAssessmentProps
+ */
 export const getAssessmentSummary = (
   assessmentResults: IAssessmentProps[] | undefined
 ): string[] => {
@@ -127,16 +132,6 @@ export const getAssessmentSummary = (
   }
 
   return [assessmentColor, assessmentMessage, assessmentField];
-};
-
-export const getAssessmentColor = (assessmentResults: IAssessmentProps): string => {
-  let assessmentColor = 'grey';
-
-  if (assessmentResults.status !== 'UNKNOWN') {
-    assessmentColor = assessmentResults.status;
-  }
-
-  return assessmentColor;
 };
 
 export const getItemIcon = (item: IItem) => {
