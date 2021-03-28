@@ -239,13 +239,13 @@ public class Group implements Labeled, Linked, Assessable {
         }
 
         List<String> changes = new ArrayList<>();
-        compareStrings(this.contact, newer.contact, "Contact", changes);
-        compareStrings(this.description, newer.description, "Description", changes);
-        compareStrings(this.owner, newer.owner, "Owner", changes);
-        compareStrings(this.color, newer.color, "Color", changes);
-        compareCollections(this.labels.keySet(), newer.labels.keySet(), "Labels", changes);
-        compareCollections(this.labels.values(), newer.labels.values(), "Label value", changes);
-        compareCollections(this.links.keySet(), newer.links.keySet(), "Links", changes);
+        changes.addAll(compareStrings(this.contact, newer.contact, "Contact"));
+        changes.addAll(compareStrings(this.description, newer.description, "Description"));
+        changes.addAll(compareStrings(this.owner, newer.owner, "Owner"));
+        changes.addAll(compareStrings(this.color, newer.color, "Color"));
+        changes.addAll(compareCollections(this.labels.keySet(), newer.labels.keySet(), "Labels"));
+        changes.addAll(compareCollections(this.labels.values(), newer.labels.values(), "Label value"));
+        changes.addAll(compareCollections(this.links.keySet(), newer.links.keySet(), "Links"));
 
         return changes;
     }

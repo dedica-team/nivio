@@ -151,9 +151,9 @@ public class Relation implements Serializable {
         }
 
         List<String> changes = new ArrayList<>();
-        compareStrings(this.format, newer.format, "Format", changes);
-        compareStrings(this.description, newer.description, "Description", changes);
-        compareOptionals(Optional.ofNullable(this.type), Optional.ofNullable(newer.type), "Type", changes);
+        changes.addAll(compareStrings(this.format, newer.format, "Format"));
+        changes.addAll(compareStrings(this.description, newer.description, "Description"));
+        changes.addAll(compareOptionals(Optional.ofNullable(this.type), Optional.ofNullable(newer.type), "Type"));
 
         return changes;
     }

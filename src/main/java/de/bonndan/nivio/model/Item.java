@@ -287,18 +287,18 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         }
 
         List<String> changes = new ArrayList<>();
-        compareStrings(this.contact, newer.contact, "Contact", changes);
-        compareStrings(this.description, newer.description, "Description", changes);
-        compareStrings(this.name, newer.name, "Name", changes);
-        compareStrings(this.owner, newer.owner, "Owner", changes);
-        compareOptionals(Optional.ofNullable(this.address), Optional.ofNullable(newer.address), "Address", changes);
-        compareCollections(this.labels.keySet(), newer.labels.keySet(), "Labels", changes);
-        compareCollections(this.labels.values(), newer.labels.values(), "Label value", changes);
-        compareCollections(this.links.keySet(), newer.links.keySet(), "Links", changes);
+        changes.addAll(compareStrings(this.contact, newer.contact, "Contact"));
+        changes.addAll(compareStrings(this.description, newer.description, "Description"));
+        changes.addAll(compareStrings(this.name, newer.name, "Name"));
+        changes.addAll(compareStrings(this.owner, newer.owner, "Owner"));
+        changes.addAll(compareOptionals(Optional.ofNullable(this.address), Optional.ofNullable(newer.address), "Address"));
+        changes.addAll(compareCollections(this.labels.keySet(), newer.labels.keySet(), "Labels"));
+        changes.addAll(compareCollections(this.labels.values(), newer.labels.values(), "Label value"));
+        changes.addAll(compareCollections(this.links.keySet(), newer.links.keySet(), "Links"));
 
         List<String> collect = this.interfaces.stream().map(ServiceInterface::toString).collect(Collectors.toList());
         List<String> collect2 = newer.getInterfaces().stream().map(ServiceInterface::toString).collect(Collectors.toList());
-        compareCollections(collect, collect2, "Links", changes);
+        changes.addAll(compareCollections(collect, collect2, "Links"));
 
         return changes;
     }

@@ -20,85 +20,87 @@ class ComponentDiffTest {
 
     @Test
     void twoNulls() {
-        ComponentDiff.compareStrings(null, null, "foo", changes);
+        changes.addAll(ComponentDiff.compareStrings(null, null, "foo"));
         assertThat(changes).hasSize(0);
     }
 
     @Test
     void twoNull() {
-        ComponentDiff.compareStrings("a", null, "foo", changes);
+        changes.addAll(ComponentDiff.compareStrings("a", null, "foo"));
         assertThat(changes).hasSize(1);
     }
 
     @Test
     void oneNull() {
-        ComponentDiff.compareStrings(null, "b", "foo", changes);
+        changes.addAll(ComponentDiff.compareStrings(null, "b", "foo"));
         assertThat(changes).hasSize(1);
     }
 
     @Test
     void similarString() {
-        ComponentDiff.compareStrings("b", "b", "foo", changes);
+        changes.addAll(ComponentDiff.compareStrings("b", "b", "foo"));
         assertThat(changes).hasSize(0);
     }
 
     @Test
     void differentString() {
-        ComponentDiff.compareStrings("a", "b", "foo", changes);
+        changes.addAll(ComponentDiff.compareStrings("a", "b", "foo"));
         assertThat(changes).hasSize(1);
     }
 
     @Test
     void bothEmpty() {
-        ComponentDiff.compareOptionals(Optional.empty(), Optional.empty(), "foo", changes);
+        changes.addAll(ComponentDiff.compareOptionals(Optional.empty(), Optional.empty(), "foo"));
         assertThat(changes).hasSize(0);
     }
 
     @Test
     void oneEmpty() {
-        ComponentDiff.compareOptionals(Optional.empty(), Optional.of("a"), "foo", changes);
+        changes.addAll(ComponentDiff.compareOptionals(Optional.empty(), Optional.of("a"), "foo"));
         assertThat(changes).hasSize(1);
     }
 
     @Test
     void twoEmpty() {
-        ComponentDiff.compareOptionals(Optional.of("a"), Optional.empty(), "foo", changes);
+        changes.addAll(ComponentDiff.compareOptionals(Optional.of("a"), Optional.empty(), "foo"));
         assertThat(changes).hasSize(1);
     }
 
     @Test
     void similarOptionals() {
-        ComponentDiff.compareOptionals(Optional.of("a"), Optional.of("a"), "foo", changes);
+        changes.addAll(ComponentDiff.compareOptionals(Optional.of("a"), Optional.of("a"), "foo"));
+
         assertThat(changes).hasSize(0);
     }
 
     @Test
     void differentOptionals() {
-        ComponentDiff.compareOptionals(Optional.of("a"), Optional.of("b"), "foo", changes);
+        changes.addAll(ComponentDiff.compareOptionals(Optional.of("a"), Optional.of("b"), "foo"));
+
         assertThat(changes).hasSize(1);
     }
 
     @Test
     void similarCollections() {
-        ComponentDiff.compareCollections(List.of("a", "b"), List.of("b", "a"), "foo", changes);
+        changes.addAll(ComponentDiff.compareCollections(List.of("a", "b"), List.of("b", "a"), "foo"));
         assertThat(changes).hasSize(0);
     }
 
     @Test
     void differentCollectionEntries() {
-        ComponentDiff.compareCollections(List.of("a", "b"), List.of("c", "a"), "foo", changes);
+        changes.addAll(ComponentDiff.compareCollections(List.of("a", "b"), List.of("c", "a"), "foo"));
         assertThat(changes).hasSize(1);
     }
 
     @Test
     void differentCollectionSize() {
-        ComponentDiff.compareCollections(List.of("a", "b"), List.of("a", "b", "c"), "foo", changes);
+        changes.addAll(ComponentDiff.compareCollections(List.of("a", "b"), List.of("a", "b", "c"), "foo"));
         assertThat(changes).hasSize(1);
     }
 
     @Test
     void differentCollectionSize2() {
-        ComponentDiff.compareCollections(List.of("a", "b", "c"), List.of("a", "b"), "foo", changes);
+        changes.addAll(ComponentDiff.compareCollections(List.of("a", "b", "c"), List.of("a", "b"), "foo"));
         assertThat(changes).hasSize(1);
     }
 }

@@ -1,6 +1,8 @@
 package de.bonndan.nivio.model;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -13,12 +15,13 @@ public class ComponentDiff {
      * @param a       first
      * @param b       second
      * @param key     label
-     * @param changes array of changes
      */
-    public static void compareStrings(String a, String b, String key, List<String> changes) {
+    public static List<String> compareStrings(@Nullable final String a, @Nullable final String b, @NonNull final String key) {
         if (!org.apache.commons.lang3.StringUtils.equals(a, b)) {
-            changes.add(key + " changed to: " + b);
+            return List.of(String.format("%s changed to: %s", key, b));
         }
+
+        return Collections.emptyList();
     }
 
     /**
@@ -27,12 +30,13 @@ public class ComponentDiff {
      * @param a       first
      * @param b       second
      * @param key     label
-     * @param changes array of changes
      */
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public static void compareOptionals(Optional<Object> a, Optional<Object> b, String key, List<String> changes) {
+    public static List<String> compareOptionals(Optional<Object> a, Optional<Object> b, @NonNull final String key) {
+
+        List<String> changes = new ArrayList<>();
         if (a.isEmpty() && b.isEmpty()) {
-            return;
+            return changes;
         }
 
         boolean onlyAExists = a.isPresent() && b.isEmpty();
@@ -41,7 +45,7 @@ public class ComponentDiff {
 
         if (onlyAExists || onlyBExists) {
             changes.add(String.format("%s changed to: %s", key, b.orElse("")));
-            return;
+            return changes;
         }
 
         String aString = a.map(Object::toString).orElse("");
@@ -49,6 +53,8 @@ public class ComponentDiff {
         if (!aString.equals(bString)) {
             changes.add(String.format("%s changed to: %s", key, bString));
         }
+
+        return changes;
     }
 
     /**
@@ -57,13 +63,17 @@ public class ComponentDiff {
      * @param one     first
      * @param two     second
      * @param key     label
-     * @param changes list of changes
      */
-    public static void compareCollections(Collection<String> one, Collection<String> two, String key, List<String> changes) {
+    public static List<String> compareCollections(@NonNull final Collection<String> one,
+                                                  @NonNull final Collection<String> two,
+                                                  @NonNull final String key
+    ) {
         @SuppressWarnings("unchecked") Collection<String> disjunction = CollectionUtils.disjunction(one, two);
         String changedKeys = String.join(",", disjunction);
+
         if (!StringUtils.isEmpty(changedKeys)) {
-            changes.add(String.format("%s have differences : '%s'", key, changedKeys));
+            return List.of(String.format("%s have differences : '%s'", key, changedKeys));
         }
+        return Collections.emptyList();
     }
 }
