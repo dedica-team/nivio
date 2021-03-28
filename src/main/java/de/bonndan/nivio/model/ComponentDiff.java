@@ -34,12 +34,20 @@ public class ComponentDiff {
         if (a.isEmpty() && b.isEmpty()) {
             return;
         }
-        if (a.isPresent() && b.isEmpty() || a.isEmpty() && b.isPresent()) {
-            changes.add(key + " changed to: " + b.orElse(""));
+
+        boolean onlyAExists = a.isPresent() && b.isEmpty();
+        //noinspection ConstantConditions left here for better readability
+        boolean onlyBExists = a.isEmpty() && b.isPresent();
+
+        if (onlyAExists || onlyBExists) {
+            changes.add(String.format("%s changed to: %s", key, b.orElse("")));
             return;
         }
-        if (!org.apache.commons.lang3.StringUtils.equals(a.map(Object::toString).orElse(""), b.map(Object::toString).orElse(""))) {
-            changes.add(key + " changed to: " + b);
+
+        String aString = a.map(Object::toString).orElse("");
+        String bString = b.map(Object::toString).orElse("");
+        if (!aString.equals(bString)) {
+            changes.add(String.format("%s changed to: %s", key, bString));
         }
     }
 
@@ -52,7 +60,7 @@ public class ComponentDiff {
      * @param changes list of changes
      */
     public static void compareCollections(Collection<String> one, Collection<String> two, String key, List<String> changes) {
-        Collection<String> disjunction = CollectionUtils.disjunction(one, two);
+        @SuppressWarnings("unchecked") Collection<String> disjunction = CollectionUtils.disjunction(one, two);
         String changedKeys = String.join(",", disjunction);
         if (!StringUtils.isEmpty(changedKeys)) {
             changes.add(String.format("%s have differences : '%s'", key, changedKeys));
