@@ -33,13 +33,13 @@ public class ItemRelationProcessor extends Processor {
                     continue;
                 }
 
-                Optional<Relation> existing = getExisting(relationDescription, landscape, origin);
-                if (existing.isPresent()) {
-                    Relation update = update(relationDescription, existing.get());
+                Optional<Relation> current = getCurrentRelation(relationDescription, landscape, origin);
+                if (current.isPresent()) {
+                    Relation update = update(relationDescription, current.get());
                     affected.add(update);
                     processed.add(update);
                     processLog.info(String.format("Updating relation between %s and %s", update.getSource(), update.getTarget()));
-                    List<String> changes = existing.get().getChanges(update);
+                    List<String> changes = current.get().getChanges(update);
                     if (!changes.isEmpty()) {
                         changelog.addEntry(update, ProcessingChangelog.ChangeType.UPDATED, String.join(";", changes));
                     }
@@ -60,7 +60,7 @@ public class ItemRelationProcessor extends Processor {
                     .filter(relation -> origin.equals(relation.getSource()))
                     .filter(relation -> !input.isPartial())
                     .forEach(relation -> {
-                        removefromBothEnds(origin, relation);
+                        removeFromBothEnds(origin, relation);
                         processLog.info(String.format("Removing relation between %s and %s", relation.getSource(), relation.getTarget()));
                         changelog.addEntry(relation, ProcessingChangelog.ChangeType.DELETED, null);
                     });
@@ -87,7 +87,7 @@ public class ItemRelationProcessor extends Processor {
     }
 
     private void assignToBothEnds(Item origin, Relation relation) {
-        removefromBothEnds(origin, relation);
+        removeFromBothEnds(origin, relation);
 
         origin.getRelations().add(relation);
         if (relation.getSource() == origin) {
@@ -97,7 +97,7 @@ public class ItemRelationProcessor extends Processor {
         }
     }
 
-    private void removefromBothEnds(Item origin, Relation relation) {
+    private void removeFromBothEnds(Item origin, Relation relation) {
         origin.getRelations().remove(relation);
         if (relation.getSource() == origin) {
             relation.getTarget().getRelations().remove(relation);
@@ -107,9 +107,9 @@ public class ItemRelationProcessor extends Processor {
     }
 
 
-    private Optional<Relation> getExisting(RelationDescription relationDescription,
-                                           Landscape landscape,
-                                           Item origin
+    private Optional<Relation> getCurrentRelation(RelationDescription relationDescription,
+                                                  Landscape landscape,
+                                                  Item origin
     ) {
         Item source = findBy(relationDescription.getSource(), landscape).orElseThrow();
         Item target = findBy(relationDescription.getTarget(), landscape).orElseThrow();
