@@ -4,6 +4,8 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.search.ItemMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,6 +16,8 @@ import java.util.stream.Collectors;
  * Adds, updates and removes items in the landscape.
  */
 public class DiffProcessor extends Processor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiffProcessor.class);
 
     protected DiffProcessor(ProcessLog processLog) {
         super(processLog);
@@ -66,18 +70,27 @@ public class DiffProcessor extends Processor {
                     }
                 }
         );
-        landscape.setItems(inLandscape);
 
-        deleteUnreferenced(input, inLandscape, existingItems, processLog)
-                .forEach(item -> {
-                    changelog.addEntry(item, ProcessingChangelog.ChangeType.DELETED);
-                    landscape.getItems().all().remove(item);
-                });
+        //cleanup
+        landscape.setItems(inLandscape); //this already removes the items from the landscape.items
+
+        //remove references left over in groups
+        List<Item> toDelete = getUnreferenced(input, inLandscape, existingItems, processLog);
+        toDelete.forEach(item -> {
+            processLog.info(String.format("Removing item %s from landscape", item));
+            changelog.addEntry(item, ProcessingChangelog.ChangeType.DELETED);
+            landscape.getGroup(item.getGroup()).ifPresent(group -> {
+                boolean removed = group.removeItem(item);
+                if (!removed) {
+                    LOGGER.warn("Failed to remove item {}", item);
+                }
+            });
+        });
 
         return changelog;
     }
 
-    private List<Item> deleteUnreferenced(
+    private List<Item> getUnreferenced(
             final LandscapeDescription landscapeDescription,
             Set<Item> kept,
             Set<Item> all,
@@ -115,6 +128,7 @@ public class DiffProcessor extends Processor {
      * Returns all elements which are not in the second list
      *
      * @return
+     *
      */
     static List<ItemDescription> added(Collection<ItemDescription> itemDescriptions, Collection<Item> existingItems, Landscape landscape) {
         return itemDescriptions.stream()

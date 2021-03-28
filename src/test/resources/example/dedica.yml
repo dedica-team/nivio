@@ -15,7 +15,7 @@ groups:
 items:
   - identifier: dedica
     name: ""
-    description: The IT consuldddting team.
+    description: The IT consulting team.
     links:
       homepage: https://dedica.team
     group: dedica

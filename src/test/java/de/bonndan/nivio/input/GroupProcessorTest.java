@@ -46,7 +46,7 @@ class GroupProcessorTest {
         LandscapeDescription input = getLandscapeDescription();
         ItemDescription itemDescription = new ItemDescription("a");
         itemDescription.setGroup("foobar");
-        input.addItems(List.of(itemDescription));
+        input.mergeItems(List.of(itemDescription));
 
         //when
         ProcessingChangelog process = groupProcessor.process(input, landscape);
@@ -65,7 +65,7 @@ class GroupProcessorTest {
 
         ItemDescription item = new ItemDescription();
         item.setIdentifier("abc");
-        input.addItems(Arrays.asList(item));
+        input.mergeItems(Arrays.asList(item));
 
         groupProcessor.process(input, landscape);
 

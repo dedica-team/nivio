@@ -37,6 +37,29 @@ class GroupTest {
     }
 
     @Test
+    void removeItem() {
+        Group g = new Group("foo", null);
+        Item item = getTestItem("foo", "b");
+        g.addItem(item);
+        assertEquals(1, g.getItems().size());
+
+        boolean b = g.removeItem(item);
+        assertThat(b).isTrue();
+        assertThat(g.getItems()).hasSize(0);
+    }
+
+    @Test
+    void removeItemFails() {
+        Group g = new Group("foo", null);
+        Item item = getTestItem("foo", "b");
+        g.addItem(item);
+
+        boolean b = g.removeItem(getTestItem("foo", "c"));
+        assertThat(b).isFalse();
+        assertThat(g.getItems()).hasSize(1);
+    }
+
+    @Test
     void hasNoChanges() {
         Group g1 = new Group("foo", "bar", "John", null, null, null, null);
         Group g2 = new Group("foo", "bar", "John", null, null, null, null);

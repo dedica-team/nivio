@@ -28,7 +28,12 @@ approach, i.e. there is no interface for manual data maintenance. It is designed
 * Apache Httpd and the logo are trademarks of the ASF.
 * WordPress and the logo are trademarks of Wordpress Foundation. http://wordpressfoundation.org/trademark-policy/
 
-Nivio uses the [Material Design Icons](https://materialdesignicons.com/) released under the MIT / Apache 2.0 licenses.  
+Nivio uses the [Material Design Icons](https://materialdesignicons.com/) released under the MIT / Apache 2.0 licenses.
+
+ <img src="https://raw.githubusercontent.com/dedica-team/nivio/develop/src/main/resources/static/icons/svg/nivio.svg" width="100" height="100" />
+
+
+The nivio logo has been designed by [Alfred Rehbach](https://alfredrehbach.de)
 
 ## Development Setup
 

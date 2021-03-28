@@ -10,13 +10,13 @@ import { useParams } from 'react-router-dom';
 
 import { SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
 import {
-  fitSelection,
+  //fitSelection,
   fitToViewer,
   ReactSVGPanZoom,
   //setPointOnViewerCenter,
   Tool,
   TOOL_AUTO,
-  Value,
+  Value
 } from 'react-svg-pan-zoom';
 
 import './Map.css';
@@ -33,6 +33,26 @@ import Group from '../Modals/Group/Group';
 //import MapUtils from './MapUtils';
 import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
 import { NotificationContext } from '../../../Context/NotificationContext';
+import ZoomOutIcon from '@material-ui/icons/ZoomOut';
+import IconButton from '@material-ui/core/IconButton';
+import { Theme, createStyles, darken } from '@material-ui/core';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+
+
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+
+    menuIcon: {
+      position: 'absolute',
+      cursor: 'pointer',
+      top: '70px',
+      zIndex: 1000,
+      backgroundColor: darken(theme.palette.primary.main, 0.2),
+    }
+
+  })
+);
 
 interface Props {
   setSidebarContent: Function;
@@ -54,7 +74,7 @@ interface SVGData {
  */
 const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [tool, setTool] = useState<Tool>(TOOL_AUTO);
-
+  const classes = useStyles();
   // It wants a value or null but if we defined it as null it throws an error that shouldn't use null
   // In their own documentation, they initialize it with {}, but that will invoke a typescript error
   // @ts-ignore
@@ -67,6 +87,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [assessments, setAssessments] = useState<IAssessment | undefined>(undefined);
 
   const [isFirstRender, setIsFirstRender] = useState(true);
+  const [isZoomed, setIsZoomed] = useState<Boolean>(false);
 
   const locateFunctionContext = useContext(LocateFunctionContext);
   const notificationContext = useContext(NotificationContext);
@@ -89,7 +110,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
     if (fullyQualifiedItemIdentifier && landscape) {
       let item = getItem(landscape, fullyQualifiedItemIdentifier);
-      if (item) setSidebarContent(<Item key={fullyQualifiedItemIdentifier} useItem={item} landscape={landscape}/>);
+      if (item) setSidebarContent(<Item key={fullyQualifiedItemIdentifier} useItem={item} landscape={landscape} />);
     }
   };
 
@@ -127,21 +148,24 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       }
     }
 
+    setHighlightElement(e.currentTarget.children);
+    setRenderWithTransition(true);
     if (sourceX && sourceY && targetX && targetY) {
       sourceX = parseFloat(sourceX) / 2;
       targetX = parseFloat(targetX) / 2;
       sourceY = parseFloat(sourceY) / 2;
       targetY = parseFloat(targetY) / 2;
 
+      /*
       const x = (sourceX + targetX) / 2;
       const y = (sourceY + targetY) / 2;
 
       const zoomWidth = Math.abs(Math.min(sourceX, targetX)) + window.innerWidth;
       const zoomHeight = Math.abs(Math.min(sourceY, targetY)) + window.innerHeight * 0.92;
 
-      setHighlightElement(e.currentTarget.children);
-      setRenderWithTransition(true);
-      setValue(fitSelection(value, x - 500, y, zoomWidth, zoomHeight));
+       */
+
+      //setValue(fitSelection(value, x - 500, y, zoomWidth, zoomHeight));
     }
 
     if (source && target && dataTarget) {
@@ -246,13 +270,24 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
     return (
       <div className='landscapeMapContainer'>
+        {isZoomed && <IconButton
+          className={classes.menuIcon}
+          title={'Click to reset view'}
+          onClick={() => {
+            // @ts-ignore  
+            setValue(fitToViewer(value, 'center', 'center'));
+            setIsZoomed(false)
+          }}
+          size={'small'}
+        >
+          <ZoomOutIcon ></ZoomOutIcon></IconButton>}
         <ReactSvgPanZoomLoaderXML
           xml={data.xml}
           proxy={
             <>
-              <SvgLoaderSelectElement selector='.item' onClick={onItemClick} />
-              <SvgLoaderSelectElement selector='.relation' onClick={onRelationClick} />
-              <SvgLoaderSelectElement selector='.groupArea' onClick={onGroupClick} />
+              <SvgLoaderSelectElement selector='.item' onMouseUp={onItemClick} onTouchEnd={onItemClick} />
+              <SvgLoaderSelectElement selector='.relation' onMouseUp={onRelationClick} onTouchEnd={onRelationClick} />
+              <SvgLoaderSelectElement selector='.groupArea' onMouseUp={onGroupClick} onTouchEnd={onGroupClick} />
             </>
           }
           render={(content: ReactElement[]) => (
@@ -270,6 +305,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
               preventPanOutside={false}
               toolbarProps={{ position: 'none' }}
               detectAutoPan={false}
+              onZoom={() => { setIsZoomed(true) }}
               tool={tool}
               onChangeTool={(newTool) => setTool(newTool)}
               value={value}
