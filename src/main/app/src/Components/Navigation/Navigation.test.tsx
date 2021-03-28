@@ -3,21 +3,21 @@ import { render } from '@testing-library/react';
 import Navigation from './Navigation';
 import { MemoryRouter } from 'react-router-dom';
 
-it('should render Navigation component', () => {
+it('should render Home link', () => {
   const { getByText } = render(
     <MemoryRouter>
-      <Navigation setSidebarContent={() => {}} appBarClass={'foo'} />
+      <Navigation setSidebarContent={() => {}} />
     </MemoryRouter>
   );
-  expect(getByText('nivio')).toBeInTheDocument();
+  expect(getByText('Home')).toBeInTheDocument();
 });
 
 it('should link to manual on button click', () => {
-  const { getByTestId } = render(
+  const { getByText } = render(
     <MemoryRouter>
-      <Navigation setSidebarContent={() => {}} appBarClass={'foo'} />
+      <Navigation setSidebarContent={() => {}} />
     </MemoryRouter>
   );
 
-  expect(getByTestId('ManualButton').closest('a')).toHaveAttribute('href', '/man/install.html');
+  expect(getByText('Help').closest('a')).toHaveAttribute('href', '/man/install.html');
 });
