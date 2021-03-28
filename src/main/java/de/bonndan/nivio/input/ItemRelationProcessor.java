@@ -34,23 +34,9 @@ public class ItemRelationProcessor extends Processor {
                 }
 
                 Optional<Relation> current = getCurrentRelation(relationDescription, landscape, origin);
-                if (current.isPresent()) {
-                    Relation update = update(relationDescription, current.get());
-                    affected.add(update);
-                    processed.add(update);
-                    processLog.info(String.format("Updating relation between %s and %s", update.getSource(), update.getTarget()));
-                    List<String> changes = current.get().getChanges(update);
-                    if (!changes.isEmpty()) {
-                        changelog.addEntry(update, ProcessingChangelog.ChangeType.UPDATED, String.join(";", changes));
-                    }
-                    continue;
-                }
-
-                Relation created = create(relationDescription, landscape);
-                affected.add(created);
-                processed.add(created);
-                processLog.info(String.format(origin + ": Adding relation between %s and %s", created.getSource(), created.getTarget()));
-                changelog.addEntry(created, ProcessingChangelog.ChangeType.CREATED, null);
+                current.ifPresentOrElse(
+                        (relation) -> updateRelation(changelog, processed, affected, relationDescription, relation),
+                        () -> createRelation(landscape, changelog, processed, origin, affected, relationDescription));
             }
 
             affected.forEach(relation -> assignToBothEnds(origin, relation));
@@ -67,6 +53,25 @@ public class ItemRelationProcessor extends Processor {
         });
 
         return changelog;
+    }
+
+    private void updateRelation(ProcessingChangelog changelog, List<Relation> processed, List<Relation> affected, RelationDescription relationDescription, Relation relation) {
+        Relation update = update(relationDescription, relation);
+        affected.add(update);
+        processed.add(update);
+        processLog.info(String.format("Updating relation between %s and %s", update.getSource(), update.getTarget()));
+        List<String> changes = relation.getChanges(update);
+        if (!changes.isEmpty()) {
+            changelog.addEntry(update, ProcessingChangelog.ChangeType.UPDATED, String.join(";", changes));
+        }
+    }
+
+    private void createRelation(Landscape landscape, ProcessingChangelog changelog, List<Relation> processed, Item origin, List<Relation> affected, RelationDescription relationDescription) {
+        Relation created = create(relationDescription, landscape);
+        affected.add(created);
+        processed.add(created);
+        processLog.info(String.format(origin + ": Adding relation between %s and %s", created.getSource(), created.getTarget()));
+        changelog.addEntry(created, ProcessingChangelog.ChangeType.CREATED, null);
     }
 
     private boolean isValid(RelationDescription relationDescription, Landscape landscape) {
