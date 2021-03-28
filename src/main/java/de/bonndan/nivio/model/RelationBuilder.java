@@ -50,6 +50,14 @@ public class RelationBuilder {
         return relationDescription;
     }
 
+    /**
+     * Returns a new relation with values updated by the description.
+     *
+     * @param existing    existing relation
+     * @param description incoming data
+     * @return new copy
+     */
+    @NonNull
     public static Relation update(@NonNull final Relation existing, @NonNull final RelationDescription description) {
         Objects.requireNonNull(existing);
         Objects.requireNonNull(description);

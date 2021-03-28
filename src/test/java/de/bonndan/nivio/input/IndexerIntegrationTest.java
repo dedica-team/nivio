@@ -185,7 +185,15 @@ public class IndexerIntegrationTest {
         assertEquals("Other name", wordpress.getName());
         assertEquals("content", wordpress.getGroup());
 
-
+        //testing changelog
+        ArgumentCaptor<ProcessingFinishedEvent> captor = ArgumentCaptor.forClass(ProcessingFinishedEvent.class);
+        verify(applicationEventPublisher, times(2)).publishEvent(captor.capture());
+        ProcessingFinishedEvent value = captor.getAllValues().get(1);
+        assertThat(value).isNotNull();
+        ProcessingChangelog changelog = value.getChangelog();
+        assertThat(changelog).isNotNull();
+        assertThat(changelog.changes).hasSize(3);
+        assertThat(changelog.changes).containsKey("nivio:example/content/wordpress-web");
     }
 
     /**

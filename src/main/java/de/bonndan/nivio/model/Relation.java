@@ -6,7 +6,13 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+
+import static de.bonndan.nivio.model.ComponentDiff.compareOptionals;
+import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
 
 /**
  * Indication of an incoming or outgoing relation like data flow or dependency (provider).
@@ -130,5 +136,25 @@ public class Relation implements Serializable {
                 direction = INBOUND;
             }
         }
+    }
+
+    /**
+     * Compare on field level against a newer version.
+     *
+     * @param newer the newer version
+     * @return a list of changes if any changes are present
+     * @throws IllegalArgumentException if the arg is not comparable
+     */
+    public List<String> getChanges(Relation newer) {
+        if (!newer.equals(this)) {
+            throw new IllegalArgumentException("Cannot compare relation " + newer.toString() + " against " + this.toString());
+        }
+
+        List<String> changes = new ArrayList<>();
+        changes.addAll(compareStrings(this.format, newer.format, "Format"));
+        changes.addAll(compareStrings(this.description, newer.description, "Description"));
+        changes.addAll(compareOptionals(Optional.ofNullable(this.type), Optional.ofNullable(newer.type), "Type"));
+
+        return changes;
     }
 }

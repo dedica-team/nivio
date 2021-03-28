@@ -5,6 +5,9 @@ import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ItemRelationProcessor;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
@@ -13,6 +16,8 @@ import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import static de.bonndan.nivio.model.ComponentDiff.*;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -267,4 +272,36 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
     public Set<StatusValue> getAdditionalStatusValues() {
         return StatusValue.fromMapping(indexedByPrefix(Label.status));
     }
+
+
+    /**
+     * Compare on field level against a newer version.
+     *
+     * @param newer the newer version
+     * @return a list of changes if any changes are present
+     * @throws IllegalArgumentException if the arg is not comparable
+     */
+    public List<String> getChanges(Item newer) {
+        if (!newer.equals(this)) {
+            throw new IllegalArgumentException("Cannot compare component " + newer.toString() + " against " + this.toString());
+        }
+
+        List<String> changes = new ArrayList<>();
+        changes.addAll(compareStrings(this.contact, newer.contact, "Contact"));
+        changes.addAll(compareStrings(this.description, newer.description, "Description"));
+        changes.addAll(compareStrings(this.name, newer.name, "Name"));
+        changes.addAll(compareStrings(this.owner, newer.owner, "Owner"));
+        changes.addAll(compareOptionals(Optional.ofNullable(this.address), Optional.ofNullable(newer.address), "Address"));
+        changes.addAll(compareCollections(this.labels.keySet(), newer.labels.keySet(), "Labels"));
+        changes.addAll(compareCollections(this.labels.values(), newer.labels.values(), "Label value"));
+        changes.addAll(compareCollections(this.links.keySet(), newer.links.keySet(), "Links"));
+
+        List<String> collect = this.interfaces.stream().map(ServiceInterface::toString).collect(Collectors.toList());
+        List<String> collect2 = newer.getInterfaces().stream().map(ServiceInterface::toString).collect(Collectors.toList());
+        changes.addAll(compareCollections(collect, collect2, "Links"));
+
+        return changes;
+    }
+
+
 }

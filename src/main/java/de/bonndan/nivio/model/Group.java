@@ -12,6 +12,9 @@ import org.springframework.util.StringUtils;
 
 import java.util.*;
 
+import static de.bonndan.nivio.model.ComponentDiff.compareCollections;
+import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
+
 /**
  * Group is a container for {@link Item}s.
  *
@@ -221,5 +224,29 @@ public class Group implements Labeled, Linked, Assessable {
 
     public String getLandscapeIdentifier() {
         return landscapeIdentifier;
+    }
+
+    /**
+     * Compare on field level against a newer version.
+     *
+     * @param newer the newer version
+     * @return a list of changes if any changes are present
+     * @throws IllegalArgumentException if the arg is not comparable
+     */
+    public List<String> getChanges(Group newer) {
+        if (!newer.getIdentifier().equalsIgnoreCase(this.identifier)) {
+            throw new IllegalArgumentException("Cannot compare group " + newer.getIdentifier() + " against " + this.getIdentifier());
+        }
+
+        List<String> changes = new ArrayList<>();
+        changes.addAll(compareStrings(this.contact, newer.contact, "Contact"));
+        changes.addAll(compareStrings(this.description, newer.description, "Description"));
+        changes.addAll(compareStrings(this.owner, newer.owner, "Owner"));
+        changes.addAll(compareStrings(this.color, newer.color, "Color"));
+        changes.addAll(compareCollections(this.labels.keySet(), newer.labels.keySet(), "Labels"));
+        changes.addAll(compareCollections(this.labels.values(), newer.labels.values(), "Label value"));
+        changes.addAll(compareCollections(this.links.keySet(), newer.links.keySet(), "Links"));
+
+        return changes;
     }
 }

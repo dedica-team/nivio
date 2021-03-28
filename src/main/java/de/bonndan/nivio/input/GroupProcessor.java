@@ -25,16 +25,26 @@ public class GroupProcessor extends Processor {
         super(processLog);
     }
 
-    public void process(LandscapeDescription input, Landscape landscape) {
+    public ProcessingChangelog process(LandscapeDescription input, Landscape landscape) {
 
+        ProcessingChangelog changelog = new ProcessingChangelog();
         List<Function<String, Boolean>> specs = getSpecs(input.getConfig().getGroupBlacklist());
 
         input.getGroups().forEach((identifier, groupDescription) -> {
             Group g = GroupFactory.createFromDescription(identifier, landscape.getIdentifier(), groupDescription);
 
             if (!isBlacklisted(g.getIdentifier(), specs)) {
-                processLog.info("Adding or updating group " + g.getIdentifier());
-                landscape.addGroup(g);
+
+                Optional<Group> existing = landscape.getGroup(g.getIdentifier());
+                Group added = landscape.addGroup(g);
+                if (existing.isEmpty()) {
+                    processLog.info("Adding group " + g.getIdentifier());
+                    changelog.addEntry(added, ProcessingChangelog.ChangeType.CREATED);
+                } else {
+                    processLog.info("Updating group " + g.getIdentifier());
+                    String updates = String.join("; ", existing.get().getChanges(added));
+                    changelog.addEntry(added, ProcessingChangelog.ChangeType.UPDATED, updates);
+                }
             } else {
                 processLog.info("Ignoring blacklisted group " + g.getIdentifier());
             }
@@ -50,7 +60,9 @@ public class GroupProcessor extends Processor {
 
             if (!isBlacklisted(group, specs)) {
                 if (!landscape.getGroups().containsKey(group)) {
-                    landscape.addGroup(GroupFactory.createFromDescription(group, landscape.getIdentifier(), null));
+                    Group fromDescription = GroupFactory.createFromDescription(group, landscape.getIdentifier(), null);
+                    changelog.addEntry(fromDescription, ProcessingChangelog.ChangeType.CREATED, String.format("Reference by item %s", item));
+                    landscape.addGroup(fromDescription);
                 }
             } else {
                 processLog.info("Removing item " + item.getIdentifier() + " because in blacklisted group " + group);
@@ -72,6 +84,8 @@ public class GroupProcessor extends Processor {
             }
             throw new RuntimeException(String.format("item group '%s' not found.", item.getGroup()));
         });
+
+        return changelog;
     }
 
     private List<Function<String, Boolean>> getSpecs(List<String> blacklist) {

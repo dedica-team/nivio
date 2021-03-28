@@ -11,17 +11,29 @@ import java.util.Objects;
  */
 public class ProcessingFinishedEvent extends ProcessingEvent {
 
+    @NonNull
     private final LandscapeDescription input;
+
+    @NonNull
     private final Landscape landscape;
+
+    @NonNull
+    private final ProcessingChangelog changelog;
 
     /**
      * @param input     the LandscapeDescription input which has been processed
      * @param landscape out
+     * @param changelog log of component changes
+     * @throws NullPointerException if any of the params is null
      */
-    public ProcessingFinishedEvent(@NonNull final LandscapeDescription input, @NonNull final Landscape landscape) {
+    public ProcessingFinishedEvent(@NonNull final LandscapeDescription input,
+                                   @NonNull final Landscape landscape,
+                                   @NonNull final ProcessingChangelog changelog
+    ) {
         super(Objects.requireNonNull(input).getFullyQualifiedIdentifier());
         this.input = input;
         this.landscape = Objects.requireNonNull(landscape);
+        this.changelog = Objects.requireNonNull(changelog);
     }
 
     @NonNull
@@ -47,5 +59,10 @@ public class ProcessingFinishedEvent extends ProcessingEvent {
     @Override
     public String getMessage() {
         return "Processing of input data has finished.";
+    }
+
+    @NonNull
+    public ProcessingChangelog getChangelog() {
+        return changelog;
     }
 }

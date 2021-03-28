@@ -5,8 +5,6 @@ import de.bonndan.nivio.model.Landscape;
 
 /**
  * Modifies the target landscape using input.
- *
- *
  */
 abstract class Processor {
 
@@ -16,5 +14,12 @@ abstract class Processor {
         this.processLog = processLog;
     }
 
-    public abstract void process(LandscapeDescription input, Landscape landscape);
+    /**
+     * Apply the input to the landscape.
+     *
+     * @param input     input data
+     * @param landscape the landscape to be modified
+     * @return a map of changes containing {@link de.bonndan.nivio.model.FullyQualifiedIdentifier} as keys
+     */
+    public abstract ProcessingChangelog process(LandscapeDescription input, Landscape landscape);
 }

@@ -2,9 +2,11 @@ package de.bonndan.nivio.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -60,5 +62,84 @@ public class ItemTest {
         Map<String, String> labels = s1.getJSONLabels();
         assertThat(labels).containsKey("foo.one");
         assertThat(labels).containsKey("foo.two");
+    }
+
+    @Test
+    public void getChangesInLabels() {
+        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
+
+        Item s1 = getTestItem("g1", "a", landscape);
+        s1.getLabels().put("foo.one", "one");
+
+        Item s2 = getTestItem("g1", "a", landscape);
+        s2.getLabels().put("foo.one", "two");
+
+        List<String> changes = s1.getChanges(s2);
+        assertThat(changes).isNotNull().hasSize(1);
+        assertThat(changes.get(0)).contains("two");
+    }
+
+    @Test
+    public void getChangesInName() {
+
+        Item s1 = getTestItemBuilder("g1", "a")
+                .withName("foo")
+                .build();
+
+        Item s2 = getTestItemBuilder("g1", "a")
+                .withName("bar")
+                .build();
+
+        List<String> changes = s1.getChanges(s2);
+        assertThat(changes).isNotNull().hasSize(1);
+        assertThat(changes.get(0)).contains("Name");
+    }
+
+    @Test
+    public void getChangesInDescription() {
+
+        Item s1 = getTestItemBuilder("g1", "a")
+                .withDescription("foo")
+                .build();
+
+        Item s2 = getTestItemBuilder("g1", "a")
+                .withDescription("bar")
+                .build();
+
+        List<String> changes = s1.getChanges(s2);
+        assertThat(changes).isNotNull().hasSize(1);
+        assertThat(changes.get(0)).contains("Description");
+    }
+
+    @Test
+    public void getChangesInOwner() {
+
+        Item s1 = getTestItemBuilder("g1", "a")
+                .withOwner("foo")
+                .build();
+
+        Item s2 = getTestItemBuilder("g1", "a")
+                .withOwner("bar")
+                .build();
+
+        List<String> changes = s1.getChanges(s2);
+        assertThat(changes).isNotNull().hasSize(1);
+        assertThat(changes.get(0)).contains("Owner");
+    }
+
+    @Test
+    public void getChangesInLinks() {
+
+        Item s1 = getTestItemBuilder("g1", "a")
+                .withLinks(Map.of("foo", new Link("https://acme.com")))
+                .build();
+
+        Item s2 = getTestItemBuilder("g1", "a")
+                .withLinks(Map.of("bar", new Link("https://acme.com")))
+                .build();
+
+        List<String> changes = s1.getChanges(s2);
+        assertThat(changes).isNotNull().hasSize(1);
+        assertThat(changes.get(0)).contains("Links");
     }
 }
