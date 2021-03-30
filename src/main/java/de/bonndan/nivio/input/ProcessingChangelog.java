@@ -15,7 +15,7 @@ import java.util.Objects;
 public class ProcessingChangelog {
 
     @Schema(description = "The key is the FullyQualifiedIdentifier of a component")
-    final Map<String, Entry> changes = new HashMap<>();
+    public final Map<String, Entry> changes = new HashMap<>();
 
     /**
      * Add a change for a component.
