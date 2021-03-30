@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 0,
       borderRadius: 50,
       height: '2.5em',
-      width: 310,
+      width: 266,
       marginRight: 2,
       paddingLeft: 10,
       border: '1px solid ',
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     searchField: {
       marginTop: 2,
-      width: 290,
+      width: 250,
     },
   })
 );

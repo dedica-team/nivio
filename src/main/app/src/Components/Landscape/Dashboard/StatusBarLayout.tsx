@@ -1,27 +1,25 @@
-import React, { useContext } from "react";
+import React from 'react';
 
-import Grid from "@material-ui/core/Grid";
-import { IAssessment, IGroup, ILandscape } from "../../../interfaces";
-import { getAssessmentSummary } from "../Utils/utils";
-import StatusChip from "../../StatusChip/StatusChip";
-import Button from "@material-ui/core/Button";
-import Toolbar from "@material-ui/core/Toolbar";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
-import { darken, Theme } from "@material-ui/core";
-import { NotificationContext } from "../../../Context/NotificationContext";
-import { Alert } from "@material-ui/lab";
+import Grid from '@material-ui/core/Grid';
+import { IAssessment, IGroup, ILandscape } from '../../../interfaces';
+import { getAssessmentSummary } from '../Utils/utils';
+import StatusChip from '../../StatusChip/StatusChip';
+import Button from '@material-ui/core/Button';
+import Toolbar from '@material-ui/core/Toolbar';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { darken, Theme } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     bottomBar: {
-      top: "auto",
+      top: 'auto',
       bottom: 0,
       left: 0,
       padding: 5,
-      position: "fixed",
-      width: "100%",
-      backgroundColor: darken(theme.palette.primary.dark, 0.2)
-    }
+      position: 'fixed',
+      width: '100%',
+      backgroundColor: darken(theme.palette.primary.dark, 0.2),
+    },
   })
 );
 
@@ -36,12 +34,11 @@ interface Props {
  * Displays all groups of given landscape and provides all needed navigation
  */
 const StatusBarLayout: React.FC<Props> = ({
-                                            landscape,
-                                            assessments,
-                                            onItemClick,
-                                            onGroupClick
-                                          }) => {
-  const notificationContext = useContext(NotificationContext);
+  landscape,
+  assessments,
+  onItemClick,
+  onGroupClick,
+}) => {
   const classes = useStyles();
   const getItems = (group: IGroup) => {
     return group.items.map((item) => {
@@ -49,13 +46,13 @@ const StatusBarLayout: React.FC<Props> = ({
         assessments?.results[item.fullyQualifiedIdentifier]
       );
 
-      if (field === "") return null;
-      if (assessmentColor === "GREEN") return null;
+      if (field === '') return null;
+      if (assessmentColor === 'GREEN') return null;
 
       return (
         <Button key={item.fullyQualifiedIdentifier} onClick={() => onItemClick(item)}>
           <StatusChip
-            name={(item.name || item.identifier) + " " + field}
+            name={(item.name || item.identifier) + ' ' + field}
             status={assessmentColor}
           />
         </Button>
@@ -68,21 +65,21 @@ const StatusBarLayout: React.FC<Props> = ({
 
     return groups.map((group) => {
       if (group.items.length === 0) {
-        console.debug("Skipping group without items");
+        console.debug('Skipping group without items');
         return null;
       }
 
-      const groupColor = `#${group.color}` || "grey";
+      const groupColor = `#${group.color}` || 'grey';
       const [groupAssessmentColor, , groupAssessmentField] = getAssessmentSummary(
         assessments?.results[group.fullyQualifiedIdentifier]
       );
 
-      if (groupAssessmentField === "") {
-        console.debug("Group " + group.fullyQualifiedIdentifier + " has no summary assessment");
+      if (groupAssessmentField === '') {
+        console.debug('Group ' + group.fullyQualifiedIdentifier + ' has no summary assessment');
         return null;
       }
 
-      const title = "Group " + group.name;
+      const title = 'Group ' + group.name;
       return (
         <Button
           id={group.fullyQualifiedIdentifier}
@@ -93,7 +90,7 @@ const StatusBarLayout: React.FC<Props> = ({
             name={title}
             status={groupAssessmentColor}
             style={{
-              backgroundColor: groupColor
+              backgroundColor: groupColor,
             }}
           />
         </Button>
@@ -102,19 +99,11 @@ const StatusBarLayout: React.FC<Props> = ({
   };
 
   return (
-    <Toolbar className={classes.bottomBar} variant={"dense"} disableGutters={true}>
+    <Toolbar className={classes.bottomBar} variant={'dense'} disableGutters={true}>
       <Grid container spacing={0}>
         <Grid item xs={9}>
           {getGroups(landscape.groups)}
           {landscape?.groups.map((group, i) => getItems(group))}
-        </Grid>
-        <Grid item xs={3}>
-          {notificationContext.notification != null ?
-            <Alert severity={notificationContext.notification?.level} >
-              {notificationContext.notification?.date} {notificationContext.notification?.landscape}<br />
-              {notificationContext.notification?.message}
-            </Alert>
-            : null}
         </Grid>
       </Grid>
     </Toolbar>

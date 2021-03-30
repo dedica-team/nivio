@@ -176,6 +176,20 @@ export interface IAssessmentProps {
   summary: boolean;
 }
 
+
+export interface IChange {
+  changeType: string;
+  componentType: string;
+  message: string;
+}
+
+/**
+ * Map of changes. Key is the FQI. A relation has two FQIs separated by semicolon.
+ */
+export interface IChanges {
+  [key: string]: IChange;
+}
+
 export interface INotificationMessage {
   timestamp: string;
   landscape: string;
@@ -183,11 +197,5 @@ export interface INotificationMessage {
   level: 'success' | 'info' | 'warning' | 'error' | undefined;
   type: string;
   date: Date;
-}
-
-export interface ISnackbarMessage {
-  message: string;
-  key: number;
-  landscape: string;
-  level: 'success' | 'info' | 'warning' | 'error' | undefined;
+  changelog: {changes: IChanges};
 }

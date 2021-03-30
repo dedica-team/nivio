@@ -1,4 +1,3 @@
-
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
@@ -68,9 +67,6 @@ public class Indexer {
         //a detailed textual log
         ProcessLog logger = landscape.getLog();
 
-        //a structured log on component level
-        ProcessingChangelog changelog = new ProcessingChangelog();
-
         // read all input sources
         new SourceReferencesResolver(formatFactory, logger, eventPublisher).resolve(input);
 
@@ -98,6 +94,9 @@ public class Indexer {
 
         // execute group "contains" queries
         new GroupQueryResolver(logger).resolve(input);
+
+        //a structured log on component level
+        ProcessingChangelog changelog = new ProcessingChangelog();
 
         // compare landscape against input, add and remove items
         changelog.merge(new DiffProcessor(logger).process(input, landscape));
