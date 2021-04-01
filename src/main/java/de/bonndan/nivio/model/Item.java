@@ -186,8 +186,9 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
                 .collect(Collectors.toSet());
     }
 
-    public void setRelations(Set<Relation> outgoing) {
-        relations.addAll(outgoing);
+    void setRelations(Set<Relation> outgoing) {
+        this.relations.clear();
+        this.relations.addAll(outgoing);
     }
 
     public String getType() {
@@ -196,17 +197,6 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
 
     public String getAddress() {
         return address != null ? address.toString() : null;
-    }
-
-    /**
-     * Returns all providers.
-     */
-    @JsonIgnore
-    public Set<Item> getProvidedBy() {
-        return getRelations(RelationType.PROVIDER).stream()
-                .filter(relationItem -> relationItem.getTarget().equals(this))
-                .map(Relation::getSource)
-                .collect(Collectors.toUnmodifiableSet());
     }
 
     public void setInterfaces(Set<ServiceInterface> interfaces) {
@@ -281,7 +271,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
      * @return a list of changes if any changes are present
      * @throws IllegalArgumentException if the arg is not comparable
      */
-    public List<String> getChanges(Item newer) {
+    public List<String> getChanges(final Item newer) {
         if (!newer.equals(this)) {
             throw new IllegalArgumentException("Cannot compare component " + newer.toString() + " against " + this.toString());
         }

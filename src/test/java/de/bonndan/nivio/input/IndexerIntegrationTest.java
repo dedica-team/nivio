@@ -22,6 +22,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -77,9 +78,15 @@ public class IndexerIntegrationTest {
         assertEquals(17, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
-        assertEquals(3, blog.getProvidedBy().size());
+        assertEquals(3, blog.getRelations(RelationType.PROVIDER).stream()
+                .filter(relationItem1 -> relationItem1.getTarget().equals(blog))
+                .map(Relation::getSource)
+                .collect(Collectors.toUnmodifiableSet()).size());
 
-        Optional<Item> first = blog.getProvidedBy().stream().filter(i -> i.getIdentifier().equals("wordpress-web")).findFirst();
+        Optional<Item> first = blog.getRelations(RelationType.PROVIDER).stream()
+                .filter(relationItem -> relationItem.getTarget().equals(blog))
+                .map(Relation::getSource)
+                .collect(Collectors.toUnmodifiableSet()).stream().filter(i -> i.getIdentifier().equals("wordpress-web")).findFirst();
         Item webserver = first.orElseThrow();
 
         Assertions.assertNotNull(webserver);
@@ -117,9 +124,15 @@ public class IndexerIntegrationTest {
         assertEquals(17, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
-        assertEquals(3, blog.getProvidedBy().size());
+        assertEquals(3, blog.getRelations(RelationType.PROVIDER).stream()
+                .filter(relationItem1 -> relationItem1.getTarget().equals(blog))
+                .map(Relation::getSource)
+                .collect(Collectors.toUnmodifiableSet()).size());
 
-        ArrayList<Item> landscapeItems = new ArrayList<>(blog.getProvidedBy());
+        ArrayList<Item> landscapeItems = new ArrayList<>(blog.getRelations(RelationType.PROVIDER).stream()
+                .filter(relationItem -> relationItem.getTarget().equals(blog))
+                .map(Relation::getSource)
+                .collect(Collectors.toUnmodifiableSet()));
         ItemIndex<Item> itemIndex = new ItemIndex<>(null, Item.class);
         itemIndex.setItems(new HashSet<>(landscapeItems));
         Item webserver = itemIndex.pick("wordpress-web", null);

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
@@ -141,5 +142,20 @@ public class ItemTest {
         List<String> changes = s1.getChanges(s2);
         assertThat(changes).isNotNull().hasSize(1);
         assertThat(changes.get(0)).contains("Links");
+    }
+
+    @Test
+    public void setRelations() {
+
+        Item s1 = getTestItemBuilder("g1", "a").build();
+        Item s2 = getTestItemBuilder("g1", "b").build();
+        Item s3 = getTestItemBuilder("g1", "c").build();
+
+        s1.setRelations(Set.of(new Relation(s1, s2)));
+        assertThat(s1.getRelations()).hasSize(1);
+
+        //when
+        s1.setRelations(Set.of(new Relation(s1, s3)));
+        assertThat(s1.getRelations()).hasSize(1);
     }
 }

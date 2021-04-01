@@ -36,7 +36,8 @@ public class Relation implements Serializable {
     private final RelationType type;
 
     public Relation(@NonNull final Item source,
-                    @NonNull final Item target) {
+                    @NonNull final Item target
+    ) {
         this(source, target, null, null, null);
     }
 
