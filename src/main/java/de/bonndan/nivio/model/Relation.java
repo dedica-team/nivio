@@ -23,6 +23,8 @@ import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Relation implements Serializable {
 
+    public static final String DELIMITER = ";";
+
     @JsonIdentityReference(alwaysAsId = true)
     private final Item source;
 
@@ -62,6 +64,10 @@ public class Relation implements Serializable {
         this.type = type;
     }
 
+    public String getIdentifier() {
+        return source.getFullyQualifiedIdentifier().jsonValue() + DELIMITER + target.getFullyQualifiedIdentifier().jsonValue();
+    }
+
     public RelationType getType() {
         return type;
     }
@@ -96,6 +102,11 @@ public class Relation implements Serializable {
         return Objects.hash(source, target);
     }
 
+    @Override
+    public String toString() {
+        return "Relation{" + getIdentifier() + '}';
+    }
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     static class ApiModel {
 
@@ -120,20 +131,19 @@ public class Relation implements Serializable {
 
         public final String direction;
 
-        ApiModel(Relation relation, Item owner) {
+        ApiModel(@NonNull final Relation relation, @NonNull final Item owner) {
             source = relation.source;
             target = relation.target;
             description = relation.description;
             format = relation.format;
             type = relation.type;
+            id = relation.getIdentifier();
 
             if (relation.source == owner) {
                 name = StringUtils.isEmpty(target.getName()) ? target.getIdentifier() : target.getName();
-                id = target.getFullyQualifiedIdentifier().toString();
                 direction = OUTBOUND;
             } else {
                 name = StringUtils.isEmpty(source.getName()) ? source.getIdentifier() : source.getName();
-                id = source.getFullyQualifiedIdentifier().toString();
                 direction = INBOUND;
             }
         }

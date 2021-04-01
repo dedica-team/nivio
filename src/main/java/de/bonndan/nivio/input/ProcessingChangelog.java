@@ -54,29 +54,26 @@ public class ProcessingChangelog {
         addEntry(component, changeType, null);
     }
 
+    /**
+     * Adds a relation change
+     *
+     * @param relation   the relation has has changed.
+     * @param changeType created, updated..
+     * @param message    the message
+     */
     public void addEntry(
             @NonNull final Relation relation,
             @NonNull final ChangeType changeType,
             @Nullable final String message
     ) {
         Objects.requireNonNull(relation);
-        final String id = getRelationKey(relation);
-        if (StringUtils.isEmpty(id)) {
-            throw new RuntimeException("Could not create a changelog entry id for " + relation);
-        }
+
         Entry entry = new Entry(
-                relation.getClass().getSimpleName(),
+                Relation.class.getSimpleName(),
                 Objects.requireNonNull(changeType),
                 message
         );
-        changes.put(id, entry);
-    }
-
-    String getRelationKey(final Relation relation) {
-        return String.format("%s;%s",
-                relation.getSource().getFullyQualifiedIdentifier().jsonValue(),
-                relation.getTarget().getFullyQualifiedIdentifier().jsonValue()
-        );
+        changes.put(relation.getIdentifier(), entry);
     }
 
     /**
