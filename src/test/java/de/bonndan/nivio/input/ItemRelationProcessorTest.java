@@ -98,5 +98,14 @@ class ItemRelationProcessorTest {
         assertThat(process.changes).hasSize(1); //no update, one delete
         assertThat(process.changes).containsKey("test/a/foo;test/a/baz");
         assertThat(process.changes.get("test/a/foo;test/a/baz").getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.DELETED.name());
+
+        Item foo = landscape.getItems().pick("foo", "a");
+        assertThat(foo.getRelations()).hasSize(1);
+
+        Item bar = landscape.getItems().pick("bar", "a");
+        assertThat(bar.getRelations()).hasSize(1);
+
+        Item baz = landscape.getItems().pick("baz", "a");
+        assertThat(baz.getRelations()).hasSize(0);
     }
 }

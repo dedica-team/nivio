@@ -46,8 +46,13 @@ public class ItemRelationProcessor extends Processor {
                     .filter(relation -> origin.equals(relation.getSource()))
                     .filter(relation -> !input.isPartial())
                     .forEach(relation -> {
-                        removeFromBothEnds(origin, relation);
                         processLog.info(String.format("Removing relation between %s and %s", relation.getSource(), relation.getTarget()));
+                        if (!relation.getSource().getRelations().remove(relation)) {
+                            processLog.warn(String.format("Could not remove relation %s from source %s", relation, relation.getSource()));
+                        }
+                        if (!relation.getTarget().getRelations().remove(relation)) {
+                            processLog.warn(String.format("Could not remove relation %s from target %s", relation, relation.getTarget()));
+                        }
                         changelog.addEntry(relation, ProcessingChangelog.ChangeType.DELETED, null);
                     });
         });
@@ -92,8 +97,6 @@ public class ItemRelationProcessor extends Processor {
     }
 
     private void assignToBothEnds(Item origin, Relation relation) {
-        removeFromBothEnds(origin, relation);
-
         origin.getRelations().add(relation);
         if (relation.getSource() == origin) {
             relation.getTarget().getRelations().add(relation);
@@ -101,16 +104,6 @@ public class ItemRelationProcessor extends Processor {
             relation.getSource().getRelations().add(relation);
         }
     }
-
-    private void removeFromBothEnds(Item origin, Relation relation) {
-        origin.getRelations().remove(relation);
-        if (relation.getSource() == origin) {
-            relation.getTarget().getRelations().remove(relation);
-        } else {
-            relation.getSource().getRelations().remove(relation);
-        }
-    }
-
 
     private Optional<Relation> getCurrentRelation(RelationDescription relationDescription,
                                                   Landscape landscape,
