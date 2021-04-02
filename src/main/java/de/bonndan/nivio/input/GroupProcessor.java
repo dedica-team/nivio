@@ -43,7 +43,8 @@ public class GroupProcessor extends Processor {
                     changelog.addEntry(added, ProcessingChangelog.ChangeType.CREATED);
                 } else {
                     processLog.info("Updating group " + g.getIdentifier());
-                    String updates = String.join("; ", existing.get().getChanges(added));
+                    String updates = existing.get().getChanges(added).isEmpty() ?
+                            "Item(s) changed" : String.join("; ", existing.get().getChanges(added));
                     changelog.addEntry(added, ProcessingChangelog.ChangeType.UPDATED, updates);
                 }
             } else {
