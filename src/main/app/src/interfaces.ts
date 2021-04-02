@@ -176,7 +176,6 @@ export interface IAssessmentProps {
   summary: boolean;
 }
 
-
 export interface IChange {
   changeType: string;
   componentType: string;
@@ -197,5 +196,5 @@ export interface INotificationMessage {
   level: 'success' | 'info' | 'warning' | 'error' | undefined;
   type: string;
   date: Date;
-  changelog: {changes: IChanges};
+  changelog: { changes: IChanges };
 }
