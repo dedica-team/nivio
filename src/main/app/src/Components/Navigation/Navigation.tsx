@@ -24,8 +24,8 @@ const useStyles = makeStyles((theme: Theme) =>
     menuIcon: {
       color: 'rgba(255, 255, 255, 0.75)',
       backgroundColor: theme.palette.primary.main,
-      height: '2em',
-      width: '2em',
+      height: '1.9em',
+      width: '1.9em',
     },
     logo: {
       height: '1.5em',
