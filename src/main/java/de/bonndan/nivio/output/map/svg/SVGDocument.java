@@ -166,7 +166,7 @@ public class SVGDocument extends Component {
         Optional<HexPath> bestPath = hexMap.getPath(item, rel.getTarget());
         if (bestPath.isPresent()) {
             SVGRelation svgRelation = new SVGRelation(bestPath.get(), layoutedItem.getColor(), rel);
-            LOGGER.debug("Added path for item {} relation {} -> {}", item, rel.getSource(), rel.getTarget());
+            LOGGER.info("Added path for item {} relation {} -> {}", item, rel.getSource(), rel.getTarget());
             return svgRelation;
         }
         LOGGER.error("No path found for item {} relation {}", item, rel);

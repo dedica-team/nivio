@@ -78,19 +78,19 @@ public class IndexerIntegrationTest {
         assertEquals(17, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
-        assertEquals(3, blog.getRelations(RelationType.PROVIDER).stream()
+        assertEquals(3, RelationType.PROVIDER.filter(blog.getRelations()).stream()
                 .filter(relationItem1 -> relationItem1.getTarget().equals(blog))
                 .map(Relation::getSource)
                 .collect(Collectors.toUnmodifiableSet()).size());
 
-        Optional<Item> first = blog.getRelations(RelationType.PROVIDER).stream()
+        Optional<Item> first = RelationType.PROVIDER.filter(blog.getRelations()).stream()
                 .filter(relationItem -> relationItem.getTarget().equals(blog))
                 .map(Relation::getSource)
                 .collect(Collectors.toUnmodifiableSet()).stream().filter(i -> i.getIdentifier().equals("wordpress-web")).findFirst();
         Item webserver = first.orElseThrow();
 
         Assertions.assertNotNull(webserver);
-        assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
+        assertEquals(1, RelationType.PROVIDER.filter(webserver.getRelations()).size());
 
         Relation push = (Relation) blog.getRelations().stream()
                 .filter(d -> "hourly push KPI data".equals(d.getDescription()))
@@ -124,12 +124,12 @@ public class IndexerIntegrationTest {
         assertEquals(17, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
-        assertEquals(3, blog.getRelations(RelationType.PROVIDER).stream()
+        assertEquals(3, RelationType.PROVIDER.filter(blog.getRelations()).stream()
                 .filter(relationItem1 -> relationItem1.getTarget().equals(blog))
                 .map(Relation::getSource)
                 .collect(Collectors.toUnmodifiableSet()).size());
 
-        ArrayList<Item> landscapeItems = new ArrayList<>(blog.getRelations(RelationType.PROVIDER).stream()
+        ArrayList<Item> landscapeItems = new ArrayList<>(RelationType.PROVIDER.filter(blog.getRelations()).stream()
                 .filter(relationItem -> relationItem.getTarget().equals(blog))
                 .map(Relation::getSource)
                 .collect(Collectors.toUnmodifiableSet()));
@@ -137,7 +137,7 @@ public class IndexerIntegrationTest {
         itemIndex.setItems(new HashSet<>(landscapeItems));
         Item webserver = itemIndex.pick("wordpress-web", null);
         Assertions.assertNotNull(webserver);
-        assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
+        assertEquals(1, RelationType.PROVIDER.filter(webserver.getRelations()).size());
 
         Relation push = blog.getRelations().stream()
                 .filter(d -> "hourly push KPI data".equals(d.getDescription()))

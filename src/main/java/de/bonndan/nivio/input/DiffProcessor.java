@@ -6,6 +6,7 @@ import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.search.ItemMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ public class DiffProcessor extends Processor {
     }
 
     @Override
-    public ProcessingChangelog process(LandscapeDescription input, Landscape landscape) {
+    public ProcessingChangelog process(@NonNull final LandscapeDescription input, @NonNull final Landscape landscape) {
         Set<Item> existingItems = landscape.getItems().all();
         ProcessingChangelog changelog = new ProcessingChangelog();
         //insert new ones

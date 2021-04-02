@@ -7,6 +7,7 @@ import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.util.URLHelper;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.util.Optional;
@@ -26,7 +27,7 @@ public class AppearanceProcessor extends Processor {
     }
 
     @Override
-    public ProcessingChangelog process(LandscapeDescription input, Landscape landscape) {
+    public ProcessingChangelog process(@NonNull final LandscapeDescription input, @NonNull final Landscape landscape) {
 
         Optional<String> logo = Optional.ofNullable(landscape.getConfig().getBranding().getMapLogo());
         logo.ifPresent(s -> setLandscapeLogo(landscape, s));

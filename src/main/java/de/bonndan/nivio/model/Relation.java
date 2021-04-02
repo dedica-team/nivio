@@ -139,7 +139,7 @@ public class Relation implements Serializable {
             type = relation.type;
             id = relation.getIdentifier();
 
-            if (relation.source == owner) {
+            if (relation.source.equals(owner)) {
                 name = StringUtils.isEmpty(target.getName()) ? target.getIdentifier() : target.getName();
                 direction = OUTBOUND;
             } else {
