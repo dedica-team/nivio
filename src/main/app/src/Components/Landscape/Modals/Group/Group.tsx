@@ -2,27 +2,16 @@ import React, { useContext } from 'react';
 
 import { IAssessment, IGroup } from '../../../../interfaces';
 import { getLabels, getLinks, getAssessmentSummary } from '../../Utils/utils';
-import { Card, CardHeader, Theme } from '@material-ui/core';
+import { Card, CardHeader } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import StatusChip from '../../../StatusChip/StatusChip';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import Avatar from '@material-ui/core/Avatar';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
-import ItemAvatar from "../Item/ItemAvatar";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    groupAvatar: {
-      width: 15,
-      height: 15,
-      display: 'inline-block',
-    },
-  })
-);
+import ItemAvatar from '../Item/ItemAvatar';
+import GroupAvatar from "./GroupAvatar";
 
 interface Props {
   group: IGroup;
@@ -34,7 +23,6 @@ interface Props {
  */
 const Group: React.FC<Props> = ({ group, assessments }) => {
   const componentClasses = componentStyles();
-  const classes = useStyles();
 
   const locateFunctionContext = useContext(LocateFunctionContext);
 
@@ -44,9 +32,7 @@ const Group: React.FC<Props> = ({ group, assessments }) => {
   ) => {
     if (group?.items) {
       return group.items.map((item) => {
-        const [status, ,] = getAssessmentSummary(
-          assessments.results[item.fullyQualifiedIdentifier]
-        );
+        const [status] = getAssessmentSummary(assessments.results[item.fullyQualifiedIdentifier]);
         return (
           <Button
             style={{ textAlign: 'left' }}
@@ -83,20 +69,8 @@ const Group: React.FC<Props> = ({ group, assessments }) => {
               onClick={() => locateFunctionContext.locateFunction(group.fullyQualifiedIdentifier)}
               size={'small'}
             >
-              <Avatar
-                className={classes.groupAvatar}
-                title={'Click to highlight the group.'}
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                  border: '2px solid #' + group.color,
-                  height: '2rem',
-                  width: '2rem'
-                }}
-              >
-                {' '}
-              </Avatar>
+              <GroupAvatar group={group} statusColor={''} />
             </IconButton>
-
             &nbsp;{group.name}
           </React.Fragment>
         }

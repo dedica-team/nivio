@@ -21,6 +21,11 @@ const componentStyles = makeStyles((theme: Theme) =>
     cardActions: {
       padding: 0,
     },
+    groupAvatar: {
+      width: '2rem',
+      height: '2rem',
+      display: 'inline-block',
+    },
   })
 );
 
