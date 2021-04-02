@@ -1,9 +1,9 @@
-import { IGroup } from "../../../../interfaces";
+import { IGroup } from '../../../../interfaces';
 import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import { Badge, Theme, withStyles } from '@material-ui/core';
 import { createStyles } from '@material-ui/core/styles';
-import componentStyles from "../../../../Resources/styling/ComponentStyles";
+import componentStyles from '../../../../Resources/styling/ComponentStyles';
 
 interface Props {
   group: IGroup;
@@ -21,7 +21,6 @@ const StyledBadge = withStyles((theme: Theme) =>
         width: '100%',
         height: '100%',
         borderRadius: '50%',
-        //animation: '$ripple 1.2s infinite ease-in-out',
         border: '1px solid currentColor',
         backgroundColor: 'currentColor',
         content: '""',
@@ -60,9 +59,8 @@ const GroupAvatar: React.FC<Props> = ({ group, statusColor }) => {
         className={classes.groupAvatar}
         title={'Click to highlight the group.'}
         style={{
-          backgroundColor: '#'+group.color,
-          //color: group.color,
-          paddingTop: 6
+          backgroundColor: '#' + group.color,
+          paddingTop: 6,
         }}
       >
         {group.identifier[0].toUpperCase()}
