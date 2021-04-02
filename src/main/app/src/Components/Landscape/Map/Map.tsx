@@ -169,7 +169,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     }
 
     if (source && target && dataTarget) {
-      let relation = source.relations[dataTarget];
+      let relation = source.relations[source.fullyQualifiedIdentifier + ';' + dataTarget];
       setSidebarContent(<MapRelation relation={relation} source={source} target={target} />);
     }
   };
