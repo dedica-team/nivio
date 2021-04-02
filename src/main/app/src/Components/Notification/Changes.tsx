@@ -8,6 +8,8 @@ import IconButton from '@material-ui/core/IconButton';
 import ItemAvatar from '../Landscape/Modals/Item/ItemAvatar';
 import componentStyles from '../../Resources/styling/ComponentStyles';
 import { LocateFunctionContext } from '../../Context/LocateFunctionContext';
+import GroupAvatar from '../Landscape/Modals/Group/GroupAvatar';
+import { LinkOutlined } from '@material-ui/icons';
 
 interface Props {
   notification: INotificationMessage;
@@ -53,6 +55,55 @@ const Changes: React.FC<Props> = ({ notification }) => {
       ));
     };
 
+    const getGroupChange = (key: string, change: IChange): Promise<any> => {
+      if (change.changeType === 'DELETED') {
+        return new Promise((resolve) =>
+          resolve(
+            <TableRow key={key}>
+              <TableCell style={{ width: '30%' }}>Group {key}</TableCell>
+              <TableCell>{change.changeType}</TableCell>
+            </TableRow>
+          )
+        );
+      }
+      return get(`/api/${key}`).then((group) => (
+        <TableRow key={key}>
+          <TableCell style={{ width: '30%' }}>
+            <IconButton title={key} onClick={() => locateFunctionContext.locateFunction(key)}>
+              <GroupAvatar group={group} statusColor={''} />
+            </IconButton>
+          </TableCell>
+          <TableCell>{change.message}</TableCell>
+        </TableRow>
+      ));
+    };
+
+    const getRelationChange = (key: string, change: IChange): Promise<any> => {
+      const parts = key.split(';');
+
+      return new Promise((resolve) =>
+        resolve(
+          <TableRow key={key}>
+            <TableCell style={{ width: '30%' }}>
+              <IconButton title={key} onClick={() => locateFunctionContext.locateFunction(key)}>
+                <LinkOutlined />
+              </IconButton>
+            </TableCell>
+            <TableCell>
+              {change.changeType} Relation from{' '}
+              <button onClick={() => locateFunctionContext.locateFunction(parts[0])}>
+                {parts[0]}
+              </button>
+              to{' '}
+              <button onClick={() => locateFunctionContext.locateFunction(parts[1])}>
+                {parts[1]}
+              </button>
+            </TableCell>
+          </TableRow>
+        )
+      );
+    };
+
     if (notification.changelog != null) {
       let promises: Promise<any>[] = [];
       for (let key of Object.keys(notification.changelog.changes)) {
@@ -63,36 +114,10 @@ const Changes: React.FC<Props> = ({ notification }) => {
             promises.push(getItemChange(key, change));
             break;
           case 'Group':
-            promises.push(
-              new Promise((resolve) => {
-                resolve(
-                  <TableRow key={key}>
-                    <TableCell style={{ width: '30%' }}>
-                      {change.changeType} {change.componentType}
-                    </TableCell>
-                    <TableCell>{key}<br />{change.message}</TableCell>
-                  </TableRow>
-                );
-              })
-            );
+            promises.push(getGroupChange(key, change));
             break;
           case 'Relation':
-            promises.push(
-              new Promise((resolve) => {
-                resolve(
-                  <TableRow key={key}>
-                    <TableCell style={{ width: '30%' }}>
-                      {change.changeType} {change.componentType}
-                    </TableCell>
-                    <TableCell>
-                      {key}
-                      <br />
-                      {change.message}
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            );
+            promises.push(getRelationChange(key, change));
             break;
         }
       }
@@ -104,7 +129,7 @@ const Changes: React.FC<Props> = ({ notification }) => {
 
   return (
     <Card className={componentClasses.card}>
-      <CardHeader title={notification.landscape} />
+      <CardHeader title={'Changes in ' + notification.landscape} />
       <CardContent>
         <Alert severity={notification.level}>
           {notification.date} {notification.landscape}
