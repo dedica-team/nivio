@@ -191,7 +191,6 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
   }, [identifier, facets]);
 
   if (identifier == null) {
-    console.debug('identifier missing');
     return null;
   }
 

@@ -1,25 +1,13 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { INotificationMessage } from '../../interfaces';
+import React, { useState, useEffect, useContext, ReactElement } from 'react';
+import { INotificationMessage } from "../../interfaces";
 import { Client, StompSubscription } from '@stomp/stompjs';
 import { withBasePath } from '../../utils/API/BasePath';
 import IconButton from '@material-ui/core/IconButton';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import {
-  Badge,
-  Card,
-  CardHeader,
-  createStyles,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Theme,
-} from '@material-ui/core';
+import { Badge, createStyles, Theme } from '@material-ui/core';
 import { RssFeed } from '@material-ui/icons';
-import { Alert } from '@material-ui/lab';
 import { NotificationContext } from '../../Context/NotificationContext';
-import CardContent from '@material-ui/core/CardContent';
-import componentStyles from '../../Resources/styling/ComponentStyles';
+import Changes from './Changes';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,15 +33,15 @@ interface Props {
  *
  */
 const Notification: React.FC<Props> = ({ setSidebarContent }) => {
-  const classes = useStyles();
-  const componentClasses = componentStyles();
 
+  const classes = useStyles();
   const backendUrl = withBasePath('/subscribe');
   const protocol = window.location.protocol !== 'https:' ? 'ws' : 'wss';
 
   const [socketUrl] = useState(protocol + `://${backendUrl.replace(/^https?:\/\//i, '')}`);
   const [subscriptions, setSubscriptions] = useState<StompSubscription[]>([]);
   const [newChanges, setNewChanges] = useState<Boolean>(false);
+  const [renderedChanges, setRenderedChanges] = useState<ReactElement | null>(null);
   const notificationContext = useContext(NotificationContext);
 
   const [client] = useState(
@@ -65,7 +53,6 @@ const Notification: React.FC<Props> = ({ setSidebarContent }) => {
           const notificationMessage: INotificationMessage = JSON.parse(message.body);
           if (notificationMessage.type === 'ProcessingFinishedEvent') {
             notificationContext.next(notificationMessage);
-            console.log(notificationMessage);
             setNewChanges(true);
           }
         });
@@ -85,52 +72,24 @@ const Notification: React.FC<Props> = ({ setSidebarContent }) => {
     };
   }, [client, subscriptions]);
 
-  const renderNotification = useCallback(() => {
-    if (notificationContext.notification == null) return null;
+  /**
+   * render changes,
+   */
+  useEffect(() => {
+    if (notificationContext.notification == null) return;
+    setRenderedChanges(<Changes notification={notificationContext.notification} />);
+  }, [notificationContext.notification]);
 
-    const notification: INotificationMessage = notificationContext.notification;
-    let changes = [];
-    if (notification.changelog != null) {
-      for (let key of Object.keys(notification.changelog.changes)) {
-        let change = notification.changelog.changes[key];
-        changes.push(
-          <TableRow key={key}>
-            <TableCell style={{ width: '33%' }}>
-              {change.changeType} {change.componentType}
-            </TableCell>
-            <TableCell>{key}<br />{change.message}</TableCell>
-          </TableRow>
-        );
-      }
-    }
-    return (
-      <Card className={componentClasses.card}>
-        <CardHeader title={notification.landscape}/>
-        <CardContent>
-          <Alert severity={notification.level}>
-            {notification.date} {notification.landscape}
-            <br />
-            {notification.message}
-          </Alert>
-          <br />
-
-          <Table aria-label={'changes'} style={{ tableLayout: 'fixed' }}>
-            <TableBody>{notification.changelog != null ? changes : null}</TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    );
-  }, [notificationContext.notification, componentClasses.card]);
+  if (notificationContext.notification == null) return <></>;
 
   return (
-    <Badge color='secondary' variant='dot' overlap='circle' invisible={!newChanges}>
+    <Badge color='secondary' variant='dot' overlap='circle' invisible={!newChanges} title={'Recent changes'}>
       <IconButton
         size={'small'}
         className={classes.icon}
-        title={'Recent changes'}
         onClick={() => {
           setNewChanges(false);
-          return setSidebarContent(renderNotification());
+          return setSidebarContent(renderedChanges);
         }}
       >
         <RssFeed />
