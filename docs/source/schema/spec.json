@@ -101,6 +101,24 @@
           "protection" : {
             "type" : "string",
             "description" : "A description of the interface protection method."
+          },
+          "deprecated" : {
+            "type" : "boolean"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "payload" : {
+            "type" : "string"
+          },
+          "path" : {
+            "type" : "string"
+          },
+          "summary" : {
+            "type" : "string"
+          },
+          "parameters" : {
+            "type" : "string"
           }
         },
         "description" : "Describes a low-level interface of an item."
@@ -182,15 +200,11 @@
             "description" : "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
             "example" : "service|database|volume"
           },
-          "status" : {
-            "type" : "array",
+          "lifecycle" : {
+            "type" : "string",
+            "description" : "The lifecycle state of an item.",
             "writeOnly" : true,
-            "items" : {
-              "type" : "object",
-              "additionalProperties" : {
-                "type" : "string"
-              }
-            }
+            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
           },
           "statuses" : {
             "type" : "array",
@@ -205,11 +219,15 @@
               "description" : "A list of statuses that works like hardcoded KPIs."
             }
           },
-          "lifecycle" : {
-            "type" : "string",
-            "description" : "The lifecycle state of an item.",
+          "status" : {
+            "type" : "array",
             "writeOnly" : true,
-            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
           },
           "tags" : {
             "type" : "array",
@@ -370,6 +388,18 @@
             },
             "description" : "Additional labels for the landscape."
           },
+          "icon" : {
+            "type" : "string"
+          },
+          "color" : {
+            "type" : "string"
+          },
+          "sourceReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SourceReference"
+            }
+          },
           "items" : {
             "type" : "array",
             "description" : "List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc.",
@@ -378,21 +408,9 @@
               "$ref" : "#/components/schemas/ItemDescription"
             }
           },
-          "sourceReferences" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/SourceReference"
-            }
-          },
           "partial" : {
             "type" : "boolean",
             "description" : "marks that the landscape is not complete, but an update"
-          },
-          "icon" : {
-            "type" : "string"
-          },
-          "color" : {
-            "type" : "string"
           },
           "links" : {
             "type" : "object",
