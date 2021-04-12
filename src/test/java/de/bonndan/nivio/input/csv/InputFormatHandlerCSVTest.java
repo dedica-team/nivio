@@ -3,6 +3,7 @@ package de.bonndan.nivio.input.csv;
 import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.observation.InputFormatObserver;
@@ -42,10 +43,13 @@ class InputFormatHandlerCSVTest {
         file.setProperty("separator", ";");
 
         InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
-        List<ItemDescription> services = factoryCSV.getDescriptions(file, null);
+        LandscapeDescription landscapeDescription = new LandscapeDescription("test");
 
-        assertEquals(3, services.size());
-        ItemDescription foo = services.get(0);
+        //when
+        factoryCSV.applyData(file, null, landscapeDescription);
+
+        assertEquals(3, landscapeDescription.getItemDescriptions().all().size());
+        ItemDescription foo = landscapeDescription.getItemDescriptions().pick("foo", null);
         assertNotNull(foo);
 
         assertEquals("foo", foo.getIdentifier());
@@ -54,7 +58,7 @@ class InputFormatHandlerCSVTest {
         assertTrue(foo.getLabels().containsKey("nivio.description"));
         assertEquals("This does nothing", foo.getLabels().get("nivio.description"));
 
-        ItemDescription bar = services.get(1);
+        ItemDescription bar = landscapeDescription.getItemDescriptions().pick("bar", null);
         assertNotNull(bar);
 
         assertEquals("bar", bar.getIdentifier());
@@ -63,7 +67,7 @@ class InputFormatHandlerCSVTest {
         assertTrue(bar.getLabels().containsKey("nivio.description"));
         assertEquals("", bar.getLabels().get("nivio.description"));
 
-        ItemDescription super1 = services.get(2);
+        ItemDescription super1 = landscapeDescription.getItemDescriptions().pick("super1", null);
         assertNotNull(super1);
 
         assertEquals("super1", super1.getIdentifier());
@@ -80,7 +84,7 @@ class InputFormatHandlerCSVTest {
         InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
 
         assertThrows(ProcessingException.class, () -> {
-            factoryCSV.getDescriptions(file, null);
+            factoryCSV.applyData(file, null, new LandscapeDescription("test"));
         });
     }
 
@@ -95,7 +99,7 @@ class InputFormatHandlerCSVTest {
         InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
 
         assertThrows(ProcessingException.class, () -> {
-            factoryCSV.getDescriptions(file, null);
+            factoryCSV.applyData(file, null, new LandscapeDescription("test"));
         });
     }
 

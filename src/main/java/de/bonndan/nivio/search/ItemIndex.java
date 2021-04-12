@@ -14,6 +14,7 @@ import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
@@ -186,13 +187,14 @@ public class ItemIndex<T extends Component> {
      * @param group      the group to search in
      * @return the sibling with the given identifier
      */
+    @NonNull
     public T pick(final String identifier, String group) {
         if (StringUtils.isEmpty(identifier)) {
             throw new IllegalArgumentException("Identifier to pick is empty");
         }
 
         return find(identifier, group).orElseThrow(() ->
-                new RuntimeException("Element '" + identifier + "' not found  in collection.")
+                new RuntimeException(String.format("Element '%s' not found  in collection.", identifier))
         );
     }
 

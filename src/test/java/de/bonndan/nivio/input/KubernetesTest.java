@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import io.fabric8.kubernetes.api.model.Container;
@@ -52,20 +53,26 @@ public class KubernetesTest {
     }
 
     @Test
-    public void testRead() throws IOException {
+    public void testRead() {
 
         SourceReference sourceReference = new SourceReference(null, "k8s");
         sourceReference.setUrl("http://localhost:80?groupLabel=release&namespace=default");
 
         InputFormatHandlerKubernetes factory = new InputFormatHandlerKubernetes(java.util.Optional.ofNullable(client));
-
         factory.getConfiguration().setNamespace("default");
 
-        List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference, null);
-        assertNotNull(itemDescriptions);
-        assertEquals(3, itemDescriptions.size());
+        LandscapeDescription landscapeDescription = new LandscapeDescription("test");
 
-        ItemDescription itemDescription = itemDescriptions.stream().filter(itemDescription1 -> ItemType.POD.equals(itemDescription1.getType())).findFirst().get();
+        //when
+        factory.applyData(sourceReference, null, landscapeDescription);
+
+        //then
+        assertEquals(3, landscapeDescription.getItemDescriptions().all().size());
+
+        ItemDescription itemDescription = landscapeDescription.getItemDescriptions().all().stream()
+                .filter(itemDescription1 -> ItemType.POD.equals(itemDescription1.getType()))
+                .findFirst()
+                .get();
         assertNotNull(itemDescription);
 
         assertEquals("testgroup", itemDescription.getGroup());

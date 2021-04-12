@@ -229,7 +229,7 @@
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.122</version>
+            <version>1.123</version>
         </dependency>
 
         <dependency>
@@ -245,7 +245,11 @@
             <version>5.1</version>
         </dependency>
 
-
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>openapi-generator</artifactId>
+            <version>5.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>

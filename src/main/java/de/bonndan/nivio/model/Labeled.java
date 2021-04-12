@@ -31,7 +31,9 @@ public interface Labeled {
                             return false;
                     }
                     return true;
-                }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                })
+                .filter(stringStringEntry -> stringStringEntry.getValue() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     default String getLabel(Label key) {

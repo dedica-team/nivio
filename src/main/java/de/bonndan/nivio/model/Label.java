@@ -15,6 +15,8 @@ public enum Label {
     capability("The capability the service provides for the business or, in case of infrastructure," +
             " the technical capability like enabling service discovery, configuration, secrets, or persistence."),
 
+    color("A hex color code to override the inherited group color"),
+
     costs("Running costs of the item."),
 
     fill("Background image (for displaying purposes)."),
