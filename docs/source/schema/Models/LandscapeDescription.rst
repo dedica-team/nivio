@@ -25,22 +25,22 @@ LandscapeDescription
      - null
    * - contact
      - String
-     - Primary contact method, preferably an email address
+     - Primary contact method, preferably an email address.
      - optional, defaults to null
      - null
    * - description
      - String
-     - A brief description of the landscape
+     - A brief description of the landscape.
      - optional, defaults to null
      - null
    * - owner
      - String
-     - The business owner (person or team), preferably an email address
+     - The business owner (person or team), preferably an email address.
      - optional, defaults to null
      - null
    * - templates
      - Map<ItemDescription>
-     - Item descriptions to be used as templates. All values excepted identifier and name will be applied to the assigned items.
+     - Item descriptions to be used as templates. All values except identifier and name will be applied to the assigned items.
      - optional, defaults to null
      - null
    * - sources
@@ -80,7 +80,7 @@ LandscapeDescription
      - null
    * - items
      - List<ItemDescription>
-     - List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc.
+     - List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.
      - optional, defaults to null
      - null
    * - partial

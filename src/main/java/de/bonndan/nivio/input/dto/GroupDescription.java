@@ -15,13 +15,13 @@ import java.util.Map;
 @Schema(description = "A group of items. Could be used as bounded context, for instance.")
 public class GroupDescription implements ComponentDescription {
 
-    @Schema(description = "Links related to the group")
+    @Schema(description = "Links related to the group.")
     private final Map<String, Link> links = new HashMap<>();
 
-    @Schema(description = "labels related to the group")
+    @Schema(description = "Labels related to the group.")
     private final Map<String, String> labels = new HashMap<>();
 
-    @Schema(required = true, description = "A unique identifier for the group (also used as name). Descriptions are merged based on the identifier", example = "shipping")
+    @Schema(required = true, description = "A unique identifier for the group (also used as name). Descriptions are merged based on the identifier.", example = "shipping")
     private String identifier;
 
     @Schema(description = "The business owner of the group.")
@@ -36,7 +36,7 @@ public class GroupDescription implements ComponentDescription {
     @Schema(description = "The HTML (hexcode only!) color used to draw the group and its items. If no color is given, one is computed.", example = "05ffaa")
     private String color;
 
-    @Schema(description = "A list of item identifiers or sql-like queries to easily assign items to this group.", example = "identifier LIKE 'DB1'")
+    @Schema(description = "A list of item identifiers or SQL-like queries to easily assign items to this group.", example = "identifier LIKE 'DB1'")
     private List<String> contains = new ArrayList<>();
 
     @Schema(hidden = true)
