@@ -3,10 +3,10 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.search.ItemMatcher;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.lang.NonNull;
 
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Creates {@link Relation}s between {@link Item}s.
@@ -18,74 +18,116 @@ public class ItemRelationProcessor extends Processor {
     }
 
     @Override
-    public void process(LandscapeDescription input, Landscape landscape) {
-        input.getItemDescriptions().all().forEach(serviceDescription -> {
-            Item origin = landscape.getItems().pick(serviceDescription);
-            if (!input.isPartial()) {
-                processLog.debug(String.format("Clearing relations of %s", origin));
-                origin.getRelations().clear(); //delete all relations on full update
-            }
-        });
+    public ProcessingChangelog process(@NonNull final LandscapeDescription input, @NonNull final Landscape landscape) {
+
+        ProcessingChangelog changelog = new ProcessingChangelog();
+        List<Relation> processed = new ArrayList<>();
 
         input.getItemDescriptions().all().forEach(itemDescription -> {
             Item origin = landscape.getItems().pick(itemDescription);
+            List<Relation> affected = new ArrayList<>();
 
             for (RelationDescription relationDescription : itemDescription.getRelations()) {
-                Optional<Relation> update = update(relationDescription, landscape, origin);
-                update.ifPresent(relation -> {
-                    origin.getRelations().remove(relation);
-                    origin.getRelations().add(relation);
-                    if (relation.getSource() == origin) {
-                        relation.getTarget().getRelations().remove(relation);
-                        relation.getTarget().getRelations().add(relation);
-                    } else {
-                        relation.getSource().getRelations().remove(relation);
-                        relation.getSource().getRelations().add(relation);
-                    }
-                });
+
+                if (!isValid(relationDescription, landscape)) {
+                    continue;
+                }
+
+                Relation current = getCurrentRelation(relationDescription, landscape, origin)
+                        .map(relation -> {
+                            Relation update = RelationBuilder.update(relation, relationDescription, landscape);
+                            processLog.info(String.format("Updating relation between %s and %s", update.getSource(), update.getTarget()));
+                            List<String> changes = relation.getChanges(update);
+                            if (!changes.isEmpty()) {
+                                changelog.addEntry(update, ProcessingChangelog.ChangeType.UPDATED, String.join(";", changes));
+                            }
+                            return update;
+                        })
+                        .orElseGet(() -> {
+                            Relation created = RelationBuilder.create(relationDescription, landscape);
+                            processLog.info(String.format(origin + ": Adding relation between %s and %s", created.getSource(), created.getTarget()));
+                            changelog.addEntry(created, ProcessingChangelog.ChangeType.CREATED, null);
+                            return created;
+                        });
+                processed.add(current);
+                affected.add(current);
             }
+
+            affected.forEach(relation -> assignToBothEnds(origin, relation));
+
+            Collection<Relation> toDelete = CollectionUtils.subtract(origin.getRelations(), affected);
+            toDelete.stream()
+                    .filter(relation -> !processed.contains(relation))
+                    .filter(relation -> origin.equals(relation.getSource()))
+                    .filter(relation -> !input.isPartial())
+                    .forEach(relation -> {
+                        processLog.info(String.format("Removing relation between %s and %s", relation.getSource(), relation.getTarget()));
+                        Item currentSource = landscape.getItems().pick(
+                                relation.getSource().getFullyQualifiedIdentifier().getItem(),
+                                relation.getSource().getFullyQualifiedIdentifier().getGroup()
+                        );
+                        if (!currentSource.removeRelation(relation)) {
+                            processLog.warn(String.format("Could not remove relation %s from source %s", relation, relation.getSource()));
+                        }
+
+                        Item currentTarget = landscape.getItems().pick(
+                                relation.getTarget().getFullyQualifiedIdentifier().getItem(),
+                                relation.getTarget().getFullyQualifiedIdentifier().getGroup()
+                        );
+                        if (!currentTarget.removeRelation(relation)) {
+                            processLog.warn(String.format("Could not remove relation %s from target %s", relation, relation.getSource()));
+                        }
+                        changelog.addEntry(relation, ProcessingChangelog.ChangeType.DELETED, null);
+                    });
         });
+
+        return changelog;
     }
 
-    private Optional<Relation> update(RelationDescription relationDescription, Landscape landscape, Item origin) {
+    private boolean isValid(RelationDescription relationDescription, Landscape landscape) {
 
-        Optional<Item> source = findBy(relationDescription.getSource(), landscape);
+        Optional<Item> source = landscape.findBy(relationDescription.getSource());
         if (source.isEmpty()) {
             processLog.warn(String.format("Relation source %s not found", relationDescription.getSource()));
-            return Optional.empty();
+            return false;
         }
 
-        Optional<Item> target = findBy(relationDescription.getTarget(), landscape);
+        Optional<Item> target = landscape.findBy(relationDescription.getTarget());
         if (target.isEmpty()) {
             processLog.warn(String.format("Relation target %s not found", relationDescription.getTarget()));
-            return Optional.empty();
+            return false;
         }
 
+        return true;
+    }
+
+    private void assignToBothEnds(Item origin, Relation relation) {
+        origin.addOrReplace(relation);
+        if (relation.getSource() == origin) {
+            relation.getTarget().addOrReplace(relation);
+        } else {
+            relation.getSource().addOrReplace(relation);
+        }
+    }
+
+    private Optional<Relation> getCurrentRelation(RelationDescription relationDescription,
+                                                  Landscape landscape,
+                                                  Item origin
+    ) {
+        Item source = landscape.findBy(relationDescription.getSource()).orElseThrow();
+        Item target = landscape.findBy(relationDescription.getTarget()).orElseThrow();
+
         Iterator<Relation> iterator = origin.getRelations().iterator();
-        Relation existing = null;
-        Relation created = new Relation(source.get(), target.get());
+        Relation created = new Relation(source, target);
+        Relation existing;
         while (iterator.hasNext()) {
             existing = iterator.next();
             if (existing.equals(created)) {
-                processLog.info(String.format("Updating relation between %s and %s", existing.getSource(), existing.getTarget()));
-                return Optional.of(RelationBuilder.update(existing, relationDescription));
+                return Optional.of(existing);
             }
         }
 
-        created = new Relation(created.getSource(),
-                created.getTarget(),
-                relationDescription.getDescription(),
-                relationDescription.getFormat(),
-                relationDescription.getType()
-        );
-
-        processLog.info(String.format("Adding relation from %s to %s", created.getSource(), created.getTarget()));
-        return Optional.of(created);
+        return Optional.empty();
     }
 
-    private Optional<Item> findBy(String term, Landscape landscape) {
-        return ItemMatcher.forTarget(term)
-                .map(itemMatcher -> landscape.getItems().find(itemMatcher))
-                .orElseGet(() -> landscape.getItems().query(term).stream().findFirst());
-    }
 }

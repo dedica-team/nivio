@@ -49,6 +49,21 @@ const defaultThemeVariables: ThemeOptions = {
         padding: '5px',
       },
     },
+    MuiCssBaseline: {
+      "@global": {
+        "*::-webkit-scrollbar": {
+          maxWidth: "5px"
+        },
+        "*::-webkit-scrollbar-thumb": {
+          backgroundColor: 'rgb(0, 104, 104)'
+        },
+        "*:hover": {
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: 'rgba(255, 255, 255, 0.75)'
+          }
+        }
+      }
+    }
   }
 };
 export default defaultThemeVariables;

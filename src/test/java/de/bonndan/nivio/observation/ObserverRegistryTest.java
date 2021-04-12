@@ -1,9 +1,6 @@
 package de.bonndan.nivio.observation;
 
-import de.bonndan.nivio.input.IndexingDispatcher;
-import de.bonndan.nivio.input.ProcessingFinishedEvent;
-import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.LandscapeDescriptionFactory;
+import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.LandscapeFactory;
@@ -58,7 +55,7 @@ class ObserverRegistryTest {
                 .withSource(source)
                 .build();
 
-        ProcessingFinishedEvent event = new ProcessingFinishedEvent(description, landscape);
+        ProcessingFinishedEvent event = new ProcessingFinishedEvent(description, landscape, new ProcessingChangelog());
 
         when(this.landscapeDescriptionFactory.from(landscape)).thenReturn(description);
         when(observerPoolFactory.getObserversFor(eq(landscape), eq(description))).thenReturn(new ArrayList<>());

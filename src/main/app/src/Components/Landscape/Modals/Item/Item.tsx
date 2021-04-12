@@ -24,7 +24,7 @@ import {
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem, ILandscape } from '../../../../interfaces';
-import { getItem, getLabels } from '../../Utils/utils';
+import { getAssessmentSummary, getItem, getLabels } from "../../Utils/utils";
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import { Details, ExpandMore, Info, MoreVertSharp, Wifi } from '@material-ui/icons';
@@ -210,16 +210,17 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small, l
     }
   }
 
+
   const getItemAssessments = (assessmentItem: IAssessmentProps[]) => {
     if (item && assessmentItem) {
       return assessmentItem
-        .filter((item) => !item.field.includes('summary.'))
-        .map((item) => {
+        .filter((assessment) => !assessment.field.includes('summary.'))
+        .map((assessment) => {
           return (
-            <TableRow key={item.field}>
-              <TableCell>{item.field}</TableCell>
+            <TableRow key={assessment.field}>
+              <TableCell>{assessment.field}</TableCell>
               <TableCell>
-                <StatusChip status={item.status} key={item.field} value={item.message} />
+                <StatusChip status={assessment.status} key={assessment.field} value={assessment.message} />
               </TableCell>
             </TableRow>
           );
@@ -270,6 +271,8 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small, l
       <MoreVertSharp />
     </IconButton>
   ) : null;
+
+  const [summaryColor, , ] = getAssessmentSummary(assessment);
   return (
     <Card className={classes.card}>
       <CardHeader
@@ -284,7 +287,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small, l
               size={'small'}
               title={'Click to locate'}
             >
-              <ItemAvatar item={item} statusColor={''} />
+              <ItemAvatar item={item} statusColor={ summaryColor ? summaryColor : ''} />
             </IconButton>
           ) : (
             ''

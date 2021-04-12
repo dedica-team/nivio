@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ScalingKPITest {
@@ -64,8 +65,8 @@ class ScalingKPITest {
     void redIfZeroAsProvider() {
         Relation r1 = new Relation(item, getTestItem("foo", "bar"), null, null, RelationType.PROVIDER);
 
+        item = getTestItemBuilder("test", "a").withRelations(Set.of(r1)).build();
         item.setLabel(Label.scale, "0");
-        item.setRelations(Set.of(r1));
 
         //when
         List<StatusValue> statusValues = scalingKPI.getStatusValues(item);
@@ -82,8 +83,8 @@ class ScalingKPITest {
     void orangeIfZeroAsDataTarget() {
         Relation r1 = new Relation(getTestItem("foo", "bar"), item, null, null, RelationType.DATAFLOW);
 
+        item = getTestItemBuilder("test", "a").withRelations(Set.of(r1)).build();
         item.setLabel(Label.scale, "0");
-        item.setRelations(Set.of(r1));
 
         //when
         List<StatusValue> statusValues = scalingKPI.getStatusValues(item);
@@ -101,8 +102,8 @@ class ScalingKPITest {
         Relation r1 = new Relation(item, getTestItem("foo", "bar"), null, null, RelationType.PROVIDER);
         Relation r2 = new Relation(item, getTestItem("foo", "baz"), null, null, RelationType.PROVIDER);
 
+        item = getTestItemBuilder("test", "a").withRelations(Set.of(r1,r2)).build();
         item.setLabel(Label.scale, "1");
-        item.setRelations(Set.of(r1,r2));
 
         //when
         List<StatusValue> statusValues = scalingKPI.getStatusValues(item);

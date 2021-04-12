@@ -43,7 +43,7 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
      * Returns an svg.
      *
      * @param landscape the landscape to render
-     * @param debug
+     * @param debug     flag to enable debug messages
      * @return the svg as string, uncached
      */
     @Nullable
@@ -70,8 +70,6 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
     @Override
     public void onApplicationEvent(ProcessingFinishedEvent processingFinishedEvent) {
         Landscape landscape = processingFinishedEvent.getLandscape();
-        if (landscape != null) {
-            createCacheEntry(landscape, false);
-        }
+        createCacheEntry(landscape, false);
     }
 }

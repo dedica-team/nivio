@@ -1,10 +1,15 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.*;
+import com.google.common.collect.ImmutableCollection;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ItemRelationProcessor;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections.MapUtils;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
@@ -13,6 +18,8 @@ import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import static de.bonndan.nivio.model.ComponentDiff.*;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -158,9 +165,49 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         return Labeled.withoutKeys(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG, Label.type.name(), Label.icon.name());
     }
 
+    /**
+     * Returns the relations.
+     *
+     * @return immutable set
+     */
     @JsonIgnore
     public Set<Relation> getRelations() {
-        return relations;
+        return Set.copyOf(relations);
+    }
+
+    /**
+     * Adds a relation or replaces the similar one.
+     *
+     * This is necessary because {@link Set} does not replace AND we need to check relation end equality on object level
+     * because referenced source or target items will be replaced by new copies.
+     *
+     * @param relation to add or replace
+     */
+    public void addOrReplace(@NonNull final Relation relation) {
+        if (relation.getSource() != this && relation.getTarget() != this) {
+            throw new IllegalArgumentException("Relation contains no reference to item.");
+        }
+
+        getSimilar(relation).map(relations::remove);
+        relations.add(relation);
+    }
+
+    /**
+     * @param relation the relation to delete
+     * @return true if the relation has been removed or was not present.
+     */
+    public boolean removeRelation(Relation relation) {
+        Optional<Relation> similar = getSimilar(relation);
+        return similar.map(relations::remove).orElse(true);
+    }
+
+    /**
+     * Returns a similar existing relation.
+     */
+    private Optional<Relation> getSimilar(Relation relation) {
+        return getRelations().stream()
+                .filter(existing -> relation.getSource().equals(existing.getSource()) && relation.getTarget().equals(existing.getTarget()))
+                .findFirst();
     }
 
     @JsonProperty("relations")
@@ -175,14 +222,9 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         return map;
     }
 
-    public Set<Relation> getRelations(RelationType type) {
-        return relations.stream()
-                .filter(relationItem -> type.equals(relationItem.getType()))
-                .collect(Collectors.toSet());
-    }
-
-    public void setRelations(Set<Relation> outgoing) {
-        relations.addAll(outgoing);
+    void setRelations(Set<Relation> outgoing) {
+        this.relations.clear();
+        this.relations.addAll(outgoing);
     }
 
     public String getType() {
@@ -191,17 +233,6 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
 
     public String getAddress() {
         return address != null ? address.toString() : null;
-    }
-
-    /**
-     * Returns all providers.
-     */
-    @JsonIgnore
-    public Set<Item> getProvidedBy() {
-        return getRelations(RelationType.PROVIDER).stream()
-                .filter(relationItem -> relationItem.getTarget().equals(this))
-                .map(Relation::getSource)
-                .collect(Collectors.toUnmodifiableSet());
     }
 
     public void setInterfaces(Set<ServiceInterface> interfaces) {
@@ -267,4 +298,36 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
     public Set<StatusValue> getAdditionalStatusValues() {
         return StatusValue.fromMapping(indexedByPrefix(Label.status));
     }
+
+
+    /**
+     * Compare on field level against a newer version.
+     *
+     * @param newer the newer version
+     * @return a list of changes if any changes are present
+     * @throws IllegalArgumentException if the arg is not comparable
+     */
+    public List<String> getChanges(final Item newer) {
+        if (!newer.equals(this)) {
+            throw new IllegalArgumentException("Cannot compare component " + newer.toString() + " against " + this.toString());
+        }
+
+        List<String> changes = new ArrayList<>();
+        changes.addAll(compareStrings(this.contact, newer.contact, "Contact"));
+        changes.addAll(compareStrings(this.description, newer.description, "Description"));
+        changes.addAll(compareStrings(this.name, newer.name, "Name"));
+        changes.addAll(compareStrings(this.owner, newer.owner, "Owner"));
+        changes.addAll(compareOptionals(Optional.ofNullable(this.address), Optional.ofNullable(newer.address), "Address"));
+        changes.addAll(compareCollections(this.labels.keySet(), newer.labels.keySet(), "Labels"));
+        changes.addAll(compareCollections(this.labels.values(), newer.labels.values(), "Label value"));
+        changes.addAll(compareCollections(this.links.keySet(), newer.links.keySet(), "Links"));
+
+        List<String> collect = this.interfaces.stream().map(ServiceInterface::toString).collect(Collectors.toList());
+        List<String> collect2 = newer.getInterfaces().stream().map(ServiceInterface::toString).collect(Collectors.toList());
+        changes.addAll(compareCollections(collect, collect2, "Links"));
+
+        return changes;
+    }
+
+
 }

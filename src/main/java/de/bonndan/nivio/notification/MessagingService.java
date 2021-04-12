@@ -1,6 +1,6 @@
 package de.bonndan.nivio.notification;
 
-import de.bonndan.nivio.input.ProcessingEvent;
+import de.bonndan.nivio.input.ProcessingErrorEvent;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.observation.InputChangedEvent;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
@@ -32,7 +32,15 @@ public class MessagingService {
     }
 
     @EventListener(ProcessingFinishedEvent.class)
-    public void onProcessingEvent(ProcessingEvent processingEvent) {
+    public void onProcessingFinishedEvent(ProcessingFinishedEvent processingEvent) {
+        EventNotification eventNotification = EventNotification.from(processingEvent);
+        fifo.add(eventNotification);
+        LOGGER.debug("Broadcasting processing event: " + processingEvent.getType());
+        this.template.convertAndSend(WebSocketConfig.TOPIC + EVENTS, eventNotification);
+    }
+
+    @EventListener(ProcessingErrorEvent.class)
+    public void onProcessingErrorEvent(ProcessingErrorEvent processingEvent) {
         EventNotification eventNotification = EventNotification.from(processingEvent);
         fifo.add(eventNotification);
         LOGGER.debug("Broadcasting processing event: " + processingEvent.getType());
@@ -41,13 +49,7 @@ public class MessagingService {
 
     @EventListener(InputChangedEvent.class)
     public void onInputChangedEvent(InputChangedEvent inputChangedEvent) {
-        EventNotification eventNotification = new EventNotification(
-                inputChangedEvent.getSource().getLandscape().getFullyQualifiedIdentifier(),
-                InputChangedEvent.class.getSimpleName(),
-                ProcessingEvent.LOG_LEVEL_INFO,
-                inputChangedEvent.getTimestamp(),
-                String.join("; ", inputChangedEvent.getSource().getChanges())
-                );
+        EventNotification eventNotification = EventNotification.from(inputChangedEvent);
         fifo.add(eventNotification);
         LOGGER.debug("Broadcasting input change event.");
         this.template.convertAndSend(WebSocketConfig.TOPIC + EVENTS, eventNotification);

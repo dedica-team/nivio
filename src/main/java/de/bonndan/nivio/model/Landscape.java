@@ -9,6 +9,7 @@ import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.search.ItemIndex;
+import de.bonndan.nivio.search.ItemMatcher;
 import de.bonndan.nivio.search.SearchIndex;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.LoggerFactory;
@@ -175,16 +176,23 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return Objects.hash(StringUtils.trimAllWhitespace(identifier));
     }
 
-    public void addGroup(@NonNull Group group) {
+    /**
+     * Add a group.
+     *
+     * @param group the group to add
+     * @return the added or merged group
+     */
+    public Group addGroup(@NonNull Group group) {
         if (group == null) {
             throw new IllegalArgumentException("Trying to add null group");
         }
-
 
         if (groups.containsKey(group.getIdentifier())) {
             group = GroupFactory.merge(groups.get(group.getIdentifier()), group);
         }
         groups.put(group.getIdentifier(), group);
+
+        return group;
     }
 
     /**
@@ -286,4 +294,17 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     public SearchIndex getSearchIndex() {
         return searchIndex;
     }
+
+    /**
+     * @param term preferably string representation of an FQI, or a simple identifier
+     * @return an item if matched
+     */
+    public Optional<Item> findBy(@NonNull final String term) {
+        Objects.requireNonNull(term);
+
+        return ItemMatcher.forTarget(term)
+                .map(itemMatcher -> getItems().find(itemMatcher))
+                .orElseGet(() -> getItems().query(term).stream().findFirst());
+    }
+
 }

@@ -46,8 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
     menuIcon: {
       position: 'absolute',
       cursor: 'pointer',
-      bottom: '10%',
-
+      top: '70px',
       zIndex: 1000,
       backgroundColor: darken(theme.palette.primary.main, 0.2),
     }
@@ -88,7 +87,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [assessments, setAssessments] = useState<IAssessment | undefined>(undefined);
 
   const [isFirstRender, setIsFirstRender] = useState(true);
-  const [isZoomed, setISZommed] = useState<Boolean>(false);
+  const [isZoomed, setIsZoomed] = useState<Boolean>(false);
 
   const locateFunctionContext = useContext(LocateFunctionContext);
   const notificationContext = useContext(NotificationContext);
@@ -170,7 +169,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     }
 
     if (source && target && dataTarget) {
-      let relation = source.relations[dataTarget];
+      let relation = source.relations[source.fullyQualifiedIdentifier + ';' + dataTarget];
       setSidebarContent(<MapRelation relation={relation} source={source} target={target} />);
     }
   };
@@ -273,11 +272,11 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       <div className='landscapeMapContainer'>
         {isZoomed && <IconButton
           className={classes.menuIcon}
-          title={'Click to Reset View'}
+          title={'Click to reset view'}
           onClick={() => {
             // @ts-ignore  
             setValue(fitToViewer(value, 'center', 'center'));
-            setISZommed(false)
+            setIsZoomed(false)
           }}
           size={'small'}
         >
@@ -306,7 +305,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
               preventPanOutside={false}
               toolbarProps={{ position: 'none' }}
               detectAutoPan={false}
-              onZoom={() => { setISZommed(true) }}
+              onZoom={() => { setIsZoomed(true) }}
               tool={tool}
               onChangeTool={(newTool) => setTool(newTool)}
               value={value}

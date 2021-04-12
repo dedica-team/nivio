@@ -6,7 +6,13 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+
+import static de.bonndan.nivio.model.ComponentDiff.compareOptionals;
+import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
 
 /**
  * Indication of an incoming or outgoing relation like data flow or dependency (provider).
@@ -16,6 +22,8 @@ import java.util.Objects;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Relation implements Serializable {
+
+    public static final String DELIMITER = ";";
 
     @JsonIdentityReference(alwaysAsId = true)
     private final Item source;
@@ -30,7 +38,8 @@ public class Relation implements Serializable {
     private final RelationType type;
 
     public Relation(@NonNull final Item source,
-                    @NonNull final Item target) {
+                    @NonNull final Item target
+    ) {
         this(source, target, null, null, null);
     }
 
@@ -53,6 +62,10 @@ public class Relation implements Serializable {
         this.description = description;
         this.format = format;
         this.type = type;
+    }
+
+    public String getIdentifier() {
+        return source.getFullyQualifiedIdentifier().jsonValue() + DELIMITER + target.getFullyQualifiedIdentifier().jsonValue();
     }
 
     public RelationType getType() {
@@ -89,6 +102,11 @@ public class Relation implements Serializable {
         return Objects.hash(source, target);
     }
 
+    @Override
+    public String toString() {
+        return "Relation{" + getIdentifier() + '}';
+    }
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     static class ApiModel {
 
@@ -113,22 +131,41 @@ public class Relation implements Serializable {
 
         public final String direction;
 
-        ApiModel(Relation relation, Item owner) {
+        ApiModel(@NonNull final Relation relation, @NonNull final Item owner) {
             source = relation.source;
             target = relation.target;
             description = relation.description;
             format = relation.format;
             type = relation.type;
+            id = relation.getIdentifier();
 
-            if (relation.source == owner) {
+            if (relation.source.equals(owner)) {
                 name = StringUtils.isEmpty(target.getName()) ? target.getIdentifier() : target.getName();
-                id = target.getFullyQualifiedIdentifier().toString();
                 direction = OUTBOUND;
             } else {
                 name = StringUtils.isEmpty(source.getName()) ? source.getIdentifier() : source.getName();
-                id = source.getFullyQualifiedIdentifier().toString();
                 direction = INBOUND;
             }
         }
+    }
+
+    /**
+     * Compare on field level against a newer version.
+     *
+     * @param newer the newer version
+     * @return a list of changes if any changes are present
+     * @throws IllegalArgumentException if the arg is not comparable
+     */
+    public List<String> getChanges(Relation newer) {
+        if (!newer.equals(this)) {
+            throw new IllegalArgumentException("Cannot compare relation " + newer.toString() + " against " + this.toString());
+        }
+
+        List<String> changes = new ArrayList<>();
+        changes.addAll(compareStrings(this.format, newer.format, "Format"));
+        changes.addAll(compareStrings(this.description, newer.description, "Description"));
+        changes.addAll(compareOptionals(Optional.ofNullable(this.type), Optional.ofNullable(newer.type), "Type"));
+
+        return changes;
     }
 }

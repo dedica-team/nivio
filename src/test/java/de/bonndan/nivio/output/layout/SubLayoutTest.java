@@ -25,7 +25,7 @@ class SubLayoutTest {
 
         Item baz = getTestItem(foo.getIdentifier(), "baz");
         foo.addItem(baz);
-        baz.getRelations().add(new Relation(baz, bar));
+        baz.addOrReplace(new Relation(baz, bar));
 
         HashSet<Item> objects = new HashSet<>();
         objects.add(bar);

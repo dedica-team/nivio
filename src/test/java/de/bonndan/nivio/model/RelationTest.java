@@ -2,6 +2,8 @@ package de.bonndan.nivio.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,5 +52,64 @@ class RelationTest {
         assertThat(apiModel).isNotNull();
         assertThat(apiModel.direction).isEqualTo(Relation.ApiModel.INBOUND);
         assertThat(apiModel.name).isEqualTo("huhu");
+    }
+
+    @Test
+    void getChangesInType() {
+        Item b = getTestItem("a", "b");
+        Item c = getTestItem("a", "c");
+        Relation before = new Relation(b, c, "foo", "JSON", null);
+        Relation after = new Relation(b, c, "foo", "JSON", RelationType.PROVIDER);
+
+        //when
+        List<String> changes = before.getChanges(after);
+
+        //then
+        assertThat(changes).isNotNull().hasSize(1);
+        assertThat(changes.get(0)).contains("Type changed ");
+    }
+
+    @Test
+    void getChangesInFormat() {
+        Item b = getTestItem("a", "b");
+        Item c = getTestItem("a", "c");
+        Relation before = new Relation(b, c, "foo", "JSON", RelationType.PROVIDER);
+        Relation after = new Relation(b, c, "foo", "XML", RelationType.PROVIDER);
+
+        //when
+        List<String> changes = before.getChanges(after);
+
+        //then
+        assertThat(changes).isNotNull().hasSize(1);
+        assertThat(changes.get(0)).contains("Format changed ");
+    }
+
+    @Test
+    void getChangesInDescription() {
+        Item b = getTestItem("a", "b");
+        Item c = getTestItem("a", "c");
+        Relation before = new Relation(b, c, "foo", "JSON", RelationType.PROVIDER);
+        Relation after = new Relation(b, c, "bar", "JSON", RelationType.PROVIDER);
+
+        //when
+        List<String> changes = before.getChanges(after);
+
+        //then
+        assertThat(changes).isNotNull().hasSize(1);
+        assertThat(changes.get(0)).contains("Description changed ");
+    }
+
+    @Test
+    void hasNoChange() {
+        Item b = getTestItem("a", "b");
+        Item c = getTestItem("a", "c");
+        Relation before = new Relation(b, c, "foo", "JSON", RelationType.PROVIDER);
+        Relation after = new Relation(b, c, "foo", "JSON", RelationType.PROVIDER);
+
+        //when
+        List<String> changes = before.getChanges(after);
+
+        //then
+        assertThat(changes).isNotNull().hasSize(0);
     }
 }

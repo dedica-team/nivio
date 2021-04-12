@@ -22,6 +22,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -77,13 +78,19 @@ public class IndexerIntegrationTest {
         assertEquals(17, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
-        assertEquals(3, blog.getProvidedBy().size());
+        assertEquals(3, RelationType.PROVIDER.filter(blog.getRelations()).stream()
+                .filter(relationItem1 -> relationItem1.getTarget().equals(blog))
+                .map(Relation::getSource)
+                .collect(Collectors.toUnmodifiableSet()).size());
 
-        Optional<Item> first = blog.getProvidedBy().stream().filter(i -> i.getIdentifier().equals("wordpress-web")).findFirst();
+        Optional<Item> first = RelationType.PROVIDER.filter(blog.getRelations()).stream()
+                .filter(relationItem -> relationItem.getTarget().equals(blog))
+                .map(Relation::getSource)
+                .collect(Collectors.toUnmodifiableSet()).stream().filter(i -> i.getIdentifier().equals("wordpress-web")).findFirst();
         Item webserver = first.orElseThrow();
 
         Assertions.assertNotNull(webserver);
-        assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
+        assertEquals(1, RelationType.PROVIDER.filter(webserver.getRelations()).size());
 
         Relation push = (Relation) blog.getRelations().stream()
                 .filter(d -> "hourly push KPI data".equals(d.getDescription()))
@@ -117,14 +124,20 @@ public class IndexerIntegrationTest {
         assertEquals(17, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
-        assertEquals(3, blog.getProvidedBy().size());
+        assertEquals(3, RelationType.PROVIDER.filter(blog.getRelations()).stream()
+                .filter(relationItem1 -> relationItem1.getTarget().equals(blog))
+                .map(Relation::getSource)
+                .collect(Collectors.toUnmodifiableSet()).size());
 
-        ArrayList<Item> landscapeItems = new ArrayList<>(blog.getProvidedBy());
+        ArrayList<Item> landscapeItems = new ArrayList<>(RelationType.PROVIDER.filter(blog.getRelations()).stream()
+                .filter(relationItem -> relationItem.getTarget().equals(blog))
+                .map(Relation::getSource)
+                .collect(Collectors.toUnmodifiableSet()));
         ItemIndex<Item> itemIndex = new ItemIndex<>(null, Item.class);
         itemIndex.setItems(new HashSet<>(landscapeItems));
         Item webserver = itemIndex.pick("wordpress-web", null);
         Assertions.assertNotNull(webserver);
-        assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
+        assertEquals(1, RelationType.PROVIDER.filter(webserver.getRelations()).size());
 
         Relation push = blog.getRelations().stream()
                 .filter(d -> "hourly push KPI data".equals(d.getDescription()))
@@ -185,7 +198,15 @@ public class IndexerIntegrationTest {
         assertEquals("Other name", wordpress.getName());
         assertEquals("content", wordpress.getGroup());
 
-
+        //testing changelog
+        ArgumentCaptor<ProcessingFinishedEvent> captor = ArgumentCaptor.forClass(ProcessingFinishedEvent.class);
+        verify(applicationEventPublisher, times(2)).publishEvent(captor.capture());
+        ProcessingFinishedEvent value = captor.getAllValues().get(1);
+        assertThat(value).isNotNull();
+        ProcessingChangelog changelog = value.getChangelog();
+        assertThat(changelog).isNotNull();
+        assertThat(changelog.changes).hasSize(3);
+        assertThat(changelog.changes).containsKey("nivio:example/content/wordpress-web");
     }
 
     /**

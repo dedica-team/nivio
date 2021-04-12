@@ -8,7 +8,8 @@ const componentStyles = makeStyles((theme: Theme) =>
       marginTop: 0,
       padding: 0,
       backgroundColor: darken(theme.palette.primary.main, 0.3),
-      overflowY: 'auto',
+      flexShrink: 0,
+      overflowY: 'hidden'
     },
     cardHeader: {
       backgroundColor: theme.palette.primary.main,
@@ -19,6 +20,11 @@ const componentStyles = makeStyles((theme: Theme) =>
     },
     cardActions: {
       padding: 0,
+    },
+    groupAvatar: {
+      width: '2rem',
+      height: '2rem',
+      display: 'inline-block',
     },
   })
 );

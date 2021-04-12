@@ -1,8 +1,7 @@
 import React, { ReactElement } from 'react';
 
 import Navigation from '../Navigation/Navigation';
-import Notification from '../Notification/Notification';
-import { Drawer, Theme, Toolbar } from '@material-ui/core';
+import { Drawer, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 interface Props {
@@ -18,19 +17,16 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       display: 'flex',
     },
-    appBar: {
-      zIndex: theme.zIndex.drawer + 1,
-      position: 'relative',
-      backgroundColor: theme.palette.primary.main,
-    },
     drawer: {
       flexShrink: 0,
     },
     drawerPaper: {
       width: 320,
+      marginTop: '4.2em',
+      marginRight: 20,
       backgroundColor: 'transparent',
       border: 'none',
-      maxHeight: '100%',
+      maxHeight: 'calc(100vh - 140px)',
       height: 'inherit',
     },
     drawerContainer: {
@@ -60,7 +56,6 @@ const Layout: React.FC<Props> = ({
   return (
     <React.Fragment>
       <Navigation
-        appBarClass={classes.appBar}
         logo={logo}
         setSidebarContent={setSidebarContent}
         pageTitle={pageTitle}
@@ -76,12 +71,9 @@ const Layout: React.FC<Props> = ({
           }}
           color={'secondary'}
         >
-          <Toolbar />
           {sidebarContent}
         </Drawer>
       </div>
-
-      <Notification />
     </React.Fragment>
   );
 };
