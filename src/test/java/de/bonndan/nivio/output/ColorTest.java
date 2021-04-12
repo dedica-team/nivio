@@ -30,7 +30,7 @@ public class ColorTest {
 
         //given
         String name = "0";
-        float[] hsv = Color.hsv(Color.nameToRGBRaw(name));
+        float[] hsv = Color.hsb(Color.nameToRGBRaw(name));
         assertThat(hsv[2]).isLessThan(Color.MIN_BRIGHTNESS);
         assertThat(hsv[1]).isGreaterThan(Color.MIN_SATURATION);
 
@@ -40,7 +40,7 @@ public class ColorTest {
         //then
         assertThat(color).isNotNull();
         assertThat(color).isEqualTo("ff4400");
-        hsv = Color.hsv(color);
+        hsv = Color.hsb(color);
         assertThat(hsv[2]).isGreaterThan(Color.MIN_BRIGHTNESS);
     }
 
@@ -49,7 +49,7 @@ public class ColorTest {
 
         //given
         String name = "fffffff35t6245z6";
-        float[] hsv = Color.hsv(Color.nameToRGBRaw(name));
+        float[] hsv = Color.hsb(Color.nameToRGBRaw(name));
         assertThat(hsv[2]).isGreaterThan(Color.MIN_BRIGHTNESS);
         assertThat(hsv[1]).isLessThan(Color.MIN_SATURATION);
 
@@ -59,7 +59,7 @@ public class ColorTest {
         //then
         assertThat(color).isNotNull();
         assertThat(color).isEqualTo("ffa3d2");
-        hsv = Color.hsv(color);
+        hsv = Color.hsb(color);
         assertThat(hsv[1]).isGreaterThan(Color.MIN_SATURATION);
     }
 

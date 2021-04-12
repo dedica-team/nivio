@@ -35,29 +35,29 @@ public class Color {
         }
 
         String colorString = nameToRGBRaw(name);
-        float[] hsv = hsv(colorString);
-        if (hsv[2] < MIN_BRIGHTNESS) {
-            LOGGER.debug("Color {} is too dark: HSValue {}", colorString, hsv[2]);
+        float[] hsb = hsb(colorString);
+        if (hsb[2] < MIN_BRIGHTNESS) {
+            LOGGER.debug("Color {} is too dark: HSValue {}", colorString, hsb[2]);
             return lighten(colorString);
         }
 
-        if (hsv[1] < MIN_SATURATION) {
-            LOGGER.debug("Color {} has too less saturation: S {}", colorString, hsv[1]);
-            return saturate(hsv[0], hsv[1], hsv[2]);
+        if (hsb[1] < MIN_SATURATION) {
+            LOGGER.debug("Color {} has too less saturation: S {}", colorString, hsb[1]);
+            return saturate(hsb[0], hsb[1], hsb[2]);
         }
 
         return colorString;
     }
 
-    static float[] hsv(String hexColor) {
+    static float[] hsb(String hexColor) {
         java.awt.Color decode = new java.awt.Color(
                 Integer.valueOf(hexColor.substring(0, 2), 16),
                 Integer.valueOf(hexColor.substring(2, 4), 16),
                 Integer.valueOf(hexColor.substring(4, 6), 16));
 
-        float[] hsv = new float[3];
-        java.awt.Color.RGBtoHSB(decode.getRed(), decode.getGreen(), decode.getBlue(), hsv);
-        return hsv;
+        float[] hsb = new float[3];
+        java.awt.Color.RGBtoHSB(decode.getRed(), decode.getGreen(), decode.getBlue(), hsb);
+        return hsb;
     }
 
     /**
