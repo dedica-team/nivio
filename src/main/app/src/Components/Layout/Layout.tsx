@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 
 import Navigation from '../Navigation/Navigation';
-import Notification from '../Notification/Notification';
 import { Drawer, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
@@ -75,8 +74,6 @@ const Layout: React.FC<Props> = ({
           {sidebarContent}
         </Drawer>
       </div>
-
-      <Notification />
     </React.Fragment>
   );
 };

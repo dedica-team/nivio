@@ -67,7 +67,7 @@ class ProcessingChangelogTest {
         assertThat(changes).isNotNull().hasSize(1);
 
         //then
-        String key = changelog.getRelationKey(relation);
+        String key = relation.getIdentifier();
         ProcessingChangelog.Entry actual = changes.get(key);
         assertThat(actual).isNotNull();
         assertThat(actual.getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.DELETED.name());

@@ -17,6 +17,8 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     overview: {
       marginRight: 320,
+      marginTop: -40,
+      paddingTop: 0
     },
     card: {
       marginBottom: 5,

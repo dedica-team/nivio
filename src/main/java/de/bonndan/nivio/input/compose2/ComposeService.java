@@ -50,7 +50,7 @@ public class ComposeService {
           link targets become providers
          */
         if (links != null) {
-            links.forEach(s -> description.addRelation(RelationBuilder.provides(s, description)));
+            links.forEach(s -> description.addRelation(RelationBuilder.createProviderDescription(s, description.getFullyQualifiedIdentifier().toString())));
         }
 
         return description;

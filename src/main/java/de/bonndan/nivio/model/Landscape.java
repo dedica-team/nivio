@@ -9,6 +9,7 @@ import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.search.ItemIndex;
+import de.bonndan.nivio.search.ItemMatcher;
 import de.bonndan.nivio.search.SearchIndex;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.LoggerFactory;
@@ -293,4 +294,17 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     public SearchIndex getSearchIndex() {
         return searchIndex;
     }
+
+    /**
+     * @param term preferably string representation of an FQI, or a simple identifier
+     * @return an item if matched
+     */
+    public Optional<Item> findBy(@NonNull final String term) {
+        Objects.requireNonNull(term);
+
+        return ItemMatcher.forTarget(term)
+                .map(itemMatcher -> getItems().find(itemMatcher))
+                .orElseGet(() -> getItems().query(term).stream().findFirst());
+    }
+
 }

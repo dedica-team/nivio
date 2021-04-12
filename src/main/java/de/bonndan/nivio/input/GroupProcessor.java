@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.GroupFactory;
 import de.bonndan.nivio.model.Landscape;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class GroupProcessor extends Processor {
         super(processLog);
     }
 
-    public ProcessingChangelog process(LandscapeDescription input, Landscape landscape) {
+    public ProcessingChangelog process(@NonNull final LandscapeDescription input, @NonNull final Landscape landscape) {
 
         ProcessingChangelog changelog = new ProcessingChangelog();
         List<Function<String, Boolean>> specs = getSpecs(input.getConfig().getGroupBlacklist());
@@ -42,7 +43,8 @@ public class GroupProcessor extends Processor {
                     changelog.addEntry(added, ProcessingChangelog.ChangeType.CREATED);
                 } else {
                     processLog.info("Updating group " + g.getIdentifier());
-                    String updates = String.join("; ", existing.get().getChanges(added));
+                    String updates = existing.get().getChanges(added).isEmpty() ?
+                            "Item(s) changed" : String.join("; ", existing.get().getChanges(added));
                     changelog.addEntry(added, ProcessingChangelog.ChangeType.UPDATED, updates);
                 }
             } else {
