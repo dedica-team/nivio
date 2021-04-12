@@ -10,6 +10,7 @@ import componentStyles from '../../Resources/styling/ComponentStyles';
 import { LocateFunctionContext } from '../../Context/LocateFunctionContext';
 import GroupAvatar from '../Landscape/Modals/Group/GroupAvatar';
 import { LinkOutlined } from '@material-ui/icons';
+import Button from '@material-ui/core/Button';
 
 interface Props {
   notification: INotificationMessage;
@@ -37,7 +38,7 @@ const Changes: React.FC<Props> = ({ notification }) => {
         return new Promise((resolve) =>
           resolve(
             <TableRow key={key}>
-              <TableCell style={{ width: '30%' }}>Item {key}</TableCell>
+              <TableCell style={{ width: '20%' }}>Item {key}</TableCell>
               <TableCell>{change.changeType}</TableCell>
             </TableRow>
           )
@@ -45,7 +46,7 @@ const Changes: React.FC<Props> = ({ notification }) => {
       }
       return get(`/api/${key}`).then((item) => (
         <TableRow key={key}>
-          <TableCell style={{ width: '30%' }}>
+          <TableCell style={{ width: '20%' }}>
             <IconButton title={key} onClick={() => locateFunctionContext.locateFunction(key)}>
               <ItemAvatar item={item} statusColor={''} />
             </IconButton>
@@ -60,7 +61,7 @@ const Changes: React.FC<Props> = ({ notification }) => {
         return new Promise((resolve) =>
           resolve(
             <TableRow key={key}>
-              <TableCell style={{ width: '30%' }}>Group {key}</TableCell>
+              <TableCell style={{ width: '20%' }}>Group {key}</TableCell>
               <TableCell>{change.changeType}</TableCell>
             </TableRow>
           )
@@ -68,7 +69,7 @@ const Changes: React.FC<Props> = ({ notification }) => {
       }
       return get(`/api/${key}`).then((group) => (
         <TableRow key={key}>
-          <TableCell style={{ width: '30%' }}>
+          <TableCell style={{ width: '20%' }}>
             <IconButton
               onClick={() => locateFunctionContext.locateFunction(key)}
               title={`Click to locate group ${group.identifier}`}
@@ -83,24 +84,36 @@ const Changes: React.FC<Props> = ({ notification }) => {
 
     const getRelationChange = (key: string, change: IChange): Promise<any> => {
       const parts = key.split(';');
+      const buttonText = (fqi: string) : string => {
+        const parts = fqi.trim().split("/");
+        return `${parts[1]}/${parts[2]}`;
+      };
 
       return new Promise((resolve) =>
         resolve(
           <TableRow key={key}>
-            <TableCell style={{ width: '30%' }}>
+            <TableCell style={{ width: '20%' }}>
               <IconButton title={key} onClick={() => locateFunctionContext.locateFunction(key)}>
                 <LinkOutlined />
               </IconButton>
             </TableCell>
             <TableCell>
               {change.changeType} Relation from{' '}
-              <button onClick={() => locateFunctionContext.locateFunction(parts[0])}>
-                {parts[0]}
-              </button>
-              to{' '}
-              <button onClick={() => locateFunctionContext.locateFunction(parts[1])}>
-                {parts[1]}
-              </button>
+              <Button
+                onClick={() => locateFunctionContext.locateFunction(parts[0])}
+                size='small'
+                variant={'outlined'}
+              >
+                {buttonText(parts[0])}
+              </Button>{' '}
+              to {' '}
+              <Button
+                onClick={() => locateFunctionContext.locateFunction(parts[1])}
+                size='small'
+                variant={'outlined'}
+              >
+                {buttonText(parts[1])}
+              </Button>
             </TableCell>
           </TableRow>
         )
