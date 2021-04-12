@@ -1,61 +1,113 @@
 package de.bonndan.nivio.output;
 
 import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
+/**
+ * Color generation utility.
+ *
+ *
+ */
 public class Color {
 
-    public static String DARK = "111111";
     public static final String DARKGRAY = "333333";
     public static final String GRAY = "aaaaaa";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Color.class);
+    public static final float MIN_BRIGHTNESS = 0.3f;
+    public static final float MIN_SATURATION = 0.2f;
 
     /**
-     * https://stackoverflow.com/questions/2464745/compute-hex-color-code-for-an-arbitrary-string
+     * Creates a hex color based on the given name.
      *
      * @param name of a group etc
      * @return a hex color
      */
-    public static String nameToRGB(String name) {
-        return nameToRGB(name, "FFFFFF");
+    @Nullable
+    public static String nameToRGB(@Nullable final String name, @Nullable final String defaultColor) {
+        if (StringUtils.isEmpty(name)) {
+            return defaultColor;
+        }
+
+        String colorString = nameToRGBRaw(name);
+        float[] hsv = hsv(colorString);
+        if (hsv[2] < MIN_BRIGHTNESS) {
+            LOGGER.debug("Color {} is too dark: HSValue {}", colorString, hsv[2]);
+            return lighten(colorString);
+        }
+
+        if (hsv[1] < MIN_SATURATION) {
+            LOGGER.debug("Color {} has too less saturation: S {}", colorString, hsv[1]);
+            return saturate(hsv[0], hsv[1], hsv[2]);
+        }
+
+        return colorString;
     }
 
-    public static String nameToRGB(String name, String defaultColor) {
-        if (StringUtils.isEmpty(name))
-            return defaultColor;
+    static float[] hsv(String hexColor) {
+        java.awt.Color decode = new java.awt.Color(
+                Integer.valueOf(hexColor.substring(0, 2), 16),
+                Integer.valueOf(hexColor.substring(2, 4), 16),
+                Integer.valueOf(hexColor.substring(4, 6), 16));
 
+        float[] hsv = new float[3];
+        java.awt.Color.RGBtoHSB(decode.getRed(), decode.getGreen(), decode.getBlue(), hsv);
+        return hsv;
+    }
+
+    /**
+     * Creates a hex color from a string. DO NOT USE OUTSIDE of tests.
+     *
+     * @link https://stackoverflow.com/questions/2464745/compute-hex-color-code-for-an-arbitrary-string
+     */
+    static String nameToRGBRaw(String name) {
         return String.format("%X", name.hashCode()).concat("000000").substring(0, 6);
     }
 
-    public static String lighten(String color) {
+    /**
+     * Converts to a awt color and invokes brighten
+     * @param color hex color string
+     * @return hex color string
+     */
+    private static String lighten(String color) {
         try {
             java.awt.Color col = java.awt.Color.decode(color.startsWith("#") ? color : "#" + color);
-            return Integer.toHexString(col.brighter().getRGB());
+            return Integer.toHexString(col.brighter().getRGB()).substring(0, 6);
         } catch (IllegalArgumentException ex) {
             LOGGER.error(color + " --> " + ex.getMessage());
             return color;
         }
     }
 
-    public static String getGroupColor(Item item) {
-        if (item.getGroup() == null || item.getGroup().startsWith(Group.COMMON))
-            return GRAY;
-
-        return getGroupColor(item.getGroup(), item.getLandscape());
+    /**
+     * Adds 20% to saturation.
+     *
+     * @param h hue
+     * @param s saturation
+     * @param b brightness
+     * @return a hex color string
+     */
+    private static String saturate(float h, float s, float b) {
+        try {
+            java.awt.Color col = new java.awt.Color(java.awt.Color.HSBtoRGB(h, s + 0.2f, b));
+            return Integer.toHexString(col.getRGB()).substring(0, 6);
+        } catch (IllegalArgumentException ex) {
+            LOGGER.error(ex.getMessage());
+            return null;
+        }
     }
 
-    public static String getGroupColor(String name, Landscape landscape) {
-        Group g = landscape.getGroup(name).orElse(landscape.getGroup(Group.COMMON).orElse(null));
-        return getGroupColor(g);
-    }
-
+    /**
+     * Returns the color of a group.
+     *
+     * @param group group object
+     * @return hex color
+     */
     public static String getGroupColor(Group group) {
         if (group == null) {
             return Color.DARKGRAY;

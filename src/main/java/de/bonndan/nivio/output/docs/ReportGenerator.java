@@ -59,7 +59,7 @@ public class ReportGenerator extends HtmlGenerator {
         final StringBuilder builder = new StringBuilder();
         Map<String, Group> groups = landscape.getGroups();
         groups.forEach((s, groupItem) -> {
-            String color = "#" + Color.getGroupColor(s, landscape);
+            String color = "#" + Color.getGroupColor(groupItem);
             builder.append(
                     h2(rawHtml("Group: " + "<span style=\"color: " + color + "\">" + GROUP_CIRCLE + "</span> " + s))
                             .attr("class", "rounded").render()
@@ -77,7 +77,7 @@ public class ReportGenerator extends HtmlGenerator {
     protected ContainerTag writeItem(Item item) {
         boolean hasRelations = item.getRelations().isEmpty();
         boolean hasInterfaces = item.getInterfaces().isEmpty();
-        String groupColor = "#" + Color.nameToRGB(item.getGroup());
+        String groupColor = "#" + Color.nameToRGB(item.getGroup(), Color.GRAY);
 
         List<ContainerTag> links = item.getLinks().entrySet().stream()
                 .map(stringURLEntry -> a(" " + stringURLEntry.getKey()).attr("href", stringURLEntry.getValue().toString()))

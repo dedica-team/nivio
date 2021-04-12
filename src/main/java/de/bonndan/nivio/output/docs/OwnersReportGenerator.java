@@ -59,7 +59,7 @@ public class OwnersReportGenerator extends HtmlGenerator {
     }
 
     private ContainerTag writeItem(Item item) {
-        String groupColor = "#" + Color.nameToRGB(item.getGroup());
+        String groupColor = "#" + Color.nameToRGB(item.getGroup(), Color.GRAY);
 
         return div(rawHtml("<span style=\"color: " + groupColor + "\">&#9899;</span> " + FormatUtils.nice(item.getGroup()) + ": " + item.toString() + " (" + item.getFullyQualifiedIdentifier().toString() + ")"));
 
