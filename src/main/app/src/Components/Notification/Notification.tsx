@@ -5,7 +5,7 @@ import { withBasePath } from '../../utils/API/BasePath';
 import IconButton from '@material-ui/core/IconButton';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Badge, createStyles, Theme } from '@material-ui/core';
-import { RssFeed } from '@material-ui/icons';
+import { DynamicFeed } from "@material-ui/icons";
 import { NotificationContext } from '../../Context/NotificationContext';
 import Changes from './Changes';
 
@@ -92,7 +92,7 @@ const Notification: React.FC<Props> = ({ setSidebarContent }) => {
           return setSidebarContent(renderedChanges);
         }}
       >
-        <RssFeed />
+        <DynamicFeed />
       </IconButton>
     </Badge>
   );

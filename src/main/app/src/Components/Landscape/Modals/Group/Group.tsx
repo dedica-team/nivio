@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 import ItemAvatar from '../Item/ItemAvatar';
-import GroupAvatar from "./GroupAvatar";
+import GroupAvatar from './GroupAvatar';
 
 interface Props {
   group: IGroup;
@@ -68,6 +68,7 @@ const Group: React.FC<Props> = ({ group, assessments }) => {
             <IconButton
               onClick={() => locateFunctionContext.locateFunction(group.fullyQualifiedIdentifier)}
               size={'small'}
+              title={`Click to local group ${group.identifier}`}
             >
               <GroupAvatar group={group} statusColor={''} />
             </IconButton>

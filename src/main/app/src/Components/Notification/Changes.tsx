@@ -69,7 +69,10 @@ const Changes: React.FC<Props> = ({ notification }) => {
       return get(`/api/${key}`).then((group) => (
         <TableRow key={key}>
           <TableCell style={{ width: '30%' }}>
-            <IconButton title={key} onClick={() => locateFunctionContext.locateFunction(key)}>
+            <IconButton
+              onClick={() => locateFunctionContext.locateFunction(key)}
+              title={`Click to locate group ${group.identifier}`}
+            >
               <GroupAvatar group={group} statusColor={''} />
             </IconButton>
           </TableCell>
