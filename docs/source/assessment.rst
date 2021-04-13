@@ -15,25 +15,42 @@ their properties. The result is a status represented by colors (ordinal):
 Built in KPIs
 -------------
 
-* scaling (warning if the scale label is exactly 0)
+Scaling
+^^^^^^^
+This KPI evaluates the scale label and tries to find bottlenecks where providers for many items are down or not scaled.
 
-  * red if 0 as provider for other items
+* red if 0 as provider for other items
+* yellow if scaled to 0 without relations
+* orange of scaled to 0 as data sink
+* unknown if no label or not a number
+* green if scaled higher than 1
+* yellow if a bottleneck (more than 1 item depends on it)
 
-  * yellow if scaled to 0 without relations
+Lifecycle
+^^^^^^^^^
+This KPI evaluates the lifecycle label for "official" values.
 
-  * orange if scaled to 0 as data sink
+* PRODUCTION turns the KPI value to GREEN
+* END_OF_LIFE turns it to ORANGE
 
-  * unknown if no label or not a number
-
-  * green if scaled higher than 1
-
-  * yellow if a bottleneck (more than 1 item depends on it)
+Other
+^^^^^
 
 * health (examines the health label on items)
 * condition (K8s condition true/false evaluation)
-* custom (see :ref:`Custom KPIs` below)
 
 By default all shipped `KPIs (Key Performance Indicators)` are enabled. Set ``enabled`` to false in the config to disable them.
+
+.. code-block:: yaml
+   :linenos:
+
+    identifier: kpi_example
+
+    config:
+      kpis:
+        scaling:
+          enabled: false
+
 
 Custom KPIs
 -----------
@@ -66,5 +83,3 @@ label ``foo``. Both ranges (inclusive lower and upper limits) and matchers are s
             RED: "BAD;err.*"
         health:
           description: can be overridden
-        scaling:
-          enabled: false
