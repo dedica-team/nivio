@@ -20,7 +20,7 @@
 # -- Project information -----------------------------------------------------
 
 project = u'Nivio'
-copyright = u'2020, dedica GmbH'
+copyright = u'2021, dedica GmbH'
 author = u'Daniel Pozzi'
 
 # The short X.Y version
@@ -155,8 +155,12 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'nivio', u'nivio Documentation',
-     author, 'nivio', 'One line description of project.',
+    (master_doc,
+    'nivio',
+    u'nivio Documentation',
+    author,
+    'nivio',
+    'Application landscape management for teams',
      'Miscellaneous'),
 ]
 
