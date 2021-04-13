@@ -161,7 +161,7 @@ public class ApiController {
         }
 
         try {
-            return new ResponseEntity<>(landscape.getItems().search(query), HttpStatus.OK);
+            return new ResponseEntity<>(landscape.search(query), HttpStatus.OK);
         } catch (RuntimeException error) {
             LOGGER.error("Search query '{}' in landscape {} failed: {}", query, landscape, error.getMessage(), error);
             return ResponseEntity.badRequest().build();

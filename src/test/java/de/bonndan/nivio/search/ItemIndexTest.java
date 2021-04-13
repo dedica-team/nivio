@@ -1,6 +1,7 @@
 package de.bonndan.nivio.search;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeFactory;
@@ -79,18 +80,32 @@ class ItemIndexTest {
     }
 
     @Test
-    public void searchStartingWithWildcard() {
-        landscape.getItems().indexForSearch();
-        Set<Item> search = landscape.getItems().search("*oo");
-        assertEquals(1, search.size());
-    }
-
-    @Test
     public void queryUrl() {
-        landscape.getItems().indexForSearch();
+        //given
+        landscape.getSearchIndex().indexForSearch(landscape.getItems().all());
+
+        //when
         Collection<Item> search = landscape.getItems().query("https://foo.bar/");
+
+        //then
         assertThat(search).isNotEmpty();
         Item next = search.iterator().next();
         assertThat(next.getIdentifier()).isEqualTo("hasaddress");
+    }
+
+    @Test
+    public void retrieve() {
+        //given
+        landscape.getSearchIndex().indexForSearch(landscape.getItems().all());
+
+        //when
+        Set<FullyQualifiedIdentifier> q = Set.of(items.get(0).getFullyQualifiedIdentifier(), items.get(1).getFullyQualifiedIdentifier());
+        Collection<Item> search = landscape.getItems().retrieve(q);
+
+        //then
+        assertThat(search).isNotEmpty();
+        assertThat(search).hasSize(2);
+        assertThat(search).contains(items.get(0));
+        assertThat(search).contains(items.get(1));
     }
 }

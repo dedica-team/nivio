@@ -107,11 +107,8 @@ public class Indexer {
         // create relations between items
         changelog.merge(new ItemRelationProcessor(logger).process(input, landscape));
 
-        // ensures that item have a resolved icon in the api
+        // ensures that items have a resolved icon in the api
         new AppearanceProcessor(logger, iconService).process(input, landscape);
-
-        // this step must be final or very late to include all item modifications
-        landscape.getItems().indexForSearch();
 
         return changelog;
     }
