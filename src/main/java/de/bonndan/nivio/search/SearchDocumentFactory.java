@@ -27,6 +27,7 @@ public class SearchDocumentFactory {
     public static final String LUCENE_FIELD_ITEM_TYPE = "type";
     public static final String LUCENE_FIELD_OWNER = "owner";
     public static final String LUCENE_FIELD_TAG = "tag";
+    public static final String LUCENE_FIELD_NETWORK = Label.network.name();
     private static final String LUCENE_FIELD_LIFECYCLE = Label.lifecycle.name();
     private static final String LUCENE_FIELD_CAPABILITY = Label.capability.name();
     private static final String LUCENE_FIELD_LAYER = Label.layer.name();
@@ -48,7 +49,7 @@ public class SearchDocumentFactory {
         document.add(new TextField(LUCENE_FIELD_COMPONENT_TYPE, "item", Field.Store.YES));
         document.add(new TextField(LUCENE_FIELD_FQI, item.getFullyQualifiedIdentifier().toString(), Field.Store.YES));
 
-        document.add(new TextField(LUCENE_FIELD_IDENTIFIER, Optional.ofNullable(item.getIdentifier()).orElse(""), Field.Store.YES));
+        document.add(new TextField(LUCENE_FIELD_IDENTIFIER, item.getIdentifier(), Field.Store.YES));
         document.add(new TextField(LUCENE_FIELD_NAME, Optional.ofNullable(item.getName()).orElse(""), Field.Store.YES));
         document.add(new TextField(LUCENE_FIELD_CONTACT, Optional.ofNullable(item.getContact()).orElse(""), Field.Store.YES));
         document.add(new TextField(LUCENE_FIELD_DESCRIPTION, Optional.ofNullable(item.getDescription()).orElse(""), Field.Store.YES));
@@ -77,6 +78,9 @@ public class SearchDocumentFactory {
             document.add(new TextField(LUCENE_FIELD_TAG, s.toLowerCase(), Field.Store.YES));
         });
 
+        //networks
+        item.getLabels(Label.network).forEach((key, value) -> document.add(new TextField(LUCENE_FIELD_NETWORK, value.toLowerCase(), Field.Store.YES)));
+
         addFacets(document, item);
         return document;
     }
@@ -86,13 +90,18 @@ public class SearchDocumentFactory {
      *
      * @param document the doc to add facets to
      */
-    private static void addFacets(Document document, Item item) {
-        document.add(new FacetField(LUCENE_FIELD_COMPONENT_TYPE, "item"));
+    private static void addFacets(final Document document, final Item item) {
+
+        // re-enable when all Components are indexed
+        //document.add(new FacetField(LUCENE_FIELD_COMPONENT_TYPE, "item"));
 
         //tag facets
         Arrays.stream(item.getTags()).forEach(s -> {
             document.add(new FacetField(LUCENE_FIELD_TAG, s.toLowerCase()));
         });
+
+        //network facets
+        item.getLabels(Label.network).forEach((key, value) -> document.add(new FacetField(LUCENE_FIELD_NETWORK, value.toLowerCase())));
 
         Optional.ofNullable(item.getLabel(Label.lifecycle))
                 .ifPresent(s -> document.add(new FacetField(LUCENE_FIELD_LIFECYCLE, s)));
@@ -102,5 +111,14 @@ public class SearchDocumentFactory {
 
         Optional.ofNullable(item.getLabel(Label.layer))
                 .ifPresent(s -> document.add(new FacetField(LUCENE_FIELD_LAYER, s)));
+
+        Optional.ofNullable(item.getOwner())
+                .ifPresent(s -> document.add(new FacetField(LUCENE_FIELD_OWNER, s)));
+
+        Optional.ofNullable(item.getGroup())
+                .ifPresent(s -> document.add(new FacetField(LUCENE_FIELD_GROUP, s)));
+
+        Optional.ofNullable(item.getType())
+                .ifPresent(s -> document.add(new FacetField(LUCENE_FIELD_ITEM_TYPE, s)));
     }
 }
