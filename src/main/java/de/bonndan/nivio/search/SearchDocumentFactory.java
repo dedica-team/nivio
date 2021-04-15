@@ -7,10 +7,13 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.facet.FacetField;
 import org.apache.lucene.facet.FacetsConfig;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 /**
  * Static factory to turn {@link Item}s into Lucene {@link Document}s.
@@ -45,24 +48,31 @@ public class SearchDocumentFactory {
      * @param item the item to index
      * @return searchable document
      */
-    public static Document from(Item item) {
+    @NonNull
+    public static Document from(final Item item) {
         Document document = new Document();
-        document.add(new TextField(LUCENE_FIELD_COMPONENT_TYPE, "item", Field.Store.YES));
-        document.add(new TextField(LUCENE_FIELD_FQI, item.getFullyQualifiedIdentifier().toString(), Field.Store.YES));
 
-        document.add(new TextField(LUCENE_FIELD_IDENTIFIER, item.getIdentifier(), Field.Store.YES));
-        document.add(new TextField(LUCENE_FIELD_NAME, Optional.ofNullable(item.getName()).orElse(""), Field.Store.YES));
-        document.add(new TextField(LUCENE_FIELD_CONTACT, Optional.ofNullable(item.getContact()).orElse(""), Field.Store.YES));
-        document.add(new TextField(LUCENE_FIELD_DESCRIPTION, Optional.ofNullable(item.getDescription()).orElse(""), Field.Store.YES));
-        Optional.ofNullable(item.getGroup()).ifPresent(s -> document.add(new TextField(LUCENE_FIELD_GROUP, s, Field.Store.YES)));
-        Optional.ofNullable(item.getType()).ifPresent(s -> document.add(new TextField(LUCENE_FIELD_ITEM_TYPE, s, Field.Store.YES)));
-        Optional.ofNullable(item.getOwner()).ifPresent(s -> document.add(new TextField(LUCENE_FIELD_OWNER, s, Field.Store.YES)));
+        BiConsumer<String, String> addTextField = (field, value) -> Optional.ofNullable(value)
+                .ifPresentOrElse(
+                        val -> document.add(new TextField(field, val, Field.Store.YES)),
+                        () -> document.add(new TextField(field, "", Field.Store.YES))
+                );
+
+        addTextField.accept(LUCENE_FIELD_COMPONENT_TYPE, "item");
+        addTextField.accept(LUCENE_FIELD_FQI, item.getFullyQualifiedIdentifier().toString());
+        addTextField.accept(LUCENE_FIELD_IDENTIFIER, item.getIdentifier());
+        addTextField.accept(LUCENE_FIELD_NAME, item.getName());
+        addTextField.accept(LUCENE_FIELD_CONTACT, item.getContact());
+        addTextField.accept(LUCENE_FIELD_DESCRIPTION, item.getDescription());
+        addTextField.accept(LUCENE_FIELD_GROUP, item.getGroup());
+        addTextField.accept(LUCENE_FIELD_ITEM_TYPE, item.getType());
+        addTextField.accept(LUCENE_FIELD_OWNER, item.getOwner());
 
         //add all labels by their key
-        item.getLabels().forEach((s, s2) -> {
-            if (StringUtils.isEmpty(s2))
+        item.getLabels().forEach((labelKey, val) -> {
+            if (StringUtils.isEmpty(val))
                 return;
-            document.add(new TextField(s, s2, Field.Store.YES));
+            addTextField.accept(labelKey, val);
         });
 
         //add links, title as key (duplicates are ok)
@@ -71,16 +81,14 @@ public class SearchDocumentFactory {
                 return;
             String val = StringUtils.isEmpty(link.getName()) ? "" : link.getName() + " ";
             val += link.getHref();
-            document.add(new TextField(s, val, Field.Store.YES));
+            addTextField.accept(s, val);
         });
 
         //tags (searchable)
-        Arrays.stream(item.getTags()).forEach(s -> {
-            document.add(new TextField(LUCENE_FIELD_TAG, s.toLowerCase(), Field.Store.YES));
-        });
+        Arrays.stream(item.getTags()).forEach(tag -> addTextField.accept(LUCENE_FIELD_TAG, tag.toLowerCase(Locale.ROOT)));
 
         //networks
-        item.getLabels(Label.network).forEach((key, value) -> document.add(new TextField(LUCENE_FIELD_NETWORK, value.toLowerCase(), Field.Store.YES)));
+        item.getLabels(Label.network).forEach((key, value) -> addTextField.accept(LUCENE_FIELD_NETWORK, value.toLowerCase(Locale.ROOT)));
 
         addFacets(document, item);
         return document;
@@ -93,33 +101,24 @@ public class SearchDocumentFactory {
      */
     private static void addFacets(final Document document, final Item item) {
 
-        // re-enable when all Components are indexed
-        //document.add(new FacetField(LUCENE_FIELD_COMPONENT_TYPE, "item"));
+        BiConsumer<String, String> addFacetField = (field, value) ->
+                Optional.ofNullable(value).ifPresent(val -> {
+                    if (field != null) document.add(new FacetField(field, val));
+                });
 
         //tag facets
-        Arrays.stream(item.getTags()).forEach(s -> {
-            document.add(new FacetField(LUCENE_FIELD_TAG, s.toLowerCase()));
-        });
+        Arrays.stream(item.getTags())
+                .forEach(tag -> addFacetField.accept(LUCENE_FIELD_TAG, tag.toLowerCase(Locale.ROOT)));
 
         //network facets
-        item.getLabels(Label.network).forEach((key, value) -> document.add(new FacetField(LUCENE_FIELD_NETWORK, value.toLowerCase())));
+        item.getLabels(Label.network)
+                .forEach((key, value) -> addFacetField.accept(LUCENE_FIELD_NETWORK, value.toLowerCase(Locale.ROOT)));
 
-        Optional.ofNullable(item.getLabel(Label.lifecycle))
-                .ifPresent(s -> document.add(new FacetField(LUCENE_FIELD_LIFECYCLE, s)));
-
-        Optional.ofNullable(item.getLabel(Label.capability))
-                .ifPresent(s -> document.add(new FacetField(LUCENE_FIELD_CAPABILITY, s)));
-
-        Optional.ofNullable(item.getLabel(Label.layer))
-                .ifPresent(s -> document.add(new FacetField(LUCENE_FIELD_LAYER, s)));
-
-        Optional.ofNullable(item.getOwner())
-                .ifPresent(s -> document.add(new FacetField(LUCENE_FIELD_OWNER, s)));
-
-        Optional.ofNullable(item.getGroup())
-                .ifPresent(s -> document.add(new FacetField(LUCENE_FIELD_GROUP, s)));
-
-        Optional.ofNullable(item.getType())
-                .ifPresent(s -> document.add(new FacetField(LUCENE_FIELD_ITEM_TYPE, s)));
+        addFacetField.accept(LUCENE_FIELD_LIFECYCLE, item.getLabel(Label.lifecycle));
+        addFacetField.accept(LUCENE_FIELD_CAPABILITY, item.getLabel(Label.capability));
+        addFacetField.accept(LUCENE_FIELD_LAYER, item.getLabel(Label.layer));
+        addFacetField.accept(LUCENE_FIELD_OWNER, item.getOwner());
+        addFacetField.accept(LUCENE_FIELD_GROUP, item.getGroup());
+        addFacetField.accept(LUCENE_FIELD_ITEM_TYPE, item.getType());
     }
 }
