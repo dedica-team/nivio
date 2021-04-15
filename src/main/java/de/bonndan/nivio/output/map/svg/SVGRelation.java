@@ -59,7 +59,7 @@ class SVGRelation extends Component {
                 .attr("stroke-width", 20);
 
         if (Lifecycle.isPlanned(relation.getSource()) || Lifecycle.isPlanned(relation.getTarget())) {
-            path.attr("opacity", 0.7);
+            shadow.attr("stroke-dasharray", 15);
         }
 
         ContainerTag endMarker = null;

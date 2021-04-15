@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -72,6 +73,36 @@ class SVGRelationTest {
         //then
         String render1 = render.render();
         assertTrue(render1.contains("url(#" + SVGRelation.MARKER_ID + ")"));
+    }
+
+    @Test
+    public void relationIsNotDashedWhenNotPlanned() {
+
+        //only works with provider relations, because dataflow inner path is dashed
+        Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
+
+        //when
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem);
+        DomContent render = svgRelation.render();
+
+        //then
+        String render1 = render.render();
+        assertFalse(render1.contains("stroke-dasharray"));
+    }
+
+    @Test
+    public void plannedRelationIsDashed() {
+        foo.setLabel(Label.lifecycle, Lifecycle.PLANNED.name());
+
+        Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
+
+        //when
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem);
+        DomContent render = svgRelation.render();
+
+        //then
+        String render1 = render.render();
+        assertTrue(render1.contains("stroke-dasharray"));
     }
 
     @Test
