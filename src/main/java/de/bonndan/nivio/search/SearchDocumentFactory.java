@@ -35,6 +35,7 @@ public class SearchDocumentFactory {
     public static FacetsConfig getConfig() {
         FacetsConfig config = new FacetsConfig();
         config.setMultiValued(LUCENE_FIELD_TAG, true);
+        config.setMultiValued(LUCENE_FIELD_NETWORK, true);
         return config;
     }
 
