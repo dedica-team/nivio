@@ -117,7 +117,11 @@ public class SVGDocument extends Component {
                 .with(logo, title)
                 .with(groups)
                 .with(relations.stream().map(SVGRelation::render))
+                //draw items above relations
                 .with(items)
+                // draw group labels above everything
+                .with(groupAreas.stream().map(SVGGroupArea::getLabel).collect(Collectors.toSet()))
+                //defs contain reusable stuff
                 .with(SvgTagCreator.defs().with(defs));
     }
 
