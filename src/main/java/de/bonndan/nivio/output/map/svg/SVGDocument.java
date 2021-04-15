@@ -85,6 +85,7 @@ public class SVGDocument extends Component {
             return area.render();
         }).collect(Collectors.toList());
 
+        defs.add(SVGRelation.dataflowMarker());
         List<SVGRelation> relations = getRelations(layouted);
 
         SVGDimension dimension = SVGDimensionFactory.getDimension(groupAreas);
