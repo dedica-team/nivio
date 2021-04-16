@@ -24,7 +24,7 @@ public class SVGDimensionFactory {
 
         //fix viewport, because xy and hex coordinate system have different offsets
         groupAreas.forEach(svgGroupArea -> {
-            svgGroupArea.groupArea.forEach(hex -> {
+            svgGroupArea.getGroupArea().forEach(hex -> {
                 var pos = hex.toPixel();
                 if (pos.x < minX.get()) {
                     minX.set((int) pos.x);
