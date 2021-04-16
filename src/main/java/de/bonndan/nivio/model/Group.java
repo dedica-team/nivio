@@ -58,12 +58,22 @@ public class Group implements Labeled, Linked, Assessable {
      * @param icon                icon
      * @param color               color, usually member items inherit it
      */
-    public Group(String identifier, String landscapeIdentifier, String owner, String description, String contact, String icon, String color) {
+    public Group(@NonNull final String identifier,
+                 @NonNull final String landscapeIdentifier,
+                 @Nullable final String owner,
+                 @Nullable final String description,
+                 @Nullable final String contact,
+                 @Nullable final String icon,
+                 @Nullable final String color
+    ) {
         if (StringUtils.isEmpty(identifier)) {
             throw new IllegalArgumentException("Group identifier must not be empty");
         }
         this.identifier = identifier;
 
+        if (StringUtils.isEmpty(landscapeIdentifier)) {
+            throw new IllegalArgumentException("Landscape identifier must not be empty");
+        }
         this.landscapeIdentifier = landscapeIdentifier;
         this.owner = owner;
         this.description = description;
@@ -72,7 +82,7 @@ public class Group implements Labeled, Linked, Assessable {
         this.color = color;
     }
 
-    public Group(String identifier, String landscapeIdentifier) {
+    public Group(@NonNull final String identifier, @NonNull final String landscapeIdentifier) {
         this(identifier, landscapeIdentifier, null, null, null, null, Color.getGroupColor(identifier));
     }
 
