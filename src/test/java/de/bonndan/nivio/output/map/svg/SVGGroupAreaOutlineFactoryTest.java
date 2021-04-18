@@ -39,7 +39,7 @@ class SVGGroupAreaOutlineFactoryTest {
         Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), foo);
 
         SVGGroupArea group = SVGGroupAreaFactory.getGroup(foo, area, false);
-        Set<Hex> groupArea = group.groupArea;
+        Set<Hex> groupArea = group.getGroupArea();
 
         //when
         SVGGroupAreaOutlineFactory svgGroupAreaOutlineFactory = new SVGGroupAreaOutlineFactory();
