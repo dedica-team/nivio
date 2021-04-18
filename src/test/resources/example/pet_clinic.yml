@@ -1,0 +1,12 @@
+identifier: petclinic
+name: The Pet Clinic
+contact: mail@petclinic.org
+description: The Pet clinic IT landscape
+
+sources:
+  - format: kubernetes
+    url: http://localhost:8888
+
+config:
+  greedy: false
+

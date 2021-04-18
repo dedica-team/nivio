@@ -1,0 +1,11 @@
+identifier: petclinic_k8s
+name: K8s mock server config
+description: This config is only used to create K8s configs
+
+# labels with prefix "demodata." are used to configure k8s specifics
+items:
+  - identifier: fe-reception
+      group: reception
+      nivio.team: Gorillaz
+      nivio.type: gui
+      demodata.node: scrappy_coco
