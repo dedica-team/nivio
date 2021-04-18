@@ -22,7 +22,7 @@ public class StatusValue {
     @NonNull
     private final String field;
 
-    @Nullable
+    @NonNull
     private final Status status;
 
     @Nullable
@@ -117,7 +117,7 @@ public class StatusValue {
         return field;
     }
 
-    @Nullable
+    @NonNull
     public Status getStatus() {
         return status;
     }

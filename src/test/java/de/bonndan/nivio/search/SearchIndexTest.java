@@ -1,9 +1,7 @@
 package de.bonndan.nivio.search;
 
-import de.bonndan.nivio.model.Component;
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.ItemFactory;
-import de.bonndan.nivio.model.Tagged;
+import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +19,7 @@ class SearchIndexTest {
     void setup() {
         searchIndex = new SearchIndex();
 
-        Set<Component> components = new HashSet<>();
+        Set<Item> components = new HashSet<>();
         components.add(ItemFactory.getTestItemBuilder("foo", "a")
                 .withName("Arnold")
                 .withDescription("is a strong guy")
@@ -32,7 +30,9 @@ class SearchIndexTest {
                 .withDescription("is a tough guy")
                 .withLabels(Map.of(Tagged.LABEL_PREFIX_TAG + "strong", "strong"))
                 .build());
-        searchIndex.indexForSearch(components);
+
+        Landscape landscape = LandscapeFactory.createForTesting("test", "test").withItems(components).build();
+        searchIndex.indexForSearch(landscape, new Assessment(Map.of()));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package de.bonndan.nivio.search;
 
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Item;
@@ -11,10 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
@@ -82,7 +80,7 @@ class ItemIndexTest {
     @Test
     public void queryUrl() {
         //given
-        landscape.getSearchIndex().indexForSearch(landscape.getItems().all());
+        landscape.getSearchIndex().indexForSearch(landscape, new Assessment(Map.of()));
 
         //when
         Collection<Item> search = landscape.getItems().query("https://foo.bar/");
@@ -96,7 +94,7 @@ class ItemIndexTest {
     @Test
     public void retrieve() {
         //given
-        landscape.getSearchIndex().indexForSearch(landscape.getItems().all());
+        landscape.getSearchIndex().indexForSearch(landscape, new Assessment(Map.of()));
 
         //when
         Set<FullyQualifiedIdentifier> q = Set.of(items.get(0).getFullyQualifiedIdentifier(), items.get(1).getFullyQualifiedIdentifier());

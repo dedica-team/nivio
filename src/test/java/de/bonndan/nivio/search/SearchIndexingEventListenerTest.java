@@ -1,5 +1,6 @@
 package de.bonndan.nivio.search;
 
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.ProcessingChangelog;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
@@ -7,6 +8,7 @@ import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,15 +33,15 @@ class SearchIndexingEventListenerTest {
         when(landscape.getSearchIndex()).thenReturn(searchIndex);
         ItemIndex<Item> itemIndex = mock(ItemIndex.class);
         when(landscape.getItems()).thenReturn(itemIndex);
-        Set<Item> aSet = Set.of(ItemFactory.getTestItem("a", "b"));
-        when(itemIndex.all()).thenReturn(aSet);
+        when(landscape.getKpis()).thenReturn(Map.of());
 
         //when
         listener.onProcessingFinishedEvent(e);
 
         //then
         verify(landscape).getSearchIndex();
-        verify(landscape).getItems();
-        verify(searchIndex).indexForSearch(eq(aSet));
+        verify(landscape).getKpis();
+        verify(landscape).applyKPIs(any());
+        verify(searchIndex).indexForSearch(eq(landscape), any(Assessment.class));
     }
 }
