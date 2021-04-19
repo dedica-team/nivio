@@ -4,13 +4,16 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { LocateFunctionContextProvider } from './Context/LocateFunctionContext';
 import { NotificationContextProvider } from './Context/NotificationContext';
+import { LandscapeContextProvider } from './Context/LandscapeContext';
 
 ReactDOM.render(
-  <LocateFunctionContextProvider>
-    <NotificationContextProvider>
-      <App />
-    </NotificationContextProvider>
-  </LocateFunctionContextProvider>,
+  <LandscapeContextProvider>
+    <LocateFunctionContextProvider>
+      <NotificationContextProvider>
+        <App />
+      </NotificationContextProvider>
+    </LocateFunctionContextProvider>
+  </LandscapeContextProvider>,
   document.getElementById('root')
 );
 
