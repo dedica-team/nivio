@@ -1,4 +1,3 @@
-import React from 'react';
 import { Badge, Theme, withStyles } from '@material-ui/core';
 import { createStyles } from '@material-ui/core/styles';
 
