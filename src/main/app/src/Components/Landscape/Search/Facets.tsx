@@ -1,8 +1,7 @@
 import React from 'react';
-import { Table, TableBody, TableCell, TableRow } from "@material-ui/core";
+import { Table, TableBody, TableCell, TableRow, Typography } from '@material-ui/core';
 import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
-import { Assessment } from "@material-ui/icons";
 
 interface IFacet {
   dim: string;
@@ -23,38 +22,79 @@ interface ILabelValue {
 }
 
 const Facets: React.FC<FacetsInterface> = ({ facets, addFacet }) => {
+  const facetsHtml: JSX.Element[] = [];
+  const kpiHtml: JSX.Element[] = [];
+
+  //regular facets
+  facets
+    .filter((facet: IFacet) => !facet.dim.startsWith('kpi_'))
+    .forEach((facet: IFacet) =>
+      facetsHtml.push(
+        <TableRow key={facet.dim}>
+          <TableCell style={{ width: '25%' }}>{facet.dim}</TableCell>
+          <TableCell>
+            {facet.labelValues.map((lv) => (
+              <Chip
+                onClick={() => {
+                  addFacet(facet.dim, lv.label);
+                }}
+                variant={'outlined'}
+                size={'small'}
+                key={facet.dim + '' + lv.label}
+                label={lv.label}
+                avatar={<Avatar>{lv.value}</Avatar>}
+              />
+            ))}
+          </TableCell>
+        </TableRow>
+      )
+    );
 
   const getLabel = (facet: IFacet) => {
-    if (facet.dim.startsWith("kpi_"))
-      return <div title={'KPI'}><Assessment /> {facet.dim.replace("kpi_", '')}</div>;
+    if (facet.dim.startsWith('kpi_'))
+      return <div title={'KPI'}>KPI: {facet.dim.replace('kpi_', '')}</div>;
 
     return facet.dim;
-  }
-  const facetsHtml = facets.map((facet: IFacet) => (
-    <TableRow key={facet.dim}>
-      <TableCell style={{ width: '25%' }}>{getLabel(facet)}</TableCell>
-      <TableCell>
-        {facet.labelValues.map((lv) => (
-          <Chip
-            onClick={() => {
-              addFacet(facet.dim, lv.label);
-            }}
-            variant={'outlined'}
-            size={'small'}
-            key={facet.dim + '' + lv.label}
-            label={lv.label}
-            avatar={<Avatar>{lv.value}</Avatar>}
-          />
-        ))}
-      </TableCell>
+  };
 
-    </TableRow>
-  ));
+  //kpis
+  facets
+    .filter((facet: IFacet) => facet.dim.startsWith('kpi_'))
+    .forEach((facet: IFacet) =>
+      kpiHtml.push(
+        <TableRow key={facet.dim}>
+          <TableCell style={{ width: '35%' }}>{getLabel(facet)}</TableCell>
+          <TableCell>
+            {facet.labelValues.map((lv) => (
+              <Chip
+                onClick={() => {
+                  addFacet(facet.dim, lv.label);
+                }}
+                variant={'outlined'}
+                size={'small'}
+                key={facet.dim + '' + lv.label}
+                label={lv.label}
+                style={{ backgroundColor: lv.label, color: 'black', margin: 1 }}
+                avatar={<Avatar>{lv.value}</Avatar>}
+              />
+            ))}
+          </TableCell>
+        </TableRow>
+      )
+    );
 
   return (
-    <Table aria-label={'facets table'} style={{ tableLayout: 'fixed' }}>
-      <TableBody>{facetsHtml}</TableBody>
-    </Table>
+    <>
+      <Typography variant={'h6'}>Field filters</Typography>
+      <Table aria-label={'regular facets'} style={{ tableLayout: 'fixed' }}>
+        <TableBody>{facetsHtml}</TableBody>
+      </Table>
+      <br />
+      <Typography variant={'h6'}>KPIs</Typography>
+      <Table aria-label={'kpi facets'} style={{ tableLayout: 'fixed' }}>
+        <TableBody>{kpiHtml}</TableBody>
+      </Table>
+    </>
   );
 };
 

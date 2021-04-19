@@ -196,7 +196,6 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
             ) : null
           }
         />
-        <Typography variant={'h6'}>Filters</Typography>
         {searchSupport}
       </Box>
     </div>
