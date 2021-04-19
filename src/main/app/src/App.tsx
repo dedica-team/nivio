@@ -48,7 +48,7 @@ const App: React.FC = () => {
       const index: Index = value;
 
       const back = getColorSafely(index.config.brandingBackground, '#161618');
-      const front = getColorSafely(index.config.brandingForeground, '#006868');
+      const front = getColorSafely(index.config.brandingForeground, '#22F2C2');
       const secondary = getColorSafely(index.config.brandingSecondary, '#eeeeee');
 
       const tv: ThemeOptions = defaultThemeVariables;
@@ -59,6 +59,17 @@ const App: React.FC = () => {
       tv.palette.primary.main = front;
       // @ts-ignore
       tv.palette.secondary.main = secondary;
+
+      if (tv.typography) {
+        // @ts-ignore
+        tv.typography.h3.color = secondary;
+        // @ts-ignore
+        tv.typography.h4.color = secondary;
+        // @ts-ignore
+        tv.typography.h5.color = secondary;
+        // @ts-ignore
+        tv.typography.h6.color = secondary;
+      }
 
       if (index.config.brandingLogoUrl && index.config.brandingLogoUrl.length) {
         setLogo(index.config.brandingLogoUrl);
