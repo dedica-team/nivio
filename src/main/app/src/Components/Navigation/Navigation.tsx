@@ -133,6 +133,7 @@ const Navigation: React.FC<Props> = ({
         <IconButton
           className={componentClasses.navigationButton}
           onClick={() => setSearchSupport(!searchSupport)}
+          title={'Toggle search'}
         >
           <SearchOutlined />
         </IconButton>

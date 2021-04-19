@@ -116,7 +116,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
     const searchResult = results.map((value1: IItem) => (
       <Item small={true} key={value1.fullyQualifiedIdentifier} useItem={value1} />
     ));
-    if (render) setSidebarContent(<>{searchResult}</>);
+    setSidebarContent(<>{searchResult}</>);
   }, [results, setSidebarContent, render]);
 
   async function loadFacets(identifier: string | undefined) {
@@ -177,14 +177,14 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
           placeholder={'...'}
           onChange={(event) => setSearchTerm(event.target.value)}
           startAdornment={
-            <IconButton size={'small'} onClick={() => setRender(!render)}>
+            <IconButton size={'small'} onClick={() => setRender(!render)} title={'Show results'}>
               <SearchOutlined />
             </IconButton>
           }
           endAdornment={
             searchTerm.length ? (
               <InputAdornment position='end'>
-                <IconButton size={'small'} onClick={() => clear()}>
+                <IconButton size={'small'} onClick={() => clear()} title={'Clear'}>
                   <Backspace />
                 </IconButton>
               </InputAdornment>

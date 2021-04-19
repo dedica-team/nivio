@@ -74,6 +74,7 @@ const LandscapeWatcher: React.FC<Props> = ({ setSidebarContent, ...props }) => {
             />
           );
         }}
+        title={'Show assessments (KPI-based warnings)'}
       >
         <WarningRounded />
       </IconButton>
