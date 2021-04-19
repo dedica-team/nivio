@@ -66,7 +66,7 @@ public class LandscapeDescription implements ComponentDescription {
      * descriptions of items fetched and parsed from sources
      */
     @Schema(hidden = true)
-    private final ItemIndex<ItemDescription> itemDescriptions = new ItemIndex<>(null, ItemDescription.class);
+    private final ItemIndex<ItemDescription> itemDescriptions = new ItemIndex<>(ItemDescription.class);
 
     @Schema(description = "Configuration of key performance indicators (i.e. status indicators) and layouting tweaks")
     private final LandscapeConfig config = new LandscapeConfig();

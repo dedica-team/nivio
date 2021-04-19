@@ -3,9 +3,14 @@ package de.bonndan.nivio.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,5 +55,30 @@ class LandscapeTest {
 
         //then
         assertThat(foo1).isEmpty();
+    }
+
+    @Test
+    public void searchStartingWithWildcard() throws URISyntaxException {
+        //given
+        ArrayList<Item> items = new ArrayList<>();
+
+        Item s1 = getTestItemBuilder("g1", "s1").withName("foo").withLandscape(landscape).build();
+        items.add(s1);
+
+        Item s2 = getTestItemBuilder("g1", "s2").withName("bar").withLandscape(landscape).build();
+        items.add(s2);
+
+        Item s3 = getTestItemBuilder("g2", "hasaddress").withAddress(new URI("https://foo.bar/")).withLandscape(landscape).build();
+        items.add(s3);
+
+        landscape.setItems(new HashSet<>(items));
+
+        landscape.getSearchIndex().indexForSearch(landscape.getItems().all());
+
+        //when
+        Set<Item> search = landscape.search("*oo");
+
+        //then
+        assertEquals(1, search.size());
     }
 }
