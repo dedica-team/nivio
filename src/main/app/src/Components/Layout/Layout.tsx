@@ -24,12 +24,11 @@ const useStyles = makeStyles((theme: Theme) =>
     sideBar: {
       flexShrink: 0,
       flexGrow: 0,
-      width: sidebarWidth
+      width: sidebarWidth,
+      overflow: 'auto',
+      maxHeight: 'calc(100vh - 100px)',
     },
 
-    drawerContainer: {
-      overflow: 'auto',
-    },
     outer: {
       display: 'flex',
       flexDirection: 'row',
