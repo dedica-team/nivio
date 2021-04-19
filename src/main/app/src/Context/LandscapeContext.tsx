@@ -6,7 +6,7 @@ export interface LandscapeContextType {
   readonly landscape: ILandscape | null;
   readonly assessment: IAssessment | null;
   readonly identifier: string | null;
-  next: (identifier: string) => void;
+  next: (identifier: string | null) => void;
   getAssessmentSummary: (fqi: string) => IAssessmentProps | null;
 }
 

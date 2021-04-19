@@ -32,7 +32,7 @@ const LandscapeWatcher: React.FC<Props> = ({ setSidebarContent, ...props }) => {
 
     const pathIdentifier: string | null = match?.params?.identifier || null;
 
-    if (pathIdentifier && pathIdentifier !== context.identifier) {
+    if (pathIdentifier !== context.identifier) {
       context.next(pathIdentifier);
     }
   }, [props, context]);
@@ -46,6 +46,8 @@ const LandscapeWatcher: React.FC<Props> = ({ setSidebarContent, ...props }) => {
       color = assessmentSummary.status;
     }
   }
+
+  if (context.identifier == null) return <></>;
 
   return (
     <StatusBadge

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   Typography,
   Theme,
@@ -21,6 +21,7 @@ import Notification from '../Notification/Notification';
 import { SearchOutlined } from '@material-ui/icons';
 import componentStyles from '../../Resources/styling/ComponentStyles';
 import LandscapeWatcher from '../Landscape/Dashboard/LandscapeWatcher';
+import { LandscapeContext } from '../../Context/LandscapeContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -64,7 +65,7 @@ const Navigation: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
   const componentClasses = componentStyles();
-
+  const landscapeContext = useContext(LandscapeContext);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -128,12 +129,14 @@ const Navigation: React.FC<Props> = ({
         <Typography variant='h6'>{pageTitle}</Typography>
       </Box>
       <div className={classes.grow} />
-      <IconButton
-        className={componentClasses.navigationButton}
-        onClick={() => setSearchSupport(!searchSupport)}
-      >
-        <SearchOutlined />
-      </IconButton>{' '}
+      {landscapeContext.identifier ? (
+        <IconButton
+          className={componentClasses.navigationButton}
+          onClick={() => setSearchSupport(!searchSupport)}
+        >
+          <SearchOutlined />
+        </IconButton>
+      ) : null}{' '}
       <Notification setSidebarContent={setSidebarContent} />
       <LandscapeWatcher setSidebarContent={setSidebarContent} />
     </Toolbar>
