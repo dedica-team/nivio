@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 import Navigation from '../Navigation/Navigation';
 import { Drawer, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Search from '../Landscape/Search/Search';
 
 interface Props {
   children: string | ReactElement | ReactElement[];
@@ -12,31 +13,45 @@ interface Props {
   logo?: string;
 }
 
+const searchSupportWidth = 360;
+const sidebarWidth = 280;
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       display: 'flex',
     },
-    drawer: {
+    sideBar: {
       flexShrink: 0,
+      flexGrow: 0,
+      width: sidebarWidth
     },
-    drawerPaper: {
-      width: 320,
-      marginTop: '4.2em',
-      marginRight: 20,
-      backgroundColor: 'transparent',
-      border: 'none',
-      maxHeight: 'calc(100vh - 140px)',
-      height: 'inherit',
-    },
+
     drawerContainer: {
       overflow: 'auto',
+    },
+    outer: {
+      display: 'flex',
+      flexDirection: 'row',
     },
     content: {
       display: 'flex',
       flexDirection: 'row',
-      padding: theme.spacing(3),
     },
+    flexItem: {
+      flexShrink: 1,
+      flexGrow: 1,
+    },
+    main: {
+      flexShrink: 1,
+      flexGrow: 2,
+      width: '1000px',
+    },
+    searchSupport: {
+      backgroundColor: theme.palette.primary.dark,
+      width: searchSupportWidth,
+      padding: 5
+    }
   })
 );
 
@@ -52,29 +67,40 @@ const Layout: React.FC<Props> = ({
   logo,
 }) => {
   const classes = useStyles();
+  const [searchSupport, setSearchSupport] = React.useState<boolean>(false);
 
   return (
-    <React.Fragment>
-      <Navigation
-        logo={logo}
-        setSidebarContent={setSidebarContent}
-        pageTitle={pageTitle}
-      />
-      <div className={classes.content}>
-        {children}
-        <Drawer
-          className={classes.drawer}
-          variant='permanent'
-          anchor={'right'}
-          classes={{
-            paper: classes.drawerPaper,
-          }}
-          color={'secondary'}
-        >
-          {sidebarContent}
-        </Drawer>
-      </div>
-    </React.Fragment>
+    <div className={classes.outer}>
+      <main className={classes.main}>
+        <Navigation
+          logo={logo}
+          setSidebarContent={setSidebarContent}
+          setSearchSupport={setSearchSupport}
+          searchSupport={searchSupport}
+          pageTitle={pageTitle}
+        />
+        <div className={classes.content}>
+          {children}
+          <div className={classes.sideBar}>
+            {sidebarContent}
+          </div>
+        </div>
+      </main>
+      <Drawer
+        classes={{
+          paper: classes.searchSupport
+        }}
+        style={{width: searchSupport ? searchSupportWidth : 0}}
+        anchor={'right'}
+        variant={'persistent'}
+        open={searchSupport}
+        onClose={() => {
+          setSearchSupport(false);
+        }}
+      >
+        <Search setSidebarContent={setSidebarContent} showSearch={setSearchSupport}/>
+      </Drawer>
+    </div>
   );
 };
 

@@ -3,25 +3,11 @@ import { INotificationMessage } from "../../interfaces";
 import { Client, StompSubscription } from '@stomp/stompjs';
 import { withBasePath } from '../../utils/API/BasePath';
 import IconButton from '@material-ui/core/IconButton';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Badge, createStyles, Theme } from '@material-ui/core';
+import { Badge} from '@material-ui/core';
 import { DynamicFeed } from "@material-ui/icons";
 import { NotificationContext } from '../../Context/NotificationContext';
 import Changes from './Changes';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    icon: {
-      color: 'rgba(255, 255, 255, 0.75)',
-      borderColor: theme.palette.primary.main,
-      borderWidth: 1,
-      borderStyle: 'solid',
-      height: '1.9em',
-      width: '1.9em',
-      marginLeft: 10,
-    },
-  })
-);
+import componentStyles from "../../Resources/styling/ComponentStyles";
 
 interface Props {
   setSidebarContent: Function;
@@ -34,7 +20,7 @@ interface Props {
  */
 const Notification: React.FC<Props> = ({ setSidebarContent }) => {
 
-  const classes = useStyles();
+  const classes = componentStyles();
   const backendUrl = withBasePath('/subscribe');
   const protocol = window.location.protocol !== 'https:' ? 'ws' : 'wss';
 
@@ -80,13 +66,11 @@ const Notification: React.FC<Props> = ({ setSidebarContent }) => {
     setRenderedChanges(<Changes notification={notificationContext.notification} />);
   }, [notificationContext.notification]);
 
-  if (notificationContext.notification == null) return <></>;
-
   return (
     <Badge color='secondary' variant='dot' overlap='circle' invisible={!newChanges} title={'Recent changes'}>
       <IconButton
         size={'small'}
-        className={classes.icon}
+        className={classes.navigationButton}
         onClick={() => {
           setNewChanges(false);
           return setSidebarContent(renderedChanges);
