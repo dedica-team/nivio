@@ -9,7 +9,7 @@ it('should render LandscapeOverview component', () => {
       <Overview setPageTitle={() => { }} setSidebarContent={() => { }} />
     </MemoryRouter>
   );
-  expect(getByText('Loading landscapes...')).toBeInTheDocument();
+  expect(getByText('Loading landscapes ...')).toBeInTheDocument();
 });
 
 

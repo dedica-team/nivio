@@ -63,29 +63,15 @@ const assessments: IAssessment = {
   },
 };
 
-it('should render LandscapeDashboard component', () => {
-  const { getByText } = render(
-    <MemoryRouter>
-      <StatusBar
-        locateItem={() => {}}
-        setSidebarContent={() => {}}
-        landscape={landscape}
-        assessments={assessments}
-      />
-    </MemoryRouter>
-  );
-});
 
 it('should display all group information', () => {
   const { getByText } = render(
     <MemoryRouter>
       <StatusBarLayout
-        landscape={landscape}
-        assessments={assessments}
         onItemClick={() => {}}
         onGroupClick={() => {}}
       />
     </MemoryRouter>
   );
-  expect(getByText('Group groupName')).toBeInTheDocument();
+  expect(getByText('Assessments')).toBeInTheDocument();
 });
