@@ -26,7 +26,8 @@ const useStyles = makeStyles((theme: Theme) =>
       borderColor: theme.palette.primary.main,
     },
     searchField: {
-      marginTop: 2,
+      marginTop: 0,
+      paddingLeft: 5,
       paddingRight: 5,
       width: '100%',
     },
@@ -154,7 +155,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
 
   return (
     <div>
-      <div style={{ float: 'right', padding: 2, color: '#222' }}>
+      <div style={{ float: 'right', padding: 2 }}>
         <IconButton size={'small'}>
           <HelpTooltip
             style={{ float: 'right', padding: 2, color: '#222' }}
@@ -165,7 +166,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
           <Close />
         </IconButton>
       </div>
-      <Typography variant={'h4'}>Search</Typography>
+      <Typography variant={'h5'}>Search</Typography>
       <Box className={classes.search}>
         <Input
           disableUnderline={true}
@@ -175,14 +176,8 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
           ref={searchInput}
           placeholder={'...'}
           onChange={(event) => setSearchTerm(event.target.value)}
-          onFocus={(event) => {
-            setRender(true);
-          }}
-          onBlur={(event) => {
-            setRender(false);
-          }}
           startAdornment={
-            <IconButton size={'small'} onClick={() => setSearchTerm(searchTerm + '')}>
+            <IconButton size={'small'} onClick={() => setRender(!render)}>
               <SearchOutlined />
             </IconButton>
           }

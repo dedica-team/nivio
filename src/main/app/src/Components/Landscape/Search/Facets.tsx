@@ -38,7 +38,8 @@ const Facets: React.FC<FacetsInterface> = ({ facets, addFacet }) => {
                 onClick={() => {
                   addFacet(facet.dim, lv.label);
                 }}
-                variant={'outlined'}
+                variant={'default'}
+                color={'primary'} style={{margin: 1}}
                 size={'small'}
                 key={facet.dim + '' + lv.label}
                 label={lv.label}
@@ -52,7 +53,7 @@ const Facets: React.FC<FacetsInterface> = ({ facets, addFacet }) => {
 
   const getLabel = (facet: IFacet) => {
     if (facet.dim.startsWith('kpi_'))
-      return <div title={'KPI'}>KPI: {facet.dim.replace('kpi_', '')}</div>;
+      return <div title={'KPI'}>{facet.dim.replace('kpi_', '')}</div>;
 
     return facet.dim;
   };
@@ -70,7 +71,7 @@ const Facets: React.FC<FacetsInterface> = ({ facets, addFacet }) => {
                 onClick={() => {
                   addFacet(facet.dim, lv.label);
                 }}
-                variant={'outlined'}
+                variant={'default'}
                 size={'small'}
                 key={facet.dim + '' + lv.label}
                 label={lv.label}

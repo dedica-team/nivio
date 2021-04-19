@@ -11,7 +11,7 @@ const HtmlTooltip = withStyles((theme: Theme) => ({
   tooltip: {
     backgroundColor: theme.palette.primary.main,
     fontSize: theme.typography.pxToRem(14),
-    boxShadow: '2px 2px 5px 5px'
+    boxShadow: '2px 2px 5px black'
   },
 }))(Tooltip);
 
