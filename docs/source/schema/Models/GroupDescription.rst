@@ -15,12 +15,12 @@ A group of items. Could be used as bounded context, for instance.
 
    * - labels
      - Map
-     - labels related to the group
+     - Labels related to the group.
      - optional, defaults to null
      - null
    * - identifier
      - String
-     - A unique identifier for the group (also used as name). Descriptions are merged based on the identifier
+     - A unique identifier for the group (also used as name). Descriptions are merged based on the identifier.
      - **required**, defaults to null
      - shipping
    * - owner
@@ -45,7 +45,7 @@ A group of items. Could be used as bounded context, for instance.
      - 05ffaa
    * - contains
      - List
-     - A list of item identifiers or sql-like queries to easily assign items to this group.
+     - A list of item identifiers or SQL-like queries to easily assign items to this group.
      - optional, defaults to null
      - identifier LIKE 'DB1'
    * - name

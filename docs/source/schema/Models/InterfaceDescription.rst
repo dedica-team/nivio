@@ -33,4 +33,34 @@ Describes a low-level interface of an item.
      - A description of the interface protection method.
      - optional, defaults to null
      - null
+   * - deprecated
+     - Boolean
+     - 
+     - optional, defaults to null
+     - null
+   * - name
+     - String
+     - 
+     - optional, defaults to null
+     - null
+   * - payload
+     - String
+     - 
+     - optional, defaults to null
+     - null
+   * - path
+     - String
+     - 
+     - optional, defaults to null
+     - null
+   * - summary
+     - String
+     - 
+     - optional, defaults to null
+     - null
+   * - parameters
+     - String
+     - 
+     - optional, defaults to null
+     - null
 

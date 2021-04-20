@@ -1,6 +1,6 @@
 # Nivio Minikube
  
-The complete instruction can be found at https://docs.bitnami.com/kubernetes/get-started-kubernetes/
+The complete instructions can be found at https://docs.bitnami.com/kubernetes/get-started-kubernetes/
 
 
 ## Install (on Ubuntu Linux)
