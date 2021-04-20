@@ -3,15 +3,12 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { LocateFunctionContextProvider } from './Context/LocateFunctionContext';
-import { NotificationContextProvider } from './Context/NotificationContext';
 import { LandscapeContextProvider } from './Context/LandscapeContext';
 
 ReactDOM.render(
   <LandscapeContextProvider>
     <LocateFunctionContextProvider>
-      <NotificationContextProvider>
-        <App />
-      </NotificationContextProvider>
+      <App />
     </LocateFunctionContextProvider>
   </LandscapeContextProvider>,
   document.getElementById('root')

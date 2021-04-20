@@ -22,7 +22,6 @@ import { getGroup, getItem } from '../Utils/utils';
 import Group from '../Modals/Group/Group';
 //import MapUtils from './MapUtils';
 import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
-import { NotificationContext } from '../../../Context/NotificationContext';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import IconButton from '@material-ui/core/IconButton';
 import { createStyles, darken, Theme } from '@material-ui/core';
@@ -75,7 +74,6 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [isZoomed, setIsZoomed] = useState<Boolean>(false);
 
   const locateFunctionContext = useContext(LocateFunctionContext);
-  const notificationContext = useContext(NotificationContext);
   const landscapeContext = useContext(LandscapeContext);
 
   const locateComponent = useCallback((fullyQualifiedItemIdentifier: string) => {
@@ -194,12 +192,12 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
    */
   useEffect(() => {
     if (
-      notificationContext.notification?.type === 'ProcessingFinishedEvent' &&
-      notificationContext.notification?.landscape === landscapeContext.identifier
+      landscapeContext.notification?.type === 'ProcessingFinishedEvent' &&
+      landscapeContext.notification?.landscape === landscapeContext.identifier
     ) {
       loadMap();
     }
-  }, [notificationContext.notification, landscapeContext.identifier, loadMap]);
+  }, [landscapeContext.notification, landscapeContext.identifier, loadMap]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
