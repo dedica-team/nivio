@@ -23,7 +23,7 @@ public class LandscapeFactory {
 
         Landscape landscape = new Landscape(
                 input.getIdentifier(),
-                getGroups(),
+                getGroups(input.getIdentifier()),
                 input.getName(),
                 input.getContact(),
                 input.getOwner(),
@@ -42,9 +42,9 @@ public class LandscapeFactory {
         return landscape;
     }
 
-    private static Map<String, Group> getGroups() {
+    private static Map<String, Group> getGroups(final String landscapeIdentifier) {
         Map<String, Group> groups = new HashMap<>();
-        groups.put(Group.COMMON, new Group(Group.COMMON, ""));
+        groups.put(Group.COMMON, new Group(Group.COMMON, landscapeIdentifier));
         return groups;
     }
 
@@ -69,7 +69,7 @@ public class LandscapeFactory {
      * Returns a copy of the existing landscape, modified with data from input.
      *
      * @param existing the existing landscape, to be replaced
-     * @param input int input data
+     * @param input    int input data
      * @return a new copy
      */
     public static Landscape recreate(Landscape existing, LandscapeDescription input) {
