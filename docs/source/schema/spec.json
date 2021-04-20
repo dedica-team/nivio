@@ -388,17 +388,17 @@
             },
             "description" : "Additional labels for the landscape."
           },
-          "icon" : {
-            "type" : "string"
-          },
-          "color" : {
-            "type" : "string"
-          },
           "sourceReferences" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/SourceReference"
             }
+          },
+          "icon" : {
+            "type" : "string"
+          },
+          "color" : {
+            "type" : "string"
           },
           "items" : {
             "type" : "array",

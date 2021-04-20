@@ -63,6 +63,11 @@ LandscapeDescription
      - Additional labels for the landscape.
      - optional, defaults to null
      - null
+   * - sourceReferences
+     - List<SourceReference>
+     - 
+     - optional, defaults to null
+     - null
    * - icon
      - String
      - 
@@ -70,11 +75,6 @@ LandscapeDescription
      - null
    * - color
      - String
-     - 
-     - optional, defaults to null
-     - null
-   * - sourceReferences
-     - List<SourceReference>
      - 
      - optional, defaults to null
      - null
