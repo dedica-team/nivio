@@ -6,9 +6,9 @@
 
  ![layoutedArtifact graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/gui.png)
  
-Nivio is application landscape management for teams (developers, operators, managers). It follows a bottom-up no-op 
+Nivio is an application landscape management for teams (developers, operators, managers). It follows a bottom-up no-op 
 approach, i.e. there is no interface for manual data maintenance. It is designed to gather the application landscape
- information from configurable items, preferably code repos.
+information from configurable items, preferably code repositories.
 
 ## Get Started
 
@@ -23,11 +23,11 @@ approach, i.e. there is no interface for manual data maintenance. It is designed
 
 
 
-## Copyright & Trademark Acknowledgement Statements
+## Copyright & Trademark Acknowledgment Statements
 
 * Redis™ is a trademark of Redis Labs Ltd. Any rights therein are reserved to Redis Labs Ltd.
-* Apache Httpd and the logo are trademarks of the ASF.
-* WordPress and the logo are trademarks of Wordpress Foundation. http://wordpressfoundation.org/trademark-policy/
+* Apache HTTP Server and its logo are trademarks of the ASF.
+* WordPress and its logo are trademarks of the WordPress Foundation. http://wordpressfoundation.org/trademark-policy/
 
 Nivio uses the [Material Design Icons](https://materialdesignicons.com/) released under the MIT / Apache 2.0 licenses.
 

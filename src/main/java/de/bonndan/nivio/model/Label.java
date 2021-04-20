@@ -12,47 +12,47 @@ import java.util.Map;
  */
 public enum Label {
 
-    capability("The capability the service provides for the business, or in case of infrastructure" +
-            " the technical capability like enabling service discovery, configuration, secrets or persistence."),
+    capability("The capability the service provides for the business or, in case of infrastructure," +
+            " the technical capability like enabling service discovery, configuration, secrets, or persistence."),
 
     color("A hex color code to override the inherited group color"),
 
     costs("Running costs of the item."),
 
-    fill("Background image (for displaying purposes)"),
-    icon("Icon/image (for displaying purposes)"),
+    fill("Background image (for displaying purposes)."),
+    icon("Icon/image (for displaying purposes)."),
 
-    health("description of the item's health status"),
+    health("Description of the item's health status."),
 
-    layer("a technical layer"),
+    layer("A technical layer."),
 
-    lifecycle("A lifecycle phase (PLANNED|plan, INTEGRATION|int, PRODUCTION|prod, END_OF_LIFE|eol|end)"),
+    lifecycle("A lifecycle phase (``PLANNED|plan``, ``INTEGRATION|int``, ``PRODUCTION|prod``, ``END_OF_LIFE|eol|end``)."),
 
-    note("a custom note"),
+    note("A custom note."),
 
-    scale("number of instances"),
+    scale("Number of instances."),
 
-    security("description of the item's security status"),
+    security("Description of the item's security status."),
 
-    shortname("abbreviated name"),
+    shortname("Abbreviated name."),
 
-    software("Software/OS name"),
+    software("Software/OS name."),
 
-    stability("description of the item's stability"),
+    stability("Description of the item's stability."),
 
-    team("Name of the responsible team (e.g. technical owner)"),
+    team("Name of the responsible team (e.g. technical owner)."),
 
-    type("the type (service, database, queue, loadbalancer...)"),
+    type("The type (service, database, queue, load balancer, etc.)."),
 
-    version("The version (e.g. software version, protocol version)"),
+    version("The version (e.g. software version or protocol version)."),
 
-    visibility("visibility to other items"),
+    visibility("Visibility to other items."),
 
-    network("prefix for network labels",true),
+    network("Prefix for network labels.",true),
 
-    status("prefix for status labels, can be used as prefix all other labels to mark a status for the label", true),
+    status("Prefix for status labels. Can be used as prefix for all other labels to mark a status for the label.", true),
 
-    condition("prefix for condition labels", true);
+    condition("Prefix for condition labels.", true);
 
     /**
      * Separator for label key parts.

@@ -32,13 +32,13 @@
             "type" : "object",
             "additionalProperties" : {
               "type" : "string",
-              "description" : "labels related to the group"
+              "description" : "Labels related to the group."
             },
-            "description" : "labels related to the group"
+            "description" : "Labels related to the group."
           },
           "identifier" : {
             "type" : "string",
-            "description" : "A unique identifier for the group (also used as name). Descriptions are merged based on the identifier",
+            "description" : "A unique identifier for the group (also used as name). Descriptions are merged based on the identifier.",
             "example" : "shipping"
           },
           "owner" : {
@@ -60,11 +60,11 @@
           },
           "contains" : {
             "type" : "array",
-            "description" : "A list of item identifiers or sql-like queries to easily assign items to this group.",
+            "description" : "A list of item identifiers or SQL-like queries to easily assign items to this group.",
             "example" : "identifier LIKE 'DB1'",
             "items" : {
               "type" : "string",
-              "description" : "A list of item identifiers or sql-like queries to easily assign items to this group.",
+              "description" : "A list of item identifiers or SQL-like queries to easily assign items to this group.",
               "example" : "identifier LIKE 'DB1'"
             }
           },
@@ -101,6 +101,24 @@
           "protection" : {
             "type" : "string",
             "description" : "A description of the interface protection method."
+          },
+          "deprecated" : {
+            "type" : "boolean"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "payload" : {
+            "type" : "string"
+          },
+          "path" : {
+            "type" : "string"
+          },
+          "summary" : {
+            "type" : "string"
+          },
+          "parameters" : {
+            "type" : "string"
           }
         },
         "description" : "Describes a low-level interface of an item."
@@ -124,7 +142,7 @@
           },
           "name" : {
             "type" : "string",
-            "description" : "A human readable name/title. The name is considered when items are searched",
+            "description" : "A human readable name/title. The name is considered when items are searched.",
             "example" : "my beautiful service"
           },
           "owner" : {
@@ -134,43 +152,43 @@
           },
           "description" : {
             "type" : "string",
-            "description" : "A brief description"
+            "description" : "A brief description."
           },
           "contact" : {
             "type" : "string",
-            "description" : "The primary way to contact a responsible person or team . Preferably use an email address.",
+            "description" : "The primary way to contact a responsible person or team. Preferably use an email address.",
             "example" : "johnson@acme.com"
           },
           "group" : {
             "type" : "string",
-            "description" : "The identifier of the group this item belongs in. Every item requires to be member a group internally, so if nothing is given, the value is set to common",
+            "description" : "The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to common.",
             "example" : "shipping"
           },
           "interfaces" : {
             "uniqueItems" : true,
             "type" : "array",
-            "description" : "A collection of low level interfaces. Can be used to describe Http API endpoints for instance.",
+            "description" : "A collection of low level interfaces. Can be used to describe HTTP API endpoints for instance.",
             "items" : {
               "$ref" : "#/components/schemas/InterfaceDescription"
             }
           },
           "providedBy" : {
             "type" : "array",
-            "description" : "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience fields to build relations.",
+            "description" : "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.",
             "example" : "shipping-mysqldb",
             "items" : {
               "type" : "string",
-              "description" : "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience fields to build relations.",
+              "description" : "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.",
               "example" : "shipping-mysqldb"
             }
           },
           "icon" : {
             "type" : "string",
-            "description" : "An icon name or url to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work)."
+            "description" : "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work)."
           },
           "color" : {
             "type" : "string",
-            "description" : "Overrides the group color. Use a HTML hex color code without leading hash.",
+            "description" : "Overrides the group color. Use an HTML hex color code without the leading hash.",
             "example" : "4400FF"
           },
           "address" : {
@@ -182,15 +200,11 @@
             "description" : "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
             "example" : "service|database|volume"
           },
-          "status" : {
-            "type" : "array",
+          "lifecycle" : {
+            "type" : "string",
+            "description" : "The lifecycle state of an item.",
             "writeOnly" : true,
-            "items" : {
-              "type" : "object",
-              "additionalProperties" : {
-                "type" : "string"
-              }
-            }
+            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
           },
           "statuses" : {
             "type" : "array",
@@ -205,11 +219,15 @@
               "description" : "A list of statuses that works like hardcoded KPIs."
             }
           },
-          "lifecycle" : {
-            "type" : "string",
-            "description" : "The lifecycle state of an item.",
+          "status" : {
+            "type" : "array",
             "writeOnly" : true,
-            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
           },
           "tags" : {
             "type" : "array",
@@ -226,7 +244,7 @@
             "example" : "github: https://github.com/dedica-team/nivio"
           }
         },
-        "description" : "List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc."
+        "description" : "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc."
       },
       "KPIConfig" : {
         "type" : "object",
@@ -311,7 +329,7 @@
             "description" : "Key performance indicator configs. Each KPI must have a unique identifier."
           }
         },
-        "description" : "Configuration of key performance indicators (i.e. status indicators) and layouting tweaks"
+        "description" : "Configuration of key performance indicators (i.e. status indicators) and layouting tweaks."
       },
       "LandscapeDescription" : {
         "required" : [ "identifier", "name" ],
@@ -328,22 +346,22 @@
           },
           "contact" : {
             "type" : "string",
-            "description" : "Primary contact method, preferably an email address"
+            "description" : "Primary contact method, preferably an email address."
           },
           "description" : {
             "type" : "string",
-            "description" : "A brief description of the landscape"
+            "description" : "A brief description of the landscape."
           },
           "owner" : {
             "type" : "string",
-            "description" : "The business owner (person or team), preferably an email address"
+            "description" : "The business owner (person or team), preferably an email address."
           },
           "templates" : {
             "type" : "object",
             "additionalProperties" : {
               "$ref" : "#/components/schemas/ItemDescription"
             },
-            "description" : "Item descriptions to be used as templates. All values excepted identifier and name will be applied to the assigned items."
+            "description" : "Item descriptions to be used as templates. All values except identifier and name will be applied to the assigned items."
           },
           "sources" : {
             "type" : "array",
@@ -370,29 +388,29 @@
             },
             "description" : "Additional labels for the landscape."
           },
-          "items" : {
-            "type" : "array",
-            "description" : "List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc.",
-            "writeOnly" : true,
-            "items" : {
-              "$ref" : "#/components/schemas/ItemDescription"
-            }
-          },
           "sourceReferences" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/SourceReference"
             }
           },
-          "partial" : {
-            "type" : "boolean",
-            "description" : "marks that the landscape is not complete, but an update"
-          },
           "icon" : {
             "type" : "string"
           },
           "color" : {
             "type" : "string"
+          },
+          "items" : {
+            "type" : "array",
+            "description" : "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.",
+            "writeOnly" : true,
+            "items" : {
+              "$ref" : "#/components/schemas/ItemDescription"
+            }
+          },
+          "partial" : {
+            "type" : "boolean",
+            "description" : "marks that the landscape is not complete, but an update"
           },
           "links" : {
             "type" : "object",
@@ -540,7 +558,7 @@
           },
           "url" : {
             "type" : "string",
-            "description" : "A URL, but can also be a relative path",
+            "description" : "A URL, but can also be a relative path.",
             "example" : "./a/items.yaml"
           },
           "format" : {

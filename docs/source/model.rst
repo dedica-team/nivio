@@ -8,7 +8,7 @@ Landscape
 A landscape is defined as a collection of items which somehow belong together, be it for technical
 or business reasons. For example, a company department might model ALL its applications in production as one landscape and use grouping
 or tagging to further separate the applications. A second landscape could be used to model a future layout with a different
-infrastructure. Both landscapes could have items in common (like a database, load balancer etc.), so their configuration can be reused.
+infrastructure. Both landscapes could have items in common (like a database, load balancer, etc.), so their configuration can be reused.
 
 .. include:: ./schema/Models/LandscapeDescription.rst
 .. include:: ./schema/Models/SourceReference.rst
@@ -21,17 +21,15 @@ infrastructure. Both landscapes could have items in common (like a database, loa
 .. include:: ./schema/Models/InterfaceDescription.rst
 .. include:: ./schema/Models/Link.rst
 
-
-
 Plus, there are labels having a special meaning:
 
-.. include:: labels.rst
+.. include:: inc_labels.rst
 
 
 You can also store **custom properties** as labels, but keep in mind that
 
-* label keys are converted to lowercase
-* label values are stored as string
+* label keys are converted to lowercase and
+* label values are stored as string.
 
 **Item configuration**
 
@@ -61,14 +59,14 @@ Item Groups
 -----------
 Groups can have the following attributes:
 
-* **identifier**: a unique identifier in the landscape. Provided automatically via the dictionary key, do not set it
-* **contains** array of references to other items (identifiers and CQN queries)
-* **owner** owning party (e.g. Marketing)
-* **description** a short description
-* **team** technical owner
-* **contact** support/notification contact (email) may be addressed in case of errors
-* **color** a hex color code for rendering
-* **links** a map/dictionary of urls to more information
+* ``identifier``: A unique identifier in the landscape. Provided automatically via the dictionary key, so do not set it.
+* ``contains`` Array of references to other items (identifiers and CQN queries).
+* ``owner`` Owning party (e.g. marketing).
+* ``description`` A short description.
+* ``team`` Technical owner.
+* ``contact`` Support/notification contact (email). May be addressed in case of errors.
+* ``color`` A hex color code for rendering.
+* ``links`` A map/dictionary of URLs to more information.
 
 **Group configuration**
 
@@ -92,12 +90,12 @@ Groups can have the following attributes:
 Item Identification and Referencing
 ------------------------------------
 
-A item can be uniquely identified by its landscape, its group and its identifier. A fully qualified
-identifier is composed of these three: **mylandscape/agroup/theitem**. Since the group is optional, items with unique
-identifier can also be addressed using **mylandscape/theitem** or just **theitem**. Nivio tries to resolve the correct item and raises
+An item can be uniquely identified by its landscape, its group, and its identifier. A fully qualified
+identifier is composed of these three: ``mylandscape``, ``agroup``, and ``theitem``. Since the group is optional, items with unique
+identifier can also be addressed using ``mylandscape`` and ``theitem``, or just ``theitem``. Nivio tries to resolve the correct item and raises
 an error if it cannot be found or the result is ambiguous.
 
-Service references are required to describe a provider relation or data flows.
+Service references are required to describe a ``provider`` relation or ``dataflow``.
 
 .. code-block:: yaml
    :linenos:
