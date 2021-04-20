@@ -38,7 +38,7 @@ const Changes: React.FC<Props> = ({ notification }) => {
         return new Promise((resolve) =>
           resolve(
             <TableRow key={key}>
-              <TableCell style={{ width: '20%' }}>Item {key}</TableCell>
+              <TableCell style={{ width: '25%' }}>Item {key}</TableCell>
               <TableCell>{change.changeType}</TableCell>
             </TableRow>
           )
@@ -46,7 +46,7 @@ const Changes: React.FC<Props> = ({ notification }) => {
       }
       return get(`/api/${key}`).then((item) => (
         <TableRow key={key}>
-          <TableCell style={{ width: '20%' }}>
+          <TableCell style={{ width: '25%' }}>
             <IconButton title={key} onClick={() => locateFunctionContext.locateFunction(key)}>
               <ItemAvatar item={item} statusColor={''} />
             </IconButton>
@@ -61,7 +61,7 @@ const Changes: React.FC<Props> = ({ notification }) => {
         return new Promise((resolve) =>
           resolve(
             <TableRow key={key}>
-              <TableCell style={{ width: '20%' }}>Group {key}</TableCell>
+              <TableCell style={{ width: '25%' }}>Group {key}</TableCell>
               <TableCell>{change.changeType}</TableCell>
             </TableRow>
           )
@@ -69,7 +69,7 @@ const Changes: React.FC<Props> = ({ notification }) => {
       }
       return get(`/api/${key}`).then((group) => (
         <TableRow key={key}>
-          <TableCell style={{ width: '20%' }}>
+          <TableCell style={{ width: '25%' }}>
             <IconButton
               onClick={() => locateFunctionContext.locateFunction(key)}
               title={`Click to locate group ${group.identifier}`}
@@ -84,15 +84,15 @@ const Changes: React.FC<Props> = ({ notification }) => {
 
     const getRelationChange = (key: string, change: IChange): Promise<any> => {
       const parts = key.split(';');
-      const buttonText = (fqi: string) : string => {
-        const parts = fqi.trim().split("/");
+      const buttonText = (fqi: string): string => {
+        const parts = fqi.trim().split('/');
         return `${parts[1]}/${parts[2]}`;
       };
 
       return new Promise((resolve) =>
         resolve(
           <TableRow key={key}>
-            <TableCell style={{ width: '20%' }}>
+            <TableCell style={{ width: '25%' }}>
               <IconButton title={key} onClick={() => locateFunctionContext.locateFunction(key)}>
                 <LinkOutlined />
               </IconButton>
@@ -106,7 +106,7 @@ const Changes: React.FC<Props> = ({ notification }) => {
               >
                 {buttonText(parts[0])}
               </Button>{' '}
-              to {' '}
+              to{' '}
               <Button
                 onClick={() => locateFunctionContext.locateFunction(parts[1])}
                 size='small'
@@ -152,11 +152,10 @@ const Changes: React.FC<Props> = ({ notification }) => {
           <br />
           {notification.message}
         </Alert>
-        <br />
-        <Table aria-label={'changes'} style={{ tableLayout: 'fixed' }}>
-          <TableBody>{notification.changelog != null ? changes : null}</TableBody>
-        </Table>
       </CardContent>
+      <Table aria-label={'changes'} style={{ tableLayout: 'fixed' }}>
+        <TableBody>{notification.changelog != null ? changes : null}</TableBody>
+      </Table>
     </Card>
   );
 };

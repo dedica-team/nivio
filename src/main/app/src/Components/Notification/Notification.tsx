@@ -29,6 +29,7 @@ const Notification: React.FC<Props> = ({ setSidebarContent }) => {
   useEffect(() => {
     if (landscapeContext.notification == null) return;
     setRenderedChanges(<Changes notification={landscapeContext.notification} />);
+    setNewChanges(true);
   }, [landscapeContext.notification]);
 
   return (
