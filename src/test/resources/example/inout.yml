@@ -73,6 +73,14 @@ items:
     group: input
     name: CSV files
 
+  - identifier: dot
+    description: Parser for GraphViz dot files.
+    group: input
+    name: dot files
+    type: graph
+    links:
+      github: https://www.graphviz.org/
+
   - identifier: nivio
     name: Nivio
     group: nivio
@@ -83,6 +91,7 @@ items:
       - k8s
       - docker-compose
       - nivio-prop
+      - dot
     links:
       github: https://github.com/dedica-team/nivio
       openapi: http://localhost:8080/v3/api-docs/
