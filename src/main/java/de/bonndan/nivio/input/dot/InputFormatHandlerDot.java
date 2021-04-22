@@ -13,6 +13,7 @@ import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Reads dot files to {@link ItemDescription}s.
+ * Reads graphviz dot files to {@link ItemDescription}s.
  */
 @Service
 public class InputFormatHandlerDot implements InputFormatHandler {
@@ -91,7 +92,7 @@ public class InputFormatHandlerDot implements InputFormatHandler {
 
     @Override
     @Nullable
-    public InputFormatObserver getObserver(InputFormatObserver inner, SourceReference sourceReference) {
+    public InputFormatObserver getObserver(@NonNull final InputFormatObserver inner, @NonNull final SourceReference sourceReference) {
         return inner;
     }
 
