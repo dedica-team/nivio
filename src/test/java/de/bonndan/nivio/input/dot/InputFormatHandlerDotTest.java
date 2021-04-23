@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.dot;
 
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.LabelToFieldResolver;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -23,6 +25,7 @@ class InputFormatHandlerDotTest {
 
     private String graph;
     private String digraph;
+    private String broken;
     private InputFormatHandlerDot handler;
     private FileFetcher fileFetcher;
     private LandscapeDescription description;
@@ -57,6 +60,8 @@ class InputFormatHandlerDotTest {
                 "main -> printf;\n" +
                 "execute -> compare;\n" +
                 "}\n";
+
+        broken = "}\nä8234,/";
 
         fileFetcher = mock(FileFetcher.class);
         handler = new InputFormatHandlerDot(fileFetcher);
@@ -140,6 +145,15 @@ class InputFormatHandlerDotTest {
         ItemIndex<ItemDescription> itemDescriptions = description.getItemDescriptions();
         itemDescriptions.pick("main", null);
         assertThat(itemDescriptions.all()).hasSize(8);
+    }
+
+    @Test
+    void brokenInput() {
+
+        when(fileFetcher.get(any(SourceReference.class), any())).thenReturn(broken);
+
+        assertThrows(ProcessingException.class, () -> {handler.applyData(mock(SourceReference.class), null, description);});
+
     }
 
     private Optional<RelationDescription> getRelationDescription(Set<RelationDescription> relations, String target) {

@@ -3,6 +3,7 @@ package de.bonndan.nivio.input.dot;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.LabelToFieldResolver;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
@@ -11,6 +12,7 @@ import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
+import guru.nidi.graphviz.parse.ParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -71,9 +73,15 @@ public class InputFormatHandlerDot implements InputFormatHandler {
                         }
                         final String key = entry.getKey().substring(NIVIO_LABEL_PREFIX.length()).toLowerCase(Locale.ROOT);
                         switch (key) {
-                            case "format": rel.setFormat((String) entry.getValue()); break;
-                            case "description": rel.setDescription((String) entry.getValue()); break;
-                            case "type": rel.setType(RelationType.from((String) entry.getValue())); break;
+                            case "format":
+                                rel.setFormat((String) entry.getValue());
+                                break;
+                            case "description":
+                                rel.setDescription((String) entry.getValue());
+                                break;
+                            case "type":
+                                rel.setType(RelationType.from((String) entry.getValue()));
+                                break;
                         }
                     });
                     itemDescription.addRelation(rel);
@@ -86,6 +94,8 @@ public class InputFormatHandlerDot implements InputFormatHandler {
         } catch (IOException e) {
             LOGGER.error("Failed to read {}", reference, e);
             return;
+        } catch (ParserException e) {
+            throw new ProcessingException("Failed to parse dot input file from " + reference, e);
         }
         landscapeDescription.mergeItems(itemDescriptions);
     }
