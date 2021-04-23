@@ -82,7 +82,12 @@ enhance items and relations. However, it is necessary to prefix attributes that 
    :linenos:
 
     digraph G {
-            main [nivio_owner = Marketing, nivio_software="Wordpress 2.0", nivio_group=FooBar]
+            main [
+                nivio_owner = Marketing,
+                nivio_software="Wordpress 2.0",
+                nivio_group=FooBar,
+                nivio_contact="foo@bar.com"
+            ]
             main -> parse -> execute
             main -> init [nivio_format = json, nivio_type=PROVIDER, nivio_description="init the procedure"]
             main -> cleanup
@@ -93,7 +98,7 @@ enhance items and relations. However, it is necessary to prefix attributes that 
             execute -> compare
             }
 
-
+Also remember to put non-ascii words (like email addresses) or sentences into double quotes.
 
 To configure this as input source, add:
 
