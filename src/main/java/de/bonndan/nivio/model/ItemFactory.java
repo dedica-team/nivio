@@ -5,6 +5,7 @@ import de.bonndan.nivio.util.URIHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.net.URI;
@@ -63,12 +64,13 @@ public class ItemFactory {
     /**
      * Assigns all values from the description except relations. Description values
      * overwrite all fields except the group
-     * @return
+     *
+     * @return an updated copy of the original item
      */
-    public static Item assignAll(@NonNull Item item, ItemDescription description) {
+    public static Item assignAll(@NonNull final Item item, @Nullable final ItemDescription description) {
         Objects.requireNonNull(item, "Item is null");
         if (description == null) {
-            logger.warn("ServiceDescription for service " + item.getIdentifier() + " is null in assignAllValues");
+            logger.warn(String.format("ItemDescription for item %s is null in assignAllValues", item.getIdentifier()));
             return item;
         }
 
@@ -93,14 +95,13 @@ public class ItemFactory {
                 .map(ServiceInterface::new)
                 .collect(Collectors.toSet()));
 
-
         builder.withName(description.getName());
         builder.withDescription(description.getDescription());
         builder.withOwner(description.getOwner());
         builder.withColor(description.getColor());
         builder.withIcon(description.getIcon());
         builder.withContact(description.getContact());
-
+        builder.withLabels(description.getLabels());
 
         return builder.build();
     }
