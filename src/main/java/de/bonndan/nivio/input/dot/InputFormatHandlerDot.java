@@ -1,9 +1,6 @@
 package de.bonndan.nivio.input.dot;
 
-import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.InputFormatHandler;
-import de.bonndan.nivio.input.LabelToFieldResolver;
-import de.bonndan.nivio.input.ProcessingException;
+import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
@@ -92,10 +89,11 @@ public class InputFormatHandlerDot implements InputFormatHandler {
             landscapeDescription.mergeItems(items);
 
         } catch (IOException e) {
-            LOGGER.error("Failed to read {}", reference, e);
-            return;
-        } catch (ParserException e) {
+            LOGGER.warn("Failed to read {}", reference, e);
             throw new ProcessingException("Failed to parse dot input file from " + reference, e);
+        } catch (ParserException e) {
+            LOGGER.warn("Failed to parse {}", reference, e);
+            throw ReadingException.from(content, "Failed to parse dot input file from " + reference, e);
         }
         landscapeDescription.mergeItems(itemDescriptions);
     }
