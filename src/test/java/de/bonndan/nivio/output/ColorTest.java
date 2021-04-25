@@ -63,4 +63,25 @@ public class ColorTest {
         assertThat(hsv[1]).isGreaterThan(Color.MIN_SATURATION);
     }
 
+    @Test
+    void safe() {
+        String safe;
+        safe = Color.safe("000000");
+        assertThat(safe).isEqualTo("000000");
+
+        safe = Color.safe("000");
+        assertThat(safe).isEqualTo("000000");
+
+        safe = Color.safe("#23465f");
+        assertThat(safe).isEqualTo("23465f");
+
+    }
+
+    @Test
+    void safeWithBadChars() {
+        String safe;
+
+        safe = Color.safe("234#65f!");
+        assertThat(safe).isEqualTo("23465f");
+    }
 }

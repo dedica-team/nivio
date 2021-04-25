@@ -1,14 +1,11 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.*;
-import com.google.common.collect.ImmutableCollection;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ItemRelationProcessor;
+import de.bonndan.nivio.output.Color;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
-import org.apache.commons.collections.MapUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
@@ -23,7 +20,7 @@ import static de.bonndan.nivio.model.ComponentDiff.*;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Item implements Linked, Tagged, Labeled, Assessable {
+public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent {
 
     public static final String LAYER_INFRASTRUCTURE = "infrastructure";
     public static final String LAYER_APPLICATION = "applications";
@@ -53,7 +50,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
     /**
      * technical address
      */
-    private URI address;
+    private final URI address;
 
     private final Map<String, Link> links = new HashMap<>();
     private final Map<String, String> labels = new HashMap<>();
@@ -67,16 +64,16 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
     @JsonManagedReference
     private Set<ServiceInterface> interfaces = new HashSet<>();
 
-    public Item(@NotNull String identifier,
-                @NotNull Landscape landscape,
-                @NotNull String group,
-                String name,
-                String owner,
-                String contact,
-                String description,
-                String color,
-                String icon,
-                URI address
+    public Item(@NotNull final String identifier,
+                @NotNull final Landscape landscape,
+                @NotNull final String group,
+                final String name,
+                final String owner,
+                final String contact,
+                final String description,
+                final String color,
+                final String icon,
+                final URI address
     ) {
         if (StringUtils.isEmpty(identifier)) {
             throw new RuntimeException("Identifier must not be empty");
@@ -96,7 +93,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         this.address = address;
 
         //these are effectively mutable
-        this.setLabel(Label.color, color);
+        this.setLabel(Label.color, Color.safe(color));
         this.setLabel(Label.icon, icon);
     }
 

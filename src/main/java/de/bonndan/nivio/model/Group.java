@@ -79,7 +79,7 @@ public class Group implements Labeled, Linked, Assessable {
         this.description = description;
         this.contact = contact;
         this.icon = icon;
-        this.color = color;
+        this.color = Color.safe(color);
     }
 
     public Group(@NonNull final String identifier, @NonNull final String landscapeIdentifier) {

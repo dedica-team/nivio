@@ -119,4 +119,27 @@ public class Color {
     public static String getGroupColor(String groupIdentifier) {
         return Color.nameToRGB(groupIdentifier, Color.DARKGRAY);
     }
+
+    /**
+     * Ensures that a given string is turned into a proper hex color code.
+     *
+     * @param input string
+     * @return safe hex code
+     */
+    public static String safe(@Nullable final String input) {
+        if (StringUtils.isEmpty(input)) {
+            return "";
+        }
+        String color;
+        if (input.startsWith("#")) {
+            color = input.replace("#", "");
+        } else {
+            color = input;
+        }
+
+        color = color.replaceAll("[^0-9a-fA-F]","");
+        color = color.concat("000000").substring(0, 6);
+        color = Integer.toHexString(java.awt.Color.decode("0x"+color).getRGB()).substring(2);
+        return color;
+    }
 }
