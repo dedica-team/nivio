@@ -138,7 +138,7 @@ class RelationBuilderTest {
         RelationDescription relationDescription = RelationBuilder.createProviderDescription("foo", "bar");
 
         //when
-        Relation newRelation = RelationBuilder.create(relationDescription, landscape);
+        Relation newRelation = RelationBuilder.create(foo, relationDescription, landscape);
 
         //then
         assertThat(newRelation.getSource()).isEqualTo(foo);
@@ -155,6 +155,6 @@ class RelationBuilderTest {
         RelationDescription relationDescription = RelationBuilder.createProviderDescription("foo", "oops");
 
         //when
-        assertThrows(NoSuchElementException.class, () -> RelationBuilder.create(relationDescription, landscape));
+        assertThrows(NoSuchElementException.class, () -> RelationBuilder.create(foo, relationDescription, landscape));
     }
 }

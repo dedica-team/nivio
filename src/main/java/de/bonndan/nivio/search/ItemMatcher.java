@@ -5,7 +5,6 @@ import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.util.URLHelper;
-import org.apache.juli.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
@@ -138,10 +137,11 @@ public class ItemMatcher {
     public boolean isSimilarTo(FullyQualifiedIdentifier fullyQualifiedIdentifier) {
 
         boolean equalsLandscape;
-        if (StringUtils.isEmpty(landscape) || StringUtils.isEmpty(fullyQualifiedIdentifier.getLandscape()))
+        if (StringUtils.isEmpty(landscape) || StringUtils.isEmpty(fullyQualifiedIdentifier.getLandscape())) {
             equalsLandscape = true; //ignoring landscape because not set
-        else
+        } else {
             equalsLandscape = landscape.equalsIgnoreCase(fullyQualifiedIdentifier.getLandscape());
+        }
 
         boolean equalsGroup;
         if (StringUtils.isEmpty(group) || StringUtils.isEmpty(fullyQualifiedIdentifier.getGroup()))

@@ -296,15 +296,41 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     /**
+     * Finds all items matching the given term.
+     *
+     * First tries an {@link ItemMatcher} and then falls back to a regular query.
+     *
      * @param term preferably string representation of an FQI, or a simple identifier
-     * @return an item if matched
+     * @return all matched items
      */
-    public Optional<Item> findBy(@NonNull final String term) {
+    public List<Item> findBy(@NonNull final String term) {
         Objects.requireNonNull(term);
 
         return ItemMatcher.forTarget(term)
-                .map(itemMatcher -> getItems().find(itemMatcher))
-                .orElseGet(() -> getItems().query(term).stream().findFirst());
+                .map(itemMatcher -> getItems().findAll(itemMatcher))
+                .orElseGet(() -> new ArrayList<>(getItems().query(term)));
+    }
+
+    /**
+     * Returns one distinct item for a query term.
+     *
+     * @param term  search term
+     * @param group optional group to narrow
+     * @return the matched item
+     * @throws NoSuchElementException if not exactly one item could be determined
+     */
+    public Item findOneBy(@NonNull final String term, @Nullable final String group) {
+        List<Item> items = findBy(term);
+        if (items == null || items.isEmpty()) {
+            throw new NoSuchElementException("Could not extract distinct item from empty list");
+        }
+
+        if (items.size() == 1) {
+            return items.get(0);
+        }
+
+        return items.stream().filter(item -> item.getGroup().equalsIgnoreCase(group))
+                .findFirst().orElseThrow(() -> new NoSuchElementException("Could not extract distinct item from ambiguous result: " + items));
     }
 
 }

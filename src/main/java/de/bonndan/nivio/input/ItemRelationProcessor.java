@@ -44,7 +44,7 @@ public class ItemRelationProcessor extends Processor {
                             return update;
                         })
                         .orElseGet(() -> {
-                            Relation created = RelationBuilder.create(relationDescription, landscape);
+                            Relation created = RelationBuilder.create(origin, relationDescription, landscape);
                             processLog.info(String.format(origin + ": Adding relation between %s and %s", created.getSource(), created.getTarget()));
                             changelog.addEntry(created, ProcessingChangelog.ChangeType.CREATED, null);
                             return created;
@@ -86,13 +86,13 @@ public class ItemRelationProcessor extends Processor {
 
     private boolean isValid(RelationDescription relationDescription, Landscape landscape) {
 
-        Optional<Item> source = landscape.findBy(relationDescription.getSource());
+        List<Item> source = landscape.findBy(relationDescription.getSource());
         if (source.isEmpty()) {
             processLog.warn(String.format("Relation source %s not found", relationDescription.getSource()));
             return false;
         }
 
-        Optional<Item> target = landscape.findBy(relationDescription.getTarget());
+        List<Item> target = landscape.findBy(relationDescription.getTarget());
         if (target.isEmpty()) {
             processLog.warn(String.format("Relation target %s not found", relationDescription.getTarget()));
             return false;
@@ -114,8 +114,8 @@ public class ItemRelationProcessor extends Processor {
                                                   Landscape landscape,
                                                   Item origin
     ) {
-        Item source = landscape.findBy(relationDescription.getSource()).orElseThrow();
-        Item target = landscape.findBy(relationDescription.getTarget()).orElseThrow();
+        Item source = landscape.findOneBy(relationDescription.getSource(), origin.getGroup());
+        Item target = landscape.findOneBy(relationDescription.getTarget(), origin.getGroup());
 
         Iterator<Relation> iterator = origin.getRelations().iterator();
         Relation created = new Relation(source, target);

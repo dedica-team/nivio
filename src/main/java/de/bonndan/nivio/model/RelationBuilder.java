@@ -69,22 +69,33 @@ public class RelationBuilder {
         Objects.requireNonNull(landscape);
 
         return new Relation(
-                landscape.findBy(description.getSource()).orElseThrow(),
-                landscape.findBy(description.getTarget()).orElseThrow(),
+                landscape.findOneBy(description.getSource(), existing.getSource().getGroup()),
+                landscape.findOneBy(description.getTarget(), existing.getTarget().getGroup()),
                 description.getDescription(),
                 description.getFormat(),
                 existing.getType()
         );
     }
 
+    /**
+     * Create a new relation object
+     *
+     * @param origin              the item the description relates to
+     * @param relationDescription the input dto
+     * @param landscape           the landscape to pick ends from
+     * @return a new relation object
+     */
     @NonNull
-    public static Relation create(@NonNull final RelationDescription relationDescription, @NonNull final Landscape landscape) {
+    public static Relation create(@NonNull final Item origin,
+                                  @NonNull final RelationDescription relationDescription,
+                                  @NonNull final Landscape landscape
+    ) {
         Objects.requireNonNull(relationDescription);
         Objects.requireNonNull(landscape);
 
         return new Relation(
-                landscape.findBy(relationDescription.getSource()).orElseThrow(),
-                landscape.findBy(relationDescription.getTarget()).orElseThrow(),
+                landscape.findOneBy(relationDescription.getSource(), origin.getGroup()),
+                landscape.findOneBy(relationDescription.getTarget(), origin.getGroup()),
                 relationDescription.getDescription(),
                 relationDescription.getFormat(),
                 relationDescription.getType()

@@ -266,7 +266,14 @@ public class ItemIndex<T extends Component> {
         return findAll(ItemMatcher.build(null, group, identifier));
     }
 
-    private List<T> findAll(ItemMatcher itemMatcher) {
+    /**
+     * Find all items matching the given matcher.
+     *
+     * @param itemMatcher the search criteria
+     * @return list of results
+     */
+    public List<T> findAll(@NonNull final ItemMatcher itemMatcher) {
+        Objects.requireNonNull(itemMatcher, "ItemMatcher is null");
         return itemStream()
                 .filter(item -> itemMatcher.isSimilarTo(item.getFullyQualifiedIdentifier()))
                 .collect(Collectors.toList());
