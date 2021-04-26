@@ -160,6 +160,7 @@
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-server-mock</artifactId>
             <version>4.11.0</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
