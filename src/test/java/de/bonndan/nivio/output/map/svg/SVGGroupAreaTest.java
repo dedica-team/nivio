@@ -33,7 +33,7 @@ class SVGGroupAreaTest {
         Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
         SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(group, area, false);
 
-        assertThat(svgGroupArea.render().render()).contains("<text x=\"650.0\" y=\"1177\" fill=\"#5E0F67\" text-anchor=\"middle\" class=\"groupLabel\">group</text>");
+        assertThat(svgGroupArea.render().render()).contains("<text x=\"650.0\" y=\"1177\" fill=\"#5e0f67\" text-anchor=\"middle\" class=\"groupLabel\">group</text>");
     }
 
     @Test

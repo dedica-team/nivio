@@ -1,0 +1,118 @@
+groups:
+  customers:
+    owner: Louis Armstrong
+    description: The customer portal and self service
+    color: "#234234"
+
+items:
+  - identifier: web
+    description: Ingress for all external traffic. Reverse proxy
+    icon: vendor://apache/httpd
+    layer: ingress
+    software: Apache
+    version: 2.4
+    machine: Pentium 1 512MB RAM
+    type: server
+    team: ops guys
+    scale: 1
+    networks:
+      - content
+    hostType: docker
+    group: customers
+    lifecycle: production
+
+  - identifier: blog-server
+    name: Blog
+    type: webservice
+    shortName: blog
+    icon: https://s.w.org/style/images/about/WordPress-logotype-wmark.png
+    version: 1.0
+    software: Wordpress
+    owner: Marketing
+    description: Company blog
+    team: A-Team
+    links:
+      homepage: https://petclinic.acme.io
+      repository: https://git.acme.io/blog-server
+    group: customers
+    visibility: public
+    tags:
+      - CMS
+      - UI
+    networks:
+      - content
+    machine: s
+    scale: 5
+    hostType: docker
+    note: to be replaced
+    lifecycle: EOL
+    statuses:
+      - label: security
+        status: red
+        message: uses outdated version
+      - label: stability
+        status: green
+      - label: capability
+        status: yellow
+        message: needs finer control of content publishing like ACLs
+    providedBy:
+      - web
+      - wordpress-mariadb
+      - wordpress-redis
+      - images-volume
+
+  - description: Database for Wordpress
+    software: MariaDB
+    version: 10.3.11
+    identifier: wordpress-mariadb
+    machine: Pentium 1 512MB RAM
+    type: database
+    team: ops guys
+    scale: 1
+    networks:
+      - content
+    hostType: docker
+    group: customers
+    layer: infrastructure
+
+  - description: Cache for Wordpress
+    software: Redis
+    version: 1.0
+    identifier: wordpress-redis
+    type: cache
+    scale: 2
+    team: ops guys
+    networks:
+      - content
+    hostType: native
+    layer: infrastructure
+    group: customers
+    lifecycle: planned
+
+  - identifier: images-volume
+    type: volume
+    team: ops guys
+    group: customers
+    description: backup volume
+
+  - identifier: customer-service
+    description: Customer service portal to schedule appointments
+    team: A-Team
+    group: customers
+    relations:
+      - type: dataflow
+        target: emailer
+    providedBy:
+      - customer-db
+    tags:
+      - ui
+      - auth
+
+  - identifier: customer-db
+    software: MariaDB
+    version: 10.3.11
+    type: database
+    team: ops guys
+    scale: 1
+    hostType: docker
+    layer: infrastructure

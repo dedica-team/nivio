@@ -107,6 +107,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     @Override
+    @NonNull
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(identifier, null, null);
     }
@@ -183,9 +184,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
      * @return the added or merged group
      */
     public Group addGroup(@NonNull Group group) {
-        if (group == null) {
-            throw new IllegalArgumentException("Trying to add null group");
-        }
+        Objects.requireNonNull(group, "Trying to add null group");
 
         if (groups.containsKey(group.getIdentifier())) {
             group = GroupFactory.merge(groups.get(group.getIdentifier()), group);
@@ -304,11 +303,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
      * @return all matched items
      */
     public List<Item> findBy(@NonNull final String term) {
-        Objects.requireNonNull(term);
-
-        return ItemMatcher.forTarget(term)
-                .map(itemMatcher -> getItems().findAll(itemMatcher))
-                .orElseGet(() -> new ArrayList<>(getItems().query(term)));
+        return getItems().findBy(term);
     }
 
     /**
@@ -320,17 +315,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
      * @throws NoSuchElementException if not exactly one item could be determined
      */
     public Item findOneBy(@NonNull final String term, @Nullable final String group) {
-        List<Item> items = findBy(term);
-        if (items == null || items.isEmpty()) {
-            throw new NoSuchElementException("Could not extract distinct item from empty list");
-        }
-
-        if (items.size() == 1) {
-            return items.get(0);
-        }
-
-        return items.stream().filter(item -> item.getGroup().equalsIgnoreCase(group))
-                .findFirst().orElseThrow(() -> new NoSuchElementException("Could not extract distinct item from ambiguous result: " + items));
+        return getItems().findOneBy(term, group);
     }
 
 }

@@ -1,0 +1,61 @@
+groups:
+  vet:
+    owner: David Gillespie
+    description: The internal services for the staff
+
+items:
+  - identifier: vet-fe
+    description: GUI for scheduling and handling treatments
+    software: React
+    type: frontend
+    team: Beta
+    scale: 1
+    hostType: docker
+    group: vet
+    lifecycle: production
+    providedBy:
+      - vet-be
+    tags:
+      - UI
+      - react
+
+  - identifier: vet-be
+    description: Backend for business processes
+    software: Spring Boot 2.2
+    type: server
+    team: Beta
+    scale: 1
+    hostType: docker
+    group: vet
+    lifecycle: production
+    providedBy:
+      - vet-db
+      - archive-volume
+    tags:
+      - java
+      - auth
+    relations:
+      - type: dataflow
+        source: customer-service
+        target: vet-be
+      - type: dataflow
+        source: vet-be
+        target: billing
+
+  - identifier: vet-db
+    description: Backend for business processes
+    software: MariaDB
+    version: 10.3.11
+    type: server
+    team: Beta
+    scale: 1
+    hostType: docker
+    group: vet
+    lifecycle: production
+
+  - identifier: archive-volume
+    type: volume
+    team: ops guy
+    size: 1TB
+    group: vet
+    description: Backup volume for treatment protocols

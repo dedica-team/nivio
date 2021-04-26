@@ -97,6 +97,6 @@ class AppearanceProcessorTest {
         resolver.process(null, landscape);
 
         //then
-        assertThat(pick.getColor()).isEqualTo("00FFAA");
+        assertThat(pick.getColor()).isEqualTo("00ffaa");
     }
 }

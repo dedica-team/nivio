@@ -20,8 +20,8 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 
 /**
- * Configures an input.
- * <p>
+ * Input DTO for a landscape.
+ *
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
 @JsonIgnoreType
@@ -112,6 +112,7 @@ public class LandscapeDescription implements ComponentDescription {
     }
 
     @Schema(hidden = true)
+    @NonNull
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(identifier, null, null);
     }

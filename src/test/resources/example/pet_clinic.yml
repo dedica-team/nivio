@@ -1,12 +1,21 @@
 identifier: petclinic
-name: The Pet Clinic
-contact: mail@petclinic.org
+name: ACME Pet Clinic
+contact: mail@acme.io
 description: The Pet clinic IT landscape
-
-sources:
-  - format: kubernetes
-    url: http://localhost:8888
 
 config:
   greedy: false
 
+sources:
+  - "./services/pet_clinic_customers.yml"
+  - "./services/pet_clinic_vet.yml"
+  - "./services/pet_clinic_billing.yml"
+
+items:
+  - identifier: emailer
+    description: Email Server providing templates
+    software: PHP 7.3
+    version: 2.4
+    scale: 0
+    type: application
+    hostType: docker
