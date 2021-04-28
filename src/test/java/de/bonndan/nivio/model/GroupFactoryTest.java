@@ -10,9 +10,9 @@ public class GroupFactoryTest {
 
     @Test
     public void testMerge() {
-        Group one = new Group("a", null, "Joe", "a", null, null, "#123123");
+        Group one = new Group("a", "test", "Joe", "a", null, null, "#123123");
 
-        Group two = new Group("a", null, "Matt", null, "mail", null, null);
+        Group two = new Group("a", "test", "Matt", null, "mail", null, null);
 
         Group merged = GroupFactory.merge(one, two);
 
@@ -39,8 +39,8 @@ public class GroupFactoryTest {
 
     @Test
     public void mergeSetsDefaultColor() {
-        Group one = new Group("a", null, "Matt", null, "mail", null, null);
-        Group two = new Group("a", null, "Matt", null, "mail", null, null);
+        Group one = new Group("a", "test", "Matt", null, "mail", null, null);
+        Group two = new Group("a", "test", "Matt", null, "mail", null, null);
 
         Group merge = GroupFactory.merge(one, two);
         assertThat(merge).isNotNull();

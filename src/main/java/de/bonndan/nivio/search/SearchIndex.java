@@ -23,6 +23,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -93,7 +94,8 @@ public class SearchIndex {
      * @param queryString a lucene query string. Whitespaces are treated as "AND".
      * @return the {@link FullyQualifiedIdentifier}s of the matched documents
      */
-    public Set<FullyQualifiedIdentifier> search(String queryString) {
+    @NonNull
+    public Set<FullyQualifiedIdentifier> search(@NonNull final String queryString) {
         try {
             return documentSearch(rewriteQuery(queryString)).stream()
                     .map(doc -> FullyQualifiedIdentifier.from(doc.get(LUCENE_FIELD_FQI)))

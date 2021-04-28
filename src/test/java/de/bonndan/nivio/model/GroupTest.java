@@ -12,18 +12,18 @@ class GroupTest {
 
     @Test
     void doesNotAllowEmptyIdentifier() {
-        assertThrows(Exception.class, () -> new Group("", null));
+        assertThrows(Exception.class, () -> new Group("", "test"));
     }
 
     @Test
     void getItemsIsImmutable() {
-        Group g = new Group("foo", null);
+        Group g = new Group("foo", "test");
         assertThrows(Exception.class, () -> g.getItems().add(getTestItem("a", "b")));
     }
 
     @Test
     void addItemAllowed() {
-        Group g = new Group("foo", null);
+        Group g = new Group("foo", "test");
         Item item = getTestItem("foo", "b");
         g.addItem(item);
         assertEquals(1, g.getItems().size());
@@ -31,14 +31,14 @@ class GroupTest {
 
     @Test
     void addItemForbidden() {
-        Group g = new Group("foo", null);
+        Group g = new Group("foo", "test");
         Item item = getTestItem("a", "b");
         assertThrows(IllegalArgumentException.class, () -> g.addItem(item));
     }
 
     @Test
     void removeItem() {
-        Group g = new Group("foo", null);
+        Group g = new Group("foo", "test");
         Item item = getTestItem("foo", "b");
         g.addItem(item);
         assertEquals(1, g.getItems().size());
@@ -50,7 +50,7 @@ class GroupTest {
 
     @Test
     void removeItemFails() {
-        Group g = new Group("foo", null);
+        Group g = new Group("foo", "test");
         Item item = getTestItem("foo", "b");
         g.addItem(item);
 

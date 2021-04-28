@@ -1,7 +1,7 @@
 LandscapeConfig
 ---------------
 
-Configuration of key performance indicators (i.e. status indicators) and layouting tweaks
+Configuration of key performance indicators (i.e. status indicators) and layouting tweaks.
 
 
 .. list-table::

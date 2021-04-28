@@ -222,14 +222,14 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.5.2</version>
+            <version>1.5.8</version>
         </dependency>
 
         <!-- github api https://mvnrepository.com/artifact/org.kohsuke/github-api -->
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.124</version>
+            <version>1.125</version>
         </dependency>
 
         <dependency>

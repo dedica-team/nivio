@@ -44,31 +44,31 @@ public class LandscapeDescription implements ComponentDescription {
     )
     private String name;
 
-    @Schema(description = "Primary contact method, preferably an email address")
+    @Schema(description = "Primary contact method, preferably an email address.")
     private String contact;
 
-    @Schema(description = "A brief description of the landscape")
+    @Schema(description = "A brief description of the landscape.")
     private String description;
 
-    @Schema(description = "The business owner (person or team), preferably an email address")
+    @Schema(description = "The business owner (person or team), preferably an email address.")
     private String owner;
 
-    @Schema(description = "Item descriptions to be used as templates. All values excepted identifier and name will be applied to the assigned items.")
+    @Schema(description = "Item descriptions to be used as templates. All values except identifier and name will be applied to the assigned items.")
     private Map<String, ItemDescription> templates = new HashMap<>();
 
     @Schema(hidden = true)
     private String source;
 
-    @Schema(description = "List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc.")
+    @Schema(description = "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.")
     private List<SourceReference> sources = new ArrayList<>();
 
     /**
      * descriptions of items fetched and parsed from sources
      */
     @Schema(hidden = true)
-    private final ItemIndex<ItemDescription> itemDescriptions = new ItemIndex<>(null, ItemDescription.class);
+    private final ItemIndex<ItemDescription> itemDescriptions = new ItemIndex<>(ItemDescription.class);
 
-    @Schema(description = "Configuration of key performance indicators (i.e. status indicators) and layouting tweaks")
+    @Schema(description = "Configuration of key performance indicators (i.e. status indicators) and layouting tweaks.")
     private final LandscapeConfig config = new LandscapeConfig();
 
     @Schema(hidden = true)
@@ -240,7 +240,7 @@ public class LandscapeDescription implements ComponentDescription {
     /**
      * For compatibility with source references, items can be added directly to the env description.
      */
-    @Schema(name = "items", description = "List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc.")
+    @Schema(name = "items", description = "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.")
     public void setItems(List<ItemDescription> items) {
         mergeItems(items);
     }

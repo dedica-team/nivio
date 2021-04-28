@@ -17,9 +17,9 @@ class AllGroupsLayoutTest {
     @Test
     public void testWithARelation() {
 
-        Group a = new Group("a", null);
-        Group b = new Group("b", null);
-        Group c = new Group("c", null);
+        Group a = new Group("a", "test");
+        Group b = new Group("b", "test");
+        Group c = new Group("c", "test");
 
         Landscape landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
 

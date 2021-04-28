@@ -89,7 +89,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         this.identifier = validateIdentifier(Objects.requireNonNull(identifier));
         this.groups = groups;
         this.searchIndex = new SearchIndex();
-        this.items = new ItemIndex<>(searchIndex, Item.class);
+        this.items = new ItemIndex<>(Item.class);
         this.name = Objects.requireNonNull(name);
         this.contact = contact;
 
@@ -293,6 +293,19 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     @JsonIgnore
     public SearchIndex getSearchIndex() {
         return searchIndex;
+    }
+
+    /**
+     * Executes a lucene search using the given query string.
+     *
+     * @param queryString the lucene format query string
+     * @return all matched items
+     */
+    public Set<Item> search(String queryString) {
+        if (StringUtils.isEmpty(queryString)) {
+            return Collections.emptySet();
+        }
+        return items.retrieve(searchIndex.search(queryString));
     }
 
     /**

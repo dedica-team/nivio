@@ -4,13 +4,14 @@ import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 
@@ -19,16 +20,27 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 class SVGGroupArea extends Component {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SVGGroupArea.class);
+
+    @NonNull
     private final Group group;
-    final Set<Hex> groupArea;
+
+    @NonNull
+    private final Set<Hex> groupArea;
+
+    @Nullable
     private final List<DomContent> outlines;
+
+    @NonNull
     private final Point2D.Double anchor;
 
-    SVGGroupArea(@NonNull final Group group, @NonNull final Set<Hex> groupArea, @NonNull final List<DomContent> outlines) {
-        this.group = group;
-        this.groupArea = groupArea;
+    SVGGroupArea(@NonNull final Group group,
+                 @NonNull final Set<Hex> groupArea,
+                 @NonNull final List<DomContent> outlines
+    ) {
+        this.group = Objects.requireNonNull(group);
+        this.groupArea = Objects.requireNonNull(groupArea);
         this.outlines = outlines;
-
 
         AtomicReference<Hex> lowest = new AtomicReference<>(null);
         groupArea.forEach(hex -> {
@@ -37,12 +49,17 @@ class SVGGroupArea extends Component {
                 lowest.set(hex);
         });
         anchor = lowest.get() != null ? lowest.get().toPixel() : new Point2D.Double(0, 0);
+
     }
 
+    @Override
     public DomContent render() {
-
         List<DomContent> territoryHexes = outlines != null ? new ArrayList<>(outlines) : new ArrayList<>();
         String fqi = group.getFullyQualifiedIdentifier().jsonValue();
+        if (StringUtils.isEmpty(fqi)) {
+            // we can still render an svg, but area will not be clickable
+            LOGGER.warn("Empty group fqi in SVG group area, group {}", group);
+        }
         return SvgTagCreator.g(territoryHexes.toArray(DomContent[]::new))
                 .attr("id", fqi)
                 .attr("data-identifier", fqi)
@@ -65,6 +82,11 @@ class SVGGroupArea extends Component {
                 .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
                 .attr("text-anchor", "middle")
                 .attr("class", "groupLabel");
+    }
+
+    @NonNull
+    public Set<Hex> getGroupArea() {
+        return Collections.unmodifiableSet(groupArea);
     }
 }
 

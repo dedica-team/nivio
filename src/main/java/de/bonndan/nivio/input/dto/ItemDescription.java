@@ -39,33 +39,33 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     @NotEmpty
     private String identifier;
 
-    @Schema(description = "A human readable name/title. The name is considered when items are searched", example = "my beautiful service")
+    @Schema(description = "A human readable name/title. The name is considered when items are searched.", example = "my beautiful service")
     private String name;
 
     @Schema(description = "The business owner of the item. Preferably use an email address.", example = "johnson@acme.com")
     private String owner;
 
-    @Schema(description = "A brief description")
+    @Schema(description = "A brief description.")
     private String description;
 
-    @Schema(description = "The primary way to contact a responsible person or team . Preferably use an email address.", example = "johnson@acme.com")
+    @Schema(description = "The primary way to contact a responsible person or team. Preferably use an email address.", example = "johnson@acme.com")
     private String contact;
 
-    @Schema(description = "The identifier of the group this item belongs in. Every item requires to be member a group internally, so if nothing is given, the value is set to " + Group.COMMON,
+    @Schema(description = "The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to " + Group.COMMON + ".",
             example = "shipping")
     private String group;
 
-    @Schema(description = "A collection of low level interfaces. Can be used to describe Http API endpoints for instance.")
+    @Schema(description = "A collection of low level interfaces. Can be used to describe HTTP API endpoints for instance.")
     @JsonDeserialize(contentAs = InterfaceDescription.class)
     private Set<InterfaceDescription> interfaces = new HashSet<>();
 
-    @Schema(description = "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience fields to build relations.", example = "shipping-mysqldb")
+    @Schema(description = "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.", example = "shipping-mysqldb")
     private List<String> providedBy = new ArrayList<>();
 
-    @Schema(description = "An icon name or url to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work).")
+    @Schema(description = "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work).")
     private String icon;
 
-    @Schema(description = "Overrides the group color. Use a HTML hex color code without leading hash.", example = "4400FF")
+    @Schema(description = "Overrides the group color. Use an HTML hex color code without the leading hash.", example = "4400FF")
     private String color;
 
     @Schema(description = "The technical address of the item (should be an URI). Taken into account when matching relation endpoints.")

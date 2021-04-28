@@ -75,7 +75,7 @@ This is a reference to a configuration file.
      - null
    * - url
      - String
-     - A URL, but can also be a relative path
+     - A URL, but can also be a relative path.
      - optional, defaults to null
      - ./a/items.yaml
    * - format
