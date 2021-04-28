@@ -2,6 +2,7 @@ package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.ProcessLog;
+import de.bonndan.nivio.input.dto.LandscapeSource;
 
 import java.util.*;
 
@@ -14,7 +15,7 @@ public final class LandscapeBuilder {
     private String contact;
     private String owner;
     private String description;
-    private String source;
+    private LandscapeSource source;
     private LandscapeConfig config;
     private ProcessLog processLog;
     private Map<String, Group> groups = new HashMap<>();
@@ -67,7 +68,7 @@ public final class LandscapeBuilder {
         return this;
     }
 
-    public LandscapeBuilder withSource(String source) {
+    public LandscapeBuilder withSource(LandscapeSource source) {
         this.source = source;
         return this;
     }

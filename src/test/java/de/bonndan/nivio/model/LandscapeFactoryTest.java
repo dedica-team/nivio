@@ -1,6 +1,7 @@
 package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.LandscapeSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,7 @@ class LandscapeFactoryTest {
     @BeforeEach
     public void setup() throws MalformedURLException {
         description = new LandscapeDescription("foo", "bar", "baz@mail.com");
-        description.setSource("/my/file.yaml");
+        description.setSource(new LandscapeSource("foo"));
         description.setOwner("baz");
         description.setDescription("Hello, World.");
         description.setLink("home", new URL("https://dedica.team"));

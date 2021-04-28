@@ -8,6 +8,7 @@ import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.ProcessLog;
+import de.bonndan.nivio.input.dto.LandscapeSource;
 import de.bonndan.nivio.search.ItemIndex;
 import de.bonndan.nivio.search.ItemMatcher;
 import de.bonndan.nivio.search.SearchIndex;
@@ -56,7 +57,8 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
     private final String description;
 
-    private final String source;
+    @JsonIgnore
+    private final LandscapeSource source;
 
     @JsonIgnore
     private final ItemIndex<Item> items;
@@ -81,7 +83,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
                      @Nullable final String contact,
                      @Nullable final String owner,
                      @Nullable final String description,
-                     @Nullable final String source,
+                     @Nullable final LandscapeSource source,
                      @Nullable final LandscapeConfig config,
                      @Nullable final ProcessLog processLog,
                      @NonNull final Map<String, KPI> kpis
@@ -133,7 +135,9 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         this.items.setItems(items);
     }
 
-    public String getSource() {
+    @JsonIgnore
+    @Nullable
+    public LandscapeSource getSource() {
         return source;
     }
 

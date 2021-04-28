@@ -57,7 +57,7 @@ public class LandscapeDescription implements ComponentDescription {
     private Map<String, ItemDescription> templates = new HashMap<>();
 
     @Schema(hidden = true)
-    private String source;
+    private LandscapeSource source;
 
     @Schema(description = "List of configuration sources. Handled in the given order, latter extended/overwrite earlier values like items etc.")
     private List<SourceReference> sources = new ArrayList<>();
@@ -165,11 +165,11 @@ public class LandscapeDescription implements ComponentDescription {
         this.sources = sources;
     }
 
-    public String getSource() {
+    public LandscapeSource getSource() {
         return source;
     }
 
-    public void setSource(String source) {
+    public void setSource(LandscapeSource source) {
         this.source = source;
     }
 

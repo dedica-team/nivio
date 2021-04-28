@@ -18,6 +18,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Fetches files either from local file system or from remote http endpoint.
@@ -34,16 +36,17 @@ public class FileFetcher {
     }
 
     /**
-     * @param source
+     * @param source the file to read
      * @return the file content
-     * @throws ReadingException
+     * @throws ReadingException if any error occurs
      */
     @NonNull
-    public static String readFile(File source) {
+    public static String readFile(@NonNull final File source) {
         try {
+            Objects.requireNonNull(source);
             return Files.readString(Paths.get(source.toURI()), StandardCharsets.UTF_8);
-        } catch (IOException | OutOfMemoryError | SecurityException e) {
-            LOGGER.error("Failed to read file " + source.getAbsolutePath(), e);
+        } catch (Exception e) {
+            LOGGER.error("Failed to read file {}", source.getAbsolutePath(), e);
             throw new ReadingException("Failed to read file " + source.getAbsolutePath(), e);
         }
     }
@@ -102,8 +105,16 @@ public class FileFetcher {
                 return null;
             }
             if (ref.getLandscapeDescription() != null) {
-                File file = new File(ref.getLandscapeDescription().getSource());
-                path = file.getParent() + "/" + ref.getUrl();
+                Optional<URL> url = ref.getLandscapeDescription().getSource().getURL();
+                if (url.isPresent()) {
+                    File file = null;
+                    try {
+                        file = new File(url.get().toURI());
+                        path = file.getParent() + "/" + ref.getUrl();
+                    } catch (URISyntaxException uriSyntaxException) {
+                        LOGGER.error("failed to create uri from " + url.get());
+                    }
+                }
             }
             File source = new File(path);
             return readFile(source);
@@ -115,7 +126,8 @@ public class FileFetcher {
      * @param baseUrl
      * @return
      */
-    public String get(SourceReference ref, URL baseUrl) {
+    @Nullable
+    public String get(@NonNull final SourceReference ref, @Nullable final URL baseUrl) {
 
         //we have no base url or source ref has absolute url
         if (baseUrl == null || ref.getUrl().startsWith("http")) {

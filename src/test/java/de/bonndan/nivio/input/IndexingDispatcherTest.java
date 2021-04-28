@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.LandscapeSource;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,18 +65,19 @@ class IndexingDispatcherTest {
 
     @Test
     void fromIncoming() {
+        String stringSource = "foo";
         Landscape existing = new Landscape(
                 "foobar", Map.of("agroup", new Group("agroup", "foobar")),
-                "foobar", null, null, null, "foo", null, null, Collections.emptyMap()
+                "foobar", null, null, null, new LandscapeSource(stringSource), null, null, Collections.emptyMap()
         );
         LandscapeDescription dto = new LandscapeDescription("foobar");
-        when(landscapeDescriptionFactory.fromString(eq(existing.getSource()), anyString())).thenReturn(dto);
+        when(landscapeDescriptionFactory.fromString(eq(stringSource), anyString())).thenReturn(dto);
 
         //when
         dispatcher.fromIncoming(existing);
 
         //then
-        verify(landscapeDescriptionFactory).fromString(eq(existing.getSource()), anyString());
+        verify(landscapeDescriptionFactory).fromString(eq(stringSource), anyString());
         verify(publisher).publishEvent(eventCaptor.capture());
         IndexEvent value = eventCaptor.getValue();
         assertThat(value).isNotNull();

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.List;
@@ -44,14 +45,14 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void read() {
+    public void read() throws MalformedURLException {
         File file = new File(FILE_PATH_ENV);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
         assertEquals("Landscape example", landscapeDescription.getName());
         assertEquals("nivio:example", landscapeDescription.getIdentifier());
         assertEquals("mail@acme.org", landscapeDescription.getContact());
         assertTrue(landscapeDescription.getDescription().contains("demonstrate"));
-        assertEquals(FILE_PATH_ENV, landscapeDescription.getSource());
+        assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource().getURL().get().toString());
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
 
         SourceReference mapped = landscapeDescription.getSourceReferences().get(1);
@@ -81,7 +82,7 @@ class LandscapeDescriptionFactoryTest {
         assertEquals("nivio:example", landscapeDescription.getIdentifier());
         assertEquals("mail@acme.org", landscapeDescription.getContact());
         assertTrue(landscapeDescription.getDescription().contains("demonstrate"));
-        assertTrue(landscapeDescription.getSource().contains("name: Landscape example"));
+        assertTrue(landscapeDescription.getSource().getStaticSource().contains("name: Landscape example"));
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
 
         SourceReference mapped = landscapeDescription.getSourceReferences().get(1);
@@ -95,22 +96,7 @@ class LandscapeDescriptionFactoryTest {
         File file = new File(FILE_PATH_ENV);
         String yaml = new String(Files.readAllBytes(file.toPath()));
         LandscapeDescription landscapeDescription = factory.fromString(yaml, file.toURI().toURL());
-        assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource());
-    }
-
-    @Test
-    public void readUrlFromDescription() throws IOException {
-
-        File file = new File(FILE_PATH_ENV);
-        Landscape outdatedLandscape = LandscapeFactory.createForTesting(
-                "test", "testLandscape")
-                .withSource(file.toURI().toURL().toString())
-                .build();
-
-        //when
-        LandscapeDescription landscapeDescription = factory.from(outdatedLandscape);
-        assertNotNull(landscapeDescription);
-        assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource());
+        assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource().getURL().get().toString());
     }
 
     @Test
@@ -124,7 +110,7 @@ class LandscapeDescriptionFactoryTest {
 
         //then
         assertNotNull(landscapeDescription);
-        assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource());
+        assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource().getURL().get().toString());
     }
 
     @Test

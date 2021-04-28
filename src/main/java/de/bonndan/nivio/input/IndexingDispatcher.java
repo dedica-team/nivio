@@ -45,11 +45,16 @@ public class IndexingDispatcher {
      * @param existing the current landscape model
      * @return a generated landscape description
      */
+    @NonNull
     public LandscapeDescription fromIncoming(@NonNull final Landscape existing) {
         Objects.requireNonNull(existing, "Landscape is null.");
-        LandscapeDescription dto = URLHelper.getURL(existing.getSource())
+        if (existing.getSource() == null) {
+            throw new ProcessingException(new LandscapeDescription(existing.getIdentifier()), "Cannot create a new landscape description form a landscape without source.");
+        }
+
+        LandscapeDescription dto = existing.getSource().getURL()
                 .map(landscapeDescriptionFactory::from)
-                .orElse(landscapeDescriptionFactory.fromString(existing.getSource(), existing.getIdentifier() + " source"));
+                .orElseGet(() -> landscapeDescriptionFactory.fromString(existing.getSource().getStaticSource(), existing.getIdentifier() + " source"));
 
         IndexEvent event = new IndexEvent(dto, "index landscape");
         publisher.publishEvent(event);
