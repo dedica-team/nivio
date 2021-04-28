@@ -85,7 +85,7 @@ public class LabelToFieldResolver extends Resolver {
 
             if (propertyType != null && propertyType.isAssignableFrom(Map.class)) {
                 String[] o = getParts(value); // value is only a list of strings
-                Map<String, Object> propertyValue = (Map<String, Object>) myAccessor.getPropertyValue(name);
+                @SuppressWarnings("unchecked") Map<String, Object> propertyValue = (Map<String, Object>) myAccessor.getPropertyValue(name);
                 if (propertyValue != null) {
                     for (int i = 0; i < o.length; i++) {
                         if ("links".equals(name)) {

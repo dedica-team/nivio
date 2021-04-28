@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * A static factory to create LandscapeDescription instances from files or strings.
+ * A factory to create Landscape DTO instances from files or strings.
  */
 @Component
 public class LandscapeDescriptionFactory {
@@ -36,8 +36,14 @@ public class LandscapeDescriptionFactory {
         this.fileFetcher = fileFetcher;
     }
 
+    /**
+     * Creates a dto from a URL by fetching its target.
+     *
+     * @param url to url of the source
+     * @return a landscape description
+     */
     @Nullable
-    public LandscapeDescription from(URL url) {
+    public LandscapeDescription from(@NonNull final URL url) {
         return fromString(fileFetcher.get(url), url);
     }
 
@@ -117,16 +123,6 @@ public class LandscapeDescriptionFactory {
         dto.setSources(List.of(sourceReference));
 
         return dto;
-    }
-
-    public LandscapeDescription fromIncoming(@Nullable final LandscapeDescription landscape) {
-        if (landscape == null || landscape.getSource() == null) {
-            throw new ProcessingException(landscape, "Cannot process empty source.");
-        }
-
-        return landscape.getSource().getURL()
-                .map(this::from)
-                .orElseGet(() -> fromString(landscape.getSource().getStaticSource(), landscape.getIdentifier() + " source"));
     }
 
     private static void sanitizeTemplates(LandscapeDescription landscapeDescription) {

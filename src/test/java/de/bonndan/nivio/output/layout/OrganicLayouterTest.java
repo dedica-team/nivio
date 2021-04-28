@@ -165,7 +165,7 @@ class OrganicLayouterTest extends RenderingTest {
 
         HttpService httpService = new HttpService();
         IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService));
-        formatFactory = InputFormatHandlerFactory.with(new InputFormatHandlerCSV(new FileFetcher(httpService)));
+        formatFactory = new InputFormatHandlerFactory(List.of(new InputFormatHandlerCSV(new FileFetcher(httpService))));
         LinkHandlerFactory linkHandlerFactory = mock(LinkHandlerFactory.class);
         indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class),  iconService);
 
