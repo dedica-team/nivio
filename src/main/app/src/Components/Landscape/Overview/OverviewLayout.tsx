@@ -16,8 +16,7 @@ import componentStyles from '../../../Resources/styling/ComponentStyles';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     overview: {
-      marginRight: 320,
-      marginTop: -40,
+      marginLeft: 10,
       paddingTop: 0
     },
     card: {

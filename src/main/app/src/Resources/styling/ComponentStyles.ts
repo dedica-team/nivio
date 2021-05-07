@@ -9,7 +9,7 @@ const componentStyles = makeStyles((theme: Theme) =>
       padding: 0,
       backgroundColor: darken(theme.palette.primary.main, 0.3),
       flexShrink: 0,
-      overflowY: 'hidden'
+      overflowY: 'hidden',
     },
     cardHeader: {
       backgroundColor: theme.palette.primary.main,
@@ -25,6 +25,14 @@ const componentStyles = makeStyles((theme: Theme) =>
       width: '2rem',
       height: '2rem',
       display: 'inline-block',
+    },
+    navigationButton: {
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: theme.palette.primary.main,
+      height: '2.1rem !important',
+      width: '2.1rem !important',
+      marginLeft: '0.5rem'
     },
   })
 );

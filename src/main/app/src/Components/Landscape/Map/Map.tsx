@@ -9,15 +9,7 @@ import React, {
 import { useParams } from 'react-router-dom';
 
 import { SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
-import {
-  //fitSelection,
-  fitToViewer,
-  ReactSVGPanZoom,
-  //setPointOnViewerCenter,
-  Tool,
-  TOOL_AUTO,
-  Value
-} from 'react-svg-pan-zoom';
+import { fitToViewer, ReactSVGPanZoom, Tool, TOOL_AUTO, Value } from 'react-svg-pan-zoom';
 
 import './Map.css';
 
@@ -26,31 +18,25 @@ import { withBasePath } from '../../../utils/API/BasePath';
 import { get } from '../../../utils/API/APIClient';
 import { ReactSvgPanZoomLoaderXML } from './ReactSVGPanZoomLoaderXML';
 import Item from '../Modals/Item/Item';
-import StatusBar from '../Dashboard/StatusBar';
-import { IAssessment, ILandscape } from '../../../interfaces';
 import { getGroup, getItem } from '../Utils/utils';
 import Group from '../Modals/Group/Group';
 //import MapUtils from './MapUtils';
 import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
-import { NotificationContext } from '../../../Context/NotificationContext';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import IconButton from '@material-ui/core/IconButton';
-import { Theme, createStyles, darken } from '@material-ui/core';
+import { createStyles, darken, Theme } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-
-
+import { LandscapeContext } from '../../../Context/LandscapeContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-
     menuIcon: {
       position: 'absolute',
       cursor: 'pointer',
       top: '70px',
       zIndex: 1000,
       backgroundColor: darken(theme.palette.primary.main, 0.2),
-    }
-
+    },
   })
 );
 
@@ -83,14 +69,12 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [renderWithTransition, setRenderWithTransition] = useState(false);
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
   const { identifier } = useParams<{ identifier: string }>();
-  const [landscape, setLandscape] = useState<ILandscape | null>();
-  const [assessments, setAssessments] = useState<IAssessment | undefined>(undefined);
 
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [isZoomed, setIsZoomed] = useState<Boolean>(false);
 
   const locateFunctionContext = useContext(LocateFunctionContext);
-  const notificationContext = useContext(NotificationContext);
+  const landscapeContext = useContext(LandscapeContext);
 
   const locateComponent = useCallback((fullyQualifiedItemIdentifier: string) => {
     const element = document.getElementById(fullyQualifiedItemIdentifier);
@@ -108,29 +92,28 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
-    if (fullyQualifiedItemIdentifier && landscape) {
-      let item = getItem(landscape, fullyQualifiedItemIdentifier);
-      if (item) setSidebarContent(<Item key={fullyQualifiedItemIdentifier} useItem={item} landscape={landscape} />);
+    if (fullyQualifiedItemIdentifier && landscapeContext.landscape) {
+      let item = getItem(landscapeContext.landscape, fullyQualifiedItemIdentifier);
+      if (item) setSidebarContent(<Item key={fullyQualifiedItemIdentifier} useItem={item} />);
     }
   };
 
   const onGroupClick = (e: MouseEvent<HTMLElement>) => {
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
-    if (fullyQualifiedItemIdentifier && landscape) {
-      let group = getGroup(landscape, fullyQualifiedItemIdentifier);
-      if (group && assessments)
-        setSidebarContent(<Group group={group} assessments={assessments} />);
+    if (fullyQualifiedItemIdentifier && landscapeContext.landscape) {
+      let group = getGroup(landscapeContext.landscape, fullyQualifiedItemIdentifier);
+      if (group) setSidebarContent(<Group group={group} />);
     }
   };
 
   const onRelationClick = (e: MouseEvent<HTMLElement>) => {
-    if (!landscape) return;
+    if (!landscapeContext.landscape) return;
 
     const dataSource = e.currentTarget.getAttribute('data-source');
     let source, sourceElement, sourceX, sourceY;
     if (dataSource) {
       sourceElement = document.getElementById(dataSource);
-      source = getItem(landscape, dataSource);
+      source = getItem(landscapeContext.landscape, dataSource);
       if (sourceElement) {
         sourceX = sourceElement.getAttribute('data-x');
         sourceY = sourceElement.getAttribute('data-y');
@@ -141,7 +124,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     let target, targetElement, targetX, targetY;
     if (dataTarget) {
       targetElement = document.getElementById(dataTarget);
-      target = getItem(landscape, dataTarget);
+      target = getItem(landscapeContext.landscape, dataTarget);
       if (targetElement) {
         targetX = targetElement.getAttribute('data-x');
         targetY = targetElement.getAttribute('data-y');
@@ -193,17 +176,10 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
   //load landscape
   useEffect(() => {
-    if (!landscape) {
-      get(`/api/${identifier}`).then((response) => {
-        setLandscape(response);
-        setPageTitle(response.name);
-      });
-
-      get(`/assessment/${identifier}`).then((response) => {
-        setAssessments(response);
-      });
+    if (landscapeContext.landscape) {
+      setPageTitle(landscapeContext.landscape.name);
     }
-  }, [identifier, setPageTitle, landscape]);
+  }, [setPageTitle, landscapeContext]);
 
   useEffect(() => {
     if (locateComponent) {
@@ -215,12 +191,13 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
    * Reload map on notification messages.
    */
   useEffect(() => {
-    if (notificationContext.notification?.type === 'ProcessingFinishedEvent'
-      && notificationContext.notification?.landscape === landscape?.identifier
+    if (
+      landscapeContext.notification?.type === 'ProcessingFinishedEvent' &&
+      landscapeContext.notification?.landscape === landscapeContext.identifier
     ) {
       loadMap();
     }
-  }, [notificationContext.notification, landscape?.identifier, loadMap]);
+  }, [landscapeContext.notification, landscapeContext.identifier, loadMap]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -270,24 +247,39 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
     return (
       <div className='landscapeMapContainer'>
-        {isZoomed && <IconButton
-          className={classes.menuIcon}
-          title={'Click to reset view'}
-          onClick={() => {
-            // @ts-ignore  
-            setValue(fitToViewer(value, 'center', 'center'));
-            setIsZoomed(false)
-          }}
-          size={'small'}
-        >
-          <ZoomOutIcon ></ZoomOutIcon></IconButton>}
+        {isZoomed && (
+          <IconButton
+            className={classes.menuIcon}
+            title={'Click to reset view'}
+            onClick={() => {
+              // @ts-ignore
+              setValue(fitToViewer(value, 'center', 'center'));
+              setIsZoomed(false);
+            }}
+            size={'small'}
+          >
+            <ZoomOutIcon></ZoomOutIcon>
+          </IconButton>
+        )}
         <ReactSvgPanZoomLoaderXML
           xml={data.xml}
           proxy={
             <>
-              <SvgLoaderSelectElement selector='.item' onMouseUp={onItemClick} onTouchEnd={onItemClick} />
-              <SvgLoaderSelectElement selector='.relation' onMouseUp={onRelationClick} onTouchEnd={onRelationClick} />
-              <SvgLoaderSelectElement selector='.groupArea' onMouseUp={onGroupClick} onTouchEnd={onGroupClick} />
+              <SvgLoaderSelectElement
+                selector='.item'
+                onMouseUp={onItemClick}
+                onTouchEnd={onItemClick}
+              />
+              <SvgLoaderSelectElement
+                selector='.relation'
+                onMouseUp={onRelationClick}
+                onTouchEnd={onRelationClick}
+              />
+              <SvgLoaderSelectElement
+                selector='.groupArea'
+                onMouseUp={onGroupClick}
+                onTouchEnd={onGroupClick}
+              />
             </>
           }
           render={(content: ReactElement[]) => (
@@ -305,7 +297,9 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
               preventPanOutside={false}
               toolbarProps={{ position: 'none' }}
               detectAutoPan={false}
-              onZoom={() => { setIsZoomed(true) }}
+              onZoom={() => {
+                setIsZoomed(true);
+              }}
               tool={tool}
               onChangeTool={(newTool) => setTool(newTool)}
               value={value}
@@ -318,13 +312,6 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
             </ReactSVGPanZoom>
           )}
         />
-        {landscape && assessments && (
-          <StatusBar
-            setSidebarContent={setSidebarContent}
-            landscape={landscape}
-            assessments={assessments}
-          />
-        )}
       </div>
     );
   }

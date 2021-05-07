@@ -1,17 +1,16 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.assessment.Assessment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LandscapeTest {
@@ -73,7 +72,7 @@ class LandscapeTest {
 
         landscape.setItems(new HashSet<>(items));
 
-        landscape.getSearchIndex().indexForSearch(landscape.getItems().all());
+        landscape.getSearchIndex().indexForSearch(landscape, new Assessment(Map.of()));
 
         //when
         Set<Item> search = landscape.search("*oo");

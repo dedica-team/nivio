@@ -1,7 +1,9 @@
 package de.bonndan.nivio.search;
 
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Landscape;
 import org.springframework.context.event.EventListener;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -18,9 +20,11 @@ public class SearchIndexingEventListener {
 
     @EventListener(ProcessingFinishedEvent.class)
     public void onProcessingFinishedEvent(@NonNull ProcessingFinishedEvent event) {
-        SearchIndex searchIndex = event.getLandscape().getSearchIndex();
-        Set<Item> items = event.getLandscape().getItems().all();
+        final Landscape landscape = event.getLandscape();
+        final SearchIndex searchIndex = landscape.getSearchIndex();
 
-        searchIndex.indexForSearch(items);
+        //see https://github.com/dedica-team/nivio/issues/519
+        Assessment assessment = new Assessment(landscape.applyKPIs(landscape.getKpis()));
+        searchIndex.indexForSearch(landscape, assessment);
     }
 }

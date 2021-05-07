@@ -116,9 +116,9 @@ yarn test:coverage
 
 The configuration is in `./package.json`.
 
-# CI/CD
+## Context Testing
 
-We use [Husky](https://github.com/typicode/husky) to prevent bad Git commits and pushes.
+To simulate the landscape context which holds all server-side status, use `utils/testing/LandscapeContextValue.ts`
 
 ## **Stages**
 
