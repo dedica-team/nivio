@@ -71,6 +71,46 @@ skip (usually 1 for the header row) can be set.
        skipLines: 1
 
 
+Reading from GraphViz dot files
+-------------------------------
+
+https://www.graphviz.org/ is a graph visualisation software which uses the dot language https://graphviz.org/doc/info/lang.html
+to describe graphs. It is possible to add arbitrary attributes to nodes and edges, so nivio can use these attributes to
+enhance items and relations. However, it is necessary to prefix attributes that should be taken into account using the string "nivio_".
+
+.. code-block:: dot
+   :linenos:
+
+    digraph G {
+            main [
+                nivio_owner = Marketing,
+                nivio_software="Wordpress 2.0",
+                nivio_group=FooBar,
+                nivio_contact="foo@bar.com"
+            ]
+            main -> parse -> execute
+            main -> init [nivio_format = json, nivio_type=PROVIDER, nivio_description="init the procedure"]
+            main -> cleanup
+            execute -> make_string
+            execute -> printf
+            init -> make_string
+            main -> printf
+            execute -> compare
+            }
+
+Also remember to put non-ascii words (like email addresses) or sentences into double quotes.
+
+To configure this as input source, add:
+
+.. code-block:: yaml
+   :linenos:
+
+    sources:
+     - url: "./test/foo.dot"
+       format: dot
+
+
+
 External data
 -------------
 

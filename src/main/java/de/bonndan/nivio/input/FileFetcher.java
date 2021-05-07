@@ -115,7 +115,7 @@ public class FileFetcher {
      * @param baseUrl
      * @return
      */
-    public String get(SourceReference ref, URL baseUrl) {
+    public String get(SourceReference ref, @Nullable URL baseUrl) {
 
         //we have no base url or source ref has absolute url
         if (baseUrl == null || ref.getUrl().startsWith("http")) {

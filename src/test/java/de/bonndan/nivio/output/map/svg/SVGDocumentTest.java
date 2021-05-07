@@ -11,13 +11,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class SVGDocumentTest  extends RenderingTest {
+class SVGDocumentTest extends RenderingTest {
 
     @BeforeEach
     public void setup() throws URISyntaxException {
@@ -36,7 +35,7 @@ class SVGDocumentTest  extends RenderingTest {
     }
 
     @Test
-    public void renderCustomFill() throws IOException, URISyntaxException {
+    public void renderCustomFill() throws IOException {
         String path = "/src/test/resources/example/dedica";
 
         Landscape landscape = getLandscape(path + ".yml");
