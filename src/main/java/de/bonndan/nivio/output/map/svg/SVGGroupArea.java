@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.output.map.hex.Hex;
+import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,41 +27,34 @@ class SVGGroupArea extends Component {
 
     @NonNull
     private final Set<Hex> groupArea;
+
     @Nullable
     private final List<DomContent> outlines;
 
-    SVGGroupArea(@NonNull final Group group, @NonNull final Set<Hex> groupArea, @Nullable final List<DomContent> outlines) {
+    @NonNull
+    private final Point2D.Double anchor;
+
+    SVGGroupArea(@NonNull final Group group,
+                 @NonNull final Set<Hex> groupArea,
+                 @NonNull final List<DomContent> outlines
+    ) {
         this.group = Objects.requireNonNull(group);
         this.groupArea = Objects.requireNonNull(groupArea);
         this.outlines = outlines;
-    }
-
-    @Override
-    public DomContent render() {
-        var fill = group.getColor();
-        var fillId = fill != null ? "#" + fill : "";
-
-        List<DomContent> territoryHexes = outlines != null ? new ArrayList<>(outlines) : new ArrayList<>();
 
         AtomicReference<Hex> lowest = new AtomicReference<>(null);
-
         groupArea.forEach(hex -> {
             Point2D.Double coords = hex.toPixel();
             if (lowest.get() == null || coords.y > lowest.get().toPixel().y)
                 lowest.set(hex);
         });
+        anchor = lowest.get() != null ? lowest.get().toPixel() : new Point2D.Double(0, 0);
 
-        Point2D.Double anchor = lowest.get() != null ? lowest.get().toPixel() : new Point2D.Double(0,0);
+    }
 
-        territoryHexes.add(
-                SvgTagCreator.text(group.getIdentifier())
-                        .attr("x", anchor.x)
-                        .attr("y", (int) (anchor.y + 25))
-                        .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
-                        .attr("text-anchor", "middle")
-                        .attr("class", "groupLabel")
-        );
-
+    @Override
+    public DomContent render() {
+        List<DomContent> territoryHexes = outlines != null ? new ArrayList<>(outlines) : new ArrayList<>();
         String fqi = group.getFullyQualifiedIdentifier().jsonValue();
         if (StringUtils.isEmpty(fqi)) {
             // we can still render an svg, but area will not be clickable
@@ -74,6 +68,23 @@ class SVGGroupArea extends Component {
                 .attr("class", "groupArea");
     }
 
+    /**
+     * Creates the group label text element positioned at the anchor (lowest point).
+     *
+     */
+    public ContainerTag getLabel() {
+        var fill = group.getColor();
+        var fillId = fill != null ? "#" + fill : "";
+
+        return SvgTagCreator.text(group.getIdentifier())
+                .attr("x", anchor.x)
+                .attr("y", (int) (anchor.y + 25))
+                .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
+                .attr("text-anchor", "middle")
+                .attr("class", "groupLabel");
+    }
+
+    @NonNull
     public Set<Hex> getGroupArea() {
         return Collections.unmodifiableSet(groupArea);
     }

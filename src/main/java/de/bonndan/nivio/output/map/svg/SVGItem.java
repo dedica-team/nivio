@@ -78,8 +78,7 @@ class SVGItem extends Component {
                 .attr("data-x", String.format(Locale.ENGLISH, "%.2f", pixel.x))
                 .attr("data-y", String.format(Locale.ENGLISH, "%.2f", pixel.y));
         if (Lifecycle.isPlanned(item)) {
-            circle.attr("stroke-dasharray", 5);
-            circle.attr("opacity", 0.7);
+            circle.attr("stroke-dasharray", 15);
         }
         ContainerTag inner = SvgTagCreator.g(circle, content, children);
 
