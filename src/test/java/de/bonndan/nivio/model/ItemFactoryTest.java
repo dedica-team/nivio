@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -65,5 +66,26 @@ public class ItemFactoryTest {
         assertEquals(landscapeItem.getLabel(Label.capability), created.getLabel(Label.capability));
         assertEquals(landscapeItem.getLabel(Label.lifecycle), created.getLabel(Label.lifecycle));
         assertEquals(landscapeItem.getAddress(), created.getAddress());
+    }
+
+    @Test
+    public void testAssignAll() {
+
+        //given
+        Landscape l = LandscapeFactory.createForTesting("testLandscape", "testLandscape").build();
+        Item existing = ItemFactory.fromDescription(landscapeItem, l);
+        ItemDescription update = new ItemDescription(existing.getIdentifier());
+        update.setDescription("123");
+        update.setLabel(Label.version, "2000");
+        update.setLabel("newlabel", "foo");
+
+        //when
+        Item updated = ItemFactory.assignAll(existing, update);
+
+        //then
+        assertThat(updated).isNotNull();
+        assertThat(updated.getDescription()).isEqualTo("123");
+        assertThat(updated.getLabel(Label.version)).isEqualTo("2000");
+        assertThat(updated.getLabel("newlabel")).isEqualTo("foo");
     }
 }

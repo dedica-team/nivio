@@ -1,6 +1,6 @@
 # How to contribute
 
-We are really glad you're reading this, because we need volunteer developers to help this project come to fruition.
+We are really glad you're reading this because we need volunteer developers to help this project come to fruition.
 
 If you haven't already, come find us on [Slack](https://dedica-hacktoberfest.slack.com/). We want you working on things you're excited about.
 
@@ -10,7 +10,7 @@ Here are some important resources:
   * [Our project roadmap](https://github.com/dedica-team/nivio/projects/1)
   * [Issues](https://github.com/dedica-team/nivio/issues)
   * [Chat](https://dedica-hacktoberfest.slack.com/)
-  * *Readme* both frontend and backend contain readme files (see ./src/main/...)
+  * *Readme* - both frontend and backend contain readme files (see ./src/main/...)
 
 ## Testing
 
@@ -23,7 +23,7 @@ Please send a [GitHub Pull Request](https://github.com/opengovernment/opengovern
 
   * The *develop* branch is the base for all new features.
   * Always write a clear log message for your commits.
-  * Please include the ticket id in commit messages, if possible.
+  * Please include the ticket id in commit messages if possible.
   * Make sure that your contribution is well tested.
   * Try not to introduce new dependencies for common tasks
 
@@ -32,9 +32,9 @@ Please send a [GitHub Pull Request](https://github.com/opengovernment/opengovern
 Start reading our code and you'll get the hang of it. We optimize for readability:
 
   * We think that the Zen Of Python is a good idea and we hate code generation.
-  * In Java we indent using four spaces (Intellij default settings)
+  * In Java we indent using four spaces (IntelliJ default settings)
   * In React we indent using two spaces using prettier.
-  * This is open source software. Consider the people who will read your code, and make it look nice for them. 
+  * This is open source software. Consider the people who will read your code and make it look nice for them. 
 
 Thanks,
 the dedica team

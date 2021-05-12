@@ -43,18 +43,12 @@
 
 .map .relation path {
   fill: none;
-  stroke-width: 0.2em;
-  stroke-opacity: 0.8;
   stroke-linecap: butt;
   stroke-linejoin: round;
 }
 
 .map g.relation {
   cursor: pointer;
-}
-
-.map g.relation path {
-  stroke-width: 1em;
 }
 
 .map g.groupArea {

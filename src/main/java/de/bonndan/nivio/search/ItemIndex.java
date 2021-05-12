@@ -12,6 +12,8 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.ItemComponent;
 import de.bonndan.nivio.util.URLHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -33,7 +35,8 @@ import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
  */
 public class ItemIndex<T extends ItemComponent> {
 
-    private static final String CQE_FIELD_FQI = "fqi";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemIndex.class);
+    public static final String CQE_FIELD_FQI = "fqi";
 
     /**
      * The {@link com.googlecode.cqengine.query.QueryFactory#attribute(String, SimpleFunction)})} relies on a method
@@ -52,7 +55,7 @@ public class ItemIndex<T extends ItemComponent> {
     /**
      * See {@link #CQE_ATTR_FQI}
      */
-    @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef"})
+    @SuppressWarnings({"Convert2Lambda"})
     private final Attribute<T, String> CQE_ATTR_IDENTIFIER = attribute("identifier", new SimpleFunction<>() {
         @Override
         public String apply(T item) {
@@ -63,7 +66,7 @@ public class ItemIndex<T extends ItemComponent> {
     /**
      * See {@link #CQE_ATTR_FQI}
      */
-    @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef"})
+    @SuppressWarnings({"Convert2Lambda"})
     private final Attribute<T, String> CQE_ATTR_NAME = attribute("name", new SimpleFunction<>() {
         @Override
         public String apply(T item) {
@@ -74,7 +77,7 @@ public class ItemIndex<T extends ItemComponent> {
     /**
      * See {@link #CQE_ATTR_FQI}
      */
-    @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef"})
+    @SuppressWarnings({"Convert2Lambda"})
     private final Attribute<T, String> CQE_ATTR_ADDRESS = attribute("address", new SimpleFunction<>() {
         @Override
         public String apply(T item) {
@@ -84,17 +87,12 @@ public class ItemIndex<T extends ItemComponent> {
 
     private final SQLParser<T> parser;
 
-    /**
-     * The search index is only used for the final models, absent for item description objects.
-     */
-    private final Optional<SearchIndex> searchIndex;
-
     private IndexedCollection<T> index = new ConcurrentIndexedCollection<>();
 
     /**
      * Creates a new empty index.
      */
-    public ItemIndex(@Nullable SearchIndex searchIndex, Class<T> tClass) {
+    public ItemIndex(Class<T> tClass) {
 
         //init cq engine
         parser = SQLParser.forPojoWithAttributes(tClass,
@@ -105,7 +103,6 @@ public class ItemIndex<T extends ItemComponent> {
                         "address", CQE_ATTR_ADDRESS)
         );
 
-        this.searchIndex = Optional.ofNullable(searchIndex);
     }
 
     public Stream<T> itemStream() {
@@ -231,25 +228,6 @@ public class ItemIndex<T extends ItemComponent> {
         return Optional.ofNullable((found.size() == 1) ? found.get(0) : null);
     }
 
-    /**
-     * Creates a search index based in a snapshot of current items state (later modifications won't be shown).
-     */
-    public void indexForSearch() {
-        searchIndex.ifPresent(searchIndex1 -> searchIndex1.indexForSearch(all()));
-    }
-
-    public Set<T> search(String queryString) {
-        if (searchIndex.isEmpty()) {
-            throw new IllegalStateException("No search index provided. Cannot execute search.");
-        }
-
-        Set<FullyQualifiedIdentifier> search = searchIndex.get().search(queryString);
-        Query<T> nativeQuery = in(CQE_ATTR_FQI, search);
-
-        return index.retrieve(nativeQuery).stream().collect(Collectors.toSet());
-    }
-
-
     public List<T> cqnQueryOnIndex(String condition) {
         try {
             ResultSet<T> results = parser.retrieve(index, condition);
@@ -324,5 +302,16 @@ public class ItemIndex<T extends ItemComponent> {
 
     public void remove(T item) {
         index.remove(item);
+    }
+
+    /**
+     * Retrieves all Items corresponding the set of FQIs.
+     *
+     * @param fullyQualifiedIdentifiers a set of fqis
+     * @return a set of components (e.g. items)
+     */
+    public Set<T> retrieve(@NonNull Set<FullyQualifiedIdentifier> fullyQualifiedIdentifiers) {
+        Query<T> nativeQuery = in(CQE_ATTR_FQI, fullyQualifiedIdentifiers);
+        return index.retrieve(nativeQuery).stream().collect(Collectors.toUnmodifiableSet());
     }
 }

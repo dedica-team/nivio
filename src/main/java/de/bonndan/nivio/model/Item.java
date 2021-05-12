@@ -110,8 +110,10 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         return landscape;
     }
 
+    @Override
+    @NonNull
     public String getName() {
-        return name;
+        return name == null ? "" : name;
     }
 
     public String getOwner() {

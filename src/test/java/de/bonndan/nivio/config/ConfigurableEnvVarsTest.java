@@ -33,10 +33,10 @@ class ConfigurableEnvVarsTest {
         labelExport.sort(Comparator.comparing(Enum::name));
 
 
-        File rst = new File(RootPath.get() + "/docs/source/env_config.rst");
+        File rst = new File(RootPath.get() + "/docs/source/inc_env_config.rst");
         String s = labelExport.stream()
-                .map(entry -> "* **" + entry.name() + "** " + entry.getDescription())
-                .collect(Collectors.joining("\n"));
+                .map(entry -> ".. envvar:: " + entry.name() + "\n\n" + entry.getDescription())
+                .collect(Collectors.joining("\n\n"));
         Files.writeString(rst.toPath(), s, Charset.defaultCharset());
     }
 }

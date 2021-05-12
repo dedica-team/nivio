@@ -1,8 +1,11 @@
 package de.bonndan.nivio.search;
 
+import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Landscape;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.facet.FacetResult;
@@ -23,13 +26,11 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.search.SearchDocumentFactory.*;
@@ -58,32 +59,33 @@ public class SearchIndex {
     }
 
     /**
+     *
+     * @param landscape
+     * @param assessment
+     */
+    public void indexForSearch(Landscape landscape, Assessment assessment) {
+        Set<Item> items = landscape.getItems().all();
+        indexItems(items, assessment.getResults());
+    }
+
+    /**
      * Creates a search index based in a snapshot of current items state (later modifications won't be shown).
      *
-     * @return number of indexed items
-     * TODO support other components than {@link Item}
      */
-    public int indexForSearch(Set<? extends Component> index) {
-        int indexed = 0;
+    private void indexItems(Set<Item> items, Map<FullyQualifiedIdentifier, List<StatusValue>> results) {
         try {
             FacetsConfig config = SearchDocumentFactory.getConfig();
             TaxonomyWriter taxoWriter = new DirectoryTaxonomyWriter(taxoIndex, IndexWriterConfig.OpenMode.CREATE);
             IndexWriter writer = new IndexWriter(searchIndex, new IndexWriterConfig(new StandardAnalyzer()));
             writer.deleteAll();
-            for (Component component : index) {
-
-                if (component instanceof Item) {
-                    Document doc = from((Item) component);
-                    writer.addDocument(config.build(taxoWriter, doc));
-                    indexed++;
-                }
+            for (Item item : items) {
+                writer.addDocument(config.build(taxoWriter, from(item, results.get(item.getFullyQualifiedIdentifier()))));
             }
             IOUtils.close(writer, taxoWriter);
         } catch (IOException e) {
             throw new RuntimeException("Failed to update search index", e);
         }
 
-        return indexed;
     }
 
     /**
@@ -93,7 +95,8 @@ public class SearchIndex {
      * @param queryString a lucene query string. Whitespaces are treated as "AND".
      * @return the {@link FullyQualifiedIdentifier}s of the matched documents
      */
-    public Set<FullyQualifiedIdentifier> search(String queryString) {
+    @NonNull
+    public Set<FullyQualifiedIdentifier> search(@NonNull final String queryString) {
         try {
             return documentSearch(rewriteQuery(queryString)).stream()
                     .map(doc -> FullyQualifiedIdentifier.from(doc.get(LUCENE_FIELD_FQI)))

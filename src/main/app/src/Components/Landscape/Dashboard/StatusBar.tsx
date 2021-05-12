@@ -46,23 +46,16 @@ const StatusBar: React.FC<Props> = ({ setSidebarContent, landscape, assessments 
 
   const onItemClick = (item: IItem) => {
     locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
-    setSidebarContent(<Item useItem={item} landscape={landscape}/>);
+    setSidebarContent(<Item useItem={item} />);
   };
 
   const onGroupClick = (group: IGroup) => {
     findGroup(group.fullyQualifiedIdentifier);
-    setSidebarContent(<Group group={group} assessments={assessments} />);
+    setSidebarContent(<Group group={group} />);
   };
 
   if (landscape && assessments)
-    return (
-      <StatusBarLayout
-        landscape={landscape}
-        assessments={assessments}
-        onItemClick={onItemClick}
-        onGroupClick={onGroupClick}
-      />
-    );
+    return <StatusBarLayout onItemClick={onItemClick} onGroupClick={onGroupClick} />;
 
   return null;
 };

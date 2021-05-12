@@ -85,6 +85,7 @@ public class SVGDocument extends Component {
             return area.render();
         }).collect(Collectors.toList());
 
+        defs.add(SVGRelation.dataflowMarker());
         List<SVGRelation> relations = getRelations(layouted);
 
         SVGDimension dimension = SVGDimensionFactory.getDimension(groupAreas);
@@ -116,7 +117,11 @@ public class SVGDocument extends Component {
                 .with(logo, title)
                 .with(groups)
                 .with(relations.stream().map(SVGRelation::render))
+                //draw items above relations
                 .with(items)
+                // draw group labels above everything
+                .with(groupAreas.stream().map(SVGGroupArea::getLabel).collect(Collectors.toSet()))
+                //defs contain reusable stuff
                 .with(SvgTagCreator.defs().with(defs));
     }
 

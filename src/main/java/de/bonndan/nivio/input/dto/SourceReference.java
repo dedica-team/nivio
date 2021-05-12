@@ -20,7 +20,7 @@ public class SourceReference extends Link {
     /**
      * used since Link cannot use relative paths as href
      */
-    @Schema(description = "A URL, but can also be a relative path", example = "./a/items.yaml")
+    @Schema(description = "A URL, but can also be a relative path.", example = "./a/items.yaml")
     private String url;
 
     @Schema(hidden = true)

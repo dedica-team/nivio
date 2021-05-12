@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 
-import { IAssessment, IGroup } from '../../../../interfaces';
-import { getLabels, getLinks, getAssessmentSummary } from '../../Utils/utils';
+import { IGroup } from '../../../../interfaces';
+import { getLabels, getLinks } from '../../Utils/utils';
 import { Card, CardHeader } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import StatusChip from '../../../StatusChip/StatusChip';
@@ -12,18 +12,18 @@ import IconButton from '@material-ui/core/IconButton';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 import ItemAvatar from '../Item/ItemAvatar';
 import GroupAvatar from './GroupAvatar';
+import { LandscapeContext } from '../../../../Context/LandscapeContext';
 
 interface Props {
   group: IGroup;
-  assessments: IAssessment;
 }
 
 /**
  * Returns a chosen group if information is available
  */
-const Group: React.FC<Props> = ({ group, assessments }) => {
+const Group: React.FC<Props> = ({ group }) => {
   const componentClasses = componentStyles();
-
+  const landscapeContext = useContext(LandscapeContext);
   const locateFunctionContext = useContext(LocateFunctionContext);
 
   const getGroupItems = (
@@ -32,7 +32,8 @@ const Group: React.FC<Props> = ({ group, assessments }) => {
   ) => {
     if (group?.items) {
       return group.items.map((item) => {
-        const [status] = getAssessmentSummary(assessments.results[item.fullyQualifiedIdentifier]);
+        const itemStatus = landscapeContext.getAssessmentSummary(item.fullyQualifiedIdentifier);
+        if (!itemStatus || !itemStatus?.status) return null;
         return (
           <Button
             style={{ textAlign: 'left' }}
@@ -43,7 +44,7 @@ const Group: React.FC<Props> = ({ group, assessments }) => {
               }
             }}
           >
-            <ItemAvatar item={item} statusColor={status} />
+            <ItemAvatar item={item} statusColor={itemStatus.status} />
             &nbsp;
             {item.identifier}
           </Button>
@@ -54,9 +55,7 @@ const Group: React.FC<Props> = ({ group, assessments }) => {
   };
   const items = getGroupItems(group, locateFunctionContext.locateFunction);
 
-  const [assessmentColor, message, field] = getAssessmentSummary(
-    assessments.results[group.fullyQualifiedIdentifier]
-  );
+  const assessment = landscapeContext.getAssessmentSummary(group.fullyQualifiedIdentifier);
   const labels = getLabels(group);
   const links = getLinks(group);
 
@@ -70,7 +69,7 @@ const Group: React.FC<Props> = ({ group, assessments }) => {
               size={'small'}
               title={`Click to local group ${group.identifier}`}
             >
-              <GroupAvatar group={group} statusColor={''} />
+              <GroupAvatar group={group} statusColor={assessment ? assessment.status : ''} />
             </IconButton>
             &nbsp;{group.name}
           </React.Fragment>
@@ -94,14 +93,16 @@ const Group: React.FC<Props> = ({ group, assessments }) => {
           </span>
         </div>
 
-        <div>
-          <Typography variant={'h6'}>Status</Typography>
-          <StatusChip
-            name={group.name || group.identifier}
-            status={assessmentColor}
-            value={field + ':' + message}
-          />
-        </div>
+        {assessment && assessment.status ? (
+          <div>
+            <Typography variant={'h6'}>Status</Typography>
+            <StatusChip
+              name={group.name || group.identifier}
+              status={assessment?.status}
+              value={assessment?.field + ':' + assessment.message}
+            />
+          </div>
+        ) : null}
 
         <div className='labels'>{labels}</div>
 

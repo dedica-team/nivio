@@ -1,6 +1,8 @@
 package de.bonndan.nivio.search;
 
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeFactory;
@@ -10,10 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
@@ -79,18 +78,32 @@ class ItemIndexTest {
     }
 
     @Test
-    public void searchStartingWithWildcard() {
-        landscape.getItems().indexForSearch();
-        Set<Item> search = landscape.getItems().search("*oo");
-        assertEquals(1, search.size());
-    }
-
-    @Test
     public void queryUrl() {
-        landscape.getItems().indexForSearch();
+        //given
+        landscape.getSearchIndex().indexForSearch(landscape, new Assessment(Map.of()));
+
+        //when
         Collection<Item> search = landscape.getItems().query("https://foo.bar/");
+
+        //then
         assertThat(search).isNotEmpty();
         Item next = search.iterator().next();
         assertThat(next.getIdentifier()).isEqualTo("hasaddress");
+    }
+
+    @Test
+    public void retrieve() {
+        //given
+        landscape.getSearchIndex().indexForSearch(landscape, new Assessment(Map.of()));
+
+        //when
+        Set<FullyQualifiedIdentifier> q = Set.of(items.get(0).getFullyQualifiedIdentifier(), items.get(1).getFullyQualifiedIdentifier());
+        Collection<Item> search = landscape.getItems().retrieve(q);
+
+        //then
+        assertThat(search).isNotEmpty();
+        assertThat(search).hasSize(2);
+        assertThat(search).contains(items.get(0));
+        assertThat(search).contains(items.get(1));
     }
 }

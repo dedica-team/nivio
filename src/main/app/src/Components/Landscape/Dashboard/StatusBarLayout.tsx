@@ -1,31 +1,12 @@
-import React from 'react';
-
-import Grid from '@material-ui/core/Grid';
-import { IAssessment, IGroup, ILandscape } from '../../../interfaces';
-import { getAssessmentSummary } from '../Utils/utils';
+import React, { useContext } from 'react';
+import { IGroup } from '../../../interfaces';
 import StatusChip from '../../StatusChip/StatusChip';
 import Button from '@material-ui/core/Button';
-import Toolbar from '@material-ui/core/Toolbar';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { darken, Theme } from '@material-ui/core';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    bottomBar: {
-      top: 'auto',
-      bottom: 0,
-      left: 0,
-      padding: 5,
-      position: 'fixed',
-      width: '100%',
-      backgroundColor: darken(theme.palette.primary.dark, 0.2),
-    },
-  })
-);
+import { Card, CardHeader } from '@material-ui/core';
+import { LandscapeContext } from '../../../Context/LandscapeContext';
+import componentStyles from '../../../Resources/styling/ComponentStyles';
 
 interface Props {
-  landscape: ILandscape;
-  assessments: IAssessment;
   onItemClick: Function;
   onGroupClick: Function;
 }
@@ -33,27 +14,28 @@ interface Props {
 /**
  * Displays all groups of given landscape and provides all needed navigation
  */
-const StatusBarLayout: React.FC<Props> = ({
-  landscape,
-  assessments,
-  onItemClick,
-  onGroupClick,
-}) => {
-  const classes = useStyles();
+const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
+  const context = useContext(LandscapeContext);
+  const componentClasses = componentStyles();
+
   const getItems = (group: IGroup) => {
     return group.items.map((item) => {
-      const [assessmentColor, , field] = getAssessmentSummary(
-        assessments?.results[item.fullyQualifiedIdentifier]
-      );
+      const assessmentSummary = context.getAssessmentSummary(item.fullyQualifiedIdentifier);
 
-      if (field === '') return null;
-      if (assessmentColor === 'GREEN') return null;
+      if (assessmentSummary?.field === '') return null;
+      if (
+        !assessmentSummary?.status ||
+        assessmentSummary?.status === 'GREEN' ||
+        assessmentSummary.status === 'UNDEFINED'
+      )
+        return null;
+      if (!assessmentSummary.maxField) return null;
 
       return (
         <Button key={item.fullyQualifiedIdentifier} onClick={() => onItemClick(item)}>
           <StatusChip
-            name={(item.name || item.identifier) + ' ' + field}
-            status={assessmentColor}
+            name={(item.name || item.identifier) + ' ' + assessmentSummary?.maxField}
+            status={assessmentSummary?.status}
           />
         </Button>
       );
@@ -65,16 +47,15 @@ const StatusBarLayout: React.FC<Props> = ({
 
     return groups.map((group) => {
       if (group.items.length === 0) {
-        console.debug('Skipping group without items');
+        console.log('Skipping group without items');
         return null;
       }
 
       const groupColor = `#${group.color}` || 'grey';
-      const [groupAssessmentColor, , groupAssessmentField] = getAssessmentSummary(
-        assessments?.results[group.fullyQualifiedIdentifier]
-      );
+      const groupAssessment = context.getAssessmentSummary(group.fullyQualifiedIdentifier);
+      if (!groupAssessment) return null;
 
-      if (groupAssessmentField === '') {
+      if (groupAssessment.field === '') {
         console.debug('Group ' + group.fullyQualifiedIdentifier + ' has no summary assessment');
         return null;
       }
@@ -88,7 +69,7 @@ const StatusBarLayout: React.FC<Props> = ({
         >
           <StatusChip
             name={title}
-            status={groupAssessmentColor}
+            status={groupAssessment.status}
             style={{
               backgroundColor: groupColor,
             }}
@@ -99,14 +80,11 @@ const StatusBarLayout: React.FC<Props> = ({
   };
 
   return (
-    <Toolbar className={classes.bottomBar} variant={'dense'} disableGutters={true}>
-      <Grid container spacing={0}>
-        <Grid item xs={9}>
-          {getGroups(landscape.groups)}
-          {landscape?.groups.map((group, i) => getItems(group))}
-        </Grid>
-      </Grid>
-    </Toolbar>
+    <Card className={componentClasses.card}>
+      <CardHeader title={'Assessments'} />
+      {context.landscape ? getGroups(context.landscape.groups) : null}
+      {context.landscape?.groups.map((group, i) => getItems(group))}
+    </Card>
   );
 };
 

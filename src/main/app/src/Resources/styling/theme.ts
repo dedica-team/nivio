@@ -6,12 +6,9 @@ const defaultThemeVariables: ThemeOptions = {
     background: {
       default: '#161618',
     },
-    text: {
-      primary: 'rgba(255, 255, 255, 0.75)',
-    },
+
     primary: {
       main: 'rgb(0,104,104)',
-      contrastText: 'rgba(255, 255, 255, 0.75)',
     },
     secondary: {
       main: 'rgb(0, 104, 104)',
@@ -25,22 +22,19 @@ const defaultThemeVariables: ThemeOptions = {
     h3: {
       fontFamily: 'monospace',
       textTransform: 'uppercase',
-      color: 'rgba(255, 255, 255, 0.75)',
     },
     h4: {
       fontFamily: 'monospace',
       textTransform: 'uppercase',
-      color: 'rgba(255, 255, 255, 0.75)',
     },
     h5: {
       fontFamily: 'monospace',
       textTransform: 'uppercase',
-      color: 'rgba(255, 255, 255, 0.75)',
     },
     h6: {
       fontFamily: 'monospace',
       textTransform: 'uppercase',
-      color: 'rgba(255, 255, 255, 0.75)',
+      fontSize: '1rem'
     },
   },
   overrides: {

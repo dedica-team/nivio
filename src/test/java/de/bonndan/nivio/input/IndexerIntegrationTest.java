@@ -133,7 +133,7 @@ public class IndexerIntegrationTest {
                 .filter(relationItem -> relationItem.getTarget().equals(blog))
                 .map(Relation::getSource)
                 .collect(Collectors.toUnmodifiableSet()));
-        ItemIndex<Item> itemIndex = new ItemIndex<>(null, Item.class);
+        ItemIndex<Item> itemIndex = new ItemIndex<>(Item.class);
         itemIndex.setItems(new HashSet<>(landscapeItems));
         Item webserver = itemIndex.pick("wordpress-web", null);
         Assertions.assertNotNull(webserver);
@@ -285,7 +285,7 @@ public class IndexerIntegrationTest {
     public void readGroupsContains() {
         Landscape landscape1 = index("/src/test/resources/example/example_groups.yml");
         Group a = landscape1.getGroups().get("groupA");
-        ItemIndex<Item> index = new ItemIndex<>(null, Item.class);
+        ItemIndex<Item> index = new ItemIndex<>(Item.class);
         index.setItems(new HashSet<>(a.getItems()));
 
         assertNotNull(index.pick("blog-server", null));
@@ -312,42 +312,6 @@ public class IndexerIntegrationTest {
         Item foo = landscape.getItems().all().iterator().next();
         assertEquals("foo", foo.getIdentifier());
         assertEquals(1, foo.getRelations().size());
-    }
-
-    @Test
-    public void triggersSearchIndexing() {
-
-        //when
-        Landscape landscape = index("/src/test/resources/example/example_env.yml");
-
-        //then
-        Set<Item> result = landscape.getItems().search("contact:alphateam@acme.io");
-        assertEquals(2, result.size());
-
-        result = landscape.getItems().search("contact:alphateam@acme.io AND name:\"Demo Blog\"");
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    public void searchForTags() {
-
-        //when
-        Landscape landscape = index("/src/test/resources/example/example_env.yml");
-
-        //then
-        Set<Item> result = landscape.getItems().search("tag:CMS");
-        assertEquals(1, result.size());
-        Item match = result.iterator().next();
-        assertEquals("nivio:example/content/blog-server", match.getFullyQualifiedIdentifier().toString());
-        assertTrue(List.of(match.getTags()).contains("cms"));
-        assertTrue(List.of(match.getTags()).contains("ui"));
-
-        result = landscape.getItems().search("tag:UI");
-        assertEquals(1, result.size());
-        match = result.iterator().next();
-        assertEquals("nivio:example/content/blog-server", match.getFullyQualifiedIdentifier().toString());
-        assertTrue(List.of(match.getTags()).contains("cms"));
-        assertTrue(List.of(match.getTags()).contains("ui"));
     }
 
     private String getRootPath() {

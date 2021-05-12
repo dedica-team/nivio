@@ -1,4 +1,4 @@
-import React, { useState, ReactElement, useEffect, useContext } from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -23,8 +23,8 @@ import {
 } from '@material-ui/core';
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
-import { IAssessmentProps, IItem, ILandscape } from '../../../../interfaces';
-import { getAssessmentSummary, getItem, getLabels } from "../../Utils/utils";
+import { IAssessmentProps, IItem } from '../../../../interfaces';
+import { getItem, getLabels } from '../../Utils/utils';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import { Details, ExpandMore, Info, MoreVertSharp, Wifi } from '@material-ui/icons';
@@ -33,6 +33,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import ItemAvatar from './ItemAvatar';
+import { LandscapeContext } from '../../../../Context/LandscapeContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -52,7 +53,6 @@ interface Props {
   small?: boolean;
   useItem?: IItem;
   fullyQualifiedItemIdentifier?: string;
-  landscape?: ILandscape;
 }
 
 /**
@@ -60,12 +60,12 @@ interface Props {
  *
  *
  */
-const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small, landscape }) => {
-  const [assessment, setAssessment] = useState<IAssessmentProps[] | undefined>(undefined);
+const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small }) => {
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const [compact, setCompact] = useState<boolean>(false);
   const [value, setValue] = React.useState(0);
   const locateFunctionContext = useContext(LocateFunctionContext);
+  const landscapeContext = useContext(LandscapeContext);
 
   const classes = componentStyles();
   const extraClasses = useStyles();
@@ -137,24 +137,8 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small, l
   };
 
   useEffect(() => {
-    const loadAssessment = (item: IItem) => {
-      const landscapeIdentifier = item ? item.fullyQualifiedIdentifier.split('/') : [];
-
-      if (landscapeIdentifier[0]) {
-        //TODO load direct to with fqi in path
-        get(`/assessment/${landscapeIdentifier[0]}`).then((response) => {
-          if (response) {
-            // @ts-ignore
-            setAssessment(response.results[item?.fullyQualifiedIdentifier]);
-          }
-        });
-      }
-    };
-
     const reset = (item: IItem) => {
       setItem(item);
-      setAssessment(undefined);
-      loadAssessment(item);
     };
 
     if (useItem) {
@@ -172,9 +156,9 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small, l
     if (small) {
       setCompact(true);
     }
-  }, [item, fullyQualifiedItemIdentifier, useItem, small, assessment]);
+  }, [item, fullyQualifiedItemIdentifier, useItem, small]);
 
-  if (item && landscape) {
+  if (item && landscapeContext.landscape) {
     for (let key of Object.keys(item.relations)) {
       let relation = item.relations[key];
       const isInbound = relation.direction === 'inbound';
@@ -183,7 +167,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small, l
         relation.type ? '(' + relation.type + ')' : ''
       }`;
       if (relation.format) secondary += ', format: ' + relation.format;
-      let other = getItem(landscape, isInbound ? relation.source : relation.target);
+      let other = getItem(landscapeContext.landscape, isInbound ? relation.source : relation.target);
       if (!other) continue;
       const listItem = (
         <ListItem key={relation.name}>
@@ -210,7 +194,6 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small, l
     }
   }
 
-
   const getItemAssessments = (assessmentItem: IAssessmentProps[]) => {
     if (item && assessmentItem) {
       return assessmentItem
@@ -220,7 +203,11 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small, l
             <TableRow key={assessment.field}>
               <TableCell>{assessment.field}</TableCell>
               <TableCell>
-                <StatusChip status={assessment.status} key={assessment.field} value={assessment.message} />
+                <StatusChip
+                  status={assessment.status}
+                  key={assessment.field}
+                  value={assessment.message}
+                />
               </TableCell>
             </TableRow>
           );
@@ -229,7 +216,11 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small, l
     return [];
   };
 
-  const assessmentStatus = assessment ? getItemAssessments(assessment) : [];
+  const assessments = item
+    ? landscapeContext.assessment?.results[item?.fullyQualifiedIdentifier]
+    : null;
+  const assessmentStatus = assessments ? getItemAssessments(assessments) : [];
+
   const interfaces: ReactElement | null = item ? getInterfaces(item) : null;
 
   const a11yProps = (index: any) => {
@@ -272,7 +263,9 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small, l
     </IconButton>
   ) : null;
 
-  const [summaryColor, , ] = getAssessmentSummary(assessment);
+  const assessmentSummary = item
+    ? landscapeContext.getAssessmentSummary(item.fullyQualifiedIdentifier)
+    : null;
   return (
     <Card className={classes.card}>
       <CardHeader
@@ -287,7 +280,10 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small, l
               size={'small'}
               title={'Click to locate'}
             >
-              <ItemAvatar item={item} statusColor={ summaryColor ? summaryColor : ''} />
+              <ItemAvatar
+                item={item}
+                statusColor={assessmentSummary ? assessmentSummary.status : ''}
+              />
             </IconButton>
           ) : (
             ''

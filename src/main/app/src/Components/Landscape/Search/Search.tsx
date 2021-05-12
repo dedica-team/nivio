@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 
-import { Box, Card, Input, InputAdornment, Theme } from '@material-ui/core';
+import { Box, Input, InputAdornment, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import { IItem, Routes } from '../../../interfaces';
 import { matchPath, RouteComponentProps, withRouter } from 'react-router-dom';
 import Item from '../Modals/Item/Item';
-import { Backspace, SearchOutlined } from '@material-ui/icons';
+import { Backspace, Close, SearchOutlined } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Chip from '@material-ui/core/Chip';
-import Avatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import CardContent from '@material-ui/core/CardContent';
 import componentStyles from '../../../Resources/styling/ComponentStyles';
 import HelpTooltip from '../../Help/HelpTooltip';
+import Facets from './Facets';
+import Typography from '@material-ui/core/Typography';
+import SearchHelp from './Help';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,21 +21,22 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 0,
       borderRadius: 50,
       height: '2.5em',
-      width: 266,
-      marginRight: 2,
-      paddingLeft: 10,
       border: '1px solid ',
-      borderColor: theme.palette.primary.dark,
+      backgroundColor: theme.palette.background.default,
+      borderColor: theme.palette.primary.main,
     },
     searchField: {
-      marginTop: 2,
-      width: 250,
+      marginTop: 0,
+      paddingLeft: 5,
+      paddingRight: 5,
+      width: '100%',
     },
   })
 );
 
 interface PropsInterface extends RouteComponentProps {
   setSidebarContent: Function;
+  showSearch: Function;
 }
 
 interface IFacet {
@@ -52,7 +52,7 @@ interface ILabelValue {
   value: number;
 }
 
-const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
+const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...props }) => {
   const match: { params?: { identifier?: string } } | null = matchPath(props.location.pathname, {
     path: Routes.MAP_ROUTE,
     exact: false,
@@ -96,58 +96,17 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
    * Initial loading of facets
    */
   useEffect(() => {
-    const facetsHtml = facets.map((facet: IFacet) => (
-      <Box key={facet.dim}>
-        <Typography variant={'h6'}>{facet.dim}</Typography>
-        {facet.labelValues.map((lv) => (
-          <Chip
-            onClick={(e) => {
-              let current = searchInput.current;
-              if (!current) return;
-              if (searchTerm.indexOf(facet.dim + ':' + lv.label) === -1) {
-                setSearchTerm(searchTerm + ' ' + facet.dim + ':' + lv.label);
-                setRender(true);
-              }
-              current.focus();
-            }}
-            variant={'outlined'}
-            size={'small'}
-            key={facet.dim + '' + lv.label}
-            label={lv.label}
-            avatar={<Avatar>{lv.value}</Avatar>}
-          />
-        ))}
-      </Box>
-    ));
+    const addFacet = (dim: string, label: string) => {
+      let current = searchInput.current;
+      if (!current) return;
+      if (searchTerm.indexOf(dim + ':' + label) === -1) {
+        setSearchTerm(searchTerm + ' ' + dim + ':' + label);
+        setRender(true);
+      }
+      current.focus();
+    };
 
-    const help = (
-      <div>
-        <h3>Search</h3>
-        Start typing to match items having name parts or description starting with the given term.
-        Find everything starting with 'foo':
-        <br />
-        <pre>foo</pre>
-        <br />
-        Use whitespaces as AND condition (default). Search in name and description for both words:
-        <br />
-        <pre>MyService outdated</pre>
-        <pre>MyService OR outdated</pre>
-        <br />
-        You can use the Lucene query syntax.
-        <br />
-        <pre>*foo</pre>
-        <br />
-        Apply facets (tags etc.) using a colon:
-        <pre>'tag:cms'</pre>
-      </div>
-    );
-
-    setSearchSupport(
-      <Card className={componentClasses.card}>
-        <HelpTooltip style={{ float: 'right', padding: 2, color: '#222'}} content={help} />
-        <CardContent>{facetsHtml}</CardContent>
-      </Card>
-    );
+    setSearchSupport(<Facets facets={facets} addFacet={addFacet} />);
   }, [setSearchSupport, searchTerm, facets, componentClasses.card]);
 
   /**
@@ -157,14 +116,8 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
     const searchResult = results.map((value1: IItem) => (
       <Item small={true} key={value1.fullyQualifiedIdentifier} useItem={value1} />
     ));
-    if (render)
-      setSidebarContent(
-        <>
-          {searchSupport}
-          {searchResult}
-        </>
-      );
-  }, [results, setSidebarContent, searchSupport, render]);
+    setSidebarContent(<>{searchResult}</>);
+  }, [results, setSidebarContent, render]);
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
@@ -201,33 +154,46 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, ...props }) => {
   }
 
   return (
-    <Box className={classes.search}>
-      <Input
-        disableUnderline={true}
-        className={classes.searchField}
-        type={'text'}
-        value={searchTerm}
-        ref={searchInput}
-        placeholder={'Search'}
-        onChange={(event) => setSearchTerm(event.target.value)}
-        onFocus={(event) => {
-          setRender(true);
-        }}
-        onBlur={(event) => {
-          setRender(false);
-        }}
-        startAdornment={<SearchOutlined />}
-        endAdornment={
-          searchTerm.length ? (
-            <InputAdornment position='end'>
-              <IconButton size={'small'} onClick={() => clear()}>
-                <Backspace />
-              </IconButton>
-            </InputAdornment>
-          ) : null
-        }
-      />
-    </Box>
+    <div>
+      <div style={{ float: 'right', padding: 2 }}>
+        <IconButton size={'small'}>
+          <HelpTooltip
+            style={{ float: 'right', padding: 2, color: '#222' }}
+            content={<SearchHelp />}
+          />
+        </IconButton>
+        <IconButton size={'small'} onClick={() => showSearch(false)} title={'Close search'}>
+          <Close />
+        </IconButton>
+      </div>
+      <Typography variant={'h5'}>Search</Typography>
+      <Box className={classes.search}>
+        <Input
+          disableUnderline={true}
+          className={classes.searchField}
+          type={'text'}
+          value={searchTerm}
+          ref={searchInput}
+          placeholder={'...'}
+          onChange={(event) => setSearchTerm(event.target.value)}
+          startAdornment={
+            <IconButton size={'small'} onClick={() => setRender(!render)} title={'Show results'}>
+              <SearchOutlined />
+            </IconButton>
+          }
+          endAdornment={
+            searchTerm.length ? (
+              <InputAdornment position='end'>
+                <IconButton size={'small'} onClick={() => clear()} title={'Clear'}>
+                  <Backspace />
+                </IconButton>
+              </InputAdornment>
+            ) : null
+          }
+        />
+        {searchSupport}
+      </Box>
+    </div>
   );
 };
 

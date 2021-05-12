@@ -16,6 +16,7 @@ public class SvgTagCreator {
     public static ContainerTag g(DomContent... dc) {
         return (new ContainerTag("g")).with(dc);
     }
+
     public static ContainerTag g() {
         return (new ContainerTag("g"));
     }
@@ -42,6 +43,10 @@ public class SvgTagCreator {
 
     public static ContainerTag defs() {
         return new ContainerTag("defs");
+    }
+
+    public static ContainerTag marker() {
+        return new ContainerTag("marker");
     }
 
     public static ContainerTag use(String path) {
