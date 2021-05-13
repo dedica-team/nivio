@@ -42,11 +42,26 @@ items:
         source: vet-be
         target: billing
 
+  - identifier: inventory
+    description: Inventory of medicals and supplies
+    type: server
+    team: Beta
+    scale: 1
+    hostType: docker
+    group: vet
+    lifecycle: test
+    providedBy:
+      - vet-db
+    tags:
+      - java
+      - auth
+
+
   - identifier: vet-db
     description: Backend for business processes
     software: MariaDB
     version: 10.3.11
-    type: server
+    type: database
     team: Beta
     scale: 1
     hostType: docker

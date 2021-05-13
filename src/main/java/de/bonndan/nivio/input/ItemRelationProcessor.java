@@ -36,7 +36,7 @@ public class ItemRelationProcessor extends Processor {
                 Relation current = getCurrentRelation(relationDescription, landscape, origin)
                         .map(relation -> {
                             Relation update = RelationBuilder.update(relation, relationDescription, landscape);
-                            processLog.info(String.format("Updating relation between %s and %s", update.getSource(), update.getTarget()));
+                            processLog.info(String.format(origin + ": Updating relation between %s and %s", update.getSource(), update.getTarget()));
                             List<String> changes = relation.getChanges(update);
                             if (!changes.isEmpty()) {
                                 changelog.addEntry(update, ProcessingChangelog.ChangeType.UPDATED, String.join(";", changes));

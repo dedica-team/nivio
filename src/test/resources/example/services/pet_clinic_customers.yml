@@ -108,6 +108,21 @@ items:
       - ui
       - auth
 
+  - identifier: checkout
+    description: Checkout for locally sold items
+    team: A-Team
+    type: app
+    group: customers
+    relations:
+      - type: dataflow
+        target: billing
+    providedBy:
+      - customer-db
+    tags:
+      - ui
+      - auth
+
+
   - identifier: customer-db
     software: MariaDB
     version: 10.3.11
