@@ -6,10 +6,13 @@ import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
 import j2html.tags.ContainerTag;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static j2html.TagCreator.*;
 
@@ -19,19 +22,20 @@ public class OwnersReportGenerator extends HtmlGenerator {
         super(localServer, iconService);
     }
 
-    public String toDocument(Landscape landscape) {
-
-        return writeLandscape(landscape);
+    @Override
+    public String toDocument(@NonNull final Landscape landscape, @Nullable final SearchConfig searchConfig) {
+        return writeLandscape(landscape, searchConfig != null ? searchConfig.getSearchTerm() : null);
     }
 
-    private String writeLandscape(Landscape landscape) {
+    private String writeLandscape(Landscape landscape, String searchTerm) {
 
+        List<Item> search = searchTerm != null ? new ArrayList<>(landscape.search(searchTerm)) : new ArrayList<>(landscape.getItems().all());
         return html(
                 getHead(landscape),
                 body(
                         h1("Owner Report: " + landscape.getName()),
                         br(),
-                        rawHtml(writeOwnerGroups(GroupedBy.by(Component::getOwner, new ArrayList<>(landscape.getItems().all()))))
+                        rawHtml(writeOwnerGroups(GroupedBy.by(Component::getOwner, search)))
                 )
         ).renderFormatted();
     }

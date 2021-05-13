@@ -13,6 +13,8 @@ import HelpTooltip from '../../Help/HelpTooltip';
 import Facets from './Facets';
 import Typography from '@material-ui/core/Typography';
 import SearchHelp from './Help';
+import { withBasePath } from '../../../utils/API/BasePath';
+import { SaveSearchConfig } from './SaveSearchConfig';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -96,18 +98,31 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
    * Initial loading of facets
    */
   useEffect(() => {
-    const addFacet = (dim: string, label: string) => {
+    const addFacet = (dim: string, label: string): string => {
       let current = searchInput.current;
-      if (!current) return;
-      if (searchTerm.indexOf(dim + ':' + label) === -1) {
-        setSearchTerm(searchTerm + ' ' + dim + ':' + label);
-        setRender(true);
+      if (current && dim.length && label.length) {
+        if (searchTerm.indexOf(dim + ':' + label) === -1) {
+          setSearchTerm(searchTerm + ' ' + dim + ':' + label);
+          setRender(true);
+        }
+        current.focus();
       }
-      current.focus();
+
+      return searchTerm;
     };
 
-    setSearchSupport(<Facets facets={facets} addFacet={addFacet} />);
-  }, [setSearchSupport, searchTerm, facets, componentClasses.card]);
+    const saveSearch = (config: SaveSearchConfig): void => {
+      const urlSearchParams = new URLSearchParams();
+      urlSearchParams.set('searchTerm', searchTerm);
+      if (!currentLandscape) return;
+      const reportUrl = withBasePath(
+        '/docs/' + currentLandscape + '/owners.html?' + urlSearchParams.toString()
+      );
+      window.open(reportUrl, '_blank');
+    };
+
+    setSearchSupport(<Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />);
+  }, [setSearchSupport, searchTerm, facets, componentClasses.card, currentLandscape]);
 
   /**
    * Update rendered search results

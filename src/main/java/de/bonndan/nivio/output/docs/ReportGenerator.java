@@ -9,6 +9,8 @@ import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.map.MapController;
 import j2html.tags.ContainerTag;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -36,7 +38,8 @@ public class ReportGenerator extends HtmlGenerator {
         super(localServer, iconService);
     }
 
-    public String toDocument(Landscape landscape) {
+    @Override
+    public String toDocument(@NonNull final Landscape landscape, @Nullable final SearchConfig searchConfig) {
         return writeLandscape(landscape);
     }
 
