@@ -115,9 +115,13 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
     };
 
     const saveSearch = (config: SaveSearchConfig): void => {
+      if (!currentLandscape) return;
+
       const urlSearchParams = new URLSearchParams();
       urlSearchParams.set('searchTerm', searchTerm);
-      if (!currentLandscape) return;
+      if (config.title) {
+        urlSearchParams.set('title', config.title);
+      }
       const reportUrl = withBasePath(
         '/docs/' + currentLandscape + '/owners.html?' + urlSearchParams.toString()
       );

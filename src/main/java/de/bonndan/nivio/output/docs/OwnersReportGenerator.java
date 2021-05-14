@@ -10,7 +10,10 @@ import de.bonndan.nivio.output.icons.IconService;
 import j2html.tags.ContainerTag;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,15 +29,22 @@ public class OwnersReportGenerator extends HtmlGenerator {
     @Override
     public String toDocument(@NonNull final Landscape landscape, @NonNull final Assessment assessment, @Nullable final SearchConfig searchConfig) {
 
-        String searchTerm = searchConfig != null ? searchConfig.getSearchTerm() : null;
+        final String searchTerm = searchConfig != null ? searchConfig.getSearchTerm() : null;
+        String title = "Report";
+        if (searchConfig != null && !StringUtils.isEmpty(searchConfig.getTitle())) {
+            title = searchConfig.getTitle();
+        }
 
-        List<Item> search = new ArrayList<>(searchTerm != null ? landscape.search(searchTerm) : landscape.getItems().all());
+        List<Item> items = new ArrayList<>(searchTerm != null ? landscape.search(searchTerm) : landscape.getItems().all());
         return html(
                 getHead(landscape),
                 body(
-                        h1("Owner Report: " + landscape.getName()),
+                        h1(title),
+                        h6("Landscape: " + landscape.getName()),
+                        h6("Date: " + ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)),
+                        iff(searchTerm != null, h6("Search term: " + searchTerm)),
                         br(),
-                        rawHtml(writeOwnerGroups(GroupedBy.by(Component::getOwner, search), assessment))
+                        rawHtml(writeOwnerGroups(GroupedBy.by(Component::getOwner, items), assessment))
                 )
         ).renderFormatted();
     }
@@ -43,11 +53,10 @@ public class OwnersReportGenerator extends HtmlGenerator {
         final StringBuilder builder = new StringBuilder();
         ownerGroups.getAll().forEach((owner, items) -> {
             builder.append(
-                    h2("Owner: " + owner).attr("class", "rounded").render()
+                    h2("Owner: " + owner).render()
             );
-            items.forEach(item -> {
-                builder.append(writeItem(item, assessment).render());
-            });
+            List<ContainerTag> collect = items.stream().map(item -> div(writeItem(item, assessment)).withClass("col-sm")).collect(Collectors.toList());
+            builder.append(div().withClass("row").with(collect).render());
         });
 
         return builder.toString();

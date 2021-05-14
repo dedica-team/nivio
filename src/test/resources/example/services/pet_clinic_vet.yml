@@ -5,6 +5,7 @@ groups:
 
 items:
   - identifier: vet-fe
+    owner: David Gillespie
     description: GUI for scheduling and handling treatments
     software: React
     type: frontend
@@ -20,6 +21,7 @@ items:
       - react
 
   - identifier: vet-be
+    owner: David Gillespie
     description: Backend for business processes
     software: Spring Boot 2.2
     type: server
@@ -43,6 +45,7 @@ items:
         target: billing
 
   - identifier: inventory
+    owner: David Gillespie
     description: Inventory of medicals and supplies
     type: server
     team: Beta
@@ -58,6 +61,7 @@ items:
 
 
   - identifier: vet-db
+    owner: David Gillespie
     description: Backend for business processes
     software: MariaDB
     version: 10.3.11
@@ -69,6 +73,7 @@ items:
     lifecycle: production
 
   - identifier: archive-volume
+    owner: David Gillespie
     type: volume
     team: ops guy
     size: 1TB

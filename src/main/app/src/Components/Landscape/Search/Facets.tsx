@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Box, Tab, Table, TableBody, TableCell, TableRow, Tabs } from '@material-ui/core';
+import { AppBar, Box, Tab, Table, TableBody, TableCell, TableRow, Tabs, TextField } from "@material-ui/core";
 import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
 import { ListAlt, SaveAlt, Speed } from '@material-ui/icons';
@@ -123,7 +123,10 @@ const Facets: React.FC<FacetsInterface> = ({ facets, addFacet, saveSearch }) => 
     );
 
   const exportCurrent = () => {
-    saveSearch({reportType: 'owners'})
+    const elementById = document.getElementById('report-title');
+    // @ts-ignore
+    const title = elementById != null ? elementById.value :'';
+    saveSearch({reportType: 'owners', title: title})
   }
 
   return (
@@ -170,7 +173,9 @@ const Facets: React.FC<FacetsInterface> = ({ facets, addFacet, saveSearch }) => 
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        <Button title={'Export'} fullWidth={true} onClick={() => exportCurrent()}>Export as report</Button>
+        <TextField id="report-title" label="Report title" variant="standard" fullWidth={true} /><br />
+        <br/>
+        <Button title={'Export'} fullWidth={true} onClick={() => exportCurrent()} variant={"outlined"}>Export as report</Button>
       </TabPanel>
 
     </>

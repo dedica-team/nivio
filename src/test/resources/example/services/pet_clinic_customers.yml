@@ -28,7 +28,7 @@ items:
     icon: https://s.w.org/style/images/about/WordPress-logotype-wmark.png
     version: 1.0
     software: Wordpress
-    owner: Marketing
+    owner: Louis Armstrong
     description: Company blog
     team: A-Team
     links:
@@ -62,6 +62,7 @@ items:
       - images-volume
 
   - description: Database for Wordpress
+    owner: Louis Armstrong
     software: MariaDB
     version: 10.3.11
     identifier: wordpress-mariadb
@@ -76,6 +77,7 @@ items:
     layer: infrastructure
 
   - description: Cache for Wordpress
+    owner: Louis Armstrong
     software: Redis
     version: 1.0
     identifier: wordpress-redis
@@ -90,12 +92,14 @@ items:
     lifecycle: planned
 
   - identifier: images-volume
+    owner: Louis Armstrong
     type: volume
     team: ops guys
     group: customers
     description: backup volume
 
   - identifier: customer-service
+    owner: Louis Armstrong
     description: Customer service portal to schedule appointments
     team: A-Team
     group: customers
@@ -109,6 +113,7 @@ items:
       - auth
 
   - identifier: checkout
+    owner: Louis Armstrong
     description: Checkout for locally sold items
     team: A-Team
     type: app
@@ -124,6 +129,7 @@ items:
 
 
   - identifier: customer-db
+    owner: Louis Armstrong
     software: MariaDB
     version: 10.3.11
     type: database
