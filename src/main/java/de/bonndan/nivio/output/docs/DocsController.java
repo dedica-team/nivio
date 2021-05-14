@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.api.NotFoundException;
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.LocalServer;
@@ -44,7 +45,7 @@ public class DocsController {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
         return new ResponseEntity<>(
-                generator.toDocument(landscape, new SearchConfig(request.getParameterMap())),
+                generator.toDocument(landscape, new Assessment(landscape.applyKPIs(landscape.getKpis())), new SearchConfig(request.getParameterMap())),
                 headers,
                 HttpStatus.OK
         );
@@ -65,7 +66,7 @@ public class DocsController {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
         return new ResponseEntity<>(
-                generator.toDocument(landscape, new SearchConfig(request.getParameterMap())),
+                generator.toDocument(landscape, new Assessment(landscape.applyKPIs(landscape.getKpis())), new SearchConfig(request.getParameterMap())),
                 headers,
                 HttpStatus.OK
         );

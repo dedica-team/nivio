@@ -6,6 +6,7 @@ import { ILandscape, IItem, IGroup } from '../../../interfaces';
 const items: IItem[] = [
     {
         contact: 'marvin',
+        group: 'test',
         owner: 'daniel',
         fullyQualifiedIdentifier: 'fullTestIdentifier',
         identifier: 'testIdentifier',
