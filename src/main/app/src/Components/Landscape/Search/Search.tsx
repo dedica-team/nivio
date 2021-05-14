@@ -102,7 +102,10 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
       let current = searchInput.current;
       if (current && dim.length && label.length) {
         if (searchTerm.indexOf(dim + ':' + label) === -1) {
-          setSearchTerm(searchTerm + ' ' + dim + ':' + label);
+          if (label.indexOf(' ') !== -1) {
+            label = `"${label}"`; //to handle whitespace
+          }
+          setSearchTerm(`${searchTerm} ${dim}:${label}`);
           setRender(true);
         }
         current.focus();
