@@ -198,3 +198,24 @@ export interface INotificationMessage {
   date: Date;
   changelog: { changes: IChanges };
 }
+
+export interface IFacet {
+  /**
+   * label / title
+   */
+  dim: string;
+  //path: [];
+  /**
+   * total count
+   */
+  value: number;
+  /**
+   * different label counts
+   */
+  labelValues: ILabelValue[];
+}
+
+export interface ILabelValue {
+  label: string;
+  value: number;
+}

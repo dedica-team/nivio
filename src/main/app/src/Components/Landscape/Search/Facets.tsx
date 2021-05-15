@@ -1,67 +1,36 @@
 import React from 'react';
-import { AppBar, Box, Tab, Table, TableBody, TableCell, TableRow, Tabs, TextField } from "@material-ui/core";
+import {
+  AppBar,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  Tabs,
+  TextField,
+} from '@material-ui/core';
 import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
 import { ListAlt, SaveAlt, Speed } from '@material-ui/icons';
-import Button from "@material-ui/core/Button";
-import { SaveSearchConfig } from "./SaveSearchConfig";
+import Button from '@material-ui/core/Button';
+import { SaveSearchConfig } from './SaveSearchConfig';
+import { IFacet } from '../../../interfaces';
+import { a11yProps, TabPanel } from '../Utils/TabUtils';
 
-interface IFacet {
-  dim: string;
-  path: [];
-  value: number;
-  childCount: number;
-  labelValues: ILabelValue[];
-}
-
-interface FacetsInterface {
+interface FacetsProps {
   addFacet: (dim: string, label: string) => string;
   saveSearch: (config: SaveSearchConfig) => void;
   facets: IFacet[];
 }
 
-interface ILabelValue {
-  label: string;
-  value: number;
-}
-
-const Facets: React.FC<FacetsInterface> = ({ facets, addFacet, saveSearch }) => {
+const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
   const facetsHtml: JSX.Element[] = [];
   const kpiHtml: JSX.Element[] = [];
   const [value, setValue] = React.useState(0);
 
-  const a11yProps = (index: any) => {
-    return {
-      'id': `search-tab-${index}`,
-      'aria-controls': `search-tabpanel-${index}`,
-    };
-  };
-
   const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
   };
-
-  interface TabPanelProps {
-    children?: React.ReactNode;
-    index: any;
-    value: any;
-  }
-
-  function TabPanel(props: TabPanelProps) {
-    const { children, value, index, ...other } = props;
-
-    return (
-      <div
-        role='tabpanel'
-        hidden={value !== index}
-        id={`search-tabpanel-${index}`}
-        aria-labelledby={`search-tab-${index}`}
-        {...other}
-      >
-        {value === index && <Box>{children}</Box>}
-      </div>
-    );
-  }
 
   //regular facets
   facets
@@ -140,39 +109,39 @@ const Facets: React.FC<FacetsInterface> = ({ facets, addFacet, saveSearch }) => 
             label={'fields'}
             style={{ minWidth: 50 }}
             title={'Fields'}
-            {...a11yProps(0)}
+            {...a11yProps(0, 'search')}
           />
           <Tab
             icon={<Speed />}
             label={'kpis'}
             style={{ minWidth: 50 }}
             title={'KPIs'}
-            {...a11yProps(1)}
+            {...a11yProps(1, 'search')}
           />
           <Tab
             icon={<SaveAlt />}
             label={'Save'}
             title={'Save'}
             style={{ minWidth: 50 }}
-            {...a11yProps(2)}
+            {...a11yProps(2, 'search')}
           />
         </Tabs>
       </AppBar>
       <br />
 
-      <TabPanel value={value} index={0}>
+      <TabPanel value={value} index={0} prefix={'search'}>
         <Table aria-label={'regular facets'} style={{ tableLayout: 'fixed' }}>
           <TableBody>{facetsHtml}</TableBody>
         </Table>
       </TabPanel>
 
-      <TabPanel value={value} index={1}>
+      <TabPanel value={value} index={1} prefix={'search'}>
         <Table aria-label={'kpi facets'} style={{ tableLayout: 'fixed' }}>
           <TableBody>{kpiHtml}</TableBody>
         </Table>
       </TabPanel>
 
-      <TabPanel value={value} index={2}>
+      <TabPanel value={value} index={2} prefix={'search'}>
         <TextField id="report-title" label="Report title" variant="standard" fullWidth={true} /><br />
         <br/>
         <Button title={'Export'} fullWidth={true} onClick={() => exportCurrent()} variant={"outlined"}>Export as report</Button>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { Box, Input, InputAdornment, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
-import { IItem, Routes } from '../../../interfaces';
+import { IFacet, IItem, Routes } from "../../../interfaces";
 import { matchPath, RouteComponentProps, withRouter } from 'react-router-dom';
 import Item from '../Modals/Item/Item';
 import { Backspace, Close, SearchOutlined } from '@material-ui/icons';
@@ -39,19 +39,6 @@ const useStyles = makeStyles((theme: Theme) =>
 interface PropsInterface extends RouteComponentProps {
   setSidebarContent: Function;
   showSearch: Function;
-}
-
-interface IFacet {
-  dim: string;
-  path: [];
-  value: number;
-  childCount: number;
-  labelValues: ILabelValue[];
-}
-
-interface ILabelValue {
-  label: string;
-  value: number;
 }
 
 const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...props }) => {
