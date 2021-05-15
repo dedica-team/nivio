@@ -193,7 +193,8 @@ public abstract class HtmlGenerator {
                     if (key.equals(StringUtils.capitalize(Label.shortname.name()))) {
                         key = Label.shortname.meaning;
                     }
-                    return li(String.format("%s: %s", key, nice(mapEntry.getValue())));
+
+                    return li(String.format("%s: %s", key, nice(mapEntry.getValue().replace(Labeled.PREFIX_VALUE_DELIMITER, " "))));
                 })
                 .collect(Collectors.toList());
     }
