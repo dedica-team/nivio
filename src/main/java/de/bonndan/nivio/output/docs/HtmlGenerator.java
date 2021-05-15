@@ -116,10 +116,12 @@ public abstract class HtmlGenerator {
                                                         statusItem.getField().endsWith("." + item.getIdentifier())
                                                                 ? statusItem.getField().replace("." + item.getIdentifier(), "")
                                                                 : statusItem.getField()
-                                                )),
-                                                span(" " + statusItem.getStatus() + " ")
-                                                        .attr("class", "badge")
-                                                        .attr("style", "background-color: " + statusItem.getStatus() + " !important"),
+                                                        ) + " "
+                                                ).with(
+                                                        span(" " + statusItem.getStatus() + " ")
+                                                                .attr("class", "badge")
+                                                                .attr("style", "background-color: " + statusItem.getStatus() + " !important")
+                                                ),
                                                 iff(
                                                         !isEmpty(statusItem.getMessage()) && !"summary".equals(statusItem.getMessage()),
                                                         dd(span(" " + FormatUtils.nice(statusItem.getMessage())))
@@ -170,10 +172,10 @@ public abstract class HtmlGenerator {
             if (isEmpty(s.getValue())) {
                 return false;
             }
-            if (Label.type.name().equals(s.getKey()) ) {
+            if (Label.type.name().equals(s.getKey())) {
                 return false;
             }
-            if (Label.icon.name().equals(s.getKey()) ) {
+            if (Label.icon.name().equals(s.getKey())) {
                 return false;
             }
             if (Label.color.name().equals(s.getKey())) {
