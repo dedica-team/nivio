@@ -144,7 +144,7 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
       <TabPanel value={value} index={2} prefix={'search'}>
         <TextField id="report-title" label="Report title" variant="standard" fullWidth={true} /><br />
         <br/>
-        <Button title={'Export'} fullWidth={true} onClick={() => exportCurrent()} variant={"outlined"}>Export as report</Button>
+        <Button title={'Export as report'} fullWidth={true} onClick={() => exportCurrent()} variant={"outlined"}>Export as report</Button>
       </TabPanel>
 
     </>

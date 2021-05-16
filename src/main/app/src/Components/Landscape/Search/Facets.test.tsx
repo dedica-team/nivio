@@ -67,4 +67,25 @@ describe('<Facets />', () => {
     fireEvent.click(getByTitle(container, 'Save'));
     expect(getByText('Export as report')).toBeInTheDocument();
   });
+
+  it('should export as report', () => {
+    const { container, getByText } = render(
+      <Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />
+    );
+
+    fireEvent.click(getByTitle(container, 'Save'));
+    expect(getByText('Export as report')).toBeInTheDocument();
+
+    fireEvent.click(getByTitle(container, 'Export as report'));
+    expect(saveSearch.mock.calls.length).toBe(1);
+  });
+
+  it('should add facet', () => {
+    const { getByText } = render(
+      <Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />
+    );
+
+    fireEvent.click(getByText('foo'));
+    expect(addFacet.mock.calls.length).toBe(1);
+  });
 });
