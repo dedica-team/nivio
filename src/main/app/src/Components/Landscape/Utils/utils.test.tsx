@@ -1,9 +1,7 @@
 import { IItem } from '../../../interfaces';
 import { render } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import OverviewLayout from '../Overview/OverviewLayout';
 import React from 'react';
-import { getLabels } from './utils';
+import { getLabels, getLabelsWithPrefix } from './utils';
 
 const item: IItem = {
   contact: 'marvin',
@@ -32,8 +30,21 @@ describe('getLabels', () => {
     expect(getByText('foo')).toBeInTheDocument();
   });
   it('should not render hidden labels', () => {
-    const { getByText, queryByText } = render(<>{getLabels(item)}</>);
+    const { queryByText } = render(<>{getLabels(item)}</>);
     expect(queryByText('java')).not.toBeInTheDocument();
+    expect(queryByText('icon')).not.toBeInTheDocument();
+    expect(queryByText('color')).not.toBeInTheDocument();
+  });
+});
+
+describe('getLabelsWithPrefix', () => {
+  it('should render prefixed labels', () => {
+    const { getByText } = render(<>{getLabelsWithPrefix('framework', item)}</>);
+    expect(getByText('java')).toBeInTheDocument();
+  });
+  it('should not render other labels', () => {
+    const { queryByText } = render(<>{getLabelsWithPrefix('framework', item)}</>);
+    expect(queryByText('foo')).not.toBeInTheDocument();
     expect(queryByText('icon')).not.toBeInTheDocument();
     expect(queryByText('color')).not.toBeInTheDocument();
   });

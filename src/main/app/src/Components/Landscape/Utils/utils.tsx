@@ -113,25 +113,23 @@ export const getLabels = (element: IGroup | IItem) => {
  * @param element the component having labels
  */
 export const getLabelsWithPrefix = (prefix: string, element: IGroup | IItem) => {
-  let labels: ReactElement[] = [];
-  if (!element?.labels) {
+  if (!element || !element?.labels) {
     return null;
   }
-  Object.keys(element.labels).forEach((key) => {
-    if (element && element.labels && element.labels[key]) {
-      if (!key.startsWith(prefix)) return;
+  let labels: ReactElement[] = [];
+  const strings = Object.keys(element.labels);
+  strings
+    .filter((key) => key.startsWith(prefix))
+    .forEach((key) => {
+      const value = element.labels?.[key] || null;
+      if (!value) return;
       const primary = key.replace(prefix + '.', '');
       labels.push(
         <ListItem key={key}>
-          <ListItemText
-            primary={primary}
-            secondary={element.labels[key].substr(0, 150)}
-            title={element.labels[key]}
-          />
+          <ListItemText primary={primary} secondary={value.substr(0, 150)} title={value} />
         </ListItem>
       );
-    }
-  });
+    });
   if (labels.length === 0) {
     return null;
   }
