@@ -143,7 +143,7 @@ public class SearchDocumentFactory {
 
         //framework facets (only key, not version)
         item.getLabels(Label.framework)
-                .forEach((key, value) -> addFacetField.accept(LUCENE_FIELD_FRAMEWORK, key.toLowerCase(Locale.ROOT)));
+                .forEach((key, value) -> addFacetField.accept(LUCENE_FIELD_FRAMEWORK, Label.framework.unprefixed(key)));
 
         addFacetField.accept(LUCENE_FIELD_LIFECYCLE, item.getLabel(Label.lifecycle));
         addFacetField.accept(LUCENE_FIELD_CAPABILITY, item.getLabel(Label.capability));

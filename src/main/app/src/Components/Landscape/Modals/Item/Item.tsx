@@ -23,7 +23,7 @@ import {
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../../interfaces';
-import { getItem, getLabels, getLabelsWithPrefix } from "../../Utils/utils";
+import { getItem, getLabels, getLabelsWithPrefix } from '../../Utils/utils';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import { Details, ExpandMore, Info, MoreVertSharp, Wifi } from '@material-ui/icons';
@@ -133,8 +133,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
       );
     });
 
-    if (ifaceElements.length == 0)
-      return null;
+    if (ifaceElements.length === 0) return null;
     return <List dense={true}>{ifaceElements}</List>;
   };
 
