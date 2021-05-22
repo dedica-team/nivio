@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static de.bonndan.nivio.model.Relation.DELIMITER;
 import static de.bonndan.nivio.output.FormatUtils.ifPresent;
 import static de.bonndan.nivio.output.FormatUtils.nice;
 import static j2html.TagCreator.*;
@@ -80,6 +81,10 @@ public abstract class HtmlGenerator {
 
         List<ContainerTag> labelList = getLabelList(item);
 
+        List<String> frameworks = Labeled.withPrefix(Label.framework.name(), item.getLabels()).entrySet().stream()
+                .map(mapEntry -> String.format("%s: %s", StringUtils.capitalize(Label.framework.unprefixed(mapEntry.getKey())), mapEntry.getValue()))
+                .collect(Collectors.toList());
+
         List<StatusValue> statusValues = assessment.getResults().get(item.getFullyQualifiedIdentifier());
 
         return div(
@@ -103,11 +108,11 @@ public abstract class HtmlGenerator {
                                 , iff(!isEmpty(item.getOwner()), li("Owner: " + FormatUtils.nice(item.getOwner())))
                                 , iff(!isEmpty(item.getType()), li("Type: " + item.getType()))
                                 , iff(links.size() > 1, li("Links: ").with(links))
+                                , iff(frameworks.size() > 0, li("Frameworks: " + String.join(String.format("%s ", DELIMITER), frameworks)))
                         ).with(labelList),
 
 
                         //statuses
-
                         iff(!statusValues.isEmpty(), h4("Status information")),
                         dl().with(
                                 statusValues.stream().map(statusItem ->
@@ -173,6 +178,9 @@ public abstract class HtmlGenerator {
                 return false;
             }
             if (Label.type.name().equals(s.getKey())) {
+                return false;
+            }
+            if (Label.framework.name().equals(s.getKey())) {
                 return false;
             }
             if (Label.icon.name().equals(s.getKey())) {
