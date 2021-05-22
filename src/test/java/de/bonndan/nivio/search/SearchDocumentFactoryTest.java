@@ -13,7 +13,9 @@ import org.junit.jupiter.api.Test;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static de.bonndan.nivio.search.SearchDocumentFactory.*;
@@ -40,6 +42,8 @@ class SearchDocumentFactoryTest {
         item.setLabel(Label.type, "app");
         item.setLink("wiki", new URL("http://foo.bar.baz"));
         item.setTags(new String[]{"one", "two"});
+        item.setLabel(Label.framework.withPrefix("java"), "8");
+        item.setLabel(Label.framework.withPrefix("Spring Boot"), "2.0.1");
     }
 
     @Test
@@ -68,10 +72,15 @@ class SearchDocumentFactoryTest {
         assertTrue(tags.contains("one"));
         assertTrue(tags.contains("two"));
 
-        String[] network = document.getValues("network");
+        String[] network = document.getValues(LUCENE_FIELD_NETWORK);
         List<String> networks = List.of(network);
         assertTrue(networks.contains("foonet"));
         assertTrue(networks.contains("barnet"));
+
+        List<String> frameworks = document.getFields().stream().map(indexableField -> indexableField.name()).collect(Collectors.toList());
+        assertThat(frameworks).contains("java");
+        String javaVersion = Arrays.stream(document.getValues("java")).findFirst().orElseThrow();
+        assertThat(javaVersion).isEqualTo("8");
     }
 
     @Test

@@ -116,4 +116,8 @@ public enum Label {
                 .forEach(label -> labelExport.put(label.name(), label.meaning));
         return labelExport;
     }
+
+    public String unprefixed(String key) {
+        return key.replace(name() + DELIMITER, "");
+    }
 }
