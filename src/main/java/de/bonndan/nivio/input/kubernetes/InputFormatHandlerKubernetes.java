@@ -212,7 +212,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
 
             //storing configmap volumes in labels
             if (volume.getConfigMap() != null) {
-                podItem.setLabel(Label.key("configMap", volume.getConfigMap().getName()), volume.getConfigMap().getName());
+                podItem.setLabel(Label.withPrefix("configMap", volume.getConfigMap().getName()), volume.getConfigMap().getName());
                 return;
             }
 
@@ -246,8 +246,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
     private void setConditionsAndHealth(PodStatus status, ItemDescription podItem) {
         if (status != null && status.getConditions() != null) {
             status.getConditions().forEach(podCondition -> {
-                String key = Label.key(Label.condition, podCondition.getType());
-                podItem.setLabel(key, podCondition.getStatus());
+                podItem.setLabel(Label.condition.withPrefix(podCondition.getType()), podCondition.getStatus());
             });
         }
     }

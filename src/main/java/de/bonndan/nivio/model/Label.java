@@ -1,14 +1,16 @@
 package de.bonndan.nivio.model;
 
+import org.springframework.lang.NonNull;
+
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Landscape component labels (to be used like fields).
  *
  * All names are used in lowercase variant.
- *
  */
 public enum Label {
 
@@ -20,6 +22,9 @@ public enum Label {
     costs("Running costs of the item."),
 
     fill("Background image (for displaying purposes)."),
+
+    framework("A map of used frameworks (key is name, value is version).", true),
+
     icon("Icon/image (for displaying purposes)."),
 
     health("Description of the item's health status."),
@@ -48,7 +53,7 @@ public enum Label {
 
     visibility("Visibility to other items."),
 
-    network("Prefix for network labels.",true),
+    network("Prefix for network labels.", true),
 
     status("Prefix for status labels. Can be used as prefix for all other labels to mark a status for the label.", true),
 
@@ -75,25 +80,27 @@ public enum Label {
 
     /**
      * Builds a properly delimited label key.
+     *
+     * @param subKey sub-key after the label name prefix
+     * @return label key
      */
-    public static String key(Label prefix, String key) {
-        return prefix + DELIMITER + key.toLowerCase();
+    public String withPrefix(@NonNull final String subKey) {
+        return withPrefix(name(), subKey);
     }
 
-    public static String key(String prefix, String key) {
-        return prefix + DELIMITER + key.toLowerCase();
+    /**
+     * Builds a properly delimited label with custom prefix.
+     *
+     * @param prefix custom prefix
+     * @param subKey sub-key after the label name prefix
+     * @return label key
+     */
+    public static String withPrefix(@NonNull final String prefix, @NonNull final String subKey) {
+        return String.format("%s%s%s", prefix, DELIMITER, Objects.requireNonNull(subKey, "Label sub key is null").toLowerCase());
     }
 
-    public static String key(Label prefix, Label key, String suffix) {
-        return prefix + DELIMITER + key.toString().toLowerCase() + DELIMITER + suffix;
-    }
-
-    public static String key(Label prefix, String key, String suffix) {
+    public static String withPrefix(Label prefix, String key, String suffix) {
         return prefix + DELIMITER + key.toLowerCase() + DELIMITER + suffix;
-    }
-
-    public static String key(String prefix, Label key, String suffix) {
-        return prefix + DELIMITER + key.toString().toLowerCase() + DELIMITER + suffix;
     }
 
     /**

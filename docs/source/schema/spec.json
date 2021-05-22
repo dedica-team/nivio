@@ -206,6 +206,23 @@
             "writeOnly" : true,
             "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
           },
+          "status" : {
+            "type" : "array",
+            "writeOnly" : true,
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          },
+          "frameworks" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "writeOnly" : true
+          },
           "statuses" : {
             "type" : "array",
             "description" : "A list of statuses that works like hardcoded KPIs.",
@@ -217,16 +234,6 @@
                 "description" : "A list of statuses that works like hardcoded KPIs."
               },
               "description" : "A list of statuses that works like hardcoded KPIs."
-            }
-          },
-          "status" : {
-            "type" : "array",
-            "writeOnly" : true,
-            "items" : {
-              "type" : "object",
-              "additionalProperties" : {
-                "type" : "string"
-              }
             }
           },
           "tags" : {
@@ -388,11 +395,9 @@
             },
             "description" : "Additional labels for the landscape."
           },
-          "sourceReferences" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/SourceReference"
-            }
+          "partial" : {
+            "type" : "boolean",
+            "description" : "marks that the landscape is not complete, but an update"
           },
           "icon" : {
             "type" : "string"
@@ -408,9 +413,11 @@
               "$ref" : "#/components/schemas/ItemDescription"
             }
           },
-          "partial" : {
-            "type" : "boolean",
-            "description" : "marks that the landscape is not complete, but an update"
+          "sourceReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SourceReference"
+            }
           },
           "links" : {
             "type" : "object",

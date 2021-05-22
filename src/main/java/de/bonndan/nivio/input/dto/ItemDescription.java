@@ -10,6 +10,7 @@ import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
@@ -83,6 +84,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.group = fqi.getGroup();
     }
 
+    @NonNull
     public String getIdentifier() {
         return identifier;
     }
@@ -92,6 +94,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     }
 
     @Schema(hidden = true)
+    @NonNull
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(environment, group, identifier);
     }
@@ -297,8 +300,8 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
             if (key != null) {
                 String value = map.get(StatusValue.LABEL_SUFFIX_STATUS);
                 String message = map.get(StatusValue.LABEL_SUFFIX_MESSAGE);
-                setLabel(Label.key(Label.status, key, StatusValue.LABEL_SUFFIX_STATUS), value);
-                setLabel(Label.key(Label.status, key, StatusValue.LABEL_SUFFIX_MESSAGE), message);
+                setLabel(Label.withPrefix(Label.status, key, StatusValue.LABEL_SUFFIX_STATUS), value);
+                setLabel(Label.withPrefix(Label.status, key, StatusValue.LABEL_SUFFIX_MESSAGE), message);
             }
         });
     }
@@ -327,6 +330,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
 
         if (value instanceof List) {
             try {
+                //noinspection unchecked,rawtypes
                 ((List) value).forEach(s -> setPrefixed(key, (String) s));
                 return;
             } catch (ClassCastException e) {
@@ -339,5 +343,15 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         }
 
         labels.put(key, String.valueOf(value));
+    }
+
+    /**
+     * Setter fpr framework map.
+     *
+     * @see Label
+     * @param frameworks "name": "version"
+     */
+    public void setFrameworks(final Map<String, String> frameworks) {
+        frameworks.forEach((s, s2) -> setLabel(Label.framework.withPrefix(s), s2));
     }
 }

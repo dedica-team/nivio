@@ -29,8 +29,7 @@ public class ComposeService {
         ItemDescription description = new ItemDescription(identifier);
         if (networks != null) {
             networks.forEach(network -> description.setLabel(
-                    Label.key(Label.network, network.toString()),
-                    network.getName()
+                    Label.network.withPrefix(network.toString()), network.getName()
                     )
             );
         }

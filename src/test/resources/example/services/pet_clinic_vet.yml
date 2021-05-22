@@ -7,7 +7,8 @@ items:
   - identifier: vet-fe
     owner: David Gillespie
     description: GUI for scheduling and handling treatments
-    software: React
+    software: Angular
+    version: 6
     type: frontend
     team: Beta
     scale: 1
@@ -59,6 +60,28 @@ items:
       - java
       - auth
 
+  - identifier: drugs
+    owner: John Ford
+    description: Drug inventory to keep track of stock and expiration
+    software: DrugMaster 12
+    type: service
+    scale: 1
+    costs: 10000
+    hostType: docker
+    group: vet
+    lifecycle: production
+    providedBy:
+      - drug-db
+
+  - identifier: drug-db
+    owner: John Ford
+    description: Persistence for DrugMaster
+    software: SqlServer
+    version: 12
+    type: database
+    scale: 1
+    group: vet
+    lifecycle: production
 
   - identifier: vet-db
     owner: David Gillespie
@@ -79,3 +102,19 @@ items:
     size: 1TB
     group: vet
     description: Backup volume for treatment protocols
+
+  - identifier: schedule
+    owner: David Gillespie
+    description: Treatment schedule management
+    software: Schedule
+    version: 1.0.12
+    type: application
+    team: Beta
+    tags:
+    - monolith
+    scale: 1
+    group: vet
+    lifecycle: production
+    providedBy:
+      - vet-db
+      - schedule-db

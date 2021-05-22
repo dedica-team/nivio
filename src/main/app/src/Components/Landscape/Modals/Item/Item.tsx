@@ -23,7 +23,7 @@ import {
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../../interfaces';
-import { getItem, getLabels } from '../../Utils/utils';
+import { getItem, getLabels, getLabelsWithPrefix } from "../../Utils/utils";
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import { Details, ExpandMore, Info, MoreVertSharp, Wifi } from '@material-ui/icons';
@@ -133,6 +133,8 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
       );
     });
 
+    if (ifaceElements.length == 0)
+      return null;
     return <List dense={true}>{ifaceElements}</List>;
   };
 
@@ -223,6 +225,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
     ? landscapeContext.assessment?.results[item?.fullyQualifiedIdentifier]
     : null;
   const assessmentStatus = assessments ? getItemAssessments(assessments) : [];
+  const frameworks: ReactElement | null = item ? getLabelsWithPrefix('framework', item) : null;
   const interfaces: ReactElement | null = item ? getInterfaces(item) : null;
 
   const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
@@ -395,7 +398,14 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
             </TabPanel>
 
             <TabPanel value={value} index={2} prefix={'item'}>
-              {interfaces ? (
+              {frameworks ? (
+                <div className='frameworks'>
+                  <Typography variant={'h6'}>Frameworks</Typography>
+                  {frameworks}
+                </div>
+              ) : null}
+
+              {interfaces != null ? (
                 <div className='interfaces'>
                   <Typography variant={'h6'}>Interfaces</Typography>
                   {interfaces}

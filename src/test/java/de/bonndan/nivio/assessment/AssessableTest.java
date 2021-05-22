@@ -1,6 +1,5 @@
 package de.bonndan.nivio.assessment;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
@@ -73,8 +72,8 @@ class AssessableTest {
     @Test
     public void withItem() {
         Item item = getTestItem("foo", "bar");
-        item.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
-        item.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
+        item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
+        item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
 
         Map<String, KPI> kpis = new HashMap<>();
         kpis.put("on", new AbstractKPI(component -> null, null) {
@@ -106,12 +105,12 @@ class AssessableTest {
     @Test
     public void groupSummary() {
         Item item = getTestItem("foo", "bar");
-        item.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
-        item.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
+        item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
+        item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
 
         Item item2 = getTestItem("foo", "baz");
-        item2.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.RED.getName());
-        item2.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
+        item2.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.RED.getName());
+        item2.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
 
         Group foo = new Group("foo", "landscapeIdentifier");
         foo.addItem(item);
@@ -144,14 +143,14 @@ class AssessableTest {
     @Test
     public void isSorted() {
         Item item = getTestItem("foo", "bar");
-        item.setLabel(Label.key(Label.status, "foo", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
-        item.setLabel(Label.key(Label.status, "foo", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
+        item.setLabel(Label.withPrefix(Label.status, "foo", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
+        item.setLabel(Label.withPrefix(Label.status, "foo", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
 
-        item.setLabel(Label.key(Label.status, "bar", StatusValue.LABEL_SUFFIX_STATUS), Status.RED.getName());
-        item.setLabel(Label.key(Label.status, "bar", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
+        item.setLabel(Label.withPrefix(Label.status, "bar", StatusValue.LABEL_SUFFIX_STATUS), Status.RED.getName());
+        item.setLabel(Label.withPrefix(Label.status, "bar", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
 
-        item.setLabel(Label.key(Label.status, "baz", StatusValue.LABEL_SUFFIX_STATUS), Status.ORANGE.getName());
-        item.setLabel(Label.key(Label.status, "baz", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
+        item.setLabel(Label.withPrefix(Label.status, "baz", StatusValue.LABEL_SUFFIX_STATUS), Status.ORANGE.getName());
+        item.setLabel(Label.withPrefix(Label.status, "baz", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
 
         Map<String, KPI> kpis = new HashMap<>();
         kpis.put("on", new AbstractKPI(component -> null, null) {
