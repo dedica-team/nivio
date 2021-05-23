@@ -329,6 +329,12 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
                       <TableCell>{item?.contact}</TableCell>
                     </TableRow>
                   ) : null}
+                  {item?.address ? (
+                    <TableRow key={'address'}>
+                      <TableCell>Address</TableCell>
+                      <TableCell>{item?.address}</TableCell>
+                    </TableRow>
+                  ) : null}
                   {item?.tags && item?.tags.length ? (
                     <TableRow key={'tags'}>
                       <TableCell>Tags</TableCell>

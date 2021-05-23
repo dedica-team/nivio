@@ -94,6 +94,7 @@ export interface IItem {
   name: string;
   owner: string;
   description?: string;
+  address?: string;
   contact: string;
   relations: IRelations;
   interfaces?: Array<IInterfaces>;
