@@ -77,6 +77,10 @@ class SearchDocumentFactoryTest {
         assertTrue(networks.contains("foonet"));
         assertTrue(networks.contains("barnet"));
 
+        List<String> frameworksValue = Arrays.asList(document.getValues(LUCENE_FIELD_FRAMEWORK));
+        assertThat(frameworksValue).contains("java");
+        assertThat(frameworksValue).contains("spring boot");
+        //per-framework field
         List<String> frameworks = document.getFields().stream().map(indexableField -> indexableField.name()).collect(Collectors.toList());
         assertThat(frameworks).contains("java");
         String javaVersion = Arrays.stream(document.getValues("java")).findFirst().orElseThrow();

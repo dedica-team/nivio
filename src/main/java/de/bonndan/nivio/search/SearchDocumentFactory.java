@@ -104,7 +104,15 @@ public class SearchDocumentFactory {
         item.getLabels(Label.network).forEach((key, value) -> addTextField.accept(LUCENE_FIELD_NETWORK, value.toLowerCase(Locale.ROOT)));
 
         //frameworks
-        item.getLabels(Label.framework).forEach((key, value) -> addTextField.accept(Label.framework.unprefixed(key), value.toLowerCase(Locale.ROOT)));
+        List<String> frameworks = new ArrayList<>();
+        item.getLabels(Label.framework).forEach((key, value) -> {
+            String val = value.toLowerCase(Locale.ROOT);
+            String unprefixed = Label.framework.unprefixed(key);
+            frameworks.add(unprefixed);
+            addTextField.accept(unprefixed, val);
+        });
+        frameworks.forEach(s -> addTextField.accept(LUCENE_FIELD_FRAMEWORK, s));
+
 
         //kpis, fields are prefixed to prevent name collisions (kpis can have any names)
         statusValues.forEach(statusValue -> {
