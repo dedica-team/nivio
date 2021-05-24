@@ -42,9 +42,9 @@ public class LocalIcons {
      *
      * @param iconFolder optional dir containing a different icon set
      */
-    public LocalIcons(@NonNull String iconFolder) {
+    public LocalIcons(@NonNull final String iconFolder) {
         if (!StringUtils.isEmpty(Objects.requireNonNull(iconFolder))) {
-            this.iconFolder = iconFolder.endsWith(File.separator) ? iconFolder : iconFolder + File.separator;
+            this.iconFolder = iconFolder.endsWith("/") || iconFolder.endsWith("\\") ? iconFolder : iconFolder + File.separator;
         } else {
             this.iconFolder = DEFAULT_ICONS_FOLDER;
         }
