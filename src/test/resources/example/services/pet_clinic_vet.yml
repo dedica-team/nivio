@@ -10,7 +10,7 @@ items:
     frameworks:
       Angular: 6.1
       NodeJs: 8
-    type: frontend
+    type: application
     team: Beta
     scale: 1
     hostType: docker

@@ -125,7 +125,7 @@ items:
       Java: 8
       Angular: 6.1
     team: A-Team
-    type: app
+    type: application
     group: customers
     relations:
       - type: dataflow
