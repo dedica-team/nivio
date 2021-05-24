@@ -1,12 +1,12 @@
 package de.bonndan.nivio.model;
 
+import com.google.common.collect.MapDifference;
+import com.google.common.collect.Maps;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -169,6 +169,25 @@ public interface Labeled {
                 .filter(entry -> entry.getValue() != null)
                 .filter(entry -> target.getLabel(entry.getKey()) == null)
                 .forEach(entry -> target.setLabel(entry.getKey(), entry.getValue()));
+    }
+
+    /**
+     * Compares the labels against a previous version.
+     *
+     * @param before instance of labeled before the change
+     * @return key-based diff
+     */
+    default List<String> diff(@NonNull final Labeled before) {
+        List<String> diff = new ArrayList<>();
+        MapDifference<String, String> difference = Maps.difference(Objects.requireNonNull(before).getLabels(), getLabels());
+        difference.entriesOnlyOnLeft().keySet().forEach(s -> diff.add(String.format("Label '%s' has been removed", s)));
+        difference.entriesOnlyOnRight().keySet().forEach(s -> diff.add(String.format("Label '%s' has been added", s)));
+        difference.entriesDiffering().forEach((key, value) -> {
+            String msg = String.format("Label '%s' has changed from '%s' to '%s'", key, value.leftValue(), value.rightValue());
+            diff.add(msg);
+        });
+
+        return diff;
     }
 
     /**

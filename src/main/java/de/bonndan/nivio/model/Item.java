@@ -97,11 +97,13 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         this.setLabel(Label.icon, icon);
     }
 
+    @NonNull
     public String getIdentifier() {
         return identifier;
     }
 
     @Override
+    @NonNull
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(landscape == null ? "" : landscape.getIdentifier(), group, identifier);
     }
@@ -308,7 +310,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
      */
     public List<String> getChanges(final Item newer) {
         if (!newer.equals(this)) {
-            throw new IllegalArgumentException("Cannot compare component " + newer.toString() + " against " + this.toString());
+            throw new IllegalArgumentException(String.format("Cannot compare component %s against %s", newer, this));
         }
 
         List<String> changes = new ArrayList<>();
@@ -317,13 +319,12 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         changes.addAll(compareStrings(this.name, newer.name, "Name"));
         changes.addAll(compareStrings(this.owner, newer.owner, "Owner"));
         changes.addAll(compareOptionals(Optional.ofNullable(this.address), Optional.ofNullable(newer.address), "Address"));
-        changes.addAll(compareCollections(this.labels.keySet(), newer.labels.keySet(), "Labels"));
-        changes.addAll(compareCollections(this.labels.values(), newer.labels.values(), "Label value"));
         changes.addAll(compareCollections(this.links.keySet(), newer.links.keySet(), "Links"));
+        changes.addAll(newer.diff(this));
 
         List<String> collect = this.interfaces.stream().map(ServiceInterface::toString).collect(Collectors.toList());
         List<String> collect2 = newer.getInterfaces().stream().map(ServiceInterface::toString).collect(Collectors.toList());
-        changes.addAll(compareCollections(collect, collect2, "Links"));
+        changes.addAll(compareCollections(collect, collect2, "Interfaces"));
 
         return changes;
     }

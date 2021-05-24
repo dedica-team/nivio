@@ -245,7 +245,7 @@ public class Group implements Labeled, Linked, Assessable {
      */
     public List<String> getChanges(Group newer) {
         if (!newer.getIdentifier().equalsIgnoreCase(this.identifier)) {
-            throw new IllegalArgumentException("Cannot compare group " + newer.getIdentifier() + " against " + this.getIdentifier());
+            throw new IllegalArgumentException(String.format("Cannot compare group %s against %s", newer.getIdentifier(), this.getIdentifier()));
         }
 
         List<String> changes = new ArrayList<>();
@@ -253,8 +253,7 @@ public class Group implements Labeled, Linked, Assessable {
         changes.addAll(compareStrings(this.description, newer.description, "Description"));
         changes.addAll(compareStrings(this.owner, newer.owner, "Owner"));
         changes.addAll(compareStrings(this.color, newer.color, "Color"));
-        changes.addAll(compareCollections(this.labels.keySet(), newer.labels.keySet(), "Labels"));
-        changes.addAll(compareCollections(this.labels.values(), newer.labels.values(), "Label value"));
+        changes.addAll(newer.diff(this));
         changes.addAll(compareCollections(this.links.keySet(), newer.links.keySet(), "Links"));
 
         return changes;
