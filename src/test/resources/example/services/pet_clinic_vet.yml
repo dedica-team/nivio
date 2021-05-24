@@ -7,8 +7,9 @@ items:
   - identifier: vet-fe
     owner: David Gillespie
     description: GUI for scheduling and handling treatments
-    software: Angular
-    version: 6
+    frameworks:
+      Angular: 6.1
+      NodeJs: 8
     type: frontend
     team: Beta
     scale: 1
@@ -19,18 +20,22 @@ items:
       - vet-be
     tags:
       - UI
-      - react
+      - auth
 
   - identifier: vet-be
     owner: David Gillespie
     description: Backend for business processes
-    software: Spring Boot 2.2
+    software: VetService
+    version: 2.2.24
+    frameworks:
+      "Spring Boot": 2.3.3
+      Glassfish: 2.1
     type: server
     team: Beta
     scale: 1
     hostType: docker
     group: vet
-    lifecycle: production
+    lifecycle: eol
     providedBy:
       - vet-db
       - archive-volume
@@ -44,10 +49,16 @@ items:
       - type: dataflow
         source: vet-be
         target: billing
+    statuses:
+      - label: security
+        status: red
+        message: uses outdated version of Glassfish
 
   - identifier: inventory
     owner: David Gillespie
     description: Inventory of medicals and supplies
+    frameworks:
+      java: 6
     type: server
     team: Beta
     scale: 1
@@ -69,7 +80,7 @@ items:
     costs: 10000
     hostType: docker
     group: vet
-    lifecycle: production
+    lifecycle: eol
     providedBy:
       - drug-db
 
@@ -81,11 +92,12 @@ items:
     type: database
     scale: 1
     group: vet
-    lifecycle: production
+    lifecycle: eol
 
   - identifier: vet-db
     owner: David Gillespie
     description: Backend for business processes
+    address: saturn.acme.com
     software: MariaDB
     version: 10.3.11
     type: database
@@ -110,6 +122,8 @@ items:
     version: 1.0.12
     type: application
     team: Beta
+    frameworks:
+      Java: 6
     tags:
     - monolith
     scale: 1

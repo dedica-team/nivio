@@ -105,7 +105,7 @@ items:
     version: build 433
     frameworks:
       PHP: 7.1
-      "Symfony": 2.3.1
+      Symfony: 2.3.1
     team: A-Team
     group: customers
     relations:
@@ -122,8 +122,8 @@ items:
     description: Checkout for locally sold items
     frameworks:
       "Spring Boot": 2.1.2
-      "Java": 8
-      "Angular": 6.1
+      Java: 8
+      Angular: 6.1
     team: A-Team
     type: app
     group: customers
@@ -141,6 +141,7 @@ items:
     owner: Louis Armstrong
     software: MariaDB
     version: 10.3.11
+    address: jupiter.acme.com
     type: database
     team: ops guys
     scale: 1
