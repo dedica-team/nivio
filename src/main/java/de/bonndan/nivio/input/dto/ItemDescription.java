@@ -256,7 +256,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         if (this == o) {
             return true;
         }
-        if (o == null) {
+        if (!(o instanceof ItemDescription)) {
             return false;
         }
         return toString().equals(o.toString());
@@ -334,12 +334,12 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
                 ((List) value).forEach(s -> setPrefixed(key, (String) s));
                 return;
             } catch (ClassCastException e) {
-                throw new ProcessingException("Cannot set " + key + " to " + value, e);
+                throw new ProcessingException(String.format("Cannot set '%s' to list '%s'. Is this a list-like structure", key, value), e);
             }
         }
 
         if (value instanceof Map) {
-            throw new IllegalArgumentException("Cannot set " + key + " to map " + value);
+            throw new IllegalArgumentException(String.format("Cannot use the value of '%s' as map ('%s'). Please check the spelling of", key, value));
         }
 
         labels.put(key, String.valueOf(value));
