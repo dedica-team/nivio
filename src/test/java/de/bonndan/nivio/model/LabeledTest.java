@@ -92,4 +92,24 @@ class LabeledTest {
                 .contains("Label 'lifecycle' has changed from 'production' to 'eol'")
         ;
     }
+
+    @Test
+    void diffIgnoresAppearanceLabels() {
+        //given
+        ItemDescription before = new ItemDescription();
+        before.setLabel(Label.color, "123");
+        before.setLabel(Label.fill, "aaff33");
+        before.setLabel(Label.icon, "foo");
+
+        ItemDescription after = new ItemDescription();
+        after.setLabel(Label.color, "");
+        after.setLabel(Label.fill, "");
+        after.setLabel(Label.icon, "");
+
+        //when
+        List<String> diff = after.diff(before);
+
+        //then
+        assertThat(diff).isEmpty();
+    }
 }

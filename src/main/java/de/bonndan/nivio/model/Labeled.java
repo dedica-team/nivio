@@ -2,6 +2,7 @@ package de.bonndan.nivio.model;
 
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
+import de.bonndan.nivio.input.AppearanceProcessor;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -180,9 +181,14 @@ public interface Labeled {
     default List<String> diff(@NonNull final Labeled before) {
         List<String> diff = new ArrayList<>();
         MapDifference<String, String> difference = Maps.difference(Objects.requireNonNull(before).getLabels(), getLabels());
-        difference.entriesOnlyOnLeft().keySet().forEach(s -> diff.add(String.format("Label '%s' has been removed", s)));
-        difference.entriesOnlyOnRight().keySet().forEach(s -> diff.add(String.format("Label '%s' has been added", s)));
+        difference.entriesOnlyOnLeft().keySet().stream()
+                .filter(s -> !AppearanceProcessor.affectedLabels.contains(s))
+                .forEach(s -> diff.add(String.format("Label '%s' has been removed", s)));
+        difference.entriesOnlyOnRight().keySet().stream()
+                .filter(s -> !AppearanceProcessor.affectedLabels.contains(s))
+                .forEach(s -> diff.add(String.format("Label '%s' has been added", s)));
         difference.entriesDiffering().forEach((key, value) -> {
+            if (AppearanceProcessor.affectedLabels.contains(key)) return;
             String msg = String.format("Label '%s' has changed from '%s' to '%s'", key, value.leftValue(), value.rightValue());
             diff.add(msg);
         });
@@ -228,11 +234,4 @@ public interface Labeled {
         setLabel(prefix.toLowerCase() + suffixAndValue, suffixAndValue);
     }
 
-    /**
-     * @param prefix
-     * @param suffixAndValue
-     */
-    default void setPrefixed(String prefix, String[] suffixAndValue) {
-        Arrays.stream(suffixAndValue).forEach(s -> setPrefixed(prefix, s));
-    }
 }

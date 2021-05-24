@@ -10,6 +10,7 @@ import de.bonndan.nivio.util.URLHelper;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -18,6 +19,12 @@ import java.util.Optional;
  * Appearance must be determined after indexing, because values might be needed in api, too.
  */
 public class AppearanceProcessor extends Processor {
+
+    /**
+     * TODO find a better solution to store appearance in components than resuing public labels
+     * see https://github.com/dedica-team/nivio/issues/543
+     */
+    public static final List<String> affectedLabels = List.of(Label.icon.name(), Label.fill.name(), Label.color.name());
 
     private final IconService iconService;
 
