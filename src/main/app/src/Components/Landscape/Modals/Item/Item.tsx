@@ -41,7 +41,10 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.primary.main,
     },
     tag: {
-      backgroundColor: theme.palette.primary.main,
+      backgroundColor: theme.palette.primary.dark,
+      padding: 0,
+      fontSize: '0.7rem',
+      height: 16,
     },
     interfaces: {
       backgroundColor: theme.palette.primary.main,
@@ -241,25 +244,35 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
   const assessmentSummary = item
     ? landscapeContext.getAssessmentSummary(item.fullyQualifiedIdentifier)
     : null;
+  const tags =
+    item?.tags && item?.tags.length
+      ? item.tags.map((value) => (
+          <Chip size={'small'} label={value} key={value} className={extraClasses.tag} />
+        ))
+      : null;
+
   return (
     <Card className={classes.card}>
       <CardHeader
         title={item ? item.name || item.identifier : null}
         titleTypographyProps={{ title: 'ID: ' + item?.fullyQualifiedIdentifier }}
+        subheader={tags}
         avatar={
           item ? (
-            <IconButton
-              onClick={() => {
-                locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
-              }}
-              size={'small'}
-              title={'Click to locate'}
-            >
-              <ItemAvatar
-                item={item}
-                statusColor={assessmentSummary ? assessmentSummary.status : ''}
-              />
-            </IconButton>
+            <>
+              <IconButton
+                onClick={() => {
+                  locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
+                }}
+                size={'small'}
+                title={'Click to locate'}
+              >
+                <ItemAvatar
+                  item={item}
+                  statusColor={assessmentSummary ? assessmentSummary.status : ''}
+                />
+              </IconButton>
+            </>
           ) : (
             ''
           )
@@ -335,21 +348,6 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
                       <TableCell>{item?.address}</TableCell>
                     </TableRow>
                   ) : null}
-                  {item?.tags && item?.tags.length ? (
-                    <TableRow key={'tags'}>
-                      <TableCell>Tags</TableCell>
-                      <TableCell>
-                        {item.tags.map((value) => (
-                          <Chip
-                            size={'small'}
-                            label={value}
-                            key={value}
-                            className={extraClasses.tag}
-                          />
-                        ))}
-                      </TableCell>
-                    </TableRow>
-                  ) : null}
 
                   {item && item?._links
                     ? Object.entries(item?._links).map((data) => {
@@ -364,22 +362,15 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
                         );
                       })
                     : null}
-
-                  {assessmentStatus.length > 0 ? assessmentStatus : null}
                 </TableBody>
               </Table>
 
-              {labels ? (
-                <Accordion className={extraClasses.labels}>
-                  <AccordionSummary
-                    expandIcon={<ExpandMore />}
-                    aria-controls='panel_labels-content'
-                    id='panel_labels-header'
-                  >
-                    more
-                  </AccordionSummary>
-                  <AccordionDetails>{labels}</AccordionDetails>
-                </Accordion>
+              {assessmentStatus.length > 0 ? (
+                <>
+                  <br />
+                  <Typography variant={'h6'}>Assessment</Typography>
+                  {assessmentStatus}
+                </>
               ) : null}
             </TabPanel>
 
@@ -408,6 +399,13 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
                   <Typography variant={'h6'}>Frameworks</Typography>
                   {frameworks}
                 </div>
+              ) : null}
+
+              {labels ? (
+                <>
+                  <Typography variant={'h6'}>Labels</Typography>
+                  {labels}
+                </>
               ) : null}
 
               {interfaces != null ? (
