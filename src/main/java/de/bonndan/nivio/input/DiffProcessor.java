@@ -29,7 +29,7 @@ public class DiffProcessor extends Processor {
         Set<Item> existingItems = landscape.getItems().all();
         ProcessingChangelog changelog = new ProcessingChangelog();
         //insert new ones
-        List<ItemDescription> newItems = added(input.getItemDescriptions().all(), existingItems, landscape);
+        List<ItemDescription> newItems = added(input.getItemDescriptions().all(), existingItems);
         Set<Item> inLandscape = new HashSet<>();
         processLog.info(String.format("Adding %d items in env %s", newItems.size(), landscape.getIdentifier()));
         newItems.forEach(
@@ -45,7 +45,7 @@ public class DiffProcessor extends Processor {
         if (input.isPartial()) {
             kept = new ArrayList<>(existingItems); //we want to keep all, increment does not contain all items
         } else {
-            kept = kept(input.getItemDescriptions().all(), existingItems, landscape);
+            kept = kept(input.getItemDescriptions().all(), existingItems);
         }
         processLog.info(String.format("Updating %d items in landscape %s", kept.size(), landscape.getIdentifier()));
         kept.forEach(
@@ -103,16 +103,16 @@ public class DiffProcessor extends Processor {
         }
 
         List<Item> removed = removed(kept, all);
-        logger.info("Removing " + removed.size() + " sources in env " + landscapeDescription.getIdentifier());
+        logger.info(String.format("Removing %d sources in env %s", removed.size(), landscapeDescription.getIdentifier()));
         return removed;
     }
 
     /**
      * Returns all items that are also present in the new itemDescriptions
      */
-    static List<Item> kept(Collection<? extends ItemDescription> newItems, Collection<? extends Item> items, Landscape landscape) {
+    static List<Item> kept(Collection<? extends ItemDescription> newItems, Collection<? extends Item> items) {
         return items.stream()
-                .filter(item -> presentInNewItems(item, newItems, landscape))
+                .filter(item -> presentInNewItems(item, newItems))
                 .collect(Collectors.toList());
     }
 
@@ -128,16 +128,15 @@ public class DiffProcessor extends Processor {
     /**
      * Returns all elements which are not in the second list
      *
-     * @return
-     *
+     * @return a list of added dtos
      */
-    static List<ItemDescription> added(Collection<ItemDescription> itemDescriptions, Collection<Item> existingItems, Landscape landscape) {
+    static List<ItemDescription> added(Collection<ItemDescription> itemDescriptions, Collection<Item> existingItems) {
         return itemDescriptions.stream()
                 .filter(newItem -> doesNotExistAsItem(newItem, existingItems))
                 .collect(Collectors.toList());
     }
 
-    private static boolean presentInNewItems(final Item item, Collection<? extends ItemDescription> newItems, Landscape landscape) {
+    private static boolean presentInNewItems(final Item item, Collection<? extends ItemDescription> newItems) {
         return newItems.stream()
                 .anyMatch(inList -> ItemMatcher.forTarget(item).isSimilarTo(inList.getFullyQualifiedIdentifier()));
     }
