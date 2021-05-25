@@ -11,17 +11,20 @@ import java.util.Optional;
 public enum IconMapping {
 
     DEFAULT_ICON("cog"),
+    BACKEND("application-cog"),
     CACHE("flash-circle"),
     CONTAINER("inbox"),
     FIREWALL("wall"),
+    FRONTEND("television-guide"),
     HUMANUSER("account"),
     INTERFACE("connection"),
     KEYVALUESTORE("view-list"),
     LOADBALANCER("call-split"),
     MESSAGEQUEUE("tray-full"),
     MOBILECLIENT("cellphone"),
+    SERVICE("application-cog"),
     VOLUME("harddisk"),
-    WEBSERVICE("application")
+    WEBSERVICE("application"),
     ;
 
     private final String icon;
