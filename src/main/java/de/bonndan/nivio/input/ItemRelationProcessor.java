@@ -21,11 +21,11 @@ public class ItemRelationProcessor extends Processor {
     public ProcessingChangelog process(@NonNull final LandscapeDescription input, @NonNull final Landscape landscape) {
 
         ProcessingChangelog changelog = new ProcessingChangelog();
-        List<Relation> processed = new ArrayList<>();
 
+        // process configured relations of all input dtos
+        List<Relation> processed = new ArrayList<>();
         input.getItemDescriptions().all().forEach(itemDescription -> {
-            Item origin = landscape.getItems().pick(itemDescription);
-            List<Relation> affected = new ArrayList<>();
+            final Item origin = landscape.getItems().pick(itemDescription);
 
             for (RelationDescription relationDescription : itemDescription.getRelations()) {
 
@@ -49,19 +49,24 @@ public class ItemRelationProcessor extends Processor {
                             changelog.addEntry(created, ProcessingChangelog.ChangeType.CREATED, null);
                             return created;
                         });
+                assignToBothEnds(origin, current);
                 processed.add(current);
-                affected.add(current);
             }
+        });
 
-            affected.forEach(relation -> assignToBothEnds(origin, relation));
+        if (input.isPartial()) {
+            return changelog;
+        }
 
-            Collection<Relation> toDelete = CollectionUtils.subtract(origin.getRelations(), affected);
+        // delete what has not been configured and is left over in landscape
+        input.getItemDescriptions().all().forEach(itemDescription -> {
+            final Item origin = landscape.getItems().pick(itemDescription);
+            Collection<Relation> toDelete = CollectionUtils.subtract(origin.getRelations(), processed);
             toDelete.stream()
                     .filter(relation -> !processed.contains(relation))
                     .filter(relation -> origin.equals(relation.getSource()))
-                    .filter(relation -> !input.isPartial())
                     .forEach(relation -> {
-                        processLog.info(String.format("Removing relation between %s and %s", relation.getSource(), relation.getTarget()));
+                        processLog.info(String.format(origin + ": Removing relation between %s and %s", relation.getSource(), relation.getTarget()));
                         Item currentSource = landscape.getItems().pick(
                                 relation.getSource().getFullyQualifiedIdentifier().getItem(),
                                 relation.getSource().getFullyQualifiedIdentifier().getGroup()
