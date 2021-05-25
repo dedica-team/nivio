@@ -42,16 +42,16 @@ public class GroupProcessor extends Processor {
                 Optional<Group> existing = landscape.getGroup(g.getIdentifier());
                 Group added = landscape.addGroup(g);
                 if (existing.isEmpty()) {
-                    processLog.info("Adding group " + g.getIdentifier());
+                    processLog.info(String.format("Adding group %s", g.getIdentifier()));
                     changelog.addEntry(added, ProcessingChangelog.ChangeType.CREATED);
                 } else {
-                    processLog.info("Updating group " + g.getIdentifier());
+                    processLog.info(String.format("Updating group %s", g.getIdentifier()));
                     String updates = existing.get().getChanges(added).isEmpty() ?
-                            "Item(s) changed" : String.join("; ", existing.get().getChanges(added));
+                            String.format("Item(s) changed in group '%s'", g.getIdentifier()) : String.join("; ", existing.get().getChanges(added));
                     changelog.addEntry(added, ProcessingChangelog.ChangeType.UPDATED, updates);
                 }
             } else {
-                processLog.info("Ignoring blacklisted group " + g.getIdentifier());
+                processLog.info(String.format("Ignoring blacklisted group %s", g.getIdentifier()));
             }
         });
 
