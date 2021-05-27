@@ -27,6 +27,9 @@ const useStyles = makeStyles((theme: Theme) =>
     red: {
       backgroundColor: 'red',
     },
+    brown: {
+      backgroundColor: 'brown',
+    },
   })
 );
 
