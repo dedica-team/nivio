@@ -26,7 +26,7 @@ class SVGBackgroundFactoryTest {
         Group g = new Group("a", "landscapeIdentifier");
         Set<Hex> hexes = Set.of(new Hex(-3, -3), new Hex(10, 10));
         SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of());
-        SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(svgGroupArea));
+        SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(svgGroupArea), List.of());
 
         List<ContainerTag> backgroundTiles = SVGBackgroundFactory.getBackgroundTiles(dimension);
         assertThat(backgroundTiles).isNotNull();

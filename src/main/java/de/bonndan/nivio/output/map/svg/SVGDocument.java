@@ -88,7 +88,7 @@ public class SVGDocument extends Component {
         defs.add(SVGRelation.dataflowMarker());
         List<SVGRelation> relations = getRelations(layouted);
 
-        SVGDimension dimension = SVGDimensionFactory.getDimension(groupAreas);
+        SVGDimension dimension = SVGDimensionFactory.getDimension(groupAreas, relations);
 
         //render background hexes
         defs.add(SVGBackgroundFactory.getHex());

@@ -77,6 +77,10 @@ class SVGRelation extends Component {
         return addAttributes(g(shadow, endMarker, path, label(bezierPath, fillId)), relation);
     }
 
+    public HexPath getHexPath() {
+        return hexPath;
+    }
+
     private ContainerTag addAttributes(ContainerTag g, Relation relation) {
         String type = !StringUtils.isEmpty(relation.getType()) ? relation.getType().name() : "-";
         g.attr("data-type", type)
