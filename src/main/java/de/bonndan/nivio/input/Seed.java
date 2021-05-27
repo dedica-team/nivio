@@ -65,13 +65,17 @@ public class Seed {
         if (ConfigurableEnvVars.DEMO.value().isEmpty()) {
             return demoFiles;
         }
+        String value = ConfigurableEnvVars.DEMO.value().get();
+
         Path currentRelativePath = Paths.get("");
         String absPath = currentRelativePath.toAbsolutePath().toString();
         try {
             demoFiles.add(new File(absPath + "/src/test/resources/example/pet_clinic.yml").toURI().toURL());
-            demoFiles.add(new File(absPath + "/src/test/resources/example/inout.yml").toURI().toURL());
-            demoFiles.add(new File(absPath + "/src/test/resources/example/internals.yml").toURI().toURL());
-            demoFiles.add(new File(absPath + "/src/test/resources/example/dedica_dot.yml").toURI().toURL());
+            if (value.equalsIgnoreCase("all")) {
+                demoFiles.add(new File(absPath + "/src/test/resources/example/inout.yml").toURI().toURL());
+                demoFiles.add(new File(absPath + "/src/test/resources/example/internals.yml").toURI().toURL());
+                demoFiles.add(new File(absPath + "/src/test/resources/example/dedica_dot.yml").toURI().toURL());
+            }
         } catch (MalformedURLException e) {
             logger.error("Error in demo files: " + e.getMessage(), e);
         }
