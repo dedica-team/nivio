@@ -103,6 +103,36 @@ class AssessableTest {
     }
 
     @Test
+    public void uniqueStatusLists() {
+        Item item = getTestItem("foo", "bar");
+        item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
+        item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
+
+        Map<String, KPI> kpis = new HashMap<>();
+        kpis.put("on", new AbstractKPI(component -> null, null) {
+            @Override
+            protected List<StatusValue> getStatusValues(String value, String message) {
+                return List.of(
+                        new StatusValue("something", Status.RED, "newer value")
+                );
+            }
+        });
+
+        //when
+        Map<FullyQualifiedIdentifier, List<StatusValue>> assessmentMap = item.applyKPIs(kpis);
+
+        //then
+        assertNotNull(assessmentMap);
+        List<StatusValue> itemStatuses = assessmentMap.get(item.getFullyQualifiedIdentifier());
+        assertNotNull(itemStatuses);
+
+        assertThat(itemStatuses).hasSize(2);
+        StatusValue something = itemStatuses.stream().filter(statusValue1 -> statusValue1.getField().equals("something")).findFirst().orElse(null);
+        assertNotNull(something);
+        assertEquals("newer value", something.getMessage());
+    }
+
+    @Test
     public void groupSummary() {
         Item item = getTestItem("foo", "bar");
         item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
@@ -137,7 +167,7 @@ class AssessableTest {
         assertEquals("summary.foo", statusValue.getField());
         assertEquals(Status.BROWN, statusValue.getStatus());
         assertEquals("very bad", statusValue.getMessage());
-        assertEquals("something", statusValue.getMaxField());
+        assertEquals("summary.bar", statusValue.getMaxField());
     }
 
     @Test

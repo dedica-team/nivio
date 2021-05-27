@@ -5,11 +5,22 @@ description: The Pet clinic IT landscape
 
 config:
   greedy: false
+  kpis:
+    radiation:
+      description: Radiation level in mrem
+      label: radiation
+      ranges:
+        GREEN: 0;99.999999
+        YELLOW: 100;199.999999
+        RED: 200;499.999999
+        BROWN: 500;1000000
+
 
 sources:
   - "./services/pet_clinic_customers.yml"
   - "./services/pet_clinic_vet.yml"
   - "./services/pet_clinic_billing.yml"
+  - "./services/pet_clinic_xray.yml"
 
 items:
   - identifier: emailer

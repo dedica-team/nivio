@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.input.demo.PetClinicSimulatorResolver;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.model.Landscape;
@@ -94,6 +95,9 @@ public class Indexer {
 
         // execute group "contains" queries
         new GroupQueryResolver(logger).resolve(input);
+
+        //for simulating pet clinic events
+        new PetClinicSimulatorResolver(logger).resolve(input);
 
         //a structured log on component level
         ProcessingChangelog changelog = new ProcessingChangelog();

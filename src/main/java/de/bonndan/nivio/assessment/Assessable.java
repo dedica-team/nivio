@@ -46,36 +46,44 @@ public interface Assessable extends Component {
         //apply to children
         getChildren().stream().map(assessable -> assessable.applyKPIs(kpis)).forEach(fullyQualifiedIdentifierListMap -> {
             map.putAll(fullyQualifiedIdentifierListMap);
-            fullyQualifiedIdentifierListMap.forEach((key, value) -> childrenValues.addAll(value));
+            fullyQualifiedIdentifierListMap.forEach((key, value) -> replaceAll(childrenValues, value));
         });
 
         //apply each kpi to his
         FullyQualifiedIdentifier fqi = this.getFullyQualifiedIdentifier();
         map.putIfAbsent(fqi, new ArrayList<>());
+
+        //add preset status values
+        replaceAll(map.get(fqi), getAdditionalStatusValues());
+
         kpis.forEach((s, kpi) -> {
             if (!kpi.isEnabled()) {
                 return;
             }
-            if (!map.containsKey(fqi)) {
-                map.put(fqi, new ArrayList<>());
-            }
+
             try {
-                map.get(fqi).addAll(kpi.getStatusValues(this));
+                replaceAll(map.get(fqi), kpi.getStatusValues(this));
             } catch (Exception ex) {
                 throw new ProcessingException("Failed to apply KPI " + s, ex);
             }
 
         });
 
-        //add preset status values
-        map.get(fqi).addAll(getAdditionalStatusValues());
-
-        childrenValues.addAll(map.get(fqi));
-        map.get(fqi).add(StatusValue.summary(SUMMARY_LABEL + "." + getIdentifier(), getWorst(childrenValues)));
+        replaceAll(childrenValues, map.get(fqi));
+        replace(map.get(fqi), StatusValue.summary(SUMMARY_LABEL + "." + getIdentifier(), getWorst(childrenValues)));
 
         //sort in descending order, worst first
         map.get(fqi).sort(Collections.reverseOrder(new StatusValue.Comparator()));
         return map;
+    }
+
+    private void replaceAll(List<StatusValue> present, Collection<StatusValue> added) {
+        added.forEach(statusValue -> replace(present, statusValue));
+    }
+
+    private void replace(List<StatusValue> present, StatusValue added) {
+        present.remove(added);
+        present.add(added);
     }
 
     private StatusValue getWorst(List<StatusValue> values) {

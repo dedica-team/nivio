@@ -188,7 +188,7 @@ public class ItemIndex<T extends ItemComponent> {
         }
 
         return find(identifier, group).orElseThrow(() ->
-                new RuntimeException(String.format("Element '%s' not found  in collection.", identifier))
+                new RuntimeException(String.format("Element '%s' not found  in collection %s.", identifier , all()))
         );
     }
 

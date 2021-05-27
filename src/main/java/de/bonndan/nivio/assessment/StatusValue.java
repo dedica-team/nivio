@@ -64,7 +64,7 @@ public class StatusValue {
      * Creates a summary status value.
      *
      * @param fieldName composed field name
-     * @param maxValue   max/highest status value
+     * @param maxValue  max/highest status value
      * @return summary
      */
     @NonNull
@@ -78,6 +78,13 @@ public class StatusValue {
         return new StatusValue(fieldName, maxValue.getStatus(), maxValue.getMessage(), maxValue.getField());
     }
 
+    /**
+     * New StatusValue with message.
+     *
+     * @param field   field / label name
+     * @param status  current status
+     * @param message additional message
+     */
     public StatusValue(@NonNull String field, @Nullable Status status, @Nullable String message) {
         if (StringUtils.isEmpty(field)) {
             throw new IllegalArgumentException("Status value has no field");
@@ -151,4 +158,19 @@ public class StatusValue {
         }
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(field);
+    }
+
+    @Override
+    public String toString() {
+        return "StatusValue{" +
+                "field='" + field + '\'' +
+                ", status=" + status +
+                ", message='" + message + '\'' +
+                ", summary=" + summary +
+                ", maxField='" + maxField + '\'' +
+                '}';
+    }
 }
