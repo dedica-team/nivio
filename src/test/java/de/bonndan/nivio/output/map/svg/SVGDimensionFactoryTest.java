@@ -55,7 +55,7 @@ class SVGDimensionFactoryTest {
 
         //when
         Hex three = new Hex(-10, -10);
-        SVGRelation svgRelation = new SVGRelation(new HexPath(List.of(three)), "aaccee", new Relation(ItemFactory.getTestItem("foo", "bar"), ItemFactory.getTestItem("foo", "baz")));
+        SVGRelation svgRelation = new SVGRelation(new HexPath(List.of(three)), "aaccee", new Relation(ItemFactory.getTestItem("foo", "bar"), ItemFactory.getTestItem("foo", "baz")), null);
         SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(svgGroupArea), List.of(svgRelation));
 
         //then

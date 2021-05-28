@@ -1,11 +1,14 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.Renderer;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.hex.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
@@ -15,17 +18,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Turns the layouted landscape into a SVG image.
- *
- *
  */
 @Service
-public class SVGRenderer implements Renderer<String> {
+public class SVGRenderer implements Renderer<SVGDocument> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGRenderer.class);
+
     public static final int DEFAULT_ICON_SIZE = 50;
 
     private final MapStyleSheetFactory mapStyleSheetFactory;
@@ -35,18 +38,20 @@ public class SVGRenderer implements Renderer<String> {
     }
 
     @Override
-    public String render(LayoutedComponent landscape, boolean debug) {
-        applyValues(landscape);
-        SVGDocument svgDocument = new SVGDocument(landscape, getStyles((Landscape) landscape.getComponent()));
+    public SVGDocument render(@NonNull final LayoutedComponent landscape, @Nullable final Assessment assessment, boolean debug) {
+        applyValues(Objects.requireNonNull(landscape));
+        SVGDocument svgDocument = new SVGDocument(landscape, assessment, getStyles((Landscape) landscape.getComponent()));
         svgDocument.setDebug(debug);
-        return svgDocument.getXML();
+        return svgDocument;
     }
 
     @Override
-    public void render(LayoutedComponent landscape, File file, boolean debug)  {
+    public void render(@NonNull final LayoutedComponent landscape, @NonNull final Assessment assessment, @NonNull final File file, boolean debug) {
         try (FileWriter fileWriter = new FileWriter(file)) {
-            fileWriter.write(render(landscape, debug));
-        } catch (IOException ignored) {}
+            fileWriter.write(render(landscape, assessment, debug).getXML());
+        } catch (IOException e) {
+            LOGGER.error("Failed to render to file", e);
+        }
     }
 
     private String getStyles(Landscape landscape) {

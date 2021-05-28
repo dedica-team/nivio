@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.awt.geom.Point2D;
-import java.net.URI;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +25,7 @@ class SVGItemTest {
         Item foo = new Item("foo", landscape, Group.COMMON, null, null, null,
                 null, null, null, null);
 
-        SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo), new Point2D.Double(1, 1));
+        SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo), List.of(), new Point2D.Double(1, 1));
         assertThat(svgItem.render().render()).contains("l1/common/foo");
     }
 
@@ -38,7 +38,7 @@ class SVGItemTest {
         Item foo = new Item("foo", landscape, "null", null, null, null,
                 null, null, null, null);
 
-        SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo), new Point2D.Double(1, 2.0303030));
+        SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo),  List.of(), new Point2D.Double(1, 2.0303030));
         assertTrue(svgItem.render().render().contains("data-x=\"1.00\""));
         assertTrue(svgItem.render().render().contains("data-y=\"2.03\""));
     }

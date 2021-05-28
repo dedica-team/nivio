@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.CachedResponse;
@@ -15,6 +16,7 @@ import de.bonndan.nivio.output.icons.ExternalIcons;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.layout.OrganicLayouter;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
+import de.bonndan.nivio.output.map.svg.SVGDocument;
 import de.bonndan.nivio.output.map.svg.SVGRenderer;
 import de.bonndan.nivio.util.RootPath;
 import org.mockito.ArgumentMatchers;
@@ -70,7 +72,7 @@ public abstract class RenderingTest {
 
         OrganicLayouter layouter = new OrganicLayouter();
         LayoutedComponent graph = layouter.layout(landscape);
-        toSVG(graph, RootPath.get() + path);
+        toSVG(graph, new Assessment(landscape.applyKPIs(landscape.getKpis())), RootPath.get() + path);
         return graph;
     }
 
@@ -78,10 +80,10 @@ public abstract class RenderingTest {
 
         OrganicLayouter layouter = new OrganicLayouter();
         LayoutedComponent graph = layouter.layout(landscape);
-        return toSVG(graph, RootPath.get() + path);
+        return toSVG(graph, new Assessment(landscape.applyKPIs(landscape.getKpis())), RootPath.get() + path);
     }
 
-    private String toSVG(LayoutedComponent layoutedComponent, String filename) throws IOException {
+    private String toSVG(LayoutedComponent layoutedComponent, Assessment assessment, String filename) throws IOException {
 
         MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
         when(mapStyleSheetFactory.getMapStylesheet(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn("");
@@ -90,14 +92,14 @@ public abstract class RenderingTest {
         new ObjectMapper().writeValue(json, layoutedComponent);
 
         SVGRenderer svgRenderer = new SVGRenderer(mapStyleSheetFactory);
-        String svg = svgRenderer.render(layoutedComponent, true);
+        SVGDocument svg = svgRenderer.render(layoutedComponent, assessment, true);
 
         File svgFile = new File(filename + "_debug.svg");
         FileWriter fileWriter = new FileWriter(svgFile);
-        fileWriter.write(svg);
+        String xml = svg.getXML();
+        fileWriter.write(xml);
         fileWriter.close();
-
-        return svg;
+        return xml;
     }
 
 }

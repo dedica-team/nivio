@@ -1,5 +1,7 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
@@ -8,11 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
-import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,6 +22,7 @@ class SVGRelationTest {
     private Item foo;
     private Item bar;
     private HexPath hexpath;
+    private StatusValue statusValue;
 
 
     @BeforeEach
@@ -30,6 +31,7 @@ class SVGRelationTest {
          foo = getTestItem(Group.COMMON, "foo", landscape);
          bar = getTestItem(Group.COMMON, "bar", landscape);
          hexpath = new HexPath(List.of(new Hex(1,2), new Hex(1,3)));
+         statusValue = new StatusValue("foo", Status.GREEN);
     }
 
     @Test
@@ -37,7 +39,7 @@ class SVGRelationTest {
     public void relationContainsBothEnds() {
 
         Relation itemRelationItem = new Relation(foo, bar);
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem);
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
         DomContent render = svgRelation.render();
         String render1 = render.render();
         assertTrue(render1.contains("l1/common/foo"));
@@ -52,7 +54,7 @@ class SVGRelationTest {
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
 
         //when
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem);
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
         DomContent render = svgRelation.render();
 
         //then
@@ -67,7 +69,7 @@ class SVGRelationTest {
         Relation relation = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
 
         //when
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", relation);
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", relation, statusValue);
         DomContent render = svgRelation.render();
 
         //then
@@ -82,7 +84,7 @@ class SVGRelationTest {
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
 
         //when
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem);
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
         DomContent render = svgRelation.render();
 
         //then
@@ -97,7 +99,7 @@ class SVGRelationTest {
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
 
         //when
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem);
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
         DomContent render = svgRelation.render();
 
         //then

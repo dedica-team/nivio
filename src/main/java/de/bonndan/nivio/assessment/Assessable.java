@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import org.springframework.lang.NonNull;
 
 import java.util.*;
 
@@ -86,7 +87,8 @@ public interface Assessable extends Component {
         present.add(added);
     }
 
-    private StatusValue getWorst(List<StatusValue> values) {
+    @NonNull
+    static StatusValue getWorst(List<StatusValue> values) {
         return values.stream()
                 .filter(Objects::nonNull)
                 .max(new StatusValue.Comparator())
