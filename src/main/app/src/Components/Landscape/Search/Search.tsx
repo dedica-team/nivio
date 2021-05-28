@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { Box, Input, InputAdornment, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
-import { IFacet, IItem, Routes } from "../../../interfaces";
-import { matchPath, RouteComponentProps, withRouter } from 'react-router-dom';
+import { IFacet, IItem } from '../../../interfaces';
 import Item from '../Modals/Item/Item';
 import { Backspace, Close, SearchOutlined } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
@@ -15,6 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import SearchHelp from './Help';
 import { withBasePath } from '../../../utils/API/BasePath';
 import { SaveSearchConfig } from './SaveSearchConfig';
+import { LandscapeContext } from '../../../Context/LandscapeContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,19 +36,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface PropsInterface extends RouteComponentProps {
+interface PropsInterface {
   setSidebarContent: Function;
   showSearch: Function;
 }
 
-const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...props }) => {
-  const match: { params?: { identifier?: string } } | null = matchPath(props.location.pathname, {
-    path: Routes.MAP_ROUTE,
-    exact: false,
-    strict: false,
-  });
-
-  const identifier = match?.params?.identifier;
+const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => {
   const [currentLandscape, setCurrentLandscape] = useState<string>('');
   const [results, setResults] = useState<IItem[]>([]);
   const [facets, setFacets] = useState<IFacet[]>([]);
@@ -58,6 +51,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
   const classes = useStyles();
   const componentClasses = componentStyles();
   const searchInput = React.useRef<HTMLDivElement>(null);
+  const landscapeContext = useContext(LandscapeContext);
 
   /**
    * Search on search term change, set results.
@@ -67,7 +61,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
 
     get(
       '/api/landscape/' +
-        identifier +
+        landscapeContext.identifier +
         '/search/' +
         encodeURIComponent(searchTerm)
           .replace(/[!'()]/g, escape)
@@ -79,10 +73,12 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
       .catch((reason) => {
         console.warn(reason);
       });
-  }, [searchTerm, identifier]);
+  }, [searchTerm, landscapeContext.identifier]);
 
   /**
-   * Initial loading of facets
+   * loading of facets
+   *
+   * also depends on assessments
    */
   useEffect(() => {
     const addFacet = (dim: string, label: string): string => {
@@ -147,19 +143,17 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
   }
 
   useEffect(() => {
-    if (facets.length === 0) {
-      loadFacets(identifier);
-    }
-  }, [identifier, facets]);
+    if (landscapeContext.identifier) loadFacets(landscapeContext.identifier);
+  }, [landscapeContext.identifier, landscapeContext.assessment]);
 
-  if (identifier == null) {
+  if (landscapeContext.identifier == null) {
     return null;
   }
 
-  if (currentLandscape == null || currentLandscape !== identifier) {
+  if (currentLandscape == null || currentLandscape !== landscapeContext.identifier) {
     setFacets([]);
     setSearchTerm('');
-    setCurrentLandscape(identifier);
+    setCurrentLandscape(landscapeContext.identifier);
   }
 
   return (
@@ -206,4 +200,4 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
   );
 };
 
-export default withRouter(Search);
+export default Search;
