@@ -369,7 +369,9 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
                 <>
                   <br />
                   <Typography variant={'h6'}>Assessment</Typography>
-                  {assessmentStatus}
+                  <Table>
+                    <TableBody>{assessmentStatus}</TableBody>
+                  </Table>
                 </>
               ) : null}
             </TabPanel>
