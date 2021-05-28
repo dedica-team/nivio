@@ -36,8 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flexDirection: "row"
     },
     content: {
-      //display: 'flex',
-      // flexDirection: 'row',
+      position: 'relative'
     },
     flexItem: {
       flexShrink: 1,

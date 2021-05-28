@@ -87,19 +87,20 @@ const Group: React.FC<Props> = ({ group }) => {
               {group?.contact || 'No Contact provided'}
             </span>
           ) : null}
-          <span className='owner group'>
+          <div className='owner group'>
             <span className='label'>Owner: </span>
             {group?.owner || 'No Owner provided'}
-          </span>
+          </div>
         </div>
 
         {assessment && assessment.status ? (
           <div>
+            <br />
             <Typography variant={'h6'}>Status</Typography>
             <StatusChip
               name={group.name || group.identifier}
               status={assessment?.status}
-              value={assessment?.field + ':' + assessment.message}
+              value={assessment.message}
             />
           </div>
         ) : null}
