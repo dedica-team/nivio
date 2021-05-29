@@ -160,7 +160,7 @@ public class DiffProcessorTest {
     @Test
     void regression439() {
 
-        DiffProcessor diffProcessor = new DiffProcessor(new ProcessLog(LoggerFactory.getLogger(DiffProcessorTest.class)));
+        DiffProcessor diffProcessor = new DiffProcessor(new ProcessLog(LoggerFactory.getLogger(DiffProcessorTest.class), landscape.getIdentifier()));
 
         LandscapeDescription input = new LandscapeDescription(landscape.getIdentifier());
         ItemDescription description = new ItemDescription("s1");

@@ -14,7 +14,6 @@ import java.net.MalformedURLException;
 @Validated
 public class NivioConfigProperties {
 
-    //TODO how to validate urls with javax properly (without hibernate)?
     public static final String URL_REGEX = "^(http|https)://.*$|";
 
     @Pattern(regexp = URL_REGEX, message = "baseUrl must be a valid URL")

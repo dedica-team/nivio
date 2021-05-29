@@ -99,7 +99,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         this.description = description;
         this.source = source;
         this.config = config != null ? config : new LandscapeConfig();
-        this.processLog = processLog != null ? processLog : new ProcessLog(LoggerFactory.getLogger(Landscape.class));
+        this.processLog = processLog != null ? processLog : new ProcessLog(LoggerFactory.getLogger(Landscape.class), identifier);
         this.kpis = kpis;
     }
 

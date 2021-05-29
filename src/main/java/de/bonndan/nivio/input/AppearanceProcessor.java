@@ -21,7 +21,6 @@ import java.util.Optional;
 public class AppearanceProcessor extends Processor {
 
     /**
-     * TODO find a better solution to store appearance in components than resuing public labels
      * see https://github.com/dedica-team/nivio/issues/543
      */
     public static final List<String> affectedLabels = List.of(Label.icon.name(), Label.fill.name(), Label.color.name());

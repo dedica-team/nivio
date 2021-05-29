@@ -22,7 +22,7 @@ class GroupProcessorTest {
     @BeforeEach
     public void setup() {
         landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
-        ProcessLog log = new ProcessLog(LoggerFactory.getLogger(GroupProcessorTest.class));
+        ProcessLog log = new ProcessLog(LoggerFactory.getLogger(GroupProcessorTest.class), landscape.getIdentifier());
         groupProcessor = new GroupProcessor(log);
     }
 

@@ -4,7 +4,10 @@ import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.assessment.StatusValue;
 import org.springframework.context.ApplicationEvent;
 
-//TODO use
+/**
+ * Refactor to assessment change event, or delete
+ * https://github.com/dedica-team/nivio/issues/545
+ */
 public class ServiceStateChangeEvent extends ApplicationEvent  {
     private final FullyQualifiedIdentifier fqi;
     private final StatusValue old;

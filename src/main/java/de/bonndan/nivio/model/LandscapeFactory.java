@@ -19,7 +19,7 @@ public class LandscapeFactory {
      *
      * @param input the description
      */
-    public static Landscape createFromInput(@NonNull LandscapeDescription input) {
+    public static Landscape createFromInput(@NonNull final LandscapeDescription input) {
 
         Landscape landscape = new Landscape(
                 input.getIdentifier(),
@@ -30,13 +30,12 @@ public class LandscapeFactory {
                 input.getDescription(),
                 input.getSource(),
                 input.getConfig(),
-                getProcessLog(),
+                new ProcessLog(LoggerFactory.getLogger(Landscape.class), input.getIdentifier()),
                 kpiFactory.getConfiguredKPIs(input.getConfig().getKPIs())
         );
         input.getLabels().forEach((s, s2) -> landscape.getLabels().put(s, s2));
         input.getLinks().forEach((s, link) -> landscape.getLinks().put(s, link));
 
-        landscape.getLog().setLandscape(landscape); //TODO ring reference, crappy
         landscape.getLog().info("Created new landscape from input " + input.getIdentifier());
 
         return landscape;
@@ -46,10 +45,6 @@ public class LandscapeFactory {
         Map<String, Group> groups = new HashMap<>();
         groups.put(Group.COMMON, new Group(Group.COMMON, landscapeIdentifier));
         return groups;
-    }
-
-    private static ProcessLog getProcessLog() {
-        return new ProcessLog(LoggerFactory.getLogger(Landscape.class));
     }
 
     /**

@@ -6,10 +6,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
+import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This is a decorator for {@link Logger} used during landscape processing in order to grab all landscape relevant
@@ -22,10 +24,11 @@ public class ProcessLog {
 
     private final List<Entry> messages = new ArrayList<>();
 
-    private Landscape landscape;
+    private final String landscapeIdentifier;
 
-    public ProcessLog(Logger logger) {
-        this.logger = logger;
+    public ProcessLog(@NonNull final Logger logger, @NonNull final String landscapeIdentifier) {
+        this.logger = Objects.requireNonNull(logger);
+        this.landscapeIdentifier = Objects.requireNonNull(landscapeIdentifier);
     }
 
     public void debug(String message) {
@@ -36,10 +39,6 @@ public class ProcessLog {
     public void info(String message) {
         messages.add(new Entry("INFO", message));
         logger.info(message);
-    }
-
-    public void setLandscape(Landscape landscape) {
-        this.landscape = landscape;
     }
 
     public void warn(String msg, ProcessingException e) {
@@ -64,12 +63,7 @@ public class ProcessLog {
 
     @JsonProperty("landscape")
     public String getLandscapeIdentifier() {
-        return landscape != null ? landscape.getFullyQualifiedIdentifier().jsonValue() : null;
-    }
-
-    @JsonIgnore
-    public Landscape getLandscape() {
-        return landscape;
+        return landscapeIdentifier;
     }
 
     public List<Entry> getMessages() {

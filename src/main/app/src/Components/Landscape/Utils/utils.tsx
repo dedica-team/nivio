@@ -136,35 +136,6 @@ export const getLabelsWithPrefix = (prefix: string, element: IGroup | IItem) => 
   return <List dense={true}>{labels}</List>;
 };
 
-/**
- * Returns the summary field from a subset of assessments.
- * @param assessmentResults
- * @todo refactor to return IAssessmentProps
- */
-export const getAssessmentSummary = (
-  assessmentResults: IAssessmentProps[] | undefined
-): string[] => {
-  let assessmentColor = 'grey';
-  let assessmentMessage = '';
-  let assessmentField = '';
-
-  if (assessmentResults) {
-    const result = assessmentResults.find((assessmentResult) => assessmentResult.summary);
-
-    if (result) {
-      if (result.status !== 'UNKNOWN') {
-        assessmentColor = result.status;
-        assessmentField = result.maxField || '';
-        assessmentMessage = result.message;
-      } else {
-        assessmentMessage = 'unknown status';
-      }
-    }
-  }
-
-  return [assessmentColor, assessmentMessage, assessmentField];
-};
-
 export const getItemIcon = (item: IItem) => {
   if (item.labels) {
     return item.labels['fill'] ? item.labels['fill'] : item.icon;

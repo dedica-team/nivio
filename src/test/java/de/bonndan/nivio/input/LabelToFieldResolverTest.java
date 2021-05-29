@@ -24,7 +24,7 @@ class LabelToFieldResolverTest {
     @BeforeEach
     public void setup() {
         Logger logger = LoggerFactory.getLogger(LabelToFieldResolverTest.class);
-        ProcessLog processLog = new ProcessLog(logger);
+        ProcessLog processLog = new ProcessLog(logger, "test");
         processor = new LabelToFieldResolver(processLog);
     }
 

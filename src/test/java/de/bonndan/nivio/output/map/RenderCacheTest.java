@@ -86,7 +86,7 @@ class RenderCacheTest {
 
     private Landscape getLandscape(String identifier, String name) {
 
-        ProcessLog test = new ProcessLog(LoggerFactory.getLogger("test"));
+        ProcessLog test = new ProcessLog(LoggerFactory.getLogger("test"), "test");
         test.info("foo");
 
         Landscape landscape = LandscapeFactory.createForTesting(identifier, name)

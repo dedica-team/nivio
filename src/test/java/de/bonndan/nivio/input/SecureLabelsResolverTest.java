@@ -25,7 +25,7 @@ class SecureLabelsResolverTest {
         landscapeDescription = new LandscapeDescription("foo");
         landscapeDescription.mergeItems(List.of(item));
 
-        secureLabelsResolver = new SecureLabelsResolver(new ProcessLog(mock(Logger.class)));
+        secureLabelsResolver = new SecureLabelsResolver(new ProcessLog(mock(Logger.class), "test"));
     }
 
     @Test
