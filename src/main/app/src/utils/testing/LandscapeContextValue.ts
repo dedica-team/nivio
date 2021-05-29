@@ -1,5 +1,5 @@
-import { IAssessment, IGroup, IItem, ILandscape } from "../../interfaces";
-import { LandscapeContextType } from "../../Context/LandscapeContext";
+import { IAssessment, IGroup, IItem, ILandscape } from '../../interfaces';
+import { LandscapeContextType } from '../../Context/LandscapeContext';
 
 const items: IItem[] = [
   {
@@ -69,15 +69,15 @@ const assessments: IAssessment = {
   },
 };
 
-const landscapeContextValue : LandscapeContextType = {
+const landscapeContextValue: LandscapeContextType = {
   identifier: 'test',
   landscape: landscape,
   assessment: assessments,
-  next: jest.fn(),
+  next: typeof jest != 'undefined' ? jest.fn() : () => {},
   getAssessmentSummary: (fqi) => {
     return assessments.results[fqi].find((assessmentResult) => assessmentResult.summary) || null;
   },
   notification: null,
-}
+};
 
 export default landscapeContextValue;

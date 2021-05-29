@@ -1,29 +1,36 @@
 import React from 'react';
-import { Table, TableBody, TableCell, TableRow, Typography } from '@material-ui/core';
+import {
+  AppBar,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  Tabs,
+  TextField,
+} from '@material-ui/core';
 import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
+import { ListAlt, SaveAlt, Speed } from '@material-ui/icons';
+import Button from '@material-ui/core/Button';
+import { SaveSearchConfig } from './SaveSearchConfig';
+import { IFacet } from '../../../interfaces';
+import { a11yProps, TabPanel } from '../Utils/TabUtils';
 
-interface IFacet {
-  dim: string;
-  path: [];
-  value: number;
-  childCount: number;
-  labelValues: ILabelValue[];
-}
-
-interface FacetsInterface {
-  addFacet: Function;
+interface FacetsProps {
+  addFacet: (dim: string, label: string) => string;
+  saveSearch: (config: SaveSearchConfig) => void;
   facets: IFacet[];
 }
 
-interface ILabelValue {
-  label: string;
-  value: number;
-}
-
-const Facets: React.FC<FacetsInterface> = ({ facets, addFacet }) => {
+const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
   const facetsHtml: JSX.Element[] = [];
   const kpiHtml: JSX.Element[] = [];
+  const [value, setValue] = React.useState(0);
+
+  const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setValue(newValue);
+  };
 
   //regular facets
   facets
@@ -84,17 +91,62 @@ const Facets: React.FC<FacetsInterface> = ({ facets, addFacet }) => {
       )
     );
 
+  const exportCurrent = () => {
+    const elementById = document.getElementById('report-title');
+    // @ts-ignore
+    const title = elementById != null ? elementById.value :'';
+    saveSearch({reportType: 'owners', title: title})
+  }
+
   return (
     <>
-      <Typography variant={'h6'}>Field filters</Typography>
-      <Table aria-label={'regular facets'} style={{ tableLayout: 'fixed' }}>
-        <TableBody>{facetsHtml}</TableBody>
-      </Table>
       <br />
-      <Typography variant={'h6'}>KPIs</Typography>
-      <Table aria-label={'kpi facets'} style={{ tableLayout: 'fixed' }}>
-        <TableBody>{kpiHtml}</TableBody>
-      </Table>
+      <br />
+      <AppBar position={'static'}>
+        <Tabs value={value} onChange={changeTab} variant={'fullWidth'} aria-label={'search tabs'}>
+          <Tab
+            icon={<ListAlt />}
+            label={'fields'}
+            style={{ minWidth: 50 }}
+            title={'Fields'}
+            {...a11yProps(0, 'search')}
+          />
+          <Tab
+            icon={<Speed />}
+            label={'kpis'}
+            style={{ minWidth: 50 }}
+            title={'KPIs'}
+            {...a11yProps(1, 'search')}
+          />
+          <Tab
+            icon={<SaveAlt />}
+            label={'Save'}
+            title={'Save'}
+            style={{ minWidth: 50 }}
+            {...a11yProps(2, 'search')}
+          />
+        </Tabs>
+      </AppBar>
+      <br />
+
+      <TabPanel value={value} index={0} prefix={'search'}>
+        <Table aria-label={'regular facets'} style={{ tableLayout: 'fixed' }}>
+          <TableBody>{facetsHtml}</TableBody>
+        </Table>
+      </TabPanel>
+
+      <TabPanel value={value} index={1} prefix={'search'}>
+        <Table aria-label={'kpi facets'} style={{ tableLayout: 'fixed' }}>
+          <TableBody>{kpiHtml}</TableBody>
+        </Table>
+      </TabPanel>
+
+      <TabPanel value={value} index={2} prefix={'search'}>
+        <TextField id="report-title" label="Report title" variant="standard" fullWidth={true} /><br />
+        <br/>
+        <Button title={'Export as report'} fullWidth={true} onClick={() => exportCurrent()} variant={"outlined"}>Export as report</Button>
+      </TabPanel>
+
     </>
   );
 };

@@ -1,6 +1,5 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.util.URLHelper;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,7 +33,7 @@ public class ItemFactoryTest {
         landscapeItem.setLabel(Label.version, "1");
         landscapeItem.setLabel(Label.team, "A-Team");
         landscapeItem.setLabel(Label.visibility, "public");
-        landscapeItem.setPrefixed(Tagged.LABEL_PREFIX_TAG, new String[]{"a", "b"});
+        Arrays.stream(new String[]{"a", "b"}).forEach(s -> landscapeItem.setPrefixed(Tagged.LABEL_PREFIX_TAG, s));
         landscapeItem.setLabel(Label.costs, "10000");
         landscapeItem.setLabel(Label.capability, "billing");
         landscapeItem.setAddress("foobar.com");

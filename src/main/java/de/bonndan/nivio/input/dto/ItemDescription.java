@@ -10,6 +10,7 @@ import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
@@ -18,7 +19,7 @@ import java.util.*;
 /**
  * This is representation of a service in the textual form as described in a source file.
  */
-public class ItemDescription implements ComponentDescription, Labeled, Linked, Tagged {
+public class ItemDescription implements ComponentDescription, Labeled, Linked, Tagged, ItemComponent {
 
     private final Map<String, Link> links = new HashMap<>();
 
@@ -83,6 +84,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.group = fqi.getGroup();
     }
 
+    @NonNull
     public String getIdentifier() {
         return identifier;
     }
@@ -92,6 +94,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     }
 
     @Schema(hidden = true)
+    @NonNull
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(environment, group, identifier);
     }
@@ -253,7 +256,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         if (this == o) {
             return true;
         }
-        if (o == null) {
+        if (!(o instanceof ItemDescription)) {
             return false;
         }
         return toString().equals(o.toString());
@@ -297,8 +300,8 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
             if (key != null) {
                 String value = map.get(StatusValue.LABEL_SUFFIX_STATUS);
                 String message = map.get(StatusValue.LABEL_SUFFIX_MESSAGE);
-                setLabel(Label.key(Label.status, key, StatusValue.LABEL_SUFFIX_STATUS), value);
-                setLabel(Label.key(Label.status, key, StatusValue.LABEL_SUFFIX_MESSAGE), message);
+                setLabel(Label.withPrefix(Label.status, key, StatusValue.LABEL_SUFFIX_STATUS), value);
+                setLabel(Label.withPrefix(Label.status, key, StatusValue.LABEL_SUFFIX_MESSAGE), message);
             }
         });
     }
@@ -327,17 +330,28 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
 
         if (value instanceof List) {
             try {
+                //noinspection unchecked,rawtypes
                 ((List) value).forEach(s -> setPrefixed(key, (String) s));
                 return;
             } catch (ClassCastException e) {
-                throw new ProcessingException("Cannot set " + key + " to " + value, e);
+                throw new ProcessingException(String.format("Cannot set '%s' to list '%s'. Is this a list-like structure", key, value), e);
             }
         }
 
         if (value instanceof Map) {
-            throw new IllegalArgumentException("Cannot set " + key + " to map " + value);
+            throw new IllegalArgumentException(String.format("Cannot use the value of '%s' as map ('%s'). Please check the spelling of", key, value));
         }
 
         labels.put(key, String.valueOf(value));
+    }
+
+    /**
+     * Setter fpr framework map.
+     *
+     * @see Label
+     * @param frameworks "name": "version"
+     */
+    public void setFrameworks(final Map<String, String> frameworks) {
+        frameworks.forEach((s, s2) -> setLabel(Label.framework.withPrefix(s), s2));
     }
 }

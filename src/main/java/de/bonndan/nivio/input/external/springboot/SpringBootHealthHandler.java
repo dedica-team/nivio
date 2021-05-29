@@ -92,11 +92,11 @@ public class SpringBootHealthHandler implements ExternalLinkHandler {
         }
 
         if (value.getStatus() != null) {
-            labels.put(Label.key(Label.health, key), asHealth(value.getStatus()));
+            labels.put(Label.health.withPrefix(key), asHealth(value.getStatus()));
         }
 
         if (value.getDetails() != null) {
-            value.getDetails().forEach((s, detail) -> labels.put(Label.key(Label.health, key, s), detail));
+            value.getDetails().forEach((s, detail) -> labels.put(Label.withPrefix(Label.health, key, s), detail));
         }
     }
 }

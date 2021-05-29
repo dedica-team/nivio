@@ -1,12 +1,13 @@
 package de.bonndan.nivio.model;
 
+import com.google.common.collect.MapDifference;
+import com.google.common.collect.Maps;
+import de.bonndan.nivio.input.AppearanceProcessor;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -172,6 +173,30 @@ public interface Labeled {
     }
 
     /**
+     * Compares the labels against a previous version.
+     *
+     * @param before instance of labeled before the change
+     * @return key-based diff
+     */
+    default List<String> diff(@NonNull final Labeled before) {
+        List<String> diff = new ArrayList<>();
+        MapDifference<String, String> difference = Maps.difference(Objects.requireNonNull(before).getLabels(), getLabels());
+        difference.entriesOnlyOnLeft().keySet().stream()
+                .filter(s -> !AppearanceProcessor.affectedLabels.contains(s))
+                .forEach(s -> diff.add(String.format("Label '%s' has been removed", s)));
+        difference.entriesOnlyOnRight().keySet().stream()
+                .filter(s -> !AppearanceProcessor.affectedLabels.contains(s))
+                .forEach(s -> diff.add(String.format("Label '%s' has been added", s)));
+        difference.entriesDiffering().forEach((key, value) -> {
+            if (AppearanceProcessor.affectedLabels.contains(key)) return;
+            String msg = String.format("Label '%s' has changed from '%s' to '%s'", key, value.leftValue(), value.rightValue());
+            diff.add(msg);
+        });
+
+        return diff;
+    }
+
+    /**
      * Map-setter that prevents overwriting existing labels.
      *
      * @param labels map of labels
@@ -209,11 +234,4 @@ public interface Labeled {
         setLabel(prefix.toLowerCase() + suffixAndValue, suffixAndValue);
     }
 
-    /**
-     * @param prefix
-     * @param suffixAndValue
-     */
-    default void setPrefixed(String prefix, String[] suffixAndValue) {
-        Arrays.stream(suffixAndValue).forEach(s -> setPrefixed(prefix, s));
-    }
 }

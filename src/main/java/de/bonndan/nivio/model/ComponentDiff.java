@@ -1,11 +1,13 @@
 package de.bonndan.nivio.model;
 
+import com.google.common.collect.Maps;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ComponentDiff {
 
@@ -69,10 +71,10 @@ public class ComponentDiff {
                                                   @NonNull final String key
     ) {
         @SuppressWarnings("unchecked") Collection<String> disjunction = CollectionUtils.disjunction(one, two);
-        String changedKeys = String.join(",", disjunction);
+        String changedKeys = disjunction.stream().filter(Objects::nonNull).collect(Collectors.joining(","));
 
         if (!StringUtils.isEmpty(changedKeys)) {
-            return List.of(String.format("%s have differences : '%s'", key, changedKeys));
+            return List.of(String.format("%s have differences: '%s'", key, changedKeys));
         }
         return Collections.emptyList();
     }

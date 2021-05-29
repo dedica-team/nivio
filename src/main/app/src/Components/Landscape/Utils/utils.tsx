@@ -83,6 +83,8 @@ export const getLabels = (element: IGroup | IItem) => {
         key.startsWith('icon') ||
         key.startsWith('fill') ||
         key.startsWith('tag') ||
+        key.startsWith('framework') ||
+        key.startsWith('network') ||
         key === 'color'
       )
         return;
@@ -99,6 +101,35 @@ export const getLabels = (element: IGroup | IItem) => {
       );
     }
   });
+  if (labels.length === 0) {
+    return null;
+  }
+  return <List dense={true}>{labels}</List>;
+};
+
+/**
+ * Returns only the labels having the given prefix.
+ * @param prefix the label prefix to filter for
+ * @param element the component having labels
+ */
+export const getLabelsWithPrefix = (prefix: string, element: IGroup | IItem) => {
+  if (!element || !element?.labels) {
+    return null;
+  }
+  let labels: ReactElement[] = [];
+  const strings = Object.keys(element.labels);
+  strings
+    .filter((key) => key.startsWith(prefix))
+    .forEach((key) => {
+      const value = element.labels?.[key] || null;
+      if (!value) return;
+      const primary = key.replace(prefix + '.', '');
+      labels.push(
+        <ListItem key={key}>
+          <ListItemText primary={primary} secondary={value.substr(0, 150)} title={value} />
+        </ListItem>
+      );
+    });
   if (labels.length === 0) {
     return null;
   }

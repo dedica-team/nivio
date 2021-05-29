@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
@@ -19,18 +20,19 @@ class SVGRendererTest {
     void testRendering() {
 
         //given
+        Landscape foo = LandscapeFactory.createForTesting("foo", "fooLandscape").build();
         IconService iconService = mock(IconService.class);
         when(iconService.getIconUrl(any(Item.class))).thenReturn("https://foo.bar/icon.png");
         MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
         SVGRenderer svgRenderer = new SVGRenderer(mapStyleSheetFactory);
 
-        LayoutedComponent lc = getLayoutedLandscape();
+        LayoutedComponent lc = getLayoutedLandscape(foo);
 
         //when
-        String render = svgRenderer.render(lc, true);
+        SVGDocument render = svgRenderer.render(lc, new Assessment(foo.applyKPIs(foo.getKpis())),true);
 
         //check svg xml is returned
-        assertTrue(render.contains("svg version=\"1.1\""));
+        assertTrue(render.getXML().contains("svg version=\"1.1\""));
 
         LayoutedComponent itemComponent = lc.getChildren().get(0).getChildren().get(0);
         assertNotNull(itemComponent);
@@ -41,8 +43,8 @@ class SVGRendererTest {
         assertEquals(266, itemComponent.getY()); //margin + group offset + own offset
     }
 
-    private LayoutedComponent getLayoutedLandscape() {
-        Landscape foo = LandscapeFactory.createForTesting("foo", "fooLandscape").build();
+    private LayoutedComponent getLayoutedLandscape(Landscape foo) {
+
 
         LayoutedComponent lc = new LayoutedComponent(foo);
         lc.setChildren(new ArrayList<>());

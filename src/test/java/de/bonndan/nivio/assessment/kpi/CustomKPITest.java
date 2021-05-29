@@ -74,6 +74,22 @@ class CustomKPITest {
     }
 
     @Test
+    public void withMessageLabel() {
+        CustomKPI test = new CustomKPI();
+
+        kpiConfig.ranges = getRangeMap();
+        kpiConfig.messageLabel = "asMessageLabel";
+        test.init(kpiConfig);
+
+        //when
+        StatusValue statusValue = test.getStatusValues(getComponent("10.1")).get(0);
+
+        //then
+        assertNotNull(statusValue);
+        Assertions.assertEquals("10.1 foo", statusValue.getMessage());
+    }
+
+    @Test
     public void brokenMatchesConfig() {
         Map<String, String> matches = getMatches();
         matches.put(Status.GREEN.name(), "0-12[");
@@ -172,6 +188,7 @@ class CustomKPITest {
     private Item getComponent(String value) {
         Item item = getTestItem("test", "a");
         item.setLabel(LABEL, value);
+        item.setLabel("asMessageLabel", value +" foo");
         return item;
     }
 

@@ -1,13 +1,16 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
+import javax.validation.constraints.Null;
 import java.awt.geom.Point2D;
 import java.util.Optional;
 
@@ -23,19 +26,26 @@ class SVGRelation extends Component {
     private final HexPath hexPath;
     private final String fill;
     private final Relation relation;
+    private final StatusValue statusValue;
 
     /**
-     * @param hexPath  the calculated best path
-     * @param fill     color
-     * @param relation graph edge, source is the item this relation belongs to
+     * @param hexPath     the calculated best path
+     * @param fill        color
+     * @param relation    graph edge, source is the item this relation belongs to
+     * @param statusValue status (worst) of source
      */
-    SVGRelation(@NonNull final HexPath hexPath, @NonNull final String fill, @NonNull final Relation relation) {
+    SVGRelation(@NonNull final HexPath hexPath,
+                @NonNull final String fill,
+                @NonNull final Relation relation,
+                @Nullable final StatusValue statusValue
+    ) {
         this.hexPath = hexPath;
         if (StringUtils.isEmpty(fill)) {
             throw new RuntimeException("Fill color cannot be empty.");
         }
         this.fill = fill;
         this.relation = relation;
+        this.statusValue = statusValue;
     }
 
     @Override
@@ -47,6 +57,15 @@ class SVGRelation extends Component {
         BezierPath bezierPath = new BezierPath();
         var points = String.join("", hexPath.getPoints());
         bezierPath.parsePathString(points);
+
+        ContainerTag status = null;
+        if (statusValue != null) {
+            status = SvgTagCreator.path()
+                    .attr("d", points)
+                    .attr("stroke", statusValue.getStatus().getName())
+                    .attr("stroke-width", 20 + SVGStatus.ADDED_STROKE)
+                    .attr("filter", "url(#" + SVGStatus.GLOW_FILTER_ID + ")");
+        }
 
         ContainerTag path = SvgTagCreator.path()
                 .attr("d", points)
@@ -74,7 +93,11 @@ class SVGRelation extends Component {
                     .attr("fill", fillId);
         }
 
-        return addAttributes(g(shadow, endMarker, path, label(bezierPath, fillId)), relation);
+        return addAttributes(g(status, shadow, endMarker, path, label(bezierPath, fillId)), relation);
+    }
+
+    public HexPath getHexPath() {
+        return hexPath;
     }
 
     private ContainerTag addAttributes(ContainerTag g, Relation relation) {
@@ -123,7 +146,7 @@ class SVGRelation extends Component {
      */
     public static ContainerTag dataflowMarker() {
         ContainerTag path = SvgTagCreator.path().attr("d", "M 0 0 L 10 5 L 0 10 z")
-                .attr("fill", "#ffffff" );
+                .attr("fill", "#ffffff");
 
         return SvgTagCreator.marker()
                 .attr("id", MARKER_ID)

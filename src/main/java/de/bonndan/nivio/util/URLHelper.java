@@ -48,15 +48,13 @@ public class URLHelper {
     /**
      * Returns the path of a file as URL or null.
      */
-    public static Optional<URL> getParentPath(String url) {
-
-        return getURL(url).map(u -> {
-            try {
-                return u.toURI().resolve(".").toURL();
-            } catch (MalformedURLException | URISyntaxException e) {
-                return null;
-            }
-        });
+    public static Optional<URL> getParentPath(@NonNull final URL url) {
+        try {
+            Objects.requireNonNull(url);
+            return Optional.of(url.toURI().resolve(".").toURL());
+        } catch (MalformedURLException | URISyntaxException e) {
+            return Optional.empty();
+        }
     }
 
     /**

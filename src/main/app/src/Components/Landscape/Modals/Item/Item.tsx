@@ -4,7 +4,6 @@ import {
   AccordionDetails,
   AccordionSummary,
   AppBar,
-  Box,
   Card,
   CardHeader,
   Link,
@@ -24,7 +23,7 @@ import {
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../../interfaces';
-import { getItem, getLabels } from '../../Utils/utils';
+import { getItem, getLabels, getLabelsWithPrefix } from '../../Utils/utils';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import { Details, ExpandMore, Info, MoreVertSharp, Wifi } from '@material-ui/icons';
@@ -34,6 +33,7 @@ import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import ItemAvatar from './ItemAvatar';
 import { LandscapeContext } from '../../../../Context/LandscapeContext';
+import { a11yProps, TabPanel } from '../../Utils/TabUtils';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,7 +41,10 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.primary.main,
     },
     tag: {
-      backgroundColor: theme.palette.primary.main,
+      backgroundColor: theme.palette.primary.dark,
+      padding: 0,
+      fontSize: '0.7rem',
+      height: 16,
     },
     interfaces: {
       backgroundColor: theme.palette.primary.main,
@@ -133,6 +136,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
       );
     });
 
+    if (ifaceElements.length === 0) return null;
     return <List dense={true}>{ifaceElements}</List>;
   };
 
@@ -167,7 +171,10 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
         relation.type ? '(' + relation.type + ')' : ''
       }`;
       if (relation.format) secondary += ', format: ' + relation.format;
-      let other = getItem(landscapeContext.landscape, isInbound ? relation.source : relation.target);
+      let other = getItem(
+        landscapeContext.landscape,
+        isInbound ? relation.source : relation.target
+      );
       if (!other) continue;
       const listItem = (
         <ListItem key={relation.name}>
@@ -220,41 +227,12 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
     ? landscapeContext.assessment?.results[item?.fullyQualifiedIdentifier]
     : null;
   const assessmentStatus = assessments ? getItemAssessments(assessments) : [];
-
+  const frameworks: ReactElement | null = item ? getLabelsWithPrefix('framework', item) : null;
   const interfaces: ReactElement | null = item ? getInterfaces(item) : null;
-
-  const a11yProps = (index: any) => {
-    return {
-      'id': `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
-    };
-  };
 
   const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
   };
-
-  interface TabPanelProps {
-    children?: React.ReactNode;
-    index: any;
-    value: any;
-  }
-
-  function TabPanel(props: TabPanelProps) {
-    const { children, value, index, ...other } = props;
-
-    return (
-      <div
-        role='tabpanel'
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-        {...other}
-      >
-        {value === index && <Box>{children}</Box>}
-      </div>
-    );
-  }
 
   const labels = item ? getLabels(item) : null;
   const extend = small ? (
@@ -266,25 +244,35 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
   const assessmentSummary = item
     ? landscapeContext.getAssessmentSummary(item.fullyQualifiedIdentifier)
     : null;
+  const tags =
+    item?.tags && item?.tags.length
+      ? item.tags.map((value) => (
+          <Chip size={'small'} label={value} key={value} className={extraClasses.tag} />
+        ))
+      : null;
+
   return (
     <Card className={classes.card}>
       <CardHeader
         title={item ? item.name || item.identifier : null}
         titleTypographyProps={{ title: 'ID: ' + item?.fullyQualifiedIdentifier }}
+        subheader={tags}
         avatar={
           item ? (
-            <IconButton
-              onClick={() => {
-                locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
-              }}
-              size={'small'}
-              title={'Click to locate'}
-            >
-              <ItemAvatar
-                item={item}
-                statusColor={assessmentSummary ? assessmentSummary.status : ''}
-              />
-            </IconButton>
+            <>
+              <IconButton
+                onClick={() => {
+                  locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
+                }}
+                size={'small'}
+                title={'Click to locate'}
+              >
+                <ItemAvatar
+                  item={item}
+                  statusColor={assessmentSummary ? assessmentSummary.status : ''}
+                />
+              </IconButton>
+            </>
           ) : (
             ''
           )
@@ -302,26 +290,26 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
                 label={'info'}
                 style={{ minWidth: 50 }}
                 title={'Info'}
-                {...a11yProps(0)}
+                {...a11yProps(0, 'item')}
               />
               <Tab
                 icon={<Wifi />}
                 label={'relations'}
                 style={{ minWidth: 50 }}
                 title={'Relations'}
-                {...a11yProps(1)}
+                {...a11yProps(1, 'item')}
               />
               <Tab
                 icon={<Details />}
                 label={'Details'}
                 title={'API / Interfaces'}
                 style={{ minWidth: 50 }}
-                {...a11yProps(2)}
+                {...a11yProps(2, 'item')}
               />
             </Tabs>
           </AppBar>
           <CardContent>
-            <TabPanel value={value} index={0}>
+            <TabPanel value={value} index={0} prefix={'item'}>
               <Table aria-label={'info table'} style={{ tableLayout: 'fixed' }}>
                 <TableBody>
                   {item?.group ? (
@@ -354,19 +342,10 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
                       <TableCell>{item?.contact}</TableCell>
                     </TableRow>
                   ) : null}
-                  {item?.tags && item?.tags.length ? (
-                    <TableRow key={'tags'}>
-                      <TableCell>Tags</TableCell>
-                      <TableCell>
-                        {item.tags.map((value) => (
-                          <Chip
-                            size={'small'}
-                            label={value}
-                            key={value}
-                            className={extraClasses.tag}
-                          />
-                        ))}
-                      </TableCell>
+                  {item?.address ? (
+                    <TableRow key={'address'}>
+                      <TableCell>Address</TableCell>
+                      <TableCell>{item?.address}</TableCell>
                     </TableRow>
                   ) : null}
 
@@ -383,26 +362,21 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
                         );
                       })
                     : null}
-
-                  {assessmentStatus.length > 0 ? assessmentStatus : null}
                 </TableBody>
               </Table>
 
-              {labels ? (
-                <Accordion className={extraClasses.labels}>
-                  <AccordionSummary
-                    expandIcon={<ExpandMore />}
-                    aria-controls='panel_labels-content'
-                    id='panel_labels-header'
-                  >
-                    more
-                  </AccordionSummary>
-                  <AccordionDetails>{labels}</AccordionDetails>
-                </Accordion>
+              {assessmentStatus.length > 0 ? (
+                <>
+                  <br />
+                  <Typography variant={'h6'}>Assessment</Typography>
+                  <Table>
+                    <TableBody>{assessmentStatus}</TableBody>
+                  </Table>
+                </>
               ) : null}
             </TabPanel>
 
-            <TabPanel value={value} index={1}>
+            <TabPanel value={value} index={1} prefix={'item'}>
               {inboundRelations && inboundRelations.length ? (
                 <div>
                   <Typography variant={'h6'}>Inbound</Typography>
@@ -421,8 +395,22 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
               )}
             </TabPanel>
 
-            <TabPanel value={value} index={2}>
-              {interfaces ? (
+            <TabPanel value={value} index={2} prefix={'item'}>
+              {frameworks ? (
+                <div className='frameworks'>
+                  <Typography variant={'h6'}>Frameworks</Typography>
+                  {frameworks}
+                </div>
+              ) : null}
+
+              {labels ? (
+                <>
+                  <Typography variant={'h6'}>Labels</Typography>
+                  {labels}
+                </>
+              ) : null}
+
+              {interfaces != null ? (
                 <div className='interfaces'>
                   <Typography variant={'h6'}>Interfaces</Typography>
                   {interfaces}

@@ -94,6 +94,7 @@ export interface IItem {
   name: string;
   owner: string;
   description?: string;
+  address?: string;
   contact: string;
   relations: IRelations;
   interfaces?: Array<IInterfaces>;
@@ -197,4 +198,25 @@ export interface INotificationMessage {
   type: string;
   date: Date;
   changelog: { changes: IChanges };
+}
+
+export interface IFacet {
+  /**
+   * label / title
+   */
+  dim: string;
+  //path: [];
+  /**
+   * total count
+   */
+  value: number;
+  /**
+   * different label counts
+   */
+  labelValues: ILabelValue[];
+}
+
+export interface ILabelValue {
+  label: string;
+  value: number;
 }
