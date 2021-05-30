@@ -33,14 +33,6 @@ class SVGRendererTest {
 
         //check svg xml is returned
         assertTrue(render.getXML().contains("svg version=\"1.1\""));
-
-        LayoutedComponent itemComponent = lc.getChildren().get(0).getChildren().get(0);
-        assertNotNull(itemComponent);
-
-
-        //check items are shifted
-        assertEquals(250, itemComponent.getX()); //margin + group offset + own offset
-        assertEquals(266, itemComponent.getY()); //margin + group offset + own offset
     }
 
     private LayoutedComponent getLayoutedLandscape(Landscape foo) {
