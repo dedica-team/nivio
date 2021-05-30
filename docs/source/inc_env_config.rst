@@ -1,6 +1,6 @@
 .. envvar:: DEMO
 
-A non-empty value causes Nivio to start in demo mode with prepared data.
+A non-empty value causes Nivio to start in demo mode with prepared data. Use the value 'all' to load more landscapes.
 
 .. envvar:: GITHUB_JWT
 
