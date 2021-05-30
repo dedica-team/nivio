@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { IAssessmentProps, IGroup, IItem, ILandscape } from '../../../interfaces';
+import { IGroup, IItem, ILandscape } from '../../../interfaces';
 import { Button, Link, List, ListItem, ListItemText } from '@material-ui/core';
 
 /**
