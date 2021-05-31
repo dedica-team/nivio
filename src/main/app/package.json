@@ -30,6 +30,7 @@
     "react-svg-pan-zoom-loader": "^1.4.1",
     "react-transition-group": "^4.4.1",
     "svg-path-properties": "^1.0.10",
+    "transformation-matrix": "^2.8.0",
     "typescript": "~3.9.9"
   },
   "devDependencies": {

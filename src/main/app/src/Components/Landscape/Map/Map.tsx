@@ -9,7 +9,6 @@ import React, {
 import { useParams } from 'react-router-dom';
 
 import { SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
-import { fitToViewer, ReactSVGPanZoom, Tool, TOOL_AUTO, Value } from 'react-svg-pan-zoom';
 
 import './Map.css';
 
@@ -20,13 +19,21 @@ import { ReactSvgPanZoomLoaderXML } from './ReactSVGPanZoomLoaderXML';
 import Item from '../Modals/Item/Item';
 import { getGroup, getItem } from '../Utils/utils';
 import Group from '../Modals/Group/Group';
-//import MapUtils from './MapUtils';
 import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import IconButton from '@material-ui/core/IconButton';
 import { createStyles, darken, Theme } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { LandscapeContext } from '../../../Context/LandscapeContext';
+import ReactSVGPanZoom from './ReactSVGPanZoom/viewer';
+import {
+  fitSelection,
+  fitToViewer,
+  setPointOnViewerCenter,
+  TOOL_AUTO,
+  Value,
+} from './ReactSVGPanZoom/ReactSVGPanZoom';
+import MapUtils from "./MapUtils";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -48,6 +55,7 @@ interface Props {
 interface SVGData {
   width: number;
   height: number;
+  viewBox: SVGAnimatedRect;
   xml: string;
 }
 
@@ -59,7 +67,6 @@ interface SVGData {
  * @param setPageTitle can be used to set the page title in parent state
  */
 const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
-  const [tool, setTool] = useState<Tool>(TOOL_AUTO);
   const classes = useStyles();
   // It wants a value or null but if we defined it as null it throws an error that shouldn't use null
   // In their own documentation, they initialize it with {}, but that will invoke a typescript error
@@ -82,8 +89,9 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       let dataX = element.getAttribute('data-x');
       let dataY = element.getAttribute('data-y');
       if (dataX && dataY) {
-        //const coords = MapUtils.getCenterCoordinates(value, dataX, dataY);
-        //setValue(setPointOnViewerCenter(value, coords.x, coords.y, 1));
+        const coords = MapUtils.getCenterCoordinates(value, dataX, dataY);
+        console.log('Centering on', dataX, dataY, value);
+        setValue(setPointOnViewerCenter(value, coords.x, coords.y, 1));
         setRenderWithTransition(true);
         setHighlightElement(element);
       }
@@ -139,16 +147,13 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       sourceY = parseFloat(sourceY) / 2;
       targetY = parseFloat(targetY) / 2;
 
-      /*
       const x = (sourceX + targetX) / 2;
       const y = (sourceY + targetY) / 2;
 
       const zoomWidth = Math.abs(Math.min(sourceX, targetX)) + window.innerWidth;
       const zoomHeight = Math.abs(Math.min(sourceY, targetY)) + window.innerHeight * 0.92;
 
-       */
-
-      //setValue(fitSelection(value, x - 500, y, zoomWidth, zoomHeight));
+      setValue(fitSelection(value, x - 500, y, zoomWidth, zoomHeight));
     }
 
     if (source && target && dataTarget) {
@@ -165,7 +170,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       const doc: any = parser.parseFromString(svg, 'image/svg+xml');
       const width = doc.firstElementChild.width.baseVal.value;
       const height = doc.firstElementChild.height.baseVal.value;
-      setData({ width: width, height: height, xml: svg });
+      const viewBox: SVGAnimatedRect = doc.firstElementChild.viewBox.baseVal;
+      setData({ width: width, height: height, viewBox: viewBox, xml: svg });
     });
   }, [identifier, setData]);
 
@@ -253,7 +259,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
             title={'Click to reset view'}
             onClick={() => {
               // @ts-ignore
-              setValue(fitToViewer(value, 'center', 'center'));
+              viewer.current.fitToViewer(value, 'center', 'center');
               setIsZoomed(false);
             }}
             size={'small'}
@@ -287,6 +293,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
               key={'panzoom'}
               width={window.innerWidth}
               height={window.innerHeight * 0.92}
+              viewBox={data?.viewBox}
               background={'transparent'}
               miniatureProps={{
                 position: 'none',
@@ -300,10 +307,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
               onZoom={() => {
                 setIsZoomed(true);
               }}
-              tool={tool}
-              onChangeTool={(newTool) => setTool(newTool)}
+              tool={TOOL_AUTO}
               value={value}
-              onChangeValue={(newValue) => setValue(newValue)}
               className={`ReactSVGPanZoom ${renderWithTransition ? 'with-transition' : ''}`}
             >
               <svg width={data?.width} height={data?.height}>
