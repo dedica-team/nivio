@@ -37,7 +37,7 @@ public class NivioConfigProperties {
     @Pattern(regexp = URL_REGEX, message = "brandingLogoUrl must be a valid URL")
     private String brandingLogoUrl;
 
-    @Pattern(regexp = "[a-zA-Z ]+", message = "brandingMessage to show on the front page")
+    @Pattern(regexp = "[a-zA-Z ]+", message = "brandingMessage must be a valid string")
     private String brandingMessage;
     //iconFolder: /a/local/path
 
