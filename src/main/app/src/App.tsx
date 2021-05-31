@@ -18,6 +18,7 @@ interface Config {
   brandingBackground: string;
   brandingSecondary: string;
   brandingLogoUrl: string;
+  brandingMessage: string;
 }
 
 interface Index {
