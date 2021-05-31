@@ -17,7 +17,7 @@ public enum ConfigurableEnvVars {
     NIVIO_BRANDING_BACKGROUND("Branding background color (hexadecimal only)."),
     NIVIO_BRANDING_SECONDARY("Accent color used for active elements (hexadecimal only)."),
     NIVIO_BRANDING_LOGO_URL("A URL pointing to a logo."),
-    NIVIO_BRANDING_MESSAGE("A Welcome Message on the front page."),
+    NIVIO_BRANDING_MESSAGE("A welcome message on the front page."),
 
     /**
      * see {@link org.kohsuke.github.GitHubBuilder}
