@@ -78,6 +78,7 @@ export default class ReactSVGPanZoom extends React.Component {
         scaleFactorMin,
         scaleFactorMax
       );
+
     } else {
       const { width: SVGWidth, height: SVGHeight } = children.props;
       defaultValue = getDefaultValue(
@@ -91,7 +92,6 @@ export default class ReactSVGPanZoom extends React.Component {
         scaleFactorMax
       );
     }
-
     super(props, context);
     this.ViewerDOM = null;
     this.state = {
@@ -317,7 +317,6 @@ export default class ReactSVGPanZoom extends React.Component {
         : undefined;
 
     const style = { display: 'block', cursor, touchAction };
-debugger;
     return (
       <div
         style={{

@@ -33,7 +33,7 @@ import {
   TOOL_AUTO,
   Value,
 } from './ReactSVGPanZoom/ReactSVGPanZoom';
-import MapUtils from "./MapUtils";
+import { getApproximateCenterCoordinates, getCorrected } from './MapUtils';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -55,7 +55,7 @@ interface Props {
 interface SVGData {
   width: number;
   height: number;
-  viewBox: SVGAnimatedRect;
+  viewBox: SVGRect;
   xml: string;
 }
 
@@ -83,20 +83,29 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const locateFunctionContext = useContext(LocateFunctionContext);
   const landscapeContext = useContext(LandscapeContext);
 
-  const locateComponent = useCallback((fullyQualifiedItemIdentifier: string) => {
-    const element = document.getElementById(fullyQualifiedItemIdentifier);
-    if (element) {
-      let dataX = element.getAttribute('data-x');
-      let dataY = element.getAttribute('data-y');
-      if (dataX && dataY) {
-        const coords = MapUtils.getCenterCoordinates(value, dataX, dataY);
-        console.log('Centering on', dataX, dataY, value);
-        setValue(setPointOnViewerCenter(value, coords.x, coords.y, 1));
-        setRenderWithTransition(true);
-        setHighlightElement(element);
+  const locateComponent = useCallback(
+    (fullyQualifiedItemIdentifier: string) => {
+      const element = document.getElementById(fullyQualifiedItemIdentifier);
+      if (element) {
+        let dataX = Number(element.getAttribute('data-x'));
+        let dataY = Number(element.getAttribute('data-y'));
+        if (dataX && dataY && data) {
+          const coords = getApproximateCenterCoordinates(
+            data.viewBox,
+            data.width,
+            data.height,
+            dataX,
+            dataY
+          );
+
+          setValue(setPointOnViewerCenter(value, coords.x, coords.y, 0.5));
+          setRenderWithTransition(true);
+          setHighlightElement(element);
+        }
       }
-    }
-  }, []);
+    },
+    [data, value]
+  );
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
@@ -123,8 +132,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       sourceElement = document.getElementById(dataSource);
       source = getItem(landscapeContext.landscape, dataSource);
       if (sourceElement) {
-        sourceX = sourceElement.getAttribute('data-x');
-        sourceY = sourceElement.getAttribute('data-y');
+        sourceX = Number(sourceElement.getAttribute('data-x'));
+        sourceY = Number(sourceElement.getAttribute('data-y'));
       }
     }
 
@@ -134,26 +143,23 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       targetElement = document.getElementById(dataTarget);
       target = getItem(landscapeContext.landscape, dataTarget);
       if (targetElement) {
-        targetX = targetElement.getAttribute('data-x');
-        targetY = targetElement.getAttribute('data-y');
+        targetX = Number(targetElement.getAttribute('data-x'));
+        targetY = Number(targetElement.getAttribute('data-y'));
       }
     }
 
     setHighlightElement(e.currentTarget.children);
     setRenderWithTransition(true);
-    if (sourceX && sourceY && targetX && targetY) {
-      sourceX = parseFloat(sourceX) / 2;
-      targetX = parseFloat(targetX) / 2;
-      sourceY = parseFloat(sourceY) / 2;
-      targetY = parseFloat(targetY) / 2;
 
-      const x = (sourceX + targetX) / 2;
-      const y = (sourceY + targetY) / 2;
+    if (data && sourceX && sourceY && targetX && targetY) {
 
-      const zoomWidth = Math.abs(Math.min(sourceX, targetX)) + window.innerWidth;
-      const zoomHeight = Math.abs(Math.min(sourceY, targetY)) + window.innerHeight * 0.92;
+      const minX = Math.min(sourceX, targetX);
+      const minY = Math.min(sourceY, targetY);
 
-      setValue(fitSelection(value, x - 500, y, zoomWidth, zoomHeight));
+      const zoomWidth = Math.abs(Math.max(sourceX, targetX) - minX) + window.innerWidth;
+      const zoomHeight = Math.abs(Math.max(sourceY, targetY) - minY) + window.innerHeight;
+
+      setValue(fitSelection(value, getCorrected(data.viewBox.x, minX, data.width), getCorrected(data.viewBox.y, minY, data.height), zoomWidth, zoomHeight));
     }
 
     if (source && target && dataTarget) {
@@ -170,7 +176,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       const doc: any = parser.parseFromString(svg, 'image/svg+xml');
       const width = doc.firstElementChild.width.baseVal.value;
       const height = doc.firstElementChild.height.baseVal.value;
-      const viewBox: SVGAnimatedRect = doc.firstElementChild.viewBox.baseVal;
+      const viewBox: SVGRect = doc.firstElementChild.viewBox.baseVal;
       setData({ width: width, height: height, viewBox: viewBox, xml: svg });
     });
   }, [identifier, setData]);
@@ -259,7 +265,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
             title={'Click to reset view'}
             onClick={() => {
               // @ts-ignore
-              viewer.current.fitToViewer(value, 'center', 'center');
+              setValue(fitToViewer(value, 'center', 'center'));
               setIsZoomed(false);
             }}
             size={'small'}
@@ -308,6 +314,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
                 setIsZoomed(true);
               }}
               tool={TOOL_AUTO}
+              onChangeValue={(newValue: Value) => setValue(newValue)}
+              onChangeTool={() => {}}
               value={value}
               className={`ReactSVGPanZoom ${renderWithTransition ? 'with-transition' : ''}`}
             >

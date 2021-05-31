@@ -1,6 +1,5 @@
 import {
   applyToPoint,
-  applyToPoints,
   fromObject,
   identity,
   inverse,
@@ -202,7 +201,6 @@ export function fitSelection(
   );
 }
 
-
 export function fitToViewer(value: Value, SVGAlignX = ALIGN_LEFT, SVGAlignY = ALIGN_TOP): Value {
   let { viewerWidth, viewerHeight, SVGMinX, SVGMinY, SVGWidth, SVGHeight } = value;
 
@@ -346,10 +344,17 @@ export function setPointOnViewerCenter(
 ): Value {
   let { viewerWidth, viewerHeight } = value;
 
+  console.log('viewer center', SVGPointX, SVGPointY, viewerWidth, viewerHeight);
   let matrix = transform(
     translate(-SVGPointX + viewerWidth / 2, -SVGPointY + viewerHeight / 2), //4
-    translate(SVGPointX, SVGPointY), //3
-    scale(zoomLevel, zoomLevel), //2
+    translate(SVGPointX, SVGPointY) //3
+  );
+  matrix = transform(
+    matrix,
+    scale(zoomLevel, zoomLevel) //2
+  );
+  matrix = transform(
+    matrix,
     translate(-SVGPointX, -SVGPointY) //1
   );
 
