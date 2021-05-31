@@ -17,8 +17,11 @@ public enum ConfigurableEnvVars {
     NIVIO_BRANDING_BACKGROUND("Branding background color (hexadecimal only)."),
     NIVIO_BRANDING_SECONDARY("Accent color used for active elements (hexadecimal only)."),
     NIVIO_BRANDING_LOGO_URL("A URL pointing to a logo."),
+    NIVIO_BRANDING_MESSAGE("A Welcome Message on the front page."),
 
-    /** see {@link org.kohsuke.github.GitHubBuilder} */
+    /**
+     * see {@link org.kohsuke.github.GitHubBuilder}
+     */
     GITHUB_LOGIN("GitHub user name. Can also be used to connect as organization with OAuth."),
     GITHUB_PASSWORD("GitHub password (for username/password login)."),
     GITHUB_OAUTH("GitHUb OAuth Token to connect to GitHub via personal access token."),
