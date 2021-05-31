@@ -27,7 +27,6 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { LandscapeContext } from '../../../Context/LandscapeContext';
 import ReactSVGPanZoom from './ReactSVGPanZoom/viewer';
 import {
-  fitSelection,
   fitToViewer,
   setPointOnViewerCenter,
   TOOL_AUTO,
@@ -152,14 +151,16 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     setRenderWithTransition(true);
 
     if (data && sourceX && sourceY && targetX && targetY) {
-
       const minX = Math.min(sourceX, targetX);
       const minY = Math.min(sourceY, targetY);
 
-      const zoomWidth = Math.abs(Math.max(sourceX, targetX) - minX) + window.innerWidth;
-      const zoomHeight = Math.abs(Math.max(sourceY, targetY) - minY) + window.innerHeight;
-
-      setValue(fitSelection(value, getCorrected(data.viewBox.x, minX, data.width), getCorrected(data.viewBox.y, minY, data.height), zoomWidth, zoomHeight));
+      let centerX = minX + (Math.max(sourceX, targetX) - minX) / 2;
+      const correctedX = getCorrected(data.viewBox.x, centerX, data.width);
+      let centerY = minY + (Math.max(sourceY, targetY) - minY) / 2;
+      const correctedY = getCorrected(data.viewBox.y, centerY, data.height);
+      setValue(
+        setPointOnViewerCenter(value, correctedX, correctedY, 0.3)
+      );
     }
 
     if (source && target && dataTarget) {
