@@ -29,6 +29,7 @@ const App: React.FC = () => {
   const [sidebarContent, setSidebarContent] = useState<ReactElement[]>([]);
   const [pageTitle, setPageTitle] = useState<string>('');
   const [logo, setLogo] = useState<string>('');
+  const [message, setMessage] = useState<string>('');
   const [theme, setTheme] = useState<Theme>();
 
   useEffect(() => {
@@ -51,6 +52,7 @@ const App: React.FC = () => {
       const back = getColorSafely(index.config.brandingBackground, '#161618');
       const front = getColorSafely(index.config.brandingForeground, '#22F2C2');
       const secondary = getColorSafely(index.config.brandingSecondary, '#eeeeee');
+      setMessage(index.config.brandingMessage);
 
       const tv: ThemeOptions = defaultThemeVariables;
       if (!tv.palette) return;
@@ -101,6 +103,7 @@ const App: React.FC = () => {
                 <LandscapeOverview
                   setSidebarContent={setSidebarContent}
                   setPageTitle={setPageTitle}
+                  welcomeMessage={message}
                   {...props}
                 />
               )}

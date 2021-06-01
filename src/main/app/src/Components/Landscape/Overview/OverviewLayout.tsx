@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     overview: {
       marginLeft: 10,
+      width: 'calc(100% - 300px)',
       paddingTop: 0
     },
     card: {
