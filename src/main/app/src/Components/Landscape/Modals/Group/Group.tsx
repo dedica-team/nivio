@@ -98,7 +98,7 @@ const Group: React.FC<Props> = ({ group }) => {
             <br />
             <Typography variant={'h6'}>Status</Typography>
             <StatusChip
-              name={group.name || group.identifier}
+              name={assessment.maxField}
               status={assessment?.status}
               value={assessment.message}
             />
