@@ -35,6 +35,9 @@ public class NivioConfigProperties {
 
     @Pattern(regexp = URL_REGEX, message = "brandingLogoUrl must be a valid URL")
     private String brandingLogoUrl;
+
+    @Pattern(regexp = "[a-zA-Z ]+", message = "brandingMessage must be a valid string")
+    private String brandingMessage;
     //iconFolder: /a/local/path
 
 
@@ -94,13 +97,21 @@ public class NivioConfigProperties {
         this.brandingLogoUrl = brandingLogoUrl;
     }
 
+    public String getBrandingMessage() {
+        return brandingMessage;
+    }
+
+    public void setBrandingMessage(String brandingMessage) {
+        this.brandingMessage = brandingMessage;
+    }
+
     public ApiModel getApiModel() {
         java.net.URL brandingLogoUrl = null;
         try {
             brandingLogoUrl = this.brandingLogoUrl != null ? new java.net.URL(getBrandingLogoUrl()) : null;
         } catch (MalformedURLException ignored) {
         }
-        return new ApiModel(baseUrl, version, brandingForeground, brandingBackground, brandingSecondary, brandingLogoUrl);
+        return new ApiModel(baseUrl, version, brandingForeground, brandingBackground, brandingSecondary, brandingLogoUrl, brandingMessage);
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -111,13 +122,15 @@ public class NivioConfigProperties {
         public final String brandingBackground;
         public final String brandingSecondary;
         public final java.net.URL brandingLogoUrl;
+        public final String brandingMessage;
 
         public ApiModel(String baseUrl,
                         String version,
                         String brandingForeground,
                         String brandingBackground,
                         String brandingSecondary,
-                        java.net.URL brandingLogoUrl
+                        java.net.URL brandingLogoUrl,
+                        String brandingMessage
         ) {
             this.baseUrl = baseUrl;
             this.version = version;
@@ -125,6 +138,7 @@ public class NivioConfigProperties {
             this.brandingBackground = brandingBackground;
             this.brandingSecondary = brandingSecondary;
             this.brandingLogoUrl = brandingLogoUrl;
+            this.brandingMessage = brandingMessage;
         }
     }
 }
