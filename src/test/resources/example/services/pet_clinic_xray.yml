@@ -30,3 +30,14 @@ items:
     group: xray
     description: backup volume
 
+  - identifier: customer-db
+    owner: Louis Armstrong
+    group: xray
+    software: MariaDB
+    version: 10.3.11
+    address: jupiter.acme.com
+    type: database
+    team: ops guys
+    scale: 1
+    hostType: docker
+    layer: infrastructure

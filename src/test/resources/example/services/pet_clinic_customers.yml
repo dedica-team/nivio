@@ -135,15 +135,3 @@ items:
     tags:
       - ui
       - auth
-
-
-  - identifier: customer-db
-    owner: Louis Armstrong
-    software: MariaDB
-    version: 10.3.11
-    address: jupiter.acme.com
-    type: database
-    team: ops guys
-    scale: 1
-    hostType: docker
-    layer: infrastructure
