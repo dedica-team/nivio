@@ -47,6 +47,7 @@ nivio:
   brandingBackground: ${NIVIO_BRANDING_BACKGROUND:161618}
   brandingSecondary: ${NIVIO_BRANDING_SECONDARY:22F2C2}
   brandingLogoUrl: ${NIVIO_BRANDING_LOGO_URL:}
+  brandingMessage: ${NIVIO_BRANDING_MESSAGE:All Landscapes}
 
 ---
 spring:

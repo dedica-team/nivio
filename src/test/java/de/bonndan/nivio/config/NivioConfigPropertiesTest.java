@@ -83,4 +83,16 @@ class NivioConfigPropertiesTest {
         ConstraintViolation<NivioConfigProperties>[] constraintViolations = (ConstraintViolation<NivioConfigProperties>[]) validate.toArray(ConstraintViolation[]::new);
         assertThat(constraintViolations[0].getMessage()).isEqualTo("brandingLogoUrl must be a valid URL");
     }
+
+    @Test
+    void checksBrandingMessage() {
+
+        NivioConfigProperties props = new NivioConfigProperties();
+        props.setBrandingMessage("*!W13");
+        Set<ConstraintViolation<NivioConfigProperties>> validate = localValidatorFactoryBean.getValidator().validate(props);
+
+        assertThat(validate).isNotEmpty();
+        ConstraintViolation<NivioConfigProperties>[] constraintViolations = (ConstraintViolation<NivioConfigProperties>[]) validate.toArray(ConstraintViolation[]::new);
+        assertThat(constraintViolations[0].getMessage()).isEqualTo("brandingMessage must be a valid string");
+    }
 }
