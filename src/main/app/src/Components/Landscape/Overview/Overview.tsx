@@ -75,7 +75,7 @@ const Overview: React.FC<Props> = ({ setSidebarContent, setPageTitle, welcomeMes
     getLandscapes();
     setSidebarContent(<Events />);
     setPageTitle(welcomeMessage);
-  }, [getLandscapes, setSidebarContent, setPageTitle]);
+  }, [getLandscapes, setSidebarContent, setPageTitle, welcomeMessage]);
 
   const loading = (
     <div className={classes.loading}>
