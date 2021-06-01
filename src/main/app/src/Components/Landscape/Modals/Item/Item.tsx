@@ -356,7 +356,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
                           <TableRow key={'link_' + data[0]}>
                             <TableCell>{data[0]}</TableCell>
                             <TableCell>
-                              <Link href={data[1].href}>{data[1].href}</Link>
+                              <Link href={data[1].href} className={classes.link}>{data[1].href}</Link>
                             </TableCell>
                           </TableRow>
                         );

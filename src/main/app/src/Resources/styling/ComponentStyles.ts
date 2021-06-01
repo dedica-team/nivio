@@ -42,6 +42,9 @@ const componentStyles = makeStyles((theme: Theme) =>
       width: '2.1rem !important',
       marginLeft: '0.5rem'
     },
+    link: {
+      color: theme.palette.secondary.main,
+    }
   })
 );
 
