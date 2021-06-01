@@ -25,14 +25,8 @@ import IconButton from '@material-ui/core/IconButton';
 import { createStyles, darken, Theme } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { LandscapeContext } from '../../../Context/LandscapeContext';
-import ReactSVGPanZoom from './ReactSVGPanZoom/viewer';
-import {
-  fitToViewer,
-  setPointOnViewerCenter,
-  TOOL_AUTO,
-  Value,
-} from './ReactSVGPanZoom/ReactSVGPanZoom';
 import { getApproximateCenterCoordinates, getCorrected } from './MapUtils';
+import { fitToViewer, ReactSVGPanZoom, setPointOnViewerCenter, TOOL_AUTO, Value } from "react-svg-pan-zoom";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -158,9 +152,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       const correctedX = getCorrected(data.viewBox.x, centerX, data.width);
       let centerY = minY + (Math.max(sourceY, targetY) - minY) / 2;
       const correctedY = getCorrected(data.viewBox.y, centerY, data.height);
-      setValue(
-        setPointOnViewerCenter(value, correctedX, correctedY, 0.3)
-      );
+      setValue(setPointOnViewerCenter(value, correctedX, correctedY, 0.3));
     }
 
     if (source && target && dataTarget) {
@@ -253,8 +245,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
   if (data) {
     if (isFirstRender && value.a != null) {
-      // @ts-ignore
-      setValue(fitToViewer(value, 'center', 'center'));
+      setValue(fitToViewer(value));
       setIsFirstRender(false);
     }
 
@@ -300,7 +291,6 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
               key={'panzoom'}
               width={window.innerWidth}
               height={window.innerHeight * 0.92}
-              viewBox={data?.viewBox}
               background={'transparent'}
               miniatureProps={{
                 position: 'none',
