@@ -33,8 +33,8 @@ const useStyles = makeStyles((theme: Theme) =>
     menuIcon: {
       position: 'absolute',
       cursor: 'pointer',
-      top: '70px',
       zIndex: 1000,
+      left: 20,
       backgroundColor: darken(theme.palette.primary.main, 0.2),
     },
   })
@@ -94,6 +94,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
           setValue(setPointOnViewerCenter(value, coords.x, coords.y, 0.5));
           setRenderWithTransition(true);
           setHighlightElement(element);
+          setIsZoomed(true);
         }
       }
     },
@@ -153,6 +154,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       let centerY = minY + (Math.max(sourceY, targetY) - minY) / 2;
       const correctedY = getCorrected(data.viewBox.y, centerY, data.height);
       setValue(setPointOnViewerCenter(value, correctedX, correctedY, 0.3));
+      setIsZoomed(true);
     }
 
     if (source && target && dataTarget) {
