@@ -68,4 +68,7 @@ jobs:
         # The --no-transfer-progress flag ensures that dependency downloads are not logged.
         # Reference: https://maven.apache.org/ref/3.6.3/maven-embedder/cli.html
         # This is useful as the tests run in fresh containers and, therefore, dependencies are *always* downloaded.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn test --batch-mode --no-transfer-progress --f pom.xml org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
