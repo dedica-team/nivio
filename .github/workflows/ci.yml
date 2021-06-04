@@ -39,6 +39,13 @@ jobs:
         with:
           java-version: ${{matrix.jdk}}
 
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
       - name: Cache local Maven repository
         uses: actions/cache@v2
         with:
@@ -61,4 +68,4 @@ jobs:
         # The --no-transfer-progress flag ensures that dependency downloads are not logged.
         # Reference: https://maven.apache.org/ref/3.6.3/maven-embedder/cli.html
         # This is useful as the tests run in fresh containers and, therefore, dependencies are *always* downloaded.
-        run: mvn test --batch-mode --no-transfer-progress --f pom.xml
+        run: mvn test --batch-mode --no-transfer-progress --f pom.xml org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
