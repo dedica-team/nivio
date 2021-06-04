@@ -42,8 +42,11 @@ public class LinksResolver extends Resolver {
         LOGGER.info("Waiting for completion of {} external link handlers.", completableFutures.size());
         try {
             CompletableFuture.allOf(completableFutures.toArray(CompletableFuture[]::new)).get(2, TimeUnit.MINUTES);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (ExecutionException | TimeoutException e) {
             processLog.error(new ProcessingException("Failed to complete all external data resolvers", e));
+        } catch (InterruptedException e) {
+            processLog.error(new ProcessingException("Failed to complete all external data resolvers", e));
+            Thread.currentThread().interrupt();
         }
     }
 
