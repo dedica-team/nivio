@@ -54,6 +54,10 @@ Branding foreground color (hexadecimal only).
 
 A URL pointing to a logo.
 
+.. envvar:: NIVIO_BRANDING_MESSAGE
+
+A welcome message on the front page.
+
 .. envvar:: NIVIO_BRANDING_SECONDARY
 
 Accent color used for active elements (hexadecimal only).
