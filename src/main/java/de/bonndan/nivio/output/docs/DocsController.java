@@ -10,9 +10,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,7 +33,7 @@ public class DocsController {
         this.iconService = iconService;
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/" + REPORT_HTML)
+    @GetMapping(path = "/{landscape}/" + REPORT_HTML)
     public ResponseEntity<String> htmlResource(@PathVariable(name = "landscape") final String landscapeIdentifier, final HttpServletRequest request) {
 
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
@@ -52,7 +52,7 @@ public class DocsController {
 
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/owners.html")
+    @GetMapping(path = "/{landscape}/owners.html")
     public ResponseEntity<String> owners(@PathVariable(name = "landscape") final String landscapeIdentifier,
                                          final HttpServletRequest request
     ) {

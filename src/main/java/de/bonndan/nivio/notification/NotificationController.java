@@ -1,10 +1,7 @@
 package de.bonndan.nivio.notification;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/events")
@@ -17,7 +14,7 @@ public class NotificationController {
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping()
     public ResponseEntity<EventNotification[]> events() {
         return ResponseEntity.ok(messagingService.getLast());
     }

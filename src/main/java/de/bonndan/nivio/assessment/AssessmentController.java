@@ -20,7 +20,7 @@ public class AssessmentController {
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Assessment> landscape(@PathVariable String identifier) {
         FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(identifier);
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(fqi.getLandscape()).orElse(null);
