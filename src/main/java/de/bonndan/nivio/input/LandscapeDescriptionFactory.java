@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.LandscapeSource;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.util.Mappers;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookupFactory;
 import org.slf4j.Logger;
