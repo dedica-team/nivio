@@ -92,7 +92,7 @@ List of configuration sources. Handled in the given order, latter extend/overwri
      - Map
      - The parts used to create the item. Usually refers to technical frameworks.
      - optional, defaults to null
-     - null
+     - java: 8
    * - lifecycle
      - String
      - The lifecycle state of an item.

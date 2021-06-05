@@ -179,7 +179,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.group = group;
     }
 
-    @Schema(description = "The lifecycle state of an item." , allowableValues = {"PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL"})
+    @Schema(description = "The lifecycle state of an item.", allowableValues = {"PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL"})
     public void setLifecycle(String lifecycle) {
 
         //try to standardize using enum values
@@ -294,6 +294,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
      *
      * @param status a list of key-value pairs, keys are "label", "status", "message"
      */
+    @Schema(name = "status", description = "A list of statuses that works like hardcoded KPIs.")
     public void setStatus(List<LinkedHashMap<String, String>> status) {
         status.forEach(map -> {
             String key = map.get("label");
@@ -346,11 +347,12 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     }
 
     /**
-     * Setter fpr framework map.
+     * Setter for framework map.
      *
-     * @see Label
      * @param frameworks "name": "version"
+     * @see Label
      */
+    @Schema(description = "The parts used to create the item. Usually refers to technical frameworks.", type = "Map", example = "java: 8")
     public void setFrameworks(final Map<String, String> frameworks) {
         frameworks.forEach((s, s2) -> setLabel(Label.framework.withPrefix(s), s2));
     }

@@ -230,10 +230,12 @@
             "type" : "object",
             "additionalProperties" : {
               "type" : "string",
-              "description" : "The parts used to create the item. Usually refers to technical frameworks."
+              "description" : "The parts used to create the item. Usually refers to technical frameworks.",
+              "example" : "java: 8"
             },
             "description" : "The parts used to create the item. Usually refers to technical frameworks.",
-            "writeOnly" : true
+            "writeOnly" : true,
+            "example" : "java: 8"
           },
           "lifecycle" : {
             "type" : "string",
@@ -400,10 +402,6 @@
             },
             "description" : "Additional labels for the landscape."
           },
-          "partial" : {
-            "type" : "boolean",
-            "description" : "marks that the landscape is not complete, but an update"
-          },
           "color" : {
             "type" : "string"
           },
@@ -417,6 +415,10 @@
             "items" : {
               "$ref" : "#/components/schemas/ItemDescription"
             }
+          },
+          "partial" : {
+            "type" : "boolean",
+            "description" : "marks that the landscape is not complete, but an update"
           },
           "links" : {
             "type" : "object",
