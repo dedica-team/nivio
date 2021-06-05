@@ -19,7 +19,6 @@ import java.net.URL;
 @Component
 public class HttpService {
 
-
     public String get(@NonNull final URL url) throws IOException, URISyntaxException {
         return executeRequest(new HttpGet(url.toURI()));
     }
