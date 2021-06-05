@@ -157,6 +157,7 @@ public class LandscapeDescription implements ComponentDescription {
         this.owner = owner;
     }
 
+    @Schema(hidden = true)
     public List<SourceReference> getSourceReferences() {
         return sources;
     }

@@ -200,29 +200,6 @@
             "description" : "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
             "example" : "service|database|volume"
           },
-          "lifecycle" : {
-            "type" : "string",
-            "description" : "The lifecycle state of an item.",
-            "writeOnly" : true,
-            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
-          },
-          "status" : {
-            "type" : "array",
-            "writeOnly" : true,
-            "items" : {
-              "type" : "object",
-              "additionalProperties" : {
-                "type" : "string"
-              }
-            }
-          },
-          "frameworks" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            },
-            "writeOnly" : true
-          },
           "statuses" : {
             "type" : "array",
             "description" : "A list of statuses that works like hardcoded KPIs.",
@@ -235,6 +212,34 @@
               },
               "description" : "A list of statuses that works like hardcoded KPIs."
             }
+          },
+          "status" : {
+            "type" : "array",
+            "description" : "A list of statuses that works like hardcoded KPIs.",
+            "writeOnly" : true,
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string",
+                "description" : "A list of statuses that works like hardcoded KPIs."
+              },
+              "description" : "A list of statuses that works like hardcoded KPIs."
+            }
+          },
+          "frameworks" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string",
+              "description" : "The parts used to create the item. Usually refers to technical frameworks."
+            },
+            "description" : "The parts used to create the item. Usually refers to technical frameworks.",
+            "writeOnly" : true
+          },
+          "lifecycle" : {
+            "type" : "string",
+            "description" : "The lifecycle state of an item.",
+            "writeOnly" : true,
+            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
           },
           "tags" : {
             "type" : "array",
@@ -399,10 +404,10 @@
             "type" : "boolean",
             "description" : "marks that the landscape is not complete, but an update"
           },
-          "icon" : {
+          "color" : {
             "type" : "string"
           },
-          "color" : {
+          "icon" : {
             "type" : "string"
           },
           "items" : {
@@ -411,12 +416,6 @@
             "writeOnly" : true,
             "items" : {
               "$ref" : "#/components/schemas/ItemDescription"
-            }
-          },
-          "sourceReferences" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/SourceReference"
             }
           },
           "links" : {

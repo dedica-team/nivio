@@ -68,12 +68,12 @@ LandscapeDescription
      - marks that the landscape is not complete, but an update
      - optional, defaults to null
      - null
-   * - icon
+   * - color
      - String
      - 
      - optional, defaults to null
      - null
-   * - color
+   * - icon
      - String
      - 
      - optional, defaults to null
@@ -81,11 +81,6 @@ LandscapeDescription
    * - items
      - List<ItemDescription>
      - List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.
-     - optional, defaults to null
-     - null
-   * - sourceReferences
-     - List<SourceReference>
-     - 
      - optional, defaults to null
      - null
    * - links
