@@ -14,8 +14,6 @@ import java.util.Map;
  */
 public interface Linked {
 
-    String LINK_LABEL_PREFIX = "link.";
-
     /**
      * Returns all assigned links.
      *

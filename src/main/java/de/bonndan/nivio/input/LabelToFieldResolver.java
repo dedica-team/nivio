@@ -2,8 +2,8 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Link;
-import de.bonndan.nivio.model.Linked;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.PropertyAccessor;
@@ -23,6 +23,10 @@ public class LabelToFieldResolver extends Resolver {
 
     public static final String NIVIO_LABEL_PREFIX = "nivio.";
     public static final String COLLECTION_DELIMITER = ",";
+    public static final String LINK_LABEL_PREFIX = "link.";
+    public static final String LINKS_LABEL = "links";
+    private static final String FRAMEWORKS_LABEL = "frameworks";
+    public static final String MAP_KEY_VALUE_DELIMITER = ":";
 
     public LabelToFieldResolver(ProcessLog logger) {
         super(logger);
@@ -67,53 +71,77 @@ public class LabelToFieldResolver extends Resolver {
             name = descriptor.get().getName();
         }
 
+        if (handleLinksAndFrameworks(item, name, value))
+            return;
+
         PropertyAccessor myAccessor = PropertyAccessorFactory.forBeanPropertyAccess(item);
         Class<?> propertyType = myAccessor.getPropertyType(name);
 
         try {
-            if (propertyType != null && propertyType.isAssignableFrom(List.class)) {
+            if (propertyType != null) {
                 String[] o = getParts(value);
-                myAccessor.setPropertyValue(name, Arrays.asList(o));
-                return;
-            }
+                if (propertyType.isAssignableFrom(List.class)) {
+                    myAccessor.setPropertyValue(name, Arrays.asList(o));
+                    return;
+                }
 
-            if (propertyType != null && propertyType.isAssignableFrom(Set.class)) {
-                String[] o = getParts(value);
-                myAccessor.setPropertyValue(name, Set.of(o));
-                return;
-            }
+                if (propertyType.isAssignableFrom(Set.class)) {
+                    myAccessor.setPropertyValue(name, Set.of(o));
+                    return;
+                }
 
-            if (propertyType != null && propertyType.isAssignableFrom(Map.class)) {
-                String[] o = getParts(value); // value is only a list of strings
-                @SuppressWarnings("unchecked") Map<String, Object> propertyValue = (Map<String, Object>) myAccessor.getPropertyValue(name);
-                if (propertyValue != null) {
-                    for (int i = 0; i < o.length; i++) {
-                        if ("links".equals(name)) {
-                            processLog.warn("Found deprecated label named links.");
-                            try {
-                                propertyValue.put(String.valueOf(i + 1), new Link(new URL(o[i])));
-                            } catch (MalformedURLException e) {
-                                processLog.warn("Failed to parse link " + o[i]);
-                            }
-                        } else {
-                            propertyValue.put(String.valueOf(i + 1), o[i]);
+                if (propertyType.isAssignableFrom(Map.class)) {
+                    @SuppressWarnings("unchecked") Map<String, Object> propertyValue = (Map<String, Object>) myAccessor.getPropertyValue(name);
+                    if (propertyValue != null) {
+                        for (int i = 0; i < o.length; i++) {
+                            String key = String.valueOf(i + 1);
+                            propertyValue.put(key, o[i]);
                         }
                     }
+                    return;
                 }
-                return;
             }
 
-            if (name.startsWith(Linked.LINK_LABEL_PREFIX)) {
-                item.setLink(name.replace(Linked.LINK_LABEL_PREFIX, ""), new URL(value));
-            } else {
-                myAccessor.setPropertyValue(name, value.trim());
-            }
+            myAccessor.setPropertyValue(name, value.trim());
+
         } catch (NotWritablePropertyException e) {
             processLog.debug("Failed to write field '" + name + "' via label");
             item.getLabels().put(name, value);
-        } catch (MalformedURLException e) {
-            processLog.warn("Failed to add link '" + name + "' via label because of malformed URL " + value);
         }
+    }
+
+    private boolean handleLinksAndFrameworks(ItemDescription item, String name, String value) {
+        if (LINKS_LABEL.equals(name)) {
+            processLog.info("Found list-style label named 'links'.");
+            String[] o = getParts(value);
+            for (int i = 0; i < o.length; i++) {
+                String key = String.valueOf(i + 1);
+                getLink(o[i]).ifPresent(link1 -> item.getLinks().put(key, link1));
+            }
+            return true;
+        }
+
+        if (FRAMEWORKS_LABEL.equals(name)) {
+            processLog.warn("Found map-style label named 'frameworks'.");
+            String[] o = getParts(value);
+            for (String s : o) {
+                String[] frameworkParts = s.split(MAP_KEY_VALUE_DELIMITER);
+                if (frameworkParts.length == 2) {
+                    item.setFramework(frameworkParts[0], frameworkParts[1]);
+                }
+            }
+            return true;
+        }
+
+        if (name.startsWith(LINK_LABEL_PREFIX)) {
+            try {
+                item.setLink(name.replace(LINK_LABEL_PREFIX, ""), new URL(value));
+            } catch (MalformedURLException e) {
+                processLog.warn(String.format("Failed to add link '%s' via label because of malformed URL %s", name, value));
+            }
+            return true;
+        }
+        return false;
     }
 
     private static String[] getParts(String value) {
@@ -123,5 +151,14 @@ public class LabelToFieldResolver extends Resolver {
         }
 
         return Arrays.stream(split).map(String::trim).toArray(String[]::new);
+    }
+
+    private Optional<Link> getLink(String url) {
+        try {
+            return Optional.of(new Link(new URL(url)));
+        } catch (MalformedURLException e) {
+            processLog.warn("Failed to parse link " + url);
+            return Optional.empty();
+        }
     }
 }

@@ -185,6 +185,51 @@ class LabelToFieldResolverTest {
     }
 
     @Test
+    @DisplayName("Ensure frameworks with a map structure are parsed")
+    public void frameworks() {
+        ItemDescription item1 = new ItemDescription();
+        item1.getLabels().put("a", "b");
+        item1.getLabels().put("nivio." + Label.framework.name() + ".java", "8");
+        item1.getLabels().put("nivio." + Label.framework.name() + ".angular", "6");
+
+        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
+        input.getItemDescriptions().add(item1);
+
+        //when
+        processor.resolve(input);
+
+        //then
+        Map<String, String> frameworks = item1.getLabels(Label.framework);
+        assertFalse(frameworks.isEmpty());
+        assertThat(frameworks).containsKey("framework.java");
+        assertThat(frameworks.get("framework.java")).isEqualTo("8");
+        assertThat(frameworks).containsKey("framework.angular");
+        assertThat(frameworks.get("framework.angular")).isEqualTo("6");
+    }
+
+    @Test
+    @DisplayName("Ensure comma separated frameworks are parsed properly")
+    public void commaSeparatedFrameworks() {
+        ItemDescription item1 = new ItemDescription();
+        item1.getLabels().put("a", "b");
+        item1.getLabels().put("nivio.frameworks", "java:8, angular:6");
+
+        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
+        input.getItemDescriptions().add(item1);
+
+        //when
+        processor.resolve(input);
+
+        //then
+        Map<String, String> frameworks = item1.getLabels(Label.framework);
+        assertFalse(frameworks.isEmpty());
+        assertThat(frameworks).containsKey("framework.java");
+        assertThat(frameworks.get("framework.java")).isEqualTo("8");
+        assertThat(frameworks).containsKey("framework.angular");
+        assertThat(frameworks.get("framework.angular")).isEqualTo("6");
+    }
+
+    @Test
     @DisplayName("Ensure comma separated links are parsed properly")
     public void labelsToLabels() {
         ItemDescription item1 = new ItemDescription();

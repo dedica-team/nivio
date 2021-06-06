@@ -354,6 +354,10 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
      */
     @Schema(description = "The parts used to create the item. Usually refers to technical frameworks.", type = "Map", example = "java: 8")
     public void setFrameworks(final Map<String, String> frameworks) {
-        frameworks.forEach((s, s2) -> setLabel(Label.framework.withPrefix(s), s2));
+        frameworks.forEach(this::setFramework);
+    }
+
+    public void setFramework(@NonNull final String key, String value) {
+        setLabel(Label.framework.withPrefix(key), value);
     }
 }
