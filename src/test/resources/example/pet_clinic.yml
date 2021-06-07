@@ -29,5 +29,5 @@ items:
     software: PHP 7.3
     version: 2.4
     scale: 0
-    type: application
+    type: email
     hostType: docker

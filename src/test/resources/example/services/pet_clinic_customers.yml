@@ -108,6 +108,7 @@ items:
       Symfony: 2.3.1
     team: A-Team
     group: customers
+    type: application
     relations:
       - type: dataflow
         target: emailer
