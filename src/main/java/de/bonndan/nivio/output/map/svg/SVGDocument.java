@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
@@ -60,6 +61,12 @@ public class SVGDocument extends Component {
         hexMap = new HexMap(this.debug);
 
         defs.add(SVGStatus.glowFilter());
+        defs.add(SVGStatus.patternFor(Status.UNKNOWN));
+        defs.add(SVGStatus.patternFor(Status.GREEN));
+        defs.add(SVGStatus.patternFor(Status.YELLOW));
+        defs.add(SVGStatus.patternFor(Status.ORANGE));
+        defs.add(SVGStatus.patternFor(Status.RED));
+        defs.add(SVGStatus.patternFor(Status.BROWN));
         //transform all item positions to hex map positions
         layouted.getChildren().forEach(group -> {
             LOGGER.info("rendering group {} with items {}", group.getComponent().getIdentifier(), group.getChildren());

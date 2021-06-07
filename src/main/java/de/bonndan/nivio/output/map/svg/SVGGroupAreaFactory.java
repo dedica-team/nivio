@@ -43,10 +43,7 @@ public class SVGGroupAreaFactory {
         if (statusShadow.size() > 0) {
             StatusValue worst = Assessable.getWorst(groupStatuses);
             ContainerTag svgPath = (ContainerTag) statusShadow.get(0);
-            svgPath.attr("stroke", worst.getStatus().getName())
-                    .attr("stroke-width", 5 + SVGStatus.getAddedStroke(worst))
-                    .attr("fill", worst.getStatus().getName())
-                    .attr("filter", "url(#" + SVGStatus.GLOW_FILTER_ID + ")");
+            svgPath.attr("fill", "url(#" + SVGStatus.STATUS_PATTERN_PREFIX + worst.getStatus() + ")");
         }
 
         List<DomContent> outlines = outlineFactory.getOutline(inArea, fillId);

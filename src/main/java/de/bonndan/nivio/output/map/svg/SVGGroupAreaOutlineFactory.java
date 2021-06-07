@@ -94,8 +94,10 @@ public class SVGGroupAreaOutlineFactory {
 
         ContainerTag svgPath = SvgTagCreator.path()
                 .attr("d", pointsPath)
-                .condAttr(!StringUtils.isEmpty(fill), "stroke", fillId)
-                .condAttr(!StringUtils.isEmpty(fill), "fill", fill);
+                .condAttr(!StringUtils.isEmpty(fillId), "stroke", fillId)
+                .condAttr(!StringUtils.isEmpty(fillId), "stroke-width", "10")
+                .attr( "fill", "transparent")
+        ;
 
         containerTags.add(svgPath);
         return containerTags;
