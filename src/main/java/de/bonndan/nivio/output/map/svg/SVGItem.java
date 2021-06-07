@@ -91,17 +91,18 @@ class SVGItem extends Component {
             ;
         }
 
+        String stroke = "#" + (layoutedComponent.getColor() != null ? layoutedComponent.getColor() : Color.GRAY);
         ContainerTag statusCircle = null;
         if (itemStatuses != null) {
             StatusValue worst = Assessable.getWorst(itemStatuses);
             if (worst.getStatus() != Status.UNKNOWN) {
                 statusCircle = SvgTagCreator.circle()
-                        .attr("cx", 0)
-                        .attr("cy", 0)
-                        .attr("r", DEFAULT_ICON_SIZE * 2 + SVGStatus.getAddedStroke(worst))
-                        .attr("stroke", worst.getStatus().getName())
+                        .attr("cx", 70)
+                        .attr("cy", 70)
+                        .attr("r", DEFAULT_ICON_SIZE / 2)
+                        .attr("stroke", "grey")
                         .attr("fill", worst.getStatus().getName())
-                        .attr("filter", "url(#" + SVGStatus.GLOW_FILTER_ID + ")");
+                ;
             }
         }
 
@@ -111,15 +112,15 @@ class SVGItem extends Component {
                 .attr("cy", 0)
                 .attr("r", DEFAULT_ICON_SIZE * 2)
                 .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
-                .attr("stroke", "#" + (layoutedComponent.getColor() != null ? layoutedComponent.getColor() : Color.GRAY))
+                .attr("stroke", stroke)
                 .attr("data-x", String.format(Locale.ENGLISH, "%.2f", pixel.x))
                 .attr("data-y", String.format(Locale.ENGLISH, "%.2f", pixel.y));
         if (Lifecycle.isPlanned(item)) {
             circle.attr("stroke-dasharray", 15);
         }
-        ContainerTag inner = SvgTagCreator.g(statusCircle, circle, content, children);
+        ContainerTag inner = SvgTagCreator.g(circle, content, children);
 
-        return SvgTagCreator.g(inner, icon)
+        return SvgTagCreator.g(inner, icon, statusCircle)
                 .attr("data-identifier", this.id)
                 .attr("class", "item")
                 .attr("transform", "translate(" + pixel.x + "," + pixel.y + ")");
