@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { IGroup } from '../../../../interfaces';
 import { getLabels, getLinks } from '../../Utils/utils';
@@ -13,6 +13,7 @@ import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext
 import ItemAvatar from '../Item/ItemAvatar';
 import GroupAvatar from './GroupAvatar';
 import { LandscapeContext } from '../../../../Context/LandscapeContext';
+import { Close } from '@material-ui/icons';
 
 interface Props {
   group: IGroup;
@@ -25,6 +26,17 @@ const Group: React.FC<Props> = ({ group }) => {
   const componentClasses = componentStyles();
   const landscapeContext = useContext(LandscapeContext);
   const locateFunctionContext = useContext(LocateFunctionContext);
+  const [visible, setVisible] = useState<boolean>(true);
+
+  const close = (
+    <IconButton
+      onClick={() => {
+        setVisible(false);
+      }}
+    >
+      <Close />
+    </IconButton>
+  );
 
   const getGroupItems = (
     group: IGroup,
@@ -53,6 +65,9 @@ const Group: React.FC<Props> = ({ group }) => {
     }
     return [];
   };
+
+  if (!visible) return null;
+
   const items = getGroupItems(group, locateFunctionContext.locateFunction);
 
   const assessment = landscapeContext.getAssessmentSummary(group.fullyQualifiedIdentifier);
@@ -75,6 +90,7 @@ const Group: React.FC<Props> = ({ group }) => {
           </React.Fragment>
         }
         className={componentClasses.cardHeader}
+        action={<React.Fragment>{close}</React.Fragment>}
       />
       <CardContent>
         <div className='information'>

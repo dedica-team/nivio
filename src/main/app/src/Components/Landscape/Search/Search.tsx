@@ -119,7 +119,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
    */
   useEffect(() => {
     const searchResult = results.map((value1: IItem) => (
-      <Item small={true} key={value1.fullyQualifiedIdentifier} useItem={value1} />
+      <Item small={true} key={value1.fullyQualifiedIdentifier} fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier} />
     ));
     setSidebarContent(<>{searchResult}</>);
   }, [results, setSidebarContent, render]);

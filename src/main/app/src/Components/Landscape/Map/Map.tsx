@@ -105,7 +105,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
     if (fullyQualifiedItemIdentifier && landscapeContext.landscape) {
       let item = getItem(landscapeContext.landscape, fullyQualifiedItemIdentifier);
-      if (item) setSidebarContent(<Item key={fullyQualifiedItemIdentifier} useItem={item} />);
+      if (item) setSidebarContent(<Item key={fullyQualifiedItemIdentifier} fullyQualifiedItemIdentifier={item.fullyQualifiedIdentifier} />);
     }
   };
 

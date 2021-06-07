@@ -26,7 +26,7 @@ import { IAssessmentProps, IItem } from '../../../../interfaces';
 import { getItem, getLabels, getLabelsWithPrefix } from '../../Utils/utils';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
-import { Details, ExpandMore, Info, MoreVertSharp, Power } from "@material-ui/icons";
+import { Close, Details, ExpandMore, Info, MoreVertSharp, Power } from '@material-ui/icons';
 import Chip from '@material-ui/core/Chip';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
@@ -54,7 +54,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   small?: boolean;
-  useItem?: IItem;
   fullyQualifiedItemIdentifier?: string;
 }
 
@@ -63,9 +62,10 @@ interface Props {
  *
  *
  */
-const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small }) => {
+const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const [compact, setCompact] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(true);
   const [value, setValue] = React.useState(0);
   const locateFunctionContext = useContext(LocateFunctionContext);
   const landscapeContext = useContext(LandscapeContext);
@@ -144,23 +144,18 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
     const reset = (item: IItem) => {
       setItem(item);
     };
-
-    if (useItem) {
-      if (useItem && item !== useItem) {
-        reset(useItem);
-      }
-    } else {
-      if (!item && fullyQualifiedItemIdentifier) {
-        get(`/api/${fullyQualifiedItemIdentifier}`).then((loaded) => {
-          reset(loaded);
-        });
-      }
+    if (!item && fullyQualifiedItemIdentifier) {
+      get(`/api/${fullyQualifiedItemIdentifier}`).then((loaded) => {
+        reset(loaded);
+      });
     }
+  }, [item, fullyQualifiedItemIdentifier]);
 
+  useEffect(() => {
     if (small) {
       setCompact(true);
     }
-  }, [item, fullyQualifiedItemIdentifier, useItem, small]);
+  }, [small]);
 
   if (item && landscapeContext.landscape) {
     for (let key of Object.keys(item.relations)) {
@@ -235,12 +230,23 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
   };
 
   const labels = item ? getLabels(item) : null;
-  const extend = small ? (
-    <IconButton onClick={() => setCompact(!compact)}>
-      <MoreVertSharp />
-    </IconButton>
-  ) : null;
-
+  const extend = (
+    <>
+      {small ? (
+        <IconButton onClick={() => setCompact(!compact)}>
+          <MoreVertSharp />
+        </IconButton>
+      ) : null}
+      <IconButton
+        onClick={() => {
+          setItem(undefined);
+          setVisible(false);
+        }}
+      >
+        <Close />
+      </IconButton>
+    </>
+  );
   const assessmentSummary = item
     ? landscapeContext.getAssessmentSummary(item.fullyQualifiedIdentifier)
     : null;
@@ -250,6 +256,8 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
           <Chip size={'small'} label={value} key={value} className={extraClasses.tag} />
         ))
       : null;
+
+  if (!visible) return null;
 
   return (
     <Card className={classes.card}>
@@ -356,7 +364,9 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
                           <TableRow key={'link_' + data[0]}>
                             <TableCell>{data[0]}</TableCell>
                             <TableCell>
-                              <Link href={data[1].href} className={classes.link}>{data[1].href}</Link>
+                              <Link href={data[1].href} className={classes.link}>
+                                {data[1].href}
+                              </Link>
                             </TableCell>
                           </TableRow>
                         );

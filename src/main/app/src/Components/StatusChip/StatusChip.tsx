@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: '100%',
       textShadow: 'none',
       fontFamily: 'monospace',
-      backgroundColor: theme.palette.primary.dark,
+      backgroundColor: theme.palette.primary.main,
       color: 'white',
     },
     green: {
@@ -44,10 +44,10 @@ const StatusChip: React.FC<Props> = ({ name, value, status, style }) => {
   const classes: Record<string, any> = useStyles();
   let letter = '?';
   if (status.toLowerCase() === 'green') letter = '✓';
-  if (status.toLowerCase() === 'yellow') letter = '';
-  if (status.toLowerCase() === 'orange') letter = '*';
-  if (status.toLowerCase() === 'red') letter = '!';
-  if (status.toLowerCase() === 'brown') letter = '!!';
+  if (status.toLowerCase() === 'yellow') letter = '*';
+  if (status.toLowerCase() === 'orange') letter = '!';
+  if (status.toLowerCase() === 'red') letter = '⚠';
+  if (status.toLowerCase() === 'brown') letter = '☠';
 
   let label = name || '';
   if (value != null && value !== 'null') {
@@ -56,14 +56,16 @@ const StatusChip: React.FC<Props> = ({ name, value, status, style }) => {
     label += value;
   }
   return (
+    <>
     <Chip
       style={style}
       size={'small'}
       className={classes.chip}
-      avatar={<Avatar className={classes[status.toLowerCase()]}>{letter}</Avatar>}
-      label={label}
+      avatar={<Avatar className={classes[status.toLowerCase()]} style={{color: 'black'}}>{letter}</Avatar>}
+      label={status}
       title={label}
-    />
+    />{label}
+    </>
   );
 };
 

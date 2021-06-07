@@ -1,13 +1,5 @@
-import React, { useContext } from 'react';
-import {
-  Card,
-  CardHeader,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Tooltip,
-} from '@material-ui/core';
+import React, { useContext, useState } from 'react';
+import { Card, CardHeader, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import { IItem, IRelation } from '../../../../interfaces';
 import Typography from '@material-ui/core/Typography';
@@ -15,7 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import ItemAvatar from '../../Modals/Item/ItemAvatar';
-import Chip from '@material-ui/core/Chip';
+import { Close, HelpRounded } from '@material-ui/icons';
 
 interface Props {
   source: IItem;
@@ -31,25 +23,44 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
   const classes = componentStyles();
   const sourceTitle = source.name || source.identifier;
   const targetTitle = target.name || target.identifier;
-  const title = sourceTitle + ' -> ' + targetTitle;
-
+  const title = sourceTitle + ' to ' + targetTitle;
+  const [visible, setVisible] = useState<boolean>(true);
   const locateFunctionContext = useContext(LocateFunctionContext);
+
+  const close = (
+    <IconButton
+      onClick={() => {
+        setVisible(false);
+      }}
+    >
+      <Close />
+    </IconButton>
+  );
+
+  if (!visible) return null;
 
   return (
     <Card className={classes.card}>
-      <CardHeader title={title} className={classes.cardHeader} subheader={'Relation'} />
+      <CardHeader
+        title={title}
+        className={classes.cardHeader}
+        subheader={'Relation'}
+        action={close}
+      />
       <CardContent>
         <Table aria-label={'info table'} style={{ tableLayout: 'fixed' }}>
           <TableBody>
             <TableRow key={'Type'}>
               <TableCell style={{ width: '33%' }}>Type</TableCell>
               <TableCell>
-                <Tooltip
-                  disableHoverListener
-                  title='A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
+                {relation.type}
+                <span
+                  title={
+                    'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
+                  }
                 >
-                  <Chip variant='outlined' size='small' label={relation.type} />
-                </Tooltip>
+                  <HelpRounded />
+                </span>
               </TableCell>
             </TableRow>
 
