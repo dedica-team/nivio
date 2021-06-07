@@ -98,7 +98,7 @@ class SVGItem extends Component {
                 statusCircle = SvgTagCreator.circle()
                         .attr("cx", 0)
                         .attr("cy", 0)
-                        .attr("r", DEFAULT_ICON_SIZE * 2 + SVGStatus.ADDED_STROKE)
+                        .attr("r", DEFAULT_ICON_SIZE * 2 + SVGStatus.getAddedStroke(worst))
                         .attr("stroke", worst.getStatus().getName())
                         .attr("fill", worst.getStatus().getName())
                         .attr("filter", "url(#" + SVGStatus.GLOW_FILTER_ID + ")");

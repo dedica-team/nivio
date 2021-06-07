@@ -63,7 +63,7 @@ class SVGRelation extends Component {
             status = SvgTagCreator.path()
                     .attr("d", points)
                     .attr("stroke", statusValue.getStatus().getName())
-                    .attr("stroke-width", 20 + SVGStatus.ADDED_STROKE)
+                    .attr("stroke-width", 20 + SVGStatus.getAddedStroke(statusValue))
                     .attr("filter", "url(#" + SVGStatus.GLOW_FILTER_ID + ")");
         }
 

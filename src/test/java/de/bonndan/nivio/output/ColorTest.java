@@ -31,7 +31,8 @@ public class ColorTest {
         //given
         String name = "0";
         float[] hsv = Color.hsb(Color.nameToRGBRaw(name));
-        assertThat(hsv[2]).isLessThan(Color.MIN_BRIGHTNESS);
+        float initialBrightness = hsv[2];
+        assertThat(initialBrightness).isLessThan(Color.MIN_BRIGHTNESS);
         assertThat(hsv[1]).isGreaterThan(Color.MIN_SATURATION);
 
         //when
@@ -39,9 +40,9 @@ public class ColorTest {
 
         //then
         assertThat(color).isNotNull();
-        assertThat(color).isEqualTo("ff4400");
+        assertThat(color).isEqualTo("440000");
         hsv = Color.hsb(color);
-        assertThat(hsv[2]).isGreaterThan(Color.MIN_BRIGHTNESS);
+        assertThat(hsv[2]).isGreaterThan(initialBrightness);
     }
 
     @Test
@@ -83,5 +84,27 @@ public class ColorTest {
 
         safe = Color.safe("234#65f!");
         assertThat(safe).isEqualTo("23465f");
+    }
+
+    @Test
+    void lighten() {
+        String in = "#af2c55";
+
+        //when
+        String out = Color.lighten(in);
+
+        //then
+        assertThat(out).isEqualTo("fa3e79");
+    }
+
+    @Test
+    void darken() {
+        String in = "#ff2c55";
+
+        //when
+        String out = Color.darken(in);
+
+        //then
+        assertThat(out).isEqualTo("b21e3b");
     }
 }

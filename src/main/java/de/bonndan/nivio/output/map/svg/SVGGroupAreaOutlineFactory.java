@@ -1,14 +1,17 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -22,27 +25,31 @@ public class SVGGroupAreaOutlineFactory {
         this.debug = debug;
     }
 
-    @Nullable
-    public List<DomContent> getOutline(@NonNull Set<Hex> groupArea, String fillId) {
+    /**
+     *
+     * @param groupArea
+     * @param fillId
+     * @return
+     */
+    @NonNull
+    public List<DomContent> getOutline(@NonNull final Set<Hex> groupArea, @NonNull final String fillId) {
 
         if (!groupArea.iterator().hasNext()) {
-            return null;
+            return new ArrayList<>();
         }
 
         //find left top
         //start with left top
         Hex start = Hex.topLeft(groupArea);
-        List<DomContent> outlines = new ArrayList<>();
         List<DomContent> pointsPath = getOutline(start, groupArea, fillId);
-        outlines.addAll(pointsPath);
 
-        return outlines;
+        return pointsPath;
     }
 
     private List<DomContent> getOutline(@NonNull Hex start, @NonNull Set<Hex> groupArea, String fillId) {
 
         if (groupArea.containsAll(start.neighbours())) {
-            throw new IllegalArgumentException("Starting point " + start + " for outline is not on border.");
+            throw new IllegalArgumentException(String.format("Starting point %s for outline is not on border.", start));
         }
         LinkedHashSet<Hex> borderHexes = new LinkedHashSet<>();
         Position next = new Position(start, 0);
@@ -83,11 +90,12 @@ public class SVGGroupAreaOutlineFactory {
             containerTags.addAll(territoryHexes);
         }
 
+        String fill = "#" + Color.desaturate(Color.lighten(fillId));
 
         ContainerTag svgPath = SvgTagCreator.path()
                 .attr("d", pointsPath)
-                .condAttr(!StringUtils.isEmpty(fillId), "stroke", fillId)
-                .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId);
+                .condAttr(!StringUtils.isEmpty(fill), "stroke", fillId)
+                .condAttr(!StringUtils.isEmpty(fill), "fill", fill);
 
         containerTags.add(svgPath);
         return containerTags;
