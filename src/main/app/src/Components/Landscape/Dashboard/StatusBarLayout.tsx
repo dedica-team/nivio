@@ -1,10 +1,12 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { IGroup } from '../../../interfaces';
 import StatusChip from '../../StatusChip/StatusChip';
 import Button from '@material-ui/core/Button';
 import { Card, CardHeader } from '@material-ui/core';
 import { LandscapeContext } from '../../../Context/LandscapeContext';
 import componentStyles from '../../../Resources/styling/ComponentStyles';
+import IconButton from '@material-ui/core/IconButton';
+import { Close } from '@material-ui/icons';
 
 interface Props {
   onItemClick: Function;
@@ -17,6 +19,17 @@ interface Props {
 const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
   const context = useContext(LandscapeContext);
   const componentClasses = componentStyles();
+  const [visible, setVisible] = useState<boolean>(true);
+
+  const close = (
+    <IconButton
+      onClick={() => {
+        setVisible(false);
+      }}
+    >
+      <Close />
+    </IconButton>
+  );
 
   const getItems = (group: IGroup) => {
     return group.items.map((item) => {
@@ -79,9 +92,10 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
     });
   };
 
+  if (!visible) return null;
   return (
     <Card className={componentClasses.card}>
-      <CardHeader title={'Assessments'} />
+      <CardHeader title={'Warnings'} action={<React.Fragment>{close}</React.Fragment>} />
       {context.landscape ? getGroups(context.landscape.groups) : null}
       {context.landscape?.groups.map((group, i) => getItems(group))}
     </Card>
