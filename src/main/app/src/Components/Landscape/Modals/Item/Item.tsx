@@ -26,7 +26,7 @@ import { IAssessmentProps, IItem } from '../../../../interfaces';
 import { getItem, getLabels, getLabelsWithPrefix } from '../../Utils/utils';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
-import { Details, ExpandMore, Info, MoreVertSharp, Wifi } from '@material-ui/icons';
+import { Details, ExpandMore, Info, MoreVertSharp, Power } from "@material-ui/icons";
 import Chip from '@material-ui/core/Chip';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
@@ -293,7 +293,7 @@ const Item: React.FC<Props> = ({ useItem, fullyQualifiedItemIdentifier, small })
                 {...a11yProps(0, 'item')}
               />
               <Tab
-                icon={<Wifi />}
+                icon={<Power />}
                 label={'relations'}
                 style={{ minWidth: 50 }}
                 title={'Relations'}
