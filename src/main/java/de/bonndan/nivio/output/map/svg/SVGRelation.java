@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.model.Relation;
@@ -58,18 +59,11 @@ class SVGRelation extends Component {
         var points = String.join("", hexPath.getPoints());
         bezierPath.parsePathString(points);
 
-        ContainerTag status = null;
-        if (statusValue != null) {
-            status = SvgTagCreator.path()
-                    .attr("d", points)
-                    .attr("stroke", statusValue.getStatus().getName())
-                    .attr("stroke-width", 20 + SVGStatus.getAddedStroke(statusValue))
-                    .attr("filter", "url(#" + SVGStatus.GLOW_FILTER_ID + ")");
-        }
+        String statusColor = statusValue.getStatus().getName();
 
         ContainerTag path = SvgTagCreator.path()
                 .attr("d", points)
-                .attr("stroke", "#ffffff")
+                .attr("stroke", statusColor)
                 .attr("stroke-width", 2);
 
         ContainerTag shadow = SvgTagCreator.path()
@@ -93,7 +87,7 @@ class SVGRelation extends Component {
                     .attr("fill", fillId);
         }
 
-        return addAttributes(g(status, shadow, endMarker, path, label(bezierPath, fillId)), relation);
+        return addAttributes(g(shadow, endMarker, path, label(bezierPath, fillId)), relation);
     }
 
     public HexPath getHexPath() {
