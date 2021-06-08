@@ -165,7 +165,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
       <div style={{ float: 'right', padding: 2 }}>
         <IconButton size={'small'}>
           <HelpTooltip
-            style={{ float: 'right', padding: 2, color: '#222' }}
+            style={{ float: 'right', padding: 2 }}
             content={<SearchHelp />}
           />
         </IconButton>

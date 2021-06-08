@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core';
 import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
-import { ListAlt, SaveAlt, Speed } from '@material-ui/icons';
+import { ListAlt, Print, Speed } from '@material-ui/icons';
 import Button from '@material-ui/core/Button';
 import { SaveSearchConfig } from './SaveSearchConfig';
 import { IFacet } from '../../../interfaces';
@@ -119,9 +119,9 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
             {...a11yProps(1, 'search')}
           />
           <Tab
-            icon={<SaveAlt />}
-            label={'Save'}
-            title={'Save'}
+            icon={<Print />}
+            label={'Report'}
+            title={'Export current search as report'}
             style={{ minWidth: 50 }}
             {...a11yProps(2, 'search')}
           />
