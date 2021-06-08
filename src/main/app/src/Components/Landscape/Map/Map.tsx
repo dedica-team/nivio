@@ -26,7 +26,13 @@ import { createStyles, darken, Theme } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { LandscapeContext } from '../../../Context/LandscapeContext';
 import { getApproximateCenterCoordinates, getCorrected } from './MapUtils';
-import { fitToViewer, ReactSVGPanZoom, setPointOnViewerCenter, TOOL_AUTO, Value } from "react-svg-pan-zoom";
+import {
+  fitToViewer,
+  ReactSVGPanZoom,
+  setPointOnViewerCenter,
+  TOOL_AUTO,
+  Value,
+} from 'react-svg-pan-zoom';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -105,15 +111,21 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
     if (fullyQualifiedItemIdentifier && landscapeContext.landscape) {
       let item = getItem(landscapeContext.landscape, fullyQualifiedItemIdentifier);
-      if (item) setSidebarContent(<Item key={fullyQualifiedItemIdentifier} fullyQualifiedItemIdentifier={item.fullyQualifiedIdentifier} />);
+      if (item)
+        setSidebarContent(
+          <Item
+            fullyQualifiedItemIdentifier={item.fullyQualifiedIdentifier}
+            key={`item_${item.fullyQualifiedIdentifier}_${Math.random()}`}
+          />
+        );
     }
   };
 
   const onGroupClick = (e: MouseEvent<HTMLElement>) => {
-    const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
-    if (fullyQualifiedItemIdentifier && landscapeContext.landscape) {
-      let group = getGroup(landscapeContext.landscape, fullyQualifiedItemIdentifier);
-      if (group) setSidebarContent(<Group group={group} />);
+    const fqi = e.currentTarget.getAttribute('data-identifier');
+    if (fqi && landscapeContext.landscape) {
+      let group = getGroup(landscapeContext.landscape, fqi);
+      if (group) setSidebarContent(<Group group={group} key={`group_${fqi}_${Math.random()}`} />);
     }
   };
 
@@ -158,8 +170,16 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     }
 
     if (source && target && dataTarget) {
-      let relation = source.relations[source.fullyQualifiedIdentifier + ';' + dataTarget];
-      setSidebarContent(<MapRelation relation={relation} source={source} target={target} />);
+      const relId = source.fullyQualifiedIdentifier + ';' + dataTarget;
+      let relation = source.relations[relId];
+      setSidebarContent(
+        <MapRelation
+          relation={relation}
+          source={source}
+          target={target}
+          key={`relation_${relId}_${Math.random()}`}
+        />
+      );
     }
   };
 

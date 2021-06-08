@@ -27,16 +27,6 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
   const [visible, setVisible] = useState<boolean>(true);
   const locateFunctionContext = useContext(LocateFunctionContext);
 
-  const close = (
-    <IconButton
-      onClick={() => {
-        setVisible(false);
-      }}
-    >
-      <Close />
-    </IconButton>
-  );
-
   if (!visible) return null;
 
   return (
@@ -45,7 +35,16 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
         title={title}
         className={classes.cardHeader}
         subheader={'Relation'}
-        action={close}
+        action={
+          <IconButton
+            size={'small'}
+            onClick={() => {
+              setVisible(false);
+            }}
+          >
+            <Close />
+          </IconButton>
+        }
       />
       <CardContent>
         <Table aria-label={'info table'} style={{ tableLayout: 'fixed' }}>

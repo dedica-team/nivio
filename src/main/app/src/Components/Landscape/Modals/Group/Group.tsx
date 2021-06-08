@@ -28,16 +28,6 @@ const Group: React.FC<Props> = ({ group }) => {
   const locateFunctionContext = useContext(LocateFunctionContext);
   const [visible, setVisible] = useState<boolean>(true);
 
-  const close = (
-    <IconButton
-      onClick={() => {
-        setVisible(false);
-      }}
-    >
-      <Close />
-    </IconButton>
-  );
-
   const getGroupItems = (
     group: IGroup,
     findItem?: (fullyQualifiedItemIdentifier: string) => void
@@ -90,7 +80,16 @@ const Group: React.FC<Props> = ({ group }) => {
           </React.Fragment>
         }
         className={componentClasses.cardHeader}
-        action={<React.Fragment>{close}</React.Fragment>}
+        action={<React.Fragment>{(
+          <IconButton
+            size={'small'}
+            onClick={() => {
+              setVisible(false);
+            }}
+          >
+            <Close />
+          </IconButton>
+        )}</React.Fragment>}
       />
       <CardContent>
         <div className='information'>

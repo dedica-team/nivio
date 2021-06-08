@@ -233,11 +233,12 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
   const extend = (
     <>
       {small ? (
-        <IconButton onClick={() => setCompact(!compact)}>
+        <IconButton onClick={() => setCompact(!compact)} size={'small'}>
           <MoreVertSharp />
         </IconButton>
       ) : null}
       <IconButton
+        size={'small'}
         onClick={() => {
           setItem(undefined);
           setVisible(false);

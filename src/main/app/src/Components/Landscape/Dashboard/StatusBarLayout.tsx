@@ -21,16 +21,6 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
   const componentClasses = componentStyles();
   const [visible, setVisible] = useState<boolean>(true);
 
-  const close = (
-    <IconButton
-      onClick={() => {
-        setVisible(false);
-      }}
-    >
-      <Close />
-    </IconButton>
-  );
-
   const getItems = (group: IGroup) => {
     return group.items.map((item) => {
       const assessmentSummary = context.getAssessmentSummary(item.fullyQualifiedIdentifier);
@@ -95,7 +85,15 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
   if (!visible) return null;
   return (
     <Card className={componentClasses.card}>
-      <CardHeader title={'Warnings'} action={<React.Fragment>{close}</React.Fragment>} />
+      <CardHeader title={'Warnings'} action={<React.Fragment>{(
+        <IconButton
+          onClick={() => {
+            setVisible(false);
+          }}
+        >
+          <Close />
+        </IconButton>
+      )}</React.Fragment>} />
       {context.landscape ? getGroups(context.landscape.groups) : null}
       {context.landscape?.groups.map((group, i) => getItems(group))}
     </Card>

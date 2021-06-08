@@ -78,7 +78,7 @@ class SVGGroupArea extends Component {
 
         return SvgTagCreator.text(group.getIdentifier())
                 .attr("x", anchor.x)
-                .attr("y", (int) (anchor.y + 30))
+                .attr("y", (int) (anchor.y + SVGRenderer.DEFAULT_ICON_SIZE))
                 .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
                 .attr("text-anchor", "middle")
                 .attr("class", "groupLabel");
