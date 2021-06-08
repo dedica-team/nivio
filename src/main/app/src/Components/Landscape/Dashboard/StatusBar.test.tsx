@@ -21,6 +21,6 @@ describe('<StatusBarLayout />', () => {
         <StatusBarLayout onItemClick={() => {}} onGroupClick={() => {}} />
       </LandscapeContext.Provider>
     );
-    expect(getByText('Group A Group')).toBeInTheDocument();
+    expect(getByText('A Group')).toBeInTheDocument();
   });
 });

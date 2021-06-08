@@ -203,14 +203,14 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
         .map((assessment) => {
           return (
             <TableRow key={assessment.field}>
-              <TableCell>{assessment.field}</TableCell>
               <TableCell>
                 <StatusChip
                   status={assessment.status}
                   key={assessment.field}
-                  value={assessment.message}
+                  value={assessment.field}
                 />
               </TableCell>
+              <TableCell>{assessment.message}</TableCell>
             </TableRow>
           );
         });

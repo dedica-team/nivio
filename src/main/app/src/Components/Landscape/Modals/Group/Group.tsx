@@ -80,16 +80,18 @@ const Group: React.FC<Props> = ({ group }) => {
           </React.Fragment>
         }
         className={componentClasses.cardHeader}
-        action={<React.Fragment>{(
-          <IconButton
-            size={'small'}
-            onClick={() => {
-              setVisible(false);
-            }}
-          >
-            <Close />
-          </IconButton>
-        )}</React.Fragment>}
+        action={
+          <React.Fragment>
+            <IconButton
+              size={'small'}
+              onClick={() => {
+                setVisible(false);
+              }}
+            >
+              <Close />
+            </IconButton>
+          </React.Fragment>
+        }
       />
       <CardContent>
         <div className='information'>
@@ -110,13 +112,14 @@ const Group: React.FC<Props> = ({ group }) => {
 
         {assessment && assessment.status ? (
           <div>
+            <div>
+              <br />
+              <Typography variant={'h6'}>Status</Typography>
+              <StatusChip name={assessment.maxField} status={assessment?.status} />
+              {assessment.message}
+            </div>
             <br />
-            <Typography variant={'h6'}>Status</Typography>
-            <StatusChip
-              name={assessment.maxField}
-              status={assessment?.status}
-              value={assessment.message}
-            />
+            <br />
           </div>
         ) : null}
 
