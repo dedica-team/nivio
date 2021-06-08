@@ -51,7 +51,7 @@ describe('<Facets />', () => {
     const { container, queryByText, getByText } = render(
       <Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />
     );
-    fireEvent.click(getByTitle(container, 'KPIs'));
+    fireEvent.click(getByTitle(container, "KPIs"));
 
     expect(queryByText('owner')).toBeNull();
     expect(getByText('security')).toBeInTheDocument();
@@ -64,7 +64,7 @@ describe('<Facets />', () => {
       <Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />
     );
 
-    fireEvent.click(getByTitle(container, 'Save'));
+    fireEvent.click(getByTitle(container, 'Export current search as report'));
     expect(getByText('Export as report')).toBeInTheDocument();
   });
 
@@ -73,8 +73,8 @@ describe('<Facets />', () => {
       <Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />
     );
 
-    fireEvent.click(getByTitle(container, 'Save'));
-    expect(getByText('Export as report')).toBeInTheDocument();
+    fireEvent.click(getByTitle(container, 'Export current search as report'));
+    expect(getByText('Report')).toBeInTheDocument();
 
     fireEvent.click(getByTitle(container, 'Export as report'));
     expect(saveSearch.mock.calls.length).toBe(1);
