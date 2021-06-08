@@ -1,5 +1,7 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.ItemFactory;
 import de.bonndan.nivio.model.Relation;
@@ -21,7 +23,7 @@ class SVGDimensionFactoryTest {
         Hex one = new Hex(-3, -3);
         Hex two = new Hex(10, 10);
         Set<Hex> hexes = Set.of(one, two); //usually would be much more, but here it is sufficient
-        SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of());
+        SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of(), new StatusValue("foo", Status.GREEN));
 
         //when
         SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(svgGroupArea), List.of());
@@ -37,10 +39,10 @@ class SVGDimensionFactoryTest {
 
         SVGDimension.BoundingBox cartesian = dimension.cartesian;
         assertThat(cartesian).isNotNull();
-        assertThat(cartesian.horMin).isEqualTo((int)one.toPixel().x);
-        assertThat(cartesian.vertMin).isEqualTo((int)one.toPixel().y);
-        assertThat(cartesian.horMax).isEqualTo((int)two.toPixel().x);
-        assertThat(cartesian.vertMax).isEqualTo((int)two.toPixel().y);
+        assertThat(cartesian.horMin).isEqualTo((int) one.toPixel().x);
+        assertThat(cartesian.vertMin).isEqualTo((int) one.toPixel().y);
+        assertThat(cartesian.horMax).isEqualTo((int) two.toPixel().x);
+        assertThat(cartesian.vertMax).isEqualTo((int) two.toPixel().y);
     }
 
     @Test
@@ -51,7 +53,7 @@ class SVGDimensionFactoryTest {
         Hex one = new Hex(-3, -3);
         Hex two = new Hex(10, 10);
         Set<Hex> hexes = Set.of(one, two); //usually would be much more, but here it is sufficient
-        SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of());
+        SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of(), new StatusValue("foo", Status.GREEN));
 
         //when
         Hex three = new Hex(-10, -10);
@@ -69,9 +71,9 @@ class SVGDimensionFactoryTest {
 
         SVGDimension.BoundingBox cartesian = dimension.cartesian;
         assertThat(cartesian).isNotNull();
-        assertThat(cartesian.horMin).isEqualTo((int)three.toPixel().x);
-        assertThat(cartesian.vertMin).isEqualTo((int)three.toPixel().y);
-        assertThat(cartesian.horMax).isEqualTo((int)two.toPixel().x);
-        assertThat(cartesian.vertMax).isEqualTo((int)two.toPixel().y);
+        assertThat(cartesian.horMin).isEqualTo((int) three.toPixel().x);
+        assertThat(cartesian.vertMin).isEqualTo((int) three.toPixel().y);
+        assertThat(cartesian.horMax).isEqualTo((int) two.toPixel().x);
+        assertThat(cartesian.vertMax).isEqualTo((int) two.toPixel().y);
     }
 }

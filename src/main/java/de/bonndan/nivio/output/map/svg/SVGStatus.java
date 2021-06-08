@@ -21,9 +21,10 @@ public class SVGStatus {
     }
 
     public static DomContent patternFor(@NonNull final Status status) {
-        final String space = "20";
+        final String space = "30";
+        final String width = "5";
         return new UnescapedText("<pattern id=\"" + STATUS_PATTERN_PREFIX + status + "\" patternUnits=\"userSpaceOnUse\" width=\"10\" height=\"10\" patternTransform=\"rotate(45)\">\n" +
-                "\t\t\t<line x1=\"0\" y=\"0\" x2=\"0\" y2=\"" + space + "\" stroke=\"" + status + "\" stroke-width=\"2\" />\n" +
+                "\t\t\t<line x1=\"0\" y=\"0\" x2=\"0\" y2=\"" + space + "\" stroke=\"" + status + "\" stroke-width=\"" + width + "\" />\n" +
                 "\t\t</pattern>");
 
     }

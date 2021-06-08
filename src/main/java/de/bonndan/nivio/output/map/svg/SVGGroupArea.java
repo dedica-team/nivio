@@ -1,5 +1,7 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
@@ -32,15 +34,20 @@ class SVGGroupArea extends Component {
     private final List<DomContent> outlines;
 
     @NonNull
+    private final StatusValue groupStatus;
+
+    @NonNull
     private final Point2D.Double anchor;
 
     SVGGroupArea(@NonNull final Group group,
                  @NonNull final Set<Hex> groupArea,
-                 @NonNull final List<DomContent> outlines
+                 @NonNull final List<DomContent> outlines,
+                 @NonNull final StatusValue groupStatus
     ) {
         this.group = Objects.requireNonNull(group);
         this.groupArea = Objects.requireNonNull(groupArea);
         this.outlines = outlines;
+        this.groupStatus = groupStatus;
 
         AtomicReference<Hex> lowest = new AtomicReference<>(null);
         groupArea.forEach(hex -> {
@@ -72,14 +79,19 @@ class SVGGroupArea extends Component {
      * Creates the group label text element positioned at the anchor (lowest point).
      *
      */
+    @NonNull
     public ContainerTag getLabel() {
         var fill = group.getColor();
         var fillId = fill != null ? "#" + fill : "";
-
-        return SvgTagCreator.text(group.getIdentifier())
+        boolean higherThanGreen = groupStatus.getStatus().isHigherThan(Status.GREEN);
+        if (StringUtils.isEmpty(fillId) || higherThanGreen) {
+            fillId = groupStatus.getStatus().getName();
+        }
+        final String text = higherThanGreen? "⚠ " + group.getIdentifier() : group.getIdentifier();
+        return SvgTagCreator.text(text)
                 .attr("x", anchor.x)
                 .attr("y", (int) (anchor.y + SVGRenderer.DEFAULT_ICON_SIZE))
-                .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
+                .attr("fill", fillId)
                 .attr("text-anchor", "middle")
                 .attr("class", "groupLabel");
     }

@@ -90,13 +90,13 @@ public class SVGGroupAreaOutlineFactory {
             containerTags.addAll(territoryHexes);
         }
 
-        String fill = "#" + Color.desaturate(Color.lighten(fillId));
+        String fill = "#" + Color.lighten(fillId);
 
         ContainerTag svgPath = SvgTagCreator.path()
                 .attr("d", pointsPath)
+                .condAttr(!StringUtils.isEmpty(fillId), "fill", fill)
                 .condAttr(!StringUtils.isEmpty(fillId), "stroke", fillId)
-                .condAttr(!StringUtils.isEmpty(fillId), "stroke-width", "10")
-                .attr( "fill", "transparent")
+                .attr( "stroke-width", 5)
         ;
 
         containerTags.add(svgPath);

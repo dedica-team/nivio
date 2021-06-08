@@ -1,5 +1,7 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
 import de.bonndan.nivio.output.map.hex.Hex;
@@ -31,7 +33,7 @@ class SVGGroupAreaTest {
         hexesToItems.put(e2, landscapeItem2);
 
         Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
-        SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(group, area, List.of(), false);
+        SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(group, area, new StatusValue("foo", Status.GREEN), false);
 
         assertThat(svgGroupArea.render().render()).contains(group.getFullyQualifiedIdentifier().jsonValue());
     }

@@ -61,30 +61,38 @@ class SVGRelation extends Component {
 
         String statusColor = statusValue.getStatus().getName();
 
+        ContainerTag shadow = null;
+        int innerStrokeWidth = 5;
+        if (statusValue.getStatus().equals(Status.UNKNOWN)) {
+            innerStrokeWidth = 15;
+        } else {
+            shadow = SvgTagCreator.path()
+                    .attr("d", points)
+                    .attr("stroke", statusColor)
+                    .attr("stroke-width", 20);
+        }
+
         ContainerTag path = SvgTagCreator.path()
                 .attr("d", points)
-                .attr("stroke", statusColor)
-                .attr("stroke-width", 2);
-
-        ContainerTag shadow = SvgTagCreator.path()
-                .attr("d", points)
                 .attr("stroke", fillId)
-                .attr("stroke-width", 20);
+                .attr("stroke-width", innerStrokeWidth);
+
+
 
         if (Lifecycle.isPlanned(relation.getSource()) || Lifecycle.isPlanned(relation.getTarget())) {
-            shadow.attr("stroke-dasharray", 15);
+            path.attr("stroke-dasharray", 15);
         }
 
         ContainerTag endMarker = null;
         if (RelationType.DATAFLOW.equals(relation.getType())) {
-            path.attr("stroke-dasharray", 3);
             path.attr("marker-mid", String.format("url(#%s)", SVGRelation.MARKER_ID));
+            path.attr("fill", shadow != null ? statusColor: fillId);
         } else {
             endMarker = SvgTagCreator.circle()
                     .attr("cx", hexPath.getEndPoint().x)
                     .attr("cy", hexPath.getEndPoint().y)
                     .attr("r", 35)
-                    .attr("fill", fillId);
+                    .attr("fill", shadow != null ? statusColor: fillId);
         }
 
         return addAttributes(g(shadow, endMarker, path, label(bezierPath, fillId)), relation);
@@ -144,12 +152,14 @@ class SVGRelation extends Component {
 
         return SvgTagCreator.marker()
                 .attr("id", MARKER_ID)
-                .attr("markerWidth", 6)
-                .attr("markerHeight", 6)
+                .attr("markerWidth", 10)
+                .attr("markerHeight", 10)
                 .attr("refX", 0)
                 .attr("refY", 5)
                 .attr("orient", "auto")
                 .attr("viewBox", "0 0 10 10")
+                .attr("stroke", "context-stroke")
+                .attr("markerUnits", "userSpaceOnUse")
                 .with(path)
                 ;
     }

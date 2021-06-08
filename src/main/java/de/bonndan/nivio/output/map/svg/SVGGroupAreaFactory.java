@@ -1,6 +1,5 @@
 package de.bonndan.nivio.output.map.svg;
 
-import com.google.common.collect.Lists;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Group;
@@ -13,8 +12,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
-
 /**
  * Collects all hexes close to group item hexes to create an area.
  */
@@ -23,31 +20,23 @@ public class SVGGroupAreaFactory {
     /**
      * Builds an areas of hex tiles belonging to a group.
      *
-     * @param group         the group
-     * @param inArea        all hex tiles forming an area
-     * @param groupStatuses assessment statuses of the group and its children
-     * @param debug         turn on debugging
+     * @param group       the group
+     * @param inArea      all hex tiles forming an area
+     * @param groupStatus assessment status summary of the group
+     * @param debug       turn on debugging
      */
     public static SVGGroupArea getGroup(@NonNull final Group group,
                                         @NonNull final Set<Hex> inArea,
-                                        @NonNull final List<StatusValue> groupStatuses,
+                                        @NonNull final StatusValue groupStatus,
                                         boolean debug
     ) {
-
         var fill = Objects.requireNonNull(group).getColor();
         var fillId = fill != null ? "#" + fill : "";
 
         SVGGroupAreaOutlineFactory outlineFactory = new SVGGroupAreaOutlineFactory();
         outlineFactory.setDebug(debug);
-        List<DomContent> statusShadow = outlineFactory.getOutline(inArea, fillId);
-        if (statusShadow.size() > 0) {
-            StatusValue worst = Assessable.getWorst(groupStatuses);
-            ContainerTag svgPath = (ContainerTag) statusShadow.get(0);
-            svgPath.attr("fill", "url(#" + SVGStatus.STATUS_PATTERN_PREFIX + worst.getStatus() + ")");
-        }
 
         List<DomContent> outlines = outlineFactory.getOutline(inArea, fillId);
-        statusShadow.addAll(outlines);
-        return new SVGGroupArea(group, inArea, statusShadow);
+        return new SVGGroupArea(group, inArea, outlines, groupStatus);
     }
 }
