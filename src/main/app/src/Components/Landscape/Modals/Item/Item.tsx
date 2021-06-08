@@ -171,6 +171,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
         isInbound ? relation.source : relation.target
       );
       if (!other) continue;
+      const status = landscapeContext.getAssessmentSummary(other.fullyQualifiedIdentifier);
       const listItem = (
         <ListItem key={relation.name}>
           <ListItemIcon>
@@ -185,7 +186,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
               size={'small'}
               title={'Click to locate'}
             >
-              <ItemAvatar item={other} statusColor={''} />
+              <ItemAvatar item={other} statusColor={status?.status || ''} />
             </IconButton>
           </ListItemIcon>
           <ListItemText primary={primary} secondary={secondary} />

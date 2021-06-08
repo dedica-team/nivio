@@ -8,6 +8,7 @@ import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import ItemAvatar from '../../Modals/Item/ItemAvatar';
 import { Close, HelpRounded } from '@material-ui/icons';
+import { LandscapeContext } from '../../../../Context/LandscapeContext';
 
 interface Props {
   source: IItem;
@@ -21,13 +22,18 @@ interface Props {
  */
 const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
   const classes = componentStyles();
+
+  const [visible, setVisible] = useState<boolean>(true);
+  const locateFunctionContext = useContext(LocateFunctionContext);
+  const landscapeContext = useContext(LandscapeContext);
+
+  if (!visible) return null;
+
   const sourceTitle = source.name || source.identifier;
   const targetTitle = target.name || target.identifier;
   const title = sourceTitle + ' to ' + targetTitle;
-  const [visible, setVisible] = useState<boolean>(true);
-  const locateFunctionContext = useContext(LocateFunctionContext);
-
-  if (!visible) return null;
+  const sourceStatus = landscapeContext.getAssessmentSummary(source.fullyQualifiedIdentifier);
+  const targetStatus = landscapeContext.getAssessmentSummary(target.fullyQualifiedIdentifier);
 
   return (
     <Card className={classes.card}>
@@ -84,7 +90,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
             size={'small'}
             title={'Click to locate'}
           >
-            <ItemAvatar item={source} statusColor={''} />
+            <ItemAvatar item={source} statusColor={sourceStatus?.status || ''} />
           </IconButton>
 
           {sourceTitle}
@@ -99,7 +105,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
             size={'small'}
             title={'Click to locate'}
           >
-            <ItemAvatar item={target} statusColor={''} />
+            <ItemAvatar item={target} statusColor={targetStatus?.status || ''} />
           </IconButton>
 
           {targetTitle}
