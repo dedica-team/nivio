@@ -7,7 +7,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class ApplicationProperties {
 
-    private String seed; // define a new attribute of the environment variable SEED
+    private String seed; 
 
     public String getSeed() {
         return seed;
