@@ -13,6 +13,8 @@ public class GitLabProperties {
     private String username;
     private String password;
 
+    /** define the setter and getter methods for the new attributes */
+
     public String getHostUrl() {
         return hostUrl;
     }
