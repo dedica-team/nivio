@@ -49,12 +49,14 @@ nivio:
   brandingLogoUrl: ${NIVIO_BRANDING_LOGO_URL:}
   seed: ${SEED:}
 
+# define the environment variable GITLAB
 gitlab:
   hostUrl: ${GITLAB_HOST_URL:}
   personalAccessToken: ${GITLAB_PERSONAL_ACCESS_TOKEN:}
   username: ${GITLAB_USERNAME:}
   password: ${GITLAB_PASSWORD:}
 
+# define the environment variable SONAR
 sonar:
   serverUrl: ${SONAR_SERVER_URL:}
   login: ${SONAR_LOGIN:}
