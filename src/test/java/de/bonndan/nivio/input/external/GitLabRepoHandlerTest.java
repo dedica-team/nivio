@@ -95,7 +95,7 @@ class GitLabRepoHandlerTest {
 
         //env vars used, configure them properly
         GitLabProperties gitLabProperties = null; // add a new variable and initializes it
-        GitLabConfig gitLabConfig = new GitLabConfig(null);
+        GitLabConfig gitLabConfig = new GitLabConfig(null); // add a new variable
         GitLabApi gitLabAPI = gitLabConfig.getGitLabAPI();
 
         handler = new GitLabRepoHandler(gitLabAPI);
