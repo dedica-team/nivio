@@ -14,9 +14,9 @@ import static de.bonndan.nivio.config.ConfigurableEnvVars.*;
 @EnableConfigurationProperties(SonarProperties.class)
 public class SonarConfig {
 
-    private final SonarProperties sonarProperties;
+    private final SonarProperties sonarProperties; // add a new attribute
 
-    @Autowired
+    @Autowired // add a constructor
     public SonarConfig(SonarProperties sonarProperties) {
         this.sonarProperties = sonarProperties;
     }
