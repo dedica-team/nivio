@@ -7,7 +7,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class ApplicationProperties {
 
-    private String seed; 
+    private String seed;
 
     public String getSeed() {
         return seed;
