@@ -19,7 +19,7 @@ public class ApplicationConfig {
 
     private final ApplicationProperties applicationProperties; // add a new attribute
 
-    @Autowired
+    @Autowired // add a new Constructor 
     public ApplicationConfig(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
     }
