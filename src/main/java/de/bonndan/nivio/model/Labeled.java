@@ -61,6 +61,7 @@ public interface Labeled {
     /**
      * Returns all label with values.
      */
+    @NonNull
     Map<String, String> getLabels();
 
     void setLabel(String key, String value);

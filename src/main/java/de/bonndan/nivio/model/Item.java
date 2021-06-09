@@ -150,6 +150,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         return description;
     }
 
+    @NonNull
     @JsonIgnore
     @Override
     public Map<String, String> getLabels() {

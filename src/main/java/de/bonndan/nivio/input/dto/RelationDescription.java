@@ -1,10 +1,15 @@
 package de.bonndan.nivio.input.dto;
 
+import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.model.RelationType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.lang.NonNull;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Schema(description = "A directed relation between two landscape items. Also known as edge in a directed graph.")
-public class RelationDescription {
+public class RelationDescription implements Labeled {
 
     @Schema(description = "The type of the relation, i.e. whether it is a hard or a soft dependency.")
     private RelationType type;
@@ -21,7 +26,11 @@ public class RelationDescription {
     @Schema(description = "The item identifier of the target. Prepend a group identifier if the simple item identifier is ambiguous.", example = "dataSink|groupB/dataSink")
     private String target;
 
-    public RelationDescription(){}
+    @Schema(description = "Key-value pair labels for a relation.")
+    private final Map<String, String> labels = new HashMap<>();
+
+    public RelationDescription() {
+    }
 
     public RelationDescription(String source, String target) {
         this.source = source;
@@ -77,5 +86,21 @@ public class RelationDescription {
                 ", source='" + source + '\'' +
                 ", target='" + target + '\'' +
                 '}';
+    }
+
+    @Override
+    public String getLabel(String key) {
+        return getLabels().get(key);
+    }
+
+    @Override
+    @NonNull
+    public Map<String, String> getLabels() {
+        return labels;
+    }
+
+    @Override
+    public void setLabel(String key, String value) {
+        getLabels().put(key, value);
     }
 }

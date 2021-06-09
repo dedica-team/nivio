@@ -161,12 +161,6 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return new ArrayList<>(groups.values());
     }
 
-    @JsonIgnore
-    @Override
-    public String getAddress() {
-        return null;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -223,6 +217,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return owner;
     }
 
+    @NonNull
     @JsonIgnore
     @Override
     public Map<String, String> getLabels() {

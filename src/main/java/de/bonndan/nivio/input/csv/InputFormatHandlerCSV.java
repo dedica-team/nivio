@@ -10,22 +10,20 @@ import de.bonndan.nivio.input.LabelToFieldResolver;
 import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.observation.InputFormatObserver;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.StringReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Reads csv files to {@link ItemDescription}s.
- *
- *
  */
 @Service
 public class InputFormatHandlerCSV implements InputFormatHandler {
@@ -44,7 +42,7 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
     }
 
     @Override
-    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
+    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
         List<ItemDescription> itemDescriptions = new ArrayList<>();
         String content = fileFetcher.get(reference, baseUrl);
         CSVReader reader = getReader(reference, content);
@@ -54,33 +52,48 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
             throw new ProcessingException(reference.getLandscapeDescription(), "'mapping' must be present in configuration.");
         }
         if (!mapping.containsKey(IDENTIFIER_KEY)) {
-            throw new ProcessingException(reference.getLandscapeDescription(), "'" + IDENTIFIER_KEY + "' must be present in configured mapping.");
+            throw new ProcessingException(reference.getLandscapeDescription(), String.format("'%s' must be present in configured mapping.", IDENTIFIER_KEY));
         }
 
         reader.iterator().forEachRemaining(strings -> {
             ItemDescription itemDescription = new ItemDescription();
-            mapping.forEach((key, value) -> {
-                Integer colNum = 0;
+            RelationDescription relationDescription = null;
+            Map<String, String> labels = new HashMap<>();
+            for (Map.Entry<String, Object> entry : mapping.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                int colNum = 0;
                 if (value instanceof String) {
-                    colNum = Integer.valueOf((String)value);
+                    colNum = Integer.parseInt((String) value);
                 }
 
                 if (value instanceof Integer) {
                     colNum = (Integer) value;
                 }
 
-
+                String columnValue = strings[colNum];
                 if (IDENTIFIER_KEY.equals(key)) {
-                    itemDescription.setIdentifier(strings[colNum]);
-                    return;
-                }
+                    if (columnValue.contains(Relation.DELIMITER)) {
+                        String[] split = columnValue.split(Relation.DELIMITER);
+                        itemDescription.setIdentifier(split[0]);
+                        relationDescription = new RelationDescription(split[0], split[1]);
+                    } else {
 
-                if (colNum >= strings.length) {
-                    return;
+                        itemDescription.setIdentifier(columnValue);
+                    }
+                    continue;
                 }
                 //relies on LabelToFieldProcessor running later
-                itemDescription.getLabels().put(LabelToFieldResolver.NIVIO_LABEL_PREFIX + key, strings[colNum]);
-            });
+                labels.put(LabelToFieldResolver.NIVIO_LABEL_PREFIX + key, columnValue);
+            }
+
+            if (relationDescription != null) {
+                relationDescription.setLabels(labels);
+                itemDescription.addRelation(relationDescription);
+            } else {
+                itemDescription.getLabels().putAll(labels);
+            }
+
             itemDescriptions.add(itemDescription);
         });
 
@@ -89,7 +102,7 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
 
     @Override
     @Nullable
-    public InputFormatObserver getObserver(InputFormatObserver inner, SourceReference sourceReference) {
+    public InputFormatObserver getObserver(@NonNull InputFormatObserver inner, @NonNull SourceReference sourceReference) {
         return inner;
     }
 

@@ -6,6 +6,7 @@ import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.model.Link;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,12 +75,6 @@ public class GroupDescription implements ComponentDescription {
         return null;
     }
 
-    @JsonIgnore
-    @Override
-    public String getAddress() {
-        return null;
-    }
-
     public void setOwner(String owner) {
         this.owner = owner;
     }
@@ -131,6 +126,7 @@ public class GroupDescription implements ComponentDescription {
         this.contains = contains;
     }
 
+    @NonNull
     public Map<String, String> getLabels() {
         return labels;
     }

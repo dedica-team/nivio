@@ -195,6 +195,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         }
     }
 
+    @NonNull
     @Override
     public Map<String, String> getLabels() {
         return labels;

@@ -266,11 +266,6 @@ class AssessableTest {
         }
 
         @Override
-        public String getAddress() {
-            return null;
-        }
-
-        @Override
         public List<? extends Assessable> getChildren() {
             return children;
         }
