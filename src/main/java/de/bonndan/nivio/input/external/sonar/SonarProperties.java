@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class SonarProperties {
 
+    /** define new attributes for the enviroment variable SONAR */
     private String serverUrl;
     private String login;
     private String password;
