@@ -1,6 +1,8 @@
 package de.bonndan.nivio.input.external.sonar;
 
 import org.sonar.wsclient.SonarClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,7 +11,15 @@ import java.util.Optional;
 import static de.bonndan.nivio.config.ConfigurableEnvVars.*;
 
 @Configuration
+@EnableConfigurationProperties(SonarProperties.class)
 public class SonarConfig {
+
+    private final SonarProperties sonarProperties; // add a new attribute
+
+    @Autowired
+    public SonarConfig(SonarProperties sonarProperties) {
+        this.sonarProperties = sonarProperties;
+    }
 
     @Bean
     public SonarClient.Builder getSonarClientBuilder() {
