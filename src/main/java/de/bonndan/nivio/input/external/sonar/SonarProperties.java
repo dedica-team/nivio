@@ -14,6 +14,7 @@ public class SonarProperties {
     private String proxyHost;
     private String proxyPort;
 
+    /** define the getter and setter methods of the new attributes */
     public String getServerUrl() {
         return serverUrl;
     }
