@@ -478,6 +478,47 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>com.societegenerale.commons</groupId>
+                <artifactId>arch-unit-maven-plugin</artifactId>
+                <version>2.7.2</version>
+                <configuration>
+
+                    <rules>
+                        <preConfiguredRules>
+                            <rule>com.societegenerale.commons.plugin.rules.NoStandardStreamRuleTest</rule>
+                            <rule>com.societegenerale.commons.plugin.rules.NoJunitAssertRuleTest</rule>
+                            <rule>com.societegenerale.commons.plugin.rules.NoJodaTimeRuleTest</rule>
+                            <rule>com.societegenerale.commons.plugin.rules.NoJavaUtilDateRuleTest</rule>
+                            <rule>com.societegenerale.commons.plugin.rules.NoPowerMockRuleTest</rule>
+                            <rule>com.societegenerale.commons.plugin.rules.NoPrefixForInterfacesRuleTest</rule>
+                            <rule>com.societegenerale.commons.plugin.rules.NoPublicFieldRuleTest</rule>
+                        </preConfiguredRules>
+                    </rules>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>arch-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <!--
+                             A version of the core jar is included by default, but don't hesitate
+                             to upgrade to a later one if you need :
+                             we will be able to add rules and behavior in arch-unit-build-plugin-core
+                             without releasing a new version of arch-unit-maven-plugin
+                         -->
+                        <groupId>com.societegenerale.commons</groupId>
+                        <artifactId>arch-unit-build-plugin-core</artifactId>
+                        <version>2.7.3</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
 
     </build>
