@@ -7,7 +7,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class ApplicationProperties {
 
-    private String seed;
+    private String seed; // define an attribute for the environment variable SEED
 
     public String getSeed() {
         return seed;
@@ -16,6 +16,5 @@ public class ApplicationProperties {
     public void setSeed(String seed) {
         this.seed = seed;
     }
-
 
 }
