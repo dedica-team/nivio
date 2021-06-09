@@ -17,9 +17,9 @@ import static de.bonndan.nivio.output.icons.LocalIcons.DEFAULT_ICONS_FOLDER;
 @EnableConfigurationProperties(ApplicationProperties.class)
 public class ApplicationConfig {
 
-    private final ApplicationProperties applicationProperties; // add a new attribute
+    private final ApplicationProperties applicationProperties;
 
-    @Autowired // add a new Constructor 
+    @Autowired 
     public ApplicationConfig(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
     }
