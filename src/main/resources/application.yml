@@ -47,17 +47,17 @@ nivio:
   brandingBackground: ${NIVIO_BRANDING_BACKGROUND:161618}
   brandingSecondary: ${NIVIO_BRANDING_SECONDARY:22F2C2}
   brandingLogoUrl: ${NIVIO_BRANDING_LOGO_URL:}
-  seed: ${SEED:} # define the environment variable SEED
+  seed: ${SEED:} # define the new environment variable SEED
 
 
-gitlab: # define the environment variables GITLAB
+gitlab: # define the new environment variables GITLAB
   hostUrl: ${GITLAB_HOST_URL:}
   personalAccessToken: ${GITLAB_PERSONAL_ACCESS_TOKEN:}
   username: ${GITLAB_USERNAME:}
   password: ${GITLAB_PASSWORD:}
 
 
-sonar: # define the environment variable SONAR
+sonar: # define the new environment variable SONAR
   serverUrl: ${SONAR_SERVER_URL:}
   login: ${SONAR_LOGIN:}
   password: ${SONAR_PASSWORD:}
