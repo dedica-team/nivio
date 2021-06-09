@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "gitlab")
 @Validated
 public class GitLabProperties {
+/** define new attributes for the environment variables GITLAB */
 
     private String hostUrl;
     private String personalAccessToken;
