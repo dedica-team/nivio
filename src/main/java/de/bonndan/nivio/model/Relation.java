@@ -39,6 +39,12 @@ public class Relation implements Labeled, Assessable, Serializable {
     private final Map<String, String> labels = new HashMap<>();
 
     public Relation(@NonNull final Item source,
+                    @NonNull final Item target
+    ) {
+        this(source, target, null, null, null);
+    }
+
+    public Relation(@NonNull final Item source,
                     @NonNull final Item target,
                     final String description,
                     final String format,

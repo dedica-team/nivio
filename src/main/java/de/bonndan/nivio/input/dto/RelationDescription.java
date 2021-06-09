@@ -6,6 +6,10 @@ import de.bonndan.nivio.search.ItemMatcher;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
 
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.lang.NonNull;
+
 import java.util.*;
 
 @Schema(description = "A directed relation between two landscape items. Also known as edge in a directed graph.")
