@@ -91,11 +91,12 @@ class GitLabRepoHandlerTest {
 
     @Disabled
     @Test
+    /** add two new variables and initialize it */
     void integration() throws IOException, ExecutionException, InterruptedException {
 
         //env vars used, configure them properly
         GitLabProperties gitLabProperties = null;
-        GitLabConfig gitLabConfig = new GitLabConfig(null); 
+        GitLabConfig gitLabConfig = new GitLabConfig(null);
         GitLabApi gitLabAPI = gitLabConfig.getGitLabAPI();
 
         handler = new GitLabRepoHandler(gitLabAPI);
