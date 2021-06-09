@@ -1,6 +1,8 @@
 package de.bonndan.nivio.input.external.gitlab;
 
 import org.gitlab4j.api.GitLabApi;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
@@ -11,7 +13,15 @@ import static de.bonndan.nivio.config.ConfigurableEnvVars.*;
 
 
 @Configuration
+@EnableConfigurationProperties(GitLabProperties.class)
 public class GitLabConfig {
+
+    private final GitLabProperties gitLabProperties;
+
+    @Autowired
+    public GitLabConfig(GitLabProperties gitLabProperties) {
+        this.gitLabProperties = gitLabProperties;
+    }
 
     @Bean
     public GitLabApi getGitLabAPI() {
