@@ -16,9 +16,9 @@ import static de.bonndan.nivio.config.ConfigurableEnvVars.*;
 @EnableConfigurationProperties(GitLabProperties.class)
 public class GitLabConfig {
 
-    private final GitLabProperties gitLabProperties;
+    private final GitLabProperties gitLabProperties; // add a new attribute
 
-    @Autowired
+    @Autowired // add a constructor
     public GitLabConfig(GitLabProperties gitLabProperties) {
         this.gitLabProperties = gitLabProperties;
     }
