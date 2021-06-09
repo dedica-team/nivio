@@ -3,6 +3,7 @@ package de.bonndan.nivio.input.external;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.external.github.GitHubRepoHandler;
 import de.bonndan.nivio.input.external.gitlab.GitLabConfig;
+import de.bonndan.nivio.input.external.gitlab.GitLabProperties;
 import de.bonndan.nivio.input.external.gitlab.GitLabRepoHandler;
 import de.bonndan.nivio.model.Link;
 import org.gitlab4j.api.*;
@@ -11,14 +12,8 @@ import org.gitlab4j.api.models.Project;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.kohsuke.github.GHContent;
-import org.kohsuke.github.GHPullRequest;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -99,7 +94,8 @@ class GitLabRepoHandlerTest {
     void integration() throws IOException, ExecutionException, InterruptedException {
 
         //env vars used, configure them properly
-        GitLabConfig gitLabConfig = new GitLabConfig();
+        GitLabProperties gitLabProperties = null; // add a new variable and initializes it
+        GitLabConfig gitLabConfig = new GitLabConfig(null);
         GitLabApi gitLabAPI = gitLabConfig.getGitLabAPI();
 
         handler = new GitLabRepoHandler(gitLabAPI);
