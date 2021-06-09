@@ -48,6 +48,22 @@ nivio:
   brandingSecondary: ${NIVIO_BRANDING_SECONDARY:22F2C2}
   brandingLogoUrl: ${NIVIO_BRANDING_LOGO_URL:}
   brandingMessage: ${NIVIO_BRANDING_MESSAGE:All Landscapes}
+  seed: ${SEED:} # add a new environment variable
+
+
+gitlab:  # add new environment variables
+  hostUrl: ${GITLAB_HOST_URL:}
+  personalAccessToken: ${GITLAB_PERSONAL_ACCESS_TOKEN:}
+  username: ${GITLAB_USERNAME:}
+  password: ${GITLAB_PASSWORD:}
+
+
+sonar: # add new environment variables
+  serverUrl: ${SONAR_SERVER_URL:}
+  login: ${SONAR_LOGIN:}
+  password: ${SONAR_PASSWORD:}
+  proxyHost: ${SONAR_PROXY_HOST:}
+  proxyPort: ${SONAR_PROXY_PORT:}
 
 ---
 spring:
