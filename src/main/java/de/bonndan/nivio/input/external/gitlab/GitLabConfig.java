@@ -18,7 +18,7 @@ public class GitLabConfig {
 
     private final GitLabProperties gitLabProperties; // add a new attribute
 
-    @Autowired
+    @Autowired // add a new constructor
     public GitLabConfig(GitLabProperties gitLabProperties) {
         this.gitLabProperties = gitLabProperties;
     }
