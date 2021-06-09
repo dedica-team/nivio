@@ -10,9 +10,9 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
 
 @AnalyzeClasses(packages = "de.bonndan.nivio")
-class ArchTestSpringBoot {
+class ArchSpringBootTest {
 
 
     @ArchTest
-    public static final ArchRule checkBeansInApplicationClass = methods().that().areDeclaredIn(Application.class).should().notBeAnnotatedWith(Bean.class);
+    public static final ArchRule checkBeansInApplicationClassTest = methods().that().areDeclaredIn(Application.class).should().notBeAnnotatedWith(Bean.class);
 }

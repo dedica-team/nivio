@@ -200,6 +200,12 @@
             "description" : "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
             "example" : "service|database|volume"
           },
+          "lifecycle" : {
+            "type" : "string",
+            "description" : "The lifecycle state of an item.",
+            "writeOnly" : true,
+            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
+          },
           "statuses" : {
             "type" : "array",
             "description" : "A list of statuses that works like hardcoded KPIs.",
@@ -236,12 +242,6 @@
             "description" : "The parts used to create the item. Usually refers to technical frameworks.",
             "writeOnly" : true,
             "example" : "java: 8"
-          },
-          "lifecycle" : {
-            "type" : "string",
-            "description" : "The lifecycle state of an item.",
-            "writeOnly" : true,
-            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
           },
           "tags" : {
             "type" : "array",
