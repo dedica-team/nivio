@@ -16,7 +16,7 @@ public class SonarConfig {
 
     private final SonarProperties sonarProperties; // add a new attribute
 
-    @Autowired
+    @Autowired // add a new constructor
     public SonarConfig(SonarProperties sonarProperties) {
         this.sonarProperties = sonarProperties;
     }
