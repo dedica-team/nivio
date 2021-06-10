@@ -2,6 +2,7 @@
 * ``color`` A hex color code to override the inherited group color
 * ``costs`` Running costs of the item.
 * ``fill`` Background image (for displaying purposes).
+* ``frameworks`` A comma-separated list of frameworks as key-value pairs (key is name, value is version).
 * ``icon`` Icon/image (for displaying purposes).
 * ``health`` Description of the item's health status.
 * ``layer`` A technical layer.

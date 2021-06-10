@@ -24,6 +24,7 @@ public enum Label {
     fill("Background image (for displaying purposes)."),
 
     framework("A map of used frameworks (key is name, value is version).", true),
+    frameworks("A comma-separated list of frameworks as key-value pairs (key is name, value is version)."),
 
     icon("Icon/image (for displaying purposes)."),
 
