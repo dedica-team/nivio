@@ -1,17 +1,17 @@
 package de.bonndan.nivio.search;
 
 import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.assessment.AssessmentRepository;
 import de.bonndan.nivio.input.ProcessingChangelog;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
-import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class SearchIndexingEventListenerTest {
@@ -22,7 +22,7 @@ class SearchIndexingEventListenerTest {
     @BeforeEach
     void setUp() {
         landscape = mock(Landscape.class);
-        listener = new SearchIndexingEventListener();
+        listener = new SearchIndexingEventListener(new AssessmentRepository());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.map;
 
 import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.assessment.AssessmentRepository;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
@@ -29,10 +30,12 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
      */
     private final Map<String, String> renderings = new HashMap<>();
 
-    private final SVGRenderer svgRenderer;
+    private final AssessmentRepository assessmentRepository;
     private final Layouter<LayoutedComponent> layouter;
+    private final SVGRenderer svgRenderer;
 
-    public RenderCache(final SVGRenderer svgRenderer) {
+    public RenderCache(final SVGRenderer svgRenderer, AssessmentRepository assessmentRepository) {
+        this.assessmentRepository = assessmentRepository;
         this.svgRenderer = svgRenderer;
         layouter = new OrganicLayouter();
     }
@@ -72,6 +75,11 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
     }
 
     private Assessment getAssessment(Landscape landscape) {
-        return new Assessment(landscape.applyKPIs(landscape.getKpis()));
+        var assessment = assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier());
+        if (assessment != null) {
+            return assessment;
+        } else {
+            return assessmentRepository.createAssessment(landscape);
+        }
     }
 }

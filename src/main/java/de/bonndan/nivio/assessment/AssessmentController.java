@@ -14,9 +14,11 @@ public class AssessmentController {
 
     public static final String PATH = "/assessment";
     private final LandscapeRepository landscapeRepository;
+    private final AssessmentRepository assessmentRepository;
 
-    public AssessmentController(LandscapeRepository landscapeRepository) {
+    public AssessmentController(LandscapeRepository landscapeRepository, AssessmentRepository assessmentRepository) {
         this.landscapeRepository = landscapeRepository;
+        this.assessmentRepository = assessmentRepository;
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
@@ -28,7 +30,10 @@ public class AssessmentController {
             return ResponseEntity.notFound().build();
         }
 
-        Assessment assessment = new Assessment(landscape.applyKPIs(landscape.getKpis()));
+        Assessment assessment = assessmentRepository.getAssessment(fqi);
+        if (assessment == null) {
+            assessment = assessmentRepository.createAssessment(landscape);
+        }
         return new ResponseEntity<>(assessment, HttpStatus.OK);
     }
 

@@ -1,7 +1,7 @@
 package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.api.NotFoundException;
-import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.assessment.AssessmentRepository;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.LocalServer;
@@ -23,14 +23,28 @@ public class DocsController {
     public static final String PATH = "/docs";
     public static final String REPORT_HTML = "report.html";
 
+    private final AssessmentRepository assessmentRepository;
     private final LandscapeRepository landscapeRepository;
     private final LocalServer localServer;
     private final IconService iconService;
 
-    public DocsController(LandscapeRepository landscapeRepository, LocalServer localServer, IconService iconService) {
+    public DocsController(LandscapeRepository landscapeRepository, LocalServer localServer, IconService iconService, AssessmentRepository assessmentRepository) {
+        this.assessmentRepository = assessmentRepository;
         this.landscapeRepository = landscapeRepository;
         this.localServer = localServer;
         this.iconService = iconService;
+    }
+
+    private ResponseEntity<String> getResponseEntity(HttpServletRequest request, Landscape landscape, HtmlGenerator generator) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
+        return new ResponseEntity<>(
+                generator.toDocument(landscape, assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier()) != null ?
+                                assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier()) : assessmentRepository.createAssessment(landscape),
+                        new SearchConfig(request.getParameterMap())),
+                headers,
+                HttpStatus.OK
+        );
     }
 
     @GetMapping(path = "/{landscape}/" + REPORT_HTML)
@@ -42,20 +56,12 @@ public class DocsController {
 
         ReportGenerator generator = new ReportGenerator(localServer, iconService);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
-        return new ResponseEntity<>(
-                generator.toDocument(landscape, new Assessment(landscape.applyKPIs(landscape.getKpis())), new SearchConfig(request.getParameterMap())),
-                headers,
-                HttpStatus.OK
-        );
+        return getResponseEntity(request, landscape, generator);
 
     }
 
     @GetMapping(path = "/{landscape}/owners.html")
-    public ResponseEntity<String> owners(@PathVariable(name = "landscape") final String landscapeIdentifier,
-                                         final HttpServletRequest request
-    ) {
+    public ResponseEntity<String> owners(@PathVariable(name = "landscape") final String landscapeIdentifier, final HttpServletRequest request) {
 
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
                 () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
@@ -63,13 +69,6 @@ public class DocsController {
 
         OwnersReportGenerator generator = new OwnersReportGenerator(localServer, iconService);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
-        return new ResponseEntity<>(
-                generator.toDocument(landscape, new Assessment(landscape.applyKPIs(landscape.getKpis())), new SearchConfig(request.getParameterMap())),
-                headers,
-                HttpStatus.OK
-        );
-
+        return getResponseEntity(request, landscape, generator);
     }
 }
