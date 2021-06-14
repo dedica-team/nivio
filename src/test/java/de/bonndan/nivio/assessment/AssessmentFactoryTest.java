@@ -1,6 +1,5 @@
 package de.bonndan.nivio.assessment;
 
-import com.tngtech.archunit.junit.AnalyzeClasses;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.ItemFactory;
 import de.bonndan.nivio.model.LandscapeFactory;
@@ -13,8 +12,8 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@AnalyzeClasses(packages = "de.bonndan.nivio")
-public class AssessmentFactoryTest {
+
+class AssessmentFactoryTest {
 
 
     @Test

@@ -30,7 +30,7 @@ public class AssessmentController {
             return ResponseEntity.notFound().build();
         }
 
-        Assessment assessment = assessmentRepository.getAssessment(fqi);
+        var assessment = assessmentRepository.getAssessment(fqi);
         if (assessment == null) {
             assessment = assessmentRepository.createAssessment(landscape);
         }

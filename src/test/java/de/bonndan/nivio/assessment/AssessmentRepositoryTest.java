@@ -10,9 +10,10 @@ import org.junit.jupiter.api.Test;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-public class AssessmentRepositoryTest {
+class AssessmentRepositoryTest {
 
     private static Landscape landscape;
 
@@ -41,15 +42,16 @@ public class AssessmentRepositoryTest {
     @Test
     void testGetNonExistingElement() {
         var storedAssessment = assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier());
-        assertThat(storedAssessment).isEqualTo(null);
+        assertThat(storedAssessment).isNull();
     }
 
+
     @Test
-    void testIllegalNullArguments() {
-        var nullAssessment = assessmentRepository.createAssessment(null);
-        assertThat(nullAssessment).isEqualTo(null);
-        nullAssessment = assessmentRepository.getAssessment(null);
-        assertThat(nullAssessment).isEqualTo(null);
+    void testIllegalArgumentExceptionGet() {
+        var exception = assertThrows(NullPointerException.class, () -> {
+            assessmentRepository.createAssessment(null);
+        });
+        assertThat(exception.getMessage()).isEqualTo("Assessments can't be created from a null value");
     }
 
 }

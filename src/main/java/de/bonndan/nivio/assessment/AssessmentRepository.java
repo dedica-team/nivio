@@ -3,9 +3,11 @@ package de.bonndan.nivio.assessment;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Landscape;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * Stores and loads and creates Assessments with FullyQualifiedIdentifier as key
@@ -24,16 +26,14 @@ public class AssessmentRepository {
     }
 
     public Assessment createAssessment(@NonNull Landscape landscape) {
-        if (landscape != null) {
-            var newAssessment = AssessmentFactory.createAssessment(landscape);
-            storeAssessment(landscape.getFullyQualifiedIdentifier(), newAssessment);
-            return newAssessment;
-        } else {
-            return null;
-        }
+        var testedLandscape = Objects.requireNonNull(landscape, "Assessments can't be created from a null value");
+        var newAssessment = AssessmentFactory.createAssessment(testedLandscape);
+        storeAssessment(testedLandscape.getFullyQualifiedIdentifier(), newAssessment);
+        return newAssessment;
     }
 
-    public Assessment getAssessment(@NonNull FullyQualifiedIdentifier fullyQualifiedIdentifier) {
+    // TODO: 14.06.21  fix SearchIndexingEventListenerTest
+    public Assessment getAssessment(@Nullable FullyQualifiedIdentifier fullyQualifiedIdentifier) {
         if (fullyQualifiedIdentifier != null) {
             return repository.get(fullyQualifiedIdentifier);
         } else {
@@ -42,7 +42,7 @@ public class AssessmentRepository {
     }
 
     private void storeAssessment(@NonNull FullyQualifiedIdentifier fullyQualifiedIdentifier, @NonNull Assessment assessment) {
-        var newValue = repository.put(fullyQualifiedIdentifier, assessment);
+        repository.put(fullyQualifiedIdentifier, assessment);
     }
 
 }
