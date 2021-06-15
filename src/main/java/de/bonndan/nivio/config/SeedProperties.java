@@ -4,8 +4,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties(prefix = "nivio")
-@Validated
+
 public class SeedProperties {
+
+    private String seed;
+
     public String getSeed() {
         return seed;
     }
@@ -13,7 +16,5 @@ public class SeedProperties {
     public void setSeed(String seed) {
         this.seed = seed;
     }
-
-    private String seed;
 
 }
