@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.external;
 
 
 import de.bonndan.nivio.input.external.github.GitHubRepoHandler;
+import de.bonndan.nivio.input.external.gitlab.GitLabRepoHandler;
 import de.bonndan.nivio.input.external.openapi.OpenAPILinkHandler;
 import de.bonndan.nivio.input.external.sonar.SonarLinkHandler;
 import de.bonndan.nivio.input.external.springboot.SpringBootHealthHandler;
@@ -26,6 +27,7 @@ public class LinkHandlerFactory {
     public static final String GITHUB = "github";
     private static final String SONAR = "sonar";
     private static final String SPRING_HEALTH = "spring.health";
+    private static final String GITLAB = "gitlab";
 
     // add semantics, e.g. handle identifier "sonarqube" to grab metrics
     // see https://github.com/dedica-team/nivio/issues/97
@@ -33,7 +35,9 @@ public class LinkHandlerFactory {
             GITHUB, GitHubRepoHandler.class,
             SONAR, SonarLinkHandler.class,
             SPRING_HEALTH, SpringBootHealthHandler.class,
-            OpenAPILinkHandler.NAMESPACE, OpenAPILinkHandler.class
+            OpenAPILinkHandler.NAMESPACE, OpenAPILinkHandler.class,
+            GITLAB, GitLabRepoHandler.class
+
     );
 
     private final AutowireCapableBeanFactory beanFactory;
@@ -52,7 +56,7 @@ public class LinkHandlerFactory {
         try {
             return Optional.of(beanFactory.createBean(aClass));
         } catch (BeansException e) {
-            LOGGER.error(String.format("Failed to create external link handler of type %s. Please check the handler is properly configured.", key));
+         //   LOGGER.error(String.format("Failed to create external link handler of type %s. Please check the handler is properly configured.", key));
             return Optional.empty();
         }
     }
