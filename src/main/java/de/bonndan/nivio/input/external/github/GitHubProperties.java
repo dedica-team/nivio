@@ -4,9 +4,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties(prefix = "github")
-@Validated
+
 
 public class GitHubProperties {
+
+    private String login;
+    private String password;
+    private String oauth;
+    private String jwt;
 
     public String getLogin() {
         return login;
@@ -40,8 +45,5 @@ public class GitHubProperties {
         this.jwt = jwt;
     }
 
-    private String login;
-    private String password;
-    private String oauth;
-    private String jwt;
+
 }
