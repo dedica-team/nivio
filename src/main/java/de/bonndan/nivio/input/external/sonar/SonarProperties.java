@@ -4,9 +4,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties(prefix = "sonar")
-@Validated
+
 
 public class SonarProperties {
+
+    private String serverUrl;
+    private String login;
+    private String password;
+    private String proxyHost;
+    private String proxyPort;
 
     public String getServerUrl() {
         return serverUrl;
@@ -48,11 +54,7 @@ public class SonarProperties {
         this.proxyPort = proxyPort;
     }
 
-    private String serverUrl;
-    private String login;
-    private String password;
-    private String proxyHost;
-    private String proxyPort;
+
 
 
 
