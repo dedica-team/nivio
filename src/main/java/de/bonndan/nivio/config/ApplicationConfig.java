@@ -2,7 +2,6 @@ package de.bonndan.nivio.config;
 
 import de.bonndan.nivio.input.Seed;
 import de.bonndan.nivio.output.icons.LocalIcons;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.Optional;
 
 import static de.bonndan.nivio.output.icons.LocalIcons.DEFAULT_ICONS_FOLDER;
 
@@ -19,7 +20,6 @@ public class ApplicationConfig {
 
     private final SeedProperties seedProperties;
 
-    @Autowired
     public ApplicationConfig(SeedProperties seedProperties) {
         this.seedProperties = seedProperties;
     }
@@ -41,7 +41,8 @@ public class ApplicationConfig {
 
     @Bean
     public Seed seed() {
-        return new Seed(ConfigurableEnvVars.SEED.value());
+
+        return new Seed(Optional.ofNullable(seedProperties.getSeed()));
     }
 
     @Bean
