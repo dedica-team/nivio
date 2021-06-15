@@ -28,6 +28,13 @@ public class GitHubConfig {
      *
      * export GITHUB_JWT=my_jwt_token
      */
+
+    private final GitHubProperties gitHubProperties;
+
+    public GitHubConfig(GitHubProperties gitHubProperties) {
+        this.gitHubProperties = gitHubProperties;
+    }
+
     @Bean
     public GitHub getGitHub() {
 
@@ -45,9 +52,9 @@ public class GitHubConfig {
     }
 
     private boolean checkAnyEnv() {
-        return !StringUtils.isEmpty(System.getenv("GITHUB_LOGIN")) ||
-                !StringUtils.isEmpty(System.getenv("GITHUB_PASSWORD")) ||
-                !StringUtils.isEmpty(System.getenv("GITHUB_OAUTH")) ||
-                !StringUtils.isEmpty(System.getenv("GITHUB_JWT"));
+        return !StringUtils.isEmpty(System.getenv("Optional.ofNullable(gitHubProperties.getLogin())")) ||
+                !StringUtils.isEmpty(System.getenv("Optional.ofNullable(gitHubProperties.getPassword()")) ||
+                !StringUtils.isEmpty(System.getenv("Optional.ofNullable(gitHubProperties.getOauth()")) ||
+                !StringUtils.isEmpty(System.getenv("Optional.ofNullable(gitHubProperties.getJwt()"));
     }
 }
