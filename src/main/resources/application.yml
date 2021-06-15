@@ -58,6 +58,12 @@ gitlab:  # add new environment variables
   password: ${GITLAB_PASSWORD:}
 
 
+github: # add new environment variables
+   login: ${GITHUB_LOGIN:}
+   password: ${GITHUB_PASSWORD:}
+   oauth: ${GITHUB_OAUTH:}
+   jwt: ${GITHUB_JWT:}
+
 sonar: # add new environment variables
   serverUrl: ${SONAR_SERVER_URL:}
   login: ${SONAR_LOGIN:}
