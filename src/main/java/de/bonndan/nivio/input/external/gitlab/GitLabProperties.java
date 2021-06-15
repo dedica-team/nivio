@@ -1,11 +1,15 @@
 package de.bonndan.nivio.input.external.gitlab;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties(prefix = "gitlab")
-@Validated
+
 public class GitLabProperties {
+
+    private String hostUrl;
+    private String personalAccessToken;
+    private String username;
+    private String password;
 
     public String getHostUrl() {
         return hostUrl;
@@ -38,10 +42,5 @@ public class GitLabProperties {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    private String hostUrl;
-    private String personalAccessToken;
-    private String username;
-    private String password;
 
 }
