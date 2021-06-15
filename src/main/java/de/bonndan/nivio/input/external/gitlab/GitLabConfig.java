@@ -1,7 +1,6 @@
 package de.bonndan.nivio.input.external.gitlab;
 
 import org.gitlab4j.api.GitLabApi;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +9,7 @@ import org.springframework.lang.NonNull;
 import java.util.Optional;
 
 import static de.bonndan.nivio.config.ConfigurableEnvVars.*;
-
+import java.util.Optional;
 
 @Configuration
 @EnableConfigurationProperties(GitLabProperties.class)
@@ -18,7 +17,6 @@ public class GitLabConfig {
 
     private final GitLabProperties gitLabProperties;
 
-    @Autowired
     public GitLabConfig(GitLabProperties gitLabProperties) {
         this.gitLabProperties = gitLabProperties;
     }
@@ -26,22 +24,22 @@ public class GitLabConfig {
     @Bean
     public GitLabApi getGitLabAPI() {
 
-        Optional<String> hostUrl = GITLAB_HOST_URL.value();
+        Optional<String> hostUrl = Optional.ofNullable(gitLabProperties.getHostUrl());
         if (hostUrl.isEmpty()) {
             return null;
         }
 
-        Optional<String> personalAccessToken = GITLAB_PERSONAL_ACCESS_TOKEN.value();
-        Optional<String> username = GITLAB_USERNAME.value();
-        Optional<String> password = GITLAB_PASSWORD.value();
+        Optional<String> personalAccessToken = Optional.ofNullable(gitLabProperties.getPersonalAccessToken());
+        Optional<String> username = Optional.ofNullable(gitLabProperties.getUsername());
+        Optional<String> password = Optional.ofNullable(gitLabProperties.getPassword());
 
         return getGitLabAPI(hostUrl.get(), personalAccessToken, username, password);
     }
 
     GitLabApi getGitLabAPI(@NonNull String hostUrl,
-                                  Optional<String> personalAccessToken,
-                                  Optional<String> username,
-                                  Optional<String> password
+                           Optional<String> personalAccessToken,
+                           Optional<String> username,
+                           Optional<String> password
     ) {
 
         if (personalAccessToken.isPresent()) {
