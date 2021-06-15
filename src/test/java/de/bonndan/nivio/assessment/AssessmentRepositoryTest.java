@@ -32,6 +32,7 @@ class AssessmentRepositoryTest {
         assessmentRepository.clean();
     }
 
+
     @Test
     void testGetExistingElement() {
         var assessment = assessmentRepository.createAssessment(landscape);
@@ -48,9 +49,7 @@ class AssessmentRepositoryTest {
 
     @Test
     void testIllegalArgumentExceptionGet() {
-        var exception = assertThrows(NullPointerException.class, () -> {
-            assessmentRepository.createAssessment(null);
-        });
+        var exception = assertThrows(NullPointerException.class, () -> assessmentRepository.createAssessment(null));
         assertThat(exception.getMessage()).isEqualTo("Assessments can't be created from a null value");
     }
 

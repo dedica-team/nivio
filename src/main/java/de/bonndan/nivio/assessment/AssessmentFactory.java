@@ -14,6 +14,7 @@ public class AssessmentFactory {
     private AssessmentFactory() {
     }
 
+
     public static Assessment createAssessment(Map<FullyQualifiedIdentifier, List<StatusValue>> results) {
         return new Assessment(results);
     }

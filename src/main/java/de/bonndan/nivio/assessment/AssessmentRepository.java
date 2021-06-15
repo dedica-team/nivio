@@ -15,14 +15,14 @@ import java.util.Objects;
 @Component
 public class AssessmentRepository {
 
-    private HashMap<FullyQualifiedIdentifier, Assessment> repository;
+    private final HashMap<FullyQualifiedIdentifier, Assessment> repository;
 
     public AssessmentRepository() {
         repository = new HashMap<>();
     }
 
     public void clean() {
-        repository = new HashMap<>();
+        repository.clear();
     }
 
     public Assessment createAssessment(@NonNull Landscape landscape) {

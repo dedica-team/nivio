@@ -43,7 +43,7 @@ public class OwnersReportGenerator extends HtmlGenerator {
                         h1(title),
                         h6("Landscape: " + landscape.getName()),
                         h6("Date: " + ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)),
-                        iff(searchTerm.isPresent(), h6("Search term: " + searchTerm.get())),
+                        iff(searchTerm.isPresent(), h6("Search term: " + (searchTerm.orElse(null)))),
                         br(),
                         rawHtml(writeOwnerGroups(GroupedBy.by(Component::getOwner, items), assessment))
                 )
