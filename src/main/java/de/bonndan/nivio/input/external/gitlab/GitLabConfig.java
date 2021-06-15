@@ -8,9 +8,6 @@ import org.springframework.lang.NonNull;
 
 import java.util.Optional;
 
-import static de.bonndan.nivio.config.ConfigurableEnvVars.*;
-import java.util.Optional;
-
 @Configuration
 @EnableConfigurationProperties(GitLabProperties.class)
 public class GitLabConfig {
