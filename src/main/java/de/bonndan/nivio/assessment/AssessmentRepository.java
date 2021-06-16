@@ -32,7 +32,6 @@ public class AssessmentRepository {
         return newAssessment;
     }
 
-    // TODO: 14.06.21  fix SearchIndexingEventListenerTest
     public Assessment getAssessment(@Nullable FullyQualifiedIdentifier fullyQualifiedIdentifier) {
         if (fullyQualifiedIdentifier != null) {
             return repository.get(fullyQualifiedIdentifier);

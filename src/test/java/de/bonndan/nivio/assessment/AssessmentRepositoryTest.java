@@ -32,6 +32,10 @@ class AssessmentRepositoryTest {
         assessmentRepository.clean();
     }
 
+    @Test
+    void testNull() {
+        assertThat(assessmentRepository.getAssessment(null)).isNull();
+    }
 
     @Test
     void testGetExistingElement() {

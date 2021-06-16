@@ -1,5 +1,7 @@
 package de.bonndan.nivio.assessment;
 
+import de.bonndan.nivio.assessment.kpi.ConditionKPI;
+import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.ItemFactory;
 import de.bonndan.nivio.model.LandscapeFactory;
@@ -15,6 +17,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class AssessmentFactoryTest {
 
+    @Test
+    void getAssessmentFromFactoryLandscapeAndKPI() {
+        var foo = ItemFactory.getTestItem("a", "foo");
+        var bar = ItemFactory.getTestItem("b", "bar");
+        var landscape = LandscapeFactory.createForTesting("test", "test").withItems(Set.of(foo, bar)).build();
+        var conditionKpi = new ConditionKPI();
+        var map = new HashMap<String, KPI>();
+        map.put("test", conditionKpi);
+        var assessment = AssessmentFactory.createAssessment(landscape, map);
+        assertThat(assessment.getClass()).isEqualTo(Assessment.class);
+    }
 
     @Test
     void getAssessmentFromFactoryLandscape() {
