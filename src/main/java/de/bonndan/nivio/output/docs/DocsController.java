@@ -39,8 +39,7 @@ public class DocsController {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
         return new ResponseEntity<>(
-                generator.toDocument(landscape, assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier()).isPresent() ?
-                                assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier()).get() : assessmentRepository.createAssessment(landscape),
+                generator.toDocument(landscape, assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier()).orElse(assessmentRepository.createAssessment(landscape)),
                         new SearchConfig(request.getParameterMap())),
                 headers,
                 HttpStatus.OK

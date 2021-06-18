@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 class AssessmentFactoryTest {
+    String errorMessage = "Assessments can't be created from a null value";
 
     @Test
     void getAssessmentFromFactoryLandscapeAndKPI() {
@@ -51,10 +52,10 @@ class AssessmentFactoryTest {
     @Test
     void testNullValues() {
         var exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment(null, null));
-        assertThat(exception.getMessage()).isEqualTo("Assessments can't be created from a null value");
+        assertThat(exception.getMessage()).isEqualTo(errorMessage);
         exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment((Landscape) null));
-        assertThat(exception.getMessage()).isEqualTo("Assessments can't be created from a null value");
+        assertThat(exception.getMessage()).isEqualTo(errorMessage);
         exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment((Map<FullyQualifiedIdentifier, List<StatusValue>>) null));
-        assertThat(exception.getMessage()).isEqualTo("Assessments can't be created from a null value");
+        assertThat(exception.getMessage()).isEqualTo(errorMessage);
     }
 }
