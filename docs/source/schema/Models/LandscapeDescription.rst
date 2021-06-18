@@ -63,12 +63,12 @@ LandscapeDescription
      - Additional labels for the landscape.
      - optional, defaults to null
      - null
-   * - icon
+   * - color
      - String
      - 
      - optional, defaults to null
      - null
-   * - color
+   * - icon
      - String
      - 
      - optional, defaults to null

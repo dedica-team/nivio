@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static de.bonndan.nivio.assessment.AssessmentFactoryTest.errorMessageAssessmentNull;
+import static de.bonndan.nivio.assessment.AssessmentFactory.errorMessageAssessmentNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
