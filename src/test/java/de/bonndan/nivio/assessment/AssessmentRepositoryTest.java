@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static de.bonndan.nivio.assessment.AssessmentFactory.errorMessageAssessmentNull;
+import static de.bonndan.nivio.assessment.AssessmentFactory.ASSESSMENTERRORNULL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -56,7 +56,7 @@ class AssessmentRepositoryTest {
     @Test
     void testIllegalArgumentExceptionGet() {
         var exception = assertThrows(NullPointerException.class, () -> assessmentRepository.createAssessment(null));
-        assertThat(exception.getMessage()).isEqualTo(errorMessageAssessmentNull);
+        assertThat(exception.getMessage()).isEqualTo(ASSESSMENTERRORNULL);
     }
 
 }

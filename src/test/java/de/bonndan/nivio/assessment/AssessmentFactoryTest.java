@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static de.bonndan.nivio.assessment.AssessmentFactory.errorMessageAssessmentNull;
+import static de.bonndan.nivio.assessment.AssessmentFactory.ASSESSMENTERRORNULL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -53,10 +53,10 @@ class AssessmentFactoryTest {
     @Test
     void testNullValues() {
         var exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment(null, null));
-        assertThat(exception.getMessage()).isEqualTo(errorMessageAssessmentNull);
+        assertThat(exception.getMessage()).isEqualTo(ASSESSMENTERRORNULL);
         exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment((Landscape) null));
-        assertThat(exception.getMessage()).isEqualTo(errorMessageAssessmentNull);
+        assertThat(exception.getMessage()).isEqualTo(ASSESSMENTERRORNULL);
         exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment((Map<FullyQualifiedIdentifier, List<StatusValue>>) null));
-        assertThat(exception.getMessage()).isEqualTo(errorMessageAssessmentNull);
+        assertThat(exception.getMessage()).isEqualTo(ASSESSMENTERRORNULL);
     }
 }

@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class AssessmentFactory {
-    public static final String errorMessageAssessmentNull = "Assessments can't be created from a null value";
+    public static final String ASSESSMENTERRORNULL = "Assessments can't be created from a null value";
 
     private AssessmentFactory() {
     }
@@ -24,7 +24,7 @@ public class AssessmentFactory {
      * @throws NullPointerException On null input.
      */
     public static Assessment createAssessment(@NonNull Landscape landscape) {
-        var testedLandscape = Objects.requireNonNull(landscape, errorMessageAssessmentNull);
+        var testedLandscape = Objects.requireNonNull(landscape, ASSESSMENTERRORNULL);
         return new Assessment(testedLandscape.applyKPIs(testedLandscape.getKpis()));
     }
 
@@ -37,8 +37,8 @@ public class AssessmentFactory {
      * @throws NullPointerException On null input.
      */
     public static Assessment createAssessment(@NonNull Landscape landscape, @NonNull Map<String, KPI> kpis) {
-        var testedLandscape = Objects.requireNonNull(landscape, errorMessageAssessmentNull);
-        var testedKpis = Objects.requireNonNull(kpis, errorMessageAssessmentNull);
+        var testedLandscape = Objects.requireNonNull(landscape, ASSESSMENTERRORNULL);
+        var testedKpis = Objects.requireNonNull(kpis, ASSESSMENTERRORNULL);
         var map = new HashMap<FullyQualifiedIdentifier, List<StatusValue>>();
         testedKpis.forEach((k, v) -> map.putIfAbsent(FullyQualifiedIdentifier.from(k), v.getStatusValues(testedLandscape)));
         return new Assessment(map);
@@ -52,7 +52,7 @@ public class AssessmentFactory {
      * @throws NullPointerException On null input.
      */
     public static Assessment createAssessment(@NonNull Map<FullyQualifiedIdentifier, List<StatusValue>> results) {
-        var testedResult = Objects.requireNonNull(results, errorMessageAssessmentNull);
+        var testedResult = Objects.requireNonNull(results, ASSESSMENTERRORNULL);
         return new Assessment(testedResult);
     }
 
