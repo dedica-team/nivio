@@ -4,15 +4,14 @@ import de.bonndan.nivio.assessment.kpi.ConditionKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.ItemFactory;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeFactory;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 class AssessmentFactoryTest {
@@ -46,5 +45,16 @@ class AssessmentFactoryTest {
         results.put(fqi, statusList);
         var assessment = AssessmentFactory.createAssessment(results);
         assertThat(assessment.getClass()).isEqualTo(Assessment.class);
+    }
+
+
+    @Test
+    void testNullValues() {
+        var exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment(null, null));
+        assertThat(exception.getMessage()).isEqualTo("Assessments can't be created from a null value");
+        exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment((Landscape) null));
+        assertThat(exception.getMessage()).isEqualTo("Assessments can't be created from a null value");
+        exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment((Map<FullyQualifiedIdentifier, List<StatusValue>>) null));
+        assertThat(exception.getMessage()).isEqualTo("Assessments can't be created from a null value");
     }
 }
