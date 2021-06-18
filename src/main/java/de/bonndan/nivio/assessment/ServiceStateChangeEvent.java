@@ -1,7 +1,6 @@
 package de.bonndan.nivio.assessment;
 
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.assessment.StatusValue;
 import org.springframework.context.ApplicationEvent;
 
 /**
