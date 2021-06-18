@@ -15,7 +15,6 @@ class LabelTest {
 
     /**
      * Exports the labels for GUI and docs
-     * @throws IOException
      */
     @Test
     public void export() throws IOException {

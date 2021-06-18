@@ -25,7 +25,6 @@ public class LabelToFieldResolver extends Resolver {
     public static final String COLLECTION_DELIMITER = ",";
     public static final String LINK_LABEL_PREFIX = "link.";
     public static final String LINKS_LABEL = "links";
-    private static final String FRAMEWORKS_LABEL = "frameworks";
     public static final String MAP_KEY_VALUE_DELIMITER = ":";
 
     public LabelToFieldResolver(ProcessLog logger) {
@@ -121,8 +120,7 @@ public class LabelToFieldResolver extends Resolver {
             return true;
         }
 
-        if (FRAMEWORKS_LABEL.equals(name)) {
-            processLog.warn("Found map-style label named 'frameworks'.");
+        if (Label.frameworks.name().equals(name)) {
             String[] o = getParts(value);
             for (String s : o) {
                 String[] frameworkParts = s.split(MAP_KEY_VALUE_DELIMITER);

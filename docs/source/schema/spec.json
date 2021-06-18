@@ -182,46 +182,33 @@
               "example" : "shipping-mysqldb"
             }
           },
-          "icon": {
-            "type": "string",
-            "description": "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work)."
+          "icon" : {
+            "type" : "string",
+            "description" : "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work)."
           },
-          "color": {
-            "type": "string",
-            "description": "Overrides the group color. Use an HTML hex color code without the leading hash.",
-            "example": "4400FF"
+          "color" : {
+            "type" : "string",
+            "description" : "Overrides the group color. Use an HTML hex color code without the leading hash.",
+            "example" : "4400FF"
           },
-          "address": {
-            "type": "string",
-            "description": "The technical address of the item (should be an URI). Taken into account when matching relation endpoints."
+          "address" : {
+            "type" : "string",
+            "description" : "The technical address of the item (should be an URI). Taken into account when matching relation endpoints."
           },
-          "type": {
-            "type": "string",
-            "description": "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
-            "example": "service|database|volume"
+          "type" : {
+            "type" : "string",
+            "description" : "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
+            "example" : "service|database|volume"
           },
-          "lifecycle": {
-            "type": "string",
-            "description": "The lifecycle state of an item.",
-            "writeOnly": true,
-            "enum": [
-              "PLANNED",
-              "INTEGRATION",
-              "TEST",
-              "PRODUCTION",
-              "END_OF_LIFE",
-              "EOL"
-            ]
-          },
-          "status": {
-            "type": "array",
-            "description": "A list of statuses that works like hardcoded KPIs.",
-            "writeOnly": true,
-            "items": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "string",
-                "description": "A list of statuses that works like hardcoded KPIs."
+          "statuses" : {
+            "type" : "array",
+            "description" : "A list of statuses that works like hardcoded KPIs.",
+            "writeOnly" : true,
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string",
+                "description" : "A list of statuses that works like hardcoded KPIs."
               },
               "description": "A list of statuses that works like hardcoded KPIs."
             }
@@ -246,14 +233,20 @@
               "description": "The parts used to create the item. Usually refers to technical frameworks.",
               "example": "java: 8"
             },
-            "description": "The parts used to create the item. Usually refers to technical frameworks.",
-            "writeOnly": true,
-            "example": "java: 8"
+            "description" : "The parts used to create the item. Usually refers to technical frameworks.",
+            "writeOnly" : true,
+            "example" : "java: 8"
           },
-          "tags": {
-            "type": "array",
-            "items": {
-              "type": "string"
+          "lifecycle" : {
+            "type" : "string",
+            "description" : "The lifecycle state of an item.",
+            "writeOnly" : true,
+            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
+          },
+          "tags" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
             }
           },
           "links": {
@@ -409,10 +402,10 @@
             },
             "description" : "Additional labels for the landscape."
           },
-          "color" : {
+          "icon" : {
             "type" : "string"
           },
-          "icon" : {
+          "color" : {
             "type" : "string"
           },
           "items" : {

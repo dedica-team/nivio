@@ -2,8 +2,9 @@
 * ``color`` A hex color code to override the inherited group color
 * ``costs`` Running costs of the item.
 * ``fill`` Background image (for displaying purposes).
-* ``icon`` Icon/image (for displaying purposes).
+* ``frameworks`` A comma-separated list of frameworks as key-value pairs (key is name, value is version).
 * ``health`` Description of the item's health status.
+* ``icon`` Icon/image (for displaying purposes).
 * ``layer`` A technical layer.
 * ``lifecycle`` A lifecycle phase (``PLANNED|plan``, ``INTEGRATION|int``, ``PRODUCTION|prod``, ``END_OF_LIFE|eol|end``).
 * ``note`` A custom note.
