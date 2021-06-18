@@ -25,6 +25,7 @@ public class AssessmentRepository {
         repository.clear();
     }
 
+   @NonNull
     public Assessment createAssessment(@NonNull Landscape landscape) {
         var testedLandscape = Objects.requireNonNull(landscape, "Assessments can't be created from a null value");
         var newAssessment = AssessmentFactory.createAssessment(testedLandscape);
