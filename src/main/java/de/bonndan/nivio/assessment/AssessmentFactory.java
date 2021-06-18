@@ -10,18 +10,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * A factory to create Assessment instances from map or Landscape
- */
 public class AssessmentFactory {
     private AssessmentFactory() {
     }
 
+    /**
+     * This method which generates a new Assessment from a landscape.
+     *
+     * @param landscape used to generate the new Assessment with its own kpis.
+     * @return Assessment
+     * @throws NullPointerException On null input.
+     */
     public static Assessment createAssessment(@NonNull Landscape landscape) {
         var testedLandscape = Objects.requireNonNull(landscape, "Assessments can't be created from a null value");
         return new Assessment(testedLandscape.applyKPIs(testedLandscape.getKpis()));
     }
 
+    /**
+     * This method which generates a new  from a landscape and a kpi.
+     *
+     * @param landscape used to generate the new Assessment.
+     * @param kpis      external kpi used to get status values.
+     * @return Assessment
+     * @throws NullPointerException On null input.
+     */
     public static Assessment createAssessment(@NonNull Landscape landscape, @NonNull Map<String, KPI> kpis) {
         var testedLandscape = Objects.requireNonNull(landscape, "Assessments can't be created from a null value");
         var testedKpis = Objects.requireNonNull(kpis, "Assessments can't be created from a null value");
@@ -30,6 +42,13 @@ public class AssessmentFactory {
         return new Assessment(map);
     }
 
+    /**
+     * This method which generates a new Assessment from map.
+     *
+     * @param results used to generate the new Assessment with fully qualified identifier and a list of status values.
+     * @return Assessment
+     * @throws NullPointerException On null input.
+     */
     public static Assessment createAssessment(@NonNull Map<FullyQualifiedIdentifier, List<StatusValue>> results) {
         var testedResult = Objects.requireNonNull(results, "Assessments can't be created from a null value");
         return new Assessment(testedResult);

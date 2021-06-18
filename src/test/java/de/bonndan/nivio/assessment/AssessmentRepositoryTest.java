@@ -34,20 +34,22 @@ class AssessmentRepositoryTest {
 
     @Test
     void testNull() {
-        assertThat(assessmentRepository.getAssessment(null)).isNull();
+        var getValue = assessmentRepository.getAssessment(null);
+        assertThat(getValue.isPresent()).isFalse();
     }
 
     @Test
     void testGetExistingElement() {
         var assessment = assessmentRepository.createAssessment(landscape);
         var storedAssessment = assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier());
-        assertThat(storedAssessment).isEqualTo(assessment);
+        assertThat(storedAssessment.isPresent()).isTrue();
+        assertThat(storedAssessment.get()).isEqualTo(assessment);
     }
 
     @Test
     void testGetNonExistingElement() {
         var storedAssessment = assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier());
-        assertThat(storedAssessment).isNull();
+        assertThat(storedAssessment.isPresent()).isFalse();
     }
 
 

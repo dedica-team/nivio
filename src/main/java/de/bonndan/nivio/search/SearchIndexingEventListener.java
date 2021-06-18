@@ -26,9 +26,11 @@ public class SearchIndexingEventListener {
 
         //see https://github.com/dedica-team/nivio/issues/519
         var assessment = assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier());
-        if (assessment == null) {
-            assessment = assessmentRepository.createAssessment(landscape);
+        if (assessment.isEmpty()) {
+            searchIndex.indexForSearch(landscape, assessmentRepository.createAssessment(landscape));
+        } else {
+            searchIndex.indexForSearch(landscape, assessment.get());
         }
-        searchIndex.indexForSearch(landscape, assessment);
+
     }
 }

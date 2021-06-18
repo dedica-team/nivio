@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,7 +41,7 @@ class AssessmentControllerTest {
     void assessmentFoundInRepository() {
         var assessment = new Assessment(Map.of());
         var landscape = LandscapeFactory.createForTesting("test", "test").build();
-        Mockito.when(assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier())).thenReturn(assessment);
+        Mockito.when(assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier())).thenReturn(Optional.of(assessment));
         landscapeRepository.save(landscape);
         var responseEntity = assessmentController.landscape("test");
         assertThat(responseEntity).isEqualTo(new ResponseEntity<>(assessment, HttpStatus.OK));

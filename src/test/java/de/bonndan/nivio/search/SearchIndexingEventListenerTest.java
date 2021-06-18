@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -33,7 +34,7 @@ class SearchIndexingEventListenerTest {
     void onProcessingFinishedEvent() {
         //given
         var assessment = AssessmentFactory.createAssessment(landscape);
-        when(assessmentRepository.getAssessment(Mockito.any())).thenReturn(assessment);
+        when(assessmentRepository.getAssessment(Mockito.any())).thenReturn(Optional.of(assessment));
         ProcessingFinishedEvent e = new ProcessingFinishedEvent(new LandscapeDescription("foo"), landscape, new ProcessingChangelog());
         SearchIndex searchIndex = mock(SearchIndex.class);
         when(landscape.getSearchIndex()).thenReturn(searchIndex);
@@ -55,7 +56,7 @@ class SearchIndexingEventListenerTest {
     void onProcessingFinishedEventAssessmentRepoNull() {
         //given
         var assessment = AssessmentFactory.createAssessment(landscape);
-        when(assessmentRepository.getAssessment(Mockito.any())).thenReturn(null);
+        when(assessmentRepository.getAssessment(Mockito.any())).thenReturn(Optional.empty());
         when(assessmentRepository.createAssessment(Mockito.any())).thenReturn(assessment);
         ProcessingFinishedEvent e = new ProcessingFinishedEvent(new LandscapeDescription("foo"), landscape, new ProcessingChangelog());
         SearchIndex searchIndex = mock(SearchIndex.class);

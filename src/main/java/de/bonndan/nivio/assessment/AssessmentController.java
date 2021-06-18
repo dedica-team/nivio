@@ -30,11 +30,13 @@ public class AssessmentController {
             return ResponseEntity.notFound().build();
         }
 
-        var assessment = assessmentRepository.getAssessment(fqi);
-        if (assessment == null) {
-            assessment = assessmentRepository.createAssessment(landscape);
+        var optionalAssessment = assessmentRepository.getAssessment(fqi);
+        if (optionalAssessment.isEmpty()) {
+            return new ResponseEntity<>(assessmentRepository.createAssessment(landscape), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(optionalAssessment.get(), HttpStatus.OK);
         }
-        return new ResponseEntity<>(assessment, HttpStatus.OK);
+
     }
 
 }

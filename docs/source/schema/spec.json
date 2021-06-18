@@ -182,20 +182,20 @@
               "example" : "shipping-mysqldb"
             }
           },
-          "icon" : {
-            "type" : "string",
-            "description" : "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work)."
+          "icon": {
+            "type": "string",
+            "description": "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work)."
           },
-          "color" : {
-            "type" : "string",
-            "description" : "Overrides the group color. Use an HTML hex color code without the leading hash.",
-            "example" : "4400FF"
+          "color": {
+            "type": "string",
+            "description": "Overrides the group color. Use an HTML hex color code without the leading hash.",
+            "example": "4400FF"
           },
-          "address" : {
-            "type" : "string",
-            "description" : "The technical address of the item (should be an URI). Taken into account when matching relation endpoints."
+          "address": {
+            "type": "string",
+            "description": "The technical address of the item (should be an URI). Taken into account when matching relation endpoints."
           },
-          "type" : {
+          "type": {
             "type": "string",
             "description": "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
             "example": "service|database|volume"
@@ -246,23 +246,23 @@
               "description": "The parts used to create the item. Usually refers to technical frameworks.",
               "example": "java: 8"
             },
-            "description" : "The parts used to create the item. Usually refers to technical frameworks.",
-            "writeOnly" : true,
-            "example" : "java: 8"
+            "description": "The parts used to create the item. Usually refers to technical frameworks.",
+            "writeOnly": true,
+            "example": "java: 8"
           },
-          "tags" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
             }
           },
-          "links" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "$ref" : "#/components/schemas/Link"
+          "links": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Link"
             },
-            "description" : "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
-            "example" : "github: https://github.com/dedica-team/nivio"
+            "description": "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
+            "example": "github: https://github.com/dedica-team/nivio"
           }
         },
         "description" : "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc."

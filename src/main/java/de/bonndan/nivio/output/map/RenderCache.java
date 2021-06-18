@@ -76,10 +76,6 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
 
     private Assessment getAssessment(Landscape landscape) {
         var assessment = assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier());
-        if (assessment != null) {
-            return assessment;
-        } else {
-            return assessmentRepository.createAssessment(landscape);
-        }
+        return assessment.orElseGet(() -> assessmentRepository.createAssessment(landscape));
     }
 }

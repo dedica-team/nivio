@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -61,7 +62,7 @@ class DocsControllerTest {
         var httpHeader = new HttpHeaders();
         httpHeader.add(HttpHeaders.CONTENT_TYPE, "text/html");
         Mockito.when(landscapeRepository.findDistinctByIdentifier("test")).thenReturn(java.util.Optional.of(LandscapeFactory.createForTesting("test", "test").build()));
-        Mockito.when(assessmentRepository.getAssessment(Mockito.any())).thenReturn(new Assessment(Map.of()));
+        Mockito.when(assessmentRepository.getAssessment(Mockito.any())).thenReturn(Optional.of(new Assessment(Map.of())));
         var response = docsController.htmlResource("test", httpServletRequest);
         assertThat(response).isEqualToIgnoringGivenFields(new ResponseEntity<>("", httpHeader, HttpStatus.OK), "body");
     }
@@ -72,7 +73,7 @@ class DocsControllerTest {
         var httpHeader = new HttpHeaders();
         httpHeader.add(HttpHeaders.CONTENT_TYPE, "text/html");
         Mockito.when(landscapeRepository.findDistinctByIdentifier("test")).thenReturn(java.util.Optional.of(LandscapeFactory.createForTesting("test", "test").build()));
-        Mockito.when(assessmentRepository.getAssessment(Mockito.any())).thenReturn(new Assessment(Map.of()));
+        Mockito.when(assessmentRepository.getAssessment(Mockito.any())).thenReturn(Optional.of(new Assessment(Map.of())));
         Mockito.when(httpServletRequest.getParameterMap()).thenReturn(Map.of());
         var response = docsController.owners("test", httpServletRequest);
         assertThat(response).isEqualToIgnoringGivenFields(new ResponseEntity<>("", httpHeader, HttpStatus.OK), "body");

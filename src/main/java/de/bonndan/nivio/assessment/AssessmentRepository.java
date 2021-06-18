@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Stores and loads and creates Assessments with FullyQualifiedIdentifier as key
@@ -25,7 +26,7 @@ public class AssessmentRepository {
         repository.clear();
     }
 
-   @NonNull
+    @NonNull
     public Assessment createAssessment(@NonNull Landscape landscape) {
         var testedLandscape = Objects.requireNonNull(landscape, "Assessments can't be created from a null value");
         var newAssessment = AssessmentFactory.createAssessment(testedLandscape);
@@ -33,12 +34,8 @@ public class AssessmentRepository {
         return newAssessment;
     }
 
-    public Assessment getAssessment(@Nullable FullyQualifiedIdentifier fullyQualifiedIdentifier) {
-        if (fullyQualifiedIdentifier != null) {
-            return repository.get(fullyQualifiedIdentifier);
-        } else {
-            return null;
-        }
+    public Optional<Assessment> getAssessment(@Nullable FullyQualifiedIdentifier fullyQualifiedIdentifier) {
+        return Optional.ofNullable(repository.get(fullyQualifiedIdentifier));
     }
 
     private void storeAssessment(@NonNull FullyQualifiedIdentifier fullyQualifiedIdentifier, @NonNull Assessment assessment) {
