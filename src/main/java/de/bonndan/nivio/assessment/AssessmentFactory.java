@@ -13,7 +13,6 @@ import java.util.Objects;
 /**
  * A factory to create Assessment instances from map or Landscape
  */
-
 public class AssessmentFactory {
     private AssessmentFactory() {
     }
