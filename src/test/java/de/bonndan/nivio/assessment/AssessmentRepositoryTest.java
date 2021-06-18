@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
+import static de.bonndan.nivio.assessment.AssessmentFactoryTest.errorMessageAssessmentNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -42,8 +43,7 @@ class AssessmentRepositoryTest {
     void testGetExistingElement() {
         var assessment = assessmentRepository.createAssessment(landscape);
         var storedAssessment = assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier());
-        assertThat(storedAssessment).isPresent();
-        assertThat(storedAssessment).contains(assessment);
+        assertThat(storedAssessment).isPresent().contains(assessment);
     }
 
     @Test
@@ -56,7 +56,7 @@ class AssessmentRepositoryTest {
     @Test
     void testIllegalArgumentExceptionGet() {
         var exception = assertThrows(NullPointerException.class, () -> assessmentRepository.createAssessment(null));
-        assertThat(exception.getMessage()).isEqualTo("Assessments can't be created from a null value");
+        assertThat(exception.getMessage()).isEqualTo(errorMessageAssessmentNull);
     }
 
 }
