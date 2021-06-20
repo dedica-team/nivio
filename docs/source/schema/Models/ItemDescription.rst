@@ -78,21 +78,21 @@ List of configuration sources. Handled in the given order, latter extend/overwri
      - The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.
      - optional, defaults to null
      - service|database|volume
-   * - statuses
-     - List<map>
-     - A list of statuses that works like hardcoded KPIs.
-     - optional, defaults to null
-     - null
-   * - status
-     - List<map>
-     - A list of statuses that works like hardcoded KPIs.
-     - optional, defaults to null
-     - null
    * - frameworks
      - Map
      - The parts used to create the item. Usually refers to technical frameworks.
      - optional, defaults to null
      - java: 8
+   * - status
+     - List<map>
+     - A list of statuses that works like hardcoded KPIs.
+     - optional, defaults to null
+     - null
+   * - statuses
+     - List<map>
+     - A list of statuses that works like hardcoded KPIs.
+     - optional, defaults to null
+     - null
    * - lifecycle
      - String
      - The lifecycle state of an item.

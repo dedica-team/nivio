@@ -2,11 +2,11 @@ package de.bonndan.nivio.input.dto;
 
 import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.model.RelationType;
+import de.bonndan.nivio.search.ItemMatcher;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Schema(description = "A directed relation between two landscape items. Also known as edge in a directed graph.")
 public class RelationDescription implements Labeled {
@@ -102,5 +102,24 @@ public class RelationDescription implements Labeled {
     @Override
     public void setLabel(String key, String value) {
         getLabels().put(key, value);
+    }
+
+    /**
+     * Finds the first relation description with same source and target.
+     *
+     * @param relations a collection of existing relations
+     * @return the sibling
+     */
+    public Optional<RelationDescription> findMatching(@NonNull final Collection<RelationDescription> relations) {
+        return Objects.requireNonNull(relations).stream()
+                .filter(rel -> matches(source, rel.getSource()))
+                .filter(rel -> matches(target, rel.getTarget()))
+                .findFirst();
+    }
+
+    private boolean matches(String end1, String end2) {
+        Optional<ItemMatcher> m1 = ItemMatcher.forTarget(end1);
+        Optional<ItemMatcher> m2 = ItemMatcher.forTarget(end2);
+        return m1.isPresent() && m2.isPresent() && m1.map(m -> m.equals(m2.get())).orElse(false);
     }
 }

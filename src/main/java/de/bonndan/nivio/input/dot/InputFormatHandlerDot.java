@@ -81,7 +81,7 @@ public class InputFormatHandlerDot implements InputFormatHandler {
                                 break;
                         }
                     });
-                    itemDescription.addRelation(rel);
+                    itemDescription.addOrReplaceRelation(rel);
                 });
 
                 items.add(itemDescription);

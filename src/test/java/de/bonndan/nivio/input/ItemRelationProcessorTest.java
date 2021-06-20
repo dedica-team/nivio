@@ -48,13 +48,13 @@ class ItemRelationProcessorTest {
 
         ItemDescription description = new ItemDescription("foo");
         description.setGroup("a");
-        description.addRelation(new RelationDescription("foo", "bar"));
-        description.addRelation(new RelationDescription("foo", "baz"));
+        description.addOrReplaceRelation(new RelationDescription("foo", "bar"));
+        description.addOrReplaceRelation(new RelationDescription("foo", "baz"));
         input.mergeItems(List.of(description));
         //new
         ItemDescription bar = new ItemDescription("bar");
         bar.setGroup("a");
-        bar.addRelation(new RelationDescription("bar", "baz"));
+        bar.addOrReplaceRelation(new RelationDescription("bar", "baz"));
         input.mergeItems(List.of(bar));
 
         //when
@@ -72,8 +72,8 @@ class ItemRelationProcessorTest {
         description.setGroup("a");
         RelationDescription relationItem = new RelationDescription("foo", "bar");
         relationItem.setFormat("JSON");
-        description.addRelation(relationItem);
-        description.addRelation(new RelationDescription("foo", "baz"));
+        description.addOrReplaceRelation(relationItem);
+        description.addOrReplaceRelation(new RelationDescription("foo", "baz"));
         input.mergeItems(List.of(description));
 
         //when
@@ -88,7 +88,7 @@ class ItemRelationProcessorTest {
 
         ItemDescription description = new ItemDescription("foo");
         description.setGroup("a");
-        description.addRelation(new RelationDescription("foo", "bar"));
+        description.addOrReplaceRelation(new RelationDescription("foo", "bar"));
         input.mergeItems(List.of(description));
 
         //when

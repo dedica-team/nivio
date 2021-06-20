@@ -38,7 +38,7 @@ public class RelationEndpointResolver extends Resolver {
         description.getProvidedBy().forEach(term -> {
             allItems.query(term).stream().findFirst().ifPresentOrElse(o -> {
                         RelationDescription rel = RelationBuilder.createProviderDescription(o, description.getIdentifier());
-                        description.addRelation(rel);
+                        description.addOrReplaceRelation(rel);
                     },
                     () -> processLog.warn(description.getIdentifier() + ": no provider target found for term " + term));
         });

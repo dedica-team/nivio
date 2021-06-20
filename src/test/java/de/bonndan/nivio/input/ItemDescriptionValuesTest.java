@@ -80,12 +80,12 @@ class ItemDescriptionValuesTest {
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
         RelationDescription other = RelationBuilder.createDataflowDescription(sd1, "other");
-        sd1.addRelation(other);
+        sd1.addOrReplaceRelation(other);
 
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
         RelationDescription another = RelationBuilder.createDataflowDescription(increment, "another");
-        increment.addRelation(another);
+        increment.addOrReplaceRelation(another);
 
         ItemDescriptionValues.assignNotNull(sd1, increment);
 
@@ -114,13 +114,13 @@ class ItemDescriptionValuesTest {
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
         RelationDescription dbProvider = RelationBuilder.createProviderDescription(sd1, "db1");
-        sd1.addRelation(dbProvider);
+        sd1.addOrReplaceRelation(dbProvider);
 
 
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
         RelationDescription redisProvider = RelationBuilder.createProviderDescription(sd1, "redis");
-        increment.addRelation(redisProvider);
+        increment.addOrReplaceRelation(redisProvider);
 
         ItemDescriptionValues.assignNotNull(sd1, increment);
 

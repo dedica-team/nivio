@@ -89,7 +89,7 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
 
             if (relationDescription != null) {
                 relationDescription.setLabels(labels);
-                itemDescription.addRelation(relationDescription);
+                itemDescription.addOrReplaceRelation(relationDescription);
             } else {
                 itemDescription.getLabels().putAll(labels);
             }

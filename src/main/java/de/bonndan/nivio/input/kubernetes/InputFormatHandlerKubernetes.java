@@ -151,7 +151,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
 
         //TODO, check if this is reliable
         if (!StringUtils.isEmpty(targetId)) {
-            service.addRelation(new RelationDescription(service.getIdentifier(), targetId));
+            service.addOrReplaceRelation(new RelationDescription(service.getIdentifier(), targetId));
         }
 
         //link pods as providers
@@ -160,7 +160,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
                 .forEach(pod -> {
                     RelationDescription rel = new RelationDescription(pod.getIdentifier(), service.getIdentifier());
                     rel.setType(RelationType.PROVIDER);
-                    service.addRelation(rel);
+                    service.addOrReplaceRelation(rel);
                     pod.setGroup(service.getGroup());
                 });
 
@@ -180,7 +180,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         node.setIdentifier(pod.getSpec().getNodeName());
         node.setType(ItemType.SERVER);
         descriptions.add(node);
-        podItem.addRelation(new RelationDescription(node.getIdentifier(), podItem.getIdentifier()));
+        podItem.addOrReplaceRelation(new RelationDescription(node.getIdentifier(), podItem.getIdentifier()));
 
         String group = getGroup(pod);
         pod.getSpec().getContainers().forEach(container -> {
@@ -195,7 +195,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
             //container provides the pod
             RelationDescription relationDescription = new RelationDescription(containerDesc.getIdentifier(), podItem.getIdentifier());
             relationDescription.setType(RelationType.PROVIDER);
-            containerDesc.addRelation(relationDescription);
+            containerDesc.addOrReplaceRelation(relationDescription);
 
             // TODO
             //description.setScale(...);
@@ -240,7 +240,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         //volume provides the pod
         RelationDescription relationDescription = new RelationDescription(volumeDesc.getIdentifier(), podItem.getIdentifier());
         relationDescription.setType(RelationType.PROVIDER);
-        volumeDesc.addRelation(relationDescription);
+        volumeDesc.addOrReplaceRelation(relationDescription);
 
         return volumeDesc;
     }
