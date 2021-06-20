@@ -8,9 +8,8 @@ import org.springframework.lang.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.lang.NonNull;
-
 import java.util.*;
+
 
 @Schema(description = "A directed relation between two landscape items. Also known as edge in a directed graph.")
 public class RelationDescription implements Labeled {
