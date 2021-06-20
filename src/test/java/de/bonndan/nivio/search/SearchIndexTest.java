@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SearchIndexTest {
 
@@ -17,7 +18,7 @@ class SearchIndexTest {
 
     @BeforeEach
     void setup() {
-        searchIndex = new SearchIndex();
+        searchIndex = new SearchIndex("test");
 
         Set<Item> components = new HashSet<>();
         components.add(ItemFactory.getTestItemBuilder("foo", "a")
@@ -33,6 +34,19 @@ class SearchIndexTest {
 
         Landscape landscape = LandscapeFactory.createForTesting("test", "test").withItems(components).build();
         searchIndex.indexForSearch(landscape, new Assessment(Map.of()));
+    }
+
+    @Test
+    void checksNull() {
+
+        //given
+        Landscape landscape = LandscapeFactory.createForTesting("test", "test").build();
+        Assessment assessment = new Assessment(Map.of());
+
+        //when
+        assertThatThrownBy(() -> searchIndex.indexForSearch(null, assessment)).isInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> searchIndex.indexForSearch(landscape, null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test
