@@ -75,7 +75,7 @@ class SearchIndexTest {
 
         //when
         Set<FullyQualifiedIdentifier> facetDelimiter = searchIndex.search("Sylvester:");
-        assertThat(andQuery).hasSize(0);
+        assertThat(facetDelimiter).isEmpty();
     }
 
     @Test
@@ -100,11 +100,6 @@ class SearchIndexTest {
         //when
         Set<FullyQualifiedIdentifier> strong = searchIndex.search("aRn");
         assertThat(strong).hasSize(1);
-    }
-
-    @Test
-    void searchIndexIOException() {
-        var searchIndex = new SearchIndex("null");
     }
 
 
