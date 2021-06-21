@@ -5,11 +5,13 @@ import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SearchIndexTest {
 
@@ -17,7 +19,7 @@ class SearchIndexTest {
 
     @BeforeEach
     void setup() {
-        searchIndex = new SearchIndex();
+        searchIndex = new SearchIndex("test");
 
         Set<Item> components = new HashSet<>();
         components.add(ItemFactory.getTestItemBuilder("foo", "a")
@@ -33,6 +35,19 @@ class SearchIndexTest {
 
         Landscape landscape = LandscapeFactory.createForTesting("test", "test").withItems(components).build();
         searchIndex.indexForSearch(landscape, new Assessment(Map.of()));
+    }
+
+    @Test
+    void checksNull() {
+
+        //given
+        Landscape landscape = LandscapeFactory.createForTesting("test", "test").build();
+        Assessment assessment = new Assessment(Map.of());
+
+        //when
+        assertThatThrownBy(() -> searchIndex.indexForSearch(null, assessment)).isInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> searchIndex.indexForSearch(landscape, null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -57,6 +72,10 @@ class SearchIndexTest {
         //when
         Set<FullyQualifiedIdentifier> andQuery = searchIndex.search("Arnold AND Sylvester");
         assertThat(andQuery).hasSize(0);
+
+        //when
+        Set<FullyQualifiedIdentifier> facetDelimiter = searchIndex.search("Sylvester:");
+        assertThat(facetDelimiter).isEmpty();
     }
 
     @Test
@@ -81,5 +100,13 @@ class SearchIndexTest {
         //when
         Set<FullyQualifiedIdentifier> strong = searchIndex.search("aRn");
         assertThat(strong).hasSize(1);
+    }
+
+
+    @Test
+    void testFacets() {
+        var facets = searchIndex.facets();
+        assertThat(facets.getClass()).isEqualTo(ArrayList.class);
+        assertThat(facets.size()).isEqualTo(2);
     }
 }
