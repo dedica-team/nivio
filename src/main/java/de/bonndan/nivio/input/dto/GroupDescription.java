@@ -1,9 +1,10 @@
 package de.bonndan.nivio.input.dto;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.model.Link;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
@@ -43,6 +44,7 @@ public class GroupDescription implements ComponentDescription {
     @Schema(hidden = true)
     private String environment;
 
+    @NonNull
     public String getIdentifier() {
         return identifier;
     }
@@ -52,6 +54,7 @@ public class GroupDescription implements ComponentDescription {
     }
 
     @Schema(hidden = true, description = "Computed value")
+    @NonNull
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(environment, identifier, null);
     }
@@ -131,12 +134,20 @@ public class GroupDescription implements ComponentDescription {
         return labels;
     }
 
+    @Override
+    @JsonAnyGetter
     public String getLabel(String key) {
         return labels.get(key);
     }
 
     public void setLabel(String key, String value) {
         labels.put(key, value);
+    }
+
+    @JsonAnySetter
+    @Override
+    public void setLabel(@NonNull String key, Object value) {
+        ComponentDescription.super.setLabel(key, value);
     }
 
     public void setEnvironment(String environment) {
