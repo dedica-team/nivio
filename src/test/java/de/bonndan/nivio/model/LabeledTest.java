@@ -116,13 +116,13 @@ class LabeledTest {
     }
 
     @Test
-    public void anySetterRejectsEmptyKey() {
+    void anySetterRejectsEmptyKey() {
         ItemDescription i = new ItemDescription();
         assertThatThrownBy(() -> i.setLabel("", new ArrayList<String>())).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void anySetterAcceptsNumber() {
+    void anySetterAcceptsNumber() {
         ItemDescription i = new ItemDescription();
 
         //when
