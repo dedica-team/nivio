@@ -5,6 +5,7 @@ import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -71,6 +72,10 @@ class SearchIndexTest {
         //when
         Set<FullyQualifiedIdentifier> andQuery = searchIndex.search("Arnold AND Sylvester");
         assertThat(andQuery).hasSize(0);
+
+        //when
+        Set<FullyQualifiedIdentifier> facetDelimiter = searchIndex.search("Sylvester:");
+        assertThat(andQuery).hasSize(0);
     }
 
     @Test
@@ -95,5 +100,18 @@ class SearchIndexTest {
         //when
         Set<FullyQualifiedIdentifier> strong = searchIndex.search("aRn");
         assertThat(strong).hasSize(1);
+    }
+
+    @Test
+    void searchIndexIOException() {
+        var searchIndex = new SearchIndex("null");
+    }
+
+
+    @Test
+    void testFacets() {
+        var facets = searchIndex.facets();
+        assertThat(facets.getClass()).isEqualTo(ArrayList.class);
+        assertThat(facets.size()).isEqualTo(2);
     }
 }

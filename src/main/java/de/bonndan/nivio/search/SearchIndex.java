@@ -61,13 +61,13 @@ public class SearchIndex {
 
         //init lucene
         try {
-            String tmpdir = System.getProperty("java.io.tmpdir");
-            String fsSafeIdentifier = StringUtils.trimTrailingCharacter(identifier.replaceAll("[^0-9a-fA-F]", "_"), File.separatorChar);
+            var tmpdir = System.getProperty("java.io.tmpdir");
+            var fsSafeIdentifier = StringUtils.trimTrailingCharacter(identifier.replaceAll("[^0-9a-fA-F]", "_"), File.separatorChar);
             searchIndex = new MMapDirectory(Path.of(tmpdir, "nivio-document-index", fsSafeIdentifier));
             taxoIndex = new MMapDirectory(Path.of(tmpdir, "nivio-facet-index", fsSafeIdentifier));
         } catch (IOException e) {
-            LOGGER.error("Failed to create search index: " + e.getMessage());
-            throw new RuntimeException("Failed to create search index.", e);
+            LOGGER.error(String.format("Failed to create search index: %s", e.getMessage()));
+            throw new SearchIndexCreationException("Failed to create search index.", e);
         }
     }
 
