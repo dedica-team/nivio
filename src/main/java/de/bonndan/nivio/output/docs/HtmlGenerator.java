@@ -16,6 +16,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -69,7 +70,7 @@ public abstract class HtmlGenerator {
         );
     }
 
-    protected ContainerTag writeItem(Item item, Assessment assessment) {
+    protected ContainerTag writeItem(Item item, Assessment assessment, Collection<Item> allItems) {
         boolean hasRelations = !item.getRelations().isEmpty();
         boolean hasInterfaces = !item.getInterfaces().isEmpty();
         String groupColor = "#" + Color.nameToRGB(item.getGroup(), Color.GRAY);
@@ -147,11 +148,16 @@ public abstract class HtmlGenerator {
                                             Item end = (df.getSource().equals(item)) ?
                                                     df.getTarget() : df.getSource();
 
+                                            ContainerTag endTag = span(end.toString());
+                                            if (allItems.contains(end)) {
+                                                endTag = a(end.toString()).attr("href", "#" + end.getFullyQualifiedIdentifier());
+                                            }
+
                                             return li(rawHtml((df.getType() != null ? df.getType() : "") + " "
                                                             + ifPresent(df.getFormat()) + " "
                                                             + ifPresent(df.getDescription())
                                                             + direction),
-                                                    a(end.toString()).attr("href", "#" + end.getFullyQualifiedIdentifier()));
+                                                    endTag);
                                         })
                                 )
                         ),

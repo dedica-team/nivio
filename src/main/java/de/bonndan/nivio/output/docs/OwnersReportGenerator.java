@@ -56,7 +56,7 @@ public class OwnersReportGenerator extends HtmlGenerator {
             builder.append(
                     h2("Owner: " + owner).render()
             );
-            List<ContainerTag> collect = items.stream().map(item -> div(writeItem(item, assessment)).withClass("col-sm")).collect(Collectors.toList());
+            List<ContainerTag> collect = items.stream().map(item -> div(writeItem(item, assessment, items)).withClass("col-sm")).collect(Collectors.toList());
             builder.append(div().withClass("row").with(collect).render());
         });
 
