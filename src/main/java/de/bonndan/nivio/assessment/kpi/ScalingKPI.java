@@ -1,8 +1,8 @@
 package de.bonndan.nivio.assessment.kpi;
 
+import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.RelationType;
@@ -32,7 +32,7 @@ public class ScalingKPI extends AbstractKPI {
 
     @NonNull
     @Override
-    public List<StatusValue> getStatusValues(Component component) {
+    public List<StatusValue> getStatusValues(Assessable component) {
 
         if (!(component instanceof Item)) {
             return Collections.emptyList();

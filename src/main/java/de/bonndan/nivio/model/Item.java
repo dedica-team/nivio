@@ -301,6 +301,11 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         return StatusValue.fromMapping(indexedByPrefix(Label.status));
     }
 
+    @Override
+    public String getAssessmentIdentifier() {
+        return getFullyQualifiedIdentifier().toString();
+    }
+
 
     /**
      * Compare on field level against a newer version.

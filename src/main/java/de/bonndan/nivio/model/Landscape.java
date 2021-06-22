@@ -254,6 +254,11 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     @Override
+    public String getAssessmentIdentifier() {
+        return getFullyQualifiedIdentifier().toString();
+    }
+
+    @Override
     public List<? extends Assessable> getChildren() {
         return getGroups().values().stream().map(groupItem -> (Assessable) groupItem).collect(Collectors.toList());
     }

@@ -3,7 +3,6 @@ package de.bonndan.nivio.assessment;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.kpi.KPI;
-import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.springframework.lang.NonNull;
 
@@ -14,7 +13,7 @@ import static de.bonndan.nivio.assessment.StatusValue.SUMMARY_LABEL;
 /**
  * Interface for components that can be assessed and can have assigned {@link StatusValue}s.
  */
-public interface Assessable extends Component {
+public interface Assessable {
 
     /**
      * Returns pre-set status values not computed by {@link KPI}s.
@@ -25,6 +24,14 @@ public interface Assessable extends Component {
      */
     @JsonIgnore
     Set<StatusValue> getAdditionalStatusValues();
+
+    /**
+     * Returns the string to be used as key/identifier for a component assessment.
+     *
+     * @return map key / identifier
+     */
+    @JsonIgnore
+    String getAssessmentIdentifier();
 
     /**
      * Returns the components to be assessed before this (e.g. group items).
@@ -40,8 +47,8 @@ public interface Assessable extends Component {
      * @param kpis kpis used for assessment
      * @return a map with statusValues indexed by {@link FullyQualifiedIdentifier}
      */
-    default Map<FullyQualifiedIdentifier, List<StatusValue>> applyKPIs(final Map<String, KPI> kpis) {
-        final Map<FullyQualifiedIdentifier, List<StatusValue>> map = new HashMap<>();
+    default Map<String, List<StatusValue>> applyKPIs(final Map<String, KPI> kpis) {
+        final Map<String, List<StatusValue>> map = new HashMap<>();
 
         List<StatusValue> childrenValues = new ArrayList<>();
         //apply to children
@@ -51,7 +58,7 @@ public interface Assessable extends Component {
         });
 
         //apply each kpi to his
-        FullyQualifiedIdentifier fqi = this.getFullyQualifiedIdentifier();
+        String fqi = this.getAssessmentIdentifier();
         map.putIfAbsent(fqi, new ArrayList<>());
 
         //add preset status values
@@ -71,7 +78,7 @@ public interface Assessable extends Component {
         });
 
         replaceAll(childrenValues, map.get(fqi));
-        replace(map.get(fqi), StatusValue.summary(SUMMARY_LABEL + "." + getIdentifier(), getWorst(childrenValues)));
+        replace(map.get(fqi), StatusValue.summary(SUMMARY_LABEL + "." + getAssessmentIdentifier(), getWorst(childrenValues)));
 
         //sort in descending order, worst first
         map.get(fqi).sort(Collections.reverseOrder(new StatusValue.Comparator()));

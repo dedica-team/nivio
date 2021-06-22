@@ -1,11 +1,12 @@
 package de.bonndan.nivio.assessment.kpi;
 
+import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
-import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Labeled;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -25,7 +26,8 @@ public class ConditionKPI implements KPI {
     private boolean enabled = true;
 
     @Override
-    public List<StatusValue> getStatusValues(Component component) {
+    @NonNull
+    public List<StatusValue> getStatusValues(Assessable component) {
         if (!(component instanceof Labeled))
             return new ArrayList<>();
 
@@ -36,12 +38,12 @@ public class ConditionKPI implements KPI {
             String flag = entry.getValue();
             if (StringUtils.isEmpty(flag))
                 continue;
-            if (flag.toLowerCase().equals("false")) {
+            if (flag.equalsIgnoreCase("false")) {
                 status = Status.RED;
                 message = key;
             }
 
-            if (flag.toLowerCase().equals("true") && !status.equals(Status.RED)) {
+            if (flag.equalsIgnoreCase("true") && !status.equals(Status.RED)) {
                 status = Status.GREEN;
                 message = key;
             }

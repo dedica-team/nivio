@@ -1,5 +1,6 @@
 package de.bonndan.nivio.assessment.kpi;
 
+import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Component;
@@ -18,19 +19,20 @@ public interface KPI {
     /**
      * Controlled initialisation.
      *
-     * @throws ProcessingException if initialisation fails (eg regex compiling)
      * @param kpiConfig optional config
+     * @throws ProcessingException if initialisation fails (eg regex compiling)
      */
-    default void init(@Nullable KPIConfig kpiConfig) {}
+    default void init(@Nullable KPIConfig kpiConfig) {
+    }
 
     /**
      * Returns the status evaluation of the component on the configured field.
      *
-     * @param component to assess
+     * @param assessable to assess
      * @return current status value, unknown if not present
      */
     @NonNull
-    List<StatusValue> getStatusValues(Component component);
+    List<StatusValue> getStatusValues(Assessable assessable);
 
     /**
      * Describes the meaning of the KPI.

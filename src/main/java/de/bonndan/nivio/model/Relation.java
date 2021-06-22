@@ -3,6 +3,8 @@ package de.bonndan.nivio.model;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.bonndan.nivio.assessment.Assessable;
+import de.bonndan.nivio.assessment.StatusValue;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
@@ -18,7 +20,7 @@ import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
  * Outgoing flows having a target which matches a service identifier will cause a relation to be created.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Relation implements Labeled, Serializable {
+public class Relation implements Labeled, Assessable, Serializable {
 
     public static final String DELIMITER = ";";
 
@@ -113,6 +115,16 @@ public class Relation implements Labeled, Serializable {
         labels.put(key, value);
     }
 
+    @Override
+    public Set<StatusValue> getAdditionalStatusValues() {
+        return StatusValue.fromMapping(indexedByPrefix(Label.status));
+    }
+
+    @Override
+    public String getAssessmentIdentifier() {
+        return getIdentifier();
+    }
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     static class ApiModel {
 
@@ -163,7 +175,7 @@ public class Relation implements Labeled, Serializable {
      * @throws IllegalArgumentException if the arg is not comparable
      */
     public List<String> getChanges(Relation newer) {
-        if (!newer.equals(this)) {
+        if (!this.equals(newer)) {
             throw new IllegalArgumentException(String.format("Cannot compare relation %s against %s", newer, this));
         }
 
