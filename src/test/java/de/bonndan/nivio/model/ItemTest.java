@@ -151,11 +151,11 @@ public class ItemTest {
         Item s2 = getTestItemBuilder("g1", "b").build();
         Item s3 = getTestItemBuilder("g1", "c").build();
 
-        s1.setRelations(Set.of(new Relation(s1, s2)));
+        s1.setRelations(Set.of(RelationFactory.createForTesting(s1, s2)));
         assertThat(s1.getRelations()).hasSize(1);
 
         //when
-        s1.setRelations(Set.of(new Relation(s1, s3)));
+        s1.setRelations(Set.of(RelationFactory.createForTesting(s1, s3)));
         assertThat(s1.getRelations()).hasSize(1);
     }
 }

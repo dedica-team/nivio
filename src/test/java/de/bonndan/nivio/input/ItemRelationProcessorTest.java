@@ -32,11 +32,11 @@ class ItemRelationProcessorTest {
         Item baz = ItemFactory.getTestItem("a", "baz");
         items.add(baz);
 
-        foo.addOrReplace(new Relation(foo, bar));
-        bar.addOrReplace(new Relation(foo, bar));
+        foo.addOrReplace(RelationFactory.createForTesting(foo, bar));
+        bar.addOrReplace(RelationFactory.createForTesting(foo, bar));
 
-        foo.addOrReplace(new Relation(foo, baz));
-        baz.addOrReplace(new Relation(foo, baz));
+        foo.addOrReplace(RelationFactory.createForTesting(foo, baz));
+        baz.addOrReplace(RelationFactory.createForTesting(foo, baz));
 
         landscape = LandscapeFactory.createForTesting("test", "test").withItems(items).build();
 

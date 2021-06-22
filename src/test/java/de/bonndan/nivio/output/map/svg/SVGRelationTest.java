@@ -38,7 +38,7 @@ class SVGRelationTest {
     @DisplayName("items without groups use proper fqi")
     public void relationContainsBothEnds() {
 
-        Relation itemRelationItem = new Relation(foo, bar);
+        Relation itemRelationItem = RelationFactory.createForTesting(foo, bar);
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
         DomContent render = svgRelation.render();
         String render1 = render.render();

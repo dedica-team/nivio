@@ -4,7 +4,7 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.search.ItemIndex;
-import de.bonndan.nivio.model.RelationBuilder;
+import de.bonndan.nivio.model.RelationFactory;
 import org.springframework.util.StringUtils;
 
 import java.util.Collection;
@@ -37,7 +37,7 @@ public class RelationEndpointResolver extends Resolver {
         //providers
         description.getProvidedBy().forEach(term -> {
             allItems.query(term).stream().findFirst().ifPresentOrElse(o -> {
-                        RelationDescription rel = RelationBuilder.createProviderDescription(o, description.getIdentifier());
+                        RelationDescription rel = RelationFactory.createProviderDescription(o, description.getIdentifier());
                         description.addOrReplaceRelation(rel);
                     },
                     () -> processLog.warn(description.getIdentifier() + ": no provider target found for term " + term));

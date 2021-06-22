@@ -11,7 +11,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class RelationBuilderTest {
+class RelationFactoryTest {
 
     private Landscape landscape;
 
@@ -23,7 +23,7 @@ class RelationBuilderTest {
     @Test
     void createProviderDescription() {
         //when
-        RelationDescription providerDescription = RelationBuilder.createProviderDescription("foo", "bar");
+        RelationDescription providerDescription = RelationFactory.createProviderDescription("foo", "bar");
 
         //then
         assertThat(providerDescription).isNotNull();
@@ -38,7 +38,7 @@ class RelationBuilderTest {
         ItemDescription desc = new ItemDescription("foo");
 
         //when
-        RelationDescription providerDescription = RelationBuilder.createDataflowDescription(desc, "bar");
+        RelationDescription providerDescription = RelationFactory.createDataflowDescription(desc, "bar");
 
         //then
         assertThat(providerDescription).isNotNull();
@@ -55,7 +55,7 @@ class RelationBuilderTest {
         Item bar = ItemFactory.getTestItem("b", "bar");
 
         //when
-        Relation relation = RelationBuilder.createProviderRelation(foo, bar);
+        Relation relation = RelationFactory.createProviderRelation(foo, bar);
 
         //then
         assertThat(relation).isNotNull();
@@ -70,17 +70,17 @@ class RelationBuilderTest {
         //given
         Item foo = ItemFactory.getTestItem("a", "foo");
         Item bar = ItemFactory.getTestItem("b", "bar");
-        Relation relation = RelationBuilder.createProviderRelation(foo, bar);
+        Relation relation = RelationFactory.createProviderRelation(foo, bar);
         foo.setRelations(Set.of(relation));
         bar.setRelations(Set.of(relation));
         landscape.setItems(Set.of(foo, bar)); //landscape contains fooCopy instead of foo!
 
-        RelationDescription providerDescription = RelationBuilder.createProviderDescription("foo", "bar");
+        RelationDescription providerDescription = RelationFactory.createProviderDescription("foo", "bar");
         providerDescription.setFormat("json");
         providerDescription.setDescription("huhu");
 
         //when
-        Relation newRelation = RelationBuilder.update(relation, providerDescription, landscape);
+        Relation newRelation = RelationFactory.update(relation, providerDescription, landscape);
 
         //then
         assertThat(newRelation.getSource()).isEqualTo(foo);
@@ -95,15 +95,15 @@ class RelationBuilderTest {
         //given
         Item foo = ItemFactory.getTestItem("a", "foo");
         Item bar = ItemFactory.getTestItem("b", "bar");
-        Relation relation = RelationBuilder.createProviderRelation(foo, bar);
+        Relation relation = RelationFactory.createProviderRelation(foo, bar);
         foo.setRelations(Set.of(relation));
         bar.setRelations(Set.of(relation));
         landscape.setItems(Set.of(foo, bar)); //landscape contains fooCopy instead of foo!
 
-        RelationDescription providerDescription = RelationBuilder.createProviderDescription("foo", "oops");
+        RelationDescription providerDescription = RelationFactory.createProviderDescription("foo", "oops");
 
         //when
-        assertThrows(NoSuchElementException.class, () -> RelationBuilder.update(relation, providerDescription, landscape));
+        assertThrows(NoSuchElementException.class, () -> RelationFactory.update(relation, providerDescription, landscape));
     }
 
     @Test
@@ -113,15 +113,15 @@ class RelationBuilderTest {
         Item foo = ItemFactory.getTestItem("a", "foo");
         Item fooCopy = ItemFactory.getTestItem("a", "foo");
         Item bar = ItemFactory.getTestItem("b", "bar");
-        Relation relation = RelationBuilder.createProviderRelation(foo, bar);
+        Relation relation = RelationFactory.createProviderRelation(foo, bar);
         foo.setRelations(Set.of(relation));
         bar.setRelations(Set.of(relation));
         landscape.setItems(Set.of(fooCopy, bar)); //landscape contains fooCopy instead of foo!
 
-        RelationDescription providerDescription = RelationBuilder.createProviderDescription("foo", "bar");
+        RelationDescription providerDescription = RelationFactory.createProviderDescription("foo", "bar");
 
         //when
-        Relation newRelation = RelationBuilder.update(relation, providerDescription, landscape);
+        Relation newRelation = RelationFactory.update(relation, providerDescription, landscape);
 
         //then
         assertThat(newRelation.getSource() == fooCopy).isTrue(); //ensuring the item in the landscape is used
@@ -135,10 +135,10 @@ class RelationBuilderTest {
         Item foo = ItemFactory.getTestItem("a", "foo");
         Item bar = ItemFactory.getTestItem("b", "bar");
         landscape.setItems(Set.of(foo, bar));
-        RelationDescription relationDescription = RelationBuilder.createProviderDescription("foo", "bar");
+        RelationDescription relationDescription = RelationFactory.createProviderDescription("foo", "bar");
 
         //when
-        Relation newRelation = RelationBuilder.create(foo, relationDescription, landscape);
+        Relation newRelation = RelationFactory.create(foo, relationDescription, landscape);
 
         //then
         assertThat(newRelation.getSource()).isEqualTo(foo);
@@ -152,9 +152,9 @@ class RelationBuilderTest {
         Item foo = ItemFactory.getTestItem("a", "foo");
         Item bar = ItemFactory.getTestItem("b", "bar");
         landscape.setItems(Set.of(foo, bar));
-        RelationDescription relationDescription = RelationBuilder.createProviderDescription("foo", "oops");
+        RelationDescription relationDescription = RelationFactory.createProviderDescription("foo", "oops");
 
         //when
-        assertThrows(NoSuchElementException.class, () -> RelationBuilder.create(foo, relationDescription, landscape));
+        assertThrows(NoSuchElementException.class, () -> RelationFactory.create(foo, relationDescription, landscape));
     }
 }

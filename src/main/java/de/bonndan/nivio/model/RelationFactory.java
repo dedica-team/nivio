@@ -6,7 +6,12 @@ import org.springframework.lang.NonNull;
 
 import java.util.Objects;
 
-public class RelationBuilder {
+/**
+ * Factory to create {@link Relation} instances.
+ *
+ *
+ */
+public class RelationFactory {
 
     public static RelationDescription createProviderDescription(ItemDescription source, String target) {
         return createProviderDescription(source.getIdentifier(), target);
@@ -102,4 +107,10 @@ public class RelationBuilder {
         );
     }
 
+    /**
+     * Creates a relation instance without any checks.
+     */
+    public static Relation createForTesting(Item source, Item target) {
+        return new Relation(source, target, null, null, null);
+    }
 }

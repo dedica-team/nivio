@@ -32,7 +32,7 @@ class RelationTest {
     void inbound() {
         Item one = getTestItem("foo", "bar");
         Item two = getTestItem("foo", "baz");
-        Relation relation = new Relation(one, two);
+        Relation relation = RelationFactory.createForTesting(one, two);
 
         Relation.ApiModel apiModel = new Relation.ApiModel(relation, two);
 
@@ -45,7 +45,7 @@ class RelationTest {
     void inboundName() {
         Item one = getTestItemBuilder("foo", "bar").withName("huhu").build();
         Item two = getTestItem("foo", "baz");
-        Relation relation = new Relation(one, two);
+        Relation relation = RelationFactory.createForTesting(one, two);
 
         Relation.ApiModel apiModel = new Relation.ApiModel(relation, two);
 

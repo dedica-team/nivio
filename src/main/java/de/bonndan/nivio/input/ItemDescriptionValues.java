@@ -69,7 +69,6 @@ public class ItemDescriptionValues {
                     .forEach(s -> target.getProvidedBy().add(s));
         }
 
-
         source.getRelations().forEach(target::addOrReplaceRelation);
 
         target.getInterfaces().addAll(source.getInterfaces());

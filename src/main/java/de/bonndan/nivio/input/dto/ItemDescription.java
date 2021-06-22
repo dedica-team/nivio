@@ -15,7 +15,6 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This is representation of a service in the textual form as described in a source file.
@@ -236,10 +235,17 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     public void setRelations(List<String> relations) {
         relations.stream()
                 .filter(s -> !StringUtils.isEmpty(s))
-                .map(s -> RelationBuilder.createDataflowDescription(this, s))
+                .map(s -> RelationFactory.createDataflowDescription(this, s))
                 .forEach(this::addOrReplaceRelation);
     }
 
+    /**
+     * Add or update a relation description.
+     *
+     * If an equal relation description exist, it is replaced by the newer one.
+     *
+     * @param relationItem relation dto to be added
+     */
     public void addOrReplaceRelation(@NonNull final RelationDescription relationItem) {
         Objects.requireNonNull(relationItem).findMatching(this.relations).ifPresent(this.relations::remove);
         this.relations.add(relationItem);
