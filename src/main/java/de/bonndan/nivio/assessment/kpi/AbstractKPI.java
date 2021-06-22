@@ -17,7 +17,6 @@ public abstract class AbstractKPI implements KPI {
     protected String messageTemplate = "%s";
 
     private String description;
-
     private boolean enabled = true;
 
     protected Function<Assessable, String> valueFunction;
