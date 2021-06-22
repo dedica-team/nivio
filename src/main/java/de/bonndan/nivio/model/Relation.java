@@ -125,6 +125,11 @@ public class Relation implements Labeled, Assessable, Serializable {
         return getIdentifier();
     }
 
+    @Override
+    public List<? extends Assessable> getChildren() {
+        return new ArrayList<>();
+    }
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     static class ApiModel {
 

@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.assessment.Assessable;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -157,5 +158,20 @@ public class ItemTest {
         //when
         s1.setRelations(Set.of(RelationFactory.createForTesting(s1, s3)));
         assertThat(s1.getRelations()).hasSize(1);
+    }
+
+    @Test
+    public void relationsAsAssessmentChildren() {
+
+        Item s1 = getTestItemBuilder("g1", "a").build();
+        Item s2 = getTestItemBuilder("g2", "b").build();
+        Relation forTesting = RelationFactory.createForTesting(s1, s2);
+        s1.addOrReplace(forTesting);
+
+        //when
+        List<? extends Assessable> children = s1.getChildren();
+        assertThat(children).hasSize(1);
+        assertThat(children.get(0)).isEqualTo(forTesting);
+
     }
 }

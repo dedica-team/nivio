@@ -37,9 +37,7 @@ public interface Assessable {
      * Returns the components to be assessed before this (e.g. group items).
      */
     @JsonIgnore
-    default List<? extends Assessable> getChildren() {
-        return new ArrayList<>();
-    }
+    List<? extends Assessable> getChildren();
 
     /**
      * Recursively applies the {@link KPI}s to children and self.
