@@ -82,7 +82,6 @@ items:
     version: 1.0
     identifier: wordpress-redis
     type: cache
-    scale: 2
     team: ops guys
     networks:
       - content
