@@ -212,7 +212,7 @@ class LabelToFieldResolverTest {
     public void commaSeparatedFrameworks() {
         ItemDescription item1 = new ItemDescription();
         item1.getLabels().put("a", "b");
-        item1.getLabels().put("nivio.frameworks", "java:8, angular:6");
+        item1.getLabels().put("nivio." + Label.frameworks.name(), "java:8, angular:6");
 
         LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
         input.getItemDescriptions().add(item1);

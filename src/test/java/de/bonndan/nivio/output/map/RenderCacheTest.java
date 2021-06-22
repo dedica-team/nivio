@@ -1,9 +1,10 @@
 package de.bonndan.nivio.output.map;
 
-import de.bonndan.nivio.input.ProcessingChangelog;
-import de.bonndan.nivio.input.ProcessingFinishedEvent;
+import de.bonndan.nivio.assessment.AssessmentRepository;
 import de.bonndan.nivio.input.AppearanceProcessor;
 import de.bonndan.nivio.input.ProcessLog;
+import de.bonndan.nivio.input.ProcessingChangelog;
+import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
@@ -38,7 +39,7 @@ class RenderCacheTest {
 
         stylesheetFactory = mock(MapStyleSheetFactory.class);
         svgRenderer = new SVGRenderer(stylesheetFactory);
-        renderCache = new RenderCache(svgRenderer);
+        renderCache = new RenderCache(svgRenderer, new AssessmentRepository());
         when(stylesheetFactory.getMapStylesheet(any(), any())).thenReturn("");
     }
 

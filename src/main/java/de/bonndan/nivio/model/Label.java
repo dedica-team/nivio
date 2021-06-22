@@ -2,10 +2,8 @@ package de.bonndan.nivio.model;
 
 import org.springframework.lang.NonNull;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Landscape component labels (to be used like fields).
@@ -24,6 +22,7 @@ public enum Label {
     fill("Background image (for displaying purposes)."),
 
     framework("A map of used frameworks (key is name, value is version).", true),
+    frameworks("A comma-separated list of frameworks as key-value pairs (key is name, value is version)."),
 
     icon("Icon/image (for displaying purposes)."),
 
@@ -111,9 +110,11 @@ public enum Label {
      */
     public static Map<String, String> export(boolean includePrefixes) {
         Map<String, String> labelExport = new LinkedHashMap<>();
-        Arrays.stream(Label.values())
+        List<Label> sortedLabels = Arrays.stream(Label.values()).sorted(Comparator.comparing(Enum::name)).collect(Collectors.toList());
+        sortedLabels.stream()
                 .filter(label -> includePrefixes || !label.isPrefix)
                 .forEach(label -> labelExport.put(label.name(), label.meaning));
+
         return labelExport;
     }
 

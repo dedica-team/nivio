@@ -1,9 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.assessment.Assessable;
-import de.bonndan.nivio.assessment.Assessment;
-import de.bonndan.nivio.assessment.Status;
-import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.assessment.*;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
@@ -45,7 +42,7 @@ public class SVGDocument extends Component {
     public SVGDocument(@NonNull final LayoutedComponent layouted, @Nullable final Assessment assessment, @Nullable final String cssStyles) {
         this.layouted = Objects.requireNonNull(layouted);
         this.landscape = (Landscape) layouted.getComponent();
-        this.assessment = assessment == null ? new Assessment(Map.of()) : assessment;
+        this.assessment = assessment == null ? AssessmentFactory.createAssessment(Map.of()) : assessment;
         this.cssStyles = StringUtils.isEmpty(cssStyles) ? "" : cssStyles;
     }
 

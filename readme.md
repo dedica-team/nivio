@@ -10,20 +10,16 @@ Nivio is an application landscape management for teams (developers, operators, m
 approach, i.e. there is no interface for manual data maintenance. It is designed to gather the application landscape
 information from configurable items, preferably code repositories.
 
-## Get Started
+## [Try nivio our Pet Clinic demo at Heroku](https://nivio-demo.herokuapp.com/)
 
-### [Try nivio at Heroku](https://nivio-demo.herokuapp.com/) |  [User Manual](https://nivio.readthedocs.io/en/latest) | [Developer Docs](development.md)
+and then read the [User Manual](https://nivio.readthedocs.io/en/latest) 
 
+## For Developers and Contributors
 
-## Example Graphs
-
-<img src="https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/graph.png" width="200" height="150" alt="layoutedArtifact graph"/>
-
-<img src="https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/inout.png" width="150" height="150" alt="layoutedArtifact graph"/>
+Please read the [Developer Docs](development.md)
 
 
-
-## Copyright & Trademark Acknowledgment Statements
+### Copyright & Trademark Acknowledgment Statements
 
 * Redis™ is a trademark of Redis Labs Ltd. Any rights therein are reserved to Redis Labs Ltd.
 * Apache HTTP Server and its logo are trademarks of the ASF.
