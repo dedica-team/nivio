@@ -93,10 +93,9 @@ class SVGRelationTest {
     }
 
     @Test
-    public void plannedRelationIsDashed() {
-        foo.setLabel(Label.lifecycle, Lifecycle.PLANNED.name());
+    public void dataflowRelationIsDashed() {
 
-        Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
+        Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
 
         //when
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);

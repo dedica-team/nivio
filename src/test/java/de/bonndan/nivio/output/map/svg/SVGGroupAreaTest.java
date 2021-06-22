@@ -33,7 +33,7 @@ class SVGGroupAreaTest {
         hexesToItems.put(e2, landscapeItem2);
 
         Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
-        SVGGroupArea svgGroupArea = SVGGroupAreaFactory.getGroup(group, area, new StatusValue("foo", Status.GREEN), false);
+        SVGGroupArea svgGroupArea = SVGGroupArea.forGroup(group, area, new StatusValue("foo", Status.GREEN), false);
 
         assertThat(svgGroupArea.render().render()).contains(group.getFullyQualifiedIdentifier().jsonValue());
     }

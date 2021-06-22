@@ -82,7 +82,7 @@ class SVGItem extends Component {
         DomContent icon = null;
         if (!hasFill && !hasText && !StringUtils.isEmpty(layoutedComponent.getIcon())) {
             final int size = DEFAULT_ICON_SIZE * 3;
-            final int trans = Math.round(size / 2);
+            final int trans = Math.round(size / 2f);
             icon = SvgTagCreator.image()
                     .attr("xlink:href", layoutedComponent.getIcon())
                     .attr("width", size)
@@ -122,7 +122,7 @@ class SVGItem extends Component {
 
         return SvgTagCreator.g(inner, icon, statusCircle)
                 .attr("data-identifier", this.id)
-                .attr("class", "item")
+                .attr("class", "item unselected")
                 .attr("transform", "translate(" + pixel.x + "," + pixel.y + ")");
     }
 

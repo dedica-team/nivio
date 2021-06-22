@@ -93,7 +93,7 @@ public class SVGDocument extends Component {
             Group group = (Group) groupLayout.getComponent();
             Set<Hex> groupArea = hexMap.getGroupArea(group);
             List<StatusValue> groupStatuses = assessment.getResults().get(group.getFullyQualifiedIdentifier());
-            SVGGroupArea area = SVGGroupAreaFactory.getGroup(group, groupArea, Assessable.getWorst(groupStatuses), debug);
+            SVGGroupArea area = SVGGroupArea.forGroup(group, groupArea, Assessable.getWorst(groupStatuses), debug);
             groupAreas.add(area);
             return area.render();
         }).collect(Collectors.toList());
@@ -132,8 +132,6 @@ public class SVGDocument extends Component {
                 .with(relations.stream().map(SVGRelation::render))
                 //draw items above relations
                 .with(items)
-                // draw group labels above everything
-                .with(groupAreas.stream().map(SVGGroupArea::getLabel).collect(Collectors.toSet()))
                 //defs contain reusable stuff
                 .with(SvgTagCreator.defs().with(defs));
     }

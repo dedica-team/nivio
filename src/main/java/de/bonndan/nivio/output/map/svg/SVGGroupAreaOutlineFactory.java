@@ -41,9 +41,7 @@ public class SVGGroupAreaOutlineFactory {
         //find left top
         //start with left top
         Hex start = Hex.topLeft(groupArea);
-        List<DomContent> pointsPath = getOutline(start, groupArea, fillId);
-
-        return pointsPath;
+        return getOutline(start, groupArea, fillId);
     }
 
     private List<DomContent> getOutline(@NonNull Hex start, @NonNull Set<Hex> groupArea, String fillId) {
@@ -90,13 +88,11 @@ public class SVGGroupAreaOutlineFactory {
             containerTags.addAll(territoryHexes);
         }
 
-        String fill = "#" + Color.lighten(fillId);
-
         ContainerTag svgPath = SvgTagCreator.path()
                 .attr("d", pointsPath)
-                .condAttr(!StringUtils.isEmpty(fillId), "fill", fill)
+                .attr( "fill", "none")
                 .condAttr(!StringUtils.isEmpty(fillId), "stroke", fillId)
-                .attr( "stroke-width", 5)
+                .attr( "stroke-width", 10)
         ;
 
         containerTags.add(svgPath);

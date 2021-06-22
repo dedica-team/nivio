@@ -1,7 +1,4 @@
 
-.landscapeMapContainer .map {
-    text-shadow: none;
-}
 .landscapeMapContainer .map .title {
     fill: rgba(255, 255, 255, 0.75);
 }
@@ -13,9 +10,7 @@
 .landscapeMapContainer .map .item {
     cursor: pointer;
 }
-.landscapeMapContainer .map g circle {
-    stroke-width: 0.4em;
-}
+
 .landscapeMapContainer .map g .group {
     stroke-width: 0.1em;
     fill-opacity: 0.4;

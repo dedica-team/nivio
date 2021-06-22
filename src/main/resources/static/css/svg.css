@@ -36,11 +36,6 @@
   font-size: 5em;
 }
 
-.map text.groupLabel {
-  text-shadow: 1px 1px 1px black;
-  font-size: 6em;
-}
-
 .map .relation path {
   fill: none;
   stroke-linecap: butt;
@@ -53,4 +48,20 @@
 
 .map g.groupArea {
   cursor: pointer;
+}
+
+.map g.groupArea.unselected path {
+  stroke: dimgray;
+}
+
+.map g.item.unselected circle {
+  stroke: grey;
+}
+
+.map g.relation.unselected path {
+  stroke: grey;
+}
+
+.map g.relation.unselected circle {
+  fill: grey;
 }
