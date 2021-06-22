@@ -34,7 +34,7 @@ class SearchIndexingEventListenerTest {
     void onProcessingFinishedEvent() {
         //given
         var assessment = AssessmentFactory.createAssessment(landscape);
-        when(assessmentRepository.getAssessment(Mockito.any())).thenReturn(Optional.of(assessment));
+        when(assessmentRepository.createAssessment(eq(landscape))).thenReturn(assessment);
         ProcessingFinishedEvent e = new ProcessingFinishedEvent(new LandscapeDescription("foo"), landscape, new ProcessingChangelog());
         SearchIndex searchIndex = mock(SearchIndex.class);
         when(landscape.getSearchIndex()).thenReturn(searchIndex);
@@ -49,6 +49,7 @@ class SearchIndexingEventListenerTest {
         verify(landscape).getSearchIndex();
         verify(landscape).getKpis();
         verify(landscape).applyKPIs(any());
+        verify(assessmentRepository).createAssessment(eq(landscape));
         verify(searchIndex).indexForSearch(eq(landscape), any(Assessment.class));
     }
 
