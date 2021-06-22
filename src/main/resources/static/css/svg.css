@@ -54,6 +54,10 @@
   stroke: dimgray;
 }
 
+.map g.groupArea.unselected polygon {
+  fill: none;
+}
+
 .map g.item.unselected circle {
   stroke: grey;
 }

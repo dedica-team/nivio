@@ -55,7 +55,7 @@ class SVGGroupArea extends Component {
         var fill = Objects.requireNonNull(group).getColor();
         var fillId = fill != null ? "#" + fill : "";
 
-        SVGGroupAreaOutlineFactory outlineFactory = new SVGGroupAreaOutlineFactory();
+        SVGGroupAreaOutlineFactory outlineFactory = new SVGGroupAreaOutlineFactory(SVGGroupAreaOutlineFactory.GroupAreaStyle.HEXES);
         outlineFactory.setDebug(debug);
 
         List<DomContent> outlines = outlineFactory.getOutline(inArea, fillId);

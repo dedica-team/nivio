@@ -29,7 +29,7 @@ public class SVGHex extends Component {
                 .attr("points", asPoints(hex))
                 .condAttr(!StringUtils.isEmpty(stroke), "stroke", stroke)
                 .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
-                .condAttr(!StringUtils.isEmpty(fillId), "fill-opacity", String.valueOf(0.1))
+                .condAttr(!StringUtils.isEmpty(fillId), "fill-opacity", String.valueOf(0.2))
                 .condAttr(debug, "data-hex-coords", hex.q + "," + hex.r)
                 ;
     }
