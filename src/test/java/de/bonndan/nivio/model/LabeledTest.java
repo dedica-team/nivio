@@ -3,11 +3,13 @@ package de.bonndan.nivio.model;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LabeledTest {
@@ -50,7 +52,7 @@ class LabeledTest {
         itemDescription.setLabels(Map.of("one", "two"));
 
         assertEquals(2, itemDescription.getLabels().size());
-        assertTrue(itemDescription.getLabels().containsKey( "foo"));
+        assertTrue(itemDescription.getLabels().containsKey("foo"));
     }
 
     @Test
@@ -65,7 +67,7 @@ class LabeledTest {
         assertThat(stringStringMap).isNotNull();
         assertThat(stringStringMap.size()).isEqualTo(2);
         assertThat(stringStringMap.get(Label.costs.name())).isEqualTo("123");
-        assertThat(stringStringMap.get(Label.network.name()+".foo")).isEqualTo("foo");
+        assertThat(stringStringMap.get(Label.network.name() + ".foo")).isEqualTo("foo");
     }
 
     @Test
@@ -111,5 +113,22 @@ class LabeledTest {
 
         //then
         assertThat(diff).isEmpty();
+    }
+
+    @Test
+    void anySetterRejectsEmptyKey() {
+        ItemDescription i = new ItemDescription();
+        assertThatThrownBy(() -> i.setLabel("", new ArrayList<String>())).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void anySetterAcceptsNumber() {
+        ItemDescription i = new ItemDescription();
+
+        //when
+        i.setLabel("foo", 1L);
+
+        //then
+        assertThat(i.getLabel("foo")).isEqualTo("1");
     }
 }

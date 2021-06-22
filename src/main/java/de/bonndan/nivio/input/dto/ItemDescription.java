@@ -1,12 +1,10 @@
 package de.bonndan.nivio.input.dto;
 
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -319,31 +317,9 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     }
 
     @JsonAnySetter
-    public void setLabel(String key, Object value) {
-        if (value instanceof String) {
-            labels.put(key.toLowerCase(), (String) value);
-            return;
-        }
-        if (value instanceof String[]) {
-            Arrays.stream(((String[]) value)).forEach(s -> setPrefixed(key, s));
-            return;
-        }
-
-        if (value instanceof List) {
-            try {
-                //noinspection unchecked,rawtypes
-                ((List) value).forEach(s -> setPrefixed(key, (String) s));
-                return;
-            } catch (ClassCastException e) {
-                throw new ProcessingException(String.format("Cannot set '%s' to list '%s'. Is this a list-like structure", key, value), e);
-            }
-        }
-
-        if (value instanceof Map) {
-            throw new IllegalArgumentException(String.format("Cannot use the value of '%s' as map ('%s'). Please check the spelling of", key, value));
-        }
-
-        labels.put(key, String.valueOf(value));
+    @Override
+    public void setLabel(@NonNull String key, Object value) {
+        ComponentDescription.super.setLabel(key, value);
     }
 
     /**
