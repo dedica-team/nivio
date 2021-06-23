@@ -7,9 +7,12 @@ import de.bonndan.nivio.model.Item;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
@@ -26,34 +29,23 @@ class CustomKPITest {
         kpiConfig.label = LABEL;
     }
 
-    @Test
-    void testWithRanges1() {
+    @ParameterizedTest
+    @CsvSource({
+            "2.58, green",
+            "0, green",
+            "10.1, yellow",
+    })
+    void testWithRanges1(String value, String status) {
         CustomKPI test = new CustomKPI();
         kpiConfig.ranges = getRangeMap();
         test.init(kpiConfig);
-        StatusValue statusValue = test.getStatusValues(getComponent("2.58")).get(0);
-        assertNotNull(statusValue);
-        Assertions.assertEquals(Status.GREEN, statusValue.getStatus());
-    }
 
-    @Test
-    void testWithRanges2() {
-        CustomKPI test = new CustomKPI();
-        kpiConfig.ranges = getRangeMap();
-        test.init(kpiConfig);
-        StatusValue statusValue = test.getStatusValues(getComponent("0")).get(0);
-        assertNotNull(statusValue);
-        Assertions.assertEquals(Status.GREEN, statusValue.getStatus());
-    }
+        //when
+        StatusValue statusValue = test.getStatusValues(getComponent(value)).get(0);
 
-    @Test
-    void testWithRanges3() {
-        CustomKPI test = new CustomKPI();
-        kpiConfig.ranges = getRangeMap();
-        test.init(kpiConfig);
-        StatusValue statusValue = test.getStatusValues(getComponent("10.1")).get(0);
+        //then
         assertNotNull(statusValue);
-        Assertions.assertEquals(Status.YELLOW, statusValue.getStatus());
+        Assertions.assertEquals(status, statusValue.getStatus().getName().toLowerCase(Locale.ROOT));
     }
 
     @Test
