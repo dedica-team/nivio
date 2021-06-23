@@ -48,7 +48,6 @@ export interface IKpis {
 export interface IKpi {
   description?: string;
   label?: string;
-  messageLabel?: string;
   ranges?: IRanges;
   matches?: IMatches;
   enabled?: boolean;
