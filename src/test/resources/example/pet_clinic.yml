@@ -9,7 +9,7 @@ config:
     radiation:
       description: Radiation level in mrem
       label: radiation
-      messageLabel: radiation
+      messageTemplate: "Level: %s mrem"
       ranges:
         GREEN: 0;99.999999
         YELLOW: 100;199.999999

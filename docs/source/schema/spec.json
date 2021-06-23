@@ -191,78 +191,71 @@
             "description" : "Overrides the group color. Use an HTML hex color code without the leading hash.",
             "example" : "4400FF"
           },
-          "address": {
-            "type": "string",
-            "description": "The technical address of the item (should be an URI). Taken into account when matching relation endpoints."
+          "address" : {
+            "type" : "string",
+            "description" : "The technical address of the item (should be an URI). Taken into account when matching relation endpoints."
           },
-          "type": {
-            "type": "string",
-            "description": "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
-            "example": "service|database|volume"
+          "type" : {
+            "type" : "string",
+            "description" : "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
+            "example" : "service|database|volume"
           },
-          "lifecycle": {
-            "type": "string",
-            "description": "The lifecycle state of an item.",
-            "writeOnly": true,
-            "enum": [
-              "PLANNED",
-              "INTEGRATION",
-              "TEST",
-              "PRODUCTION",
-              "END_OF_LIFE",
-              "EOL"
-            ]
-          },
-          "status": {
-            "type": "array",
-            "description": "A list of statuses that works like hardcoded KPIs.",
-            "writeOnly": true,
-            "items": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "string",
-                "description": "A list of statuses that works like hardcoded KPIs."
+          "status" : {
+            "type" : "array",
+            "description" : "A list of statuses that works like hardcoded KPIs.",
+            "writeOnly" : true,
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string",
+                "description" : "A list of statuses that works like hardcoded KPIs."
               },
-              "description": "A list of statuses that works like hardcoded KPIs."
+              "description" : "A list of statuses that works like hardcoded KPIs."
             }
           },
-          "statuses": {
-            "type": "array",
-            "description": "A list of statuses that works like hardcoded KPIs.",
-            "writeOnly": true,
-            "items": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "string",
-                "description": "A list of statuses that works like hardcoded KPIs."
+          "statuses" : {
+            "type" : "array",
+            "description" : "A list of statuses that works like hardcoded KPIs.",
+            "writeOnly" : true,
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string",
+                "description" : "A list of statuses that works like hardcoded KPIs."
               },
-              "description": "A list of statuses that works like hardcoded KPIs."
+              "description" : "A list of statuses that works like hardcoded KPIs."
             }
           },
-          "frameworks": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string",
-              "description": "The parts used to create the item. Usually refers to technical frameworks.",
-              "example": "java: 8"
+          "frameworks" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string",
+              "description" : "The parts used to create the item. Usually refers to technical frameworks.",
+              "example" : "java: 8"
             },
-            "description": "The parts used to create the item. Usually refers to technical frameworks.",
-            "writeOnly": true,
-            "example": "java: 8"
+            "description" : "The parts used to create the item. Usually refers to technical frameworks.",
+            "writeOnly" : true,
+            "example" : "java: 8"
           },
-          "tags": {
-            "type": "array",
-            "items": {
-              "type": "string"
+          "lifecycle" : {
+            "type" : "string",
+            "description" : "The lifecycle state of an item.",
+            "writeOnly" : true,
+            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
+          },
+          "tags" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
             }
           },
-          "links": {
-            "type": "object",
-            "additionalProperties": {
-              "$ref": "#/components/schemas/Link"
+          "links" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Link"
             },
-            "description": "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
-            "example": "github: https://github.com/dedica-team/nivio"
+            "description" : "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
+            "example" : "github: https://github.com/dedica-team/nivio"
           }
         },
         "description" : "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc."
@@ -278,6 +271,11 @@
             "type" : "string",
             "description" : "Key of the label to evaluate",
             "example" : "costs"
+          },
+          "messageTemplate" : {
+            "type" : "string",
+            "description" : "Template for the displayed message, containing a placeholder for the assessed value '%s",
+            "example" : "The current value is: %s"
           },
           "ranges" : {
             "type" : "object",
@@ -409,12 +407,6 @@
             },
             "description" : "Additional labels for the landscape."
           },
-          "color": {
-            "type": "string"
-          },
-          "icon": {
-            "type": "string"
-          },
           "items" : {
             "type" : "array",
             "description" : "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.",
@@ -426,6 +418,12 @@
           "partial" : {
             "type" : "boolean",
             "description" : "marks that the landscape is not complete, but an update"
+          },
+          "icon" : {
+            "type" : "string"
+          },
+          "color" : {
+            "type" : "string"
           },
           "links" : {
             "type" : "object",

@@ -14,11 +14,11 @@ public class KPIConfig {
     @Schema(description = "Description of the purpose of the KPI")
     public String description;
 
-    @Schema(description = "Key of the label to evaluate", example = "costs")
+    @Schema(description = "Key of the label to evaluate", example = "costs", required = true)
     public String label;
 
-    @Schema(description = "What label content to display in the message", hidden = true)
-    public String messageLabel = null;
+    @Schema(description = "Template for the displayed message, containing a placeholder for the assessed value '%s", example = "The current value is: %s")
+    public String messageTemplate = null;
 
     /**
      * GREEN: 0;99.999999

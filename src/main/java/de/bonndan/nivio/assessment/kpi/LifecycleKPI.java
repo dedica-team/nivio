@@ -5,9 +5,7 @@ import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * This KPI evaluates the lifecycle label for "official" values (see {@link Lifecycle}).
@@ -19,7 +17,10 @@ public class LifecycleKPI extends CustomKPI {
     public LifecycleKPI() {
         super();
         label = Label.lifecycle.name();
-        messageLabel = Label.lifecycle.name();
+        msgFunction = component -> Optional.ofNullable(Lifecycle.from(valueFunction.apply(component)))
+                .map(lifecycle -> "Phase: " + lifecycle.name().toLowerCase(Locale.ROOT).replace("_", " "))
+                .orElse("unknown");
+
         setDescription("This KPI evaluates the lifecycle label for known values (PLANNED, PRODUCTION).");
     }
 
@@ -27,10 +28,10 @@ public class LifecycleKPI extends CustomKPI {
     protected List<StatusValue> getStatusValues(String value, String message) {
         Lifecycle lifecycle = Lifecycle.from(value);
         if (Lifecycle.PRODUCTION.equals(lifecycle)) {
-            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.GREEN, value));
+            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.GREEN, message));
         }
         if (Lifecycle.END_OF_LIFE.equals(lifecycle)) {
-            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.ORANGE, value));
+            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.ORANGE, message));
         }
 
         return new ArrayList<>();
