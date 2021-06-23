@@ -21,13 +21,13 @@ class CustomKPITest {
     private KPIConfig kpiConfig;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         kpiConfig = new KPIConfig();
         kpiConfig.label = LABEL;
     }
 
     @Test
-    public void testWithRanges1() {
+    void testWithRanges1() {
         CustomKPI test = new CustomKPI();
         kpiConfig.ranges = getRangeMap();
         test.init(kpiConfig);
@@ -37,7 +37,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void testWithRanges2() {
+    void testWithRanges2() {
         CustomKPI test = new CustomKPI();
         kpiConfig.ranges = getRangeMap();
         test.init(kpiConfig);
@@ -47,7 +47,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void testWithRanges3() {
+    void testWithRanges3() {
         CustomKPI test = new CustomKPI();
         kpiConfig.ranges = getRangeMap();
         test.init(kpiConfig);
@@ -57,7 +57,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void testoutOfRange() {
+    void testoutOfRange() {
         CustomKPI test = new CustomKPI();
         kpiConfig.ranges = getRangeMap();
         test.init(kpiConfig);
@@ -66,7 +66,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void brokenRangeConfig() {
+    void brokenRangeConfig() {
         CustomKPI test = new CustomKPI();
         kpiConfig.ranges = getRangeMap();
         kpiConfig.ranges.put(Status.GREEN.name(), "0-12");
@@ -74,7 +74,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void withoutMessageTemplate() {
+    void withoutMessageTemplate() {
         CustomKPI test = new CustomKPI();
 
         kpiConfig.ranges = getRangeMap();
@@ -89,7 +89,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void withMessageTemplate() {
+    void withMessageTemplate() {
         CustomKPI test = new CustomKPI();
 
         kpiConfig.ranges = getRangeMap();
@@ -105,7 +105,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void brokenMatchesConfig() {
+    void brokenMatchesConfig() {
         Map<String, String> matches = getMatches();
         matches.put(Status.GREEN.name(), "0-12[");
         kpiConfig.matches = matches;
@@ -115,7 +115,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void RangeOneNumber() {
+    void RangeOneNumber() {
         Map<String, String> r2 = getRangeMap();
         r2.put(Status.GREEN.name(), "0");
         CustomKPI customKPI = new CustomKPI();
@@ -127,7 +127,7 @@ class CustomKPITest {
 
 
     @Test
-    public void testWithMatches1() {
+    void testWithMatches1() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         customKPI.init(kpiConfig);
@@ -136,7 +136,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void testWithMatches2() {
+    void testWithMatches2() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         customKPI.init(kpiConfig);
@@ -145,7 +145,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void testWithMatches3() {
+    void testWithMatches3() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         customKPI.init(kpiConfig);
@@ -154,7 +154,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void testWithMatches4() {
+    void testWithMatches4() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         customKPI.init(kpiConfig);
@@ -163,7 +163,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void testWithMatches5() {
+    void testWithMatches5() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         customKPI.init(kpiConfig);
@@ -172,7 +172,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void noMatchIsEmpty() {
+    void noMatchIsEmpty() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         customKPI.init(kpiConfig);
@@ -181,7 +181,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void testWithRangesAndMatches1() {
+    void testWithRangesAndMatches1() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         kpiConfig.ranges = getRangeMap();
@@ -191,7 +191,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void testWithRangesAndMatches2() {
+    void testWithRangesAndMatches2() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         kpiConfig.ranges = getRangeMap();
