@@ -6,6 +6,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -13,25 +14,31 @@ import java.util.function.Function;
  */
 public abstract class AbstractKPI implements KPI {
 
-    protected Function<Assessable, String> valueFunction;
-    protected Function<Assessable, String> msgFunction;
+    protected String messageTemplate = "%s";
 
     private String description;
 
     private boolean enabled = true;
 
+    protected Function<Assessable, String> valueFunction;
+
+    @NonNull
+    protected Function<Assessable, String> msgFunction = component -> String.format(messageTemplate, valueFunction.apply(component));
+
     public AbstractKPI() {
     }
 
     /**
-     * @param valueFunction the label which is evaluated for status
-     * @param msgFunction   the label which is used as optional message
+     * @param valueFunction a function returning the value to assess
+     * @param msgFunction   a function returning the status message
      */
     public AbstractKPI(@NonNull Function<Assessable, String> valueFunction,
                        @Nullable Function<Assessable, String> msgFunction
     ) {
-        this.valueFunction = valueFunction;
-        this.msgFunction = msgFunction;
+        this.valueFunction = Objects.requireNonNull(valueFunction);
+        if (msgFunction != null) {
+            this.msgFunction = msgFunction;
+        }
     }
 
     /**
@@ -47,7 +54,7 @@ public abstract class AbstractKPI implements KPI {
             throw new RuntimeException("Value function not initialized ");
         }
         String value = valueFunction.apply(component);
-        String message = msgFunction != null ? msgFunction.apply(component) : null;
+        String message = msgFunction.apply(component);
         return getStatusValues(value, message);
     }
 

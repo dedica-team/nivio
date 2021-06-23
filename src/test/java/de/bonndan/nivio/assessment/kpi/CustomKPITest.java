@@ -74,11 +74,10 @@ class CustomKPITest {
     }
 
     @Test
-    public void withMessageLabel() {
+    public void withoutMessageTemplate() {
         CustomKPI test = new CustomKPI();
 
         kpiConfig.ranges = getRangeMap();
-        kpiConfig.messageLabel = "asMessageLabel";
         test.init(kpiConfig);
 
         //when
@@ -86,7 +85,23 @@ class CustomKPITest {
 
         //then
         assertNotNull(statusValue);
-        Assertions.assertEquals("10.1 foo", statusValue.getMessage());
+        Assertions.assertEquals("10.1", statusValue.getMessage());
+    }
+
+    @Test
+    public void withMessageTemplate() {
+        CustomKPI test = new CustomKPI();
+
+        kpiConfig.ranges = getRangeMap();
+        kpiConfig.messageTemplate = "foo bar: %s";
+        test.init(kpiConfig);
+
+        //when
+        StatusValue statusValue = test.getStatusValues(getComponent("10.1")).get(0);
+
+        //then
+        assertNotNull(statusValue);
+        Assertions.assertEquals("foo bar: 10.1", statusValue.getMessage());
     }
 
     @Test
