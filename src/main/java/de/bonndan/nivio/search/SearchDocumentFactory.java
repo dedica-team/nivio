@@ -38,12 +38,14 @@ public class SearchDocumentFactory {
     private static final String LUCENE_FIELD_LIFECYCLE = Label.lifecycle.name();
     private static final String LUCENE_FIELD_CAPABILITY = Label.capability.name();
     private static final String LUCENE_FIELD_LAYER = Label.layer.name();
+    public static final String LUCENE_FIELD_FRAMEWORK = Label.framework.name();
     public static final String KPI_FACET_PREFIX = "kpi_";
 
     public static FacetsConfig getConfig() {
         FacetsConfig config = new FacetsConfig();
         config.setMultiValued(LUCENE_FIELD_TAG, true);
         config.setMultiValued(LUCENE_FIELD_NETWORK, true);
+        config.setMultiValued(LUCENE_FIELD_FRAMEWORK, true);
         return config;
     }
 
@@ -101,6 +103,17 @@ public class SearchDocumentFactory {
         //networks
         item.getLabels(Label.network).forEach((key, value) -> addTextField.accept(LUCENE_FIELD_NETWORK, value.toLowerCase(Locale.ROOT)));
 
+        //frameworks
+        List<String> frameworks = new ArrayList<>();
+        item.getLabels(Label.framework).forEach((key, value) -> {
+            String val = value.toLowerCase(Locale.ROOT);
+            String unprefixed = Label.framework.unprefixed(key);
+            frameworks.add(unprefixed);
+            addTextField.accept(unprefixed, val);
+        });
+        frameworks.forEach(s -> addTextField.accept(LUCENE_FIELD_FRAMEWORK, s));
+
+
         //kpis, fields are prefixed to prevent name collisions (kpis can have any names)
         statusValues.forEach(statusValue -> {
             final String field = statusValue.getField().startsWith(StatusValue.SUMMARY_LABEL) ?
@@ -135,6 +148,10 @@ public class SearchDocumentFactory {
         //network facets
         item.getLabels(Label.network)
                 .forEach((key, value) -> addFacetField.accept(LUCENE_FIELD_NETWORK, value.toLowerCase(Locale.ROOT)));
+
+        //framework facets (only key, not version)
+        item.getLabels(Label.framework)
+                .forEach((key, value) -> addFacetField.accept(LUCENE_FIELD_FRAMEWORK, Label.framework.unprefixed(key)));
 
         addFacetField.accept(LUCENE_FIELD_LIFECYCLE, item.getLabel(Label.lifecycle));
         addFacetField.accept(LUCENE_FIELD_CAPABILITY, item.getLabel(Label.capability));

@@ -2,8 +2,6 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +21,7 @@ class LabelRelationResolverTest {
     @BeforeEach
     public void setup() {
         hintFactory = mock(HintFactory.class);
-        resolver = new LabelRelationResolver(new ProcessLog(mock(Logger.class)), hintFactory);
+        resolver = new LabelRelationResolver(new ProcessLog(mock(Logger.class), "test"), hintFactory);
     }
 
     @Test
@@ -75,7 +73,7 @@ class LabelRelationResolverTest {
 
         //given
         ItemDescription db = new ItemDescription("x.y.z");
-        db.setLabel(Linked.LINK_LABEL_PREFIX + "foo", "http://foo.bar.baz");
+        db.setLabel(LabelToFieldResolver.LINK_LABEL_PREFIX + "foo", "http://foo.bar.baz");
         LandscapeDescription landscape = new LandscapeDescription("identifier");
         landscape.setItems(List.of(db));
 

@@ -200,11 +200,18 @@
             "description" : "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
             "example" : "service|database|volume"
           },
-          "lifecycle" : {
-            "type" : "string",
-            "description" : "The lifecycle state of an item.",
+          "status" : {
+            "type" : "array",
+            "description" : "A list of statuses that works like hardcoded KPIs.",
             "writeOnly" : true,
-            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string",
+                "description" : "A list of statuses that works like hardcoded KPIs."
+              },
+              "description" : "A list of statuses that works like hardcoded KPIs."
+            }
           },
           "statuses" : {
             "type" : "array",
@@ -219,15 +226,22 @@
               "description" : "A list of statuses that works like hardcoded KPIs."
             }
           },
-          "status" : {
-            "type" : "array",
+          "frameworks" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string",
+              "description" : "The parts used to create the item. Usually refers to technical frameworks.",
+              "example" : "java: 8"
+            },
+            "description" : "The parts used to create the item. Usually refers to technical frameworks.",
             "writeOnly" : true,
-            "items" : {
-              "type" : "object",
-              "additionalProperties" : {
-                "type" : "string"
-              }
-            }
+            "example" : "java: 8"
+          },
+          "lifecycle" : {
+            "type" : "string",
+            "description" : "The lifecycle state of an item.",
+            "writeOnly" : true,
+            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
           },
           "tags" : {
             "type" : "array",
@@ -257,6 +271,11 @@
             "type" : "string",
             "description" : "Key of the label to evaluate",
             "example" : "costs"
+          },
+          "messageTemplate" : {
+            "type" : "string",
+            "description" : "Template for the displayed message, containing a placeholder for the assessed value '%s",
+            "example" : "The current value is: %s"
           },
           "ranges" : {
             "type" : "object",
@@ -388,18 +407,6 @@
             },
             "description" : "Additional labels for the landscape."
           },
-          "sourceReferences" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/SourceReference"
-            }
-          },
-          "icon" : {
-            "type" : "string"
-          },
-          "color" : {
-            "type" : "string"
-          },
           "items" : {
             "type" : "array",
             "description" : "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.",
@@ -411,6 +418,12 @@
           "partial" : {
             "type" : "boolean",
             "description" : "marks that the landscape is not complete, but an update"
+          },
+          "icon" : {
+            "type" : "string"
+          },
+          "color" : {
+            "type" : "string"
           },
           "links" : {
             "type" : "object",

@@ -17,6 +17,7 @@ import Avatar from '@material-ui/core/Avatar';
 interface Props {
   setSidebarContent: Function;
   setPageTitle: Function;
+  welcomeMessage: string;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -45,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Overview: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
+const Overview: React.FC<Props> = ({ setSidebarContent, setPageTitle, welcomeMessage }) => {
   const [landscapes, setLandscapes] = useState<ILandscape[]>([]);
   const [landscapeLinks, setLandscapeLinks] = useState<ILandscapeLinks | null>();
   const [loadLandscapes, setLoadLandscapes] = useState<boolean>(true);
@@ -73,8 +74,8 @@ const Overview: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   useEffect(() => {
     getLandscapes();
     setSidebarContent(<Events />);
-    setPageTitle('All Landscapes');
-  }, [getLandscapes, setSidebarContent, setPageTitle]);
+    setPageTitle(welcomeMessage);
+  }, [getLandscapes, setSidebarContent, setPageTitle, welcomeMessage]);
 
   const loading = (
     <div className={classes.loading}>

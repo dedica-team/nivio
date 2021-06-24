@@ -7,9 +7,12 @@ import de.bonndan.nivio.model.Item;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
@@ -21,43 +24,32 @@ class CustomKPITest {
     private KPIConfig kpiConfig;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         kpiConfig = new KPIConfig();
         kpiConfig.label = LABEL;
     }
 
-    @Test
-    public void testWithRanges1() {
+    @ParameterizedTest
+    @CsvSource({
+            "2.58, green",
+            "0, green",
+            "10.1, yellow",
+    })
+    void testWithRanges1(String value, String status) {
         CustomKPI test = new CustomKPI();
         kpiConfig.ranges = getRangeMap();
         test.init(kpiConfig);
-        StatusValue statusValue = test.getStatusValues(getComponent("2.58")).get(0);
+
+        //when
+        StatusValue statusValue = test.getStatusValues(getComponent(value)).get(0);
+
+        //then
         assertNotNull(statusValue);
-        Assertions.assertEquals(Status.GREEN, statusValue.getStatus());
+        Assertions.assertEquals(status, statusValue.getStatus().getName().toLowerCase(Locale.ROOT));
     }
 
     @Test
-    public void testWithRanges2() {
-        CustomKPI test = new CustomKPI();
-        kpiConfig.ranges = getRangeMap();
-        test.init(kpiConfig);
-        StatusValue statusValue = test.getStatusValues(getComponent("0")).get(0);
-        assertNotNull(statusValue);
-        Assertions.assertEquals(Status.GREEN, statusValue.getStatus());
-    }
-
-    @Test
-    public void testWithRanges3() {
-        CustomKPI test = new CustomKPI();
-        kpiConfig.ranges = getRangeMap();
-        test.init(kpiConfig);
-        StatusValue statusValue = test.getStatusValues(getComponent("10.1")).get(0);
-        assertNotNull(statusValue);
-        Assertions.assertEquals(Status.YELLOW, statusValue.getStatus());
-    }
-
-    @Test
-    public void testoutOfRange() {
+    void testoutOfRange() {
         CustomKPI test = new CustomKPI();
         kpiConfig.ranges = getRangeMap();
         test.init(kpiConfig);
@@ -66,7 +58,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void brokenRangeConfig() {
+    void brokenRangeConfig() {
         CustomKPI test = new CustomKPI();
         kpiConfig.ranges = getRangeMap();
         kpiConfig.ranges.put(Status.GREEN.name(), "0-12");
@@ -74,7 +66,38 @@ class CustomKPITest {
     }
 
     @Test
-    public void brokenMatchesConfig() {
+    void withoutMessageTemplate() {
+        CustomKPI test = new CustomKPI();
+
+        kpiConfig.ranges = getRangeMap();
+        test.init(kpiConfig);
+
+        //when
+        StatusValue statusValue = test.getStatusValues(getComponent("10.1")).get(0);
+
+        //then
+        assertNotNull(statusValue);
+        Assertions.assertEquals("10.1", statusValue.getMessage());
+    }
+
+    @Test
+    void withMessageTemplate() {
+        CustomKPI test = new CustomKPI();
+
+        kpiConfig.ranges = getRangeMap();
+        kpiConfig.messageTemplate = "foo bar: %s";
+        test.init(kpiConfig);
+
+        //when
+        StatusValue statusValue = test.getStatusValues(getComponent("10.1")).get(0);
+
+        //then
+        assertNotNull(statusValue);
+        Assertions.assertEquals("foo bar: 10.1", statusValue.getMessage());
+    }
+
+    @Test
+    void brokenMatchesConfig() {
         Map<String, String> matches = getMatches();
         matches.put(Status.GREEN.name(), "0-12[");
         kpiConfig.matches = matches;
@@ -84,7 +107,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void RangeOneNumber() {
+    void RangeOneNumber() {
         Map<String, String> r2 = getRangeMap();
         r2.put(Status.GREEN.name(), "0");
         CustomKPI customKPI = new CustomKPI();
@@ -96,7 +119,7 @@ class CustomKPITest {
 
 
     @Test
-    public void testWithMatches1() {
+    void testWithMatches1() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         customKPI.init(kpiConfig);
@@ -105,7 +128,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void testWithMatches2() {
+    void testWithMatches2() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         customKPI.init(kpiConfig);
@@ -114,7 +137,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void testWithMatches3() {
+    void testWithMatches3() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         customKPI.init(kpiConfig);
@@ -123,7 +146,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void testWithMatches4() {
+    void testWithMatches4() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         customKPI.init(kpiConfig);
@@ -132,7 +155,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void testWithMatches5() {
+    void testWithMatches5() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         customKPI.init(kpiConfig);
@@ -141,7 +164,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void noMatchIsEmpty() {
+    void noMatchIsEmpty() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         customKPI.init(kpiConfig);
@@ -150,7 +173,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void testWithRangesAndMatches1() {
+    void testWithRangesAndMatches1() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         kpiConfig.ranges = getRangeMap();
@@ -160,7 +183,7 @@ class CustomKPITest {
     }
 
     @Test
-    public void testWithRangesAndMatches2() {
+    void testWithRangesAndMatches2() {
         CustomKPI customKPI = new CustomKPI();
         kpiConfig.matches = getMatches();
         kpiConfig.ranges = getRangeMap();
@@ -172,6 +195,7 @@ class CustomKPITest {
     private Item getComponent(String value) {
         Item item = getTestItem("test", "a");
         item.setLabel(LABEL, value);
+        item.setLabel("asMessageLabel", value +" foo");
         return item;
     }
 

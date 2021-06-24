@@ -1,15 +1,14 @@
 package de.bonndan.nivio.input.dto;
 
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
@@ -18,7 +17,7 @@ import java.util.*;
 /**
  * This is representation of a service in the textual form as described in a source file.
  */
-public class ItemDescription implements ComponentDescription, Labeled, Linked, Tagged {
+public class ItemDescription implements ComponentDescription, Labeled, Linked, Tagged, ItemComponent {
 
     private final Map<String, Link> links = new HashMap<>();
 
@@ -83,6 +82,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.group = fqi.getGroup();
     }
 
+    @NonNull
     public String getIdentifier() {
         return identifier;
     }
@@ -92,6 +92,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     }
 
     @Schema(hidden = true)
+    @NonNull
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(environment, group, identifier);
     }
@@ -176,7 +177,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.group = group;
     }
 
-    @Schema(description = "The lifecycle state of an item." , allowableValues = {"PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL"})
+    @Schema(description = "The lifecycle state of an item.", allowableValues = {"PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL"})
     public void setLifecycle(String lifecycle) {
 
         //try to standardize using enum values
@@ -253,7 +254,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         if (this == o) {
             return true;
         }
-        if (o == null) {
+        if (!(o instanceof ItemDescription)) {
             return false;
         }
         return toString().equals(o.toString());
@@ -291,14 +292,15 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
      *
      * @param status a list of key-value pairs, keys are "label", "status", "message"
      */
+    @Schema(name = "status", description = "A list of statuses that works like hardcoded KPIs.")
     public void setStatus(List<LinkedHashMap<String, String>> status) {
         status.forEach(map -> {
             String key = map.get("label");
             if (key != null) {
                 String value = map.get(StatusValue.LABEL_SUFFIX_STATUS);
                 String message = map.get(StatusValue.LABEL_SUFFIX_MESSAGE);
-                setLabel(Label.key(Label.status, key, StatusValue.LABEL_SUFFIX_STATUS), value);
-                setLabel(Label.key(Label.status, key, StatusValue.LABEL_SUFFIX_MESSAGE), message);
+                setLabel(Label.withPrefix(Label.status, key, StatusValue.LABEL_SUFFIX_STATUS), value);
+                setLabel(Label.withPrefix(Label.status, key, StatusValue.LABEL_SUFFIX_MESSAGE), message);
             }
         });
     }
@@ -315,29 +317,23 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     }
 
     @JsonAnySetter
-    public void setLabel(String key, Object value) {
-        if (value instanceof String) {
-            labels.put(key.toLowerCase(), (String) value);
-            return;
-        }
-        if (value instanceof String[]) {
-            Arrays.stream(((String[]) value)).forEach(s -> setPrefixed(key, s));
-            return;
-        }
+    @Override
+    public void setLabel(@NonNull String key, Object value) {
+        ComponentDescription.super.setLabel(key, value);
+    }
 
-        if (value instanceof List) {
-            try {
-                ((List) value).forEach(s -> setPrefixed(key, (String) s));
-                return;
-            } catch (ClassCastException e) {
-                throw new ProcessingException("Cannot set " + key + " to " + value, e);
-            }
-        }
+    /**
+     * Setter for framework map.
+     *
+     * @param frameworks "name": "version"
+     * @see Label
+     */
+    @Schema(description = "The parts used to create the item. Usually refers to technical frameworks.", type = "Map", example = "java: 8")
+    public void setFrameworks(final Map<String, String> frameworks) {
+        frameworks.forEach(this::setFramework);
+    }
 
-        if (value instanceof Map) {
-            throw new IllegalArgumentException("Cannot set " + key + " to map " + value);
-        }
-
-        labels.put(key, String.valueOf(value));
+    public void setFramework(@NonNull final String key, String value) {
+        setLabel(Label.framework.withPrefix(key), value);
     }
 }

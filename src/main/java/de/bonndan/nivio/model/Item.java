@@ -1,14 +1,11 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.*;
-import com.google.common.collect.ImmutableCollection;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ItemRelationProcessor;
+import de.bonndan.nivio.output.Color;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
-import org.apache.commons.collections.MapUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
@@ -23,7 +20,7 @@ import static de.bonndan.nivio.model.ComponentDiff.*;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Item implements Linked, Tagged, Labeled, Assessable {
+public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent {
 
     public static final String LAYER_INFRASTRUCTURE = "infrastructure";
     public static final String LAYER_APPLICATION = "applications";
@@ -53,7 +50,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
     /**
      * technical address
      */
-    private URI address;
+    private final URI address;
 
     private final Map<String, Link> links = new HashMap<>();
     private final Map<String, String> labels = new HashMap<>();
@@ -67,16 +64,16 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
     @JsonManagedReference
     private Set<ServiceInterface> interfaces = new HashSet<>();
 
-    public Item(@NotNull String identifier,
-                @NotNull Landscape landscape,
-                @NotNull String group,
-                String name,
-                String owner,
-                String contact,
-                String description,
-                String color,
-                String icon,
-                URI address
+    public Item(@NotNull final String identifier,
+                @NotNull final Landscape landscape,
+                @NotNull final String group,
+                final String name,
+                final String owner,
+                final String contact,
+                final String description,
+                final String color,
+                final String icon,
+                final URI address
     ) {
         if (StringUtils.isEmpty(identifier)) {
             throw new RuntimeException("Identifier must not be empty");
@@ -96,15 +93,17 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         this.address = address;
 
         //these are effectively mutable
-        this.setLabel(Label.color, color);
+        this.setLabel(Label.color, Color.safe(color));
         this.setLabel(Label.icon, icon);
     }
 
+    @NonNull
     public String getIdentifier() {
         return identifier;
     }
 
     @Override
+    @NonNull
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(landscape == null ? "" : landscape.getIdentifier(), group, identifier);
     }
@@ -311,7 +310,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
      */
     public List<String> getChanges(final Item newer) {
         if (!newer.equals(this)) {
-            throw new IllegalArgumentException("Cannot compare component " + newer.toString() + " against " + this.toString());
+            throw new IllegalArgumentException(String.format("Cannot compare component %s against %s", newer, this));
         }
 
         List<String> changes = new ArrayList<>();
@@ -320,13 +319,12 @@ public class Item implements Linked, Tagged, Labeled, Assessable {
         changes.addAll(compareStrings(this.name, newer.name, "Name"));
         changes.addAll(compareStrings(this.owner, newer.owner, "Owner"));
         changes.addAll(compareOptionals(Optional.ofNullable(this.address), Optional.ofNullable(newer.address), "Address"));
-        changes.addAll(compareCollections(this.labels.keySet(), newer.labels.keySet(), "Labels"));
-        changes.addAll(compareCollections(this.labels.values(), newer.labels.values(), "Label value"));
         changes.addAll(compareCollections(this.links.keySet(), newer.links.keySet(), "Links"));
+        changes.addAll(newer.diff(this));
 
         List<String> collect = this.interfaces.stream().map(ServiceInterface::toString).collect(Collectors.toList());
         List<String> collect2 = newer.getInterfaces().stream().map(ServiceInterface::toString).collect(Collectors.toList());
-        changes.addAll(compareCollections(collect, collect2, "Links"));
+        changes.addAll(compareCollections(collect, collect2, "Interfaces"));
 
         return changes;
     }

@@ -6,6 +6,7 @@ import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Labeled;
 import org.apache.commons.lang3.Range;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 
 import java.util.*;
@@ -32,7 +33,6 @@ public class CustomKPI extends AbstractKPI {
     private final Map<Status, List<Function<String, Boolean>>> matches = new HashMap<>();
 
     protected String label;
-    protected String messageLabel = null;
 
     /**
      *
@@ -48,7 +48,9 @@ public class CustomKPI extends AbstractKPI {
                 label = kpiConfig.label;
             }
             this.setEnabled(kpiConfig.enabled);
-            messageLabel = kpiConfig.messageLabel;
+            if (!StringUtils.isEmpty(kpiConfig.messageTemplate)) {
+                messageTemplate = kpiConfig.messageTemplate;
+            }
             ranges = asRanges(kpiConfig.label, kpiConfig.ranges);
             addSpecsFromConfig(kpiConfig.matches);
         }
@@ -59,12 +61,7 @@ public class CustomKPI extends AbstractKPI {
             }
             throw new RuntimeException("Custom KPIs can only evaluate labels (custom fields).");
         };
-        this.msgFunction = component -> {
-            if (component instanceof Labeled) {
-                return ((Labeled) component).getLabel(messageLabel);
-            }
-            return null;
-        };
+
     }
 
     @Override
@@ -144,8 +141,9 @@ public class CustomKPI extends AbstractKPI {
     }
 
     protected void addSpecs(@Nullable Map<Status, String> statusPatterns) {
-        if (statusPatterns == null)
+        if (statusPatterns == null) {
             return;
+        }
 
         statusPatterns.forEach((status, strings) -> {
             List<Function<String, Boolean>> specs = Arrays.stream(strings.split(SEPARATOR)).map(s -> {
@@ -153,7 +151,7 @@ public class CustomKPI extends AbstractKPI {
                     Pattern p = Pattern.compile(s, Pattern.CASE_INSENSITIVE);
                     return (Function<String, Boolean>) s1 -> p.matcher(s1).matches();
                 } catch (Exception e) {
-                    throw new ProcessingException("Failed to initialize KPI " + this.label + " matcher pattern ", e);
+                    throw new ProcessingException(String.format("Failed to initialize KPI %s matcher pattern ", this.label), e);
                 }
 
             }).collect(Collectors.toList());

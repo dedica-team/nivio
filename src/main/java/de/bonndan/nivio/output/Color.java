@@ -3,15 +3,16 @@ package de.bonndan.nivio.output;
 import de.bonndan.nivio.model.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.leftPad;
+
 /**
  * Color generation utility.
- *
- *
  */
 public class Color {
 
@@ -26,7 +27,7 @@ public class Color {
      * Creates a hex color based on the given name.
      *
      * @param name of a group etc
-     * @return a hex color
+     * @return a hex color, more saturated or lightened if below limits
      */
     @Nullable
     public static String nameToRGB(@Nullable final String name, @Nullable final String defaultColor) {
@@ -71,17 +72,58 @@ public class Color {
 
     /**
      * Converts to a awt color and invokes brighten
+     *
      * @param color hex color string
      * @return hex color string
      */
-    private static String lighten(String color) {
+    public static String lighten(@NonNull final String color) {
+        if (StringUtils.isEmpty(color)) {
+            LOGGER.error("lighten used with empty color.");
+            return DARKGRAY;
+        }
         try {
             java.awt.Color col = java.awt.Color.decode(color.startsWith("#") ? color : "#" + color);
-            return Integer.toHexString(col.brighter().getRGB()).substring(0, 6);
+            java.awt.Color brighter = col.brighter();
+            return toHex(brighter);
         } catch (IllegalArgumentException ex) {
             LOGGER.error(color + " --> " + ex.getMessage());
             return color;
         }
+    }
+
+    /**
+     * Converts to a awt color and invokes darken
+     *
+     * @param color hex color string
+     * @return hex color string
+     */
+    @NonNull
+    public static String darken(@NonNull final String color) {
+        if (StringUtils.isEmpty(color)) {
+            LOGGER.error("Darken used with empty color.");
+            return DARKGRAY;
+        }
+
+        try {
+            java.awt.Color col = java.awt.Color.decode(color.startsWith("#") ? color : "#" + color);
+            java.awt.Color darker = col.darker();
+            return toHex(darker);
+        } catch (IllegalArgumentException ex) {
+            LOGGER.error(color + " --> " + ex.getMessage());
+            return color;
+        }
+    }
+
+    private static String toHex(java.awt.Color color) {
+        return
+                asHex(Integer.toHexString(color.getRed())) +
+                        asHex(Integer.toHexString(color.getGreen())) +
+                        asHex(Integer.toHexString(color.getBlue()))
+                ;
+    }
+
+    private static String asHex(String toHexString) {
+        return leftPad(toHexString, 2, "0").substring(0, 2);
     }
 
     /**
@@ -96,6 +138,17 @@ public class Color {
         try {
             java.awt.Color col = new java.awt.Color(java.awt.Color.HSBtoRGB(h, s + 0.2f, b));
             return Integer.toHexString(col.getRGB()).substring(0, 6);
+        } catch (IllegalArgumentException ex) {
+            LOGGER.error(ex.getMessage());
+            return null;
+        }
+    }
+
+    public static String desaturate(@NonNull final String color) {
+        float[] hsb = hsb(color.startsWith("#") ? color.substring(1) : color);
+        try {
+            java.awt.Color col = new java.awt.Color(java.awt.Color.HSBtoRGB(hsb[0], hsb[1] - 0.2f, hsb[2]));
+            return toHex(col);
         } catch (IllegalArgumentException ex) {
             LOGGER.error(ex.getMessage());
             return null;
@@ -118,5 +171,28 @@ public class Color {
 
     public static String getGroupColor(String groupIdentifier) {
         return Color.nameToRGB(groupIdentifier, Color.DARKGRAY);
+    }
+
+    /**
+     * Ensures that a given string is turned into a proper hex color code.
+     *
+     * @param input string
+     * @return safe hex code
+     */
+    public static String safe(@Nullable final String input) {
+        if (StringUtils.isEmpty(input)) {
+            return "";
+        }
+        String color;
+        if (input.startsWith("#")) {
+            color = input.replace("#", "");
+        } else {
+            color = input;
+        }
+
+        color = color.replaceAll("[^0-9a-fA-F]", "");
+        color = color.concat("000000").substring(0, 6);
+        color = Integer.toHexString(java.awt.Color.decode("0x" + color).getRGB()).substring(2);
+        return color;
     }
 }

@@ -71,6 +71,8 @@ sonar: # add new environment variables
   proxyHost: ${SONAR_PROXY_HOST:}
   proxyPort: ${SONAR_PROXY_PORT:}
 
+
+
 ---
 spring:
   profiles: test

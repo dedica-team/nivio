@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.LandscapeSource;
 import de.bonndan.nivio.util.URLHelper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
@@ -29,7 +30,8 @@ public class SourceReferencesResolver {
 
     public void resolve(final LandscapeDescription landscapeDescription) {
 
-        URL baseUrl = URLHelper.getParentPath(landscapeDescription.getSource()).orElse(null);
+        final URL baseUrl = getBaseUrl(landscapeDescription.getSource());
+
         landscapeDescription.getSourceReferences().forEach(ref -> {
             InputFormatHandler formatHandler;
             try {
@@ -61,6 +63,13 @@ public class SourceReferencesResolver {
                 landscapeDescription.setIsPartial(true);
             }
         });
+    }
+
+    private URL getBaseUrl(LandscapeSource source) {
+        if(source != null) {
+            return source.getURL().flatMap(URLHelper::getParentPath).orElse(null);
+        }
+        return null;
     }
 
     //keeps human readable message, removes part starting at  [Source: (StringReader); line: 11, column: 9]

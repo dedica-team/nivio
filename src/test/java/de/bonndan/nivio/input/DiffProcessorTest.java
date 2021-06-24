@@ -8,7 +8,6 @@ import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
@@ -56,7 +55,7 @@ public class DiffProcessorTest {
         ArrayList<Item> existing = new ArrayList<>();
         existing.add(getTestItem(Group.COMMON, "c", landscape));
 
-        List<ItemDescription> added = DiffProcessor.added(items1, existing, landscape);
+        List<ItemDescription> added = DiffProcessor.added(items1, existing);
         assertEquals(2, added.size());
     }
 
@@ -73,7 +72,7 @@ public class DiffProcessorTest {
         ArrayList<Item> existing = new ArrayList<>();
         existing.add(getTestItem("a", "c", landscape));
 
-        List<ItemDescription> added = DiffProcessor.added(items1, existing, landscape);
+        List<ItemDescription> added = DiffProcessor.added(items1, existing);
         assertEquals(2, added.size());
     }
 
@@ -90,7 +89,7 @@ public class DiffProcessorTest {
         items2.add(getTestItem(Group.COMMON, "b"));
         items2.add(getTestItem(Group.COMMON, "c"));
 
-        List<ItemDescription> added = DiffProcessor.added(items1, items2, landscape);
+        List<ItemDescription> added = DiffProcessor.added(items1, items2);
         assertEquals(0, added.size());
     }
 
@@ -138,7 +137,7 @@ public class DiffProcessorTest {
         items2.add(getTestItem("a", "a"));
         items2.add(getTestItem("a", "b"));
 
-        List<Item> kept = DiffProcessor.kept(items1, items2, landscape);
+        List<Item> kept = DiffProcessor.kept(items1, items2);
         assertEquals(2, kept.size());
     }
 
@@ -154,14 +153,14 @@ public class DiffProcessorTest {
         items2.add(getTestItem("a", "d"));
         items2.add(getTestItem("a", "e"));
 
-        List<Item> kept = DiffProcessor.kept(items1, items2, landscape);
+        List<Item> kept = DiffProcessor.kept(items1, items2);
         assertEquals(0, kept.size());
     }
 
     @Test
     void regression439() {
 
-        DiffProcessor diffProcessor = new DiffProcessor(new ProcessLog(LoggerFactory.getLogger(DiffProcessorTest.class)));
+        DiffProcessor diffProcessor = new DiffProcessor(new ProcessLog(LoggerFactory.getLogger(DiffProcessorTest.class), landscape.getIdentifier()));
 
         LandscapeDescription input = new LandscapeDescription(landscape.getIdentifier());
         ItemDescription description = new ItemDescription("s1");

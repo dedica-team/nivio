@@ -1,6 +1,4 @@
-.landscapeMapContainer {
-    overflow: hidden;
-}
+
 .landscapeMapContainer .map {
     text-shadow: none;
 }
@@ -86,35 +84,44 @@
 }
 @-o-keyframes highlightRelation {
     0% {
-        stroke: #fff;
+        stroke-width: 5px;
+        stroke: #000;
     }
     50% {
-        stroke: #ff4081;
+        stroke-width: 40px;
+        stroke: white;
     }
     to {
-        stroke: #fff;
+        stroke: #000;
+        stroke-width: 5px;
     }
 }
 @-webkit-keyframes highlightRelation {
     0% {
-        stroke: #fff;
+        stroke-width: 5px;
+        stroke: #000;
     }
     50% {
-        stroke: #ff4081;
+        stroke-width: 40px;
+        stroke: white;
     }
     to {
-        stroke: #fff;
+        stroke: #000;
+        stroke-width: 5px;
     }
 }
 @keyframes highlightRelation {
     0% {
-        stroke: #fff;
+        stroke-width: 5px;
+        stroke: #000;
     }
     50% {
-        stroke: #ff4081;
+        stroke-width: 40px;
+        stroke: white;
     }
     to {
-        stroke: #fff;
+        stroke: #000;
+        stroke-width: 5px;
     }
 }
 .landscapeMapContainer .highlightLabel {

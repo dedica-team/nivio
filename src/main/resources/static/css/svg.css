@@ -38,7 +38,7 @@
 
 .map text.groupLabel {
   text-shadow: 1px 1px 1px black;
-  font-size: 4em;
+  font-size: 6em;
 }
 
 .map .relation path {
@@ -53,8 +53,4 @@
 
 .map g.groupArea {
   cursor: pointer;
-}
-
-.map g.groupArea path {
-  fill-opacity: 0.3;
 }

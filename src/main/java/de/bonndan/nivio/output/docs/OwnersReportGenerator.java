@@ -1,15 +1,23 @@
 package de.bonndan.nivio.output.docs;
 
-import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.Color;
-import de.bonndan.nivio.output.FormatUtils;
+import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.model.Component;
+import de.bonndan.nivio.model.GroupedBy;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
 import j2html.tags.ContainerTag;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static j2html.TagCreator.*;
 
@@ -19,50 +27,40 @@ public class OwnersReportGenerator extends HtmlGenerator {
         super(localServer, iconService);
     }
 
-    public String toDocument(Landscape landscape) {
+    @Override
+    public String toDocument(@NonNull final Landscape landscape, @NonNull final Assessment assessment, @Nullable final SearchConfig searchConfig) {
 
-        return writeLandscape(landscape);
-    }
+        String title = "Report";
+        if (searchConfig != null && !StringUtils.isEmpty(searchConfig.getTitle())) {
+            title = searchConfig.getTitle();
+        }
 
-    private String writeLandscape(Landscape landscape) {
-
+        final Optional<String> searchTerm = searchConfig != null && !StringUtils.isEmpty(searchConfig.getSearchTerm()) ? Optional.ofNullable(searchConfig.getSearchTerm()) : Optional.empty();
+        List<Item> items = new ArrayList<>(searchTerm.map(landscape::search).orElse(landscape.getItems().all()));
         return html(
                 getHead(landscape),
                 body(
-                        h1("Owner Report: " + landscape.getName()),
+                        h1(title),
+                        h6("Landscape: " + landscape.getName()),
+                        h6("Date: " + ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)),
+                        iff(searchTerm.isPresent(), h6("Search term: " + (searchTerm.orElse(null)))),
                         br(),
-                        rawHtml(writeOwnerGroups(GroupedBy.by(Component::getOwner, new ArrayList<>(landscape.getItems().all()))))
+                        rawHtml(writeOwnerGroups(GroupedBy.by(Component::getOwner, items), assessment))
                 )
         ).renderFormatted();
     }
 
-    private String writeOwnerGroups(GroupedBy ownerGroups) {
+    private String writeOwnerGroups(GroupedBy ownerGroups, Assessment assessment) {
         final StringBuilder builder = new StringBuilder();
-        ownerGroups.getAll().forEach((owner, landscapeItems) -> {
+        ownerGroups.getAll().forEach((owner, items) -> {
             builder.append(
-                    h2(rawHtml(owner)).attr("class", "rounded").render()
+                    h2("Owner: " + owner).render()
             );
-            builder.append(writeGroups(GroupedBy.by(Item::getGroup, landscapeItems)).render());
+            List<ContainerTag> collect = items.stream().map(item -> div(writeItem(item, assessment, items)).withClass("col-sm")).collect(Collectors.toList());
+            builder.append(div().withClass("row").with(collect).render());
         });
 
         return builder.toString();
-    }
-
-    private ContainerTag writeGroups(GroupedBy groups) {
-        List<ContainerTag> collect = new ArrayList<>();
-        groups.getAll().entrySet().forEach(entry -> collect.add(writeGroup(entry)));
-        return ul().with(collect);
-    }
-
-    private ContainerTag writeGroup(Map.Entry<String, List<Item>> services) {
-        return li().with(services.getValue().stream().map(this::writeItem));
-    }
-
-    private ContainerTag writeItem(Item item) {
-        String groupColor = "#" + Color.nameToRGB(item.getGroup(), Color.GRAY);
-
-        return div(rawHtml("<span style=\"color: " + groupColor + "\">&#9899;</span> " + FormatUtils.nice(item.getGroup()) + ": " + item.toString() + " (" + item.getFullyQualifiedIdentifier().toString() + ")"));
-
     }
 
 }

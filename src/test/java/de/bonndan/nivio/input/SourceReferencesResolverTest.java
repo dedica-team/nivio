@@ -38,7 +38,7 @@ public class SourceReferencesResolverTest {
 
     @BeforeEach
     public void setup() {
-        log = new ProcessLog(LoggerFactory.getLogger(SourceReferencesResolver.class));
+        log = new ProcessLog(LoggerFactory.getLogger(SourceReferencesResolver.class), "test");
         fileFetcher = new FileFetcher(mock(HttpService.class));
         eventPublisher = mock(ApplicationEventPublisher.class);
         sourceReferencesResolver = new SourceReferencesResolver(

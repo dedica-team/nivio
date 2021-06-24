@@ -89,7 +89,7 @@ enhance items and relations. However, it is necessary to prefix attributes that 
                 nivio_contact="foo@bar.com"
             ]
             main -> parse -> execute
-            main -> init [nivio_format = json, nivio_type=PROVIDER, nivio_description="init the procedure"]
+            main -> init [nivio_format = json, nivio_type=PROVIDER, nivio_description="init the procedure", nivio_frameworks="PHP:7.2,Angular:9"]
             main -> cleanup
             execute -> make_string
             execute -> printf

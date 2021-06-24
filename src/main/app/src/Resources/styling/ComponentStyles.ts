@@ -26,7 +26,7 @@ const componentStyles = makeStyles((theme: Theme) =>
       height: '2rem',
       display: 'inline-block',
     },
-    navigationButton: {
+    menuButton: {
       borderWidth: 1,
       borderStyle: 'solid',
       borderColor: theme.palette.primary.main,
@@ -34,6 +34,17 @@ const componentStyles = makeStyles((theme: Theme) =>
       width: '2.1rem !important',
       marginLeft: '0.5rem'
     },
+    navigationButton: {
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: theme.palette.secondary.main,
+      height: '2.1rem !important',
+      width: '2.1rem !important',
+      marginLeft: '0.5rem'
+    },
+    link: {
+      color: theme.palette.secondary.main,
+    }
   })
 );
 

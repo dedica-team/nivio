@@ -3,10 +3,13 @@ package de.bonndan.nivio.model;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LabeledTest {
@@ -49,7 +52,7 @@ class LabeledTest {
         itemDescription.setLabels(Map.of("one", "two"));
 
         assertEquals(2, itemDescription.getLabels().size());
-        assertTrue(itemDescription.getLabels().containsKey( "foo"));
+        assertTrue(itemDescription.getLabels().containsKey("foo"));
     }
 
     @Test
@@ -64,6 +67,68 @@ class LabeledTest {
         assertThat(stringStringMap).isNotNull();
         assertThat(stringStringMap.size()).isEqualTo(2);
         assertThat(stringStringMap.get(Label.costs.name())).isEqualTo("123");
-        assertThat(stringStringMap.get(Label.network.name()+".foo")).isEqualTo("foo");
+        assertThat(stringStringMap.get(Label.network.name() + ".foo")).isEqualTo("foo");
+    }
+
+    @Test
+    void diff() {
+        //given
+        ItemDescription before = new ItemDescription();
+        before.setLabel(Label.costs, "123");
+        before.setLabel(Label.lifecycle, "production");
+        before.setPrefixed(Label.network, "foo");
+
+        ItemDescription after = new ItemDescription();
+        after.setLabel(Label.team, "A-Team");
+        after.setLabel(Label.lifecycle, "eol");
+        after.setPrefixed(Label.network, "bar");
+
+        //when
+        List<String> diff = after.diff(before);
+
+        //then
+        assertThat(diff).isNotNull().hasSize(5)
+                .contains("Label 'costs' has been removed")
+                .contains("Label 'network.foo' has been removed")
+                .contains("Label 'network.bar' has been added")
+                .contains("Label 'lifecycle' has changed from 'production' to 'eol'")
+        ;
+    }
+
+    @Test
+    void diffIgnoresAppearanceLabels() {
+        //given
+        ItemDescription before = new ItemDescription();
+        before.setLabel(Label.color, "123");
+        before.setLabel(Label.fill, "aaff33");
+        before.setLabel(Label.icon, "foo");
+
+        ItemDescription after = new ItemDescription();
+        after.setLabel(Label.color, "");
+        after.setLabel(Label.fill, "");
+        after.setLabel(Label.icon, "");
+
+        //when
+        List<String> diff = after.diff(before);
+
+        //then
+        assertThat(diff).isEmpty();
+    }
+
+    @Test
+    void anySetterRejectsEmptyKey() {
+        ItemDescription i = new ItemDescription();
+        assertThatThrownBy(() -> i.setLabel("", new ArrayList<String>())).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void anySetterAcceptsNumber() {
+        ItemDescription i = new ItemDescription();
+
+        //when
+        i.setLabel("foo", 1L);
+
+        //then
+        assertThat(i.getLabel("foo")).isEqualTo("1");
     }
 }

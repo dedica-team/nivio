@@ -8,6 +8,7 @@ import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.ProcessLog;
+import de.bonndan.nivio.input.dto.LandscapeSource;
 import de.bonndan.nivio.search.ItemIndex;
 import de.bonndan.nivio.search.ItemMatcher;
 import de.bonndan.nivio.search.SearchIndex;
@@ -56,7 +57,8 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
     private final String description;
 
-    private final String source;
+    @JsonIgnore
+    private final LandscapeSource source;
 
     @JsonIgnore
     private final ItemIndex<Item> items;
@@ -81,14 +83,14 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
                      @Nullable final String contact,
                      @Nullable final String owner,
                      @Nullable final String description,
-                     @Nullable final String source,
+                     @Nullable final LandscapeSource source,
                      @Nullable final LandscapeConfig config,
                      @Nullable final ProcessLog processLog,
                      @NonNull final Map<String, KPI> kpis
     ) {
         this.identifier = validateIdentifier(Objects.requireNonNull(identifier));
         this.groups = groups;
-        this.searchIndex = new SearchIndex();
+        this.searchIndex = new SearchIndex(identifier);
         this.items = new ItemIndex<>(Item.class);
         this.name = Objects.requireNonNull(name);
         this.contact = contact;
@@ -97,7 +99,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         this.description = description;
         this.source = source;
         this.config = config != null ? config : new LandscapeConfig();
-        this.processLog = processLog != null ? processLog : new ProcessLog(LoggerFactory.getLogger(Landscape.class));
+        this.processLog = processLog != null ? processLog : new ProcessLog(LoggerFactory.getLogger(Landscape.class), identifier);
         this.kpis = kpis;
     }
 
@@ -107,6 +109,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     @Override
+    @NonNull
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(identifier, null, null);
     }
@@ -132,7 +135,9 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         this.items.setItems(items);
     }
 
-    public String getSource() {
+    @JsonIgnore
+    @Nullable
+    public LandscapeSource getSource() {
         return source;
     }
 
@@ -183,9 +188,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
      * @return the added or merged group
      */
     public Group addGroup(@NonNull Group group) {
-        if (group == null) {
-            throw new IllegalArgumentException("Trying to add null group");
-        }
+        Objects.requireNonNull(group, "Trying to add null group");
 
         if (groups.containsKey(group.getIdentifier())) {
             group = GroupFactory.merge(groups.get(group.getIdentifier()), group);
@@ -309,15 +312,27 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     /**
+     * Finds all items matching the given term.
+     *
+     * First tries an {@link ItemMatcher} and then falls back to a regular query.
+     *
      * @param term preferably string representation of an FQI, or a simple identifier
-     * @return an item if matched
+     * @return all matched items
      */
-    public Optional<Item> findBy(@NonNull final String term) {
-        Objects.requireNonNull(term);
+    public List<Item> findBy(@NonNull final String term) {
+        return getItems().findBy(term);
+    }
 
-        return ItemMatcher.forTarget(term)
-                .map(itemMatcher -> getItems().find(itemMatcher))
-                .orElseGet(() -> getItems().query(term).stream().findFirst());
+    /**
+     * Returns one distinct item for a query term.
+     *
+     * @param term  search term
+     * @param group optional group to narrow
+     * @return the matched item
+     * @throws NoSuchElementException if not exactly one item could be determined
+     */
+    public Item findOneBy(@NonNull final String term, @Nullable final String group) {
+        return getItems().findOneBy(term, group);
     }
 
 }

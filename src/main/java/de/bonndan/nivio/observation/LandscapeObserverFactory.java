@@ -58,11 +58,15 @@ public class LandscapeObserverFactory {
     ) {
 
         List<InputFormatObserver> observers = new ArrayList<>();
-        Optional<URL> baseUrl = URLHelper.getParentPath(description.getSource());
-        if (baseUrl.isEmpty()) {
-            LOGGER.info("Cannot create observer for landscape '{}' description source '{}' ", description.getIdentifier(), description.getSource());
-        } else {
-            URLHelper.getURL(description.getSource()).ifPresent(url -> observers.add(getObserver(landscape, url)));
+        Optional<URL> url = description.getSource() != null ? description.getSource().getURL() : Optional.empty();
+        Optional<URL> baseUrl = Optional.empty();
+        if (url.isPresent()) {
+            baseUrl = URLHelper.getParentPath(url.get());
+            if (baseUrl.isEmpty()) {
+                LOGGER.info("Cannot create observer for landscape '{}' source '{}' ", description.getIdentifier(), url.get());
+            } else {
+                observers.add(getObserver(landscape, url.get()));
+            }
         }
 
         for (SourceReference sourceReference : description.getSourceReferences()) {

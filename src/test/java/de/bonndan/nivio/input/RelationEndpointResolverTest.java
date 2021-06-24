@@ -35,7 +35,7 @@ class RelationEndpointResolverTest {
 
     @BeforeEach
     public void setup() {
-        log = new ProcessLog(Mockito.mock(Logger.class));
+        log = new ProcessLog(Mockito.mock(Logger.class), "test");
         relationEndpointResolver = new RelationEndpointResolver(log);
         FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
         factory = new LandscapeDescriptionFactory(fileFetcher);
@@ -104,7 +104,7 @@ class RelationEndpointResolverTest {
         InputFormatHandlerFactory formatFactory = new InputFormatHandlerFactory(
                 new ArrayList<>(Arrays.asList(new InputFormatHandlerNivio(new FileFetcher(new HttpService())), InputFormatHandlerCompose2.forTesting()))
         );
-        ProcessLog logger = new ProcessLog(mock(Logger.class));
+        ProcessLog logger = new ProcessLog(mock(Logger.class), "test");
         SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(formatFactory, logger, mock(ApplicationEventPublisher.class));
         sourceReferencesResolver.resolve(landscapeDescription);
 

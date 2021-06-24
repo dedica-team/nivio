@@ -97,6 +97,21 @@ const LandscapeContextProvider: React.FC<{}> = (props) => {
     });
   }, [identifier]);
 
+  /**
+   * Load the assessment data on a notification
+   */
+  useEffect(() => {
+    if (identifier == null) {
+      console.debug(`Identifier not present`);
+      return;
+    }
+
+    get(`/assessment/${identifier}`).then((response) => {
+      setAssessment(response);
+      console.debug(`Loaded assessment data for ${identifier}`);
+    });
+  }, [identifier, notification]);
+
   return (
     <LandscapeContext.Provider
       value={{

@@ -21,11 +21,11 @@ public class ItemRelationProcessor extends Processor {
     public ProcessingChangelog process(@NonNull final LandscapeDescription input, @NonNull final Landscape landscape) {
 
         ProcessingChangelog changelog = new ProcessingChangelog();
-        List<Relation> processed = new ArrayList<>();
 
+        // process configured relations of all input dtos
+        List<Relation> processed = new ArrayList<>();
         input.getItemDescriptions().all().forEach(itemDescription -> {
-            Item origin = landscape.getItems().pick(itemDescription);
-            List<Relation> affected = new ArrayList<>();
+            final Item origin = landscape.getItems().pick(itemDescription);
 
             for (RelationDescription relationDescription : itemDescription.getRelations()) {
 
@@ -36,32 +36,37 @@ public class ItemRelationProcessor extends Processor {
                 Relation current = getCurrentRelation(relationDescription, landscape, origin)
                         .map(relation -> {
                             Relation update = RelationBuilder.update(relation, relationDescription, landscape);
-                            processLog.info(String.format("Updating relation between %s and %s", update.getSource(), update.getTarget()));
                             List<String> changes = relation.getChanges(update);
                             if (!changes.isEmpty()) {
+                                processLog.info(String.format(origin + ": Updating relation between %s and %s", update.getSource(), update.getTarget()));
                                 changelog.addEntry(update, ProcessingChangelog.ChangeType.UPDATED, String.join(";", changes));
                             }
                             return update;
                         })
                         .orElseGet(() -> {
-                            Relation created = RelationBuilder.create(relationDescription, landscape);
+                            Relation created = RelationBuilder.create(origin, relationDescription, landscape);
                             processLog.info(String.format(origin + ": Adding relation between %s and %s", created.getSource(), created.getTarget()));
                             changelog.addEntry(created, ProcessingChangelog.ChangeType.CREATED, null);
                             return created;
                         });
+                assignToBothEnds(origin, current);
                 processed.add(current);
-                affected.add(current);
             }
+        });
 
-            affected.forEach(relation -> assignToBothEnds(origin, relation));
+        if (input.isPartial()) {
+            return changelog;
+        }
 
-            Collection<Relation> toDelete = CollectionUtils.subtract(origin.getRelations(), affected);
+        // delete what has not been configured and is left over in landscape
+        input.getItemDescriptions().all().forEach(itemDescription -> {
+            final Item origin = landscape.getItems().pick(itemDescription);
+            Collection<Relation> toDelete = CollectionUtils.subtract(origin.getRelations(), processed);
             toDelete.stream()
                     .filter(relation -> !processed.contains(relation))
                     .filter(relation -> origin.equals(relation.getSource()))
-                    .filter(relation -> !input.isPartial())
                     .forEach(relation -> {
-                        processLog.info(String.format("Removing relation between %s and %s", relation.getSource(), relation.getTarget()));
+                        processLog.info(String.format(origin + ": Removing relation between %s and %s", relation.getSource(), relation.getTarget()));
                         Item currentSource = landscape.getItems().pick(
                                 relation.getSource().getFullyQualifiedIdentifier().getItem(),
                                 relation.getSource().getFullyQualifiedIdentifier().getGroup()
@@ -86,13 +91,13 @@ public class ItemRelationProcessor extends Processor {
 
     private boolean isValid(RelationDescription relationDescription, Landscape landscape) {
 
-        Optional<Item> source = landscape.findBy(relationDescription.getSource());
+        List<Item> source = landscape.findBy(relationDescription.getSource());
         if (source.isEmpty()) {
             processLog.warn(String.format("Relation source %s not found", relationDescription.getSource()));
             return false;
         }
 
-        Optional<Item> target = landscape.findBy(relationDescription.getTarget());
+        List<Item> target = landscape.findBy(relationDescription.getTarget());
         if (target.isEmpty()) {
             processLog.warn(String.format("Relation target %s not found", relationDescription.getTarget()));
             return false;
@@ -114,8 +119,8 @@ public class ItemRelationProcessor extends Processor {
                                                   Landscape landscape,
                                                   Item origin
     ) {
-        Item source = landscape.findBy(relationDescription.getSource()).orElseThrow();
-        Item target = landscape.findBy(relationDescription.getTarget()).orElseThrow();
+        Item source = landscape.findOneBy(relationDescription.getSource(), origin.getGroup());
+        Item target = landscape.findOneBy(relationDescription.getTarget(), origin.getGroup());
 
         Iterator<Relation> iterator = origin.getRelations().iterator();
         Relation created = new Relation(source, target);

@@ -1,6 +1,6 @@
 .. envvar:: DEMO
 
-A non-empty value causes Nivio to start in demo mode with prepared data.
+A non-empty value causes Nivio to start in demo mode with prepared data. Use the value 'all' to load more landscapes.
 
 .. envvar:: GITHUB_JWT
 
@@ -53,6 +53,10 @@ Branding foreground color (hexadecimal only).
 .. envvar:: NIVIO_BRANDING_LOGO_URL
 
 A URL pointing to a logo.
+
+.. envvar:: NIVIO_BRANDING_MESSAGE
+
+A welcome message on the front page.
 
 .. envvar:: NIVIO_BRANDING_SECONDARY
 

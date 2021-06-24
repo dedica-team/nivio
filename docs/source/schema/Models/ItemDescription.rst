@@ -83,16 +83,21 @@ List of configuration sources. Handled in the given order, latter extend/overwri
      - The lifecycle state of an item.
      - optional, defaults to null
      - null
+   * - status
+     - List<map>
+     - A list of statuses that works like hardcoded KPIs.
+     - optional, defaults to null
+     - null
    * - statuses
      - List<map>
      - A list of statuses that works like hardcoded KPIs.
      - optional, defaults to null
      - null
-   * - status
-     - List<map>
-     - 
+   * - frameworks
+     - Map
+     - The parts used to create the item. Usually refers to technical frameworks.
      - optional, defaults to null
-     - null
+     - java: 8
    * - tags
      - List
      - 

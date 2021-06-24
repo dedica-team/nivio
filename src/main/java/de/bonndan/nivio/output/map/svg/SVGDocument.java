@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.assessment.*;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
@@ -34,12 +35,14 @@ public class SVGDocument extends Component {
     private final LayoutedComponent layouted;
     private final Landscape landscape;
     private final String cssStyles;
+    private final Assessment assessment;
     private boolean debug = false;
     private HexMap hexMap;
 
-    public SVGDocument(@NonNull LayoutedComponent layouted, @Nullable String cssStyles) {
+    public SVGDocument(@NonNull final LayoutedComponent layouted, @Nullable final Assessment assessment, @Nullable final String cssStyles) {
         this.layouted = Objects.requireNonNull(layouted);
         this.landscape = (Landscape) layouted.getComponent();
+        this.assessment = assessment == null ? AssessmentFactory.createAssessment(Map.of()) : assessment;
         this.cssStyles = StringUtils.isEmpty(cssStyles) ? "" : cssStyles;
     }
 
@@ -54,6 +57,13 @@ public class SVGDocument extends Component {
 
         hexMap = new HexMap(this.debug);
 
+        defs.add(SVGStatus.glowFilter());
+        defs.add(SVGStatus.patternFor(Status.UNKNOWN));
+        defs.add(SVGStatus.patternFor(Status.GREEN));
+        defs.add(SVGStatus.patternFor(Status.YELLOW));
+        defs.add(SVGStatus.patternFor(Status.ORANGE));
+        defs.add(SVGStatus.patternFor(Status.RED));
+        defs.add(SVGStatus.patternFor(Status.BROWN));
         //transform all item positions to hex map positions
         layouted.getChildren().forEach(group -> {
             LOGGER.info("rendering group {} with items {}", group.getComponent().getIdentifier(), group.getChildren());
@@ -72,15 +82,18 @@ public class SVGDocument extends Component {
                 SVGItemLabel label = new SVGItemLabel(item);
                 Point2D.Double pos = hexMap.hexForItem(item).toPixel();
 
-                SVGItem SVGItem = new SVGItem(label.render(), layoutedItem, pos);
+                List<StatusValue> itemStatuses = assessment.getResults().get(item.getFullyQualifiedIdentifier());
+                SVGItem SVGItem = new SVGItem(label.render(), layoutedItem, itemStatuses, pos);
                 items.add(SVGItem.render());
             });
         });
 
         List<SVGGroupArea> groupAreas = new ArrayList<>();
         List<DomContent> groups = layouted.getChildren().stream().map(groupLayout -> {
-            Set<Hex> groupArea = hexMap.getGroupArea((Group) groupLayout.getComponent());
-            SVGGroupArea area = SVGGroupAreaFactory.getGroup((Group) groupLayout.getComponent(), groupArea, debug);
+            Group group = (Group) groupLayout.getComponent();
+            Set<Hex> groupArea = hexMap.getGroupArea(group);
+            List<StatusValue> groupStatuses = assessment.getResults().get(group.getFullyQualifiedIdentifier());
+            SVGGroupArea area = SVGGroupAreaFactory.getGroup(group, groupArea, Assessable.getWorst(groupStatuses), debug);
             groupAreas.add(area);
             return area.render();
         }).collect(Collectors.toList());
@@ -88,7 +101,7 @@ public class SVGDocument extends Component {
         defs.add(SVGRelation.dataflowMarker());
         List<SVGRelation> relations = getRelations(layouted);
 
-        SVGDimension dimension = SVGDimensionFactory.getDimension(groupAreas);
+        SVGDimension dimension = SVGDimensionFactory.getDimension(groupAreas, relations);
 
         //render background hexes
         defs.add(SVGBackgroundFactory.getHex());
@@ -167,14 +180,16 @@ public class SVGDocument extends Component {
         return relations;
     }
 
-    private SVGRelation getSvgRelation(LayoutedComponent layoutedItem, Item item, Relation rel) {
-        Optional<HexPath> bestPath = hexMap.getPath(item, rel.getTarget());
+    private SVGRelation getSvgRelation(LayoutedComponent layoutedItem, Item source, Relation rel) {
+        Optional<HexPath> bestPath = hexMap.getPath(source, rel.getTarget());
         if (bestPath.isPresent()) {
-            SVGRelation svgRelation = new SVGRelation(bestPath.get(), layoutedItem.getColor(), rel);
-            LOGGER.debug("Added path for item {} relation {} -> {}", item, rel.getSource(), rel.getTarget());
+            List<StatusValue> statusValues = assessment.getResults().get(source.getFullyQualifiedIdentifier());
+            StatusValue worst = Assessable.getWorst(statusValues);
+            SVGRelation svgRelation = new SVGRelation(bestPath.get(), layoutedItem.getColor(), rel, worst);
+            LOGGER.debug("Added path for item {} relation {} -> {}", source, rel.getSource(), rel.getTarget());
             return svgRelation;
         }
-        LOGGER.error("No path found for item {} relation {}", item, rel);
+        LOGGER.error("No path found for item {} relation {}", source, rel);
         return null;
     }
 

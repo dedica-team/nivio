@@ -4,7 +4,7 @@ import java.util.Optional;
 
 public enum ConfigurableEnvVars {
 
-    DEMO("A non-empty value causes Nivio to start in demo mode with prepared data."),
+    DEMO("A non-empty value causes Nivio to start in demo mode with prepared data. Use the value 'all' to load more landscapes."),
     PORT("The port Nivio runs on."),
     SEED("A semicolon-separated list of file paths containing landscape configurations."),
 

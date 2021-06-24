@@ -101,7 +101,7 @@ const Navigation: React.FC<Props> = ({
         aria-controls='simple-menu'
         aria-haspopup='true'
         onClick={openMenu}
-        className={componentClasses.navigationButton}
+        className={componentClasses.menuButton}
       >
         {logo ? (
           <Avatar
@@ -128,7 +128,6 @@ const Navigation: React.FC<Props> = ({
       <Box className={classes.pageTitle}>
         <Typography variant='h6'>{pageTitle}</Typography>
       </Box>
-      <div className={classes.grow} />
       {landscapeContext.identifier ? (
         <IconButton
           className={componentClasses.navigationButton}

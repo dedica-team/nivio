@@ -44,7 +44,7 @@ public class ApiController {
      * Overview on all landscapes.
      */
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public Index index() {
         return linkFactory.getIndex(landscapeRepository.findAll());
     }
@@ -56,7 +56,7 @@ public class ApiController {
      * @return response entity of landscape
      */
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/{landscapeIdentifier}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{landscapeIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Landscape> landscape(@PathVariable String landscapeIdentifier) {
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
         if (landscape == null) {
@@ -72,7 +72,7 @@ public class ApiController {
      * This resource serves  a group in a landscape and can be addressed by using a {@link FullyQualifiedIdentifier}
      */
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/{landscapeIdentifier}/{groupIdentifier}", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{landscapeIdentifier}/{groupIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Group> group(@PathVariable String landscapeIdentifier,
                                        @PathVariable String groupIdentifier
     ) {
@@ -95,7 +95,7 @@ public class ApiController {
      * This resource serves an item in a landscape and can be addressed by using a {@link FullyQualifiedIdentifier}
      */
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/{landscapeIdentifier}/{groupIdentifier}/{itemIdentifier}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{landscapeIdentifier}/{groupIdentifier}/{itemIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Item> item(@PathVariable String landscapeIdentifier,
                                      @PathVariable String groupIdentifier,
                                      @PathVariable String itemIdentifier
@@ -117,7 +117,7 @@ public class ApiController {
     /**
      * Creates a new landscape
      */
-    @RequestMapping(path = "/landscape", method = RequestMethod.POST)
+    @PostMapping(path = "/landscape")
     public ResponseEntity<Object> create(@RequestBody String body) throws URISyntaxException {
         LandscapeDescription env = indexingDispatcher.createFromBody(body);
         Optional<URI> uriForDTO = getURIForDTO(env);
@@ -126,7 +126,7 @@ public class ApiController {
                 .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
     }
 
-    @RequestMapping(path = "/landscape/{identifier}/items", method = RequestMethod.POST)
+    @PostMapping(path = "/landscape/{identifier}/items")
     public ResponseEntity<Object> addItems(
             @PathVariable String identifier,
             @RequestHeader(name = "format") String format,
@@ -140,7 +140,7 @@ public class ApiController {
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/landscape/{identifier}/log", method = RequestMethod.GET)
+    @GetMapping(path = "/landscape/{identifier}/log")
     public ResponseEntity<ProcessLog> log(@PathVariable String identifier) {
 
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
@@ -152,7 +152,7 @@ public class ApiController {
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/landscape/{identifier}/search/{query}", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(path = "/landscape/{identifier}/search/{query}", produces = "application/json")
     public ResponseEntity<Set<Item>> search(@PathVariable String identifier, @PathVariable String query) {
 
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
@@ -170,7 +170,7 @@ public class ApiController {
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/landscape/{identifier}/facets", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(path = "/landscape/{identifier}/facets", produces = "application/json")
     public ResponseEntity<List<FacetResult>> facets(@PathVariable String identifier) {
 
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
@@ -185,7 +185,7 @@ public class ApiController {
     /**
      * Trigger reindexing of a landscape source.
      */
-    @RequestMapping(path = "/reindex/{landscape}", method = RequestMethod.POST)
+    @PostMapping(path = "/reindex/{landscape}")
     public ResponseEntity<Object> reindex(@PathVariable String landscape) throws URISyntaxException {
         Landscape existing = landscapeRepository.findDistinctByIdentifier(landscape).orElse(null);
         if (existing == null) {

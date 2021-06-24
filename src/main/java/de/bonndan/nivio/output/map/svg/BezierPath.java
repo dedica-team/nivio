@@ -147,7 +147,7 @@ public class BezierPath
             if (curLength < bezLength)
             {
                 double param = curLength / bezLength;
-                bez.eval(param, point); //TODO eval result is not used
+                bez.eval(param, point);
                 break;
             }
             

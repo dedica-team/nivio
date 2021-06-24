@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { IAssessmentProps, IGroup, IItem, ILandscape } from '../../../interfaces';
+import { IGroup, IItem, ILandscape } from '../../../interfaces';
 import { Button, Link, List, ListItem, ListItemText } from '@material-ui/core';
 
 /**
@@ -83,6 +83,8 @@ export const getLabels = (element: IGroup | IItem) => {
         key.startsWith('icon') ||
         key.startsWith('fill') ||
         key.startsWith('tag') ||
+        key.startsWith('framework') ||
+        key.startsWith('network') ||
         key === 'color'
       )
         return;
@@ -106,32 +108,32 @@ export const getLabels = (element: IGroup | IItem) => {
 };
 
 /**
- * Returns the summary field from a subset of assessments.
- * @param assessmentResults
- * @todo refactor to return IAssessmentProps
+ * Returns only the labels having the given prefix.
+ * @param prefix the label prefix to filter for
+ * @param element the component having labels
  */
-export const getAssessmentSummary = (
-  assessmentResults: IAssessmentProps[] | undefined
-): string[] => {
-  let assessmentColor = 'grey';
-  let assessmentMessage = '';
-  let assessmentField = '';
-
-  if (assessmentResults) {
-    const result = assessmentResults.find((assessmentResult) => assessmentResult.summary);
-
-    if (result) {
-      if (result.status !== 'UNKNOWN') {
-        assessmentColor = result.status;
-        assessmentField = result.maxField || '';
-        assessmentMessage = result.message;
-      } else {
-        assessmentMessage = 'unknown status';
-      }
-    }
+export const getLabelsWithPrefix = (prefix: string, element: IGroup | IItem) => {
+  if (!element || !element?.labels) {
+    return null;
   }
-
-  return [assessmentColor, assessmentMessage, assessmentField];
+  let labels: ReactElement[] = [];
+  const strings = Object.keys(element.labels);
+  strings
+    .filter((key) => key.startsWith(prefix))
+    .forEach((key) => {
+      const value = element.labels?.[key] || null;
+      if (!value) return;
+      const primary = key.replace(prefix + '.', '');
+      labels.push(
+        <ListItem key={key}>
+          <ListItemText primary={primary} secondary={value.substr(0, 150)} title={value} />
+        </ListItem>
+      );
+    });
+  if (labels.length === 0) {
+    return null;
+  }
+  return <List dense={true}>{labels}</List>;
 };
 
 export const getItemIcon = (item: IItem) => {

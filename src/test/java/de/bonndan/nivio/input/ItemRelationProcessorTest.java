@@ -40,7 +40,7 @@ class ItemRelationProcessorTest {
 
         landscape = LandscapeFactory.createForTesting("test", "test").withItems(items).build();
 
-        processor = new ItemRelationProcessor(new ProcessLog(LoggerFactory.getLogger(ItemRelationProcessorTest.class)));
+        processor = new ItemRelationProcessor(new ProcessLog(LoggerFactory.getLogger(ItemRelationProcessorTest.class), landscape.getIdentifier()));
     }
 
     @Test
