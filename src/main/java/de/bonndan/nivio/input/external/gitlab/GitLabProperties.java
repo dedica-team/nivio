@@ -11,6 +11,17 @@ public class GitLabProperties {
     private String username;
     private String password;
 
+    public GitLabProperties() {
+
+    }
+
+    public GitLabProperties(String hostUrl, String personalAccessToken, String username, String password) {
+        this.hostUrl = hostUrl;
+        this.personalAccessToken = personalAccessToken;
+        this.username = username;
+        this.password = password;
+    }
+
     public String getHostUrl() {
         return hostUrl;
     }
