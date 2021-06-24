@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input.dto;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
@@ -104,6 +105,7 @@ public class RelationDescription implements Labeled {
     }
 
     @Override
+    @JsonAnySetter
     public void setLabel(String key, String value) {
         getLabels().put(key, value);
     }

@@ -110,7 +110,6 @@ public class Relation implements Labeled, Assessable, Serializable {
     }
 
     @Override
-    @JsonAnySetter
     public void setLabel(String key, String value) {
         labels.put(key, value);
     }
@@ -154,6 +153,8 @@ public class Relation implements Labeled, Assessable, Serializable {
 
         public final String direction;
 
+        public final Map<String, String> labels;
+
         ApiModel(@NonNull final Relation relation, @NonNull final Item owner) {
             source = relation.source;
             target = relation.target;
@@ -161,6 +162,7 @@ public class Relation implements Labeled, Assessable, Serializable {
             format = relation.format;
             type = relation.type;
             id = relation.getIdentifier();
+            labels = relation.getLabels();
 
             if (relation.source.equals(owner)) {
                 name = StringUtils.isEmpty(target.getName()) ? target.getIdentifier() : target.getName();
