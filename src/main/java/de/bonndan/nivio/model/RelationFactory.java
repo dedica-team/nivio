@@ -73,13 +73,16 @@ public class RelationFactory {
         Objects.requireNonNull(description);
         Objects.requireNonNull(landscape);
 
-        return new Relation(
+        Relation relation = new Relation(
                 landscape.findOneBy(description.getSource(), existing.getSource().getGroup()),
                 landscape.findOneBy(description.getTarget(), existing.getTarget().getGroup()),
                 description.getDescription(),
                 description.getFormat(),
                 existing.getType()
         );
+
+        Labeled.merge(description, relation);
+        return relation;
     }
 
     /**
@@ -98,13 +101,16 @@ public class RelationFactory {
         Objects.requireNonNull(relationDescription);
         Objects.requireNonNull(landscape);
 
-        return new Relation(
+        Relation relation = new Relation(
                 landscape.findOneBy(relationDescription.getSource(), origin.getGroup()),
                 landscape.findOneBy(relationDescription.getTarget(), origin.getGroup()),
                 relationDescription.getDescription(),
                 relationDescription.getFormat(),
                 relationDescription.getType()
         );
+
+        Labeled.merge(relationDescription, relation);
+        return relation;
     }
 
     /**

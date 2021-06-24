@@ -71,6 +71,7 @@ class RelationFactoryTest {
         Item foo = ItemFactory.getTestItem("a", "foo");
         Item bar = ItemFactory.getTestItem("b", "bar");
         Relation relation = RelationFactory.createProviderRelation(foo, bar);
+        relation.setLabel("foo1", "bar1");
         foo.setRelations(Set.of(relation));
         bar.setRelations(Set.of(relation));
         landscape.setItems(Set.of(foo, bar)); //landscape contains fooCopy instead of foo!
@@ -78,6 +79,8 @@ class RelationFactoryTest {
         RelationDescription providerDescription = RelationFactory.createProviderDescription("foo", "bar");
         providerDescription.setFormat("json");
         providerDescription.setDescription("huhu");
+        providerDescription.setLabel("foo1", "bar2");
+        providerDescription.setLabel("foo2", "bar2");
 
         //when
         Relation newRelation = RelationFactory.update(relation, providerDescription, landscape);
@@ -87,6 +90,8 @@ class RelationFactoryTest {
         assertThat(newRelation.getTarget()).isEqualTo(bar);
         assertThat(newRelation.getFormat()).isEqualTo("json");
         assertThat(newRelation.getDescription()).isEqualTo("huhu");
+        assertThat(newRelation.getLabel("foo1")).isEqualTo("bar2");
+        assertThat(newRelation.getLabel("foo2")).isEqualTo("bar2");
     }
 
     @Test
@@ -136,6 +141,7 @@ class RelationFactoryTest {
         Item bar = ItemFactory.getTestItem("b", "bar");
         landscape.setItems(Set.of(foo, bar));
         RelationDescription relationDescription = RelationFactory.createProviderDescription("foo", "bar");
+        relationDescription.setLabel("foo1", "bar1");
 
         //when
         Relation newRelation = RelationFactory.create(foo, relationDescription, landscape);
@@ -143,6 +149,7 @@ class RelationFactoryTest {
         //then
         assertThat(newRelation.getSource()).isEqualTo(foo);
         assertThat(newRelation.getTarget()).isEqualTo(bar);
+        assertThat(newRelation.getLabel("foo1")).isEqualTo("bar1");
     }
 
     @Test
