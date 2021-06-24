@@ -2,11 +2,14 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -21,6 +24,8 @@ import static de.bonndan.nivio.output.map.svg.SvgTagCreator.g;
  * SVG representation of a relation between items.
  */
 class SVGRelation extends Component {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SVGRelation.class);
 
     public static final String MARKER_ID = "arrow";
 
@@ -62,22 +67,28 @@ class SVGRelation extends Component {
         String statusColor = statusValue.getStatus().getName();
 
         ContainerTag shadow = null;
-        int innerStrokeWidth = 5;
+        float factor = Optional.ofNullable(relation.getLabel(Label.weight)).map(s -> {
+            try {
+                return Float.parseFloat(s);
+            } catch (NumberFormatException e) {
+                LOGGER.warn("Invalid weight: {}", s);
+                return 1f;
+            }
+        }).orElse(1f);
+        int innerStrokeWidth = Math.round(5 * factor);
         if (statusValue.getStatus().equals(Status.UNKNOWN)) {
-            innerStrokeWidth = 15;
+            innerStrokeWidth = Math.round(15 * factor);
         } else {
             shadow = SvgTagCreator.path()
                     .attr("d", points)
                     .attr("stroke", statusColor)
-                    .attr("stroke-width", 20);
+                    .attr("stroke-width", Math.round(20 * factor));
         }
 
         ContainerTag path = SvgTagCreator.path()
                 .attr("d", points)
                 .attr("stroke", fillId)
                 .attr("stroke-width", innerStrokeWidth);
-
-
 
         if (Lifecycle.isPlanned(relation.getSource()) || Lifecycle.isPlanned(relation.getTarget())) {
             path.attr("stroke-dasharray", 15);

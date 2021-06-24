@@ -17,3 +17,4 @@
 * ``type`` The type (service, database, queue, load balancer, etc.).
 * ``version`` The version (e.g. software version or protocol version).
 * ``visibility`` Visibility to other items.
+* ``weight`` Importance or relations. Used as factor for drawn width if numbers between 0 and 3 are given.

@@ -27,11 +27,11 @@ class SVGRelationTest {
 
     @BeforeEach
     void setup() {
-         landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
-         foo = getTestItem(Group.COMMON, "foo", landscape);
-         bar = getTestItem(Group.COMMON, "bar", landscape);
-         hexpath = new HexPath(List.of(new Hex(1,2), new Hex(1,3)));
-         statusValue = new StatusValue("foo", Status.GREEN);
+        landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
+        foo = getTestItem(Group.COMMON, "foo", landscape);
+        bar = getTestItem(Group.COMMON, "bar", landscape);
+        hexpath = new HexPath(List.of(new Hex(1, 2), new Hex(1, 3)));
+        statusValue = new StatusValue("foo", Status.GREEN);
     }
 
     @Test
@@ -105,6 +105,22 @@ class SVGRelationTest {
         //then
         String render1 = render.render();
         assertTrue(render1.contains("stroke-dasharray"));
+    }
+
+    @Test
+    public void weightDeterminesStrokeWidth() {
+
+        Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
+        itemRelationItem.setLabel(Label.weight, "2.44");
+
+        //when
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
+        DomContent render = svgRelation.render();
+
+        //then
+        String render1 = render.render();
+        var width = Math.round(5 * 2.44f);
+        assertThat(render1).contains("stroke-width=\"" + width + "\"");
     }
 
     @Test
