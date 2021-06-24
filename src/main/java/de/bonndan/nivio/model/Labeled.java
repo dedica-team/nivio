@@ -205,12 +205,12 @@ public interface Labeled {
     }
 
     /**
-     * Copies all non-null labels from source to target.
+     * ADd all non-null labels from source to target where target labels are not set.
      *
      * @param source label source
      * @param target target
      */
-    static void merge(@NonNull final Labeled source, @NonNull final Labeled target) {
+    static void add(@NonNull final Labeled source, @NonNull final Labeled target) {
         source.getLabels().entrySet().stream()
                 .filter(entry -> entry.getValue() != null)
                 .filter(entry -> target.getLabel(entry.getKey()) == null)
@@ -218,15 +218,15 @@ public interface Labeled {
     }
 
     /**
-     * Copies all non-null labels from source.
+     * Copies all non-null value labels from source to target.
      *
      * @param source label source
+     * @param target target
      */
-    default void merge(@NonNull final Labeled source) {
-        Objects.requireNonNull(source).getLabels().entrySet().stream()
+    static void merge(@NonNull final Labeled source, @NonNull final Labeled target) {
+        source.getLabels().entrySet().stream()
                 .filter(entry -> entry.getValue() != null)
-                .filter(entry -> getLabel(entry.getKey()) == null)
-                .forEach(entry -> setLabel(entry.getKey(), entry.getValue()));
+                .forEach(entry -> target.setLabel(entry.getKey(), entry.getValue()));
     }
 
     /**

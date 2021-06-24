@@ -240,13 +240,18 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     /**
      * Add or update a relation description.
      *
-     * If an equal relation description exist, it is replaced by the newer one.
+     * If an equal relation description exist, it is updated with values from the newer one.
      *
-     * @param relationItem relation dto to be added
+     * @param description relation dto to be added
      */
-    public void addOrReplaceRelation(@NonNull final RelationDescription relationItem) {
-        Objects.requireNonNull(relationItem).findMatching(this.relations).ifPresent(this.relations::remove);
-        this.relations.add(relationItem);
+    public void addOrReplaceRelation(@NonNull final RelationDescription description) {
+        RelationDescription relationDescription = Objects.requireNonNull(description).findMatching(this.relations)
+                .map(relationDescription1 -> {
+                    relationDescription1.update(description);
+                    return relationDescription1;
+                })
+                .orElse(description);
+        this.relations.add(relationDescription);
     }
 
     public String getAddress() {

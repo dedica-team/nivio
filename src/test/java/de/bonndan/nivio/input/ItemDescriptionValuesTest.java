@@ -93,6 +93,29 @@ class ItemDescriptionValuesTest {
     }
 
     @Test
+    public void incrementUpdatesRelationDescription() {
+
+        ItemDescription sd1 = new ItemDescription();
+        sd1.setIdentifier("sd1");
+        RelationDescription other = RelationFactory.createDataflowDescription(sd1, "other");
+        sd1.addOrReplaceRelation(other);
+
+        ItemDescription increment = new ItemDescription();
+        increment.setIdentifier("sd1");
+        RelationDescription another = RelationFactory.createDataflowDescription(increment, "other");
+        another.setLabel("foo", "bar");
+        increment.addOrReplaceRelation(another);
+
+        //when
+        ItemDescriptionValues.assignNotNull(sd1, increment);
+
+
+        assertEquals(1, sd1.getRelations().size());
+        RelationDescription relationDescription = sd1.getRelations().iterator().next();
+        assertEquals("bar", relationDescription.getLabel("foo"));
+    }
+
+    @Test
     public void incrementAddsNetworks() {
 
         ItemDescription sd1 = new ItemDescription();

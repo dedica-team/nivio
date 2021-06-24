@@ -51,4 +51,24 @@ class RelationDescriptionTest {
         assertThat(matching).isEmpty();
     }
 
+    @Test
+    void update() {
+        var rel = new RelationDescription("aGroup/foo", "bGroup/notBar");
+        rel.setLabel("foo", "one");
+        rel.setFormat("f1");
+
+        var newer = new RelationDescription("aGroup/foo", "bGroup/notBar");
+        newer.setDescription("one");
+        newer.setFormat("foo");
+        newer.setLabel("foo", "two");
+
+        //when
+        rel.update(newer);
+
+        //then
+        assertThat(rel.getDescription()).isEqualTo("one");
+        assertThat(rel.getFormat()).isEqualTo("foo");
+        assertThat(rel.getLabel("foo")).isEqualTo("two");
+    }
+
 }

@@ -31,15 +31,7 @@ public class ItemDescriptionValues {
         if (increment.getAddress() != null)
             existing.setAddress(increment.getAddress());
 
-        increment.getRelations().forEach(relationDescription -> {
-            RelationDescription rel = relationDescription.findMatching(existing.getRelations())
-                    .map(relationDescription1 -> {
-                        relationDescription1.merge(relationDescription);
-                        return relationDescription1;
-                    })
-                    .orElse(relationDescription);
-            existing.addOrReplaceRelation(rel);
-        });
+        increment.getRelations().forEach(existing::addOrReplaceRelation);
 
         assignSafe(increment.getInterfaces(), (set) -> set.forEach(intf -> existing.getInterfaces().add(intf)));
     }

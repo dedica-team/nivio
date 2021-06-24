@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input.dto;
 
 import de.bonndan.nivio.model.Labeled;
+import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.search.ItemMatcher;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -113,7 +114,7 @@ public class RelationDescription implements Labeled {
      * @param relations a collection of existing relations
      * @return the sibling
      */
-    public Optional<RelationDescription> findMatching(@NonNull final Collection<RelationDescription> relations) {
+    Optional<RelationDescription> findMatching(@NonNull final Collection<RelationDescription> relations) {
         return Objects.requireNonNull(relations).stream()
                 .filter(rel -> matches(source, rel.getSource()))
                 .filter(rel -> matches(target, rel.getTarget()))
@@ -124,5 +125,19 @@ public class RelationDescription implements Labeled {
         Optional<ItemMatcher> m1 = ItemMatcher.forTarget(end1);
         Optional<ItemMatcher> m2 = ItemMatcher.forTarget(end2);
         return m1.isPresent() && m2.isPresent() && m1.map(m -> m.equals(m2.get())).orElse(false);
+    }
+
+    /**
+     * Updates the current object with values from the param.
+     *
+     * @param newer update
+     */
+    public void update(@NonNull final RelationDescription newer) {
+        Objects.requireNonNull(newer);
+
+        setDescription(newer.description);
+        setFormat(newer.format);
+
+        Labeled.merge(newer, this);
     }
 }
