@@ -7,6 +7,7 @@ import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -62,6 +63,7 @@ class SVGRelationTest {
         assertTrue(render1.contains("circle"));
     }
 
+    @Disabled // dataflow has no endpoint marker anymore/yet
     @Test
     public void dataflowRelationsContainsEndpoint() {
 

@@ -11,7 +11,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import javax.validation.constraints.Null;
 import java.awt.geom.Point2D;
 import java.util.Optional;
 
@@ -27,6 +26,8 @@ class SVGRelation extends Component {
     private final HexPath hexPath;
     private final String fill;
     private final Relation relation;
+
+    @Nullable
     private final StatusValue statusValue;
 
     /**
@@ -59,11 +60,11 @@ class SVGRelation extends Component {
         var points = String.join("", hexPath.getPoints());
         bezierPath.parsePathString(points);
 
-        String statusColor = statusValue.getStatus().getName();
 
         ContainerTag shadow = null;
         int innerStrokeWidth = 20;
-        if (!statusValue.getStatus().equals(Status.UNKNOWN)) {
+        if (statusValue != null && !statusValue.getStatus().equals(Status.UNKNOWN)) {
+            String statusColor = statusValue.getStatus().getName();
             shadow = SvgTagCreator.path()
                     .attr("d", points)
                     .attr("stroke", statusColor)
@@ -82,14 +83,14 @@ class SVGRelation extends Component {
         ContainerTag endMarker = null;
         if (RelationType.DATAFLOW.equals(relation.getType())) {
             //path.attr("marker-mid", String.format("url(#%s)", SVGRelation.MARKER_ID));
-            path.attr("fill", shadow != null ? statusColor: fillId);
+            path.attr("fill", fillId);
             path.attr("stroke-dasharray", 15);
         } else {
             endMarker = SvgTagCreator.circle()
                     .attr("cx", hexPath.getEndPoint().x)
                     .attr("cy", hexPath.getEndPoint().y)
                     .attr("r", 35)
-                    .attr("fill", shadow != null ? statusColor: fillId);
+                    .attr("fill", fillId);
         }
 
         return addAttributes(g(shadow, endMarker, path, label(bezierPath, fillId)), relation);
