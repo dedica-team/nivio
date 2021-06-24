@@ -69,7 +69,11 @@ class SVGRelation extends Component {
         ContainerTag shadow = null;
         float factor = Optional.ofNullable(relation.getLabel(Label.weight)).map(s -> {
             try {
-                return Float.parseFloat(s);
+                float v = Float.parseFloat(s);
+                if (v > 5f) {
+                    v = 5;
+                }
+                return v;
             } catch (NumberFormatException e) {
                 LOGGER.warn("Invalid weight: {}", s);
                 return 1f;
