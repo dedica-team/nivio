@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.LocalServer;
@@ -12,6 +13,7 @@ import org.springframework.lang.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static de.bonndan.nivio.output.FormatUtils.nice;
 import static de.bonndan.nivio.output.map.MapController.MAP_SVG_ENDPOINT;
@@ -20,8 +22,6 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 /**
  * Generates a report containing all landscape groups and items.
- *
- *
  */
 public class ReportGenerator extends HtmlGenerator {
 
@@ -50,7 +50,8 @@ public class ReportGenerator extends HtmlGenerator {
 
     private String writeGroups(Landscape landscape, Assessment assessment) {
         final StringBuilder builder = new StringBuilder();
-        Map<String, Group> groups = landscape.getGroups();
+        final Map<String, Group> groups = landscape.getGroups();
+        final Set<Item> all = landscape.getItems().all();
         groups.forEach((s, groupItem) -> {
             String color = "#" + Color.getGroupColor(groupItem);
             builder.append(
@@ -59,7 +60,7 @@ public class ReportGenerator extends HtmlGenerator {
             );
             builder.append(
                     div().attr("class", "group")
-                            .with(groupItem.getItems().stream().map(item -> this.writeItem(item, assessment)))
+                            .with(groupItem.getItems().stream().map(item -> this.writeItem(item, assessment, all)))
                             .render()
             );
         });
