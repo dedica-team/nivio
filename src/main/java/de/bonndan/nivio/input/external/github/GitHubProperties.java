@@ -13,6 +13,13 @@ public class GitHubProperties {
     private String oauth;
     private String jwt;
 
+    public GitHubProperties(String login, String password, String oauth, String jwt) {
+        this.login = login;
+        this.password = password;
+        this.oauth = oauth;
+        this.jwt = jwt;
+    }
+
     public String getLogin() {
         return login;
     }
