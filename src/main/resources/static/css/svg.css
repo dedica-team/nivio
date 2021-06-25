@@ -50,10 +50,6 @@
   cursor: pointer;
 }
 
-.map g.groupArea.unselected path {
-  stroke: dimgray;
-}
-
 .map g.groupArea.unselected polygon {
   fill: none;
 }

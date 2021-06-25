@@ -1,6 +1,5 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
@@ -9,7 +8,7 @@ import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,7 +34,8 @@ class SVGGroupAreaOutlineFactory {
     /**
      * @param groupArea all hexes in the group area
      * @param fillId    fill color
-     * @return
+     * @return all svg elements forming the group outline
+     *
      */
     @NonNull
     public List<DomContent> getOutline(@NonNull final Set<Hex> groupArea, @NonNull final String fillId) {
@@ -50,23 +50,14 @@ class SVGGroupAreaOutlineFactory {
         return getOutline(start, groupArea, fillId);
     }
 
-    private List<DomContent> getOutline(@NonNull Hex start, @NonNull Set<Hex> groupArea, String fillId) {
+    private List<DomContent> getOutline(@NonNull final Hex start, @NonNull final Set<Hex> groupArea, String fillId) {
 
         if (groupArea.containsAll(start.neighbours())) {
             throw new IllegalArgumentException(String.format("Starting point %s for outline is not on border.", start));
         }
-        LinkedHashSet<Hex> borderHexes = new LinkedHashSet<>();
-        Position next = new Position(start, 0);
-        while (next != null) {
-            //end
-            if (borderHexes.contains(next.hex)) {
-                break;
-            }
-            borderHexes.add(next.hex);
-            next = getNext(next, groupArea);
-        }
 
-        List<Point2D.Double> centers = borderHexes.stream()
+        LinkedHashMap<Hex, Position> borderHexes = getBorderHexes(start, groupArea);
+        List<Point2D.Double> centers = borderHexes.keySet().stream()
                 .map(Hex::toPixel)
                 .collect(Collectors.toList());
 
@@ -83,6 +74,7 @@ class SVGGroupAreaOutlineFactory {
                 pointsPath = WobblyGroupOutline.getPath(centers);
                 break;
             case HEXES:
+                pointsPath = BorderHexesGroupOutline.getPath(borderHexes, groupArea);
                 /* style of multiple hexes*/
                 List<DomContent> territoryHexes = groupArea.stream()
                         .map(hex -> new SVGHex(hex, fillId, fillId).render())
@@ -108,11 +100,26 @@ class SVGGroupAreaOutlineFactory {
                     .attr("d", pointsPath)
                     .attr("fill", "none")
                     .condAttr(!StringUtils.isEmpty(fillId), "stroke", fillId)
-                    .attr("stroke-width", 10);
+                    .attr("stroke-width", 3);
             containerTags.add(svgPath);
         }
 
         return containerTags;
+    }
+
+    static LinkedHashMap<Hex, Position> getBorderHexes(Hex start, Set<Hex> groupArea) {
+        LinkedHashMap<Hex, Position> borderHexes = new LinkedHashMap<>();
+        Position next = new Position(start, 0);
+        while (next != null) {
+            //end
+            if (borderHexes.containsKey(next.hex)) {
+                break;
+            }
+            borderHexes.put(next.hex, next);
+            next = getNext(next, groupArea);
+        }
+
+        return borderHexes;
     }
 
     /**
@@ -120,7 +127,7 @@ class SVGGroupAreaOutlineFactory {
      * @param allInGroup    all hexes in the group area
      * @return the position to continue with
      */
-    private Position getNext(@NonNull Position startPosition, Set<Hex> allInGroup) {
+    private static Position getNext(@NonNull Position startPosition, Set<Hex> allInGroup) {
 
         Hex start = startPosition.hex;
         final List<Hex> neighbours = start.neighbours();
@@ -158,7 +165,7 @@ class SVGGroupAreaOutlineFactory {
     static class Position {
 
         final Hex hex;
-        private final int rotationOffset;
+        final int rotationOffset;
 
         Position(@NonNull Hex hex, int rotationOffset) {
             this.hex = hex;
