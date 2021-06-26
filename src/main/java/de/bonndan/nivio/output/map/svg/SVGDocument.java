@@ -31,6 +31,8 @@ public class SVGDocument extends Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGDocument.class);
     public static final int LABEL_WIDTH = 140;
+    public static final String VISUAL_FOCUS_UNSELECTED = "unselected";
+    public static final String DATA_IDENTIFIER = "data-identifier";
 
     private final LayoutedComponent layouted;
     private final Landscape landscape;

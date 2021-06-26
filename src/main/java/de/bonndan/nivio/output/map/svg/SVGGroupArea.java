@@ -16,6 +16,9 @@ import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
+import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
+
 
 /**
  * Displays a group as an area containing items.
@@ -93,10 +96,10 @@ class SVGGroupArea extends Component {
         return SvgTagCreator.g(territoryHexes.toArray(DomContent[]::new))
                 .with(getLabel())
                 .attr("id", fqi)
-                .attr("data-identifier", fqi)
+                .attr(DATA_IDENTIFIER, fqi)
                 .attr("data-x", anchor.x)
                 .attr("data-y", anchor.y)
-                .attr("class", "groupArea unselected");
+                .attr("class", "groupArea " + VISUAL_FOCUS_UNSELECTED);
     }
 
     /**

@@ -50,8 +50,9 @@
   cursor: pointer;
 }
 
+/* hexagon */
 .map g.groupArea.unselected polygon {
-  fill: none;
+  fill-opacity: 0.05
 }
 
 .map g.item.unselected circle {

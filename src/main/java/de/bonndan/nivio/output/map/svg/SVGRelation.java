@@ -14,6 +14,8 @@ import org.springframework.util.StringUtils;
 import java.awt.geom.Point2D;
 import java.util.Optional;
 
+import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
+import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
 import static de.bonndan.nivio.output.map.svg.SvgTagCreator.g;
 
 /**
@@ -105,7 +107,8 @@ class SVGRelation extends Component {
         g.attr("data-type", type)
                 .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().jsonValue())
                 .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().jsonValue())
-                .attr("class", "relation unselected");
+                .attr(DATA_IDENTIFIER, relation.getIdentifier())
+                .attr("class", "relation " + VISUAL_FOCUS_UNSELECTED);
 
         return g;
     }
