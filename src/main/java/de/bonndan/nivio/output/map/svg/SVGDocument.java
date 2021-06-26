@@ -183,8 +183,6 @@ public class SVGDocument extends Component {
     private SVGRelation getSvgRelation(LayoutedComponent layoutedItem, Item source, Relation rel) {
         Optional<HexPath> bestPath = hexMap.getPath(source, rel.getTarget());
         if (bestPath.isPresent()) {
-            List<StatusValue> statusValues = assessment.getResults().get(source.getFullyQualifiedIdentifier());
-            StatusValue worst = Assessable.getWorst(statusValues);
             SVGRelation svgRelation = new SVGRelation(bestPath.get(), layoutedItem.getColor(), rel, null);
             LOGGER.debug("Added path for item {} relation {} -> {}", source, rel.getSource(), rel.getTarget());
             return svgRelation;
