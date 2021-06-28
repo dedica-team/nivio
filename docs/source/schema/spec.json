@@ -172,24 +172,24 @@
               "$ref" : "#/components/schemas/InterfaceDescription"
             }
           },
-          "providedBy" : {
-            "type" : "array",
-            "description" : "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.",
-            "example" : "shipping-mysqldb",
-            "items" : {
-              "type" : "string",
-              "description" : "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.",
-              "example" : "shipping-mysqldb"
+          "providedBy": {
+            "type": "array",
+            "description": "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.",
+            "example": "shipping-mysqldb",
+            "items": {
+              "type": "string",
+              "description": "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.",
+              "example": "shipping-mysqldb"
             }
           },
-          "icon" : {
-            "type" : "string",
-            "description" : "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work)."
+          "icon": {
+            "type": "string",
+            "description": "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work)."
           },
-          "color" : {
-            "type" : "string",
-            "description" : "Overrides the group color. Use an HTML hex color code without the leading hash.",
-            "example" : "4400FF"
+          "color": {
+            "type": "string",
+            "description": "Overrides the group color. Use an HTML hex color code without the leading hash.",
+            "example": "4400FF"
           },
           "address": {
             "type": "string",
@@ -213,7 +213,7 @@
               "EOL"
             ]
           },
-          "status": {
+          "statuses": {
             "type": "array",
             "description": "A list of statuses that works like hardcoded KPIs.",
             "writeOnly": true,
@@ -226,7 +226,7 @@
               "description": "A list of statuses that works like hardcoded KPIs."
             }
           },
-          "statuses": {
+          "status": {
             "type": "array",
             "description": "A list of statuses that works like hardcoded KPIs.",
             "writeOnly": true,
@@ -391,23 +391,23 @@
               "$ref" : "#/components/schemas/SourceReference"
             }
           },
-          "config" : {
-            "$ref" : "#/components/schemas/LandscapeConfig"
+          "config": {
+            "$ref": "#/components/schemas/LandscapeConfig"
           },
-          "groups" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "$ref" : "#/components/schemas/GroupDescription"
+          "groups": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/GroupDescription"
             },
-            "description" : "Description of item groups (optional, can also be given in sources)."
+            "description": "Description of item groups (optional, can also be given in sources)."
           },
-          "labels" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string",
-              "description" : "Additional labels for the landscape."
+          "labels": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "Additional labels for the landscape."
             },
-            "description" : "Additional labels for the landscape."
+            "description": "Additional labels for the landscape."
           },
           "color": {
             "type": "string"
@@ -415,25 +415,25 @@
           "icon": {
             "type": "string"
           },
-          "items" : {
-            "type" : "array",
-            "description" : "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.",
-            "writeOnly" : true,
-            "items" : {
-              "$ref" : "#/components/schemas/ItemDescription"
+          "partial": {
+            "type": "boolean",
+            "description": "marks that the landscape is not complete, but an update"
+          },
+          "items": {
+            "type": "array",
+            "description": "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.",
+            "writeOnly": true,
+            "items": {
+              "$ref": "#/components/schemas/ItemDescription"
             }
           },
-          "partial" : {
-            "type" : "boolean",
-            "description" : "marks that the landscape is not complete, but an update"
-          },
-          "links" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "$ref" : "#/components/schemas/Link"
+          "links": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Link"
             },
-            "description" : "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
-            "example" : "github: https://github.com/dedica-team/nivio"
+            "description": "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
+            "example": "github: https://github.com/dedica-team/nivio"
           }
         }
       },

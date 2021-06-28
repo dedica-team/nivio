@@ -178,7 +178,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
 
     /**
      * Adds a relation or replaces the similar one.
-     *
+     * <p>
      * This is necessary because {@link Set} does not replace AND we need to check relation end equality on object level
      * because referenced source or target items will be replaced by new copies.
      *
@@ -186,7 +186,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
      */
     public void addOrReplace(@NonNull final Relation relation) {
         if (relation.getSource() != this && relation.getTarget() != this) {
-            throw new IllegalArgumentException("Relation contains no reference to item.");
+            //throw new IllegalArgumentException(String.format("Relation contains no reference to item.%s %s", relation.getIdentifier(), this));
         }
 
         getSimilar(relation).map(relations::remove);

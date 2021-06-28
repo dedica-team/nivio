@@ -1,8 +1,8 @@
 package de.bonndan.nivio.input.kubernetes;
 
-import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.ItemType;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
@@ -90,12 +90,113 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         });
 
         List<Service> services = client.services().list().getItems();
+        List<ItemDescription> itemServices = new ArrayList<>();
         LOGGER.info("Found services: {}", services.stream().map(service -> service.getMetadata().getName()).collect(Collectors.toList()));
         services.stream()
                 .filter(service -> namespace == null || namespace.equals(service.getMetadata().getNamespace()))
-                .forEach(service -> descriptions.add(createDescriptionFromService(service, pods)));
+                .forEach(service -> itemServices.add(createDescriptionFromService(service, pods)));
 
-        landscapeDescription.mergeItems(descriptions);
+        descriptions.addAll(itemServices);
+        //landscapeDescription.mergeItems(descriptions);
+
+        var deployments = getDeployments(client);
+        var replicaSets = getReplicaSets(client);
+        var podList = getPodItems();
+        var serviceList = getServiceItems(client);
+        var statefulSets = getStatefulSet(client);
+
+        var itemList = new ArrayList<Item>();
+        itemList.addAll(deployments);
+        itemList.addAll(replicaSets);
+        itemList.addAll(podList);
+        itemList.addAll(serviceList);
+        itemList.addAll(statefulSets);
+        crossReferenceOwner(itemList);
+        var e = createItemDescription(itemList);
+        landscapeDescription.mergeItems(e);
+    }
+
+    private List<ItemDescription> createItemDescription(List<Item> itemList) {
+        return itemList.stream().map(item -> {
+            var itemDescription = new ItemDescription();
+            itemDescription.setIdentifier(item.getUid());
+            itemDescription.setName(item.getName());
+            itemDescription.setType(item.getType());
+            if (!item.getOwner().isEmpty()) {
+                itemDescription.setOwner(item.getOwner().get(0).getName());
+            }
+            itemDescription.setGroup(item.getGroup());
+            item.getOwner().forEach(owner -> itemDescription.addRelation(new RelationDescription(owner.getUid(), item.getUid())));
+            return itemDescription;
+        }).collect(Collectors.toList());
+    }
+
+    private void crossReferenceOwner(ArrayList<Item> items) {
+        items.forEach(item -> {
+            var owners = new ArrayList<Item>();
+            owners = (ArrayList<Item>) items.stream().filter(item1 -> item.getWrappedItem().getMetadata().getOwnerReferences().stream().map(OwnerReference::getUid).collect(Collectors.toList()).contains(item1.getUid())).collect(Collectors.toList());
+            item.setOwners(owners);
+        });
+    }
+
+    private List<PodItem> getPodItems() {
+        var pods = getPods();
+        return pods.stream().map(pod -> {
+            var podItem = new PodItem();
+            podItem.setType(ItemType.POD);
+            podItem.setPod(pod);
+            podItem.setName(pod.getMetadata().getName());
+            podItem.setUid(pod.getMetadata().getUid());
+            return podItem;
+        }).collect(Collectors.toList());
+    }
+
+    private List<DeploymentItem> getDeployments(KubernetesClient client) {
+        var deploymentList = client.apps().deployments().list().getItems();
+        return deploymentList.stream().map(deployment -> {
+            var deploymentItem = new DeploymentItem();
+            deploymentItem.setType(ItemType.DEPLOYMENT);
+            deploymentItem.setDeployment(deployment);
+            deploymentItem.setName(deployment.getMetadata().getName());
+            deploymentItem.setUid(deployment.getMetadata().getUid());
+            return deploymentItem;
+        }).collect(Collectors.toList());
+    }
+
+    private List<ReplicaSetItem> getReplicaSets(KubernetesClient client) {
+        var replicaSetList = client.apps().replicaSets().list().getItems();
+        return replicaSetList.stream().map(replicaSet -> {
+            var replicaSetItem = new ReplicaSetItem();
+            replicaSetItem.setType(ItemType.REPLICASET);
+            replicaSetItem.setReplicaSet(replicaSet);
+            replicaSetItem.setName(replicaSet.getMetadata().getName());
+            replicaSetItem.setUid(replicaSet.getMetadata().getUid());
+            return replicaSetItem;
+        }).collect(Collectors.toList());
+    }
+
+    private List<ServiceItem> getServiceItems(KubernetesClient client) {
+        var serviceList = client.services().list().getItems();
+        return serviceList.stream().map(service -> {
+            var serviceItem = new ServiceItem();
+            serviceItem.setType(ItemType.SERVICE);
+            serviceItem.setService(service);
+            serviceItem.setName(service.getMetadata().getName());
+            serviceItem.setUid(service.getMetadata().getUid());
+            return serviceItem;
+        }).collect(Collectors.toList());
+    }
+
+    private List<StatefulSetItem> getStatefulSet(KubernetesClient client) {
+        var statefulSetList = client.apps().statefulSets().list().getItems();
+        return statefulSetList.stream().map(statefulSet -> {
+            var statefulSetItem = new StatefulSetItem();
+            statefulSetItem.setType(ItemType.STATEFULSET);
+            statefulSetItem.setStatefulSet(statefulSet);
+            statefulSetItem.setName(statefulSet.getMetadata().getName());
+            statefulSetItem.setUid(statefulSet.getMetadata().getUid());
+            return statefulSetItem;
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -138,21 +239,10 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
 
         ItemDescription service = new ItemDescription();
         service.setIdentifier(kubernetesService.getMetadata().getName());
-        service.setType(kubernetesService.getSpec().getType());
+        service.setType(ItemType.SERVICE);
 
         String group = getGroup(kubernetesService);
         service.setGroup(group);
-
-        String targetId = "";
-        Map<String, String> selector = kubernetesService.getSpec().getSelector();
-        if (selector != null) {
-            targetId = selector.getOrDefault(APP_SELECTOR, null);
-        }
-
-        //TODO, check if this is reliable
-        if (!StringUtils.isEmpty(targetId)) {
-            service.addRelation(new RelationDescription(service.getIdentifier(), targetId));
-        }
 
         //link pods as providers
         pods.stream()
