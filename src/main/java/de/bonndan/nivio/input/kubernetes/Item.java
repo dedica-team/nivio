@@ -4,12 +4,16 @@ import de.bonndan.nivio.input.dto.RelationDescription;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class Item {
     protected String name;
     private String uid;
     private String type;
+
+    private final Map<String, String> status = new HashMap<>();
 
     private final List<Item> owners = new ArrayList<>();
 
@@ -17,6 +21,14 @@ public abstract class Item {
 
     public List<RelationDescription> getRelationDescriptionList() {
         return relationDescriptionList;
+    }
+
+    public Map<String, String> getStatus() {
+        return status;
+    }
+
+    public void addStatus(String key, String value) {
+        status.put(key, value);
     }
 
     public abstract HasMetadata getWrappedItem();

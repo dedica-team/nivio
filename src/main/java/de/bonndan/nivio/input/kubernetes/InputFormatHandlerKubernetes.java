@@ -127,6 +127,9 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
             }
             itemDescription.setGroup(item.getGroup());
             item.getOwner().forEach(owner -> itemDescription.addRelation(new RelationDescription(owner.getUid(), item.getUid())));
+            if (!item.getStatus().isEmpty()) {
+                item.getStatus().forEach((k, v) -> itemDescription.setLabel(Label.condition.withPrefix(k), v));
+            }
             return itemDescription;
         }).collect(Collectors.toList());
     }
@@ -159,6 +162,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
             deploymentItem.setDeployment(deployment);
             deploymentItem.setName(deployment.getMetadata().getName());
             deploymentItem.setUid(deployment.getMetadata().getUid());
+            deployment.getStatus().getConditions().forEach(condition -> deploymentItem.addStatus(condition.getType(), condition.getStatus()));
             return deploymentItem;
         }).collect(Collectors.toList());
     }
