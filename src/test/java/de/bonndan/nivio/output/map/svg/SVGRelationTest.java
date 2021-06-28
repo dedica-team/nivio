@@ -7,12 +7,15 @@ import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
+import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -62,6 +65,7 @@ class SVGRelationTest {
         assertTrue(render1.contains("circle"));
     }
 
+    @Disabled // dataflow has no endpoint marker anymore/yet
     @Test
     public void dataflowRelationsContainsEndpoint() {
 
@@ -93,10 +97,9 @@ class SVGRelationTest {
     }
 
     @Test
-    public void plannedRelationIsDashed() {
-        foo.setLabel(Label.lifecycle, Lifecycle.PLANNED.name());
+    public void dataflowRelationIsDashed() {
 
-        Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
+        Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
 
         //when
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
@@ -105,6 +108,21 @@ class SVGRelationTest {
         //then
         String render1 = render.render();
         assertTrue(render1.contains("stroke-dasharray"));
+    }
+
+    @Test
+    public void supportsVisualFocus() {
+
+        Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
+
+        //when
+        DomContent render = svgRelation.render();
+
+        //then
+        String render1 = render.render();
+        assertThat(render1).contains(DATA_IDENTIFIER);
+        assertThat(render1).contains(VISUAL_FOCUS_UNSELECTED);
     }
 
     @Test

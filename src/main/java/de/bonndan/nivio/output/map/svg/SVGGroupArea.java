@@ -16,6 +16,9 @@ import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
+import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
+
 
 /**
  * Displays a group as an area containing items.
@@ -38,6 +41,29 @@ class SVGGroupArea extends Component {
 
     @NonNull
     private final Point2D.Double anchor;
+
+    /**
+     * Builds an areas of hex tiles belonging to a group.
+     *
+     * @param group       the group
+     * @param inArea      all hex tiles forming an area
+     * @param groupStatus assessment status summary of the group
+     * @param debug       turn on debugging
+     */
+    public static SVGGroupArea forGroup(@NonNull final Group group,
+                                        @NonNull final Set<Hex> inArea,
+                                        @NonNull final StatusValue groupStatus,
+                                        boolean debug
+    ) {
+        var fill = Objects.requireNonNull(group).getColor();
+        var fillId = fill != null ? "#" + fill : "";
+
+        SVGGroupAreaOutlineFactory outlineFactory = new SVGGroupAreaOutlineFactory(SVGGroupAreaOutlineFactory.GroupAreaStyle.HEXES);
+        outlineFactory.setDebug(debug);
+
+        List<DomContent> outlines = outlineFactory.getOutline(inArea, fillId);
+        return new SVGGroupArea(group, inArea, outlines, groupStatus);
+    }
 
     SVGGroupArea(@NonNull final Group group,
                  @NonNull final Set<Hex> groupArea,
@@ -68,31 +94,47 @@ class SVGGroupArea extends Component {
             LOGGER.warn("Empty group fqi in SVG group area, group {}", group);
         }
         return SvgTagCreator.g(territoryHexes.toArray(DomContent[]::new))
+                .with(getLabel())
                 .attr("id", fqi)
-                .attr("data-identifier", fqi)
+                .attr(DATA_IDENTIFIER, fqi)
                 .attr("data-x", anchor.x)
                 .attr("data-y", anchor.y)
-                .attr("class", "groupArea");
+                .attr("class", "groupArea " + VISUAL_FOCUS_UNSELECTED);
     }
 
     /**
      * Creates the group label text element positioned at the anchor (lowest point).
-     *
      */
     @NonNull
     public ContainerTag getLabel() {
+
+        var x = anchor.x;
+        var y = anchor.y + SVGRenderer.DEFAULT_ICON_SIZE * 2;
+        var fontSize = 8;
+        boolean small = group.getItems().size() < 4;
+        if (!small) {
+            fontSize = 16;
+            //calculate center
+            SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(this), Collections.emptyList());
+            x = dimension.cartesian.horMin + (dimension.cartesian.horMax - dimension.cartesian.horMin) / 2f;
+            y = dimension.cartesian.vertMin + (dimension.cartesian.vertMax - dimension.cartesian.vertMin) / 2f;
+            y += SVGRenderer.DEFAULT_ICON_SIZE;
+        }
+
         var fill = group.getColor();
         var fillId = fill != null ? "#" + fill : "";
+        var shadow = "black";
         boolean higherThanGreen = groupStatus.getStatus().isHigherThan(Status.GREEN);
-        if (StringUtils.isEmpty(fillId) || higherThanGreen) {
-            fillId = groupStatus.getStatus().getName();
+        if (higherThanGreen) {
+            shadow = groupStatus.getStatus().getName().toLowerCase(Locale.ROOT);
         }
-        final String text = higherThanGreen? "⚠ " + group.getIdentifier() : group.getIdentifier();
-        return SvgTagCreator.text(text)
-                .attr("x", anchor.x)
-                .attr("y", (int) (anchor.y + SVGRenderer.DEFAULT_ICON_SIZE))
+        return SvgTagCreator.text(group.getIdentifier())
+                .attr("x", x)
+                .attr("y", y)
                 .attr("fill", fillId)
                 .attr("text-anchor", "middle")
+                .attr("text-shadow", "1px 1px 1px " + shadow)
+                .attr("font-size", fontSize + "em")
                 .attr("class", "groupLabel");
     }
 
