@@ -158,14 +158,7 @@ const Changes: React.FC<Props> = ({ notification }) => {
 
   return (
     <Card className={componentClasses.card}>
-      <CardHeader title={'Last change in ' + notification.landscape} action={close} />
-      <CardContent>
-        <Alert severity={notification.level}>
-          {notification.date} {notification.landscape}
-          <br />
-          {notification.message}
-        </Alert>
-      </CardContent>
+      <CardHeader title={'Latest changes in ' + notification.landscape} action={close} />
       <Table aria-label={'changes'} style={{ tableLayout: 'fixed' }}>
         <TableBody>{notification.changelog != null ? changes : null}</TableBody>
       </Table>

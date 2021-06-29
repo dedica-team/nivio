@@ -23,11 +23,11 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     sideBar: {
       position: "absolute",
-      right: 5,
+      right: 0,
       top: 5,
       width: sidebarWidth,
       overflow: "auto",
-      maxHeight: "calc(100vh - 100px)",
+      maxHeight: "calc(100vh - 50px)",
       zIndex: 5000
     },
 

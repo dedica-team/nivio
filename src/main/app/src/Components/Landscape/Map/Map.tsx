@@ -41,6 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
       cursor: 'pointer',
       zIndex: 1000,
       left: 20,
+      top: 20,
       backgroundColor: darken(theme.palette.primary.main, 0.2),
     },
   })
@@ -79,7 +80,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const { identifier } = useParams<{ identifier: string }>();
 
   const [isFirstRender, setIsFirstRender] = useState(true);
-  const [isZoomed, setIsZoomed] = useState<Boolean>(false);
+  const [isZoomed, setIsZoomed] = useState<boolean>(false);
 
   const locateFunctionContext = useContext(LocateFunctionContext);
   const landscapeContext = useContext(LandscapeContext);
@@ -240,7 +241,6 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       visualFocus.classList.add('selected');
       visualFocus.classList.remove('unselected');
     });
-
   }, [visualFocus, data]);
 
   /**
@@ -341,7 +341,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
             <ReactSVGPanZoom
               key={'panzoom'}
               width={window.innerWidth}
-              height={window.innerHeight * 0.92}
+              height={window.innerHeight - 50}
               background={'transparent'}
               miniatureProps={{
                 position: 'none',

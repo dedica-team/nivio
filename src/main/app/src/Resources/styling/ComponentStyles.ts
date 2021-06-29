@@ -7,12 +7,12 @@ const componentStyles = makeStyles((theme: Theme) =>
       margin: 5,
       marginTop: 0,
       padding: 0,
-      backgroundColor: darken(theme.palette.primary.main, 0.3),
+      //backgroundColor: darken(theme.palette.primary.main, 0.3),
       flexShrink: 0,
       overflowY: 'hidden',
     },
     cardHeader: {
-      backgroundColor: theme.palette.primary.main,
+      //backgroundColor: theme.palette.primary.main,
       padding: 10,
     },
     cardSubheader: {
@@ -26,18 +26,10 @@ const componentStyles = makeStyles((theme: Theme) =>
       height: '2rem',
       display: 'inline-block',
     },
-    menuButton: {
-      borderWidth: 1,
-      borderStyle: 'solid',
-      borderColor: theme.palette.primary.main,
-      height: '2.1rem !important',
-      width: '2.1rem !important',
-      marginLeft: '0.5rem'
-    },
     navigationButton: {
       borderWidth: 1,
-      borderStyle: 'solid',
-      borderColor: theme.palette.secondary.main,
+      //borderStyle: 'solid',
+      //borderColor: theme.palette.secondary.dark,
       height: '2.1rem !important',
       width: '2.1rem !important',
       marginLeft: '0.5rem'

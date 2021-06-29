@@ -6,8 +6,8 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     box: {
       padding: 2,
-      borderRadius: 50,
-      backgroundColor: theme.palette.primary.main,
+      borderRadius: 5,
+      backgroundColor: theme.palette.secondary.dark,
       display: 'flex',
       justifyContent: 'center'
     },
@@ -15,42 +15,41 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: 'green',
       width: 15,
       height: 15,
-      border: '2px solid grey',
+      marginRight: 1,
       borderRadius: 50,
     },
     yellow: {
       backgroundColor: 'yellow',
       width: 15,
       height: 15,
-      border: '2px solid grey',
+      marginRight: 1,
       borderRadius: 50,
     },
     orange: {
       backgroundColor: 'orange',
       width: 15,
       height: 15,
-      border: '2px solid grey',
+      marginRight: 1,
       borderRadius: 50,
     },
     red: {
       backgroundColor: 'red',
       width: 15,
       height: 15,
-      border: '2px solid grey',
+      marginRight: 1,
       borderRadius: 50,
     },
     brown: {
       backgroundColor: 'brown',
       width: 15,
       height: 15,
-      border: '2px solid grey',
       borderRadius: 50,
     },
     none: {
       backgroundColor: '#666',
       width: 15,
       height: 15,
-      border: '2px solid grey',
+      marginRight: 1,
       borderRadius: 50,
     },
   })
