@@ -1,13 +1,5 @@
-import React, { useContext } from 'react';
-import {
-  Card,
-  CardHeader,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Tooltip,
-} from '@material-ui/core';
+import React, { useContext, useState } from 'react';
+import { Card, CardHeader, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import { IItem, IRelation } from '../../../../interfaces';
 import Typography from '@material-ui/core/Typography';
@@ -15,7 +7,8 @@ import IconButton from '@material-ui/core/IconButton';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import ItemAvatar from '../../Modals/Item/ItemAvatar';
-import Chip from '@material-ui/core/Chip';
+import { Close, HelpRounded } from '@material-ui/icons';
+import { LandscapeContext } from '../../../../Context/LandscapeContext';
 
 interface Props {
   source: IItem;
@@ -29,27 +22,50 @@ interface Props {
  */
 const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
   const classes = componentStyles();
+
+  const [visible, setVisible] = useState<boolean>(true);
+  const locateFunctionContext = useContext(LocateFunctionContext);
+  const landscapeContext = useContext(LandscapeContext);
+
+  if (!visible) return null;
+
   const sourceTitle = source.name || source.identifier;
   const targetTitle = target.name || target.identifier;
-  const title = sourceTitle + ' -> ' + targetTitle;
-
-  const locateFunctionContext = useContext(LocateFunctionContext);
+  const title = sourceTitle + ' to ' + targetTitle;
+  const sourceStatus = landscapeContext.getAssessmentSummary(source.fullyQualifiedIdentifier);
+  const targetStatus = landscapeContext.getAssessmentSummary(target.fullyQualifiedIdentifier);
 
   return (
     <Card className={classes.card}>
-      <CardHeader title={title} className={classes.cardHeader} subheader={'Relation'} />
+      <CardHeader
+        title={title}
+        className={classes.cardHeader}
+        subheader={'Relation'}
+        action={
+          <IconButton
+            size={'small'}
+            onClick={() => {
+              setVisible(false);
+            }}
+          >
+            <Close />
+          </IconButton>
+        }
+      />
       <CardContent>
         <Table aria-label={'info table'} style={{ tableLayout: 'fixed' }}>
           <TableBody>
             <TableRow key={'Type'}>
               <TableCell style={{ width: '33%' }}>Type</TableCell>
               <TableCell>
-                <Tooltip
-                  disableHoverListener
-                  title='A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
+                {relation.type}
+                <span
+                  title={
+                    'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
+                  }
                 >
-                  <Chip variant='outlined' size='small' label={relation.type} />
-                </Tooltip>
+                  <HelpRounded />
+                </span>
               </TableCell>
             </TableRow>
 
@@ -74,7 +90,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
             size={'small'}
             title={'Click to locate'}
           >
-            <ItemAvatar item={source} statusColor={''} />
+            <ItemAvatar item={source} statusColor={sourceStatus?.status || ''} />
           </IconButton>
 
           {sourceTitle}
@@ -89,7 +105,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
             size={'small'}
             title={'Click to locate'}
           >
-            <ItemAvatar item={target} statusColor={''} />
+            <ItemAvatar item={target} statusColor={targetStatus?.status || ''} />
           </IconButton>
 
           {targetTitle}

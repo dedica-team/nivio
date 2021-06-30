@@ -9,7 +9,6 @@ import React, {
 import { useParams } from 'react-router-dom';
 
 import { SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
-import { fitToViewer, ReactSVGPanZoom, Tool, TOOL_AUTO, Value } from 'react-svg-pan-zoom';
 
 import './Map.css';
 
@@ -20,21 +19,28 @@ import { ReactSvgPanZoomLoaderXML } from './ReactSVGPanZoomLoaderXML';
 import Item from '../Modals/Item/Item';
 import { getGroup, getItem } from '../Utils/utils';
 import Group from '../Modals/Group/Group';
-//import MapUtils from './MapUtils';
 import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import IconButton from '@material-ui/core/IconButton';
 import { createStyles, darken, Theme } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { LandscapeContext } from '../../../Context/LandscapeContext';
+import { getApproximateCenterCoordinates, getCorrected } from './MapUtils';
+import {
+  fitToViewer,
+  ReactSVGPanZoom,
+  setPointOnViewerCenter,
+  TOOL_AUTO,
+  Value,
+} from 'react-svg-pan-zoom';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     menuIcon: {
       position: 'absolute',
       cursor: 'pointer',
-      top: '70px',
       zIndex: 1000,
+      left: 20,
       backgroundColor: darken(theme.palette.primary.main, 0.2),
     },
   })
@@ -48,6 +54,7 @@ interface Props {
 interface SVGData {
   width: number;
   height: number;
+  viewBox: SVGRect;
   xml: string;
 }
 
@@ -59,7 +66,6 @@ interface SVGData {
  * @param setPageTitle can be used to set the page title in parent state
  */
 const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
-  const [tool, setTool] = useState<Tool>(TOOL_AUTO);
   const classes = useStyles();
   // It wants a value or null but if we defined it as null it throws an error that shouldn't use null
   // In their own documentation, they initialize it with {}, but that will invoke a typescript error
@@ -76,33 +82,50 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const locateFunctionContext = useContext(LocateFunctionContext);
   const landscapeContext = useContext(LandscapeContext);
 
-  const locateComponent = useCallback((fullyQualifiedItemIdentifier: string) => {
-    const element = document.getElementById(fullyQualifiedItemIdentifier);
-    if (element) {
-      let dataX = element.getAttribute('data-x');
-      let dataY = element.getAttribute('data-y');
-      if (dataX && dataY) {
-        //const coords = MapUtils.getCenterCoordinates(value, dataX, dataY);
-        //setValue(setPointOnViewerCenter(value, coords.x, coords.y, 1));
-        setRenderWithTransition(true);
-        setHighlightElement(element);
+  const locateComponent = useCallback(
+    (fullyQualifiedItemIdentifier: string) => {
+      const element = document.getElementById(fullyQualifiedItemIdentifier);
+      if (element) {
+        let dataX = Number(element.getAttribute('data-x'));
+        let dataY = Number(element.getAttribute('data-y'));
+        if (dataX && dataY && data) {
+          const coords = getApproximateCenterCoordinates(
+            data.viewBox,
+            data.width,
+            data.height,
+            dataX,
+            dataY
+          );
+
+          setValue(setPointOnViewerCenter(value, coords.x, coords.y, 0.5));
+          setRenderWithTransition(true);
+          setHighlightElement(element);
+          setIsZoomed(true);
+        }
       }
-    }
-  }, []);
+    },
+    [data, value]
+  );
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
     const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
     if (fullyQualifiedItemIdentifier && landscapeContext.landscape) {
       let item = getItem(landscapeContext.landscape, fullyQualifiedItemIdentifier);
-      if (item) setSidebarContent(<Item key={fullyQualifiedItemIdentifier} useItem={item} />);
+      if (item)
+        setSidebarContent(
+          <Item
+            fullyQualifiedItemIdentifier={item.fullyQualifiedIdentifier}
+            key={`item_${item.fullyQualifiedIdentifier}_${Math.random()}`}
+          />
+        );
     }
   };
 
   const onGroupClick = (e: MouseEvent<HTMLElement>) => {
-    const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
-    if (fullyQualifiedItemIdentifier && landscapeContext.landscape) {
-      let group = getGroup(landscapeContext.landscape, fullyQualifiedItemIdentifier);
-      if (group) setSidebarContent(<Group group={group} />);
+    const fqi = e.currentTarget.getAttribute('data-identifier');
+    if (fqi && landscapeContext.landscape) {
+      let group = getGroup(landscapeContext.landscape, fqi);
+      if (group) setSidebarContent(<Group group={group} key={`group_${fqi}_${Math.random()}`} />);
     }
   };
 
@@ -115,8 +138,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       sourceElement = document.getElementById(dataSource);
       source = getItem(landscapeContext.landscape, dataSource);
       if (sourceElement) {
-        sourceX = sourceElement.getAttribute('data-x');
-        sourceY = sourceElement.getAttribute('data-y');
+        sourceX = Number(sourceElement.getAttribute('data-x'));
+        sourceY = Number(sourceElement.getAttribute('data-y'));
       }
     }
 
@@ -126,34 +149,37 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       targetElement = document.getElementById(dataTarget);
       target = getItem(landscapeContext.landscape, dataTarget);
       if (targetElement) {
-        targetX = targetElement.getAttribute('data-x');
-        targetY = targetElement.getAttribute('data-y');
+        targetX = Number(targetElement.getAttribute('data-x'));
+        targetY = Number(targetElement.getAttribute('data-y'));
       }
     }
 
     setHighlightElement(e.currentTarget.children);
     setRenderWithTransition(true);
-    if (sourceX && sourceY && targetX && targetY) {
-      sourceX = parseFloat(sourceX) / 2;
-      targetX = parseFloat(targetX) / 2;
-      sourceY = parseFloat(sourceY) / 2;
-      targetY = parseFloat(targetY) / 2;
 
-      /*
-      const x = (sourceX + targetX) / 2;
-      const y = (sourceY + targetY) / 2;
+    if (data && sourceX && sourceY && targetX && targetY) {
+      const minX = Math.min(sourceX, targetX);
+      const minY = Math.min(sourceY, targetY);
 
-      const zoomWidth = Math.abs(Math.min(sourceX, targetX)) + window.innerWidth;
-      const zoomHeight = Math.abs(Math.min(sourceY, targetY)) + window.innerHeight * 0.92;
-
-       */
-
-      //setValue(fitSelection(value, x - 500, y, zoomWidth, zoomHeight));
+      let centerX = minX + (Math.max(sourceX, targetX) - minX) / 2;
+      const correctedX = getCorrected(data.viewBox.x, centerX, data.width);
+      let centerY = minY + (Math.max(sourceY, targetY) - minY) / 2;
+      const correctedY = getCorrected(data.viewBox.y, centerY, data.height);
+      setValue(setPointOnViewerCenter(value, correctedX, correctedY, 0.3));
+      setIsZoomed(true);
     }
 
     if (source && target && dataTarget) {
-      let relation = source.relations[source.fullyQualifiedIdentifier + ';' + dataTarget];
-      setSidebarContent(<MapRelation relation={relation} source={source} target={target} />);
+      const relId = source.fullyQualifiedIdentifier + ';' + dataTarget;
+      let relation = source.relations[relId];
+      setSidebarContent(
+        <MapRelation
+          relation={relation}
+          source={source}
+          target={target}
+          key={`relation_${relId}_${Math.random()}`}
+        />
+      );
     }
   };
 
@@ -165,7 +191,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       const doc: any = parser.parseFromString(svg, 'image/svg+xml');
       const width = doc.firstElementChild.width.baseVal.value;
       const height = doc.firstElementChild.height.baseVal.value;
-      setData({ width: width, height: height, xml: svg });
+      const viewBox: SVGRect = doc.firstElementChild.viewBox.baseVal;
+      setData({ width: width, height: height, viewBox: viewBox, xml: svg });
     });
   }, [identifier, setData]);
 
@@ -240,8 +267,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
   if (data) {
     if (isFirstRender && value.a != null) {
-      // @ts-ignore
-      setValue(fitToViewer(value, 'center', 'center'));
+      setValue(fitToViewer(value));
       setIsFirstRender(false);
     }
 
@@ -300,10 +326,10 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
               onZoom={() => {
                 setIsZoomed(true);
               }}
-              tool={tool}
-              onChangeTool={(newTool) => setTool(newTool)}
+              tool={TOOL_AUTO}
+              onChangeValue={(newValue: Value) => setValue(newValue)}
+              onChangeTool={() => {}}
               value={value}
-              onChangeValue={(newValue) => setValue(newValue)}
               className={`ReactSVGPanZoom ${renderWithTransition ? 'with-transition' : ''}`}
             >
               <svg width={data?.width} height={data?.height}>

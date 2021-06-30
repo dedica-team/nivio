@@ -1,12 +1,14 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.LandscapeSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
@@ -30,14 +32,14 @@ class StartupListenerTest {
     }
 
     @Test
-    public void fires() {
+    public void fires() throws MalformedURLException {
 
         //given
         seed = new Seed(Optional.of("https://dedica.team"));
         startupListener = new StartupListener(factory, publisher, seed);
 
         LandscapeDescription landscapeDescription = new LandscapeDescription("foo", "bar", null);
-        landscapeDescription.setSource("https://dedica.team");
+        landscapeDescription.setSource(new LandscapeSource(new URL("https://dedica.team")));
         when(factory.from(any(URL.class))).thenReturn(landscapeDescription);
 
 

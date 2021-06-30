@@ -2,7 +2,6 @@ package de.bonndan.nivio.search;
 
 import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
@@ -16,20 +15,27 @@ import org.apache.lucene.facet.taxonomy.FastTaxonomyFacetCounts;
 import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyReader;
 import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyWriter;
-import org.apache.lucene.index.*;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MatchAllDocsQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,26 +57,33 @@ public class SearchIndex {
     /**
      * Creates a new empty index.
      */
-    public SearchIndex() {
+    public SearchIndex(@NonNull final String identifier) {
 
         //init lucene
-        searchIndex = new RAMDirectory();
-        taxoIndex = new RAMDirectory();
+        try {
+            var tmpdir = System.getProperty("java.io.tmpdir");
+            var fsSafeIdentifier = StringUtils.trimTrailingCharacter(identifier.replaceAll("[^0-9a-fA-F]", "_"), File.separatorChar);
+            searchIndex = new MMapDirectory(Path.of(tmpdir, "nivio-document-index", fsSafeIdentifier));
+            taxoIndex = new MMapDirectory(Path.of(tmpdir, "nivio-facet-index", fsSafeIdentifier));
+        } catch (IOException e) {
+            LOGGER.error(String.format("Failed to create search index: %s", e.getMessage()));
+            throw new SearchIndexCreationException("Failed to create search index.", e);
+        }
     }
 
     /**
+     * Index a landscape.
      *
-     * @param landscape
-     * @param assessment
+     * @param landscape  the landscape to index
+     * @param assessment the current assessment (status are indexed, too)
      */
-    public void indexForSearch(Landscape landscape, Assessment assessment) {
-        Set<Item> items = landscape.getItems().all();
-        indexItems(items, assessment.getResults());
+    public void indexForSearch(@NonNull final Landscape landscape, @NonNull final Assessment assessment) {
+        Set<Item> items = Objects.requireNonNull(landscape).getItems().all();
+        indexItems(items, Objects.requireNonNull(assessment).getResults());
     }
 
     /**
      * Creates a search index based in a snapshot of current items state (later modifications won't be shown).
-     *
      */
     private void indexItems(Set<Item> items, Map<FullyQualifiedIdentifier, List<StatusValue>> results) {
         try {

@@ -9,12 +9,13 @@ import com.googlecode.cqengine.query.parser.common.InvalidQueryException;
 import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.ItemComponent;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Type;
@@ -32,7 +33,7 @@ import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
  * TODO the API is too wide
  * TODO cqengine based search could be replaced completely by lucene if SQL-like queries were not used and items were kept in a hashmap
  */
-public class ItemIndex<T extends Component> {
+public class ItemIndex<T extends ItemComponent> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ItemIndex.class);
     public static final String CQE_FIELD_FQI = "fqi";
@@ -54,7 +55,7 @@ public class ItemIndex<T extends Component> {
     /**
      * See {@link #CQE_ATTR_FQI}
      */
-    @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef"})
+    @SuppressWarnings({"Convert2Lambda"})
     private final Attribute<T, String> CQE_ATTR_IDENTIFIER = attribute("identifier", new SimpleFunction<>() {
         @Override
         public String apply(T item) {
@@ -65,7 +66,7 @@ public class ItemIndex<T extends Component> {
     /**
      * See {@link #CQE_ATTR_FQI}
      */
-    @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef"})
+    @SuppressWarnings({"Convert2Lambda"})
     private final Attribute<T, String> CQE_ATTR_NAME = attribute("name", new SimpleFunction<>() {
         @Override
         public String apply(T item) {
@@ -76,7 +77,7 @@ public class ItemIndex<T extends Component> {
     /**
      * See {@link #CQE_ATTR_FQI}
      */
-    @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef"})
+    @SuppressWarnings({"Convert2Lambda"})
     private final Attribute<T, String> CQE_ATTR_ADDRESS = attribute("address", new SimpleFunction<>() {
         @Override
         public String apply(T item) {
@@ -187,7 +188,7 @@ public class ItemIndex<T extends Component> {
         }
 
         return find(identifier, group).orElseThrow(() ->
-                new RuntimeException(String.format("Element '%s' not found  in collection.", identifier))
+                new RuntimeException(String.format("Element '%s' not found  in collection %s.", identifier , all()))
         );
     }
 
@@ -240,11 +241,64 @@ public class ItemIndex<T extends Component> {
         return findAll(ItemMatcher.build(null, group, identifier));
     }
 
-    private List<T> findAll(ItemMatcher itemMatcher) {
+    /**
+     * Find all items matching the given matcher.
+     *
+     * @param itemMatcher the search criteria
+     * @return list of results
+     */
+    public List<T> findAll(@NonNull final ItemMatcher itemMatcher) {
+        Objects.requireNonNull(itemMatcher, "ItemMatcher is null");
         return itemStream()
                 .filter(item -> itemMatcher.isSimilarTo(item.getFullyQualifiedIdentifier()))
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Finds all items matching the given term.
+     *
+     * First tries an {@link ItemMatcher} and then falls back to a regular query.
+     *
+     * @param term preferably string representation of an FQI, or a simple identifier
+     * @return all matched items
+     */
+    public List<T> findBy(@NonNull final String term) {
+        Objects.requireNonNull(term);
+
+        return ItemMatcher.forTarget(term)
+                .map(this::findAll)
+                .orElseGet(() -> new ArrayList<>(query(term)));
+    }
+
+    /**
+     * Returns one distinct item for a query term.
+     *
+     * @param term  search term
+     * @param group optional group to narrow
+     * @return the matched item
+     * @throws NoSuchElementException if not exactly one item could be determined
+     */
+    public T findOneBy(@NonNull final String term, @Nullable final String group) {
+        List<T> items = findBy(term);
+        if (items == null || items.isEmpty()) {
+            throw new NoSuchElementException("Could not extract distinct item from empty list");
+        }
+
+        if (items.size() == 1) {
+            return items.get(0);
+        }
+
+        if (group == null) {
+            throw new NoSuchElementException("Could not extract distinct item from ambiguous result without group: " + items);
+        }
+
+        return firstWithGroup(items, group).orElseThrow(() -> new NoSuchElementException("Could not extract distinct item from ambiguous result: " + items));
+    }
+
+    public Optional<T> firstWithGroup(Collection<T> items, String group) {
+        return items.stream().filter(item -> group.equalsIgnoreCase(item.getGroup())).findFirst();
+    }
+
 
     public void remove(T item) {
         index.remove(item);

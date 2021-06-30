@@ -44,6 +44,9 @@ public class LinksResolver extends Resolver {
             CompletableFuture.allOf(completableFutures.toArray(CompletableFuture[]::new)).get(2, TimeUnit.MINUTES);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             processLog.error(new ProcessingException("Failed to complete all external data resolvers", e));
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 

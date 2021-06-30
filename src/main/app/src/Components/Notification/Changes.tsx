@@ -9,7 +9,7 @@ import ItemAvatar from '../Landscape/Modals/Item/ItemAvatar';
 import componentStyles from '../../Resources/styling/ComponentStyles';
 import { LocateFunctionContext } from '../../Context/LocateFunctionContext';
 import GroupAvatar from '../Landscape/Modals/Group/GroupAvatar';
-import { LinkOutlined } from '@material-ui/icons';
+import { Close, LinkOutlined } from '@material-ui/icons';
 import Button from '@material-ui/core/Button';
 
 interface Props {
@@ -26,6 +26,17 @@ const Changes: React.FC<Props> = ({ notification }) => {
   const componentClasses = componentStyles();
   const [changes, setChanges] = useState<ReactElement[]>([]);
   const locateFunctionContext = useContext(LocateFunctionContext);
+  const [visible, setVisible] = useState<boolean>(true);
+
+  const close = (
+    <IconButton
+      onClick={() => {
+        setVisible(false);
+      }}
+    >
+      <Close />
+    </IconButton>
+  );
 
   /**
    * render changes, calling api for component info
@@ -143,9 +154,11 @@ const Changes: React.FC<Props> = ({ notification }) => {
     }
   }, [notification, componentClasses.card, locateFunctionContext]);
 
+  if (!visible) return null;
+
   return (
     <Card className={componentClasses.card}>
-      <CardHeader title={'Changes in ' + notification.landscape} />
+      <CardHeader title={'Last change in ' + notification.landscape} action={close} />
       <CardContent>
         <Alert severity={notification.level}>
           {notification.date} {notification.landscape}

@@ -1,8 +1,7 @@
 import React from 'react';
-import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Theme } from '@material-ui/core';
+import { Box, Theme } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -10,10 +9,21 @@ const useStyles = makeStyles((theme: Theme) =>
       marginBottom: 5,
       marginRight: 5,
       maxWidth: '100%',
-      textShadow: 'none',
       fontFamily: 'monospace',
-      backgroundColor: theme.palette.primary.dark,
+      backgroundColor: theme.palette.primary.main,
       color: 'white',
+    },
+    box: {
+      marginRight: 5,
+      padding: 2,
+      borderRadius: 5,
+      textAlign: 'center',
+      width: '4rem',
+      maxWidth: '100%',
+      fontFamily: 'monospace',
+      backgroundColor: theme.palette.primary.main,
+      color: 'white',
+      fontSize: 'x-small'
     },
     green: {
       backgroundColor: 'green',
@@ -27,6 +37,9 @@ const useStyles = makeStyles((theme: Theme) =>
     red: {
       backgroundColor: 'red',
     },
+    brown: {
+      backgroundColor: 'brown',
+    },
   })
 );
 
@@ -37,14 +50,14 @@ interface Props {
   style?: any;
 }
 
-const StatusChip: React.FC<Props> = ({ name, value, status, style }) => {
+const StatusChip: React.FC<Props> = ({ name, value, status}) => {
   const classes: Record<string, any> = useStyles();
   let letter = '?';
   if (status.toLowerCase() === 'green') letter = '✓';
-  if (status.toLowerCase() === 'yellow') letter = '';
-  if (status.toLowerCase() === 'orange') letter = '*';
-  if (status.toLowerCase() === 'red') letter = '!';
-  if (status.toLowerCase() === 'brown') letter = '!!';
+  if (status.toLowerCase() === 'yellow') letter = '*';
+  if (status.toLowerCase() === 'orange') letter = '!';
+  if (status.toLowerCase() === 'red') letter = '⚠';
+  if (status.toLowerCase() === 'brown') letter = '☠';
 
   let label = name || '';
   if (value != null && value !== 'null') {
@@ -53,14 +66,10 @@ const StatusChip: React.FC<Props> = ({ name, value, status, style }) => {
     label += value;
   }
   return (
-    <Chip
-      style={style}
-      size={'small'}
-      className={classes.chip}
-      avatar={<Avatar className={classes[status.toLowerCase()]}>{letter}</Avatar>}
-      label={label}
-      title={label}
-    />
+    <Box style={{float: 'left'}} className={classes.box}>
+      <Avatar className={classes[status.toLowerCase()]} style={{margin: 'auto'}}>{letter}</Avatar>
+      {label}
+    </Box>
   );
 };
 

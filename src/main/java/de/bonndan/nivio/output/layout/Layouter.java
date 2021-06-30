@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.Landscape;
+import org.springframework.lang.NonNull;
 
 /**
  * Layouts / arranges landscapes.
@@ -15,5 +16,5 @@ public interface Layouter<T> {
      * @param landscape landscape impl
      * @return an artifact
      */
-    LayoutedComponent layout(Landscape landscape);
+    LayoutedComponent layout(@NonNull final Landscape landscape);
 }

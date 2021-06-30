@@ -57,7 +57,10 @@ Custom KPIs
 
 Custom KPIs can be configured in the landscape config using ranges and/or matchers (regular expressions) and applied to everything having labels.
 In the example below a KPI ``monthlyCosts`` is defined, using ranges on the label ``costs``, and the KPI ``myEval`` evaluates a
-label ``foo``. Both ranges (inclusive lower and upper limits) and matchers are separated by semicolon.
+label ``foo``.
+
+* Both ranges (inclusive lower and upper limits) and matchers are separated by semicolon.
+* The displayed message can be customized by a template. The placeholder for the value is '%s'.
 
 .. code-block:: yaml
    :linenos:
@@ -70,6 +73,7 @@ label ``foo``. Both ranges (inclusive lower and upper limits) and matchers are s
         monthlyCosts:
           description: Evaluates the monthly maintenance costs
           label: costs
+          messageTemplate: "Monthly costs: $%s"
           ranges:
             GREEN: 0;99.999999
             YELLOW: 100;199.999999

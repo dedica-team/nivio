@@ -24,8 +24,10 @@ public interface Component {
 
     /**
      * A human readable and/or well known name.
+     *
+     * Can be null in DTOs.
      */
-    @NonNull
+    @Nullable
     String getName();
 
     /**

@@ -1,34 +1,34 @@
-import { Value } from 'react-svg-pan-zoom';
-
-const MapUtils = {
-  /**
-   * Calculates the proper center coordinates to focus an item.
-   *
-   * @param value svg viewer context
-   * @param dataX x coordinate attribute of element
-   * @param dataY y coordinate attribute of element
-   */
-  getCenterCoordinates: (value: Value, dataX: string, dataY: string): { x: number; y: number } => {
-    const drawerWidth = 320;
-    const halfWidth = value.viewerWidth / 2;
-    let x = parseFloat(dataX);
-    if (x < halfWidth) {
-      x = halfWidth - drawerWidth;
-    }
-    if (x > value.SVGWidth - halfWidth) {
-      x = value.SVGWidth - halfWidth + drawerWidth;
-    }
-
-    const halfHeight = value.viewerHeight / 2;
-    let y = parseFloat(dataY);
-    if (y < halfHeight) {
-      y = halfHeight;
-    }
-    if (y > value.SVGHeight - halfHeight) {
-      y = value.SVGHeight - halfHeight;
-    }
-    return { x: x, y: y };
-  },
+/**
+ *
+ * @param lowerBound viewbox x or y
+ * @param coordinate original item x or y coordinate on the map
+ * @param dimension total width or height
+ */
+export const getCorrected = (lowerBound: number, coordinate: number, dimension: number): number => {
+  let correction = 0;
+  //if in first half we subtract the viewbox offset
+  if (coordinate < dimension / 2) {
+    if (lowerBound < 0) correction = (lowerBound / 2) * -1;
+    //if in second half we add some viewbox offset depending on the relative position to center
+  } else {
+    let factor = (dimension - coordinate) / dimension;
+    correction = (lowerBound / 2) * -1 * factor;
+  }
+  return coordinate + correction;
 };
 
-export default MapUtils;
+/**
+ * This is a naive approach to work around #438
+ *
+ */
+export const getApproximateCenterCoordinates = (
+  viewBox: SVGRect,
+  width: number,
+  height: number,
+  dataX: number,
+  dataY: number
+): { x: number; y: number } => {
+  dataX = getCorrected(viewBox.x, dataX, width);
+  dataY = getCorrected(viewBox.y, dataY, height);
+  return { x: dataX, y: dataY };
+};

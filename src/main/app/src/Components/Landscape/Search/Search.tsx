@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { Box, Input, InputAdornment, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
-import { IItem, Routes } from '../../../interfaces';
-import { matchPath, RouteComponentProps, withRouter } from 'react-router-dom';
+import { IFacet, IItem } from '../../../interfaces';
 import Item from '../Modals/Item/Item';
 import { Backspace, Close, SearchOutlined } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
@@ -13,6 +12,9 @@ import HelpTooltip from '../../Help/HelpTooltip';
 import Facets from './Facets';
 import Typography from '@material-ui/core/Typography';
 import SearchHelp from './Help';
+import { withBasePath } from '../../../utils/API/BasePath';
+import { SaveSearchConfig } from './SaveSearchConfig';
+import { LandscapeContext } from '../../../Context/LandscapeContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,32 +36,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface PropsInterface extends RouteComponentProps {
+interface PropsInterface {
   setSidebarContent: Function;
   showSearch: Function;
 }
 
-interface IFacet {
-  dim: string;
-  path: [];
-  value: number;
-  childCount: number;
-  labelValues: ILabelValue[];
-}
-
-interface ILabelValue {
-  label: string;
-  value: number;
-}
-
-const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...props }) => {
-  const match: { params?: { identifier?: string } } | null = matchPath(props.location.pathname, {
-    path: Routes.MAP_ROUTE,
-    exact: false,
-    strict: false,
-  });
-
-  const identifier = match?.params?.identifier;
+const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => {
   const [currentLandscape, setCurrentLandscape] = useState<string>('');
   const [results, setResults] = useState<IItem[]>([]);
   const [facets, setFacets] = useState<IFacet[]>([]);
@@ -69,6 +51,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
   const classes = useStyles();
   const componentClasses = componentStyles();
   const searchInput = React.useRef<HTMLDivElement>(null);
+  const landscapeContext = useContext(LandscapeContext);
 
   /**
    * Search on search term change, set results.
@@ -78,7 +61,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
 
     get(
       '/api/landscape/' +
-        identifier +
+        landscapeContext.identifier +
         '/search/' +
         encodeURIComponent(searchTerm)
           .replace(/[!'()]/g, escape)
@@ -90,31 +73,57 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
       .catch((reason) => {
         console.warn(reason);
       });
-  }, [searchTerm, identifier]);
+  }, [searchTerm, landscapeContext.identifier]);
 
   /**
-   * Initial loading of facets
+   * loading of facets
+   *
+   * also depends on assessments
    */
   useEffect(() => {
-    const addFacet = (dim: string, label: string) => {
+    const addFacet = (dim: string, label: string): string => {
       let current = searchInput.current;
-      if (!current) return;
-      if (searchTerm.indexOf(dim + ':' + label) === -1) {
-        setSearchTerm(searchTerm + ' ' + dim + ':' + label);
-        setRender(true);
+      if (current && dim.length && label.length) {
+        if (searchTerm.indexOf(dim + ':' + label) === -1) {
+          if (label.indexOf(' ') !== -1) {
+            label = `"${label}"`; //to handle whitespace
+          }
+          setSearchTerm(`${searchTerm} ${dim}:${label}`);
+          setRender(true);
+        }
+        current.focus();
       }
-      current.focus();
+
+      return searchTerm;
     };
 
-    setSearchSupport(<Facets facets={facets} addFacet={addFacet} />);
-  }, [setSearchSupport, searchTerm, facets, componentClasses.card]);
+    const saveSearch = (config: SaveSearchConfig): void => {
+      if (!currentLandscape) return;
+
+      const urlSearchParams = new URLSearchParams();
+      urlSearchParams.set('searchTerm', searchTerm);
+      if (config.title) {
+        urlSearchParams.set('title', config.title);
+      }
+      const reportUrl = withBasePath(
+        '/docs/' + currentLandscape + '/owners.html?' + urlSearchParams.toString()
+      );
+      window.open(reportUrl, '_blank');
+    };
+
+    setSearchSupport(<Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />);
+  }, [setSearchSupport, searchTerm, facets, componentClasses.card, currentLandscape]);
 
   /**
    * Update rendered search results
    */
   useEffect(() => {
     const searchResult = results.map((value1: IItem) => (
-      <Item small={true} key={value1.fullyQualifiedIdentifier} useItem={value1} />
+      <Item
+        small={true}
+        key={`item_${value1.fullyQualifiedIdentifier}_${Math.random()}`}
+        fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier}
+      />
     ));
     setSidebarContent(<>{searchResult}</>);
   }, [results, setSidebarContent, render]);
@@ -138,19 +147,17 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
   }
 
   useEffect(() => {
-    if (facets.length === 0) {
-      loadFacets(identifier);
-    }
-  }, [identifier, facets]);
+    if (landscapeContext.identifier) loadFacets(landscapeContext.identifier);
+  }, [landscapeContext.identifier, landscapeContext.assessment]);
 
-  if (identifier == null) {
+  if (landscapeContext.identifier == null) {
     return null;
   }
 
-  if (currentLandscape == null || currentLandscape !== identifier) {
+  if (currentLandscape == null || currentLandscape !== landscapeContext.identifier) {
     setFacets([]);
     setSearchTerm('');
-    setCurrentLandscape(identifier);
+    setCurrentLandscape(landscapeContext.identifier);
   }
 
   return (
@@ -158,7 +165,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
       <div style={{ float: 'right', padding: 2 }}>
         <IconButton size={'small'}>
           <HelpTooltip
-            style={{ float: 'right', padding: 2, color: '#222' }}
+            style={{ float: 'right', padding: 2 }}
             content={<SearchHelp />}
           />
         </IconButton>
@@ -197,4 +204,4 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch, ...pr
   );
 };
 
-export default withRouter(Search);
+export default Search;

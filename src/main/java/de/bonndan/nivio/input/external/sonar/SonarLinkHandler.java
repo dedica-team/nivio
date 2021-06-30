@@ -36,7 +36,6 @@ public class SonarLinkHandler implements ExternalLinkHandler {
         }
 
         SonarClient sonarClient = this.sonarClient.get();
-        // TODO
         return CompletableFuture.completedFuture(new ItemDescription());
     }
 }

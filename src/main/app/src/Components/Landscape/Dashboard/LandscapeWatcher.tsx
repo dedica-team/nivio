@@ -71,10 +71,11 @@ const LandscapeWatcher: React.FC<Props> = ({ setSidebarContent, ...props }) => {
               landscape={context.landscape}
               setSidebarContent={setSidebarContent}
               assessments={context.assessment}
+              key={'statusbar_' + Math.random()}
             />
           );
         }}
-        title={'Show assessments (KPI-based warnings)'}
+        title={'Show warnings (KPI-based)'}
       >
         <WarningRounded />
       </IconButton>

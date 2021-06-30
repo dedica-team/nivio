@@ -30,7 +30,7 @@ class KPIFactoryTest {
         landscapeConfig = new LandscapeConfig();
         landscape = LandscapeFactory.createForTesting("test", "testLandscape")
                 .withConfig(landscapeConfig)
-                .withProcessLog(new ProcessLog(mock(Logger.class)))
+                .withProcessLog(new ProcessLog(mock(Logger.class), "test"))
                 .build();
     }
 

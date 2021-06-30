@@ -56,7 +56,11 @@ public class LinkHandlerFactory {
         try {
             return Optional.of(beanFactory.createBean(aClass));
         } catch (BeansException e) {
+
          //   LOGGER.error(String.format("Failed to create external link handler of type %s. Please check the handler is properly configured.", key));
+
+         //   LOGGER.warn(String.format("Failed to create external link handler of type %s. Please check the handler is properly configured.", key));
+
             return Optional.empty();
         }
     }

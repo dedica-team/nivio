@@ -31,6 +31,9 @@ public class GroupProcessor extends Processor {
         ProcessingChangelog changelog = new ProcessingChangelog();
         List<Function<String, Boolean>> specs = getSpecs(input.getConfig().getGroupBlacklist());
 
+        /*
+         * this handles the configured groups, the default/fallback group COMMON is not configured
+         */
         input.getGroups().forEach((identifier, groupDescription) -> {
             Group g = GroupFactory.createFromDescription(identifier, landscape.getIdentifier(), groupDescription);
 
@@ -39,16 +42,16 @@ public class GroupProcessor extends Processor {
                 Optional<Group> existing = landscape.getGroup(g.getIdentifier());
                 Group added = landscape.addGroup(g);
                 if (existing.isEmpty()) {
-                    processLog.info("Adding group " + g.getIdentifier());
+                    processLog.info(String.format("Adding group %s", g.getIdentifier()));
                     changelog.addEntry(added, ProcessingChangelog.ChangeType.CREATED);
                 } else {
-                    processLog.info("Updating group " + g.getIdentifier());
+                    processLog.info(String.format("Updating group %s", g.getIdentifier()));
                     String updates = existing.get().getChanges(added).isEmpty() ?
-                            "Item(s) changed" : String.join("; ", existing.get().getChanges(added));
+                            String.format("Item(s) changed in group '%s'", g.getIdentifier()) : String.join("; ", existing.get().getChanges(added));
                     changelog.addEntry(added, ProcessingChangelog.ChangeType.UPDATED, updates);
                 }
             } else {
-                processLog.info("Ignoring blacklisted group " + g.getIdentifier());
+                processLog.info(String.format("Ignoring blacklisted group %s", g.getIdentifier()));
             }
         });
 
@@ -64,6 +67,7 @@ public class GroupProcessor extends Processor {
                 if (!landscape.getGroups().containsKey(group)) {
                     Group fromDescription = GroupFactory.createFromDescription(group, landscape.getIdentifier(), null);
                     changelog.addEntry(fromDescription, ProcessingChangelog.ChangeType.CREATED, String.format("Reference by item %s", item));
+                    processLog.info("Adding group " + fromDescription.getIdentifier());
                     landscape.addGroup(fromDescription);
                 }
             } else {

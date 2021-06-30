@@ -33,7 +33,7 @@ class TemplateResolverTest {
 
     @BeforeEach
     public void setup() {
-        log = new ProcessLog(LoggerFactory.getLogger(TemplateResolver.class));
+        log = new ProcessLog(LoggerFactory.getLogger(TemplateResolver.class), "test");
         templateResolver = new TemplateResolver(mock(ProcessLog.class));
         FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
         factory = new LandscapeDescriptionFactory(fileFetcher);
@@ -116,7 +116,7 @@ class TemplateResolverTest {
         InputFormatHandlerFactory formatFactory = new InputFormatHandlerFactory(
                 new ArrayList<>(Arrays.asList(new InputFormatHandlerNivio(new FileFetcher(new HttpService())), InputFormatHandlerCompose2.forTesting()))
         );
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(formatFactory, new ProcessLog(mock(Logger.class)), mock(ApplicationEventPublisher.class));
+        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(formatFactory, new ProcessLog(mock(Logger.class), "test"), mock(ApplicationEventPublisher.class));
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
         sourceReferencesResolver.resolve(landscapeDescription);
         return landscapeDescription;

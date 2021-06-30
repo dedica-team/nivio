@@ -24,7 +24,7 @@ class LabelToFieldResolverTest {
     @BeforeEach
     public void setup() {
         Logger logger = LoggerFactory.getLogger(LabelToFieldResolverTest.class);
-        ProcessLog processLog = new ProcessLog(logger);
+        ProcessLog processLog = new ProcessLog(logger, "test");
         processor = new LabelToFieldResolver(processLog);
     }
 
@@ -182,6 +182,51 @@ class LabelToFieldResolverTest {
         assertNotNull(url);
         assertNotNull(url.getHref());
         assertEquals("https://two.net", url.getHref().toString());
+    }
+
+    @Test
+    @DisplayName("Ensure frameworks with a map structure are parsed")
+    public void frameworks() {
+        ItemDescription item1 = new ItemDescription();
+        item1.getLabels().put("a", "b");
+        item1.getLabels().put("nivio." + Label.framework.name() + ".java", "8");
+        item1.getLabels().put("nivio." + Label.framework.name() + ".angular", "6");
+
+        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
+        input.getItemDescriptions().add(item1);
+
+        //when
+        processor.resolve(input);
+
+        //then
+        Map<String, String> frameworks = item1.getLabels(Label.framework);
+        assertFalse(frameworks.isEmpty());
+        assertThat(frameworks).containsKey("framework.java");
+        assertThat(frameworks.get("framework.java")).isEqualTo("8");
+        assertThat(frameworks).containsKey("framework.angular");
+        assertThat(frameworks.get("framework.angular")).isEqualTo("6");
+    }
+
+    @Test
+    @DisplayName("Ensure comma separated frameworks are parsed properly")
+    public void commaSeparatedFrameworks() {
+        ItemDescription item1 = new ItemDescription();
+        item1.getLabels().put("a", "b");
+        item1.getLabels().put("nivio." + Label.frameworks.name(), "java:8, angular:6");
+
+        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
+        input.getItemDescriptions().add(item1);
+
+        //when
+        processor.resolve(input);
+
+        //then
+        Map<String, String> frameworks = item1.getLabels(Label.framework);
+        assertFalse(frameworks.isEmpty());
+        assertThat(frameworks).containsKey("framework.java");
+        assertThat(frameworks.get("framework.java")).isEqualTo("8");
+        assertThat(frameworks).containsKey("framework.angular");
+        assertThat(frameworks.get("framework.angular")).isEqualTo("6");
     }
 
     @Test

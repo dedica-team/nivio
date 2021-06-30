@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { IGroup } from '../../../../interfaces';
 import { getLabels, getLinks } from '../../Utils/utils';
@@ -13,6 +13,7 @@ import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext
 import ItemAvatar from '../Item/ItemAvatar';
 import GroupAvatar from './GroupAvatar';
 import { LandscapeContext } from '../../../../Context/LandscapeContext';
+import { Close } from '@material-ui/icons';
 
 interface Props {
   group: IGroup;
@@ -25,6 +26,7 @@ const Group: React.FC<Props> = ({ group }) => {
   const componentClasses = componentStyles();
   const landscapeContext = useContext(LandscapeContext);
   const locateFunctionContext = useContext(LocateFunctionContext);
+  const [visible, setVisible] = useState<boolean>(true);
 
   const getGroupItems = (
     group: IGroup,
@@ -53,6 +55,9 @@ const Group: React.FC<Props> = ({ group }) => {
     }
     return [];
   };
+
+  if (!visible) return null;
+
   const items = getGroupItems(group, locateFunctionContext.locateFunction);
 
   const assessment = landscapeContext.getAssessmentSummary(group.fullyQualifiedIdentifier);
@@ -75,6 +80,18 @@ const Group: React.FC<Props> = ({ group }) => {
           </React.Fragment>
         }
         className={componentClasses.cardHeader}
+        action={
+          <React.Fragment>
+            <IconButton
+              size={'small'}
+              onClick={() => {
+                setVisible(false);
+              }}
+            >
+              <Close />
+            </IconButton>
+          </React.Fragment>
+        }
       />
       <CardContent>
         <div className='information'>
@@ -87,20 +104,22 @@ const Group: React.FC<Props> = ({ group }) => {
               {group?.contact || 'No Contact provided'}
             </span>
           ) : null}
-          <span className='owner group'>
+          <div className='owner group'>
             <span className='label'>Owner: </span>
             {group?.owner || 'No Owner provided'}
-          </span>
+          </div>
         </div>
 
         {assessment && assessment.status ? (
           <div>
-            <Typography variant={'h6'}>Status</Typography>
-            <StatusChip
-              name={group.name || group.identifier}
-              status={assessment?.status}
-              value={assessment?.field + ':' + assessment.message}
-            />
+            <div>
+              <br />
+              <Typography variant={'h6'}>Status</Typography>
+              <StatusChip name={assessment.maxField} status={assessment?.status} />
+              {assessment.message}
+            </div>
+            <br />
+            <br />
           </div>
         ) : null}
 

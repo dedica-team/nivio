@@ -1,13 +1,17 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
+import javax.validation.constraints.Null;
 import java.awt.geom.Point2D;
 import java.util.Optional;
 
@@ -23,19 +27,26 @@ class SVGRelation extends Component {
     private final HexPath hexPath;
     private final String fill;
     private final Relation relation;
+    private final StatusValue statusValue;
 
     /**
-     * @param hexPath  the calculated best path
-     * @param fill     color
-     * @param relation graph edge, source is the item this relation belongs to
+     * @param hexPath     the calculated best path
+     * @param fill        color
+     * @param relation    graph edge, source is the item this relation belongs to
+     * @param statusValue status (worst) of source
      */
-    SVGRelation(@NonNull final HexPath hexPath, @NonNull final String fill, @NonNull final Relation relation) {
+    SVGRelation(@NonNull final HexPath hexPath,
+                @NonNull final String fill,
+                @NonNull final Relation relation,
+                @Nullable final StatusValue statusValue
+    ) {
         this.hexPath = hexPath;
         if (StringUtils.isEmpty(fill)) {
             throw new RuntimeException("Fill color cannot be empty.");
         }
         this.fill = fill;
         this.relation = relation;
+        this.statusValue = statusValue;
     }
 
     @Override
@@ -48,33 +59,47 @@ class SVGRelation extends Component {
         var points = String.join("", hexPath.getPoints());
         bezierPath.parsePathString(points);
 
+        String statusColor = statusValue.getStatus().getName();
+
+        ContainerTag shadow = null;
+        int innerStrokeWidth = 5;
+        if (statusValue.getStatus().equals(Status.UNKNOWN)) {
+            innerStrokeWidth = 15;
+        } else {
+            shadow = SvgTagCreator.path()
+                    .attr("d", points)
+                    .attr("stroke", statusColor)
+                    .attr("stroke-width", 20);
+        }
+
         ContainerTag path = SvgTagCreator.path()
                 .attr("d", points)
-                .attr("stroke", "#ffffff")
-                .attr("stroke-width", 2);
-
-        ContainerTag shadow = SvgTagCreator.path()
-                .attr("d", points)
                 .attr("stroke", fillId)
-                .attr("stroke-width", 20);
+                .attr("stroke-width", innerStrokeWidth);
+
+
 
         if (Lifecycle.isPlanned(relation.getSource()) || Lifecycle.isPlanned(relation.getTarget())) {
-            shadow.attr("stroke-dasharray", 15);
+            path.attr("stroke-dasharray", 15);
         }
 
         ContainerTag endMarker = null;
         if (RelationType.DATAFLOW.equals(relation.getType())) {
-            path.attr("stroke-dasharray", 3);
             path.attr("marker-mid", String.format("url(#%s)", SVGRelation.MARKER_ID));
+            path.attr("fill", shadow != null ? statusColor: fillId);
         } else {
             endMarker = SvgTagCreator.circle()
                     .attr("cx", hexPath.getEndPoint().x)
                     .attr("cy", hexPath.getEndPoint().y)
                     .attr("r", 35)
-                    .attr("fill", fillId);
+                    .attr("fill", shadow != null ? statusColor: fillId);
         }
 
         return addAttributes(g(shadow, endMarker, path, label(bezierPath, fillId)), relation);
+    }
+
+    public HexPath getHexPath() {
+        return hexPath;
     }
 
     private ContainerTag addAttributes(ContainerTag g, Relation relation) {
@@ -123,16 +148,18 @@ class SVGRelation extends Component {
      */
     public static ContainerTag dataflowMarker() {
         ContainerTag path = SvgTagCreator.path().attr("d", "M 0 0 L 10 5 L 0 10 z")
-                .attr("fill", "#ffffff" );
+                .attr("fill", "#ffffff");
 
         return SvgTagCreator.marker()
                 .attr("id", MARKER_ID)
-                .attr("markerWidth", 6)
-                .attr("markerHeight", 6)
+                .attr("markerWidth", 10)
+                .attr("markerHeight", 10)
                 .attr("refX", 0)
                 .attr("refY", 5)
                 .attr("orient", "auto")
                 .attr("viewBox", "0 0 10 10")
+                .attr("stroke", "context-stroke")
+                .attr("markerUnits", "userSpaceOnUse")
                 .with(path)
                 ;
     }

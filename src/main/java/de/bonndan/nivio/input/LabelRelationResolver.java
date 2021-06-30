@@ -58,7 +58,7 @@ public class LabelRelationResolver extends Resolver {
 
         List<String> blacklist = new ArrayList<>();
         blacklist.add(Label.fill.name());
-        blacklist.add(Linked.LINK_LABEL_PREFIX + "*");
+        blacklist.add(LabelToFieldResolver.LINK_LABEL_PREFIX + "*");
         blacklist.addAll(configuredBlacklist);
 
         return blacklist.stream().map(s -> {

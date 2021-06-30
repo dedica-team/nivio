@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
@@ -30,9 +29,9 @@ class AppearanceProcessorTest {
     public void setup() {
 
         iconService = mock(IconService.class);
-        resolver = new AppearanceProcessor(new ProcessLog(LoggerFactory.getLogger(AppearanceProcessorTest.class)), iconService);
-
         landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
+        resolver = new AppearanceProcessor(new ProcessLog(LoggerFactory.getLogger(AppearanceProcessorTest.class), landscape.getIdentifier()), iconService);
+
 
         g1 = new Group("g1", "landscapeIdentifier");
         landscape.addGroup(g1);
@@ -97,6 +96,6 @@ class AppearanceProcessorTest {
         resolver.process(null, landscape);
 
         //then
-        assertThat(pick.getColor()).isEqualTo("00FFAA");
+        assertThat(pick.getColor()).isEqualTo("00ffaa");
     }
 }

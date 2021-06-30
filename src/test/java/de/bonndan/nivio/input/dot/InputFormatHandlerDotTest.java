@@ -37,7 +37,7 @@ class InputFormatHandlerDotTest {
                 "    { rank=same; cyan; yellow; pink}\n" +
                 "    { rank=same; red; green; blue}\n" +
                 "    { rank=same; black}\n" +
-                "    white [nivio_owner = Marketing, nivio_software=\"Wordpress 2.0\", nivio_group=FooBar]\n" +
+                "    white [nivio_owner = Marketing, nivio_software=\"Wordpress 2.0\", nivio_group=FooBar, nivio_frameworks=\"php:7.1,angular:9\"]\n" +
                 "\n" +
                 "    white -- cyan [nivio_format = json, nivio_type=PROVIDER, nivio_description=\"hello world\"]\n" +
                 "    cyan -- blue\n" +
@@ -85,6 +85,7 @@ class InputFormatHandlerDotTest {
         assertThat(white.getLabel(LabelToFieldResolver.NIVIO_LABEL_PREFIX + "owner")).isEqualTo("Marketing");
         assertThat(white.getLabel(LabelToFieldResolver.NIVIO_LABEL_PREFIX + "software")).isEqualTo("Wordpress 2.0");
         assertThat(white.getLabel(LabelToFieldResolver.NIVIO_LABEL_PREFIX + "group")).isEqualTo("FooBar");
+        assertThat(white.getLabel(LabelToFieldResolver.NIVIO_LABEL_PREFIX + "frameworks")).isEqualTo("php:7.1,angular:9");
         Set<RelationDescription> relations = white.getRelations();
         assertThat(relations).isNotEmpty().hasSize(3);
     }

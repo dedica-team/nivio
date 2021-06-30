@@ -79,7 +79,7 @@ class SpringBootHealthHandlerTest {
         //then
         assertThat(itemDescription).isNotNull();
         assertThat(itemDescription.getLabel(Label.health)).isEqualTo(HealthKPI.HEALTHY);
-        assertThat(itemDescription.getLabel(Label.key(Label.health, "broker"))).isEqualTo(HealthKPI.HEALTHY);
+        assertThat(itemDescription.getLabel(Label.health.withPrefix("broker"))).isEqualTo(HealthKPI.HEALTHY);
     }
 
     @Test
@@ -99,7 +99,7 @@ class SpringBootHealthHandlerTest {
         CompletableFuture<ComponentDescription> resolve = handler.resolve(link);
 
         assertThat(resolve.isCompletedExceptionally()).isTrue();
-        assertThrows(ExecutionException.class, () ->  resolve.get());
+        assertThrows(ExecutionException.class, () -> resolve.get());
 
     }
 
@@ -115,7 +115,7 @@ class SpringBootHealthHandlerTest {
         CompletableFuture<ComponentDescription> resolve = handler.resolve(link);
 
         assertThat(resolve.isCompletedExceptionally()).isTrue();
-        assertThrows(ExecutionException.class, () ->  resolve.get());
+        assertThrows(ExecutionException.class, () -> resolve.get());
 
     }
 }

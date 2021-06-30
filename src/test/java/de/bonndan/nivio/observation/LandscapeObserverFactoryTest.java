@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.InputFormatHandlerFactory;
 import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.LandscapeSource;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.Landscape;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,13 +44,13 @@ class LandscapeObserverFactoryTest {
 
     @Test
     @DisplayName("creates a list of observers with correct base url")
-    public void getObservers() {
+    public void getObservers() throws MalformedURLException {
         String source = getRootPath() + "/src/test/resources/example/example_env.yml";
         File file = new File(source);
         LandscapeDescriptionFactory landscapeDescriptionFactory = new LandscapeDescriptionFactory(new FileFetcher(new HttpService()));
         LandscapeDescription description = landscapeDescriptionFactory.fromYaml(file);
         landscape = LandscapeFactory.createForTesting("test", "testLandscape")
-                .withSource(source)
+                .withSource(new LandscapeSource(file.toURI().toURL()))
                 .build();
 
         SourceReference ref1 = new SourceReference();

@@ -43,6 +43,8 @@ You can also store **custom properties** as labels, but keep in mind that
         mycustomlabel1: foo
         mycustomlabel_2: bar
         any: entry is stored as label
+        frameworks:
+          php: 7.1
 
       - identifier: auth-gateway
         shortName: blog1
