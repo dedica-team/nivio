@@ -158,7 +158,7 @@ const Changes: React.FC<Props> = ({ notification }) => {
         setChanges(rows);
       });
     }
-  }, [notification, componentClasses.card, locateFunctionContext]);
+  }, [notification, componentClasses.card, locateFunctionContext, landscapeContext]);
 
   if (!visible) return null;
 

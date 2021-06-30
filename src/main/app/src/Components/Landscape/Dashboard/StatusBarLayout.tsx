@@ -37,7 +37,7 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
       if (!assessmentSummary.maxField) return null;
 
       return (
-        <TableRow>
+        <TableRow key={'status_' + item.fullyQualifiedIdentifier}>
           <TableCell style={{ textAlign: 'center' }}>
             <Button
               key={item.fullyQualifiedIdentifier}
@@ -82,7 +82,7 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
       }
 
       return (
-        <TableRow>
+        <TableRow key={'status_' + group.fullyQualifiedIdentifier}>
           <TableCell style={{ textAlign: 'center' }}>
             <Button
               id={group.fullyQualifiedIdentifier}
@@ -119,9 +119,11 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
         }
       />
       <Table>
-        <TableBody>{context.landscape ? getGroups(context.landscape.groups) : null}</TableBody>
+        <TableBody>
+          {context.landscape ? getGroups(context.landscape.groups) : null}
+          {context.landscape?.groups.map((group) => getItems(group))}
+        </TableBody>
       </Table>
-      {context.landscape?.groups.map((group) => getItems(group))}
     </Card>
   );
 };
