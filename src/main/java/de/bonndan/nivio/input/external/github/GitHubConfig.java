@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.util.Properties;
 
 @Configuration
 public class GitHubConfig {
@@ -45,16 +46,21 @@ public class GitHubConfig {
         }
 
         try {
-            return GitHubBuilder.fromEnvironment().build();
+            Properties properties = new Properties();
+            properties.setProperty("login",gitHubProperties.getLogin());
+            properties.setProperty("password",gitHubProperties.getPassword());
+            properties.setProperty("oauth",gitHubProperties.getOauth());
+            properties.setProperty("jwt",gitHubProperties.getJwt());
+            return GitHubBuilder.fromProperties(properties).build();
         } catch (IOException ignored) {
             return null;
         }
     }
 
     private boolean checkAnyEnv() {
-        return !StringUtils.isEmpty(System.getenv("Optional.ofNullable(gitHubProperties.getLogin())")) ||
-                !StringUtils.isEmpty(System.getenv("Optional.ofNullable(gitHubProperties.getPassword()")) ||
-                !StringUtils.isEmpty(System.getenv("Optional.ofNullable(gitHubProperties.getOauth()")) ||
-                !StringUtils.isEmpty(System.getenv("Optional.ofNullable(gitHubProperties.getJwt()"));
+        return !StringUtils.isEmpty(System.getenv(gitHubProperties.getLogin())) ||
+                !StringUtils.isEmpty(System.getenv(gitHubProperties.getPassword())) ||
+                !StringUtils.isEmpty(System.getenv(gitHubProperties.getOauth())) ||
+                !StringUtils.isEmpty(System.getenv(gitHubProperties.getJwt()));
     }
 }
