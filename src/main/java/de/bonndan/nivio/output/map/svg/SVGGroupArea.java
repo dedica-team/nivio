@@ -123,17 +123,13 @@ class SVGGroupArea extends Component {
 
         var fill = group.getColor();
         var fillId = fill != null ? "#" + fill : "";
-        var shadow = "black";
-        boolean higherThanGreen = groupStatus.getStatus().isHigherThan(Status.GREEN);
-        if (higherThanGreen) {
-            shadow = groupStatus.getStatus().getName().toLowerCase(Locale.ROOT);
-        }
+
         return SvgTagCreator.text(group.getIdentifier())
                 .attr("x", x)
                 .attr("y", y)
                 .attr("fill", fillId)
                 .attr("text-anchor", "middle")
-                .attr("text-shadow", "1px 1px 1px " + shadow)
+                .attr("style", "text-shadow: 1px 2px 2px black")
                 .attr("font-size", fontSize + "em")
                 .attr("class", "groupLabel");
     }
