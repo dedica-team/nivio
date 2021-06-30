@@ -2,12 +2,13 @@ package de.bonndan.nivio.output.map.svg;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SmoothCornersGroupOutline {
 
     public static final int SMOOTHING_DIVISOR = 20;
 
-    public static String getPath(ArrayList<Point2D.Double> corners) {
+    public static String getPath(List<Point2D.Double> corners) {
 
         ArrayList<Point2D.Double> bezierPoints = new ArrayList<>();
 

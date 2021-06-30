@@ -53,7 +53,7 @@ const LandscapeWatcher: React.FC<Props> = ({ setSidebarContent, ...props }) => {
     <StatusBadge
       overlap={'circle'}
       anchorOrigin={{
-        vertical: 'bottom',
+        vertical: 'top',
         horizontal: 'right',
       }}
       variant={'dot'}

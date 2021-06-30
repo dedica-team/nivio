@@ -11,10 +11,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import javax.validation.constraints.Null;
 import java.awt.geom.Point2D;
 import java.util.Optional;
 
+import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
+import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
 import static de.bonndan.nivio.output.map.svg.SvgTagCreator.g;
 
 /**
@@ -27,6 +28,8 @@ class SVGRelation extends Component {
     private final HexPath hexPath;
     private final String fill;
     private final Relation relation;
+
+    @Nullable
     private final StatusValue statusValue;
 
     /**
@@ -59,17 +62,15 @@ class SVGRelation extends Component {
         var points = String.join("", hexPath.getPoints());
         bezierPath.parsePathString(points);
 
-        String statusColor = statusValue.getStatus().getName();
 
         ContainerTag shadow = null;
-        int innerStrokeWidth = 5;
-        if (statusValue.getStatus().equals(Status.UNKNOWN)) {
-            innerStrokeWidth = 15;
-        } else {
+        int innerStrokeWidth = 20;
+        if (statusValue != null && !statusValue.getStatus().equals(Status.UNKNOWN)) {
+            String statusColor = statusValue.getStatus().getName();
             shadow = SvgTagCreator.path()
                     .attr("d", points)
                     .attr("stroke", statusColor)
-                    .attr("stroke-width", 20);
+                    .attr("stroke-width", 24);
         }
 
         ContainerTag path = SvgTagCreator.path()
@@ -77,22 +78,21 @@ class SVGRelation extends Component {
                 .attr("stroke", fillId)
                 .attr("stroke-width", innerStrokeWidth);
 
-
-
         if (Lifecycle.isPlanned(relation.getSource()) || Lifecycle.isPlanned(relation.getTarget())) {
-            path.attr("stroke-dasharray", 15);
+            path.attr("opacity", "0.5");
         }
 
         ContainerTag endMarker = null;
         if (RelationType.DATAFLOW.equals(relation.getType())) {
-            path.attr("marker-mid", String.format("url(#%s)", SVGRelation.MARKER_ID));
-            path.attr("fill", shadow != null ? statusColor: fillId);
+            //path.attr("marker-mid", String.format("url(#%s)", SVGRelation.MARKER_ID));
+            path.attr("fill", fillId);
+            path.attr("stroke-dasharray", 15);
         } else {
             endMarker = SvgTagCreator.circle()
                     .attr("cx", hexPath.getEndPoint().x)
                     .attr("cy", hexPath.getEndPoint().y)
                     .attr("r", 35)
-                    .attr("fill", shadow != null ? statusColor: fillId);
+                    .attr("fill", fillId);
         }
 
         return addAttributes(g(shadow, endMarker, path, label(bezierPath, fillId)), relation);
@@ -107,7 +107,8 @@ class SVGRelation extends Component {
         g.attr("data-type", type)
                 .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().jsonValue())
                 .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().jsonValue())
-                .attr("class", "relation");
+                .attr(DATA_IDENTIFIER, relation.getIdentifier())
+                .attr("class", "relation " + VISUAL_FOCUS_UNSELECTED);
 
         return g;
     }

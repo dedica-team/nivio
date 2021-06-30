@@ -31,6 +31,8 @@ public class SVGDocument extends Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGDocument.class);
     public static final int LABEL_WIDTH = 140;
+    public static final String VISUAL_FOCUS_UNSELECTED = "unselected";
+    public static final String DATA_IDENTIFIER = "data-identifier";
 
     private final LayoutedComponent layouted;
     private final Landscape landscape;
@@ -93,7 +95,7 @@ public class SVGDocument extends Component {
             Group group = (Group) groupLayout.getComponent();
             Set<Hex> groupArea = hexMap.getGroupArea(group);
             List<StatusValue> groupStatuses = assessment.getResults().get(group.getFullyQualifiedIdentifier());
-            SVGGroupArea area = SVGGroupAreaFactory.getGroup(group, groupArea, Assessable.getWorst(groupStatuses), debug);
+            SVGGroupArea area = SVGGroupArea.forGroup(group, groupArea, Assessable.getWorst(groupStatuses), debug);
             groupAreas.add(area);
             return area.render();
         }).collect(Collectors.toList());
@@ -132,8 +134,6 @@ public class SVGDocument extends Component {
                 .with(relations.stream().map(SVGRelation::render))
                 //draw items above relations
                 .with(items)
-                // draw group labels above everything
-                .with(groupAreas.stream().map(SVGGroupArea::getLabel).collect(Collectors.toSet()))
                 //defs contain reusable stuff
                 .with(SvgTagCreator.defs().with(defs));
     }
@@ -183,9 +183,7 @@ public class SVGDocument extends Component {
     private SVGRelation getSvgRelation(LayoutedComponent layoutedItem, Item source, Relation rel) {
         Optional<HexPath> bestPath = hexMap.getPath(source, rel.getTarget());
         if (bestPath.isPresent()) {
-            List<StatusValue> statusValues = assessment.getResults().get(source.getFullyQualifiedIdentifier());
-            StatusValue worst = Assessable.getWorst(statusValues);
-            SVGRelation svgRelation = new SVGRelation(bestPath.get(), layoutedItem.getColor(), rel, worst);
+            SVGRelation svgRelation = new SVGRelation(bestPath.get(), layoutedItem.getColor(), rel, null);
             LOGGER.debug("Added path for item {} relation {} -> {}", source, rel.getSource(), rel.getTarget());
             return svgRelation;
         }

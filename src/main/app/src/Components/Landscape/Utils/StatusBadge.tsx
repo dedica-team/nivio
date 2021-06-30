@@ -9,7 +9,7 @@ import { createStyles } from '@material-ui/core/styles';
 const StatusBadge = withStyles((theme: Theme) =>
   createStyles({
     'badge': {
-      'boxShadow': `0 0 0 2px ${theme.palette.background.paper}`,
+      //'boxShadow': `0 0 0 1px ${theme.palette.background.paper}`,
       '&::after': {
         position: 'absolute',
         top: 0,
@@ -18,7 +18,7 @@ const StatusBadge = withStyles((theme: Theme) =>
         height: '100%',
         borderRadius: '50%',
         //animation: '$ripple 1.2s infinite ease-in-out',
-        border: '1px solid currentColor',
+        //border: '1px solid currentColor',
         backgroundColor: 'currentColor',
         content: '""',
       },
