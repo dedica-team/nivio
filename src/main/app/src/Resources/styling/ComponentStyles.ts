@@ -1,4 +1,4 @@
-import { darken, Theme } from '@material-ui/core';
+import { Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 const componentStyles = makeStyles((theme: Theme) =>
@@ -32,11 +32,11 @@ const componentStyles = makeStyles((theme: Theme) =>
       //borderColor: theme.palette.secondary.dark,
       height: '2.1rem !important',
       width: '2.1rem !important',
-      marginLeft: '0.5rem'
+      marginLeft: '0.5rem',
     },
     link: {
       color: theme.palette.secondary.main,
-    }
+    },
   })
 );
 
