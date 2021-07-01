@@ -3,6 +3,7 @@ package de.bonndan.nivio.input.external;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.external.github.GitHubRepoHandler;
 import de.bonndan.nivio.input.external.gitlab.GitLabConfig;
+import de.bonndan.nivio.input.external.gitlab.GitLabProperties;
 import de.bonndan.nivio.input.external.gitlab.GitLabRepoHandler;
 import de.bonndan.nivio.model.Link;
 import org.gitlab4j.api.*;
@@ -99,7 +100,8 @@ class GitLabRepoHandlerTest {
     void integration() throws IOException, ExecutionException, InterruptedException {
 
         //env vars used, configure them properly
-        GitLabConfig gitLabConfig = new GitLabConfig();
+        GitLabProperties gitLabProperties = new GitLabProperties();
+        GitLabConfig gitLabConfig = new GitLabConfig(gitLabProperties);
         GitLabApi gitLabAPI = gitLabConfig.getGitLabAPI();
 
         handler = new GitLabRepoHandler(gitLabAPI);
