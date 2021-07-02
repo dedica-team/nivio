@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 class PathFinder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PathFinder.class);
+    public static final int DEPTH_MAX = 4000;
     private final BidiMap<Hex, Object> hexesToItems;
 
     public boolean debug = false;
@@ -76,15 +77,15 @@ class PathFinder {
         float G;
 
         int depth = 0;
-        int depthMax = 1500;
 
         while (true) {
 
             /*
              * Limit the amount of loops for better performance
              */
-            if (depth >= depthMax) {
-                throw new RuntimeException("Max depth exceeded.");
+            if (depth >= DEPTH_MAX) {
+                LOGGER.error(String.format("Max depth exceeded searching path from %s to %s", startHex, destHex));
+                return Optional.empty();
             }
 
             /*

@@ -1,10 +1,11 @@
 package de.bonndan.nivio.output.map;
 
-import de.bonndan.nivio.input.ProcessingFinishedEvent;
+import de.bonndan.nivio.assessment.AssessmentRepository;
 import de.bonndan.nivio.input.AppearanceProcessor;
 import de.bonndan.nivio.input.ProcessLog;
+import de.bonndan.nivio.input.ProcessingChangelog;
+import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.Set;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -37,13 +39,13 @@ class RenderCacheTest {
 
         stylesheetFactory = mock(MapStyleSheetFactory.class);
         svgRenderer = new SVGRenderer(stylesheetFactory);
-        renderCache = new RenderCache(svgRenderer);
+        renderCache = new RenderCache(svgRenderer, new AssessmentRepository());
         when(stylesheetFactory.getMapStylesheet(any(), any())).thenReturn("");
     }
 
     @Test
     void toPNGCached() {
-        Landscape landscape = getLandscape("test");
+        Landscape landscape = getLandscape("test", "testLandscape");
         String first = renderCache.getSVG(landscape, false);
         String second = renderCache.getSVG(landscape, false);
 
@@ -52,46 +54,54 @@ class RenderCacheTest {
 
     @Test
     void cachesBasedOnIdentifier() {
-        Landscape one = getLandscape("test");
-        String first = renderCache.getSVG(getLandscape("test"), false);
-        Landscape two = getLandscape("test");
-        two.setProcessLog(one.getLog()); //sync last update
-        two.setIdentifier("second");
+        Landscape one = getLandscape("first", "one");
+        String first = renderCache.getSVG(
+                getLandscape("first", "testLandscape"),
+                false
+        );
+        Landscape two = getLandscape("second", "two");
+        //two.setProcessLog(one.getLog()); //sync last update
         String second = renderCache.getSVG(two, false);
 
-        verify(stylesheetFactory, times(2)).getMapStylesheet(any(), any());
+        verify(stylesheetFactory, times(2))
+                .getMapStylesheet(any(), any());
     }
 
     @Test
     void toSVG() {
-        String svg = renderCache.getSVG(getLandscape("test"), true);
+        String svg = renderCache.getSVG(getLandscape("test", "testLandscape"), true);
         assertNotNull(svg);
         assertTrue(svg.contains("svg"));
     }
 
     @Test
     void onProcessingFinishedEvent() {
-        renderCache.onApplicationEvent(new ProcessingFinishedEvent(new LandscapeDescription(), getLandscape("test")));
+        renderCache.onApplicationEvent(new ProcessingFinishedEvent(
+                new LandscapeDescription("test", "testLandscape", null),
+                getLandscape("test", "testLandscape"),
+                new ProcessingChangelog()
+        ));
 
         verify(stylesheetFactory, times(1)).getMapStylesheet(any(), any());
     }
 
-    private Landscape getLandscape(String identifier) {
-        Landscape landscape = LandscapeFactory.create(identifier);
+    private Landscape getLandscape(String identifier, String name) {
 
-        Item item = new Item("bar", "foo");
+        ProcessLog test = new ProcessLog(LoggerFactory.getLogger("test"), "test");
+        test.info("foo");
+
+        Landscape landscape = LandscapeFactory.createForTesting(identifier, name)
+                .withProcessLog(test)
+                .build();
+
+        Item item = getTestItem("bar", "foo");
         landscape.setItems(Set.of(item));
         landscape.setItems(Collections.singleton(item));
 
-        Group bar = new Group("bar");
+        Group bar = new Group("bar", identifier);
         bar.addItem(item);
         landscape.getGroups().put("bar", bar);
 
-        ProcessLog test = new ProcessLog(LoggerFactory.getLogger("test"));
-        test.info("foo");
-        landscape.setProcessLog(test);
-
-        HttpService httpService = mock(HttpService.class);
         new AppearanceProcessor(landscape.getLog(), mock(IconService.class)).process(null, landscape);
         return landscape;
     }

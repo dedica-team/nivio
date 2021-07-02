@@ -8,8 +8,14 @@ import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.ProcessLog;
+import de.bonndan.nivio.input.dto.LandscapeSource;
+import de.bonndan.nivio.search.ItemIndex;
+import de.bonndan.nivio.search.ItemMatcher;
+import de.bonndan.nivio.search.SearchIndex;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
@@ -25,76 +31,103 @@ import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Landscape implements Linked, Component, Labeled, Assessable {
 
+    private final SearchIndex searchIndex;
+
     /**
      * Immutable unique identifier. Maybe use an URN.
      */
+    @NonNull
     @Pattern(regexp = IDENTIFIER_VALIDATION)
-    private String identifier;
+    private final String identifier;
 
     /**
      * Human readable name.
      */
-    private String name;
+    @NonNull
+    private final String name;
 
     /**
      * Maintainer email
      */
-    private String contact;
+    @Nullable
+    private final String contact;
 
-    private String description;
+    @Nullable
+    private final String owner;
 
-    private String source;
+    private final String description;
 
     @JsonIgnore
-    private final ItemIndex items = new ItemIndex();
+    private final LandscapeSource source;
 
-    private LandscapeConfig config;
+    @JsonIgnore
+    private final ItemIndex<Item> items;
 
-    private final Map<String, Group> groups = new HashMap<>();
+    private final LandscapeConfig config;
 
-    private ProcessLog processLog;
+    private final Map<String, Group> groups;
+
+    private final ProcessLog processLog;
 
     private final Map<String, String> labels = new HashMap<>();
     private final Map<String, Link> links = new HashMap<>();
-    private String owner;
 
     /**
      * all KPIs for the landscape, configured and initialized
      */
-    private Map<String, KPI> kpis = new HashMap<>();
+    private final Map<String, KPI> kpis;
 
-    public Landscape(@NonNull String identifier, @NonNull Group defaultGroup) {
-        setIdentifier(identifier);
-        this.addGroup(defaultGroup);
+    public Landscape(@NonNull final String identifier,
+                     @NonNull final Map<String, Group> groups,
+                     @NonNull final String name,
+                     @Nullable final String contact,
+                     @Nullable final String owner,
+                     @Nullable final String description,
+                     @Nullable final LandscapeSource source,
+                     @Nullable final LandscapeConfig config,
+                     @Nullable final ProcessLog processLog,
+                     @NonNull final Map<String, KPI> kpis
+    ) {
+        this.identifier = validateIdentifier(Objects.requireNonNull(identifier));
+        this.groups = groups;
+        this.searchIndex = new SearchIndex(identifier);
+        this.items = new ItemIndex<>(Item.class);
+        this.name = Objects.requireNonNull(name);
+        this.contact = contact;
+
+        this.owner = owner;
+        this.description = description;
+        this.source = source;
+        this.config = config != null ? config : new LandscapeConfig();
+        this.processLog = processLog != null ? processLog : new ProcessLog(LoggerFactory.getLogger(Landscape.class), identifier);
+        this.kpis = kpis;
     }
 
+    @NonNull
     public String getIdentifier() {
         return identifier;
     }
 
     @Override
+    @NonNull
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(identifier, null, null);
     }
 
-    public void setIdentifier(String identifier) {
-
+    private String validateIdentifier(String identifier) {
         if (StringUtils.isEmpty(identifier) || !identifier.matches(IDENTIFIER_VALIDATION)) {
             throw new IllegalArgumentException("Invalid landscape identifier given: '" + identifier + "', it must match " + IDENTIFIER_VALIDATION);
         }
-        this.identifier = StringUtils.trimAllWhitespace(identifier);
+        return StringUtils.trimAllWhitespace(identifier);
     }
 
+    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @JsonIgnore
-    public ItemIndex getItems() {
+    public ItemIndex<Item> getItems() {
         return items;
     }
 
@@ -102,23 +135,19 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         this.items.setItems(items);
     }
 
-    public String getSource() {
+    @JsonIgnore
+    @Nullable
+    public LandscapeSource getSource() {
         return source;
     }
 
-    public void setSource(String source) {
-        this.source = source;
-    }
-
     @Override
+    @Nullable
     public String getContact() {
         return contact;
     }
 
     public LandscapeConfig getConfig() {
-        if (config == null) {
-            config = new LandscapeConfig();
-        }
         return config;
     }
 
@@ -132,8 +161,10 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return new ArrayList<>(groups.values());
     }
 
-    public void setContact(String contact) {
-        this.contact = contact;
+    @JsonIgnore
+    @Override
+    public String getAddress() {
+        return null;
     }
 
     @Override
@@ -150,21 +181,21 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return Objects.hash(StringUtils.trimAllWhitespace(identifier));
     }
 
-    public void setConfig(LandscapeConfig config) {
-        this.config = config;
-    }
+    /**
+     * Add a group.
+     *
+     * @param group the group to add
+     * @return the added or merged group
+     */
+    public Group addGroup(@NonNull Group group) {
+        Objects.requireNonNull(group, "Trying to add null group");
 
-    public void addGroup(@NonNull Group group) {
-        if (group == null) {
-            throw new IllegalArgumentException("Trying to add null group");
-        }
-
-        group.setLandscape(this.identifier);
         if (groups.containsKey(group.getIdentifier())) {
-            Groups.merge(groups.get(group.getIdentifier()), group);
-        } else {
-            groups.put(group.getIdentifier(), group);
+            group = GroupFactory.merge(groups.get(group.getIdentifier()), group);
         }
+        groups.put(group.getIdentifier(), group);
+
+        return group;
     }
 
     /**
@@ -177,17 +208,9 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return Optional.ofNullable(groups.get(group));
     }
 
-    public void setProcessLog(ProcessLog processLog) {
-        this.processLog = processLog;
-    }
-
     @JsonIgnore
     public ProcessLog getLog() {
         return processLog;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @Override
@@ -198,10 +221,6 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     @Override
     public String getOwner() {
         return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
     }
 
     @JsonIgnore
@@ -219,7 +238,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     public Map<String, String> getJSONLabels() {
 
         return Labeled.groupedByPrefixes(
-                Labeled.withoutPrefixes(labels, Label.status.name(), Tagged.LABEL_PREFIX_TAG),
+                Labeled.withoutKeys(labels, Label.status.name(), Tagged.LABEL_PREFIX_TAG),
                 ","
         );
     }
@@ -241,7 +260,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
     @Override
     public List<? extends Assessable> getChildren() {
-        return getGroups().values().stream().map(groupItem -> (Assessable)groupItem).collect(Collectors.toList());
+        return getGroups().values().stream().map(groupItem -> (Assessable) groupItem).collect(Collectors.toList());
     }
 
     @Schema(name = "_links")
@@ -261,7 +280,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
     @Override
     public String getIcon() {
-        return null;
+        return getLabel("icon");
     }
 
     /**
@@ -274,7 +293,46 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return kpis;
     }
 
-    public void setKpis(Map<String, KPI> kpis) {
-        this.kpis = kpis;
+    @JsonIgnore
+    public SearchIndex getSearchIndex() {
+        return searchIndex;
     }
+
+    /**
+     * Executes a lucene search using the given query string.
+     *
+     * @param queryString the lucene format query string
+     * @return all matched items
+     */
+    public Set<Item> search(String queryString) {
+        if (StringUtils.isEmpty(queryString)) {
+            return Collections.emptySet();
+        }
+        return items.retrieve(searchIndex.search(queryString));
+    }
+
+    /**
+     * Finds all items matching the given term.
+     *
+     * First tries an {@link ItemMatcher} and then falls back to a regular query.
+     *
+     * @param term preferably string representation of an FQI, or a simple identifier
+     * @return all matched items
+     */
+    public List<Item> findBy(@NonNull final String term) {
+        return getItems().findBy(term);
+    }
+
+    /**
+     * Returns one distinct item for a query term.
+     *
+     * @param term  search term
+     * @param group optional group to narrow
+     * @return the matched item
+     * @throws NoSuchElementException if not exactly one item could be determined
+     */
+    public Item findOneBy(@NonNull final String term, @Nullable final String group) {
+        return getItems().findOneBy(term, group);
+    }
+
 }

@@ -1,63 +1,114 @@
-import React from 'react';
-import { Card, CardHeader } from '@material-ui/core';
+import React, { useContext, useState } from 'react';
+import { Card, CardHeader, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
-import componentStyles from '../../../../Ressources/styling/ComponentStyles';
-import Button from '@material-ui/core/Button';
 import { IItem, IRelation } from '../../../../interfaces';
 import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
+import componentStyles from '../../../../Resources/styling/ComponentStyles';
+import ItemAvatar from '../../Modals/Item/ItemAvatar';
+import { Close, HelpRounded } from '@material-ui/icons';
+import { LandscapeContext } from '../../../../Context/LandscapeContext';
 
 interface Props {
   source: IItem;
   target: IItem;
   relation: IRelation;
-  locateItem: (fullyQualifiedItemIdentifier: string) => void;
 }
 
 /**
  * Returns a chosen Map Relation
  *
  */
-const MapRelation: React.FC<Props> = ({ source, target, relation, locateItem }) => {
+const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
   const classes = componentStyles();
+
+  const [visible, setVisible] = useState<boolean>(true);
+  const locateFunctionContext = useContext(LocateFunctionContext);
+  const landscapeContext = useContext(LandscapeContext);
+
+  if (!visible) return null;
+
   const sourceTitle = source.name || source.identifier;
   const targetTitle = target.name || target.identifier;
-  const title = sourceTitle + ' -> ' + targetTitle;
+  const title = sourceTitle + ' to ' + targetTitle;
+  const sourceStatus = landscapeContext.getAssessmentSummary(source.fullyQualifiedIdentifier);
+  const targetStatus = landscapeContext.getAssessmentSummary(target.fullyQualifiedIdentifier);
 
   return (
     <Card className={classes.card}>
-      <CardHeader title={title} className={classes.cardHeader} subheader={'Relation'} />
+      <CardHeader
+        title={title}
+        className={classes.cardHeader}
+        subheader={'Relation'}
+        action={
+          <IconButton
+            size={'small'}
+            onClick={() => {
+              setVisible(false);
+            }}
+          >
+            <Close />
+          </IconButton>
+        }
+      />
       <CardContent>
-        <span>Type: {relation.type || '-'}</span>
-        <br />
-        <span>Format: {relation.format || '-'}</span>
-        <br />
-        <span>Description: {relation.description || '-'}</span>
-        <br />
+        <Table aria-label={'info table'} style={{ tableLayout: 'fixed' }}>
+          <TableBody>
+            <TableRow key={'Type'}>
+              <TableCell style={{ width: '33%' }}>Type</TableCell>
+              <TableCell>
+                {relation.type}
+                <span
+                  title={
+                    'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
+                  }
+                >
+                  <HelpRounded />
+                </span>
+              </TableCell>
+            </TableRow>
+
+            <TableRow key={'format'}>
+              <TableCell style={{ width: '33%' }}>Format</TableCell>
+              <TableCell>{relation.format || '-'}</TableCell>
+            </TableRow>
+
+            <TableRow key={'desc'}>
+              <TableCell style={{ width: '33%' }}>Description</TableCell>
+              <TableCell>{relation.description || '-'}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
         <br />
         <Typography variant={'h6'}>Source</Typography>
         <div>
-          <Button
-            fullWidth={true}
-            key={source.fullyQualifiedIdentifier}
+          <IconButton
             onClick={() => {
-              locateItem(source.fullyQualifiedIdentifier);
+              locateFunctionContext.locateFunction(source.fullyQualifiedIdentifier);
             }}
+            size={'small'}
+            title={'Click to locate'}
           >
-            {sourceTitle}
-          </Button>
+            <ItemAvatar item={source} statusColor={sourceStatus?.status || ''} />
+          </IconButton>
+
+          {sourceTitle}
         </div>
 
         <Typography variant={'h6'}>Target</Typography>
         <div>
-          <Button
-            fullWidth={true}
-            key={target.fullyQualifiedIdentifier}
+          <IconButton
             onClick={() => {
-              locateItem(target.fullyQualifiedIdentifier);
+              locateFunctionContext.locateFunction(target.fullyQualifiedIdentifier);
             }}
+            size={'small'}
+            title={'Click to locate'}
           >
-            {targetTitle}
-          </Button>
+            <ItemAvatar item={target} statusColor={targetStatus?.status || ''} />
+          </IconButton>
+
+          {targetTitle}
         </div>
       </CardContent>
     </Card>

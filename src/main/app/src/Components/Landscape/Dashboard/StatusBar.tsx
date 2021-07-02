@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
 import StatusBarLayout from './StatusBarLayout';
 import { ILandscape, IAssessment, IItem, IGroup } from '../../../interfaces';
 import Group from '../Modals/Group/Group';
 import Item from '../Modals/Item/Item';
+import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
 
 /**
  * Logic Component to display all status of groups and items.
  */
 interface Props {
   setSidebarContent: Function;
-  locateItem: (fqi: string) => void;
   landscape: ILandscape;
   assessments: IAssessment;
 }
 
-const StatusBar: React.FC<Props> = ({ setSidebarContent, locateItem, landscape, assessments }) => {
+const StatusBar: React.FC<Props> = ({ setSidebarContent, landscape, assessments }) => {
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
+
+  const locateFunctionContext = useContext(LocateFunctionContext);
 
   const findGroup = (fullyQualifiedGroupIdentifier: string) => {
     const element = document.getElementById(fullyQualifiedGroupIdentifier);
@@ -43,26 +45,17 @@ const StatusBar: React.FC<Props> = ({ setSidebarContent, locateItem, landscape, 
   }, [highlightElement]);
 
   const onItemClick = (item: IItem) => {
-    locateItem(item.fullyQualifiedIdentifier);
-    setSidebarContent(<Item useItem={item} locateItem={locateItem} />);
+    locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
+    setSidebarContent(<Item fullyQualifiedItemIdentifier={item.fullyQualifiedIdentifier} />);
   };
 
   const onGroupClick = (group: IGroup) => {
     findGroup(group.fullyQualifiedIdentifier);
-    setSidebarContent(
-      <Group group={group} assessments={assessments} locateItem={locateItem} locateGroup={findGroup} />
-    );
+    setSidebarContent(<Group group={group} />);
   };
 
   if (landscape && assessments)
-    return (
-      <StatusBarLayout
-        landscape={landscape}
-        assessments={assessments}
-        onItemClick={onItemClick}
-        onGroupClick={onGroupClick}
-      />
-    );
+    return <StatusBarLayout onItemClick={onItemClick} onGroupClick={onGroupClick} />;
 
   return null;
 };

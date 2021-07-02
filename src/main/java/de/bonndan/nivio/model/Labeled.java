@@ -1,12 +1,14 @@
 package de.bonndan.nivio.model;
 
+import com.google.common.collect.MapDifference;
+import com.google.common.collect.Maps;
+import de.bonndan.nivio.input.AppearanceProcessor;
+import de.bonndan.nivio.input.ProcessingException;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -23,16 +25,17 @@ public interface Labeled {
      * @param prefixes filter criteria
      * @return filtered labels
      */
-    static Map<String, String> withoutPrefixes(Map<String, String> labels, String... prefixes) {
-        final List<String> strings = Arrays.asList(prefixes);
+    static Map<String, String> withoutKeys(Map<String, String> labels, String... prefixes) {
         return labels.entrySet().stream()
-                .filter(stringStringEntry -> {
-                    String[] split = stringStringEntry.getKey().split("\\" + Label.DELIMITER);
-                    if (split.length > 1) {
-                        return !strings.contains(split[0]);
+                .filter(entry -> {
+                    for (String prefix : prefixes) {
+                        if (entry.getKey().startsWith(prefix))
+                            return false;
                     }
                     return true;
-                }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                })
+                .filter(stringStringEntry -> stringStringEntry.getValue() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     default String getLabel(Label key) {
@@ -71,6 +74,49 @@ public interface Labeled {
      */
     default void setLabel(Label key, String value) {
         setLabel(key.name().toLowerCase(), value);
+    }
+
+    /**
+     * Any-setter default implementation for deserialization.
+     *
+     * @param key   label key
+     * @param value label value (string|string[]|number|list|map)
+     */
+    default void setLabel(@NonNull final String key, final Object value) {
+        if (StringUtils.isEmpty(key)) {
+            throw new IllegalArgumentException("Label key is empty.");
+        }
+
+        if (value instanceof String) {
+            getLabels().put(key.toLowerCase(), (String) value);
+            return;
+        }
+
+        if (value instanceof Number) {
+            getLabels().put(key.toLowerCase(), String.valueOf(value));
+            return;
+        }
+
+        if (value instanceof String[]) {
+            Arrays.stream(((String[]) value)).forEach(s -> setPrefixed(key, s));
+            return;
+        }
+
+        if (value instanceof List) {
+            try {
+                //noinspection unchecked,rawtypes
+                ((List) value).forEach(s -> setPrefixed(key, (String) s));
+                return;
+            } catch (ClassCastException e) {
+                throw new ProcessingException(String.format("Cannot set '%s' to list '%s'. Is this a list-like structure", key, value), e);
+            }
+        }
+
+        if (value instanceof Map) {
+            throw new IllegalArgumentException(String.format("Cannot use the value of '%s' as map ('%s'). Please check the spelling of", key, value));
+        }
+
+        getLabels().put(key, String.valueOf(value));
     }
 
     static Map<String, String> withPrefix(String prefix, Map<String, String> all) {
@@ -171,6 +217,42 @@ public interface Labeled {
     }
 
     /**
+     * Compares the labels against a previous version.
+     *
+     * @param before instance of labeled before the change
+     * @return key-based diff
+     */
+    default List<String> diff(@NonNull final Labeled before) {
+        List<String> diff = new ArrayList<>();
+        MapDifference<String, String> difference = Maps.difference(Objects.requireNonNull(before).getLabels(), getLabels());
+        difference.entriesOnlyOnLeft().keySet().stream()
+                .filter(s -> !AppearanceProcessor.affectedLabels.contains(s))
+                .forEach(s -> diff.add(String.format("Label '%s' has been removed", s)));
+        difference.entriesOnlyOnRight().keySet().stream()
+                .filter(s -> !AppearanceProcessor.affectedLabels.contains(s))
+                .forEach(s -> diff.add(String.format("Label '%s' has been added", s)));
+        difference.entriesDiffering().forEach((key, value) -> {
+            if (AppearanceProcessor.affectedLabels.contains(key)) return;
+            String msg = String.format("Label '%s' has changed from '%s' to '%s'", key, value.leftValue(), value.rightValue());
+            diff.add(msg);
+        });
+
+        return diff;
+    }
+
+    /**
+     * Map-setter that prevents overwriting existing labels.
+     *
+     * @param labels map of labels
+     */
+    default void setLabels(@Nullable Map<String, String> labels) {
+        if (labels == null) {
+            return;
+        }
+        labels.forEach((s, s2) -> getLabels().put(s, s2));
+    }
+
+    /**
      * Convenience method to set array-like labels.
      *
      * @param prefix         label prefix enum
@@ -196,11 +278,4 @@ public interface Labeled {
         setLabel(prefix.toLowerCase() + suffixAndValue, suffixAndValue);
     }
 
-    /**
-     * @param prefix
-     * @param suffixAndValue
-     */
-    default void setPrefixed(String prefix, String[] suffixAndValue) {
-        Arrays.stream(suffixAndValue).forEach(s -> setPrefixed(prefix, s));
-    }
 }

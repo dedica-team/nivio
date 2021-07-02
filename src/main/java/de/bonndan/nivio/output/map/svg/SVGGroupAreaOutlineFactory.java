@@ -4,67 +4,87 @@ import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Collects all hexes close to group item hexes to create an outline around an area
  */
-public class SVGGroupAreaOutlineFactory {
+class SVGGroupAreaOutlineFactory {
+
+    private final GroupAreaStyle groupAreaStyle;
 
     private boolean debug = false;
 
-    public void setDebug(boolean debug) {
+
+    SVGGroupAreaOutlineFactory(@NonNull final GroupAreaStyle groupAreaStyle) {
+        this.groupAreaStyle = groupAreaStyle;
+    }
+
+    void setDebug(boolean debug) {
         this.debug = debug;
     }
 
-    @Nullable
-    public List<DomContent> getOutline(@NonNull Set<Hex> groupArea, String fillId) {
+    /**
+     * @param groupArea all hexes in the group area
+     * @param fillId    fill color
+     * @return all svg elements forming the group outline
+     *
+     */
+    @NonNull
+    public List<DomContent> getOutline(@NonNull final Set<Hex> groupArea, @NonNull final String fillId) {
 
         if (!groupArea.iterator().hasNext()) {
-            return null;
+            return new ArrayList<>();
         }
 
         //find left top
         //start with left top
         Hex start = Hex.topLeft(groupArea);
-        List<DomContent> outlines = new ArrayList<>();
-        List<DomContent> pointsPath = getOutline(start, groupArea, fillId);
-        outlines.addAll(pointsPath);
-
-        return outlines;
+        return getOutline(start, groupArea, fillId);
     }
 
-    private List<DomContent> getOutline(@NonNull Hex start, @NonNull Set<Hex> groupArea, String fillId) {
+    private List<DomContent> getOutline(@NonNull final Hex start, @NonNull final Set<Hex> groupArea, String fillId) {
 
         if (groupArea.containsAll(start.neighbours())) {
-            throw new IllegalArgumentException("Starting point " + start + " for outline is not on border.");
-        }
-        LinkedHashSet<Hex> borderHexes = new LinkedHashSet<>();
-        Position next = new Position(start, 0);
-        while (next != null) {
-            //end
-            if (borderHexes.contains(next.hex)) {
-                break;
-            }
-            borderHexes.add(next.hex);
-            next = getNext(next, groupArea);
+            throw new IllegalArgumentException(String.format("Starting point %s for outline is not on border.", start));
         }
 
-        List<Point2D.Double> centers = borderHexes.stream()
+        LinkedHashMap<Hex, Position> borderHexes = getBorderHexes(start, groupArea);
+        List<Point2D.Double> centers = borderHexes.keySet().stream()
                 .map(Hex::toPixel)
                 .collect(Collectors.toList());
 
-        String pointsPath = WobblyGroupOutline.getPath(centers);
-        //String pointsPath = SharpCornersGroupOutline.getPath(centers);
-        //String pointsPath = SmoothCornersGroupOutline.getPath(corners);
+        List<DomContent> containerTags = new ArrayList<>();
+        String pointsPath = null;
+        switch (groupAreaStyle) {
+            case SHARP:
+                pointsPath = SharpCornersGroupOutline.getPath(centers);
+                break;
+            case SMOOTH:
+                pointsPath = SmoothCornersGroupOutline.getPath(centers);
+                break;
+            case WOBBLY:
+                pointsPath = WobblyGroupOutline.getPath(centers);
+                break;
+            case HEXES:
+                pointsPath = BorderHexesGroupOutline.getPath(borderHexes, groupArea);
+                /* style of multiple hexes*/
+                List<DomContent> territoryHexes = groupArea.stream()
+                        .map(hex -> new SVGHex(hex, fillId, fillId).render())
+                        .collect(Collectors.toList());
+                containerTags.addAll(territoryHexes);
+                break;
+        }
+
 
         /* DEBUG path point order */
-        List<DomContent> containerTags = new ArrayList<>();
         if (debug) {
             int i = 0;
             for (Point2D.Double aDouble : centers) {
@@ -75,22 +95,31 @@ public class SVGGroupAreaOutlineFactory {
             }
         }
 
-        if (debug) {
-            /* old style of multiple hexes*/
-            List<DomContent> territoryHexes = groupArea.stream()
-                    .map(hex -> new SVGHex(hex, fillId, fillId).render())
-                    .collect(Collectors.toList());
-            containerTags.addAll(territoryHexes);
+        if (pointsPath != null) {
+            ContainerTag svgPath = SvgTagCreator.path()
+                    .attr("d", pointsPath)
+                    .attr("fill", "none")
+                    .condAttr(!StringUtils.isEmpty(fillId), "stroke", fillId)
+                    .attr("stroke-width", 3);
+            containerTags.add(svgPath);
         }
 
-
-        ContainerTag svgPath = SvgTagCreator.path()
-                .attr("d", pointsPath)
-                .condAttr(!StringUtils.isEmpty(fillId), "stroke", fillId)
-                .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId);
-
-        containerTags.add(svgPath);
         return containerTags;
+    }
+
+    static LinkedHashMap<Hex, Position> getBorderHexes(Hex start, Set<Hex> groupArea) {
+        LinkedHashMap<Hex, Position> borderHexes = new LinkedHashMap<>();
+        Position next = new Position(start, 0);
+        while (next != null) {
+            //end
+            if (borderHexes.containsKey(next.hex)) {
+                break;
+            }
+            borderHexes.put(next.hex, next);
+            next = getNext(next, groupArea);
+        }
+
+        return borderHexes;
     }
 
     /**
@@ -98,7 +127,7 @@ public class SVGGroupAreaOutlineFactory {
      * @param allInGroup    all hexes in the group area
      * @return the position to continue with
      */
-    private Position getNext(@NonNull Position startPosition, Set<Hex> allInGroup) {
+    private static Position getNext(@NonNull Position startPosition, Set<Hex> allInGroup) {
 
         Hex start = startPosition.hex;
         final List<Hex> neighbours = start.neighbours();
@@ -136,7 +165,7 @@ public class SVGGroupAreaOutlineFactory {
     static class Position {
 
         final Hex hex;
-        private final int rotationOffset;
+        final int rotationOffset;
 
         Position(@NonNull Hex hex, int rotationOffset) {
             this.hex = hex;
@@ -146,4 +175,10 @@ public class SVGGroupAreaOutlineFactory {
         }
     }
 
+    public enum GroupAreaStyle {
+        SHARP,
+        WOBBLY,
+        SMOOTH,
+        HEXES
+    }
 }

@@ -1,13 +1,14 @@
 package de.bonndan.nivio.input.dto;
 
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
@@ -16,26 +17,58 @@ import java.util.*;
 /**
  * This is representation of a service in the textual form as described in a source file.
  */
-public class ItemDescription implements ComponentDescription, Labeled, Linked, Tagged {
+public class ItemDescription implements ComponentDescription, Labeled, Linked, Tagged, ItemComponent {
 
     private final Map<String, Link> links = new HashMap<>();
+
+    @Schema(description = "Relations to other landscape items.")
     @JsonDeserialize(contentAs = RelationDescription.class)
     private final Set<RelationDescription> relations = new HashSet<>();
+
+    @Schema(description = "Key-value pair labels for an item.")
     private final Map<String, String> labels = new HashMap<>();
+
+    @Schema(hidden = true)
     @NotEmpty
     private String environment;
+
+    @Schema(required = true,
+            description = "Immutable unique identifier (maybe use an URN). Primary means to identify items in searches.",
+            pattern = Item.IDENTIFIER_VALIDATION)
     @NotEmpty
     private String identifier;
+
+    @Schema(description = "A human readable name/title. The name is considered when items are searched.", example = "my beautiful service")
     private String name;
+
+    @Schema(description = "The business owner of the item. Preferably use an email address.", example = "johnson@acme.com")
     private String owner;
+
+    @Schema(description = "A brief description.")
     private String description;
+
+    @Schema(description = "The primary way to contact a responsible person or team. Preferably use an email address.", example = "johnson@acme.com")
     private String contact;
+
+    @Schema(description = "The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to " + Group.COMMON + ".",
+            example = "shipping")
     private String group;
+
+    @Schema(description = "A collection of low level interfaces. Can be used to describe HTTP API endpoints for instance.")
     @JsonDeserialize(contentAs = InterfaceDescription.class)
     private Set<InterfaceDescription> interfaces = new HashSet<>();
+
+    @Schema(description = "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.", example = "shipping-mysqldb")
     private List<String> providedBy = new ArrayList<>();
+
+    @Schema(description = "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work).")
     private String icon;
+
+    @Schema(description = "Overrides the group color. Use an HTML hex color code without the leading hash.", example = "4400FF")
     private String color;
+
+    @Schema(description = "The technical address of the item (should be an URI). Taken into account when matching relation endpoints.")
+    private String address;
 
     public ItemDescription() {
     }
@@ -49,6 +82,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.group = fqi.getGroup();
     }
 
+    @NonNull
     public String getIdentifier() {
         return identifier;
     }
@@ -57,6 +91,8 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.identifier = StringUtils.trimAllWhitespace(identifier);
     }
 
+    @Schema(hidden = true)
+    @NonNull
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(environment, group, identifier);
     }
@@ -69,6 +105,8 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.environment = environment;
     }
 
+    @Schema(description = "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
+            example = "service|database|volume")
     public String getType() {
         return getLabel(Label.type);
     }
@@ -125,6 +163,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.contact = contact;
     }
 
+    @JsonProperty("links") //this override is for DTO documentation, hateoas is not relevant here
     @Override
     public Map<String, Link> getLinks() {
         return links;
@@ -138,6 +177,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.group = group;
     }
 
+    @Schema(description = "The lifecycle state of an item.", allowableValues = {"PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL"})
     public void setLifecycle(String lifecycle) {
 
         //try to standardize using enum values
@@ -201,12 +241,20 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.relations.add(relationItem);
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null) {
+        if (!(o instanceof ItemDescription)) {
             return false;
         }
         return toString().equals(o.toString());
@@ -234,7 +282,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
      *
      * @param status a list of key-value pairs, keys are "label", "status", "message"
      */
-    @Deprecated
+    @Schema(name = "statuses", description = "A list of statuses that works like hardcoded KPIs.")
     public void setStatuses(List<LinkedHashMap<String, String>> status) {
         setStatus(status);
     }
@@ -244,14 +292,15 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
      *
      * @param status a list of key-value pairs, keys are "label", "status", "message"
      */
+    @Schema(name = "status", description = "A list of statuses that works like hardcoded KPIs.")
     public void setStatus(List<LinkedHashMap<String, String>> status) {
         status.forEach(map -> {
             String key = map.get("label");
             if (key != null) {
                 String value = map.get(StatusValue.LABEL_SUFFIX_STATUS);
                 String message = map.get(StatusValue.LABEL_SUFFIX_MESSAGE);
-                setLabel(Label.key(Label.status, key, StatusValue.LABEL_SUFFIX_STATUS), value);
-                setLabel(Label.key(Label.status, key, StatusValue.LABEL_SUFFIX_MESSAGE), message);
+                setLabel(Label.withPrefix(Label.status, key, StatusValue.LABEL_SUFFIX_STATUS), value);
+                setLabel(Label.withPrefix(Label.status, key, StatusValue.LABEL_SUFFIX_MESSAGE), message);
             }
         });
     }
@@ -268,29 +317,23 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     }
 
     @JsonAnySetter
-    public void setLabel(String key, Object value) {
-        if (value instanceof String) {
-            labels.put(key.toLowerCase(), (String) value);
-            return;
-        }
-        if (value instanceof String[]) {
-            Arrays.stream(((String[]) value)).forEach(s -> setPrefixed(key, s));
-            return;
-        }
+    @Override
+    public void setLabel(@NonNull String key, Object value) {
+        ComponentDescription.super.setLabel(key, value);
+    }
 
-        if (value instanceof List) {
-            try {
-                ((List) value).forEach(s -> setPrefixed(key, (String) s));
-                return;
-            } catch (ClassCastException e) {
-                throw new ProcessingException("Cannot set " + key + " to " + value, e);
-            }
-        }
+    /**
+     * Setter for framework map.
+     *
+     * @param frameworks "name": "version"
+     * @see Label
+     */
+    @Schema(description = "The parts used to create the item. Usually refers to technical frameworks.", type = "Map", example = "java: 8")
+    public void setFrameworks(final Map<String, String> frameworks) {
+        frameworks.forEach(this::setFramework);
+    }
 
-        if (value instanceof Map) {
-            throw new IllegalArgumentException("Cannot set " + key + " to map " + value);
-        }
-
-        labels.put(key, String.valueOf(value));
+    public void setFramework(@NonNull final String key, String value) {
+        setLabel(Label.framework.withPrefix(key), value);
     }
 }

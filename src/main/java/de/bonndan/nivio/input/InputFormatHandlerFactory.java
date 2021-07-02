@@ -16,10 +16,6 @@ public class InputFormatHandlerFactory {
 
     private final Map<InputFormatHandler, List<String>> factoryListMap = new ConcurrentHashMap<>();
 
-    public static InputFormatHandlerFactory with(InputFormatHandler handler) {
-        return new InputFormatHandlerFactory(new ArrayList<>(Collections.singletonList(handler)));
-    }
-
     /**
      * The available handlers are injected here.
      *
@@ -36,7 +32,7 @@ public class InputFormatHandlerFactory {
      * @return the factory
      */
     @NonNull
-    public InputFormatHandler getInputFormatHandler(SourceReference reference) {
+    public InputFormatHandler getInputFormatHandler(@NonNull final SourceReference reference) {
 
         List<InputFormatHandler> factories = new ArrayList<>();
         factoryListMap.entrySet().stream()
@@ -50,8 +46,10 @@ public class InputFormatHandlerFactory {
         if (factories.isEmpty()) {
             List<String> knownFormats = new ArrayList<>();
             factoryListMap.values().forEach(knownFormats::addAll);
-            String msg = "Unknown source reference format: '" + reference.getFormat() + "', known formats are: "
-                    + StringUtils.collectionToDelimitedString(knownFormats, ", ");
+            String msg = String.format("Unknown source reference format: '%s', known formats are: %s",
+                    reference.getFormat(),
+                    StringUtils.collectionToDelimitedString(knownFormats, ", ")
+            );
             if (reference.getLandscapeDescription() != null) {
                 throw new ProcessingException(reference.getLandscapeDescription(), msg);
             } else {

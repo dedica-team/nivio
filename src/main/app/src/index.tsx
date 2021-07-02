@@ -2,15 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import theme from './Ressources/styling/theme';
-import { ThemeProvider } from '@material-ui/core/styles';
-import { CssBaseline } from '@material-ui/core';
+import { LocateFunctionContextProvider } from './Context/LocateFunctionContext';
+import { LandscapeContextProvider } from './Context/LandscapeContext';
 
 ReactDOM.render(
-  <ThemeProvider theme={theme}>
-    <CssBaseline />
-    <App />
-  </ThemeProvider>,
+  <LandscapeContextProvider>
+    <LocateFunctionContextProvider>
+      <App />
+    </LocateFunctionContextProvider>
+  </LandscapeContextProvider>,
   document.getElementById('root')
 );
 

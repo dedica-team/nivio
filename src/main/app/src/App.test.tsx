@@ -6,5 +6,5 @@ jest.mock('@stomp/stompjs');
 
 it('should render home component', () => {
   const { getByText } = render(<App />);
-  expect(getByText('Loading landscapes...')).toBeInTheDocument();
+  expect(getByText(new RegExp('Loading ...', 'i'))).toBeInTheDocument();
 });

@@ -8,7 +8,7 @@ import de.bonndan.nivio.model.Landscape;
  *
  *
  */
-abstract class Resolver {
+public abstract class Resolver {
 
     protected final ProcessLog processLog;
 

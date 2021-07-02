@@ -42,9 +42,9 @@ public class LocalIcons {
      *
      * @param iconFolder optional dir containing a different icon set
      */
-    public LocalIcons(@NonNull String iconFolder) {
+    public LocalIcons(@NonNull final String iconFolder) {
         if (!StringUtils.isEmpty(Objects.requireNonNull(iconFolder))) {
-            this.iconFolder = iconFolder.endsWith(File.separator) ? iconFolder : iconFolder + File.separator;
+            this.iconFolder = iconFolder.endsWith("/") || iconFolder.endsWith("\\") ? iconFolder : iconFolder + File.separator;
         } else {
             this.iconFolder = DEFAULT_ICONS_FOLDER;
         }
@@ -98,10 +98,16 @@ public class LocalIcons {
             return Optional.ofNullable(iconDataUrls.get(path));
         }
 
+        if (path.startsWith(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64)) {
+            return Optional.of(path);
+        }
+
         Optional<String> dataUrl = DataUrlHelper.asBase64(path).map(s -> DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + s);
         dataUrl.ifPresentOrElse(
                 s -> iconDataUrls.put(path, s),
-                () -> LOGGER.warn("Failed to load svg icon {}", path)
+                () -> {
+                    LOGGER.warn("Failed to load svg icon {}", path);
+                }
         );
         return dataUrl;
     }

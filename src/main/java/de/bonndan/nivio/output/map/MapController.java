@@ -29,7 +29,7 @@ public class MapController {
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(method = RequestMethod.GET, path = "/{landscape}/" + MAP_SVG_ENDPOINT)
+    @GetMapping(path = "/{landscape}/" + MAP_SVG_ENDPOINT)
     public ResponseEntity<String> svg(@PathVariable(name = "landscape") final String landscapeIdentifier,
                                       @RequestParam(value = "debug", required = false, defaultValue = "false") boolean debug
     ) {

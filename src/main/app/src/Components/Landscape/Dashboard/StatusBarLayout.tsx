@@ -1,31 +1,16 @@
-import React from 'react';
-
-import Grid from '@material-ui/core/Grid';
-import { IAssessment, IGroup, ILandscape } from '../../../interfaces';
-import { getAssessmentSummary } from '../Utils/utils';
+import React, { useContext, useState } from 'react';
+import { IGroup } from '../../../interfaces';
 import StatusChip from '../../StatusChip/StatusChip';
 import Button from '@material-ui/core/Button';
-import Toolbar from '@material-ui/core/Toolbar';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import {darken, Theme} from '@material-ui/core';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    bottomBar: {
-      top: 'auto',
-      bottom: 0,
-      left: 0,
-      padding: 5,
-      position: 'fixed',
-      width: '100%',
-      backgroundColor: darken(theme.palette.secondary.dark, 0.2),
-    },
-  })
-);
+import { Card, CardHeader, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
+import { LandscapeContext } from '../../../Context/LandscapeContext';
+import componentStyles from '../../../Resources/styling/ComponentStyles';
+import IconButton from '@material-ui/core/IconButton';
+import { Close } from '@material-ui/icons';
+import ItemAvatar from '../Modals/Item/ItemAvatar';
+import GroupAvatar from '../Modals/Group/GroupAvatar';
 
 interface Props {
-  landscape: ILandscape;
-  assessments: IAssessment;
   onItemClick: Function;
   onGroupClick: Function;
 }
@@ -33,28 +18,42 @@ interface Props {
 /**
  * Displays all groups of given landscape and provides all needed navigation
  */
-const StatusBarLayout: React.FC<Props> = ({
-  landscape,
-  assessments,
-  onItemClick,
-  onGroupClick,
-}) => {
-  const classes = useStyles();
+const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
+  const context = useContext(LandscapeContext);
+  const componentClasses = componentStyles();
+  const [visible, setVisible] = useState<boolean>(true);
+
   const getItems = (group: IGroup) => {
     return group.items.map((item) => {
-      const [assessmentColor, , field] = getAssessmentSummary(
-        assessments?.results[item.fullyQualifiedIdentifier]
-      );
+      const assessmentSummary = context.getAssessmentSummary(item.fullyQualifiedIdentifier);
 
-      if (field === '') return null;
+      if (assessmentSummary?.field === '') return null;
+      if (
+        !assessmentSummary?.status ||
+        assessmentSummary?.status === 'GREEN' ||
+        assessmentSummary.status === 'UNDEFINED'
+      )
+        return null;
+      if (!assessmentSummary.maxField) return null;
 
       return (
-        <Button key={item.fullyQualifiedIdentifier} onClick={() => onItemClick(item)}>
-          <StatusChip
-            name={(item.name || item.identifier) + ' ' + field}
-            status={assessmentColor}
-          />
-        </Button>
+        <TableRow key={'status_' + item.fullyQualifiedIdentifier}>
+          <TableCell style={{ textAlign: 'center' }}>
+            <Button
+              key={item.fullyQualifiedIdentifier}
+              title={item.name || item.identifier}
+              onClick={() => onItemClick(item)}
+            >
+              <ItemAvatar item={item} statusColor={assessmentSummary?.status} />
+            </Button>
+            <br />
+            {item.name || item.identifier}
+          </TableCell>
+          <TableCell>
+            <StatusChip name={assessmentSummary.maxField} status={assessmentSummary.status} />
+            {assessmentSummary.message}
+          </TableCell>
+        </TableRow>
       );
     });
   };
@@ -64,46 +63,68 @@ const StatusBarLayout: React.FC<Props> = ({
 
     return groups.map((group) => {
       if (group.items.length === 0) {
-        console.debug('Skipping group without items');
+        console.log('Skipping group without items');
         return null;
       }
 
-      const groupColor = `#${group.color}` || 'grey';
-      const [groupAssessmentColor, , groupAssessmentField] = getAssessmentSummary(
-        assessments?.results[group.fullyQualifiedIdentifier]
-      );
+      const groupAssessment = context.getAssessmentSummary(group.fullyQualifiedIdentifier);
+      if (
+        !groupAssessment ||
+        !groupAssessment?.status ||
+        groupAssessment?.status === 'GREEN' ||
+        groupAssessment.status === 'UNDEFINED'
+      )
+        return null;
 
-      if (groupAssessmentField === '') {
+      if (groupAssessment.field === '') {
         console.debug('Group ' + group.fullyQualifiedIdentifier + ' has no summary assessment');
         return null;
       }
 
-      const title = 'Group ' + group.name;
       return (
-        <Button
-          id={group.fullyQualifiedIdentifier}
-          onClick={() => onGroupClick(group)}
-          key={group.name}
-        >
-          <StatusChip
-            name={title}
-            status={groupAssessmentColor}
-            style={{
-              backgroundColor: groupColor,
-            }}
-          />
-        </Button>
+        <TableRow key={'status_' + group.fullyQualifiedIdentifier}>
+          <TableCell style={{ textAlign: 'center' }}>
+            <Button
+              id={group.fullyQualifiedIdentifier}
+              onClick={() => onGroupClick(group)}
+              key={group.name}
+            >
+              <GroupAvatar group={group} statusColor={groupAssessment.status} />
+            </Button>
+            <br />
+            {group.name}
+          </TableCell>
+          <TableCell>
+            <StatusChip name={groupAssessment.maxField} status={groupAssessment.status} />
+            {groupAssessment.message}
+          </TableCell>
+        </TableRow>
       );
     });
   };
 
+  if (!visible) return null;
   return (
-    <Toolbar className={classes.bottomBar} variant={'dense'} disableGutters={true}>
-      <Grid container spacing={0}>
-        {getGroups(landscape.groups)}
-        {landscape?.groups.map((group, i) => getItems(group))}
-      </Grid>
-    </Toolbar>
+    <Card className={componentClasses.card}>
+      <CardHeader
+        title={'Warnings'}
+        action={
+          <IconButton
+            onClick={() => {
+              setVisible(false);
+            }}
+          >
+            <Close />
+          </IconButton>
+        }
+      />
+      <Table>
+        <TableBody>
+          {context.landscape ? getGroups(context.landscape.groups) : null}
+          {context.landscape?.groups.map((group) => getItems(group))}
+        </TableBody>
+      </Table>
+    </Card>
   );
 };
 

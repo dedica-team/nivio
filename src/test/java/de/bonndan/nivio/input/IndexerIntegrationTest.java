@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.IconService;
+import de.bonndan.nivio.search.ItemIndex;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,8 +63,8 @@ public class IndexerIntegrationTest {
 
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, applicationEventPublisher, iconService);
 
-        ProcessLog processLog = indexer.index(landscapeDescription);
-        return (Landscape) processLog.getLandscape();
+        indexer.index(landscapeDescription);
+        return landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
     }
 
     @Test //first pass
@@ -76,13 +78,19 @@ public class IndexerIntegrationTest {
         assertEquals(17, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
-        assertEquals(3, blog.getProvidedBy().size());
+        assertEquals(3, RelationType.PROVIDER.filter(blog.getRelations()).stream()
+                .filter(relationItem1 -> relationItem1.getTarget().equals(blog))
+                .map(Relation::getSource)
+                .collect(Collectors.toUnmodifiableSet()).size());
 
-        Optional<Item> first = blog.getProvidedBy().stream().filter(i -> i.getIdentifier().equals("wordpress-web")).findFirst();
+        Optional<Item> first = RelationType.PROVIDER.filter(blog.getRelations()).stream()
+                .filter(relationItem -> relationItem.getTarget().equals(blog))
+                .map(Relation::getSource)
+                .collect(Collectors.toUnmodifiableSet()).stream().filter(i -> i.getIdentifier().equals("wordpress-web")).findFirst();
         Item webserver = first.orElseThrow();
 
         Assertions.assertNotNull(webserver);
-        assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
+        assertEquals(1, RelationType.PROVIDER.filter(webserver.getRelations()).size());
 
         Relation push = (Relation) blog.getRelations().stream()
                 .filter(d -> "hourly push KPI data".equals(d.getDescription()))
@@ -116,12 +124,20 @@ public class IndexerIntegrationTest {
         assertEquals(17, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
-        assertEquals(3, blog.getProvidedBy().size());
+        assertEquals(3, RelationType.PROVIDER.filter(blog.getRelations()).stream()
+                .filter(relationItem1 -> relationItem1.getTarget().equals(blog))
+                .map(Relation::getSource)
+                .collect(Collectors.toUnmodifiableSet()).size());
 
-        ArrayList<Item> landscapeItems = new ArrayList<>(blog.getProvidedBy());
-        Item webserver = new ItemIndex(new HashSet<>(landscapeItems)).pick("wordpress-web", null);
+        ArrayList<Item> landscapeItems = new ArrayList<>(RelationType.PROVIDER.filter(blog.getRelations()).stream()
+                .filter(relationItem -> relationItem.getTarget().equals(blog))
+                .map(Relation::getSource)
+                .collect(Collectors.toUnmodifiableSet()));
+        ItemIndex<Item> itemIndex = new ItemIndex<>(Item.class);
+        itemIndex.setItems(new HashSet<>(landscapeItems));
+        Item webserver = itemIndex.pick("wordpress-web", null);
         Assertions.assertNotNull(webserver);
-        assertEquals(1, webserver.getRelations(RelationType.PROVIDER).size());
+        assertEquals(1, RelationType.PROVIDER.filter(webserver.getRelations()).size());
 
         Relation push = blog.getRelations().stream()
                 .filter(d -> "hourly push KPI data".equals(d.getDescription()))
@@ -153,8 +169,9 @@ public class IndexerIntegrationTest {
         Item blog = landscape.getItems().pick("blog-server", null);
         int before = landscape.getItems().all().size();
 
-        LandscapeDescription landscapeDescription = new LandscapeDescription();
-        landscapeDescription.setIdentifier(landscape.getIdentifier());
+        LandscapeDescription landscapeDescription = new LandscapeDescription(
+                landscape.getIdentifier(), landscape.getName(), null
+        );
         landscapeDescription.setIsPartial(true);
 
         ItemDescription newItem = new ItemDescription();
@@ -170,17 +187,26 @@ public class IndexerIntegrationTest {
         Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, applicationEventPublisher, iconService);
 
         //created
-        landscape = (Landscape) indexer.index(landscapeDescription).getLandscape();
-        blog = (Item) landscape.getItems().pick("blog-server", "completelyNewGroup");
+        indexer.index(landscapeDescription);
+        landscape = landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
+        blog = landscape.getItems().pick("blog-server", "completelyNewGroup");
         assertEquals("completelyNewGroup", blog.getGroup());
         assertEquals(before + 1, landscape.getItems().all().size());
 
         //updated
-        Item wordpress = (Item) landscape.getItems().pick("wordpress-web", "content");
+        Item wordpress = landscape.getItems().pick("wordpress-web", "content");
         assertEquals("Other name", wordpress.getName());
         assertEquals("content", wordpress.getGroup());
 
-
+        //testing changelog
+        ArgumentCaptor<ProcessingFinishedEvent> captor = ArgumentCaptor.forClass(ProcessingFinishedEvent.class);
+        verify(applicationEventPublisher, times(2)).publishEvent(captor.capture());
+        ProcessingFinishedEvent value = captor.getAllValues().get(1);
+        assertThat(value).isNotNull();
+        ProcessingChangelog changelog = value.getChangelog();
+        assertThat(changelog).isNotNull();
+        assertThat(changelog.changes).hasSize(3);
+        assertThat(changelog.changes).containsKey("nivio:example/content/wordpress-web");
     }
 
     /**
@@ -246,7 +272,7 @@ public class IndexerIntegrationTest {
         Map<String, Group> groups = landscape1.getGroups();
         assertTrue(groups.containsKey("content"));
         Group content = groups.get("content");
-        assertFalse(content.getItems().isEmpty());
+        assertThat(content.getItems()).isNotEmpty();
         assertEquals(3, content.getItems().size());
 
         assertTrue(groups.containsKey("ingress"));
@@ -259,7 +285,9 @@ public class IndexerIntegrationTest {
     public void readGroupsContains() {
         Landscape landscape1 = index("/src/test/resources/example/example_groups.yml");
         Group a = landscape1.getGroups().get("groupA");
-        ItemIndex index = new ItemIndex(new HashSet<>(a.getItems()));
+        ItemIndex<Item> index = new ItemIndex<>(Item.class);
+        index.setItems(new HashSet<>(a.getItems()));
+
         assertNotNull(index.pick("blog-server", null));
         assertNotNull(index.pick("crappy_dockername-234234", null));
     }
@@ -285,62 +313,6 @@ public class IndexerIntegrationTest {
         assertEquals("foo", foo.getIdentifier());
         assertEquals(1, foo.getRelations().size());
     }
-
-    @Test
-    public void triggersSearchIndexing() {
-
-        //when
-        Landscape landscape = index("/src/test/resources/example/example_env.yml");
-
-        //then
-        Set<Item> result = landscape.getItems().search("contact:alphateam@acme.io");
-        assertEquals(2, result.size());
-
-        result = landscape.getItems().search("contact:alphateam@acme.io AND name:\"Demo Blog\"");
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    public void searchForTags() {
-
-        //when
-        Landscape landscape = index("/src/test/resources/example/example_env.yml");
-
-        //then
-        Set<Item> result = landscape.getItems().search("tag:CMS");
-        assertEquals(1, result.size());
-        Item match = result.iterator().next();
-        assertEquals("nivio:example/content/blog-server", match.getFullyQualifiedIdentifier().toString());
-        assertTrue(List.of(match.getTags()).contains("cms"));
-        assertTrue(List.of(match.getTags()).contains("ui"));
-
-        result = landscape.getItems().search("tag:UI");
-        assertEquals(1, result.size());
-        match = result.iterator().next();
-        assertEquals("nivio:example/content/blog-server", match.getFullyQualifiedIdentifier().toString());
-        assertTrue(List.of(match.getTags()).contains("cms"));
-        assertTrue(List.of(match.getTags()).contains("ui"));
-    }
-
-    /**
-     * Ensures that KPIs are inited early
-     */
-    @Test
-    public void testKpisInitialisedEarly() {
-
-        //when
-        index("/src/test/resources/example/example_kpis_broken.yml");
-
-        //then
-        ArgumentCaptor<ProcessingErrorEvent> captor = ArgumentCaptor.forClass(ProcessingErrorEvent.class);
-        verify(applicationEventPublisher, times(2)).publishEvent(captor.capture());
-
-        List<ProcessingErrorEvent> allValues = captor.getAllValues();
-        ProcessingErrorEvent value = allValues.get(0);
-        assertNotNull(value);
-        assertEquals("Failed to parse KPI 'costs' range: 0,abc", value.getMessage());
-    }
-
 
     private String getRootPath() {
         Path currentRelativePath = Paths.get("");

@@ -1,8 +1,10 @@
 package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
+import org.springframework.lang.NonNull;
+
+import java.util.Objects;
 
 public class RelationBuilder {
 
@@ -10,6 +12,13 @@ public class RelationBuilder {
         return createProviderDescription(source.getIdentifier(), target);
     }
 
+    /**
+     * Factory method to create a provider type relation.
+     *
+     * @param source the provider
+     * @param target the consumer
+     * @return a new relation description
+     */
     public static RelationDescription createProviderDescription(String source, String target) {
         RelationDescription relation = new RelationDescription();
         relation.setType(RelationType.PROVIDER);
@@ -18,7 +27,6 @@ public class RelationBuilder {
 
         return relation;
     }
-
 
     /**
      * Creates a new relation description of type dataflow and adds it to the source.
@@ -31,22 +39,67 @@ public class RelationBuilder {
         return relationDescription;
     }
 
+    /**
+     * Factory method to create a new provider type relation.
+     *
+     * @param source the provider item
+     * @param target the consuming item
+     * @return a new relation
+     */
     public static Relation createProviderRelation(Item source, Item target) {
-        Relation relation = new Relation(source, target);
-        relation.setType(RelationType.PROVIDER);
-
-        return relation;
+        return new Relation(source, target, null, null, RelationType.PROVIDER);
     }
 
-    public static RelationDescription provides(ItemDescription source, ItemDescription target) {
-        return provides(source.getIdentifier(), target);
+
+    /**
+     * Returns a new relation with values updated by the description.
+     *
+     * @param existing    existing relation
+     * @param description incoming data
+     * @param landscape   the landscape containing source and target items
+     * @return new copy
+     */
+    @NonNull
+    public static Relation update(@NonNull final Relation existing,
+                                  @NonNull final RelationDescription description,
+                                  @NonNull final Landscape landscape
+    ) {
+        Objects.requireNonNull(existing);
+        Objects.requireNonNull(description);
+        Objects.requireNonNull(landscape);
+
+        return new Relation(
+                landscape.findOneBy(description.getSource(), existing.getSource().getGroup()),
+                landscape.findOneBy(description.getTarget(), existing.getTarget().getGroup()),
+                description.getDescription(),
+                description.getFormat(),
+                existing.getType()
+        );
     }
 
-    public static RelationDescription provides(String source, ItemDescription target) {
-        RelationDescription relationDescription = new RelationDescription();
-        relationDescription.setSource(source);
-        relationDescription.setTarget(target.getFullyQualifiedIdentifier().toString());
-        relationDescription.setType(RelationType.PROVIDER);
-        return relationDescription;
+    /**
+     * Create a new relation object
+     *
+     * @param origin              the item the description relates to
+     * @param relationDescription the input dto
+     * @param landscape           the landscape to pick ends from
+     * @return a new relation object
+     */
+    @NonNull
+    public static Relation create(@NonNull final Item origin,
+                                  @NonNull final RelationDescription relationDescription,
+                                  @NonNull final Landscape landscape
+    ) {
+        Objects.requireNonNull(relationDescription);
+        Objects.requireNonNull(landscape);
+
+        return new Relation(
+                landscape.findOneBy(relationDescription.getSource(), origin.getGroup()),
+                landscape.findOneBy(relationDescription.getTarget(), origin.getGroup()),
+                relationDescription.getDescription(),
+                relationDescription.getFormat(),
+                relationDescription.getType()
+        );
     }
+
 }

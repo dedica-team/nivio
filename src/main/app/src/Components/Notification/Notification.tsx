@@ -1,98 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import { INotificationMessage, ISnackbarMessage } from '../../interfaces';
-import { Client, StompSubscription } from '@stomp/stompjs';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import IconButton from '@material-ui/core/IconButton';
+import { Badge } from '@material-ui/core';
+import { Notifications } from '@material-ui/icons';
+import Changes from './Changes';
+import componentStyles from '../../Resources/styling/ComponentStyles';
+import { LandscapeContext } from '../../Context/LandscapeContext';
 
-import NotificationLayout from './NotificationLayout';
-
-import { withBasePath } from '../../utils/API/BasePath';
+interface Props {
+  setSidebarContent: Function;
+}
 
 /**
- * Logic component for notifications
+ * Displaying server side notifications.
+ *
+ *
  */
-const Notification: React.FC = () => {
-  const snackPackCloseDelay = 20000;
+const Notification: React.FC<Props> = ({ setSidebarContent }) => {
 
-  const backendUrl = withBasePath('/subscribe');
-  const protocol = window.location.protocol !== 'https:' ? 'ws' : 'wss';
+  const classes = componentStyles();
+  const [newChanges, setNewChanges] = useState<Boolean>(false);
+  const [renderedChanges, setRenderedChanges] = useState<ReactElement | null>(null);
+  const landscapeContext = useContext(LandscapeContext);
+  
 
-  const [snackPack, setSnackPack] = useState<ISnackbarMessage[]>([]);
-  const [messageInfo, setMessageInfo] = useState<ISnackbarMessage | undefined>(undefined);
-  const [open, setOpen] = useState(false);
-  const [socketUrl] = useState(protocol + `://${backendUrl.replace(/^https?:\/\//i, '')}`);
-  const [subscriptions, setSubscriptions] = useState<StompSubscription[]>([]);
-
-  const [client] = useState(
-    new Client({
-      brokerURL: socketUrl,
-      onConnect: () => {
-        const subscriptions: StompSubscription[] = [];
-        const eventSubscription = client.subscribe('/topic/events', (message) => {
-          const notificationMessage: INotificationMessage = JSON.parse(message.body);
-          if (notificationMessage.type !== 'ProcessingFinishedEvent') {
-            const snackPackMessage = {
-              message: notificationMessage.landscape
-                ? `Change in ${notificationMessage.landscape}, ${notificationMessage.message || ''}`
-                : `${notificationMessage.message || 'Event Error: No message received'}`,
-              key: new Date().getTime(),
-              landscape: notificationMessage.landscape,
-              level: notificationMessage.level,
-            };
-            setSnackPack((prevArray) => [...prevArray, snackPackMessage]);
-            setOpen(true);
-          }
-        });
-
-        subscriptions.push(eventSubscription);
-        setSubscriptions(subscriptions);
-      },
-    })
-  );
-
+  /**
+   * render changes,
+   */
   useEffect(() => {
-    if (snackPack.length && !messageInfo) {
-      // Set a new snack when we don't have an active one
-      setMessageInfo({ ...snackPack[0] });
-      setSnackPack((prev) => prev.slice(1));
-      setOpen(true);
-    } else if (snackPack.length && messageInfo && open) {
-      // Close an active snack when a new one is added and the close delay is over
-      if (new Date().getTime() - messageInfo.key > snackPackCloseDelay) {
-        setOpen(false);
-      }
-    }
-  }, [snackPack, messageInfo, open]);
-
-  useEffect(() => {
-    client.activate();
-    return () => {
-      subscriptions.forEach((subscription) => {
-        subscription.unsubscribe();
-      });
-    };
-  }, [client, subscriptions]);
-
-  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setOpen(false);
-  };
-
-  const handleExited = () => {
-    setMessageInfo(undefined);
-  };
+    if (landscapeContext.notification == null) return;
+    setRenderedChanges(<Changes notification={landscapeContext.notification} />);
+    setNewChanges(true);
+  }, [landscapeContext.notification]);
 
   return (
-    <div className={'notification'} data-testid='notification'>
-      <NotificationLayout
-        handleClose={handleClose}
-        handleExited={handleExited}
-        messageInfo={messageInfo}
-        open={open}
-        snackPackCloseDelay={snackPackCloseDelay}
-      />
-    </div>
+    <Badge color='secondary' variant='dot' overlap='circle' invisible={!newChanges} title={'Recent changes'}>
+      <IconButton
+        size={'small'}
+        className={classes.navigationButton}
+        onClick={() => {
+          setNewChanges(false);
+          return setSidebarContent(renderedChanges);
+        }}
+      >
+        <Notifications />
+      </IconButton>
+    </Badge>
   );
 };
 

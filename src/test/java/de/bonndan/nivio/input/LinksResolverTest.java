@@ -38,7 +38,7 @@ class LinksResolverTest {
         linkHandlerFactory = mock(LinkHandlerFactory.class);
         resolver = new LinksResolver(mock(ProcessLog.class), linkHandlerFactory);
 
-        landscapeDescription = new LandscapeDescription();
+        landscapeDescription = new LandscapeDescription("foo", "foo", null);
         aGroup = new GroupDescription();
         landscapeDescription.getGroups().put("foo", aGroup);
     }

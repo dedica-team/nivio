@@ -15,7 +15,6 @@ class LabelTest {
 
     /**
      * Exports the labels for GUI and docs
-     * @throws IOException
      */
     @Test
     public void export() throws IOException {
@@ -25,9 +24,9 @@ class LabelTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(labelsJson, labelExport);
 
-        File labelsRst = new File(RootPath.get() + "/docs/source/labels.rst");
+        File labelsRst = new File(RootPath.get() + "/docs/source/inc_labels.rst");
         String s = labelExport.entrySet().stream()
-                .map(entry -> "* **" + entry.getKey() + (Label.valueOf(entry.getKey()).isPrefix ? " (prefix)" : "") + "** " + entry.getValue())
+                .map(entry -> "* ``" + entry.getKey() + (Label.valueOf(entry.getKey()).isPrefix ? " (prefix)" : "") + "`` " + entry.getValue())
                 .collect(Collectors.joining("\n"));
         Files.writeString(labelsRst.toPath(), s, Charset.defaultCharset());
     }

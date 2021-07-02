@@ -12,6 +12,7 @@ import org.springframework.lang.NonNull;
 import java.util.*;
 
 import static de.bonndan.nivio.assessment.StatusValue.SUMMARY_LABEL;
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -70,9 +71,9 @@ class AssessableTest {
 
     @Test
     public void withItem() {
-        Item item = new Item("foo", "bar");
-        item.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
-        item.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
+        Item item = getTestItem("foo", "bar");
+        item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
+        item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
 
         Map<String, KPI> kpis = new HashMap<>();
         kpis.put("on", new AbstractKPI(component -> null, null) {
@@ -102,16 +103,46 @@ class AssessableTest {
     }
 
     @Test
+    public void uniqueStatusLists() {
+        Item item = getTestItem("foo", "bar");
+        item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
+        item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
+
+        Map<String, KPI> kpis = new HashMap<>();
+        kpis.put("on", new AbstractKPI(component -> null, null) {
+            @Override
+            protected List<StatusValue> getStatusValues(String value, String message) {
+                return List.of(
+                        new StatusValue("something", Status.RED, "newer value")
+                );
+            }
+        });
+
+        //when
+        Map<FullyQualifiedIdentifier, List<StatusValue>> assessmentMap = item.applyKPIs(kpis);
+
+        //then
+        assertNotNull(assessmentMap);
+        List<StatusValue> itemStatuses = assessmentMap.get(item.getFullyQualifiedIdentifier());
+        assertNotNull(itemStatuses);
+
+        assertThat(itemStatuses).hasSize(2);
+        StatusValue something = itemStatuses.stream().filter(statusValue1 -> statusValue1.getField().equals("something")).findFirst().orElse(null);
+        assertNotNull(something);
+        assertEquals("newer value", something.getMessage());
+    }
+
+    @Test
     public void groupSummary() {
-        Item item = new Item("foo", "bar");
-        item.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
-        item.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
+        Item item = getTestItem("foo", "bar");
+        item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
+        item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
 
-        Item item2 = new Item("foo", "baz");
-        item2.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.RED.getName());
-        item2.setLabel(Label.key(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
+        Item item2 = getTestItem("foo", "baz");
+        item2.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.RED.getName());
+        item2.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
 
-        Group foo = new Group("foo");
+        Group foo = new Group("foo", "landscapeIdentifier");
         foo.addItem(item);
         foo.addItem(item2);
 
@@ -136,20 +167,20 @@ class AssessableTest {
         assertEquals("summary.foo", statusValue.getField());
         assertEquals(Status.BROWN, statusValue.getStatus());
         assertEquals("very bad", statusValue.getMessage());
-        assertEquals("something", statusValue.getMaxField());
+        assertEquals("summary.bar", statusValue.getMaxField());
     }
 
     @Test
     public void isSorted() {
-        Item item = new Item("foo", "bar");
-        item.setLabel(Label.key(Label.status, "foo", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
-        item.setLabel(Label.key(Label.status, "foo", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
+        Item item = getTestItem("foo", "bar");
+        item.setLabel(Label.withPrefix(Label.status, "foo", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
+        item.setLabel(Label.withPrefix(Label.status, "foo", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
 
-        item.setLabel(Label.key(Label.status, "bar", StatusValue.LABEL_SUFFIX_STATUS), Status.RED.getName());
-        item.setLabel(Label.key(Label.status, "bar", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
+        item.setLabel(Label.withPrefix(Label.status, "bar", StatusValue.LABEL_SUFFIX_STATUS), Status.RED.getName());
+        item.setLabel(Label.withPrefix(Label.status, "bar", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
 
-        item.setLabel(Label.key(Label.status, "baz", StatusValue.LABEL_SUFFIX_STATUS), Status.ORANGE.getName());
-        item.setLabel(Label.key(Label.status, "baz", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
+        item.setLabel(Label.withPrefix(Label.status, "baz", StatusValue.LABEL_SUFFIX_STATUS), Status.ORANGE.getName());
+        item.setLabel(Label.withPrefix(Label.status, "baz", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
 
         Map<String, KPI> kpis = new HashMap<>();
         kpis.put("on", new AbstractKPI(component -> null, null) {
@@ -231,6 +262,11 @@ class AssessableTest {
 
         @Override
         public String getColor() {
+            return null;
+        }
+
+        @Override
+        public String getAddress() {
             return null;
         }
 

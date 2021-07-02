@@ -1,0 +1,52 @@
+digraph G {
+
+    dedica [
+        nivio_name = "",
+        nivio_description = "The IT consulting team.",
+        nivio_links = "https://dedica.team",
+        nivio_group = "dedica",
+        nivio_icon = "https://dedica.team/images/logo_orange_weiss.png"
+    ]
+
+    matthias [
+        nivio_name = "Matthias Molitor",
+        nivio_contact= "matthias@dedica.team",
+        nivio_group= dedica
+        nivio_fill= "https://dedica.team/images/matthiasmolitor.jpg"
+    ]
+
+    daniel [
+        nivio_name = "Daniel Pozzi",
+        nivio_contact= "daniel@dedica.team",
+        nivio_group= dedica
+        nivio_fill= "https://dedica.team/images/danielpozzi.jpg"
+    ]
+
+    jan [
+        nivio_name = "Jan Gölz",
+        nivio_contact= "jan@dedica.team",
+        nivio_group= dedica
+        nivio_fill= "https://dedica.team/images/jangoelz.jpg"
+    ]
+
+    michelle [
+        nivio_name = "Michelle Fernandez Bieber",
+        nivio_contact= "michelle@dedica.team",
+        nivio_group= dedica
+        nivio_fill= "https://dedica.team/images/michellefernandezbieber.jpg"
+    ]
+
+    marvin [
+        nivio_name = "Marvin Schöning",
+        nivio_contact= "marvin@dedica.team",
+        nivio_group= dedica
+        nivio_fill= "http://dedica.team/images/marvinschoening.jpeg"
+    ]
+
+  dedica -> matthias [nivio_type = provider]
+  dedica -> daniel [nivio_type = provider]
+  dedica -> jan [nivio_type = provider]
+  dedica -> michelle [nivio_type = provider]
+  dedica -> marvin [nivio_type = provider]
+
+}

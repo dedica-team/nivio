@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.LandscapeSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -31,15 +32,14 @@ class StartupListenerTest {
     }
 
     @Test
-    public void fires() {
+    public void fires() throws MalformedURLException {
 
         //given
         seed = new Seed(Optional.of("https://dedica.team"));
         startupListener = new StartupListener(factory, publisher, seed);
 
-        LandscapeDescription landscapeDescription = new LandscapeDescription();
-        landscapeDescription.setIdentifier("foo");
-        landscapeDescription.setSource("https://dedica.team");
+        LandscapeDescription landscapeDescription = new LandscapeDescription("foo", "bar", null);
+        landscapeDescription.setSource(new LandscapeSource(new URL("https://dedica.team")));
         when(factory.from(any(URL.class))).thenReturn(landscapeDescription);
 
 
@@ -52,7 +52,7 @@ class StartupListenerTest {
 
         IndexEvent first = captor.getValue();
         assertNotNull(first);
-        assertEquals("foo", first.getLandscape().getIdentifier());
+        assertEquals("foo", first.getLandscapeDescription().getIdentifier());
 
     }
 }

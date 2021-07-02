@@ -17,11 +17,14 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
@@ -42,14 +45,14 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void read() {
+    public void read() throws MalformedURLException {
         File file = new File(FILE_PATH_ENV);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
         assertEquals("Landscape example", landscapeDescription.getName());
         assertEquals("nivio:example", landscapeDescription.getIdentifier());
         assertEquals("mail@acme.org", landscapeDescription.getContact());
         assertTrue(landscapeDescription.getDescription().contains("demonstrate"));
-        assertEquals(FILE_PATH_ENV, landscapeDescription.getSource());
+        assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource().getURL().get().toString());
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
 
         SourceReference mapped = landscapeDescription.getSourceReferences().get(1);
@@ -59,22 +62,27 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void readFails() throws IOException {
-        File file = new File(FILE_PATH_ENV);
-        String yaml = new String(Files.readAllBytes(file.toPath()));
-        assertThrows(ReadingException.class, () -> LandscapeDescriptionFactory.fromString("yaml", ""));
+    public void readsMinimalWithIdentifier() {
+        assertDoesNotThrow(() -> new LandscapeDescriptionFactory(mock(FileFetcher.class))
+                .fromString("yaml", ""));
+    }
+
+    @Test
+    public void readFails() {
+        assertThrows(ReadingException.class, () -> new LandscapeDescriptionFactory(mock(FileFetcher.class))
+                .fromString("", ""));
     }
 
     @Test
     public void readYamlStr() throws IOException {
         File file = new File(FILE_PATH_ENV);
         String yaml = new String(Files.readAllBytes(file.toPath()));
-        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromString(yaml, file.toString());
+        LandscapeDescription landscapeDescription = factory.fromString(yaml, file.toString());
         assertEquals("Landscape example", landscapeDescription.getName());
         assertEquals("nivio:example", landscapeDescription.getIdentifier());
         assertEquals("mail@acme.org", landscapeDescription.getContact());
         assertTrue(landscapeDescription.getDescription().contains("demonstrate"));
-        assertTrue(landscapeDescription.getSource().contains("name: Landscape example"));
+        assertTrue(landscapeDescription.getSource().getStaticSource().contains("name: Landscape example"));
         assertFalse(landscapeDescription.getSourceReferences().isEmpty());
 
         SourceReference mapped = landscapeDescription.getSourceReferences().get(1);
@@ -87,21 +95,8 @@ class LandscapeDescriptionFactoryTest {
 
         File file = new File(FILE_PATH_ENV);
         String yaml = new String(Files.readAllBytes(file.toPath()));
-        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromString(yaml, file.toURI().toURL());
-        assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource());
-    }
-
-    @Test
-    public void readUrlFromDescription() throws IOException {
-
-        File file = new File(FILE_PATH_ENV);
-        Landscape outdatedLandscape = new Landscape("test", new Group(Group.COMMON));
-        outdatedLandscape.setSource(file.toURI().toURL().toString());
-
-        //when
-        LandscapeDescription landscapeDescription = factory.from(outdatedLandscape);
-        assertNotNull(landscapeDescription);
-        assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource());
+        LandscapeDescription landscapeDescription = factory.fromString(yaml, file.toURI().toURL());
+        assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource().getURL().get().toString());
     }
 
     @Test
@@ -115,7 +110,7 @@ class LandscapeDescriptionFactoryTest {
 
         //then
         assertNotNull(landscapeDescription);
-        assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource());
+        assertEquals(file.toURI().toURL().toString(), landscapeDescription.getSource().getURL().get().toString());
     }
 
     @Test
@@ -142,7 +137,7 @@ class LandscapeDescriptionFactoryTest {
 
         File file = new File(FILE_PATH_ENVIRONMENT_VARS);
         String read = new String(Files.readAllBytes(file.toPath()));
-        LandscapeDescription landscapeDescription = LandscapeDescriptionFactory.fromString(read, file.toString());
+        LandscapeDescription landscapeDescription = factory.fromString(read, file.toString());
         assertNotNull(landscapeDescription);
         assertEquals(user, landscapeDescription.getSourceReferences().get(0).getHeaderTokenValue());
     }
@@ -276,6 +271,11 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
+    public void testUnknownProperty() {
+        factory.fromYaml(new File(FILE_PATH + "example_typo.yml"));
+    }
+
+    @Test
     public void readCustomKPIs() {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_kpis.yml");
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
@@ -296,10 +296,24 @@ class LandscapeDescriptionFactoryTest {
         CustomKPI costKPI = new CustomKPI();
         costKPI.init(monthlyCosts);
 
-        Item item = new Item("test", "a");
+        Item item = getTestItem("test", "a");
         item.setLabel(Label.costs, "200");
         StatusValue statusValue = costKPI.getStatusValues(item).get(0);
         assertNotNull(statusValue);
         assertEquals(Status.RED, statusValue.getStatus());
+    }
+
+    @Test
+    public void fromBodyItem() {
+
+        //when
+        LandscapeDescription landscapeDescription = factory.fromBodyItems("foo", "nivio", "body");
+
+        assertNotNull(landscapeDescription);
+        assertThat(landscapeDescription.getIdentifier()).isEqualTo("foo");
+        assertThat(landscapeDescription.getSourceReferences().size()).isEqualTo(1);
+        SourceReference sourceReference = landscapeDescription.getSourceReferences().get(0);
+        assertThat(sourceReference.getFormat()).isEqualTo("nivio");
+        assertThat(sourceReference.getContent()).isEqualTo("body");
     }
 }

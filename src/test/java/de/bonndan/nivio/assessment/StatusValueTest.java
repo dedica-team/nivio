@@ -6,6 +6,7 @@ import java.util.*;
 
 import static de.bonndan.nivio.assessment.StatusValue.LABEL_SUFFIX_MESSAGE;
 import static de.bonndan.nivio.assessment.StatusValue.LABEL_SUFFIX_STATUS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class StatusValueTest {
@@ -58,5 +59,11 @@ class StatusValueTest {
         assertEquals("security", security.getField());
         assertEquals("foobar", security.getMessage());
         assertEquals(Status.ORANGE, security.getStatus());
+    }
+
+    @Test
+    void isEqual() {
+        //equality on field basis only to guarantee uniqueness
+        assertThat(new StatusValue("foo", Status.GREEN)).isEqualTo(new StatusValue("foo", Status.RED));
     }
 }

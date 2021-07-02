@@ -4,6 +4,7 @@ import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.ItemType;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.Label;
@@ -16,6 +17,7 @@ import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.net.MalformedURLException;
@@ -44,6 +46,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
     private String groupLabel = null;
     private KubernetesClient client;
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public InputFormatHandlerKubernetes(Optional<KubernetesClient> client) {
         this.client = client.orElse(null);
     }
@@ -57,7 +60,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
      * Created Items: service -> pod -> containers
      */
     @Override
-    public List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl) {
+    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
 
         try {
             if (!StringUtils.isEmpty(reference.getUrl())) {
@@ -92,12 +95,11 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
                 .filter(service -> namespace == null || namespace.equals(service.getMetadata().getNamespace()))
                 .forEach(service -> descriptions.add(createDescriptionFromService(service, pods)));
 
-        return descriptions;
+        landscapeDescription.mergeItems(descriptions);
     }
 
     @Override
-    public InputFormatObserver getObserver(SourceReference reference, URL baseUrl) {
-        //TODO add observer
+    public InputFormatObserver getObserver(@NonNull final InputFormatObserver inner, @NonNull final SourceReference sourceReference) {
         return null;
     }
 
@@ -188,7 +190,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
             containerDesc.setIdentifier(podItem.getName() + "-" + container.getName());
             containerDesc.setLabel(Label.software, container.getImage());
             containerDesc.setType(ItemType.CONTAINER);
-            pod.getMetadata().getLabels().forEach((s, s2) -> containerDesc.setLabel(s, s2));
+            pod.getMetadata().getLabels().forEach(containerDesc::setLabel);
 
             //container provides the pod
             RelationDescription relationDescription = new RelationDescription(containerDesc.getIdentifier(), podItem.getIdentifier());
@@ -212,7 +214,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
 
             //storing configmap volumes in labels
             if (volume.getConfigMap() != null) {
-                podItem.setLabel(Label.key("configMap", volume.getConfigMap().getName()), volume.getConfigMap().getName());
+                podItem.setLabel(Label.withPrefix("configMap", volume.getConfigMap().getName()), volume.getConfigMap().getName());
                 return;
             }
 
@@ -246,8 +248,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
     private void setConditionsAndHealth(PodStatus status, ItemDescription podItem) {
         if (status != null && status.getConditions() != null) {
             status.getConditions().forEach(podCondition -> {
-                String key = Label.key(Label.condition, podCondition.getType());
-                podItem.setLabel(key, podCondition.getStatus());
+                podItem.setLabel(Label.condition.withPrefix(podCondition.getType()), podCondition.getStatus());
             });
         }
     }

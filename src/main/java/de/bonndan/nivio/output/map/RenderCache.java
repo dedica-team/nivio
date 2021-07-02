@@ -1,7 +1,8 @@
 package de.bonndan.nivio.output.map;
 
+import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.assessment.AssessmentRepository;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
-import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.layout.Layouter;
@@ -18,8 +19,6 @@ import java.util.Map;
 
 /**
  * A service that caches map rendering.
- *
- *
  */
 @Service
 public class RenderCache implements ApplicationListener<ProcessingFinishedEvent> {
@@ -31,28 +30,29 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
      */
     private final Map<String, String> renderings = new HashMap<>();
 
-    private final SVGRenderer svgRenderer;
+    private final AssessmentRepository assessmentRepository;
     private final Layouter<LayoutedComponent> layouter;
+    private final SVGRenderer svgRenderer;
 
-    public RenderCache(SVGRenderer svgRenderer) {
+    public RenderCache(final SVGRenderer svgRenderer, AssessmentRepository assessmentRepository) {
+        this.assessmentRepository = assessmentRepository;
         this.svgRenderer = svgRenderer;
         layouter = new OrganicLayouter();
     }
-
 
     /**
      * Returns an svg.
      *
      * @param landscape the landscape to render
-     * @param debug
-     * @return the svg as string, uncached
+     * @param debug     flag to enable debug messages
+     * @return the svg as string
      */
     @Nullable
     public String getSVG(Landscape landscape, boolean debug) {
 
         String key = getKey(landscape, debug);
         if (!renderings.containsKey(key)) {
-            createCacheEntry(landscape, debug);
+            createCacheEntry(landscape, getAssessment(landscape), debug);
         }
 
         return renderings.get(key);
@@ -62,23 +62,20 @@ public class RenderCache implements ApplicationListener<ProcessingFinishedEvent>
         return landscape.getFullyQualifiedIdentifier().toString() + (debug ? "debug" : "");
     }
 
-    private void createCacheEntry(Landscape landscape, boolean debug) {
+    private void createCacheEntry(Landscape landscape, Assessment assessment, boolean debug) {
         LayoutedComponent layout = layouter.layout(landscape);
-
-        if (landscape.getLog() == null) {
-            ProcessLog processLog = new ProcessLog(LOGGER);
-            processLog.setLandscape(landscape);
-            landscape.setProcessLog(processLog);
-        }
         LOGGER.info("Generating SVG rendering of landscape {} (debug: {})", landscape.getIdentifier(), debug);
-        renderings.put(getKey(landscape, debug), svgRenderer.render(layout, debug));
+        renderings.put(getKey(landscape, debug), svgRenderer.render(layout, assessment, debug).getXML());
     }
 
     @Override
     public void onApplicationEvent(ProcessingFinishedEvent processingFinishedEvent) {
         Landscape landscape = processingFinishedEvent.getLandscape();
-        if (landscape != null) {
-            createCacheEntry(landscape, false);
-        }
+        createCacheEntry(landscape, getAssessment(landscape), false);
+    }
+
+    private Assessment getAssessment(Landscape landscape) {
+        var assessment = assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier());
+        return assessment.orElseGet(() -> assessmentRepository.createAssessment(landscape));
     }
 }

@@ -43,11 +43,11 @@ public class ScalingKPI extends AbstractKPI {
 
     private List<StatusValue> getItemStatusValues(Item component) {
 
-        long usedAsDataTarget = component.getRelations(RelationType.DATAFLOW).stream()
+        long usedAsDataTarget = RelationType.DATAFLOW.filter(component.getRelations()).stream()
                 .filter(relation -> relation.getTarget().equals(component))
                 .count();
 
-        long usedAsProvider = component.getRelations(RelationType.PROVIDER).stream()
+        long usedAsProvider = RelationType.PROVIDER.filter(component.getRelations()).stream()
                 .filter(relation -> relation.getSource().equals(component))
                 .count();
 

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InitialPlacementStrategyTest {
@@ -13,10 +14,10 @@ class InitialPlacementStrategyTest {
     @Test
     public void placesInCircle() {
         ArrayList<LayoutedComponent> layoutedComponents = new ArrayList<>();
-        layoutedComponents.add(new LayoutedComponent(new Item("test", "a")));
-        layoutedComponents.add(new LayoutedComponent(new Item("test", "b")));
-        layoutedComponents.add(new LayoutedComponent(new Item("test", "c")));
-        layoutedComponents.add(new LayoutedComponent(new Item("test", "d")));
+        layoutedComponents.add(new LayoutedComponent(getTestItem("test", "a")));
+        layoutedComponents.add(new LayoutedComponent(getTestItem("test", "b")));
+        layoutedComponents.add(new LayoutedComponent(getTestItem("test", "c")));
+        layoutedComponents.add(new LayoutedComponent(getTestItem("test", "d")));
 
         InitialPlacementStrategy initialPlacementStrategy = new InitialPlacementStrategy(layoutedComponents);
         Point2D.Double place1 = initialPlacementStrategy.place(0);

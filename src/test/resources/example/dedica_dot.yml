@@ -1,0 +1,17 @@
+identifier: dedica.team
+name: The dedica Consulting Team
+contact: info@dedica.team
+description: The IT consulting team.
+
+config:
+  branding:
+    mapStylesheet: http://localhost:8080/css/dedica_map.css
+    mapLogo: https://dedica.team/images/logo.png
+
+groups:
+  dedica:
+    color: "f17200"
+
+sources:
+  - url: "./dedica.dot"
+    format: dot

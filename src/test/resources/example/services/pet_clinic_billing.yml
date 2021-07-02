@@ -1,0 +1,47 @@
+groups:
+  billing:
+    owner:  Charlie Parker
+    team: Billing
+    description: Customer billing
+
+items:
+  - identifier: billing
+    description: GUI for scheduling and handling treatments
+    software: Billing-Service
+    version: 0.9.8
+    frameworks:
+      "Java": 6
+      "Spring Boot": 2.2
+    type: server
+    team: Billing
+    scale: 1
+    group: billing
+    lifecycle: production
+    providedBy:
+      - billing-db
+      - archive-volume
+    relations:
+      - type: dataflow
+        target: emailer
+    tags:
+      - java
+      - backend
+
+  - identifier: billing-db
+    description: Backend for billing processes
+    address: venus.acme.io
+    software: MariaDB
+    version: 10.3.11
+    type: server
+    team: Beta
+    scale: 1
+    hostType: docker
+    group: billing
+    lifecycle: production
+
+  - identifier: archive-volume
+    type: volume
+    team: ops guy
+    size: 1TB
+    group: billing
+    description: Backup volume for treatment protocols

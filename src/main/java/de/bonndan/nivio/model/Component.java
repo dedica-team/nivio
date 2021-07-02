@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 /**
@@ -12,21 +13,27 @@ public interface Component {
     /**
      * Returns the landscape-wide unique identifier of a server or application.
      */
+    @NonNull
     String getIdentifier();
 
     /**
      * @return the fqi to identify the landscape item
      */
+    @NonNull
     FullyQualifiedIdentifier getFullyQualifiedIdentifier();
 
     /**
      * A human readable and/or well known name.
+     *
+     * Can be null in DTOs.
      */
+    @Nullable
     String getName();
 
     /**
-     * A way to contact to responsible.
+     * A way to contact the responsible person.
      */
+    @Nullable
     String getContact();
 
     /**
@@ -52,4 +59,7 @@ public interface Component {
      */
     @Nullable
     String getColor();
+
+    @Nullable
+    String getAddress();
 }

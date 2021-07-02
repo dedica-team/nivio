@@ -43,6 +43,11 @@ nivio:
   version: #project.version#
   pollingMilliseconds: 30000 # 30 secs
   # iconFolder: /a/local/path
+  brandingForeground: ${NIVIO_BRANDING_FOREGROUND:7022F2}
+  brandingBackground: ${NIVIO_BRANDING_BACKGROUND:161618}
+  brandingSecondary: ${NIVIO_BRANDING_SECONDARY:22F2C2}
+  brandingLogoUrl: ${NIVIO_BRANDING_LOGO_URL:}
+  brandingMessage: ${NIVIO_BRANDING_MESSAGE:Welcome to nivio}
 
 ---
 spring:

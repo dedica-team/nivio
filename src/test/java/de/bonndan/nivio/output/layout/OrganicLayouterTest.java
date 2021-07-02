@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.layout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.Indexer;
 import de.bonndan.nivio.input.InputFormatHandlerFactory;
@@ -11,26 +12,36 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.http.HttpService;
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.output.RenderingTest;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
-import de.bonndan.nivio.output.icons.VendorIcons;
+import de.bonndan.nivio.output.icons.ExternalIcons;
+import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
+import de.bonndan.nivio.output.map.svg.SVGDocument;
+import de.bonndan.nivio.output.map.svg.SVGRenderer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class OrganicLayouterTest extends RenderingTest {
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws URISyntaxException {
         super.setup();
     }
 
@@ -68,9 +79,7 @@ class OrganicLayouterTest extends RenderingTest {
     @Test
     public void debugRenderLargeGraph() throws IOException {
 
-        LandscapeDescription input = new LandscapeDescription();
-        input.setIdentifier("largetest");
-        input.setName("largetest");
+        LandscapeDescription input = new LandscapeDescription("largetest", "largetest", null);
 
         int g = 0;
         while (g < 30) {
@@ -100,9 +109,7 @@ class OrganicLayouterTest extends RenderingTest {
     @Test
     public void debugRenderLargeGraphSVG() throws IOException {
 
-        LandscapeDescription input = new LandscapeDescription();
-        input.setIdentifier("largetest");
-        input.setName("largetest");
+        LandscapeDescription input = new LandscapeDescription("largetest", "largetest", null);
 
         List<ItemDescription> descriptionList = new ArrayList<>();
         int g = 0;
@@ -147,9 +154,7 @@ class OrganicLayouterTest extends RenderingTest {
 
         Map<String, Object> map = mapper.convertValue(model, Map.class);
 
-        LandscapeDescription landscapeDescription = new LandscapeDescription();
-        landscapeDescription.setIdentifier("landscapeItem:model");
-        landscapeDescription.setName("Landscape Item Model");
+        LandscapeDescription landscapeDescription = new LandscapeDescription("landscapeItem:model", "Landscape Item Model", null);
         landscapeDescription.getItemDescriptions().add(model);
 
         map.forEach((field, o) -> {
@@ -169,11 +174,31 @@ class OrganicLayouterTest extends RenderingTest {
     public void renderCSV() throws IOException {
 
         HttpService httpService = new HttpService();
-        IconService iconService = new IconService(new LocalIcons(), new VendorIcons(httpService));
-        formatFactory = InputFormatHandlerFactory.with(new InputFormatHandlerCSV(new FileFetcher(httpService)));
+        IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService));
+        formatFactory = new InputFormatHandlerFactory(List.of(new InputFormatHandlerCSV(new FileFetcher(httpService))));
         LinkHandlerFactory linkHandlerFactory = mock(LinkHandlerFactory.class);
         indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class),  iconService);
 
         debugRender("/src/test/resources/example/example_csv", false);
+    }
+
+    @Test
+    public void shiftGroupsAndItems() {
+
+        //given
+        String path = "/src/test/resources/example/inout";
+        Landscape landscape = getLandscape(path + ".yml");
+
+
+        //when
+        OrganicLayouter layouter = new OrganicLayouter();
+        LayoutedComponent lc = layouter.layout(landscape);
+
+        LayoutedComponent itemComponent = lc.getChildren().get(0).getChildren().get(0);
+        assertNotNull(itemComponent);
+
+        //check items are shifted
+        assertEquals(691.4090488048637, itemComponent.getX()); //margin + group offset + own offset
+        assertEquals(1459.8723644530933, itemComponent.getY()); //margin + group offset + own offset
     }
 }

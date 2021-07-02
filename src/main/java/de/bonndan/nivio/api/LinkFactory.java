@@ -1,19 +1,19 @@
 package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.assessment.AssessmentController;
+import de.bonndan.nivio.config.NivioConfigProperties;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.docs.DocsController;
 import de.bonndan.nivio.output.map.MapController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.StreamSupport;
 
 import static de.bonndan.nivio.model.Link.LinkBuilder.linkTo;
@@ -26,33 +26,18 @@ import static de.bonndan.nivio.model.Link.LinkBuilder.linkTo;
 public class LinkFactory {
 
     public static final String REL_SELF = "self";
-    private static final Logger LOGGER = LoggerFactory.getLogger(LinkFactory.class);
+
     private final LocalServer localServer;
+    private final NivioConfigProperties configProperties;
 
-    public LinkFactory(LocalServer localServer) {
+    public LinkFactory(LocalServer localServer, NivioConfigProperties configProperties) {
         this.localServer = localServer;
-    }
-
-    /**
-     * Creates a map of {@link Link}s from a string map.
-     *
-     * @param links string map
-     */
-    public static Map<String, Link> fromStringMap(Map<String, String> links) {
-        Map<String, Link> out = new HashMap<>(links.size());
-        links.forEach((s, s2) -> {
-            try {
-                out.put(s, linkTo(new URL(s2)).build());
-            } catch (MalformedURLException e) {
-                LOGGER.warn("Could not convert malformed URL {} to Link", s2);
-            }
-        });
-        return out;
+        this.configProperties = configProperties;
     }
 
     public Map<String, Link> getLandscapeLinks(Landscape landscape) {
         Map<String, Link> links = new HashMap<>();
-        links.put(REL_SELF, generateSelfLink(landscape));
+        links.put(REL_SELF, generateComponentLink(landscape.getFullyQualifiedIdentifier()));
 
         localServer.getUrl(ApiController.PATH, "reindex", landscape.getIdentifier()).ifPresent(url -> {
             links.put("reindex", linkTo(url)
@@ -109,8 +94,15 @@ public class LinkFactory {
         return links;
     }
 
-    private Link generateSelfLink(de.bonndan.nivio.model.Component component) {
-        return localServer.getUrl(ApiController.PATH, component.getFullyQualifiedIdentifier().jsonValue())
+    /**
+     * Generates a link to a {@link de.bonndan.nivio.model.Component}
+     *
+     * @param fullyQualifiedIdentifier the component's fqi
+     * @return link based on the {@link FullyQualifiedIdentifier}
+     */
+    @Nullable
+    public Link generateComponentLink(@NonNull FullyQualifiedIdentifier fullyQualifiedIdentifier) {
+        return localServer.getUrl(ApiController.PATH, Objects.requireNonNull(fullyQualifiedIdentifier).jsonValue())
                 .map(url -> linkTo(url)
                         .withMedia(MediaType.APPLICATION_JSON_VALUE)
                         .withTitle("JSON representation")
@@ -126,7 +118,7 @@ public class LinkFactory {
      */
     Index getIndex(Iterable<Landscape> landscapes) {
 
-        Index index = new Index();
+        Index index = new Index(configProperties.getApiModel());
 
         StreamSupport.stream(landscapes.spliterator(), false)
                 .forEach((Landscape landscape) -> {
@@ -159,14 +151,14 @@ public class LinkFactory {
 
     void setGroupLinksRecursive(Group groupItem) {
         if (!groupItem.getLinks().containsKey(REL_SELF)) {
-            groupItem.getLinks().put(REL_SELF, generateSelfLink(groupItem));
+            groupItem.getLinks().put(REL_SELF, generateComponentLink(groupItem.getFullyQualifiedIdentifier()));
         }
         groupItem.getItems().forEach(this::setItemSelfLink);
     }
 
     void setItemSelfLink(Item item) {
         if (!item.getLinks().containsKey(REL_SELF)) {
-            item.getLinks().put(REL_SELF, generateSelfLink(item));
+            item.getLinks().put(REL_SELF, generateComponentLink(item.getFullyQualifiedIdentifier()));
         }
     }
 }

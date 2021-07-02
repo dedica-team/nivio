@@ -1,6 +1,5 @@
 export class Routes {
   static MAP_ROUTE: string = '/landscape/:identifier';
-  static DASHBOARD_ROUTE: string = '/landscape/:identifier/dashboard';
 }
 
 export interface ILandscape {
@@ -49,7 +48,6 @@ export interface IKpis {
 export interface IKpi {
   description?: string;
   label?: string;
-  messageLabel?: string;
   ranges?: IRanges;
   matches?: IMatches;
   enabled?: boolean;
@@ -91,9 +89,11 @@ export interface IGroup {
 
 export interface IItem {
   identifier: string;
+  group: string;
   name: string;
   owner: string;
   description?: string;
+  address?: string;
   contact: string;
   relations: IRelations;
   interfaces?: Array<IInterfaces>;
@@ -112,6 +112,12 @@ export interface IInterfaces {
   format?: string;
   url?: string;
   protection?: string;
+  deprecated?: boolean;
+  name?: string;
+  payload?: string;
+  path?: string;
+  summary?: string;
+  parameters?: string;
 }
 
 export interface IRelations {
@@ -170,6 +176,19 @@ export interface IAssessmentProps {
   summary: boolean;
 }
 
+export interface IChange {
+  changeType: string;
+  componentType: string;
+  message: string;
+}
+
+/**
+ * Map of changes. Key is the FQI. A relation has two FQIs separated by semicolon.
+ */
+export interface IChanges {
+  [key: string]: IChange;
+}
+
 export interface INotificationMessage {
   timestamp: string;
   landscape: string;
@@ -177,11 +196,26 @@ export interface INotificationMessage {
   level: 'success' | 'info' | 'warning' | 'error' | undefined;
   type: string;
   date: Date;
+  changelog: { changes: IChanges };
 }
 
-export interface ISnackbarMessage {
-  message: string;
-  key: number;
-  landscape: string;
-  level: 'success' | 'info' | 'warning' | 'error' | undefined;
+export interface IFacet {
+  /**
+   * label / title
+   */
+  dim: string;
+  //path: [];
+  /**
+   * total count
+   */
+  value: number;
+  /**
+   * different label counts
+   */
+  labelValues: ILabelValue[];
+}
+
+export interface ILabelValue {
+  label: string;
+  value: number;
 }

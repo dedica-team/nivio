@@ -37,11 +37,11 @@
     java -jar target/nivio.jar
 ```
 
-If you want to see the demo you have to set environmental variable in spring boot config to DEMO=1 and run the configuration
+If you want to see the demo, you have to set the environmental variable in spring boot config to DEMO=1 and run the configuration.
 
 ![Spring Config](doc/spring_config.png 'Spring Config')
 
-3. Start nivio frontend
+3. Start Nivio frontend
 
 ```bash
    cd src/main/app
@@ -54,38 +54,39 @@ Nivio can be reached at http://localhost:3000
 
 | Name                                                                                  | Purpose                                                                                                                                        |
 | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| [React](https://reactjs.org/)                                                         | JavaScript Library for building user interfaces                                                                                                |
+| [React](https://reactjs.org/)                                                         | JavaScript library for building user interfaces                                                                                                |
 | [Typescript](https://www.typescriptlang.org/)                                         | Optional static typing support                                                                                                                 |
-| [ESLint](https://eslint.org/)                                                         | Static Codeanalysis                                                                                                                            |
+| [ESLint](https://eslint.org/)                                                         | Static code analysis                                                                                                                            |
 | [npm](https://www.npmjs.com/)                                                         | Package management                                                                                                                             |
 | [Prettier](https://prettier.io/)                                                      | Code formatter                                                                                                                                 |
-| [React Testing Library](https://testing-library.com/docs/react-testing-library/intro) | React Testing Utility                                                                                                                          |
-| [Jest](https://jestjs.io/)                                                            | JavaScript Testing Framework                                                                                                                   |
+| [React Testing Library](https://testing-library.com/docs/react-testing-library/intro) | React testing utility                                                                                                                          |
+| [Jest](https://jestjs.io/)                                                            | JavaScript testing framework                                                                                                                   |
 | [node-sass](https://github.com/sass/node-sass)                                        | CSS preprocessor for Node                                                                                                                      |
-| [classNames](https://www.npmjs.com/package/classnames)                                | Conditionally joining classNames                                                                                                               |
-| [HTML React Parser](https://www.npmjs.com/package/html-react-parser)                  | Convert HTML String into React elements                                                                                                        |
+| [classNames](https://www.npmjs.com/package/classnames)                                | Conditionally joining class names                                                                                                               |
+| [HTML React Parser](https://www.npmjs.com/package/html-react-parser)                  | Convert HTML string into React elements                                                                                                        |
 | [dateformat](https://www.npmjs.com/package/dateformat)                                | Library to format a date easily                                                                                                                |
 | [React Modal](https://www.npmjs.com/package/react-modal)                              | Accessible modal dialog component for React                                                                                                    |
 | [React Router](https://reacttraining.com/react-router/web/guides/quick-start)         | Navigation                                                                                                                                     |
 | [React SVG Pan Zoom](https://www.npmjs.com/package/react-svg-pan-zoom)                | Pan and zoom features for SVG images                                                                                                           |
-| [React Transition Group](https://github.com/reactjs/react-transition-group)           | A set of components for managing component states (including mounting and unmounting) over time, specifically designed with animation in mind. |
+| [React Transition Group](https://github.com/reactjs/react-transition-group)           | Set of components for managing component states (including mounting and unmounting) over time, specifically designed with animation in mind |
 | [SVG Path Properties](https://www.npmjs.com/package/react-svg-pan-zoom)               | Javascript alternative to getPointAtLength(t) and getTotalLength() functions                                                                   |
 | [axios](https://www.npmjs.com/package/axios)                                          | Promise based HTTP client for the browser and node.js                                                                                          |
 
 # Styling
 
-We use [Material-UI](https://material-ui.com/) for most of our styling combined with our own .scss files for clean, easy and less CSS. [Learn More](https://sass-lang.com/)
+We use [Material-UI](https://material-ui.com/) for most of our styling.
 
 # Environment Variables
 
-We set our REACT_APP_BACKEND_URL in .env.development to http://localhost:8080, because our frontend now runs on a different port. This way we can use hot reloading from React while developing, because we dont have to rebuild the maven package everytime we change something. If you want to run the frontend app on another port or domain in production, you can create a .env.production file with the same content as .env.development, but change the URL appropriatly.
+We set our `REACT_APP_BACKEND_URL` in `.env.development` to `http://localhost:8080` because our frontend now runs on a different port. This way we can use hot reloading from React while developing because we dont have to rebuild the maven package every time we change something. If you want to run the frontend app on another port or domain in production, you can create a `.env.production` file with the same content as `.env.development`, but change the URL appropriately.
 
 # Codeanalysis, Formatting & Tests
 
 ## Formatting
 
-We format our code with [Prettier](https://prettier.io/)  
-You can format all src files with:
+We format our code with [Prettier](https://prettier.io/).
+
+You can format all source files in `src/` with:
 
 ```bash
 yarn format
@@ -93,48 +94,48 @@ yarn format
 
 ## ESLint
 
+Linting is done using the standard ES6 rules.
+
 ```bash
 yarn lint
 ```
 
-Linting with standard es6 rules
-
 ## Test
 
-Run all jest tests
+Run all jest tests:
 
 ```bash
 yarn test
 ```
 
-Run tests with coverage and report in: coverage/lcov-report/index.html
+Run tests with coverage and report in `coverage/lcov-report/index.html`:
 
 ```bash
 yarn test:coverage
 ```
 
-Config in ./package.json
+The configuration is in `./package.json`.
 
-# CI/CD
+## Context Testing
 
-We use [Husky](https://github.com/typicode/husky) to prevent bad git commit and push.
+To simulate the landscape context which holds all server-side status, use `utils/testing/LandscapeContextValue.ts`
 
 ## **Stages**
 
-Code can only be pushed if all stages succeed
+Code can only be pushed if all stages succeed.
 
 ## **Pre-Commit**
 
 ### **format**
 
-Runs "yarn format:check" to check if all files are properly formatted and will stop if any errors occure
+Runs "yarn format:check", to check if all files are properly formatted, and will stop if any errors occur.
 
 ## **Pre-Push**
 
 ### **lint**
 
-Runs "yarn lint" and will stop if any errors occure
+Runs "yarn lint" and will stop if any errors occur.
 
 ### **tests**
 
-Runs all tests and will stop if any errors occure or coverage threshold has not been reached
+Runs all tests and will stop if any errors occur or coverage threshold has not been reached.

@@ -5,31 +5,23 @@ import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.ReadingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.observation.FileSourceReferenceObserver;
 import de.bonndan.nivio.observation.InputFormatObserver;
-import de.bonndan.nivio.observation.URLObserver;
-import de.bonndan.nivio.util.Mappers;
-import de.bonndan.nivio.util.URLHelper;
+import de.bonndan.nivio.input.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static io.swagger.v3.oas.integration.StringOpenApiConfigurationLoader.LOGGER;
-
 /**
  * Handler for nivio's custom input format (yaml).
- *
- *
  */
 @Service
 public class InputFormatHandlerNivio implements InputFormatHandler {
@@ -49,7 +41,7 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
     }
 
     @Override
-    public List<ItemDescription> getDescriptions(SourceReference reference, URL baseUrl) {
+    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription description) {
 
         List<ItemDescription> descriptions = new ArrayList<>();
         String yml = fileFetcher.get(reference, baseUrl);
@@ -63,20 +55,21 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
 
         if (source == null) {
             logger.warn("Got null out of yml string " + yml);
-            return descriptions;
+            return;
         }
 
-        if (source.items != null) {
-            descriptions.addAll(source.items);
-        }
+        description.mergeItems(source.items);
+        description.mergeGroups(source.groups);
 
-        return descriptions;
+        if (source.templates != null) {
+            source.templates.forEach((s, template) -> description.getTemplates().put(s, template));
+        }
 
     }
 
     @Override
     @Nullable
-    public InputFormatObserver getObserver(SourceReference reference, URL baseUrl) {
-        return new FileSourceReferenceObserver(fileFetcher, reference, baseUrl);
+    public InputFormatObserver getObserver(InputFormatObserver inner, SourceReference sourceReference) {
+        return inner;
     }
 }

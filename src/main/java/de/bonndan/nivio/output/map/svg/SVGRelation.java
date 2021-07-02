@@ -1,17 +1,21 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.model.Lifecycle;
+import de.bonndan.nivio.model.Relation;
+import de.bonndan.nivio.model.RelationType;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
+import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
+import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
 import static de.bonndan.nivio.output.map.svg.SvgTagCreator.g;
 
 /**
@@ -19,57 +23,83 @@ import static de.bonndan.nivio.output.map.svg.SvgTagCreator.g;
  */
 class SVGRelation extends Component {
 
-    public static final String MARKER = "▸";
+    public static final String MARKER_ID = "arrow";
+
     private final HexPath hexPath;
     private final String fill;
     private final Relation relation;
 
+    @Nullable
+    private final StatusValue statusValue;
+
     /**
-     * @param hexPath the calculated best path
-     * @param fill color
-     * @param relation graph edge, source is the item this relation belongs to
+     * @param hexPath     the calculated best path
+     * @param fill        color
+     * @param relation    graph edge, source is the item this relation belongs to
+     * @param statusValue status (worst) of source
      */
-    SVGRelation(@NonNull HexPath hexPath, @NonNull String fill, @NonNull Relation relation) {
+    SVGRelation(@NonNull final HexPath hexPath,
+                @NonNull final String fill,
+                @NonNull final Relation relation,
+                @Nullable final StatusValue statusValue
+    ) {
         this.hexPath = hexPath;
-        Objects.requireNonNull(fill);
+        if (StringUtils.isEmpty(fill)) {
+            throw new RuntimeException("Fill color cannot be empty.");
+        }
         this.fill = fill;
         this.relation = relation;
+        this.statusValue = statusValue;
     }
 
+    @Override
     public DomContent render() {
 
         var fillId = "#" + fill;
-        var stringPath = hexPath.getPoints();
-        boolean isPlanned = Lifecycle.isPlanned(relation.getSource()) || Lifecycle.isPlanned(relation.getTarget());
 
         //the bezier path is only used to interpolate the "stringPath"
         BezierPath bezierPath = new BezierPath();
-        bezierPath.parsePathString(stringPath);
+        var points = String.join("", hexPath.getPoints());
+        bezierPath.parsePathString(points);
 
-        if (RelationType.PROVIDER.equals(relation.getType())) {
-            ContainerTag path = SvgTagCreator.path()
-                    .attr("d", stringPath)
-                    .attr("stroke", fillId);
-            if (isPlanned) {
-                path.attr("stroke-dasharray", 30);
-                path.attr("opacity", 0.7);
-            }
-            return addAttributes(g(path, label(bezierPath, fillId)), relation);
+
+        ContainerTag shadow = null;
+        int innerStrokeWidth = 20;
+        if (statusValue != null && !statusValue.getStatus().equals(Status.UNKNOWN)) {
+            String statusColor = statusValue.getStatus().getName();
+            shadow = SvgTagCreator.path()
+                    .attr("d", points)
+                    .attr("stroke", statusColor)
+                    .attr("stroke-width", 24);
         }
 
-        List<ContainerTag> markers = new ArrayList<>();
-        float pieces = bezierPath.path.curveLength / 40;
-        float pct = 100 / pieces;
-        for (float i = 0; i < 1; i += pct / 100) {
-            Point2D.Float point1 = bezierPath.eval(i);
-            Point2D.Float point2 = bezierPath.eval(i + 0.001f);
-            markers.add(this.marker(point1, point2, fillId));
+        ContainerTag path = SvgTagCreator.path()
+                .attr("d", points)
+                .attr("stroke", fillId)
+                .attr("stroke-width", innerStrokeWidth);
+
+        if (Lifecycle.isPlanned(relation.getSource()) || Lifecycle.isPlanned(relation.getTarget())) {
+            path.attr("opacity", "0.5");
         }
 
-        return addAttributes(
-                g(markers.toArray(DomContent[]::new)),
-                relation
-        );
+        ContainerTag endMarker = null;
+        if (RelationType.DATAFLOW.equals(relation.getType())) {
+            //path.attr("marker-mid", String.format("url(#%s)", SVGRelation.MARKER_ID));
+            path.attr("fill", fillId);
+            path.attr("stroke-dasharray", 15);
+        } else {
+            endMarker = SvgTagCreator.circle()
+                    .attr("cx", hexPath.getEndPoint().x)
+                    .attr("cy", hexPath.getEndPoint().y)
+                    .attr("r", 35)
+                    .attr("fill", fillId);
+        }
+
+        return addAttributes(g(shadow, endMarker, path, label(bezierPath, fillId)), relation);
+    }
+
+    public HexPath getHexPath() {
+        return hexPath;
     }
 
     private ContainerTag addAttributes(ContainerTag g, Relation relation) {
@@ -77,13 +107,10 @@ class SVGRelation extends Component {
         g.attr("data-type", type)
                 .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().jsonValue())
                 .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().jsonValue())
-                .attr("class", "relation");
+                .attr(DATA_IDENTIFIER, relation.getIdentifier())
+                .attr("class", "relation " + VISUAL_FOCUS_UNSELECTED);
 
         return g;
-    }
-
-    private ContainerTag marker(Point2D.Float point, Point2D.Float point2, String fillId) {
-        return alongPath(MARKER, point, point2, fillId, -10, false);
     }
 
     private ContainerTag label(BezierPath bezierPath, String fillId) {
@@ -115,12 +142,27 @@ class SVGRelation extends Component {
                 .attr("transform", transform);
     }
 
-    public Relation getRelationItem() {
-        return relation;
-    }
+    /**
+     * Create a group-colored marker.
+     *
+     * @return a reusable marker for data flow paths
+     */
+    public static ContainerTag dataflowMarker() {
+        ContainerTag path = SvgTagCreator.path().attr("d", "M 0 0 L 10 5 L 0 10 z")
+                .attr("fill", "#ffffff");
 
-    public HexPath getHexPath() {
-        return hexPath;
+        return SvgTagCreator.marker()
+                .attr("id", MARKER_ID)
+                .attr("markerWidth", 10)
+                .attr("markerHeight", 10)
+                .attr("refX", 0)
+                .attr("refY", 5)
+                .attr("orient", "auto")
+                .attr("viewBox", "0 0 10 10")
+                .attr("stroke", "context-stroke")
+                .attr("markerUnits", "userSpaceOnUse")
+                .with(path)
+                ;
     }
 }
 

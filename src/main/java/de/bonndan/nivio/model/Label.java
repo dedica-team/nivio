@@ -1,55 +1,62 @@
 package de.bonndan.nivio.model;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import org.springframework.lang.NonNull;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Landscape component labels (to be used like fields).
  *
  * All names are used in lowercase variant.
- *
  */
 public enum Label {
 
-    capability("The capability the service provides for the business, or in case of infrastructure" +
-            " the technical capability like enabling service discovery, configuration, secrets or persistence."),
+    capability("The capability the service provides for the business or, in case of infrastructure," +
+            " the technical capability like enabling service discovery, configuration, secrets, or persistence."),
+
+    color("A hex color code to override the inherited group color"),
 
     costs("Running costs of the item."),
 
-    fill("Background image (for displaying purposes)"),
+    fill("Background image (for displaying purposes)."),
 
-    health("description of the item's health status"),
+    framework("A map of used frameworks (key is name, value is version).", true),
+    frameworks("A comma-separated list of frameworks as key-value pairs (key is name, value is version)."),
 
-    layer("a technical layer"),
+    icon("Icon/image (for displaying purposes)."),
 
-    lifecycle("A lifecycle phase (PLANNED|plan, INTEGRATION|int, PRODUCTION|prod, END_OF_LIFE|eol|end)"),
+    health("Description of the item's health status."),
 
-    note("a custom note"),
+    layer("A technical layer."),
 
-    scale("number of instances"),
+    lifecycle("A lifecycle phase (``PLANNED|plan``, ``INTEGRATION|int``, ``PRODUCTION|prod``, ``END_OF_LIFE|eol|end``)."),
 
-    security("description of the item's security status"),
+    note("A custom note."),
 
-    shortname("abbreviated name"),
+    scale("Number of instances."),
 
-    software("Software/OS name"),
+    security("Description of the item's security status."),
 
-    stability("description of the item's stability"),
+    shortname("Abbreviated name."),
 
-    team("Name of the responsible team (e.g. technical owner)"),
+    software("Software/OS name."),
 
-    type("the type (service, database, queue, loadbalancer...)"),
+    stability("Description of the item's stability."),
 
-    version("The version (e.g. software version, protocol version)"),
+    team("Name of the responsible team (e.g. technical owner)."),
 
-    visibility("visibility to other items"),
+    type("The type (service, database, queue, load balancer, etc.)."),
 
-    network("prefix for network labels",true),
+    version("The version (e.g. software version or protocol version)."),
 
-    status("prefix for status labels, can be used as prefix all other labels to mark a status for the label", true),
+    visibility("Visibility to other items."),
 
-    condition("prefix for condition labels", true);
+    network("Prefix for network labels.", true),
+
+    status("Prefix for status labels. Can be used as prefix for all other labels to mark a status for the label.", true),
+
+    condition("Prefix for condition labels.", true);
 
     /**
      * Separator for label key parts.
@@ -72,25 +79,27 @@ public enum Label {
 
     /**
      * Builds a properly delimited label key.
+     *
+     * @param subKey sub-key after the label name prefix
+     * @return label key
      */
-    public static String key(Label prefix, String key) {
-        return prefix + DELIMITER + key.toLowerCase();
+    public String withPrefix(@NonNull final String subKey) {
+        return withPrefix(name(), subKey);
     }
 
-    public static String key(String prefix, String key) {
-        return prefix + DELIMITER + key.toLowerCase();
+    /**
+     * Builds a properly delimited label with custom prefix.
+     *
+     * @param prefix custom prefix
+     * @param subKey sub-key after the label name prefix
+     * @return label key
+     */
+    public static String withPrefix(@NonNull final String prefix, @NonNull final String subKey) {
+        return String.format("%s%s%s", prefix, DELIMITER, Objects.requireNonNull(subKey, "Label sub key is null").toLowerCase());
     }
 
-    public static String key(Label prefix, Label key, String suffix) {
-        return prefix + DELIMITER + key.toString().toLowerCase() + DELIMITER + suffix;
-    }
-
-    public static String key(Label prefix, String key, String suffix) {
+    public static String withPrefix(Label prefix, String key, String suffix) {
         return prefix + DELIMITER + key.toLowerCase() + DELIMITER + suffix;
-    }
-
-    public static String key(String prefix, Label key, String suffix) {
-        return prefix + DELIMITER + key.toString().toLowerCase() + DELIMITER + suffix;
     }
 
     /**
@@ -101,9 +110,15 @@ public enum Label {
      */
     public static Map<String, String> export(boolean includePrefixes) {
         Map<String, String> labelExport = new LinkedHashMap<>();
-        Arrays.stream(Label.values())
+        List<Label> sortedLabels = Arrays.stream(Label.values()).sorted(Comparator.comparing(Enum::name)).collect(Collectors.toList());
+        sortedLabels.stream()
                 .filter(label -> includePrefixes || !label.isPrefix)
                 .forEach(label -> labelExport.put(label.name(), label.meaning));
+
         return labelExport;
+    }
+
+    public String unprefixed(String key) {
+        return key.replace(name() + DELIMITER, "");
     }
 }

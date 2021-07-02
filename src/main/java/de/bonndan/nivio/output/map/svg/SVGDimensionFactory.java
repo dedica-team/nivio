@@ -1,7 +1,10 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.output.map.hex.Hex;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 /**
  * Factory to calculate the bounding boxes of a rendered landscape.
@@ -10,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class SVGDimensionFactory {
 
-    static SVGDimension getDimension(List<SVGGroupArea> groupAreas) {
+    static SVGDimension getDimension(List<SVGGroupArea> groupAreas, List<SVGRelation> relations) {
 
         AtomicInteger minX = new AtomicInteger(Integer.MAX_VALUE);
         AtomicInteger minY = new AtomicInteger(Integer.MAX_VALUE);
@@ -22,43 +25,46 @@ public class SVGDimensionFactory {
         AtomicInteger maxQ = new AtomicInteger(Integer.MIN_VALUE);
         AtomicInteger maxR = new AtomicInteger(Integer.MIN_VALUE);
 
+        Consumer<Hex> setBounds = hex -> {
+            var pos = hex.toPixel();
+            if (pos.x < minX.get()) {
+                minX.set((int) pos.x);
+            }
+
+            if (pos.y < minY.get()) {
+                minY.set((int) pos.y);
+            }
+
+            if (pos.x > maxX.get()) {
+                maxX.set((int) pos.x);
+            }
+            if (pos.y > maxY.get()) {
+                maxY.set((int) pos.y);
+            }
+
+            // same for hex coords
+            if (hex.q < minQ.get()) {
+                minQ.set(hex.q);
+            }
+
+            if (hex.q > maxQ.get()) {
+                maxQ.set(hex.q);
+            }
+
+            if (hex.r < minR.get()) {
+                minR.set(hex.r);
+            }
+
+            if (hex.r > maxR.get()) {
+                maxR.set(hex.r);
+            }
+        };
         //fix viewport, because xy and hex coordinate system have different offsets
         groupAreas.forEach(svgGroupArea -> {
-            svgGroupArea.groupArea.forEach(hex -> {
-                var pos = hex.toPixel();
-                if (pos.x < minX.get()) {
-                    minX.set((int) pos.x);
-                }
-
-                if (pos.y < minY.get()) {
-                    minY.set((int) pos.y);
-                }
-
-                if (pos.x > maxX.get()) {
-                    maxX.set((int) pos.x);
-                }
-                if (pos.y > maxY.get()) {
-                    maxY.set((int) pos.y);
-                }
-
-                // same for hex coords
-                if (hex.q < minQ.get()) {
-                    minQ.set(hex.q);
-                }
-
-                if (hex.q > maxQ.get()) {
-                    maxQ.set(hex.q);
-                }
-
-                if (hex.r < minR.get()) {
-                    minR.set(hex.r);
-                }
-
-                if (hex.r > maxR.get()) {
-                    maxR.set(hex.r);
-                }
-            });
+            svgGroupArea.getGroupArea().forEach(setBounds::accept);
         });
+
+        relations.forEach(svgRelation -> svgRelation.getHexPath().getHexes().forEach(setBounds::accept));
 
         SVGDimension.BoundingBox hex = new SVGDimension.BoundingBox(
                 minQ.get(),

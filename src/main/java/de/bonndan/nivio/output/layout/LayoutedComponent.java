@@ -4,6 +4,8 @@ import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,9 @@ public class LayoutedComponent {
     public double height = 50;
     private final List<Component> opposites;
     private List<LayoutedComponent> children;
+
+    @Nullable
+    private String defaultColor;
 
     public LayoutedComponent(@NonNull Component component, List<Component> opposites) {
         Objects.requireNonNull(component);
@@ -104,6 +109,13 @@ public class LayoutedComponent {
     }
 
     public String getColor() {
-        return component.getColor();
+        if (!StringUtils.isEmpty(component.getColor())) {
+            return component.getColor();
+        }
+        return defaultColor;
+    }
+
+    public void setDefaultColor(String color) {
+        this.defaultColor =color;
     }
 }

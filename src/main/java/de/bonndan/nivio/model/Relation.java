@@ -2,10 +2,17 @@ package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+
+import static de.bonndan.nivio.model.ComponentDiff.compareOptionals;
+import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
 
 /**
  * Indication of an incoming or outgoing relation like data flow or dependency (provider).
@@ -16,62 +23,65 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Relation implements Serializable {
 
-    @JsonIdentityReference(alwaysAsId = true)
-    private Item source;
+    public static final String DELIMITER = ";";
 
     @JsonIdentityReference(alwaysAsId = true)
-    private Item target;
+    private final Item source;
 
-    private String description;
+    @JsonIdentityReference(alwaysAsId = true)
+    private final Item target;
 
-    private String format;
+    private final String description;
 
-    private RelationType type;
+    private final String format;
 
-    Relation() {
+    private final RelationType type;
+
+    public Relation(@NonNull final Item source,
+                    @NonNull final Item target
+    ) {
+        this(source, target, null, null, null);
     }
 
-    public Relation(Item source, Item target) {
-        if (source == null || target == null)
+    public Relation(@NonNull final Item source,
+                    @NonNull final Item target,
+                    final String description,
+                    final String format,
+                    final RelationType type
+    ) {
+        if (source == null || target == null) {
             throw new IllegalArgumentException("Null arguments passed.");
+        }
 
-        if (source.equals(target))
+        if (source.equals(target)) {
             throw new IllegalArgumentException("Relation source and target are equal.");
+        }
 
         this.source = source;
         this.target = target;
+        this.description = description;
+        this.format = format;
+        this.type = type;
+    }
+
+    public String getIdentifier() {
+        return source.getFullyQualifiedIdentifier().jsonValue() + DELIMITER + target.getFullyQualifiedIdentifier().jsonValue();
     }
 
     public RelationType getType() {
         return type;
     }
 
-    public void setType(RelationType type) {
-        this.type = type;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getFormat() {
         return format;
     }
 
-    public void setFormat(String format) {
-        this.format = format;
-    }
-
     public Item getTarget() {
         return target;
-    }
-
-    public void setTarget(Item target) {
-        this.target = target;
     }
 
     public Item getSource() {
@@ -90,6 +100,11 @@ public class Relation implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(source, target);
+    }
+
+    @Override
+    public String toString() {
+        return "Relation{" + getIdentifier() + '}';
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -116,22 +131,41 @@ public class Relation implements Serializable {
 
         public final String direction;
 
-        ApiModel (Relation relation, Item owner) {
+        ApiModel(@NonNull final Relation relation, @NonNull final Item owner) {
             source = relation.source;
             target = relation.target;
             description = relation.description;
             format = relation.format;
             type = relation.type;
+            id = relation.getIdentifier();
 
-            if (relation.source == owner) {
+            if (relation.source.equals(owner)) {
                 name = StringUtils.isEmpty(target.getName()) ? target.getIdentifier() : target.getName();
-                id = target.getFullyQualifiedIdentifier().toString();
                 direction = OUTBOUND;
             } else {
                 name = StringUtils.isEmpty(source.getName()) ? source.getIdentifier() : source.getName();
-                id = source.getFullyQualifiedIdentifier().toString();
                 direction = INBOUND;
             }
         }
+    }
+
+    /**
+     * Compare on field level against a newer version.
+     *
+     * @param newer the newer version
+     * @return a list of changes if any changes are present
+     * @throws IllegalArgumentException if the arg is not comparable
+     */
+    public List<String> getChanges(Relation newer) {
+        if (!newer.equals(this)) {
+            throw new IllegalArgumentException("Cannot compare relation " + newer.toString() + " against " + this.toString());
+        }
+
+        List<String> changes = new ArrayList<>();
+        changes.addAll(compareStrings(this.format, newer.format, "Format"));
+        changes.addAll(compareStrings(this.description, newer.description, "Description"));
+        changes.addAll(compareOptionals(Optional.ofNullable(this.type), Optional.ofNullable(newer.type), "Type"));
+
+        return changes;
     }
 }

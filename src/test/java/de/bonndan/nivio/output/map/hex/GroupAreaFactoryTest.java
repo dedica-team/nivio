@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GroupAreaFactoryTest {
@@ -46,10 +46,10 @@ class GroupAreaFactoryTest {
         Hex one = new Hex(1, 2);
         Hex two = new Hex(3, 5);
 
-        Item landscapeItem = new Item("group", "landscapeItem");
-        Item target = new Item("group", "target");
+        Item landscapeItem = getTestItem("group", "landscapeItem");
+        Item target = getTestItem("group", "target");
 
-        Group group = new Group("group");
+        Group group = new Group("group", "landscapeIdentifier");
         group.addItem(landscapeItem);
         group.addItem(target);
 
@@ -74,10 +74,10 @@ class GroupAreaFactoryTest {
         Hex one = new Hex(1, 2);
         Hex two = new Hex(3, 3);
 
-        Item landscapeItem = new Item("group", "landscapeItem");
-        Item target = new Item("group", "target");
+        Item landscapeItem = getTestItem("group", "landscapeItem");
+        Item target = getTestItem("group", "target");
 
-        Group group = new Group("group");
+        Group group = new Group("group", "landscapeIdentifier");
         group.addItem(landscapeItem);
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
@@ -97,10 +97,10 @@ class GroupAreaFactoryTest {
         Hex one = new Hex(4, 4);
         Hex two = new Hex(6, 4);
 
-        Item landscapeItem = new Item("group", "landscapeItem");
-        Item target = new Item("group", "target");
+        Item landscapeItem = getTestItem("group", "landscapeItem");
+        Item target = getTestItem("group", "target");
 
-        Group group = new Group("group");
+        Group group = new Group("group", "landscapeIdentifier");
         group.addItem(landscapeItem);
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
@@ -120,10 +120,10 @@ class GroupAreaFactoryTest {
         Hex one = new Hex(4, 4);
         Hex two = new Hex(7, 4);
 
-        Item landscapeItem = new Item("group", "landscapeItem");
-        Item target = new Item("group", "target");
+        Item landscapeItem = getTestItem("group", "landscapeItem");
+        Item target = getTestItem("group", "target");
 
-        Group group = new Group("group");
+        Group group = new Group("group", "landscapeIdentifier");
         group.addItem(landscapeItem);
         group.addItem(target);
 
@@ -144,10 +144,10 @@ class GroupAreaFactoryTest {
         Hex one = new Hex(1, 1, -2);
         Hex two = new Hex(3, 3, -6);
 
-        Item landscapeItem = new Item("group", "landscapeItem");
-        Item target = new Item("group", "target");
+        Item landscapeItem = getTestItem("group", "landscapeItem");
+        Item target = getTestItem("group", "target");
 
-        Group group = new Group("group");
+        Group group = new Group("group", "landscapeIdentifier");
         group.addItem(landscapeItem);
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();

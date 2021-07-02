@@ -60,7 +60,7 @@ public class SecureLabelsResolver extends Resolver {
             return Optional.ofNullable(replaceIfSecret(url.get()));
         }
 
-        Optional<URI> uri = URIHelper.getURI((String) value);
+        Optional<URI> uri = URIHelper.getURIWithHostAndScheme((String) value);
         if (uri.isPresent()) {
             return Optional.ofNullable(replaceIfSecret(uri.get()));
         }

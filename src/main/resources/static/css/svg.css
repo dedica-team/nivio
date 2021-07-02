@@ -36,15 +36,8 @@
   font-size: 5em;
 }
 
-.map text.groupLabel {
-  text-shadow: 1px 1px 1px black;
-  font-size: 4em;
-}
-
 .map .relation path {
   fill: none;
-  stroke-width: 0.2em;
-  stroke-opacity: 0.8;
   stroke-linecap: butt;
   stroke-linejoin: round;
 }
@@ -53,14 +46,23 @@
   cursor: pointer;
 }
 
-.map g.relation path {
-  stroke-width: 1em;
-}
-
 .map g.groupArea {
   cursor: pointer;
 }
 
-.map g.groupArea path {
-  fill-opacity: 0.3;
+/* hexagon */
+.map g.groupArea.unselected polygon {
+  fill-opacity: 0.05
+}
+
+.map g.item.unselected circle {
+  stroke: grey;
+}
+
+.map g.relation.unselected path {
+  stroke: grey;
+}
+
+.map g.relation.unselected circle {
+  fill: grey;
 }

@@ -3,12 +3,14 @@ package de.bonndan.nivio.input.csv;
 import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -30,7 +32,7 @@ class InputFormatHandlerCSVTest {
     @Test
     public void read() {
 
-        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/test.csv");
+        SourceReference file =  SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test.csv"));
 
         Map<String, String> mapping = new HashMap<>();
         mapping.put("identifier", "1");
@@ -41,10 +43,13 @@ class InputFormatHandlerCSVTest {
         file.setProperty("separator", ";");
 
         InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
-        List<ItemDescription> services = factoryCSV.getDescriptions(file, null);
+        LandscapeDescription landscapeDescription = new LandscapeDescription("test");
 
-        assertEquals(3, services.size());
-        ItemDescription foo = services.get(0);
+        //when
+        factoryCSV.applyData(file, null, landscapeDescription);
+
+        assertEquals(3, landscapeDescription.getItemDescriptions().all().size());
+        ItemDescription foo = landscapeDescription.getItemDescriptions().pick("foo", null);
         assertNotNull(foo);
 
         assertEquals("foo", foo.getIdentifier());
@@ -53,7 +58,7 @@ class InputFormatHandlerCSVTest {
         assertTrue(foo.getLabels().containsKey("nivio.description"));
         assertEquals("This does nothing", foo.getLabels().get("nivio.description"));
 
-        ItemDescription bar = services.get(1);
+        ItemDescription bar = landscapeDescription.getItemDescriptions().pick("bar", null);
         assertNotNull(bar);
 
         assertEquals("bar", bar.getIdentifier());
@@ -62,7 +67,7 @@ class InputFormatHandlerCSVTest {
         assertTrue(bar.getLabels().containsKey("nivio.description"));
         assertEquals("", bar.getLabels().get("nivio.description"));
 
-        ItemDescription super1 = services.get(2);
+        ItemDescription super1 = landscapeDescription.getItemDescriptions().pick("super1", null);
         assertNotNull(super1);
 
         assertEquals("super1", super1.getIdentifier());
@@ -75,18 +80,18 @@ class InputFormatHandlerCSVTest {
     @Test
     public void failsWithoutMapping() {
 
-        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/test.csv");
+        SourceReference file = SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test.csv"));
         InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
 
         assertThrows(ProcessingException.class, () -> {
-            factoryCSV.getDescriptions(file, null);
+            factoryCSV.applyData(file, null, new LandscapeDescription("test"));
         });
     }
 
     @Test
     public void failsWithoutIdentifierInMapping() {
 
-        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/test.csv");
+        SourceReference file = SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test.csv"));
         Map<String, String> mapping = new HashMap<>();
         mapping.put("name", "0");
         file.setProperty("mapping", mapping);
@@ -94,24 +99,8 @@ class InputFormatHandlerCSVTest {
         InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
 
         assertThrows(ProcessingException.class, () -> {
-            factoryCSV.getDescriptions(file, null);
+            factoryCSV.applyData(file, null, new LandscapeDescription("test"));
         });
-    }
-
-    @Test
-    public void returnsUrlObserver() {
-        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/test.csv");
-        Map<String, String> mapping = new HashMap<>();
-        mapping.put("name", "0");
-        file.setProperty("mapping", mapping);
-
-        InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
-
-        //when
-        InputFormatObserver observer = factoryCSV.getObserver(file, null);
-
-        //then
-        assertNotNull(observer);
     }
 
     private String getRootPath() {

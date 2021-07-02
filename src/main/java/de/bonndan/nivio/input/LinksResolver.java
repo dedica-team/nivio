@@ -39,18 +39,22 @@ public class LinksResolver extends Resolver {
         input.getGroups().forEach((s, groupItem) -> resolveLinks(groupItem));
         input.getItemDescriptions().all().forEach(item -> completableFutures.addAll(resolveLinks(item)));
 
+        LOGGER.info("Waiting for completion of {} external link handlers.", completableFutures.size());
         try {
-            LOGGER.info("Waiting for completion of {} external link handlers.", completableFutures.size());
             CompletableFuture.allOf(completableFutures.toArray(CompletableFuture[]::new)).get(2, TimeUnit.MINUTES);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             processLog.error(new ProcessingException("Failed to complete all external data resolvers", e));
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
-    private <T extends ComponentDescription> List<CompletableFuture<T>> resolveLinks(T component) {
+    private <T extends ComponentDescription> List<CompletableFuture<T>> resolveLinks(final T component) {
 
         List<CompletableFuture<T>> all = new ArrayList<>();
         component.getLinks().forEach((key, link) -> linkHandlerFactory.getResolver(key).ifPresent(handler -> {
+                    LOGGER.info("Resolving link {} of component {}", link, component);
                     try {
                         CompletableFuture<T> f = handler
                                 .resolve(link)

@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
-import { IAssessmentProps, IGroup, IItem, ILandscape } from '../../../interfaces';
-import {Button, Link, List, ListItem, ListItemText} from '@material-ui/core';
+import { IGroup, IItem, ILandscape } from '../../../interfaces';
+import { Button, Link, List, ListItem, ListItemText } from '@material-ui/core';
 
 /**
  * Find an item by its fully qualified identifier.
@@ -29,9 +29,12 @@ export const getItem = (landscape: ILandscape, fullyQualifiedIdentifier: string)
  * @param landscape object
  * @param fullyQualifiedIdentifier string to identify the group
  */
-export const getGroup = (landscape: ILandscape, fullyQualifiedIdentifier: string): IGroup | null => {
+export const getGroup = (
+  landscape: ILandscape,
+  fullyQualifiedIdentifier: string
+): IGroup | null => {
   let group: IGroup | null = null;
-  for (let i = 0; i < landscape.groups.length; i++){
+  for (let i = 0; i < landscape.groups.length; i++) {
     let value = landscape.groups[i];
     if (value.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
       group = value;
@@ -76,7 +79,15 @@ export const getLabels = (element: IGroup | IItem) => {
   }
   Object.keys(element.labels).forEach((key) => {
     if (element && element.labels && element.labels[key]) {
-      if (key.startsWith('icon') || key.startsWith('fill') || key.startsWith('tag')) return;
+      if (
+        key.startsWith('icon') ||
+        key.startsWith('fill') ||
+        key.startsWith('tag') ||
+        key.startsWith('framework') ||
+        key.startsWith('network') ||
+        key === 'color'
+      )
+        return;
       if (element.labels[key] === '*') return;
 
       labels.push(
@@ -96,38 +107,33 @@ export const getLabels = (element: IGroup | IItem) => {
   return <List dense={true}>{labels}</List>;
 };
 
-export const getAssessmentSummary = (
-  assessmentResults: IAssessmentProps[] | undefined
-): string[] => {
-  let assessmentColor = 'grey';
-  let assessmentMessage = '';
-  let assessmentField = '';
-
-  if (assessmentResults) {
-    const result = assessmentResults.find((assessmentResult) => assessmentResult.summary);
-
-    if (result) {
-      if (result.status !== 'UNKNOWN') {
-        assessmentColor = result.status;
-        assessmentField = result.maxField || '';
-        assessmentMessage = result.message;
-      } else {
-        assessmentMessage = 'unknown status';
-      }
-    }
+/**
+ * Returns only the labels having the given prefix.
+ * @param prefix the label prefix to filter for
+ * @param element the component having labels
+ */
+export const getLabelsWithPrefix = (prefix: string, element: IGroup | IItem) => {
+  if (!element || !element?.labels) {
+    return null;
   }
-
-  return [assessmentColor, assessmentMessage, assessmentField];
-};
-
-export const getAssessmentColor = (assessmentResults: IAssessmentProps): string => {
-  let assessmentColor = 'grey';
-
-  if (assessmentResults.status !== 'UNKNOWN') {
-    assessmentColor = assessmentResults.status;
+  let labels: ReactElement[] = [];
+  const strings = Object.keys(element.labels);
+  strings
+    .filter((key) => key.startsWith(prefix))
+    .forEach((key) => {
+      const value = element.labels?.[key] || null;
+      if (!value) return;
+      const primary = key.replace(prefix + '.', '');
+      labels.push(
+        <ListItem key={key}>
+          <ListItemText primary={primary} secondary={value.substr(0, 150)} title={value} />
+        </ListItem>
+      );
+    });
+  if (labels.length === 0) {
+    return null;
   }
-
-  return assessmentColor;
+  return <List dense={true}>{labels}</List>;
 };
 
 export const getItemIcon = (item: IItem) => {

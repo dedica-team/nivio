@@ -11,6 +11,7 @@ import org.kohsuke.github.GitHub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -25,7 +26,7 @@ public class GitHubRepoHandler implements ExternalLinkHandler, RepositoryLinkHan
     private final GitHub gitHub;
 
     public GitHubRepoHandler(GitHub gitHub) {
-        this.gitHub = gitHub;
+        this.gitHub = Objects.requireNonNull(gitHub);
     }
 
     /**
@@ -37,6 +38,7 @@ public class GitHubRepoHandler implements ExternalLinkHandler, RepositoryLinkHan
         ItemDescription itemDescription = new ItemDescription();
         try {
             GHRepository repository = gitHub.getRepository(repoName);
+            LOGGER.info("Reading GitHub repo {}", repoName);
 
             int openIssues = repository.getOpenIssueCount();
             itemDescription.setLabel(OPEN_ISSUES, String.valueOf(openIssues));

@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { get } from '../../utils/API/APIClient';
-import {Box, Typography} from "@material-ui/core";
+import { Card, CardHeader } from '@material-ui/core';
+import CardContent from '@material-ui/core/CardContent';
+import componentStyles from '../../Resources/styling/ComponentStyles';
+import LevelChip from '../LevelChip/LevelChip';
 
 interface Entry {
   type: string;
@@ -18,6 +21,7 @@ interface Entry {
 const Events: React.FC = () => {
   const [data, setData] = useState<Entry[] | null>(null);
   const [loadData, setLoadData] = useState<boolean>(true);
+  const componentClasses = componentStyles();
 
   const loadEvents = useCallback(async () => {
     if (loadData) {
@@ -33,17 +37,22 @@ const Events: React.FC = () => {
   const content = data?.map((m, i) => {
     return (
       <div key={m.date + i}>
-        <span className='date'>{m.date}</span><br />
-        <strong>{m.level}</strong> <span className='message'>{m.landscape} {m.message}</span><br /><br />
+        <LevelChip level={m.level} title={m.date}>
+          {m.level}
+        </LevelChip>
+        <br />
+        <strong>{m.landscape}</strong>: {m.message}
+        <br />
+        <br />
       </div>
     );
   });
 
   return (
-    <Box m={2}>
-      <Typography variant={'h5'}>Processing Event Log</Typography>
-      <div className='itemContainer'>{content}</div>
-    </Box>
+    <Card className={componentClasses.card}>
+      <CardHeader title={'Processing Event Log'} />
+      <CardContent>{content}</CardContent>
+    </Card>
   );
 };
 

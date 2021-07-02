@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.icons;
 
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
@@ -16,56 +18,74 @@ import static org.mockito.Mockito.*;
 class IconServiceTest {
 
     private LocalIcons localIcons;
-    private VendorIcons vendorIcons;
+    private ExternalIcons externalIcons;
     private IconService iconService;
 
     @BeforeEach
     public void setup() {
-        vendorIcons = mock(VendorIcons.class);
+        externalIcons = mock(ExternalIcons.class);
         localIcons = new LocalIcons();
-        iconService = new IconService(localIcons, vendorIcons);
+        iconService = new IconService(localIcons, externalIcons);
     }
 
 
     @Test
     public void returnsServiceWithUnknownType() {
-        Item item = new Item("test", "a");
-        item.setType("asb");
+        Item item = getTestItem("test", "a");
+        item.setLabel(Label.type, "asb");
 
         String icon = localIcons.getIconUrl(IconMapping.DEFAULT_ICON.getIcon()).orElseThrow();
-        assertThat(iconService.getIconUrl(new Item("test", "a"))).isEqualTo(icon);
+        assertThat(iconService.getIconUrl(getTestItem("test", "a"))).isEqualTo(icon);
 
     }
 
     @Test
     public void returnsType() {
-        Item item = new Item("test", "a");
-        item.setType("account");
+        Item item = getTestItem("test", "a");
+        item.setLabel(Label.type, "account");
 
         String icon = localIcons.getIconUrl("account").orElseThrow();
         assertThat(iconService.getIconUrl(item)).isEqualTo(icon);
     }
 
     @Test
+    public void doesNotResolvesIconTwice() {
+        Item item = getTestItem("test", "a");
+        item.setLabel(Label.icon, DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foobar");
+
+        verify(externalIcons, never()).getUrl(any(String.class));
+        verify(externalIcons, never()).getUrl(any(URL.class));
+    }
+
+    @Test
     public void returnsCustomIcon() {
-        Item item = new Item("test", "a");
-        item.setIcon("http://my.icon");
+        Item item = getTestItem("test", "a");
+        item.setLabel(Label.icon, "http://my.icon");
 
         assertThat(iconService.getIconUrl(item)).isEqualTo("http://my.icon");
     }
 
     @Test
     public void returnsVendorIcon() throws MalformedURLException {
-        Item item = new Item("test", "a");
-        item.setIcon("vendor://redis");
+        Item item = getTestItem("test", "a");
+        item.setLabel(Label.icon, "vendor://redis");
 
         URL url = new URL("http://foo.com/bar.png");
-        when(vendorIcons.getUrl(eq("redis"))).thenReturn(Optional.of(url.toString()));
+        when(externalIcons.getUrl(eq("redis"))).thenReturn(Optional.of(url.toString()));
 
         //when
         String s = iconService.getIconUrl(item);
-        verify(vendorIcons).getUrl(eq("redis"));
+        verify(externalIcons).getUrl(eq("redis"));
         assertEquals(url.toString(), s);
+    }
+
+    @Test
+    public void getFillUrl() throws MalformedURLException {
+        when(externalIcons.getUrl(any(URL.class))).thenReturn(Optional.empty());
+
+        Optional<String> fillUrl = iconService.getExternalUrl(new URL("http://my.icon"));
+        assertThat(fillUrl).isEmpty();
+        verify(externalIcons).getUrl(any(URL.class));
     }
 
 }

@@ -1,25 +1,20 @@
-
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.assessment.kpi.KPIFactory;
+import de.bonndan.nivio.input.demo.PetClinicSimulatorResolver;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeFactory;
+import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.icons.IconService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 /**
  * This component is a wrapper around all the steps to examine and index an landscape input dto.
- *
- *
  */
 @Component
 public class Indexer {
-
-    private static final Logger _logger = LoggerFactory.getLogger(Indexer.class);
 
     private final LandscapeRepository landscapeRepo;
     private final InputFormatHandlerFactory formatFactory;
@@ -44,49 +39,37 @@ public class Indexer {
      * Indexes the given input and creates a landscape or updates an existing one.
      *
      * @param input dto
-     * @return the log of the operation
      */
-    public ProcessLog index(final LandscapeDescription input) {
+    public void index(final LandscapeDescription input) {
 
-        ProcessLog logger = new ProcessLog(_logger);
-
-        Landscape landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier()).orElseGet(() -> {
-            logger.info("Creating new landscape " + input.getIdentifier());
-            Landscape landscape1 = LandscapeFactory.create(input);
-            landscapeRepo.save(landscape1);
-            return landscape1;
-        });
-        LandscapeFactory.assignAll(input, landscape);
-        logger.setLandscape(landscape);
-        if (landscape.getLog() == null) {
-            landscape.setProcessLog(logger);
-        }
+        Landscape landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier())
+                .map(landscape1 -> LandscapeFactory.recreate(landscape1, input))
+                .orElseGet(() -> {
+                    Landscape created = LandscapeFactory.createFromInput(input);
+                    landscapeRepo.save(created);
+                    return created;
+                });
 
         try {
-            runResolvers(input, landscape);
+            ProcessingChangelog processingChangelog = runResolvers(input, landscape);
             landscapeRepo.save(landscape);
+            eventPublisher.publishEvent(new ProcessingFinishedEvent(input, landscape, processingChangelog));
+            landscape.getLog().info("Reindexed landscape " + input.getIdentifier());
+
         } catch (ProcessingException e) {
             final String msg = "Error while reindexing landscape " + input.getIdentifier();
-            logger.warn(msg, e);
-            eventPublisher.publishEvent(new ProcessingErrorEvent(this, e));
+            landscape.getLog().warn(msg, e);
+            eventPublisher.publishEvent(new ProcessingErrorEvent(input.getFullyQualifiedIdentifier(), e));
         }
-
-        eventPublisher.publishEvent(new ProcessingFinishedEvent(input, landscape));
-        logger.info("Reindexed landscape " + input.getIdentifier());
-        landscape.setProcessLog(logger);
-        return logger;
     }
 
-    private void runResolvers(LandscapeDescription input, Landscape landscape) {
+    private ProcessingChangelog runResolvers(LandscapeDescription input, Landscape landscape) {
 
+        //a detailed textual log
         ProcessLog logger = landscape.getLog();
 
-        //initialize KPIs
-        KPIFactory kpiFactory = new KPIFactory();
-        landscape.setKpis(kpiFactory.getConfiguredKPIs(input.getConfig().getKPIs()));
-
         // read all input sources
-        new SourceReferencesResolver(formatFactory, logger).resolve(input);
+        new SourceReferencesResolver(formatFactory, logger, eventPublisher).resolve(input);
 
         // apply template values to items
         new TemplateResolver(logger).resolve(input);
@@ -97,36 +80,41 @@ public class Indexer {
         // mask any label containing secrets
         new SecureLabelsResolver(logger).resolve(input);
 
+        // read special labels on items and assign the values to fields
+        new LabelToFieldResolver(logger).resolve(input);
+
         // create relation targets on the fly if the landscape is configured "greedy"
         new InstantItemResolver(logger).resolve(input);
 
-        // read special labels on items and assign the values to fields
-        new LabelToFieldResolver(logger).resolve(input);
+        // try to find "magic" relations by examining item labels for keywords and URIs
+        new LabelRelationResolver(logger, new HintFactory()).resolve(input);
 
         // find items for relation endpoints (which can be queries, identifiers...)
         // KEEP here (must run late after other resolvers)
         new RelationEndpointResolver(logger).resolve(input);
 
-        // add any missing groups
-        new GroupProcessor(logger).process(input, landscape);
+        // execute group "contains" queries
+        new GroupQueryResolver(logger).resolve(input);
+
+        //for simulating pet clinic events
+        new PetClinicSimulatorResolver(logger).resolve(input);
+
+        //a structured log on component level
+        ProcessingChangelog changelog = new ProcessingChangelog();
 
         // compare landscape against input, add and remove items
-        new DiffProcessor(logger).process(input, landscape);
+        changelog.merge(new DiffProcessor(logger).process(input, landscape));
 
-        // execute group "contains" queries
-        new GroupQueryProcessor(logger).process(input, landscape);
-
-        // try to find "magic" relations by examining item labels for keywords
-        new MagicLabelRelationProcessor(logger).process(input, landscape);
+        // assign items to groups, add missing groups
+        changelog.merge(new GroupProcessor(logger).process(input, landscape));
 
         // create relations between items
-        new ItemRelationProcessor(logger).process(input, landscape);
+        changelog.merge(new ItemRelationProcessor(logger).process(input, landscape));
 
-        // ensures that item have a resolved icon in the api
+        // ensures that items have a resolved icon in the api
         new AppearanceProcessor(logger, iconService).process(input, landscape);
 
-        // this step must be final or very late to include all item modifications
-        landscape.getItems().indexForSearch();
+        return changelog;
     }
 
 }

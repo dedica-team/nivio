@@ -1,207 +1,207 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
-import { Card, CardHeader, TextField, Theme } from '@material-ui/core';
+import { Box, Input, InputAdornment, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
-import { IItem, Routes } from '../../../interfaces';
-import { withRouter, RouteComponentProps, matchPath } from 'react-router-dom';
+import { IFacet, IItem } from '../../../interfaces';
 import Item from '../Modals/Item/Item';
-import { Backspace, MoreVertSharp } from '@material-ui/icons';
+import { Backspace, Close, SearchOutlined } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Chip from '@material-ui/core/Chip';
-import Avatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import CardContent from '@material-ui/core/CardContent';
-import componentStyles from '../../../Ressources/styling/ComponentStyles';
+import componentStyles from '../../../Resources/styling/ComponentStyles';
+import HelpTooltip from '../../Help/HelpTooltip';
+import Facets from './Facets';
+import Typography from '@material-ui/core/Typography';
+import SearchHelp from './Help';
+import { withBasePath } from '../../../utils/API/BasePath';
+import { SaveSearchConfig } from './SaveSearchConfig';
+import { LandscapeContext } from '../../../Context/LandscapeContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    searchField: {
+    search: {
       margin: 0,
       padding: 0,
-      borderRadius: 5,
-      backgroundColor: theme.palette.primary.dark,
+      borderRadius: 50,
+      height: '2.5em',
+      border: '1px solid ',
+      backgroundColor: theme.palette.background.default,
+      borderColor: theme.palette.primary.main,
+    },
+    searchField: {
+      marginTop: 0,
+      paddingLeft: 5,
+      paddingRight: 5,
+      width: '100%',
     },
   })
 );
 
-interface PropsInterface extends RouteComponentProps {
-  locateFunction: Function;
+interface PropsInterface {
   setSidebarContent: Function;
+  showSearch: Function;
 }
 
-interface IFacet {
-  dim: string;
-  path: [];
-  value: number;
-  childCount: number;
-  labelValues: ILabelValue[];
-}
-
-interface ILabelValue {
-  label: string;
-  value: number;
-}
-
-const Search: React.FC<PropsInterface> = ({locateFunction, setSidebarContent, ...props}) => {
-  const match: { params?: { identifier?: string } } | null = matchPath(props.location.pathname, {
-    path: Routes.MAP_ROUTE,
-    exact: false,
-    strict: false,
-  });
-
-  const identifier = match?.params?.identifier;
+const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => {
   const [currentLandscape, setCurrentLandscape] = useState<string>('');
   const [results, setResults] = useState<IItem[]>([]);
   const [facets, setFacets] = useState<IFacet[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [hasChange, setHasChange] = useState(false);
+  const [searchSupport, setSearchSupport] = useState<any>(null);
+  const [render, setRender] = useState<boolean>(false);
   const classes = useStyles();
   const componentClasses = componentStyles();
   const searchInput = React.useRef<HTMLDivElement>(null);
+  const landscapeContext = useContext(LandscapeContext);
 
-  const search = useCallback(
-    (searchTerm: string, identifier: string) => {
-      if (searchTerm.length < 2) return;
+  /**
+   * Search on search term change, set results.
+   */
+  useEffect(() => {
+    if (searchTerm.length < 2) return;
 
-      get(
-        '/api/landscape/' +
-          identifier +
-          '/search/' +
-          encodeURIComponent(searchTerm)
-            .replace(/[!'()]/g, escape)
-            .replace(/\*/g, '%2A')
-      ).then((result) => {
+    get(
+      '/api/landscape/' +
+        landscapeContext.identifier +
+        '/search/' +
+        encodeURIComponent(searchTerm)
+          .replace(/[!'()]/g, escape)
+          .replace(/\*/g, '%2A')
+    )
+      .then((result) => {
         setResults(result);
-        const searchResult = results.map((value1) => (
-          <Item
-            small={true}
-            key={value1.fullyQualifiedIdentifier}
-            useItem={value1}
-            locateItem={locateFunction}
-          />
-        ));
-        setSidebarContent(searchResult);
-        setHasChange(false);
+      })
+      .catch((reason) => {
+        console.warn(reason);
       });
-    },
-    [results, setSidebarContent, locateFunction]
-  );
+  }, [searchTerm, landscapeContext.identifier]);
+
+  /**
+   * loading of facets
+   *
+   * also depends on assessments
+   */
+  useEffect(() => {
+    const addFacet = (dim: string, label: string): string => {
+      let current = searchInput.current;
+      if (current && dim.length && label.length) {
+        if (searchTerm.indexOf(dim + ':' + label) === -1) {
+          if (label.indexOf(' ') !== -1) {
+            label = `"${label}"`; //to handle whitespace
+          }
+          setSearchTerm(`${searchTerm} ${dim}:${label}`);
+          setRender(true);
+        }
+        current.focus();
+      }
+
+      return searchTerm;
+    };
+
+    const saveSearch = (config: SaveSearchConfig): void => {
+      if (!currentLandscape) return;
+
+      const urlSearchParams = new URLSearchParams();
+      urlSearchParams.set('searchTerm', searchTerm);
+      if (config.title) {
+        urlSearchParams.set('title', config.title);
+      }
+      const reportUrl = withBasePath(
+        '/docs/' + currentLandscape + '/owners.html?' + urlSearchParams.toString()
+      );
+      window.open(reportUrl, '_blank');
+    };
+
+    setSearchSupport(<Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />);
+  }, [setSearchSupport, searchTerm, facets, componentClasses.card, currentLandscape]);
+
+  /**
+   * Update rendered search results
+   */
+  useEffect(() => {
+    const searchResult = results.map((value1: IItem) => (
+      <Item
+        small={true}
+        key={`item_${value1.fullyQualifiedIdentifier}_${Math.random()}`}
+        fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier}
+      />
+    ));
+    setSidebarContent(<>{searchResult}</>);
+  }, [results, setSidebarContent, render]);
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
-      console.debug('identifier missing');
       return;
     }
-
-    const result: IFacet[] | null = await get('/api/landscape/' + identifier + '/facets/');
+    const result: IFacet[] | null = await get(
+      '/api/landscape/' + identifier + '/facets/'
+    ).catch((reason) => console.warn(reason));
 
     if (!result) return;
     setFacets(result);
   }
 
-  function setSearchTermSafely(newTerm: string) {
-    if (newTerm !== searchTerm) {
-      setSearchTerm(newTerm);
-      setHasChange(true);
-    }
-  }
-
   function clear() {
     setSearchTerm('');
-    setHasChange(false);
     setResults([]);
+    setSidebarContent(null);
   }
 
   useEffect(() => {
-    if (facets.length === 0) {
-      loadFacets(identifier);
-    }
-  }, [identifier, facets]);
+    if (landscapeContext.identifier) loadFacets(landscapeContext.identifier);
+  }, [landscapeContext.identifier, landscapeContext.assessment]);
 
-  useEffect(() => {
-    if (identifier && hasChange) search(searchTerm, identifier);
-  }, [identifier, searchTerm, results, hasChange, search]);
-
-  if (identifier == null) {
-    console.debug('identifier missing');
+  if (landscapeContext.identifier == null) {
     return null;
   }
 
-  if (currentLandscape == null || currentLandscape !== identifier) {
+  if (currentLandscape == null || currentLandscape !== landscapeContext.identifier) {
     setFacets([]);
-    setCurrentLandscape(identifier);
+    setSearchTerm('');
+    setCurrentLandscape(landscapeContext.identifier);
   }
 
-  const facetsHtml = facets.map((facet) => (
-    <Card className={componentClasses.card} key={facet.dim}>
-      <CardContent>
-        <Typography variant={'h6'}>{facet.dim}</Typography>
-        {facet.labelValues.map((lv) => (
-          <Chip
-            onClick={(e) => {
-              let current = searchInput.current;
-              if (!current) return;
-              setSearchTermSafely(facet.dim + ':' + lv.label);
-              current.focus();
-            }}
-            variant={'outlined'}
-            size={'small'}
-            key={facet.dim + '' + lv.label}
-            label={lv.label}
-            avatar={<Avatar>{lv.value}</Avatar>}
-          />
-        ))}
-      </CardContent>
-    </Card>
-  ));
-
   return (
-    <React.Fragment>
-      <IconButton
-        size={'small'}
-        onClick={() =>
-          setSidebarContent(
-            <React.Fragment>
-              <Card className={componentClasses.card}>
-                <CardHeader title={'Search'} className={componentClasses.cardHeader} />
-                <CardContent>
-                  <strong>{'You can use the Lucene query syntax.'}</strong>
-                  <br />
-                  <em>{'foo*'}</em>
-                  <br />
-                  <em>{'*press'}</em>
-                  <br />
-                  <em>{'tag:cms'}</em>
-                </CardContent>
-              </Card>
-              {facetsHtml}
-            </React.Fragment>
-          )
-        }
-      >
-        <MoreVertSharp />
-      </IconButton>
-      <TextField
-        className={classes.searchField}
-        value={searchTerm}
-        onChange={(event) => setSearchTermSafely(event.target.value)}
-        ref={searchInput}
-        variant={'outlined'}
-        margin={'dense'}
-        placeholder={'Search'}
-      />
-
-      <IconButton
-        className={'searchIcon'}
-        size={'small'}
-        onClick={() => clear()}
-        disabled={searchTerm.length === 0}
-      >
-        <Backspace />
-      </IconButton>
-    </React.Fragment>
+    <div>
+      <div style={{ float: 'right', padding: 2 }}>
+        <IconButton size={'small'}>
+          <HelpTooltip
+            style={{ float: 'right', padding: 2 }}
+            content={<SearchHelp />}
+          />
+        </IconButton>
+        <IconButton size={'small'} onClick={() => showSearch(false)} title={'Close search'}>
+          <Close />
+        </IconButton>
+      </div>
+      <Typography variant={'h5'}>Search</Typography>
+      <Box className={classes.search}>
+        <Input
+          disableUnderline={true}
+          className={classes.searchField}
+          type={'text'}
+          value={searchTerm}
+          ref={searchInput}
+          placeholder={'...'}
+          onChange={(event) => setSearchTerm(event.target.value)}
+          startAdornment={
+            <IconButton size={'small'} onClick={() => setRender(!render)} title={'Show results'}>
+              <SearchOutlined />
+            </IconButton>
+          }
+          endAdornment={
+            searchTerm.length ? (
+              <InputAdornment position='end'>
+                <IconButton size={'small'} onClick={() => clear()} title={'Clear'}>
+                  <Backspace />
+                </IconButton>
+              </InputAdornment>
+            ) : null
+          }
+        />
+        {searchSupport}
+      </Box>
+    </div>
   );
 };
 
-export default withRouter(Search);
+export default Search;

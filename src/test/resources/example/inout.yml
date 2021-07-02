@@ -73,6 +73,14 @@ items:
     group: input
     name: CSV files
 
+  - identifier: dot
+    description: Parser for GraphViz dot files.
+    group: input
+    name: dot files
+    type: graph
+    links:
+      github: https://www.graphviz.org/
+
   - identifier: nivio
     name: Nivio
     group: nivio
@@ -83,8 +91,10 @@ items:
       - k8s
       - docker-compose
       - nivio-prop
+      - dot
     links:
       github: https://github.com/dedica-team/nivio
+      openapi: http://localhost:8080/v3/api-docs/
 
 #
 # links
@@ -103,6 +113,15 @@ items:
     name: GitHub
     type: github
     description: Reads GitHub repository info from a link pointing to it
+    group: links
+    relations:
+      - target: nivio
+        type: dataflow
+
+  - identifier: openapi
+    name: OpenAPI
+    type: api
+    description: Reads OpenAPI V3 / Swagger specs
     group: links
     relations:
       - target: nivio

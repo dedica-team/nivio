@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ConditionKPITest {
@@ -22,8 +23,8 @@ class ConditionKPITest {
 
     @Test
     public void testGreen() {
-        Item item = new Item(null, "foo");
-        item.setLabel(Label.key(Label.condition, "bar"), "True");
+        Item item = getTestItem("null", "foo");
+        item.setLabel(Label.condition.withPrefix("bar"), "True");
 
         List<StatusValue> statusValues = kpi.getStatusValues(item);
         assertEquals(1, statusValues.size());
@@ -32,9 +33,9 @@ class ConditionKPITest {
 
     @Test
     public void testRed() {
-        Item item = new Item(null, "foo");
-        item.setLabel(Label.key(Label.condition, "bar"), "True");
-        item.setLabel(Label.key(Label.condition, "baz"), "False");
+        Item item = getTestItem("null", "foo");
+        item.setLabel(Label.condition.withPrefix("bar"), "True");
+        item.setLabel(Label.condition.withPrefix("baz"), "False");
 
         List<StatusValue> statusValues = kpi.getStatusValues(item);
         assertEquals(1, statusValues.size());

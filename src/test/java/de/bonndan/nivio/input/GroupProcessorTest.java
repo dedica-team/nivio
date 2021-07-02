@@ -3,36 +3,59 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.LandscapeFactory;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GroupProcessorTest {
 
     private GroupProcessor groupProcessor;
+    private Landscape landscape;
 
     @BeforeEach
     public void setup() {
-        ProcessLog log = new ProcessLog(LoggerFactory.getLogger(GroupProcessorTest.class));
+        landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
+        ProcessLog log = new ProcessLog(LoggerFactory.getLogger(GroupProcessorTest.class), landscape.getIdentifier());
         groupProcessor = new GroupProcessor(log);
     }
 
     @Test
     void process() {
 
+        //given
         LandscapeDescription input = getLandscapeDescription();
-        Landscape landscape = LandscapeFactory.create("test");
 
-        groupProcessor.process(input, landscape);
+        //when
+        ProcessingChangelog process = groupProcessor.process(input, landscape);
 
+        //then
         assertEquals(3, landscape.getGroups().size());
+    }
+
+    @Test
+    void withNewGroupChangelog() {
+
+        //given
+        LandscapeDescription input = getLandscapeDescription();
+        ItemDescription itemDescription = new ItemDescription("a");
+        itemDescription.setGroup("foobar");
+        input.mergeItems(List.of(itemDescription));
+
+        //when
+        ProcessingChangelog process = groupProcessor.process(input, landscape);
+
+        //then
+        assertEquals(4, landscape.getGroups().size());
+        assertThat(process.changes).hasSize(3);
+        assertThat(process.changes).containsKey("test/foobar");
+        assertThat(process.changes.get("test/foobar").getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.CREATED.name());
     }
 
     @Test
@@ -42,10 +65,7 @@ class GroupProcessorTest {
 
         ItemDescription item = new ItemDescription();
         item.setIdentifier("abc");
-        input.addItems(Arrays.asList(item));
-
-        Landscape landscape = LandscapeFactory.create("test");
-
+        input.mergeItems(Arrays.asList(item));
 
         groupProcessor.process(input, landscape);
 
@@ -57,7 +77,6 @@ class GroupProcessorTest {
     public void testBlacklistOnGroups() {
         LandscapeDescription input = getLandscapeDescription();
         input.getConfig().getGroupBlacklist().add("test2");
-        Landscape landscape = LandscapeFactory.create("test");
 
         groupProcessor.process(input, landscape);
         assertEquals(2, landscape.getGroups().size()); //COMMON is always present
@@ -69,7 +88,6 @@ class GroupProcessorTest {
     public void testBlacklistOnGroupsWithRegex() {
         LandscapeDescription input = getLandscapeDescription();
         input.getConfig().getGroupBlacklist().add("^test[0-9].*");
-        Landscape landscape = LandscapeFactory.create("test");
 
         groupProcessor.process(input, landscape);
         assertEquals(1, landscape.getGroups().size()); //COMMON only
@@ -79,25 +97,33 @@ class GroupProcessorTest {
     public void testBlacklistOnItems() {
         LandscapeDescription input = getLandscapeDescription();
         input.getConfig().getGroupBlacklist().add("test2");
+
         ItemDescription test1item = new ItemDescription();
         test1item.setIdentifier("intest1");
         test1item.setGroup("test1");
         input.getItemDescriptions().add(test1item);
+
         ItemDescription test2item = new ItemDescription();
         test2item.setIdentifier("intest2");
         test2item.setGroup("test2");
         input.getItemDescriptions().add(test2item);
 
-        Landscape landscape = LandscapeFactory.create("test");
+        Item item = ItemFactory.getTestItem("test2", "foo");
+        landscape.getItems().add(item);
+        assertEquals(1, landscape.getItems().all().size());
 
+        //when
         groupProcessor.process(input, landscape);
 
         assertEquals(2, landscape.getGroups().size()); //incl COMMON
+
+        //deletes item of blacklisted group
+        assertEquals(0, landscape.getItems().all().size());
         assertEquals(1, input.getItemDescriptions().all().size());
     }
 
     private LandscapeDescription getLandscapeDescription() {
-        LandscapeDescription input = new LandscapeDescription();
+        LandscapeDescription input = new LandscapeDescription("test", "testLandscape", null);
         input.getGroups().put("test1", new GroupDescription());
         input.getGroups().put("test2", new GroupDescription());
         return input;

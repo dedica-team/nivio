@@ -1,5 +1,7 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SVGGroupAreaOutlineFactoryTest {
@@ -23,11 +26,10 @@ class SVGGroupAreaOutlineFactoryTest {
         Hex e2 = new Hex(0, 20, -20);
         Set<Hex> occupied = Set.of(e1, e2);
 
-        Item item1 = new Item("foo", "bar");
-        Item item2 = new Item("foo", "baz");
+        Item item1 = getTestItem("foo", "bar");
+        Item item2 = getTestItem("foo", "baz");
 
-        Group foo = new Group("foo");
-        foo.setColor("005500");
+        Group foo = new Group("foo", "landscapeIdentifier", null, null, null, null, "005500");
         foo.addItem(item1);
         foo.addItem(item2);
 
@@ -38,11 +40,11 @@ class SVGGroupAreaOutlineFactoryTest {
 
         Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), foo);
 
-        SVGGroupArea group = SVGGroupAreaFactory.getGroup(foo, area, false);
-        Set<Hex> groupArea = group.groupArea;
+        SVGGroupArea group = SVGGroupArea.forGroup(foo, area, new StatusValue("foo", Status.GREEN), false);
+        Set<Hex> groupArea = group.getGroupArea();
 
         //when
-        SVGGroupAreaOutlineFactory svgGroupAreaOutlineFactory = new SVGGroupAreaOutlineFactory();
+        SVGGroupAreaOutlineFactory svgGroupAreaOutlineFactory = new SVGGroupAreaOutlineFactory(SVGGroupAreaOutlineFactory.GroupAreaStyle.WOBBLY);
         List<DomContent> outline = svgGroupAreaOutlineFactory.getOutline(groupArea, "005500");
 
         //then

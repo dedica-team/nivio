@@ -1,54 +1,50 @@
 package de.bonndan.nivio.api;
 
-import de.bonndan.nivio.input.ProcessingException;
-import de.bonndan.nivio.input.*;
-import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.IndexingDispatcher;
+import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.util.URLHelper;
 import org.apache.lucene.facet.FacetResult;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping(path = ApiController.PATH)
 public class ApiController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApiController.class);
+
     public static final String PATH = "/api";
 
     private final LandscapeRepository landscapeRepository;
-    private final LandscapeDescriptionFactory landscapeDescriptionFactory;
-    private final InputFormatHandlerFactory formatFactory;
-    private final Indexer indexer;
     private final LinkFactory linkFactory;
+    private final IndexingDispatcher indexingDispatcher;
 
     public ApiController(LandscapeRepository landscapeRepository,
-                         LandscapeDescriptionFactory landscapeDescriptionFactory,
-                         InputFormatHandlerFactory formatFactory,
-                         Indexer indexer,
-                         LinkFactory linkFactory
+                         LinkFactory linkFactory,
+                         IndexingDispatcher indexingDispatcher
     ) {
         this.landscapeRepository = landscapeRepository;
-        this.landscapeDescriptionFactory = landscapeDescriptionFactory;
-        this.formatFactory = formatFactory;
-        this.indexer = indexer;
         this.linkFactory = linkFactory;
+        this.indexingDispatcher = indexingDispatcher;
     }
 
     /**
      * Overview on all landscapes.
      */
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public Index index() {
         return linkFactory.getIndex(landscapeRepository.findAll());
     }
@@ -60,7 +56,7 @@ public class ApiController {
      * @return response entity of landscape
      */
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/{landscapeIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{landscapeIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Landscape> landscape(@PathVariable String landscapeIdentifier) {
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
         if (landscape == null) {
@@ -76,7 +72,7 @@ public class ApiController {
      * This resource serves  a group in a landscape and can be addressed by using a {@link FullyQualifiedIdentifier}
      */
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/{landscapeIdentifier}/{groupIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{landscapeIdentifier}/{groupIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Group> group(@PathVariable String landscapeIdentifier,
                                        @PathVariable String groupIdentifier
     ) {
@@ -99,7 +95,7 @@ public class ApiController {
      * This resource serves an item in a landscape and can be addressed by using a {@link FullyQualifiedIdentifier}
      */
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/{landscapeIdentifier}/{groupIdentifier}/{itemIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{landscapeIdentifier}/{groupIdentifier}/{itemIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Item> item(@PathVariable String landscapeIdentifier,
                                      @PathVariable String groupIdentifier,
                                      @PathVariable String itemIdentifier
@@ -121,38 +117,30 @@ public class ApiController {
     /**
      * Creates a new landscape
      */
-    @RequestMapping(path = "/landscape", method = RequestMethod.POST)
-    public ProcessLog create(@RequestBody String body) {
-        LandscapeDescription env = LandscapeDescriptionFactory.fromString(body, "request body");
-        return indexer.index(env);
+    @PostMapping(path = "/landscape")
+    public ResponseEntity<Object> create(@RequestBody String body) throws URISyntaxException {
+        LandscapeDescription env = indexingDispatcher.createFromBody(body);
+        Optional<URI> uriForDTO = getURIForDTO(env);
+        return uriForDTO
+                .map(uri -> ResponseEntity.created(uri).build())
+                .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
     }
 
-    @RequestMapping(path = "/landscape/{identifier}/services", method = RequestMethod.POST)
-    public ProcessLog indexLandscape(
+    @PostMapping(path = "/landscape/{identifier}/items")
+    public ResponseEntity<Object> addItems(
             @PathVariable String identifier,
             @RequestHeader(name = "format") String format,
             @RequestBody String body
-    ) {
-        LandscapeDescription dto = new LandscapeDescription();
-        dto.setIdentifier(identifier);
-        dto.setIsPartial(true);
-
-        SourceReference sourceReference = new SourceReference();
-        sourceReference.setFormat(format);
-        sourceReference.setContent(body);
-
-        InputFormatHandler factory = formatFactory.getInputFormatHandler(sourceReference);
-        Optional<URL> baseUrl = URLHelper.getParentPath(dto.getSource());
-
-        List<ItemDescription> itemDescriptions = factory.getDescriptions(sourceReference, baseUrl.orElse(null));
-
-        dto.setItemDescriptions(itemDescriptions);
-
-        return indexer.index(dto);
+    ) throws URISyntaxException {
+        LandscapeDescription dto = indexingDispatcher.createFromBodyItems(identifier, format, body);
+        Optional<URI> uriForDTO = getURIForDTO(dto);
+        return uriForDTO
+                .map(uri -> ResponseEntity.created(uri).build())
+                .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/landscape/{identifier}/log", method = RequestMethod.GET)
+    @GetMapping(path = "/landscape/{identifier}/log")
     public ResponseEntity<ProcessLog> log(@PathVariable String identifier) {
 
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
@@ -161,11 +149,10 @@ public class ApiController {
         }
 
         return new ResponseEntity<>(landscape.getLog(), HttpStatus.OK);
-
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/landscape/{identifier}/search/{query}", method = RequestMethod.GET)
+    @GetMapping(path = "/landscape/{identifier}/search/{query}", produces = "application/json")
     public ResponseEntity<Set<Item>> search(@PathVariable String identifier, @PathVariable String query) {
 
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
@@ -174,15 +161,16 @@ public class ApiController {
         }
 
         try {
-            return new ResponseEntity<>(landscape.getItems().search(query), HttpStatus.OK);
-        } catch (RuntimeException ignored) {
+            return new ResponseEntity<>(landscape.search(query), HttpStatus.OK);
+        } catch (RuntimeException error) {
+            LOGGER.error("Search query '{}' in landscape {} failed: {}", query, landscape, error.getMessage(), error);
             return ResponseEntity.badRequest().build();
         }
 
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
-    @RequestMapping(path = "/landscape/{identifier}/facets", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(path = "/landscape/{identifier}/facets", produces = "application/json")
     public ResponseEntity<List<FacetResult>> facets(@PathVariable String identifier) {
 
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
@@ -190,45 +178,42 @@ public class ApiController {
             return ResponseEntity.notFound().build();
         }
 
-        return new ResponseEntity<>(landscape.getItems().facets(), HttpStatus.OK);
+        return new ResponseEntity<>(landscape.getSearchIndex().facets(), HttpStatus.OK);
     }
 
 
     /**
      * Trigger reindexing of a landscape source.
      */
-    @RequestMapping(path = "/reindex/{landscape}", method = RequestMethod.POST)
-    public ProcessLog reindex(@PathVariable String landscape) {
-        Landscape distinctByIdentifier = landscapeRepository.findDistinctByIdentifier(landscape).orElse(null);
-        if (distinctByIdentifier == null) {
-            ProcessLog p = new ProcessLog(LoggerFactory.getLogger("nivio"));
-            p.error(new ProcessingException(null, "Could not find landscape " + landscape));
-            return p;
+    @PostMapping(path = "/reindex/{landscape}")
+    public ResponseEntity<Object> reindex(@PathVariable String landscape) throws URISyntaxException {
+        Landscape existing = landscapeRepository.findDistinctByIdentifier(landscape).orElse(null);
+        if (existing == null) {
+            return ResponseEntity.notFound().build();
         }
 
-        return process(LandscapeDescriptionFactory.fromString(
-                distinctByIdentifier.getSource(),
-                distinctByIdentifier.getIdentifier() + " source"
-        ));
+        LandscapeDescription env = indexingDispatcher.fromIncoming(existing);
+        Optional<URI> uriForDTO = getURIForDTO(env);
+        return uriForDTO
+                .map(uri -> ResponseEntity.created(uri).build())
+                .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
     }
 
-    private ProcessLog process(LandscapeDescription landscape) {
-        if (landscape == null || StringUtils.isEmpty(landscape.getSource())) {
-            ProcessLog p = new ProcessLog(LoggerFactory.getLogger("nivio"));
-            p.error(new ProcessingException(landscape, "Cannot process empty source."));
-            return p;
+    private Optional<URI> getURIForDTO(LandscapeDescription env) {
+        Optional<Link> link = Optional.ofNullable(linkFactory.generateComponentLink(env.getFullyQualifiedIdentifier()));
+        if (link.isEmpty()) {
+            return Optional.empty();
         }
 
-        File file = new File(landscape.getSource());
-        if (file.exists()) {
-            LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
-            return indexer.index(Objects.requireNonNull(landscapeDescription));
+        URL href = link.get().getHref();
+        if (href == null) {
+            return Optional.empty();
         }
 
-        Optional<URL> url = URLHelper.getURL(landscape.getSource());
-
-        return url.map(u -> process(landscapeDescriptionFactory.from(u)))
-                .orElseGet(() -> process(LandscapeDescriptionFactory.fromString(landscape.getSource(), landscape.getIdentifier() + " source")));
+        try {
+            return Optional.of(href.toURI());
+        } catch (URISyntaxException e) {
+            return Optional.empty();
+        }
     }
-
 }

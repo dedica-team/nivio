@@ -1,0 +1,43 @@
+groups:
+  xray:
+    owner: Marie Curie
+    description: X-Ray Room
+
+items:
+  - identifier: xray
+    description: X-Ray emitter
+    type: server
+    team: xray guys
+    cost: 5000
+    group: xray
+    lifecycle: production
+    layer: infrastructure
+    providedBy:
+      - images-volume
+
+  - identifier: sensor
+    group: xray
+    type: radioactive
+    statuses:
+      - label: radiation
+        status: red
+        message: leak detected
+
+  - identifier: images-volume
+    owner: Louis Armstrong
+    type: volume
+    team: ops guys
+    group: xray
+    description: backup volume
+
+  - identifier: customer-db
+    owner: Louis Armstrong
+    group: xray
+    software: MariaDB
+    version: 10.3.11
+    address: jupiter.acme.com
+    type: database
+    team: ops guys
+    scale: 1
+    hostType: docker
+    layer: infrastructure

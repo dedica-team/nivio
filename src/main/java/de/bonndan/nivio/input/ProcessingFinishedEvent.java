@@ -1,43 +1,49 @@
 package de.bonndan.nivio.input;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Landscape;
+import org.springframework.lang.NonNull;
 
-import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Event is fired after successful indexing of a landscape.
- *
- *
- *
  */
 public class ProcessingFinishedEvent extends ProcessingEvent {
 
+    @NonNull
+    private final LandscapeDescription input;
+
+    @NonNull
     private final Landscape landscape;
 
+    @NonNull
+    private final ProcessingChangelog changelog;
+
     /**
-     * @param source the LandscapeDescription
+     * @param input     the LandscapeDescription input which has been processed
      * @param landscape out
+     * @param changelog log of component changes
+     * @throws NullPointerException if any of the params is null
      */
-    public ProcessingFinishedEvent(LandscapeDescription source, Landscape landscape) {
-        super(source);
-        this.landscape = landscape;
+    public ProcessingFinishedEvent(@NonNull final LandscapeDescription input,
+                                   @NonNull final Landscape landscape,
+                                   @NonNull final ProcessingChangelog changelog
+    ) {
+        super(Objects.requireNonNull(input).getFullyQualifiedIdentifier());
+        this.input = input;
+        this.landscape = Objects.requireNonNull(landscape);
+        this.changelog = Objects.requireNonNull(changelog);
     }
 
-    @JsonSerialize(using = PLS.class)
+    @NonNull
     public Landscape getLandscape() {
         return landscape;
     }
 
-    private static class PLS extends JsonSerializer<Landscape> {
-        @Override
-        public void serialize(Landscape value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            gen.writeString(value.getIdentifier());
-        }
+    @NonNull
+    public LandscapeDescription getInput() {
+        return input;
     }
 
     @Override
@@ -52,6 +58,11 @@ public class ProcessingFinishedEvent extends ProcessingEvent {
 
     @Override
     public String getMessage() {
-        return null;
+        return "Processing of input data has finished.";
+    }
+
+    @NonNull
+    public ProcessingChangelog getChangelog() {
+        return changelog;
     }
 }

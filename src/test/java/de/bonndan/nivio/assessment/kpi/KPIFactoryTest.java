@@ -9,6 +9,7 @@ import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 class KPIFactoryTest {
 
+    private ApplicationEventPublisher publisher;
     private KPIFactory kpiFactory;
     private Landscape landscape;
     private LandscapeConfig landscapeConfig;
@@ -25,10 +27,11 @@ class KPIFactoryTest {
     public void setup() {
         kpiFactory = new KPIFactory();
 
-        landscape = LandscapeFactory.create("test");
         landscapeConfig = new LandscapeConfig();
-        landscape.setConfig(landscapeConfig);
-        landscape.setProcessLog(new ProcessLog(mock(Logger.class)));
+        landscape = LandscapeFactory.createForTesting("test", "testLandscape")
+                .withConfig(landscapeConfig)
+                .withProcessLog(new ProcessLog(mock(Logger.class), "test"))
+                .build();
     }
 
     @Test

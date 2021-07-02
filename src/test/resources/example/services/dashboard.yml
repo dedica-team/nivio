@@ -54,3 +54,12 @@ items:
     group: dashboard
 
 
+groups:
+  ingress:
+    description: This group provides authentication.
+
+
+templates:
+  tagWithAuth:
+    tags:
+      - Authentication

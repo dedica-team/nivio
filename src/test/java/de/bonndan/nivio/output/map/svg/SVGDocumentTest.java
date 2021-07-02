@@ -1,19 +1,25 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.input.http.CachedResponse;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.RenderingTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-class SVGDocumentTest  extends RenderingTest {
+class SVGDocumentTest extends RenderingTest {
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws URISyntaxException {
         super.setup();
     }
 
@@ -23,23 +29,45 @@ class SVGDocumentTest  extends RenderingTest {
         Landscape landscape = getLandscape(path + ".yml");
         String svg = renderLandscape(path, landscape);
         assertTrue(svg.contains("svg version=\"1.1\""));
-        assertTrue(svg.contains("<image xlink:href=\"https://dedica.team/images/logo_orange_weiss.png\""));
         assertTrue(svg.contains("class=\"title\">Input and Output</text>"));
-        assertTrue(svg.contains("<g data-identifier=\"inout/output/svg\" class=\"item\""));
+        assertThat(svg).contains("<g data-identifier=\"inout/output/svg\" class=\"item");
         assertTrue(svg.contains(">Docker Compose files</text>"));
-
     }
 
     @Test
     public void renderCustomFill() throws IOException {
         String path = "/src/test/resources/example/dedica";
-        Landscape landscape = getLandscape(path + ".yml");
-        String svg = renderLandscape(path, landscape);
-        assertTrue(svg.contains("svg version=\"1.1\""));
-        assertTrue(svg.contains("<image xlink:href=\"https://dedica.team/images/logo_orange_weiss.png\""));
 
-        assertThat(svg).contains("https://dedica.team/images/danielpozzi.jpg");
-        assertThat(svg).contains("fill=\"url(#aHR0cHM6Ly9kZWRpY2EudGVhbS9pbWFnZXMvZGFuaWVscG96emkuanBn)\"");
+        Landscape landscape = getLandscape(path + ".yml");
+
+        //when
+        String svg = renderLandscape(path, landscape);
+
+        //then
+        assertTrue(svg.contains("svg version=\"1.1\""));
+
+        //external icon
+        assertThat(svg).contains("fill=\"url(#Wm05dg==)\""); //pattern for "foo" response
+
+    }
+
+    @Test
+    public void embedsExternalImages() throws IOException, URISyntaxException {
+        String path = "/src/test/resources/example/dedica";
+        CachedResponse response = mock(CachedResponse.class);
+        when(response.getBytes()).thenReturn("foo".getBytes());
+        when(httpService.getResponse(any(URL.class))).thenReturn(response);
+
+        Landscape landscape = getLandscape(path + ".yml");
+
+        //when
+        String svg = renderLandscape(path, landscape);
+
+        //then
+        assertThat(svg).doesNotContain("https://dedica.team/images/logo_orange_weiss.png"); //external image, to be replaced
+        assertThat(svg).doesNotContain("https://dedica.team/images/logo.png"); //map logo
+        assertThat(svg).doesNotContain("danielpozzi.jpg"); //external image, to be replaced
+        assertThat(svg).contains("fill=\"url(#Wm05dg==)\""); //pattern for "foo" response
 
     }
 }

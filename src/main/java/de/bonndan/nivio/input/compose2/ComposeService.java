@@ -29,8 +29,7 @@ public class ComposeService {
         ItemDescription description = new ItemDescription(identifier);
         if (networks != null) {
             networks.forEach(network -> description.setLabel(
-                    Label.key(Label.network, network.toString()),
-                    network.getName()
+                    Label.network.withPrefix(network.toString()), network.getName()
                     )
             );
         }
@@ -50,7 +49,7 @@ public class ComposeService {
           link targets become providers
          */
         if (links != null) {
-            links.forEach(s -> description.addRelation(RelationBuilder.provides(s, description)));
+            links.forEach(s -> description.addRelation(RelationBuilder.createProviderDescription(s, description.getFullyQualifiedIdentifier().toString())));
         }
 
         return description;

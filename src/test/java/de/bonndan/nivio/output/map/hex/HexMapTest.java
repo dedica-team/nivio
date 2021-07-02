@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class HexMapTest {
@@ -16,12 +17,12 @@ class HexMapTest {
 
     @Test
     public void getPath() {
-        Item bar = new Item("foo", "bar");
+        Item bar = getTestItem("foo", "bar");
         LayoutedComponent barComponent = new LayoutedComponent(bar);
         barComponent.x = 0;
         barComponent.y = 0;
 
-        Item baz = new Item("moo", "baz");
+        Item baz = getTestItem("moo", "baz");
         LayoutedComponent bazComponent = new LayoutedComponent(baz);
         barComponent.x = 500;
         barComponent.y = 500;
@@ -39,7 +40,7 @@ class HexMapTest {
 
     @Test
     void addCreatesHexWithItem() {
-        Item bar = new Item("foo", "bar");
+        Item bar = getTestItem("foo", "bar");
         LayoutedComponent barComponent = new LayoutedComponent(bar);
         barComponent.x = 0;
         barComponent.y = 0;

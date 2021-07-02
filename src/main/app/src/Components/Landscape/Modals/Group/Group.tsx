@@ -1,71 +1,32 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 
-import { IAssessment, IGroup } from '../../../../interfaces';
-import { getLabels, getLinks, getAssessmentSummary, getItemIcon } from '../../Utils/utils';
-import { Badge, Card, CardHeader, Theme, withStyles } from '@material-ui/core';
+import { IGroup } from '../../../../interfaces';
+import { getLabels, getLinks } from '../../Utils/utils';
+import { Card, CardHeader } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import StatusChip from '../../../StatusChip/StatusChip';
-import componentStyles from '../../../../Ressources/styling/ComponentStyles';
+import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import Avatar from '@material-ui/core/Avatar';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import IconButton from "@material-ui/core/IconButton";
-import {FilterCenterFocus} from "@material-ui/icons";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    groupAvatar: {
-      width: 15,
-      height: 15,
-      display: 'inline-block',
-    },
-  })
-);
-
-const StyledBadge = withStyles((theme: Theme) =>
-  createStyles({
-    'badge': {
-      'boxShadow': `0 0 0 2px ${theme.palette.background.paper}`,
-      '&::after': {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        borderRadius: '50%',
-        //animation: '$ripple 1.2s infinite ease-in-out',
-        border: '1px solid currentColor',
-        backgroundColor: 'currentColor',
-        content: '""',
-      },
-    },
-    '@keyframes ripple': {
-      '0%': {
-        transform: 'scale(.8)',
-        opacity: 1,
-      },
-      '100%': {
-        transform: 'scale(2.4)',
-        opacity: 0,
-      },
-    },
-  })
-)(Badge);
+import IconButton from '@material-ui/core/IconButton';
+import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
+import ItemAvatar from '../Item/ItemAvatar';
+import GroupAvatar from './GroupAvatar';
+import { LandscapeContext } from '../../../../Context/LandscapeContext';
+import { Close } from '@material-ui/icons';
 
 interface Props {
   group: IGroup;
-  assessments: IAssessment;
-  locateItem?: (fullyQualifiedGroupIdentifier: string) => void;
-  locateGroup?: (fullyQualifiedGroupIdentifier: string) => void;
 }
 
 /**
  * Returns a chosen group if information is available
  */
-const Group: React.FC<Props> = ({ group, assessments, locateItem, locateGroup }) => {
+const Group: React.FC<Props> = ({ group }) => {
   const componentClasses = componentStyles();
-  const classes = useStyles();
+  const landscapeContext = useContext(LandscapeContext);
+  const locateFunctionContext = useContext(LocateFunctionContext);
+  const [visible, setVisible] = useState<boolean>(true);
 
   const getGroupItems = (
     group: IGroup,
@@ -73,9 +34,8 @@ const Group: React.FC<Props> = ({ group, assessments, locateItem, locateGroup })
   ) => {
     if (group?.items) {
       return group.items.map((item) => {
-        const [status, ,] = getAssessmentSummary(
-          assessments.results[item.fullyQualifiedIdentifier]
-        );
+        const itemStatus = landscapeContext.getAssessmentSummary(item.fullyQualifiedIdentifier);
+        if (!itemStatus || !itemStatus?.status) return null;
         return (
           <Button
             style={{ textAlign: 'left' }}
@@ -86,21 +46,7 @@ const Group: React.FC<Props> = ({ group, assessments, locateItem, locateGroup })
               }
             }}
           >
-            <StyledBadge
-              overlap='circle'
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              variant='dot'
-              style={{ color: status }}
-            >
-              <Avatar
-                imgProps={{ style: { objectFit: 'contain' } }}
-                src={getItemIcon(item)}
-                style={{ backgroundColor: 'white', border: '2px solid #' + group.color }}
-              />
-            </StyledBadge>
+            <ItemAvatar item={item} statusColor={itemStatus.status} />
             &nbsp;
             {item.identifier}
           </Button>
@@ -109,34 +55,43 @@ const Group: React.FC<Props> = ({ group, assessments, locateItem, locateGroup })
     }
     return [];
   };
-  const items = getGroupItems(group, locateItem);
 
-  const [assessmentColor, message, field] = getAssessmentSummary(
-    assessments.results[group.fullyQualifiedIdentifier]
-  );
+  if (!visible) return null;
+
+  const items = getGroupItems(group, locateFunctionContext.locateFunction);
+
+  const assessment = landscapeContext.getAssessmentSummary(group.fullyQualifiedIdentifier);
   const labels = getLabels(group);
   const links = getLinks(group);
 
-  const action = locateGroup ?
-      <IconButton onClick={ () => locateGroup(group.fullyQualifiedIdentifier)}><FilterCenterFocus /></IconButton>
-      : null;
   return (
     <Card className={componentClasses.card}>
       <CardHeader
         title={
           <React.Fragment>
-            <Avatar
-              style={{ backgroundColor: '#' + group.color }}
-              className={classes.groupAvatar}
-              variant={'square'}
+            <IconButton
+              onClick={() => locateFunctionContext.locateFunction(group.fullyQualifiedIdentifier)}
+              size={'small'}
+              title={`Click to local group ${group.identifier}`}
             >
-              {' '}
-            </Avatar>
+              <GroupAvatar group={group} statusColor={assessment ? assessment.status : ''} />
+            </IconButton>
             &nbsp;{group.name}
           </React.Fragment>
         }
-        action={action}
         className={componentClasses.cardHeader}
+        action={
+          <React.Fragment>
+            <IconButton
+              size={'small'}
+              onClick={() => {
+                setVisible(false);
+              }}
+            >
+              <Close />
+            </IconButton>
+          </React.Fragment>
+        }
       />
       <CardContent>
         <div className='information'>
@@ -149,20 +104,24 @@ const Group: React.FC<Props> = ({ group, assessments, locateItem, locateGroup })
               {group?.contact || 'No Contact provided'}
             </span>
           ) : null}
-          <span className='owner group'>
+          <div className='owner group'>
             <span className='label'>Owner: </span>
             {group?.owner || 'No Owner provided'}
-          </span>
+          </div>
         </div>
 
-        <div>
-          <Typography variant={'h6'}>Status</Typography>
-          <StatusChip
-            name={group.name || group.identifier}
-            status={assessmentColor}
-            value={field + ':' + message}
-          />
-        </div>
+        {assessment && assessment.status ? (
+          <div>
+            <div>
+              <br />
+              <Typography variant={'h6'}>Status</Typography>
+              <StatusChip name={assessment.maxField} status={assessment?.status} />
+              {assessment.message}
+            </div>
+            <br />
+            <br />
+          </div>
+        ) : null}
 
         <div className='labels'>{labels}</div>
 

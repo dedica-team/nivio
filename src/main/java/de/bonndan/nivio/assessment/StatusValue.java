@@ -19,10 +19,18 @@ public class StatusValue {
     public static final String LABEL_SUFFIX_STATUS = "status";
     public static final String LABEL_SUFFIX_MESSAGE = "message";
 
+    @NonNull
     private final String field;
+
+    @NonNull
     private final Status status;
+
+    @Nullable
     private final String message;
+
     private final boolean summary;
+
+    @Nullable
     private final String maxField;
 
     /**
@@ -37,6 +45,7 @@ public class StatusValue {
      * @param valuesByKey grouped label values
      * @return derived StatusValues
      */
+    @NonNull
     public static Set<StatusValue> fromMapping(Map<String, Map<String, String>> valuesByKey) {
 
         Set<StatusValue> statusValues = new HashSet<>();
@@ -54,18 +63,28 @@ public class StatusValue {
     /**
      * Creates a summary status value.
      *
-     * @param field composed field name
-     * @param max   max/highest status value
+     * @param fieldName composed field name
+     * @param maxValue  max/highest status value
      * @return summary
      */
-    public static StatusValue summary(@NonNull String field, @NonNull StatusValue max) {
-
-        if (StringUtils.isEmpty(field)) {
-            throw new IllegalArgumentException("Status value has no field");
+    @NonNull
+    public static StatusValue summary(@NonNull String fieldName, @NonNull StatusValue maxValue) {
+        if (StringUtils.isEmpty(fieldName)) {
+            throw new IllegalArgumentException("Status value has no field name.");
         }
-        return new StatusValue(field, max.getStatus(), max.getMessage(), max.getField());
+        if (StringUtils.isEmpty(maxValue)) {
+            throw new IllegalArgumentException("Status value has no max status value.");
+        }
+        return new StatusValue(fieldName, maxValue.getStatus(), maxValue.getMessage(), maxValue.getField());
     }
 
+    /**
+     * New StatusValue with message.
+     *
+     * @param field   field / label name
+     * @param status  current status
+     * @param message additional message
+     */
     public StatusValue(@NonNull String field, @Nullable Status status, @Nullable String message) {
         if (StringUtils.isEmpty(field)) {
             throw new IllegalArgumentException("Status value has no field");
@@ -96,18 +115,21 @@ public class StatusValue {
         this.maxField = status != Status.UNKNOWN ? maxField : null;
     }
 
-    public StatusValue(@NonNull String field, Status status) {
+    public StatusValue(@NonNull String field, @Nullable Status status) {
         this(field, status, null);
     }
 
+    @NonNull
     public String getField() {
         return field;
     }
 
+    @NonNull
     public Status getStatus() {
         return status;
     }
 
+    @Nullable
     public String getMessage() {
         return message;
     }
@@ -130,10 +152,25 @@ public class StatusValue {
 
     public static class Comparator implements java.util.Comparator<StatusValue> {
         public int compare(StatusValue s1, StatusValue s2) {
-            if (s1.status.isHigherThan(s2.status)) return 1;
+            if (Objects.requireNonNull(s1.status).isHigherThan(Objects.requireNonNull(s2.status))) return 1;
             if (s1.status.equals(s2.status)) return 0;
             return -1;
         }
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(field);
+    }
+
+    @Override
+    public String toString() {
+        return "StatusValue{" +
+                "field='" + field + '\'' +
+                ", status=" + status +
+                ", message='" + message + '\'' +
+                ", summary=" + summary +
+                ", maxField='" + maxField + '\'' +
+                '}';
+    }
 }

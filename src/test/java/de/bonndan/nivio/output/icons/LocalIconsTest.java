@@ -1,12 +1,14 @@
 package de.bonndan.nivio.output.icons;
 
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
 import java.util.Optional;
 
+import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -46,8 +48,8 @@ class LocalIconsTest {
 
     @Test
     public void returnsTypeIgnoreCase() {
-        Item item = new Item("test", "a");
-        item.setType("");
+        Item item = getTestItem("test", "a");
+        item.setLabel(Label.type, "");
 
         assertThat(localIcons.getIconUrl("AccOunT")).isNotEmpty();
     }
