@@ -96,16 +96,6 @@ class NivioConfigPropertiesTest {
         assertThat(constraintViolations[0].getMessage()).isEqualTo("brandingMessage must be a valid string");
     }
 
-    @Test
-    void checkSeed()
-    {
-        NivioConfigProperties props = new NivioConfigProperties();
-        props.setSeed("*!W13");
-        Set<ConstraintViolation<NivioConfigProperties>> validate = localValidatorFactoryBean.getValidator().validate(props);
 
-        assertThat(validate).isNotEmpty();
-        ConstraintViolation<NivioConfigProperties>[] constraintViolations = (ConstraintViolation<NivioConfigProperties>[]) validate.toArray(ConstraintViolation[]::new);
-        assertThat(constraintViolations[0].getMessage()).isEqualTo("seed must be a valid landscape configuration");
-    }
 
 }
