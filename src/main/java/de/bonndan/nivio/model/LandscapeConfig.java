@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPIConfig;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -135,10 +136,11 @@ public class LandscapeConfig {
     }
 
     /**
-     * The active KPIs.
+     * The configured KPIs.
      *
      * @return all active {@link AbstractKPI}s with their unique identifier
      */
+    @JsonIgnore
     public Map<String, KPIConfig> getKPIs() {
         return kpis;
     }

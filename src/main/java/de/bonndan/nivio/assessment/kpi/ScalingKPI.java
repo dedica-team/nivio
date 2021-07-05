@@ -6,12 +6,15 @@ import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.RelationType;
+import org.apache.commons.lang3.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This KPI evaluates the scale label and tries to find bottlenecks where providers for many items are down or not scaled.
@@ -29,6 +32,18 @@ public class ScalingKPI extends AbstractKPI {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScalingKPI.class);
     public static final String SCALED_TO_ZERO = "scaled to zero";
+
+    private final Map<Status, RangeApiModel> ranges = Map.of(
+            Status.GREEN, new RangeApiModel(Range.between(1D, Double.POSITIVE_INFINITY)),
+            Status.YELLOW, new RangeApiModel(Range.between(0D, 0D)),
+            Status.ORANGE, new RangeApiModel(Range.between(0D, 0D)),
+            Status.RED, new RangeApiModel(Range.between(0D, 0D))
+    );
+
+    @Override
+    public String getDescription() {
+        return "Turns yellow if the 'scale' label is zero. Turns orange or red if is also is a data sink or provider.";
+    }
 
     @NonNull
     @Override
@@ -60,7 +75,7 @@ public class ScalingKPI extends AbstractKPI {
                     Status status = Status.YELLOW;
                     String message = SCALED_TO_ZERO;
                     if (usedAsProvider > 0) {
-                        status =  Status.RED;
+                        status = Status.RED;
                         message += " and provider for " + usedAsProvider + " items";
                     } else if (usedAsDataTarget > 0) {
                         status = Status.ORANGE;
@@ -90,4 +105,15 @@ public class ScalingKPI extends AbstractKPI {
         return Collections.emptyList();
     }
 
+    @Override
+    @Nullable
+    public Map<Status, RangeApiModel> getRanges() {
+        return sorted(ranges);
+    }
+
+    @Override
+    @Nullable
+    public Map<Status, List<String>> getMatches() {
+        return null;
+    }
 }

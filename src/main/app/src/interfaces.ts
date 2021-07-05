@@ -18,6 +18,7 @@ export interface ILandscape {
   links?: ILinks;
   lastUpdate?: string;
   groups: IGroup[];
+  kpis?: IKpis;
 }
 
 export interface IProcessLog {
@@ -38,7 +39,6 @@ export interface IConfig {
   groupBlacklist?: Array<string>;
   labelBlacklist?: Array<string>;
   branding?: IBranding;
-  kpis?: IKpis;
 }
 
 export interface IKpis {
