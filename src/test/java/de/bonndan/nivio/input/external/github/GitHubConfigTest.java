@@ -8,10 +8,12 @@ class GitHubConfigTest {
 
     @Test
     void returnsNullIfNoConfig() {
-        GitHubProperties gitHubProperties = null;
-        GitHubConfig gitHubConfig = new GitHubConfig(null);
+
+        GitHubProperties gitHubProperties = new GitHubProperties("kohsuke","012345678","4d98173f7c075527cb64878561d1fe70","my_jwt_token");
+        GitHubConfig gitHubConfig = new GitHubConfig(gitHubProperties);
         assertNull(gitHubConfig.getGitHub());
     }
+
     @Test
     void groupedAssertions(){
         GitHubProperties gitHubProperties = new GitHubProperties("kohsuke","012345678","4d98173f7c075527cb64878561d1fe70","my_jwt_token");
