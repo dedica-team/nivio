@@ -40,8 +40,7 @@ public class NivioConfigProperties {
     private String brandingMessage;
     //iconFolder: /a/local/path
 
-    private String seed;
-
+    
     public String getBaseUrl() {
         return baseUrl;
     }
@@ -106,9 +105,7 @@ public class NivioConfigProperties {
         this.brandingMessage = brandingMessage;
     }
 
-    public String getSeed(){ return seed; }
 
-    public void setSeed(String seed){ this.seed = seed;}
 
     public ApiModel getApiModel() {
         java.net.URL brandingLogoUrl = null;
@@ -116,7 +113,7 @@ public class NivioConfigProperties {
             brandingLogoUrl = this.brandingLogoUrl != null ? new java.net.URL(getBrandingLogoUrl()) : null;
         } catch (MalformedURLException ignored) {
         }
-        return new ApiModel(baseUrl, version, brandingForeground, brandingBackground, brandingSecondary, brandingLogoUrl, brandingMessage,seed);
+        return new ApiModel(baseUrl, version, brandingForeground, brandingBackground, brandingSecondary, brandingLogoUrl, brandingMessage);
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -128,7 +125,7 @@ public class NivioConfigProperties {
         public final String brandingSecondary;
         public final java.net.URL brandingLogoUrl;
         public final String brandingMessage;
-        public final String seed;
+
 
         public ApiModel(String baseUrl,
                         String version,
@@ -136,8 +133,8 @@ public class NivioConfigProperties {
                         String brandingBackground,
                         String brandingSecondary,
                         java.net.URL brandingLogoUrl,
-                        String brandingMessage,
-                        String seed
+                        String brandingMessage
+
         ) {
             this.baseUrl = baseUrl;
             this.version = version;
@@ -146,7 +143,7 @@ public class NivioConfigProperties {
             this.brandingSecondary = brandingSecondary;
             this.brandingLogoUrl = brandingLogoUrl;
             this.brandingMessage = brandingMessage;
-            this.seed = seed;
+
         }
     }
 }
