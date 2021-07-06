@@ -3,7 +3,6 @@ package de.bonndan.nivio.input.external.gitlab;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "gitlab")
-
 public class GitLabProperties {
 
     private String hostUrl;
