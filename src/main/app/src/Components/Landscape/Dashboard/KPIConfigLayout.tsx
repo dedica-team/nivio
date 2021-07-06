@@ -32,7 +32,7 @@ const KPIConfigLayout: React.FC<Props> = ({ name, kpi }) => {
     for (let key of Object.keys(kpi.ranges)) {
       const range = kpi.ranges[key];
       const rangeText =
-        range.minimum == range.maximum ? range.minimum : `${range.minimum} → ${range.maximum}`;
+        range.minimum === range.maximum ? range.minimum : `${range.minimum} → ${range.maximum}`;
       ranges.push(
         <TableRow key={'range_' + key}>
           <TableCell>
