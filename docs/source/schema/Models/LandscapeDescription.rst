@@ -73,14 +73,14 @@ LandscapeDescription
      - 
      - optional, defaults to null
      - null
-   * - partial
-     - Boolean
-     - marks that the landscape is not complete, but an update
-     - optional, defaults to null
-     - null
    * - items
      - List<ItemDescription>
      - List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.
+     - optional, defaults to null
+     - null
+   * - partial
+     - Boolean
+     - marks that the landscape is not complete, but an update
      - optional, defaults to null
      - null
    * - links

@@ -17,7 +17,7 @@ public class AssessmentFactory {
     }
 
     /**
-     * This method which generates a new Assessment from a landscape.
+     * This method generates a new Assessment from a landscape.
      *
      * @param landscape used to generate the new Assessment with its own kpis.
      * @return Assessment
@@ -29,7 +29,7 @@ public class AssessmentFactory {
     }
 
     /**
-     * This method which generates a new  from a landscape and a kpi.
+     * This method generates a new Assessment from a landscape and a kpi.
      *
      * @param landscape used to generate the new Assessment.
      * @param kpis      external kpi used to get status values.
@@ -45,7 +45,7 @@ public class AssessmentFactory {
     }
 
     /**
-     * This method which generates a new Assessment from map.
+     * This method generates a new Assessment from map.
      *
      * @param results used to generate the new Assessment with fully qualified identifier and a list of status values.
      * @return Assessment

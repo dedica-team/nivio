@@ -9,40 +9,31 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class Item {
-    protected String name;
-    private String uid;
-    private String type;
+    private final String name;
 
-    private final Map<String, String> status = new HashMap<>();
-
-    private final List<Item> owners = new ArrayList<>();
+    private List<Item> owners = new ArrayList<>();
 
     private final List<RelationDescription> relationDescriptionList = new ArrayList<>();
+    private final Map<String, String> status = new HashMap<>();
+    private final String type;
+    private final String uid;
 
-    public List<RelationDescription> getRelationDescriptionList() {
-        return relationDescriptionList;
+    protected Item(String name, String uid, String type) {
+        this.name = name;
+        this.uid = uid;
+        this.type = type;
     }
 
-    public Map<String, String> getStatus() {
-        return status;
+    public void addOwner(Item owner) {
+        this.owners.add(owner);
+    }
+
+    public void addRelation(RelationDescription relationDescription) {
+        relationDescriptionList.add(relationDescription);
     }
 
     public void addStatus(String key, String value) {
         status.put(key, value);
-    }
-
-    public abstract HasMetadata getWrappedItem();
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getGroup() {
@@ -53,31 +44,33 @@ public abstract class Item {
         }
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getName() {
+        return name;
     }
 
     public List<Item> getOwner() {
         return owners;
     }
 
-    public void addOwner(Item owner) {
-        this.owners.add(owner);
+    public List<RelationDescription> getRelationDescriptionList() {
+        return relationDescriptionList;
     }
 
-    public void setOwners(List<Item> owners) {
-        this.owners.addAll(owners);
+    public Map<String, String> getStatus() {
+        return status;
     }
 
-    public void addRelation(RelationDescription relationDescription) {
-        relationDescriptionList.add(relationDescription);
+    public String getType() {
+        return type;
     }
 
     public String getUid() {
         return uid;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public abstract HasMetadata getWrappedItem();
+
+    public void setOwners(List<Item> owners) {
+        this.owners = owners;
     }
 }

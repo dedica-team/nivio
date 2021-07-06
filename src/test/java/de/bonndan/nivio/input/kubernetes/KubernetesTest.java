@@ -1,9 +1,9 @@
-package de.bonndan.nivio.input;
+package de.bonndan.nivio.input.kubernetes;
 
+import de.bonndan.nivio.input.ItemType;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.PodBuilder;
 import io.fabric8.kubernetes.api.model.PodSpecBuilder;
@@ -20,7 +20,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@EnableKubernetesMockClient(crud = true, https = false)
+@EnableKubernetesMockClient(crud = true)
 public class KubernetesTest {
 
     static KubernetesClient client;
