@@ -42,7 +42,7 @@ class GitHubConfigTest {
             // executed only if the previous assertion is valid
                     assertAll("password",
                             ()-> assertTrue(password.contains("45")),
-                            ()-> assertTrue(password.length()==9));
+                            ()-> assertEquals(9,password.length()));
 
                 },
                 ()->{String oauth = gitHubProperties.getOauth();
@@ -56,7 +56,7 @@ class GitHubConfigTest {
             assertNotNull(jwt);
             // executed only if the previous assertion is valid
                     assertAll("jwt",
-                            ()->assertTrue(jwt.length()==12),
+                            ()->assertEquals(12,jwt.length()),
                             ()->assertTrue(jwt.endsWith("ken"))
         );
 
