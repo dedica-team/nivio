@@ -4,7 +4,6 @@ import StatusChip from '../../StatusChip/StatusChip';
 import Button from '@material-ui/core/Button';
 import {
   AppBar,
-  Box,
   Card,
   CardHeader,
   Tab,
@@ -22,7 +21,7 @@ import ItemAvatar from '../Modals/Item/ItemAvatar';
 import GroupAvatar from '../Modals/Group/GroupAvatar';
 import { a11yProps, TabPanel } from '../Utils/TabUtils';
 import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
+import KPIConfigLayout from './KPIConfigLayout';
 
 interface Props {
   onItemClick: Function;
@@ -125,24 +124,20 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
   if (!visible) return null;
 
   const kpiConfig = context.landscape?.kpis;
-  let kpis : JSX.Element[] = [];
+  let kpis: JSX.Element[] = [];
   if (kpiConfig) {
-    for (let key of Object.keys(kpiConfig))
-    {
-      const kpi = kpiConfig[key];
-      kpis.push(
-        <Box key={key}>
-          <Typography variant={'h6'}>{key}</Typography>
-          <p>{kpi.description}</p>
-        </Box>
-      )
+    for (let key of Object.keys(kpiConfig)) {
+      const kpiConfigElement = kpiConfig[key];
+      if (kpiConfigElement.enabled) {
+        kpis.push(<KPIConfigLayout kpi={kpiConfigElement} name={key} key={key} />);
+      }
     }
   }
 
   return (
     <Card className={componentClasses.card}>
       <CardHeader
-        title={'Warnings'}
+        title={'Status'}
         action={
           <IconButton
             onClick={() => {
@@ -154,7 +149,12 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
         }
       />
       <AppBar position={'static'}>
-        <Tabs value={currentTab} onChange={changeTab} variant={'fullWidth'} aria-label={'item tabs'}>
+        <Tabs
+          value={currentTab}
+          onChange={changeTab}
+          variant={'fullWidth'}
+          aria-label={'item tabs'}
+        >
           <Tab
             icon={<Warning />}
             label={'warnings'}

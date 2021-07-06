@@ -54,11 +54,17 @@ export interface IKpi {
 }
 
 export interface IRanges {
-  [key: string]: string;
+  [key: string]: IRange;
+}
+
+export interface IRange {
+  minimum: string;
+  maximum: string;
+  description?: string;
 }
 
 export interface IMatches {
-  [key: string]: string;
+  [key: string]: string[];
 }
 
 export interface IBranding {
