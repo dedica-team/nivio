@@ -6,13 +6,10 @@ import de.bonndan.nivio.input.external.gitlab.GitLabRepoHandler;
 import de.bonndan.nivio.input.external.openapi.OpenAPILinkHandler;
 import de.bonndan.nivio.input.external.sonar.SonarLinkHandler;
 import de.bonndan.nivio.input.external.springboot.SpringBootHealthHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-
 import java.util.Map;
 import java.util.Optional;
 
@@ -21,8 +18,6 @@ import java.util.Optional;
  */
 @Component
 public class LinkHandlerFactory {
-
-  //  private static final Logger LOGGER = LoggerFactory.getLogger(LinkHandlerFactory.class);
 
     public static final String GITHUB = "github";
     private static final String SONAR = "sonar";
@@ -56,10 +51,6 @@ public class LinkHandlerFactory {
         try {
             return Optional.of(beanFactory.createBean(aClass));
         } catch (BeansException e) {
-
-         //   LOGGER.error(String.format("Failed to create external link handler of type %s. Please check the handler is properly configured.", key));
-
-         //   LOGGER.warn(String.format("Failed to create external link handler of type %s. Please check the handler is properly configured.", key));
 
             return Optional.empty();
         }
