@@ -152,9 +152,7 @@ public class StatusValue {
 
     public static class Comparator implements java.util.Comparator<StatusValue> {
         public int compare(StatusValue s1, StatusValue s2) {
-            if (Objects.requireNonNull(s1.status).isHigherThan(Objects.requireNonNull(s2.status))) return 1;
-            if (s1.status.equals(s2.status)) return 0;
-            return -1;
+            return Objects.requireNonNull(s1.status).compareTo(Objects.requireNonNull(s2.status));
         }
     }
 

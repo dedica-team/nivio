@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.springframework.util.StringUtils;
 
+import java.util.Objects;
+
 public enum Status {
 
     UNKNOWN("grey", 0),
@@ -52,8 +54,11 @@ public enum Status {
         return status;
     }
 
-    public boolean isHigherThan(Status current) {
-        return order > current.order;
+    public static class Comparator implements java.util.Comparator<Status> {
+        public int compare(Status s1, Status s2) {
+            if (Objects.requireNonNull(s1).order > Objects.requireNonNull(s2).order) return 1;
+            if (s1.equals(s2)) return 0;
+            return -1;
+        }
     }
-
 }

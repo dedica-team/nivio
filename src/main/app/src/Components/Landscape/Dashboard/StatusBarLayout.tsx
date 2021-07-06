@@ -2,13 +2,26 @@ import React, { useContext, useState } from 'react';
 import { IGroup } from '../../../interfaces';
 import StatusChip from '../../StatusChip/StatusChip';
 import Button from '@material-ui/core/Button';
-import { Card, CardHeader, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
+import {
+  AppBar,
+  Card,
+  CardHeader,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  Tabs,
+} from '@material-ui/core';
 import { LandscapeContext } from '../../../Context/LandscapeContext';
 import componentStyles from '../../../Resources/styling/ComponentStyles';
 import IconButton from '@material-ui/core/IconButton';
-import { Close } from '@material-ui/icons';
+import { Close, Settings, Warning } from '@material-ui/icons';
 import ItemAvatar from '../Modals/Item/ItemAvatar';
 import GroupAvatar from '../Modals/Group/GroupAvatar';
+import { a11yProps, TabPanel } from '../Utils/TabUtils';
+import CardContent from '@material-ui/core/CardContent';
+import KPIConfigLayout from './KPIConfigLayout';
 
 interface Props {
   onItemClick: Function;
@@ -22,6 +35,7 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
   const context = useContext(LandscapeContext);
   const componentClasses = componentStyles();
   const [visible, setVisible] = useState<boolean>(true);
+  const [currentTab, setCurrentTab] = React.useState(0);
 
   const getItems = (group: IGroup) => {
     return group.items.map((item) => {
@@ -103,11 +117,27 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
     });
   };
 
+  const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setCurrentTab(newValue);
+  };
+
   if (!visible) return null;
+
+  const kpiConfig = context.landscape?.kpis;
+  let kpis: JSX.Element[] = [];
+  if (kpiConfig) {
+    for (let key of Object.keys(kpiConfig)) {
+      const kpiConfigElement = kpiConfig[key];
+      if (kpiConfigElement.enabled) {
+        kpis.push(<KPIConfigLayout kpi={kpiConfigElement} name={key} key={key} />);
+      }
+    }
+  }
+
   return (
     <Card className={componentClasses.card}>
       <CardHeader
-        title={'Warnings'}
+        title={'Status'}
         action={
           <IconButton
             onClick={() => {
@@ -118,12 +148,42 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
           </IconButton>
         }
       />
-      <Table>
-        <TableBody>
-          {context.landscape ? getGroups(context.landscape.groups) : null}
-          {context.landscape?.groups.map((group) => getItems(group))}
-        </TableBody>
-      </Table>
+      <AppBar position={'static'}>
+        <Tabs
+          value={currentTab}
+          onChange={changeTab}
+          variant={'fullWidth'}
+          aria-label={'item tabs'}
+        >
+          <Tab
+            icon={<Warning />}
+            label={'warnings'}
+            style={{ minWidth: 50 }}
+            title={'Warnings'}
+            {...a11yProps(0, 'statusbar')}
+          />
+          <Tab
+            icon={<Settings />}
+            label={'kpis'}
+            style={{ minWidth: 50 }}
+            title={'KPIs'}
+            {...a11yProps(1, 'statusbar')}
+          />
+        </Tabs>
+      </AppBar>
+      <CardContent>
+        <TabPanel value={currentTab} index={0} prefix={'statusbar'}>
+          <Table>
+            <TableBody>
+              {context.landscape ? getGroups(context.landscape.groups) : null}
+              {context.landscape?.groups.map((group) => getItems(group))}
+            </TableBody>
+          </Table>
+        </TabPanel>
+        <TabPanel value={currentTab} index={1} prefix={'statusbar'}>
+          {kpis}
+        </TabPanel>
+      </CardContent>
     </Card>
   );
 };
