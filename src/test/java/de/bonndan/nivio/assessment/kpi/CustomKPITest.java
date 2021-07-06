@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CustomKPITest {
@@ -46,6 +47,19 @@ class CustomKPITest {
         //then
         assertNotNull(statusValue);
         Assertions.assertEquals(status, statusValue.getStatus().getName().toLowerCase(Locale.ROOT));
+    }
+
+    @Test
+    void testUsesConfigValues() {
+        CustomKPI test = new CustomKPI();
+        kpiConfig.ranges = getRangeMap();
+        kpiConfig.description = "bar";
+
+        //when
+        test.init(kpiConfig);
+
+        //then
+        assertThat(test.getDescription()).isEqualTo("bar");
     }
 
     @Test

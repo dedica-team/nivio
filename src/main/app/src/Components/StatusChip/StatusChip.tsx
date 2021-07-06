@@ -1,44 +1,56 @@
 import React from 'react';
-import Avatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Box, Theme } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    chip: {
-      marginBottom: 5,
-      marginRight: 5,
-      maxWidth: '100%',
-      fontFamily: 'monospace',
-      backgroundColor: theme.palette.primary.main,
-      color: 'white',
-    },
     box: {
-      marginRight: 5,
       padding: 2,
       borderRadius: 5,
-      textAlign: 'center',
-      width: '4rem',
-      maxWidth: '100%',
-      fontFamily: 'monospace',
-      backgroundColor: theme.palette.primary.main,
-      color: 'white',
-      fontSize: 'x-small'
+      backgroundColor: theme.palette.secondary.dark,
+      display: 'flex',
+      justifyContent: 'center'
     },
     green: {
       backgroundColor: 'green',
+      width: 15,
+      height: 15,
+      marginRight: 1,
+      borderRadius: 50,
     },
     yellow: {
       backgroundColor: 'yellow',
+      width: 15,
+      height: 15,
+      marginRight: 1,
+      borderRadius: 50,
     },
     orange: {
       backgroundColor: 'orange',
+      width: 15,
+      height: 15,
+      marginRight: 1,
+      borderRadius: 50,
     },
     red: {
       backgroundColor: 'red',
+      width: 15,
+      height: 15,
+      marginRight: 1,
+      borderRadius: 50,
     },
     brown: {
       backgroundColor: 'brown',
+      width: 15,
+      height: 15,
+      borderRadius: 50,
+    },
+    none: {
+      backgroundColor: '#666',
+      width: 15,
+      height: 15,
+      marginRight: 1,
+      borderRadius: 50,
     },
   })
 );
@@ -50,25 +62,43 @@ interface Props {
   style?: any;
 }
 
-const StatusChip: React.FC<Props> = ({ name, value, status}) => {
+const StatusChip: React.FC<Props> = ({ name, value, status }) => {
   const classes: Record<string, any> = useStyles();
-  let letter = '?';
-  if (status.toLowerCase() === 'green') letter = '✓';
-  if (status.toLowerCase() === 'yellow') letter = '*';
-  if (status.toLowerCase() === 'orange') letter = '!';
-  if (status.toLowerCase() === 'red') letter = '⚠';
-  if (status.toLowerCase() === 'brown') letter = '☠';
+  let level: number = 0;
+  let usedClass;
+  if (status.toLowerCase() === 'green') {
+    level = 1;
+    usedClass = classes.green;
+  }
+  if (status.toLowerCase() === 'yellow') {
+    level = 2;
+    usedClass = classes.yellow;
+  }
+  if (status.toLowerCase() === 'orange') {
+    level = 3;
+    usedClass = classes.orange;
+  }
+  if (status.toLowerCase() === 'red') {
+    level = 4;
+    usedClass = classes.red;
+  }
+  if (status.toLowerCase() === 'brown') {
+    level = 5;
+    usedClass = classes.brown;
+  }
 
   let label = name || '';
   if (value != null && value !== 'null') {
-    if (label.length > 0)
-    label += ': ';
+    if (label.length > 0) label += ': ';
     label += value;
   }
   return (
-    <Box style={{float: 'left'}} className={classes.box}>
-      <Avatar className={classes[status.toLowerCase()]} style={{margin: 'auto'}}>{letter}</Avatar>
-      {label}
+    <Box className={classes.box} title={label}>
+      <Box className={level > 0 ? usedClass : classes.none} />
+      <Box className={level > 1 ? usedClass : classes.none} />
+      <Box className={level > 2 ? usedClass : classes.none} />
+      <Box className={level > 3 ? usedClass : classes.none} />
+      <Box className={level > 4 ? usedClass : classes.none} />
     </Box>
   );
 };

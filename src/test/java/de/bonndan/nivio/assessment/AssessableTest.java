@@ -2,14 +2,14 @@ package de.bonndan.nivio.assessment;
 
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.assessment.kpi.RangeApiModel;
+import de.bonndan.nivio.model.*;
+import org.apache.commons.lang3.Range;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static de.bonndan.nivio.assessment.StatusValue.SUMMARY_LABEL;
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
@@ -51,13 +51,13 @@ class AssessableTest {
         var parent = new TestAssessable(List.of(child1, child2));
 
         Map<String, KPI> kpis = new HashMap<>();
-        kpis.put("on", new AbstractKPI(component -> null, null) {
+        kpis.put("on", new TestKPI(component -> null, null) {
             @Override
             protected List<StatusValue> getStatusValues(String value, String message) {
                 return new ArrayList<>();
             }
         });
-        var disabled = new AbstractKPI(component -> null, null) {
+        var disabled = new TestKPI(component -> null, null) {
             @Override
             protected List<StatusValue> getStatusValues(String value, String message) {
                 throw new RuntimeException("This should never happen.");
@@ -76,7 +76,7 @@ class AssessableTest {
         item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
 
         Map<String, KPI> kpis = new HashMap<>();
-        kpis.put("on", new AbstractKPI(component -> null, null) {
+        kpis.put("on", new TestKPI(component -> null, null) {
             @Override
             protected List<StatusValue> getStatusValues(String value, String message) {
                 return new ArrayList<>();
@@ -109,7 +109,7 @@ class AssessableTest {
         item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
 
         Map<String, KPI> kpis = new HashMap<>();
-        kpis.put("on", new AbstractKPI(component -> null, null) {
+        kpis.put("on", new TestKPI(component -> null, null) {
             @Override
             protected List<StatusValue> getStatusValues(String value, String message) {
                 return List.of(
@@ -147,7 +147,7 @@ class AssessableTest {
         foo.addItem(item2);
 
         Map<String, KPI> kpis = new HashMap<>();
-        kpis.put("on", new AbstractKPI(component -> null, null) {
+        kpis.put("on", new TestKPI(component -> null, null) {
             @Override
             protected List<StatusValue> getStatusValues(String value, String message) {
                 return new ArrayList<>();
@@ -183,7 +183,7 @@ class AssessableTest {
         item.setLabel(Label.withPrefix(Label.status, "baz", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
 
         Map<String, KPI> kpis = new HashMap<>();
-        kpis.put("on", new AbstractKPI(component -> null, null) {
+        kpis.put("on", new TestKPI(component -> null, null) {
             @Override
             protected List<StatusValue> getStatusValues(String value, String message) {
                 return new ArrayList<>();
@@ -209,7 +209,7 @@ class AssessableTest {
 
     class TestAssessable implements Assessable {
 
-        private Set<StatusValue> statusValues = new HashSet<>();
+        private final Set<StatusValue> statusValues = new HashSet<>();
         private final List<? extends Assessable> children;
 
         TestAssessable(List<? extends Assessable> children) {
@@ -226,11 +226,13 @@ class AssessableTest {
         }
 
         @Override
+        @NonNull
         public String getIdentifier() {
             return "test";
         }
 
         @Override
+        @NonNull
         public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
             return FullyQualifiedIdentifier.build("test", null, null);
         }
@@ -273,6 +275,22 @@ class AssessableTest {
         @Override
         public List<? extends Assessable> getChildren() {
             return children;
+        }
+    }
+
+    private abstract static class TestKPI extends AbstractKPI {
+        public TestKPI(Function<Component, String> valueFunction, Function<Component, String> msgFunction) {
+            super(valueFunction, msgFunction);
+        }
+
+        @Override
+        public Map<Status, RangeApiModel> getRanges() {
+            return null;
+        }
+
+        @Override
+        public Map<Status, List<String>> getMatches() {
+            return null;
         }
     }
 }

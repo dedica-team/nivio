@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
+import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
 import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 
 /**
@@ -41,7 +43,7 @@ class SVGItem extends Component {
     /**
      * @param children          optional child elements
      * @param layoutedComponent the rendered component with an {@link Item} inside
-     * @param itemStatuses
+     * @param itemStatuses      all status values of the item
      * @param position          the calculated position
      */
     SVGItem(@Nullable final DomContent children,
@@ -82,7 +84,7 @@ class SVGItem extends Component {
         DomContent icon = null;
         if (!hasFill && !hasText && !StringUtils.isEmpty(layoutedComponent.getIcon())) {
             final int size = DEFAULT_ICON_SIZE * 3;
-            final int trans = Math.round(size / 2);
+            final int trans = Math.round(size / 2f);
             icon = SvgTagCreator.image()
                     .attr("xlink:href", layoutedComponent.getIcon())
                     .attr("width", size)
@@ -121,8 +123,8 @@ class SVGItem extends Component {
         ContainerTag inner = SvgTagCreator.g(circle, content, children);
 
         return SvgTagCreator.g(inner, icon, statusCircle)
-                .attr("data-identifier", this.id)
-                .attr("class", "item")
+                .attr(DATA_IDENTIFIER, this.id)
+                .attr("class", "item " + VISUAL_FOCUS_UNSELECTED)
                 .attr("transform", "translate(" + pixel.x + "," + pixel.y + ")");
     }
 

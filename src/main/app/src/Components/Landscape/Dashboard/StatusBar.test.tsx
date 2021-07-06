@@ -12,7 +12,7 @@ describe('<StatusBarLayout />', () => {
         <StatusBarLayout onItemClick={() => {}} onGroupClick={() => {}} />
       </LandscapeContext.Provider>
     );
-    expect(getByText('Warnings')).toBeInTheDocument();
+    expect(getByText('Status')).toBeInTheDocument();
   });
 
   it('should display an assessment', () => {
