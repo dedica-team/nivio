@@ -135,12 +135,12 @@ public class LandscapeConfig {
         }
     }
 
+
     /**
      * The configured KPIs.
      *
      * @return all active {@link AbstractKPI}s with their unique identifier
      */
-    @JsonIgnore
     public Map<String, KPIConfig> getKPIs() {
         return kpis;
     }

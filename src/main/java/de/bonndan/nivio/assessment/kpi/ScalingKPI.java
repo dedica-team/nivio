@@ -35,14 +35,14 @@ public class ScalingKPI extends AbstractKPI {
 
     private final Map<Status, RangeApiModel> ranges = Map.of(
             Status.GREEN, new RangeApiModel(Range.between(1D, Double.POSITIVE_INFINITY)),
-            Status.YELLOW, new RangeApiModel(Range.between(0D, 0D)),
-            Status.ORANGE, new RangeApiModel(Range.between(0D, 0D)),
-            Status.RED, new RangeApiModel(Range.between(0D, 0D))
+            Status.YELLOW, new RangeApiModel(Range.between(0D, 0D), SCALED_TO_ZERO),
+            Status.ORANGE, new RangeApiModel(Range.between(0D, 0D), "data sink scaled to zero"),
+            Status.RED, new RangeApiModel(Range.between(0D, 0D), "provider scaled to zero")
     );
 
     @Override
     public String getDescription() {
-        return "Turns yellow if the 'scale' label is zero. Turns orange or red if is also is a data sink or provider.";
+        return "Turns yellow if the 'scale' label is zero. Turns orange or red if it is also is a data sink or provider.";
     }
 
     @NonNull
