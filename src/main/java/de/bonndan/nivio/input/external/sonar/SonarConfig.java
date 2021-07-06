@@ -7,9 +7,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Optional;
 
-import static de.bonndan.nivio.config.ConfigurableEnvVars.*;
-import java.util.Optional;
-
 @Configuration
 @EnableConfigurationProperties(SonarProperties.class)
 public class SonarConfig {
