@@ -1,6 +1,5 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPIConfig;
 import io.swagger.v3.oas.annotations.media.Schema;
