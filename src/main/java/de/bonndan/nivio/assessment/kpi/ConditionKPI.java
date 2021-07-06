@@ -76,7 +76,7 @@ public class ConditionKPI implements KPI {
 
     @Override
     public Map<Status, List<String>> getMatches() {
-        return matches;
+        return sorted(matches);
     }
 
     public void setEnabled(boolean enabled) {
