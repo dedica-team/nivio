@@ -1,20 +1,18 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.config.ConfigurableEnvVars;
-import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * After the application has booted the SEED ({@link Seed}) is processed.
@@ -38,7 +36,7 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
     }
 
     @Override
-    public void onApplicationEvent(final ApplicationReadyEvent event) {
+    public void onApplicationEvent(@NonNull final ApplicationReadyEvent event) {
         if (!StringUtils.isEmpty(ConfigurableEnvVars.DEMO.value().orElse(""))) {
             LOGGER.info("Running in demo mode");
         }
