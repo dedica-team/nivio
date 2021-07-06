@@ -22,7 +22,7 @@ import java.util.Optional;
 @Component
 public class LinkHandlerFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LinkHandlerFactory.class);
+  //  private static final Logger LOGGER = LoggerFactory.getLogger(LinkHandlerFactory.class);
 
     public static final String GITHUB = "github";
     private static final String SONAR = "sonar";
