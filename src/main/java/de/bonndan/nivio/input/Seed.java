@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.config.ConfigurableEnvVars;
+import de.bonndan.nivio.config.SeedProperties;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +27,14 @@ public class Seed {
 
     private final List<URL> seed;
 
+    private final SeedProperties seedProperties;
+
     /**
      * @param seed comma separated urls
      * @throw RuntimeException to fail early on wrong config
      */
-    public Seed(Optional<String> seed) {
+    public Seed(Optional<String> seed, SeedProperties seedProperties) {
+       this.seedProperties = seedProperties;
         if (seed.isEmpty()) {
             this.seed = new ArrayList<>();
             return;
@@ -62,10 +66,10 @@ public class Seed {
      */
     public List<URL> getDemoFiles() {
         List<URL> demoFiles = new ArrayList<>();
-        if (ConfigurableEnvVars.DEMO.value().isEmpty()) {
+        if (seedProperties.getSeed().isEmpty()) {
             return demoFiles;
         }
-        String value = ConfigurableEnvVars.DEMO.value().get();
+        String value = seedProperties.getSeed();
 
         Path currentRelativePath = Paths.get("");
         String absPath = currentRelativePath.toAbsolutePath().toString();
