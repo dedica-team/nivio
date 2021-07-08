@@ -23,14 +23,15 @@ class StartupListenerTest {
     private LandscapeDescriptionFactory factory;
     private ApplicationEventPublisher publisher;
     private StartupListener startupListener;
-    private SeedProperties seedProperties = null;
+    private SeedProperties seedProperties;
     private Seed seed = new Seed(Optional.empty(), null); // will use Seed.NIVIO_ENV_DIRECTORY
 
+    
     @BeforeEach
     public void setup() {
         factory = mock(LandscapeDescriptionFactory.class);
         publisher = mock(ApplicationEventPublisher.class);
-        startupListener = new StartupListener(factory, publisher, seed);
+        startupListener = new StartupListener(factory, publisher, seed,seedProperties);
     }
 
     @Test
@@ -38,7 +39,7 @@ class StartupListenerTest {
 
         //given
         seed = new Seed(Optional.of("https://dedica.team"),null);
-        startupListener = new StartupListener(factory, publisher, seed);
+        startupListener = new StartupListener(factory, publisher, seed,seedProperties);
 
         LandscapeDescription landscapeDescription = new LandscapeDescription("foo", "bar", null);
         landscapeDescription.setSource(new LandscapeSource(new URL("https://dedica.team")));
