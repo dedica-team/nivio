@@ -42,7 +42,7 @@ public class ApplicationConfig {
     @Bean
     public Seed seed() {
 
-        return new Seed(Optional.ofNullable(seedProperties.getSeed()));
+        return new Seed(Optional.ofNullable(seedProperties.getSeed()),seedProperties);
     }
 
     @Bean
