@@ -15,8 +15,7 @@ import java.util.function.Function;
 public abstract class AbstractKPI implements KPI {
 
     protected String messageTemplate = "%s";
-
-    private String description;
+    protected String description;
     private boolean enabled = true;
 
     protected Function<Assessable, String> valueFunction;
@@ -24,7 +23,7 @@ public abstract class AbstractKPI implements KPI {
     @NonNull
     protected Function<Assessable, String> msgFunction = component -> String.format(messageTemplate, valueFunction.apply(component));
 
-    public AbstractKPI() {
+    protected AbstractKPI() {
     }
 
     /**
@@ -50,7 +49,7 @@ public abstract class AbstractKPI implements KPI {
     public List<StatusValue> getStatusValues(Assessable component) {
 
         if (valueFunction == null) {
-            throw new RuntimeException("Value function not initialized ");
+            throw new IllegalStateException("Value function not initialized ");
         }
         String value = valueFunction.apply(component);
         String message = msgFunction.apply(component);

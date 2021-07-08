@@ -134,8 +134,9 @@ public class LandscapeConfig {
         }
     }
 
+
     /**
-     * The active KPIs.
+     * The configured KPIs.
      *
      * @return all active {@link AbstractKPI}s with their unique identifier
      */

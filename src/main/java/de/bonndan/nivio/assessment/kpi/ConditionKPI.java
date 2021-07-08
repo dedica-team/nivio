@@ -9,19 +9,23 @@ import de.bonndan.nivio.model.Labeled;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Evaluates the "condition.*" labels, see {@link InputFormatHandlerKubernetes}
  *
- * this is similiar to the {@link HealthKPI}, it only works on a different field.
+ * this is similar to the {@link HealthKPI}, it only works on a different field.
  */
 public class ConditionKPI implements KPI {
 
     public static final String IDENTIFIER = "condition";
+
+    private static final Map<Status, List<String>> matches = new LinkedHashMap<>();
+
+    static {
+        matches.put(Status.RED, List.of("One condition is not met."));
+        matches.put(Status.GREEN, List.of("All conditions are met."));
+    }
 
     private boolean enabled = true;
 
@@ -63,6 +67,16 @@ public class ConditionKPI implements KPI {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    @Override
+    public Map<Status, RangeApiModel> getRanges() {
+        return null;
+    }
+
+    @Override
+    public Map<Status, List<String>> getMatches() {
+        return sorted(matches);
     }
 
     public void setEnabled(boolean enabled) {

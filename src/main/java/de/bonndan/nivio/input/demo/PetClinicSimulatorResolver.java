@@ -52,8 +52,14 @@ public class PetClinicSimulatorResolver extends Resolver {
         int low = 1;
         int high = 1000;
         int mrem = r.nextInt(high - low) + low;
+        ItemDescription sensor;
+        try {
+            sensor = input.getItemDescriptions().pick("sensor", "xray");
+        } catch (Exception e) {
+            processLog.warn("Failed to run simulation: " + e.getMessage());
+            return;
+        }
 
-        ItemDescription sensor = input.getItemDescriptions().pick("sensor", "xray");
         int currentRad = Integer.parseInt(Optional.ofNullable(sensor.getLabel(RADIATION)).orElse("0"));
         if (mrem == currentRad) {
             mrem--;

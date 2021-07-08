@@ -49,7 +49,7 @@ const defaultThemeVariables: ThemeOptions = {
           maxWidth: "5px"
         },
         "*::-webkit-scrollbar-thumb": {
-          backgroundColor: 'rgb(0, 104, 104)'
+          backgroundColor: 'rgba(255, 255, 255, 0.75)'
         },
         "*:hover": {
           "&::-webkit-scrollbar-thumb": {

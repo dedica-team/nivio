@@ -14,10 +14,13 @@ import java.util.stream.Collectors;
 
 public class ItemFactory {
 
+    private ItemFactory() {
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(ItemFactory.class);
 
     public static Item getTestItem(String group, String identifier) {
-        Landscape landscape = LandscapeBuilder.aLandscape().withIdentifier("test").withName("test").build();
+        var landscape = LandscapeBuilder.aLandscape().withIdentifier("test").withName("test").build();
         return getTestItem(group, identifier, landscape);
     }
 
@@ -27,7 +30,7 @@ public class ItemFactory {
     }
 
     public static ItemBuilder getTestItemBuilder(String group, String identifier) {
-        Landscape landscape = LandscapeBuilder.aLandscape().withIdentifier("test").withName("test").build();
+        var landscape = LandscapeBuilder.aLandscape().withIdentifier("test").withName("test").build();
         return ItemBuilder.anItem().withGroup(group).withIdentifier(identifier).withLandscape(landscape);
     }
 
@@ -70,7 +73,7 @@ public class ItemFactory {
     public static Item assignAll(@NonNull final Item item, @Nullable final ItemDescription description) {
         Objects.requireNonNull(item, "Item is null");
         if (description == null) {
-            logger.warn(String.format("ItemDescription for item %s is null in assignAllValues", item.getIdentifier()));
+            logger.warn("ItemDescription for item {} is null in assignAllValues", item.getIdentifier());
             return item;
         }
 
