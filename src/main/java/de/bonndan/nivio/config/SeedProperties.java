@@ -2,9 +2,7 @@ package de.bonndan.nivio.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-
 @ConfigurationProperties(prefix = "nivio")
-
 public class SeedProperties {
 
     private String seed;
@@ -16,5 +14,4 @@ public class SeedProperties {
     public void setSeed(String seed) {
         this.seed = seed;
     }
-
 }

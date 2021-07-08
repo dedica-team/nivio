@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
     appBar: {
       zIndex: theme.zIndex.drawer + 1,
       position: 'relative',
-      backgroundColor: 'transparent',
+      backgroundColor: theme.palette.primary.main,
     },
   })
 );
@@ -93,7 +93,7 @@ const Navigation: React.FC<Props> = ({
     />
   ));
   return (
-    <Toolbar>
+    <Toolbar className={classes.appBar} variant={'dense'}>
       <IconButton
         size={'small'}
         edge='start'
@@ -101,7 +101,7 @@ const Navigation: React.FC<Props> = ({
         aria-controls='simple-menu'
         aria-haspopup='true'
         onClick={openMenu}
-        className={componentClasses.menuButton}
+        className={componentClasses.navigationButton}
       >
         {logo ? (
           <Avatar

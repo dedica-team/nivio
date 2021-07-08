@@ -1,5 +1,7 @@
 package de.bonndan.nivio.assessment.kpi;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Component;
@@ -7,21 +9,25 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Key Performance Indicator
  *
  * Used to evaluate {@link Component}s.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public interface KPI {
 
     /**
      * Controlled initialisation.
      *
-     * @throws ProcessingException if initialisation fails (eg regex compiling)
      * @param kpiConfig optional config
+     * @throws ProcessingException if initialisation fails (eg regex compiling)
      */
-    default void init(@Nullable KPIConfig kpiConfig) {}
+    default void init(@Nullable KPIConfig kpiConfig) {
+    }
 
     /**
      * Returns the status evaluation of the component on the configured field.
@@ -43,4 +49,28 @@ public interface KPI {
      * @return true if active
      */
     boolean isEnabled();
+
+    /**
+     * Returns the calculated range for the statuses for the API.
+     *
+     * @return ranges if present, sorted from best to worst, otherwise null
+     */
+    @Nullable
+    Map<Status, RangeApiModel> getRanges();
+
+    /**
+     * Returns the calculated matches for the statuses for the API.
+     *
+     * @return ranges if present, sorted from best to worst, otherwise null
+     */
+    @Nullable
+    Map<Status, List<String>> getMatches();
+
+    @Nullable
+    default <T> Map<Status, T> sorted(@Nullable final Map<Status, T> inner) {
+        if (inner == null) return null;
+        var sorted = new TreeMap<Status, T>(new Status.Comparator());
+        inner.forEach(sorted::put);
+        return sorted;
+    }
 }

@@ -20,6 +20,11 @@ public class HealthKPI extends CustomKPI {
             Status.RED, UNHEALTHY
     );
 
+    @Override
+    public String getDescription() {
+        return "Evaluates the 'health' label values healthy and unhealthy.";
+    }
+
     public HealthKPI() {
         super();
         label = Label.health.name();

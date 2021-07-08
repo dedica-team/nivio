@@ -41,6 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
       cursor: 'pointer',
       zIndex: 1000,
       left: 20,
+      top: 20,
       backgroundColor: darken(theme.palette.primary.main, 0.2),
     },
   })
@@ -56,6 +57,7 @@ interface SVGData {
   height: number;
   viewBox: SVGRect;
   xml: string;
+  loaded: Date;
 }
 
 /**
@@ -74,10 +76,11 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   const [data, setData] = useState<SVGData | null>(null);
   const [renderWithTransition, setRenderWithTransition] = useState(false);
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
+  const [visualFocus, setVisualFocus] = useState<String | null>(null);
   const { identifier } = useParams<{ identifier: string }>();
 
   const [isFirstRender, setIsFirstRender] = useState(true);
-  const [isZoomed, setIsZoomed] = useState<Boolean>(false);
+  const [isZoomed, setIsZoomed] = useState<boolean>(false);
 
   const locateFunctionContext = useContext(LocateFunctionContext);
   const landscapeContext = useContext(LandscapeContext);
@@ -108,9 +111,11 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   );
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
-    const fullyQualifiedItemIdentifier = e.currentTarget.getAttribute('data-identifier');
-    if (fullyQualifiedItemIdentifier && landscapeContext.landscape) {
-      let item = getItem(landscapeContext.landscape, fullyQualifiedItemIdentifier);
+    const fqi = e.currentTarget.getAttribute('data-identifier');
+    setVisualFocus(fqi);
+
+    if (fqi && landscapeContext.landscape) {
+      let item = getItem(landscapeContext.landscape, fqi);
       if (item)
         setSidebarContent(
           <Item
@@ -123,6 +128,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
   const onGroupClick = (e: MouseEvent<HTMLElement>) => {
     const fqi = e.currentTarget.getAttribute('data-identifier');
+    setVisualFocus(fqi);
+
     if (fqi && landscapeContext.landscape) {
       let group = getGroup(landscapeContext.landscape, fqi);
       if (group) setSidebarContent(<Group group={group} key={`group_${fqi}_${Math.random()}`} />);
@@ -133,6 +140,9 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     if (!landscapeContext.landscape) return;
 
     const dataSource = e.currentTarget.getAttribute('data-source');
+    const fqi = e.currentTarget.getAttribute('data-identifier');
+    setVisualFocus(fqi);
+
     let source, sourceElement, sourceX, sourceY;
     if (dataSource) {
       sourceElement = document.getElementById(dataSource);
@@ -192,7 +202,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       const width = doc.firstElementChild.width.baseVal.value;
       const height = doc.firstElementChild.height.baseVal.value;
       const viewBox: SVGRect = doc.firstElementChild.viewBox.baseVal;
-      setData({ width: width, height: height, viewBox: viewBox, xml: svg });
+      setData({ width: width, height: height, viewBox: viewBox, xml: svg, loaded: new Date() });
     });
   }, [identifier, setData]);
 
@@ -213,6 +223,25 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
       locateFunctionContext.setLocateFunction(() => locateComponent);
     }
   }, [locateComponent, locateFunctionContext]);
+
+  /**
+   * (re)paints the visual focus (also when the svg reloads)
+   */
+  useEffect(() => {
+    if (!visualFocus) return;
+
+    const currentSelected = document.getElementsByClassName('selected');
+    Array.from(currentSelected).forEach((el) => {
+      el.classList.remove('selected');
+      el.classList.add('unselected');
+    });
+
+    const current = document.querySelectorAll("[data-identifier='" + visualFocus + "']");
+    Array.from(current).forEach((visualFocus) => {
+      visualFocus.classList.add('selected');
+      visualFocus.classList.remove('unselected');
+    });
+  }, [visualFocus, data]);
 
   /**
    * Reload map on notification messages.
@@ -284,7 +313,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
             }}
             size={'small'}
           >
-            <ZoomOutIcon></ZoomOutIcon>
+            <ZoomOutIcon />
           </IconButton>
         )}
         <ReactSvgPanZoomLoaderXML
@@ -312,7 +341,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
             <ReactSVGPanZoom
               key={'panzoom'}
               width={window.innerWidth}
-              height={window.innerHeight * 0.92}
+              height={window.innerHeight - 50}
               background={'transparent'}
               miniatureProps={{
                 position: 'none',

@@ -20,9 +20,11 @@ class StatusValueTest {
     void comparator() {
         StatusValue green = new StatusValue("foo", Status.GREEN);
         StatusValue red = new StatusValue("foo", Status.RED);
-        assertEquals(-1, new StatusValue.Comparator().compare(green, red));
+        StatusValue yellow = new StatusValue("foo", Status.YELLOW);
+        assertEquals(-3, new StatusValue.Comparator().compare(green, red));
         assertEquals(0, new StatusValue.Comparator().compare(green, green));
-        assertEquals(1, new StatusValue.Comparator().compare(red, green));
+        assertEquals(1, new StatusValue.Comparator().compare(yellow, green));
+        assertEquals(3, new StatusValue.Comparator().compare(red, green));
     }
 
     @Test
