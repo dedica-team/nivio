@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.config.ConfigurableEnvVars;
+import de.bonndan.nivio.config.SeedProperties;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,19 +28,21 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
     private final LandscapeDescriptionFactory landscapeDescriptionFactory;
     private final ApplicationEventPublisher publisher;
     private final Seed seed;
+    private final SeedProperties seedProperties;
 
     public StartupListener(LandscapeDescriptionFactory landscapeDescriptionFactory,
                            ApplicationEventPublisher publisher,
-                           Seed seed
+                           Seed seed,SeedProperties seedProperties
     ) {
         this.landscapeDescriptionFactory = landscapeDescriptionFactory;
         this.publisher = publisher;
         this.seed = seed;
+        this.seedProperties = seedProperties;
     }
 
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent event) {
-        if (!StringUtils.isEmpty(ConfigurableEnvVars.DEMO.value().orElse(""))) {
+        if (!StringUtils.isEmpty(seedProperties.getSeed().isEmpty())) {
             LOGGER.info("Running in demo mode");
         }
 
