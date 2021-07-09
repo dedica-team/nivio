@@ -162,34 +162,34 @@
           "group" : {
             "type" : "string",
             "description" : "The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to common.",
-            "example" : "shipping"
+            "example": "shipping"
           },
-          "interfaces" : {
-            "uniqueItems" : true,
-            "type" : "array",
-            "description" : "A collection of low level interfaces. Can be used to describe HTTP API endpoints for instance.",
-            "items" : {
-              "$ref" : "#/components/schemas/InterfaceDescription"
+          "interfaces": {
+            "uniqueItems": true,
+            "type": "array",
+            "description": "A collection of low level interfaces. Can be used to describe HTTP API endpoints for instance.",
+            "items": {
+              "$ref": "#/components/schemas/InterfaceDescription"
             }
           },
-          "providedBy" : {
-            "type" : "array",
-            "description" : "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.",
-            "example" : "shipping-mysqldb",
-            "items" : {
-              "type" : "string",
-              "description" : "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.",
-              "example" : "shipping-mysqldb"
+          "providedBy": {
+            "type": "array",
+            "description": "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.",
+            "example": "shipping-mysqldb",
+            "items": {
+              "type": "string",
+              "description": "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.",
+              "example": "shipping-mysqldb"
             }
           },
-          "icon" : {
-            "type" : "string",
-            "description" : "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work)."
+          "icon": {
+            "type": "string",
+            "description": "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work)."
           },
-          "color" : {
-            "type" : "string",
-            "description" : "Overrides the group color. Use an HTML hex color code without the leading hash.",
-            "example" : "4400FF"
+          "color": {
+            "type": "string",
+            "description": "Overrides the group color. Use an HTML hex color code without the leading hash.",
+            "example": "4400FF"
           },
           "address": {
             "type": "string",
@@ -213,19 +213,6 @@
               "EOL"
             ]
           },
-          "statuses": {
-            "type": "array",
-            "description": "A list of statuses that works like hardcoded KPIs.",
-            "writeOnly": true,
-            "items": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "string",
-                "description": "A list of statuses that works like hardcoded KPIs."
-              },
-              "description": "A list of statuses that works like hardcoded KPIs."
-            }
-          },
           "status": {
             "type": "array",
             "description": "A list of statuses that works like hardcoded KPIs.",
@@ -239,30 +226,43 @@
               "description": "A list of statuses that works like hardcoded KPIs."
             }
           },
-          "frameworks" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string",
-              "description" : "The parts used to create the item. Usually refers to technical frameworks.",
-              "example" : "java: 8"
-            },
-            "description" : "The parts used to create the item. Usually refers to technical frameworks.",
-            "writeOnly" : true,
-            "example" : "java: 8"
-          },
-          "tags" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
+          "statuses": {
+            "type": "array",
+            "description": "A list of statuses that works like hardcoded KPIs.",
+            "writeOnly": true,
+            "items": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "description": "A list of statuses that works like hardcoded KPIs."
+              },
+              "description": "A list of statuses that works like hardcoded KPIs."
             }
           },
-          "links" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "$ref" : "#/components/schemas/Link"
+          "frameworks": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "The parts used to create the item. Usually refers to technical frameworks.",
+              "example": "java: 8"
             },
-            "description" : "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
-            "example" : "github: https://github.com/dedica-team/nivio"
+            "description": "The parts used to create the item. Usually refers to technical frameworks.",
+            "writeOnly": true,
+            "example": "java: 8"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "links": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Link"
+            },
+            "description": "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
+            "example": "github: https://github.com/dedica-team/nivio"
           }
         },
         "description" : "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc."
@@ -282,34 +282,34 @@
             "description": "Key of the label to evaluate",
             "example": "costs"
           },
-          "messageTemplate" : {
-            "type" : "string",
-            "description" : "Template for the displayed message, containing a placeholder for the assessed value '%s",
-            "example" : "The current value is: %s"
+          "messageTemplate": {
+            "type": "string",
+            "description": "Template for the displayed message, containing a placeholder for the assessed value '%s",
+            "example": "The current value is: %s"
           },
-          "ranges" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string",
-              "description" : "A map of number based ranges that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate upper and lower bounds. Tries to evaluate label values as numbers.",
-              "example" : "GREEN: 0;99.999999"
+          "ranges": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "A map of number based ranges that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate upper and lower bounds. Tries to evaluate label values as numbers.",
+              "example": "GREEN: 0;99.999999"
             },
-            "description" : "A map of number based ranges that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate upper and lower bounds. Tries to evaluate label values as numbers.",
-            "example" : "GREEN: 0;99.999999"
+            "description": "A map of number based ranges that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate upper and lower bounds. Tries to evaluate label values as numbers.",
+            "example": "GREEN: 0;99.999999"
           },
-          "matches" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string",
-              "description" : "A map of string based matchers that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate matchers.",
-              "example" : "RED: BAD;err.*"
+          "matches": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "A map of string based matchers that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate matchers.",
+              "example": "RED: BAD;err.*"
             },
-            "description" : "A map of string based matchers that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate matchers.",
-            "example" : "RED: BAD;err.*"
+            "description": "A map of string based matchers that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate matchers.",
+            "example": "RED: BAD;err.*"
           },
-          "enabled" : {
-            "type" : "boolean",
-            "description" : "A flag indicating that the KPI is active. Can be used to disable default kpis."
+          "enabled": {
+            "type": "boolean",
+            "description": "A flag indicating that the KPI is active. Can be used to disable default kpis."
           }
         },
         "description" : "The configuration of landscape specific key performance indicators that derive status information from landscape components. Usually the KPIs work on labels"
@@ -382,30 +382,30 @@
             "description" : "A brief description of the landscape."
           },
           "owner" : {
-            "type" : "string",
-            "description" : "The business owner (person or team), preferably an email address."
+            "type": "string",
+            "description": "The business owner (person or team), preferably an email address."
           },
-          "templates" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "$ref" : "#/components/schemas/ItemDescription"
+          "templates": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ItemDescription"
             },
-            "description" : "Item descriptions to be used as templates. All values except identifier and name will be applied to the assigned items."
+            "description": "Item descriptions to be used as templates. All values except identifier and name will be applied to the assigned items."
           },
-          "sources" : {
-            "type" : "array",
-            "writeOnly" : true,
-            "items" : {
-              "$ref" : "#/components/schemas/SourceReference"
+          "sources": {
+            "type": "array",
+            "writeOnly": true,
+            "items": {
+              "$ref": "#/components/schemas/SourceReference"
             }
           },
-          "config" : {
-            "$ref" : "#/components/schemas/LandscapeConfig"
+          "config": {
+            "$ref": "#/components/schemas/LandscapeConfig"
           },
-          "groups" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "$ref" : "#/components/schemas/GroupDescription"
+          "groups": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/GroupDescription"
             },
             "description": "Description of item groups (optional, can also be given in sources)."
           },
@@ -433,15 +433,15 @@
           },
           "partial": {
             "type": "boolean",
-            "description" : "marks that the landscape is not complete, but an update"
+            "description": "marks that the landscape is not complete, but an update"
           },
-          "links" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "$ref" : "#/components/schemas/Link"
+          "links": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Link"
             },
-            "description" : "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
-            "example" : "github: https://github.com/dedica-team/nivio"
+            "description": "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
+            "example": "github: https://github.com/dedica-team/nivio"
           }
         }
       },

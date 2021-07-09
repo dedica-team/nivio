@@ -5,8 +5,6 @@ import de.bonndan.nivio.input.dto.RelationDescription;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.server.mock.EnableKubernetesMockClient;
-import io.fabric8.kubernetes.client.server.mock.KubernetesMockServer;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,12 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @EnableKubernetesMockClient(crud = true, https = false)
 class PersistentVolumeClaimItemTest {
     PersistentVolumeClaim persistentVolumeClaim;
     PersistentVolumeClaimItem persistentVolumeClaimItem;
-    KubernetesMockServer kubernetesMockServer = new KubernetesMockServer();
     static KubernetesClient kubernetesClient;
 
     @BeforeEach
@@ -28,7 +26,8 @@ class PersistentVolumeClaimItemTest {
         persistentVolumeClaim = new PersistentVolumeClaimBuilder()
                 .withNewMetadata()
                 .withName("test")
-                .withNamespace("default")
+                .withNamespace("test")
+                .withUid("1234")
                 .withLabels(Map.of("release", "testgroup"))
                 .endMetadata()
                 .withSpec(new PersistentVolumeClaimSpecBuilder()
@@ -37,8 +36,9 @@ class PersistentVolumeClaimItemTest {
                 .withStatus(new PersistentVolumeClaimStatusBuilder()
                         .build())
                 .build();
-        persistentVolumeClaimItem = new PersistentVolumeClaimItem("test", "1234", ItemType.VOLUME, persistentVolumeClaim);
-        kubernetesClient.persistentVolumeClaims().inNamespace("default").create(persistentVolumeClaim);
+        kubernetesClient.persistentVolumeClaims().create(persistentVolumeClaim);
+
+        persistentVolumeClaimItem = new PersistentVolumeClaimItem("test", "1234", ItemType.VOLUME, persistentVolumeClaim, new LevelDecorator(4));
     }
 
     @Test
@@ -49,30 +49,66 @@ class PersistentVolumeClaimItemTest {
 
     @Test
     void testGetPersistentVolumeClaimItems() {
-
-        var test = kubernetesClient.persistentVolumeClaims().list().getItems();
-        List<PersistentVolumeClaimItem> result = PersistentVolumeClaimItem.getPersistentVolumeClaimItems(kubernetesClient);
-        assertThat(Collections.singletonList(new PersistentVolumeClaimItem("test", "1234", ItemType.VOLUME, persistentVolumeClaim))).isEqualTo(result);
+        List<Item> result = PersistentVolumeClaimItem.getPersistentVolumeClaimItems(kubernetesClient);
+        assertThat(result.size()).isEqualTo(Collections.singletonList(new PersistentVolumeClaimItem("test", "1234", ItemType.VOLUME, persistentVolumeClaim, new LevelDecorator(4))).size());
+        result.forEach(item -> assertThat(item).isEqualToComparingFieldByField(persistentVolumeClaimItem));
     }
 
     @Test
     void testAddOwner() {
-        persistentVolumeClaimItem.addOwner(null);
+        var owner = new DeploymentItem("test", "1234", ItemType.VOLUME, null, new LevelDecorator(4));
+        persistentVolumeClaimItem.addOwner(owner);
+        assertThat(persistentVolumeClaimItem.getOwner()).isEqualTo(Collections.singletonList(owner));
+    }
+
+    @Test
+    void testAddOwnerNull() {
+        assertThatThrownBy(() -> persistentVolumeClaimItem.addOwner(null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void testAddRelation() {
-        persistentVolumeClaimItem.addRelation(new RelationDescription("source", "target"));
+        var relation = new RelationDescription("source", "target");
+        persistentVolumeClaimItem.addRelation(relation);
+        assertThat(persistentVolumeClaimItem.getRelationDescriptionList()).isEqualTo(Collections.singletonList(relation));
+    }
+
+    @Test
+    void testAddRelationNull() {
+        assertThatThrownBy(() -> persistentVolumeClaimItem.addRelation(null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void testAddStatus() {
         persistentVolumeClaimItem.addStatus("key", "value");
+        assertThat(persistentVolumeClaimItem.getStatus()).isEqualTo(Collections.singletonMap("key", "value"));
+    }
+
+    @Test
+    void testAddStatusNull() {
+        assertThatThrownBy(() -> persistentVolumeClaimItem.addStatus(null, null)).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> persistentVolumeClaimItem.addStatus("null", null)).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> persistentVolumeClaimItem.addStatus(null, "null")).isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void testGetGroup() {
+
+        var owner = new DeploymentItem("test", "1234", ItemType.VOLUME, null, new LevelDecorator(4));
+        persistentVolumeClaimItem.addOwner(owner);
         String result = persistentVolumeClaimItem.getGroup();
-        Assertions.assertEquals("replaceMeWithExpectedResult", result);
+        assertThat(result).isEqualTo("test");
+    }
+
+    @Test
+    void testSetOwners() {
+        List<Item> owner = Collections.singletonList(new DeploymentItem("test", "1234", ItemType.VOLUME, null, new LevelDecorator(4)));
+        persistentVolumeClaimItem.setOwners(owner);
+        assertThat(persistentVolumeClaimItem.getOwner()).isEqualTo(owner);
+    }
+
+    @Test
+    void testSetOwnersNull() {
+        assertThatThrownBy(() -> persistentVolumeClaimItem.setOwners(null)).isInstanceOf(NullPointerException.class);
     }
 }

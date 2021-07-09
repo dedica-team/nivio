@@ -59,30 +59,31 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
     @Override
     public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
 
-
         this.client = getClient(reference.getUrl());
 
         var persistentVolumeClaims = getPersistentVolumeClaimItems(client);
         var persistentVolumes = getPersistentVolumeItems(client);
         crossReferenceClaimer(persistentVolumeClaims, persistentVolumes);
 
-        var itemList = getK8sComponents(client);
+        var serviceItems = getServiceItems(client);
+        var deploymentItems = getDeploymentItems(client);
+        var statefulSetItems = getStatefulSetItems(client);
+
+        crossReferenceService(serviceItems, deploymentItems);
+        crossReferenceService(serviceItems, statefulSetItems);
+
+        var itemList = new ArrayList<Item>();
+        itemList.addAll(getReplicaSetItems(client));
+        itemList.addAll(getPodItems(client));
+        itemList.addAll(serviceItems);
+        itemList.addAll(deploymentItems);
+        itemList.addAll(statefulSetItems);
         crossReferenceOwner(itemList);
 
         itemList.addAll(persistentVolumeClaims);
         itemList.addAll(persistentVolumes);
 
         landscapeDescription.mergeItems(createItemDescription(itemList));
-    }
-
-    private ArrayList<Item> getK8sComponents(KubernetesClient client) {
-        var itemList = new ArrayList<Item>();
-        itemList.addAll(getDeploymentItems(client));
-        itemList.addAll(getReplicaSetItems(client));
-        itemList.addAll(getPodItems(client));
-        itemList.addAll(getServiceItems(client));
-        itemList.addAll(getStatefulSetItems(client));
-        return itemList;
     }
 
     private List<ItemDescription> createItemDescription(List<Item> itemList) {
@@ -107,14 +108,21 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         items.forEach(item -> {
             var owners = new ArrayList<Item>();
             owners = (ArrayList<Item>) items.stream().filter(item1 -> item.getWrappedItem().getMetadata().getOwnerReferences().stream().map(OwnerReference::getUid).collect(Collectors.toList()).contains(item1.getUid())).collect(Collectors.toList());
-            item.setOwners(owners);
+            owners.forEach(item::addOwner);
         });
     }
 
-    private void crossReferenceClaimer(List<PersistentVolumeClaimItem> persistentVolumeClaims, List<PersistentVolumeItem> persistentVolumes) {
+    private void crossReferenceClaimer(List<Item> persistentVolumeClaims, List<Item> persistentVolumes) {
         persistentVolumes.forEach(item -> {
             var claimer = persistentVolumeClaims.stream().filter(claimItem -> ((PersistentVolume) item.getWrappedItem()).getSpec().getClaimRef().getUid().equals(claimItem.getUid())).collect(Collectors.toList());
-            item.setOwners(new ArrayList<>(claimer));
+            claimer.forEach(item::addOwner);
+        });
+    }
+
+    private void crossReferenceService(List<Item> service, List<Item> owners) {
+        service.forEach(item -> {
+            var claimer = owners.stream().filter(claimItem -> (item.getName().equals(claimItem.getName()))).collect(Collectors.toList());
+            claimer.forEach(item::addOwner);
         });
     }
 
@@ -132,9 +140,5 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
 
         this.client = new DefaultKubernetesClient(config);
         return this.client;
-    }
-
-    public Config getConfiguration() {
-        return getClient("").getConfiguration();
     }
 }
