@@ -47,7 +47,7 @@ class SearchDocumentFactoryTest {
     }
 
     @Test
-    public void generatesDocument() {
+    void generatesDocument() {
         //given
 
 
@@ -85,6 +85,11 @@ class SearchDocumentFactoryTest {
         assertThat(frameworks).contains("java");
         String javaVersion = Arrays.stream(document.getValues("java")).findFirst().orElseThrow();
         assertThat(javaVersion).isEqualTo("8");
+
+        String genericField = document.get(LUCENE_FIELD_GENERIC);
+        assertThat(genericField).contains("java").contains("spring").contains("boot");
+        assertThat(genericField).contains("bar2"); //label
+        assertThat(genericField).doesNotContain("2.0.1"); //not framework version/value
     }
 
     @Test

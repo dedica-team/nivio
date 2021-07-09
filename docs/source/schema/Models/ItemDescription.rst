@@ -88,16 +88,16 @@ List of configuration sources. Handled in the given order, latter extend/overwri
      - A list of statuses that works like hardcoded KPIs.
      - optional, defaults to null
      - null
-   * - statuses
-     - List<map>
-     - A list of statuses that works like hardcoded KPIs.
-     - optional, defaults to null
-     - null
    * - frameworks
      - Map
      - The parts used to create the item. Usually refers to technical frameworks.
      - optional, defaults to null
      - java: 8
+   * - statuses
+     - List<map>
+     - A list of statuses that works like hardcoded KPIs.
+     - optional, defaults to null
+     - null
    * - tags
      - List
      - 

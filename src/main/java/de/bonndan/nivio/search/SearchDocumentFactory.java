@@ -3,6 +3,8 @@ package de.bonndan.nivio.search;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.Labeled;
+import joptsimple.internal.Strings;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
@@ -27,6 +29,11 @@ public class SearchDocumentFactory {
     public static final String LUCENE_FIELD_IDENTIFIER = "identifier";
     public static final String LUCENE_FIELD_NAME = "name";
     public static final String LUCENE_FIELD_DESCRIPTION = "description";
+
+    /**
+     * This is used to collect strings which should be directly searchable
+     */
+    public static final String LUCENE_FIELD_GENERIC = "generic";
     public static final String LUCENE_FIELD_CONTACT = "contact";
     public static final String LUCENE_FIELD_FQI = "fqi";
     public static final String LUCENE_FIELD_COMPONENT_TYPE = "component";
@@ -64,7 +71,7 @@ public class SearchDocumentFactory {
         }
 
         Document document = new Document();
-
+        List<String> genericStrings = new ArrayList<>();
         BiConsumer<String, String> addTextField = (field, value) -> Optional.ofNullable(value)
                 .ifPresentOrElse(
                         val -> document.add(new TextField(field, val, Field.Store.YES)),
@@ -83,9 +90,15 @@ public class SearchDocumentFactory {
 
         //add all labels by their key
         item.getLabels().forEach((labelKey, val) -> {
-            if (StringUtils.isEmpty(val))
+            if (StringUtils.isEmpty(val)) {
                 return;
+            }
             addTextField.accept(labelKey, val);
+
+            //add non-prefixed label values to generic field
+            if (!labelKey.contains(Label.DELIMITER)) {
+                genericStrings.add(val);
+            }
         });
 
         //add links, title as key (duplicates are ok)
@@ -98,7 +111,9 @@ public class SearchDocumentFactory {
         });
 
         //tags (searchable)
-        Arrays.stream(item.getTags()).forEach(tag -> addTextField.accept(LUCENE_FIELD_TAG, tag.toLowerCase(Locale.ROOT)));
+        Arrays.stream(item.getTags())
+                .map(tag -> tag.toLowerCase(Locale.ROOT))
+                .forEach(tag -> addTextField.accept(LUCENE_FIELD_TAG, tag));
 
         //networks
         item.getLabels(Label.network).forEach((key, value) -> addTextField.accept(LUCENE_FIELD_NETWORK, value.toLowerCase(Locale.ROOT)));
@@ -110,9 +125,9 @@ public class SearchDocumentFactory {
             String unprefixed = Label.framework.unprefixed(key);
             frameworks.add(unprefixed);
             addTextField.accept(unprefixed, val);
+            genericStrings.add(unprefixed);
         });
         frameworks.forEach(s -> addTextField.accept(LUCENE_FIELD_FRAMEWORK, s));
-
 
         //kpis, fields are prefixed to prevent name collisions (kpis can have any names)
         statusValues.forEach(statusValue -> {
@@ -120,6 +135,9 @@ public class SearchDocumentFactory {
                     StatusValue.SUMMARY_LABEL : statusValue.getField();
             addTextField.accept(KPI_FACET_PREFIX + field, statusValue.getStatus().getName());
         });
+
+        //frameworks name (label keys)
+        addTextField.accept(LUCENE_FIELD_GENERIC, Strings.join(genericStrings, " "));
 
         addFacets(document, item, statusValues);
         return document;

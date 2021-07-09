@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
  */
 public interface Labeled {
 
+    /**
+     * Used to concatenate values when same-prefix labels are grouped.
+     */
     String PREFIX_VALUE_DELIMITER = ";";
 
     /**

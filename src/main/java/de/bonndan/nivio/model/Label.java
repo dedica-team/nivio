@@ -62,7 +62,7 @@ public enum Label {
      * Separator for label key parts.
      * Should not be used outside this package. Use key() methods instead.
      */
-    static final String DELIMITER = ".";
+    public static final String DELIMITER = ".";
 
     public final String meaning;
     public final boolean isPrefix;
