@@ -72,7 +72,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         crossReferenceService(serviceItems, deploymentItems);
         crossReferenceService(serviceItems, statefulSetItems);
 
-        var itemList = new ArrayList<Item>();
+        var itemList = new ArrayList<K8sItem>();
         itemList.addAll(getReplicaSetItems(client));
         itemList.addAll(getPodItems(client));
         itemList.addAll(serviceItems);
@@ -86,7 +86,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         landscapeDescription.mergeItems(createItemDescription(itemList));
     }
 
-    private List<ItemDescription> createItemDescription(List<Item> itemList) {
+    private List<ItemDescription> createItemDescription(List<K8sItem> itemList) {
         return itemList.stream().map(item -> {
             var itemDescription = new ItemDescription();
             itemDescription.setIdentifier(item.getUid());
@@ -104,22 +104,22 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         }).collect(Collectors.toList());
     }
 
-    private void crossReferenceOwner(ArrayList<Item> items) {
+    private void crossReferenceOwner(ArrayList<K8sItem> items) {
         items.forEach(item -> {
-            var owners = new ArrayList<Item>();
-            owners = (ArrayList<Item>) items.stream().filter(item1 -> item.getWrappedItem().getMetadata().getOwnerReferences().stream().map(OwnerReference::getUid).collect(Collectors.toList()).contains(item1.getUid())).collect(Collectors.toList());
+            var owners = new ArrayList<K8sItem>();
+            owners = (ArrayList<K8sItem>) items.stream().filter(item1 -> item.getItemContainer().getWrappedItem().getMetadata().getOwnerReferences().stream().map(OwnerReference::getUid).collect(Collectors.toList()).contains(item1.getUid())).collect(Collectors.toList());
             owners.forEach(item::addOwner);
         });
     }
 
-    private void crossReferenceClaimer(List<Item> persistentVolumeClaims, List<Item> persistentVolumes) {
+    private void crossReferenceClaimer(List<K8sItem> persistentVolumeClaims, List<K8sItem> persistentVolumes) {
         persistentVolumes.forEach(item -> {
-            var claimer = persistentVolumeClaims.stream().filter(claimItem -> ((PersistentVolume) item.getWrappedItem()).getSpec().getClaimRef().getUid().equals(claimItem.getUid())).collect(Collectors.toList());
+            var claimer = persistentVolumeClaims.stream().filter(claimItem -> ((PersistentVolume) item.getItemContainer().getWrappedItem()).getSpec().getClaimRef().getUid().equals(claimItem.getUid())).collect(Collectors.toList());
             claimer.forEach(item::addOwner);
         });
     }
 
-    private void crossReferenceService(List<Item> service, List<Item> owners) {
+    private void crossReferenceService(List<K8sItem> service, List<K8sItem> owners) {
         service.forEach(item -> {
             var claimer = owners.stream().filter(claimItem -> (item.getName().equals(claimItem.getName()))).collect(Collectors.toList());
             claimer.forEach(item::addOwner);

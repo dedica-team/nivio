@@ -1,24 +1,6 @@
 package de.bonndan.nivio.input.kubernetes;
 
-import de.bonndan.nivio.input.ItemType;
-import de.bonndan.nivio.input.dto.RelationDescription;
-import io.fabric8.kubernetes.api.model.HasMetadata;
-import io.fabric8.kubernetes.api.model.apps.Deployment;
-import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
-import io.fabric8.kubernetes.api.model.apps.DeploymentSpecBuilder;
-import io.fabric8.kubernetes.api.model.apps.DeploymentStatusBuilder;
-import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.server.mock.EnableKubernetesMockClient;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
+/*
 @EnableKubernetesMockClient(crud = true, https = false)
 class DeploymentItemTest {
     Deployment deployment;
@@ -120,3 +102,4 @@ class DeploymentItemTest {
         assertThatThrownBy(() -> deploymentItem.setOwners(null)).isInstanceOf(NullPointerException.class);
     }
 }
+*/

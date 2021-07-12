@@ -13,24 +13,21 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class DeploymentItem extends Item {
+public class DeploymentItem implements Item {
     private final Deployment deployment;
 
-    public DeploymentItem(String name, String uid, String type, Deployment deployment, LevelDecorator levelDecorator) {
-        super(name, uid, type, levelDecorator);
+    public DeploymentItem(Deployment deployment) {
         this.deployment = deployment;
     }
 
-    @Override
     @NonNull
     public HasMetadata getWrappedItem() {
         return deployment;
     }
 
-    @Override
     @NonNull
-    public Map<String, String> getStatus() {
-        return super.getStatus().entrySet().stream().collect(Collectors.toMap(
+    public Map<String, String> getStatus(Map<String, String> status) {
+        return status.entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey,
                 pair -> {
                     if (pair.getValue().toLowerCase(Locale.ROOT).equals("true")) {
@@ -41,10 +38,10 @@ public class DeploymentItem extends Item {
                 }));
     }
 
-    public static List<Item> getDeploymentItems(@NonNull KubernetesClient client) {
+    public static List<K8sItem> getDeploymentItems(@NonNull KubernetesClient client) {
         var deploymentList = client.apps().deployments().list().getItems();
         return deploymentList.stream().map(deployment -> {
-            var deploymentItem = new DeploymentItem(deployment.getMetadata().getName(), deployment.getMetadata().getUid(), ItemType.DEPLOYMENT, deployment, new LevelDecorator(4));
+            var deploymentItem = new K8sItem(deployment.getMetadata().getName(), deployment.getMetadata().getUid(), ItemType.DEPLOYMENT, new LevelDecorator(4), new DeploymentItem(deployment));
             deployment.getStatus().getConditions().forEach(condition -> deploymentItem.addStatus(condition.getType(), condition.getStatus()));
             return deploymentItem;
         }).collect(Collectors.toList());

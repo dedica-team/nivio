@@ -7,24 +7,28 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ServiceItem extends Item {
+public class ServiceItem implements Item {
     private final Service service;
 
-    protected ServiceItem(String name, String uid, String type, Service service, LevelDecorator levelDecorator) {
-        super(name, uid, type, levelDecorator);
+    public ServiceItem(Service service) {
         this.service = service;
     }
 
-    @Override
     @NonNull
     public HasMetadata getWrappedItem() {
         return service;
     }
 
-    public static List<Item> getServiceItems(KubernetesClient client) {
+    @Override
+    public Map<String, String> getStatus(Map<String, String> status) {
+        return null;
+    }
+
+    public static List<K8sItem> getServiceItems(KubernetesClient client) {
         var serviceList = client.services().list().getItems();
-        return serviceList.stream().map(service -> new ServiceItem(service.getMetadata().getName(), service.getMetadata().getUid(), ItemType.SERVICE, service, new LevelDecorator(-1))).collect(Collectors.toList());
+        return serviceList.stream().map(service -> new K8sItem(service.getMetadata().getName(), service.getMetadata().getUid(), ItemType.DEPLOYMENT, new LevelDecorator(4), new ServiceItem(service))).collect(Collectors.toList());
     }
 }

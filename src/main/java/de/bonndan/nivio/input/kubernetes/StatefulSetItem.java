@@ -7,13 +7,13 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-public class StatefulSetItem extends Item {
+public class StatefulSetItem implements Item {
     private final StatefulSet statefulSet;
 
-    protected StatefulSetItem(String name, String uid, String type, StatefulSet statefulSet, LevelDecorator levelDecorator) {
-        super(name, uid, type, levelDecorator);
+    public StatefulSetItem(StatefulSet statefulSet) {
         this.statefulSet = statefulSet;
     }
 
@@ -23,8 +23,13 @@ public class StatefulSetItem extends Item {
         return statefulSet;
     }
 
-    public static List<Item> getStatefulSetItems(KubernetesClient client) {
+    @Override
+    public Map<String, String> getStatus(Map<String, String> status) {
+        return null;
+    }
+
+    public static List<K8sItem> getStatefulSetItems(KubernetesClient client) {
         var statefulSetList = client.apps().statefulSets().list().getItems();
-        return statefulSetList.stream().map(statefulSet -> new StatefulSetItem(statefulSet.getMetadata().getName(), statefulSet.getMetadata().getUid(), ItemType.STATEFULSET, statefulSet, new LevelDecorator(3))).collect(Collectors.toList());
+        return statefulSetList.stream().map(statefulSet -> new K8sItem(statefulSet.getMetadata().getName(), statefulSet.getMetadata().getUid(), ItemType.DEPLOYMENT, new LevelDecorator(4), new StatefulSetItem(statefulSet))).collect(Collectors.toList());
     }
 }

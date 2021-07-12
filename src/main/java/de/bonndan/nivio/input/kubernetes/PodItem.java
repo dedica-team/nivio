@@ -12,24 +12,22 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class PodItem extends Item {
+public class PodItem implements Item {
     private final Pod pod;
 
-    protected PodItem(String name, String uid, String type, Pod pod, LevelDecorator levelDecorator) {
-        super(name, uid, type, levelDecorator);
+    public PodItem(Pod pod) {
         this.pod = pod;
     }
 
-    @Override
     @NonNull
     public HasMetadata getWrappedItem() {
         return pod;
     }
 
-    @Override
+
     @NonNull
-    public Map<String, String> getStatus() {
-        return super.getStatus().entrySet().stream().collect(Collectors.toMap(
+    public Map<String, String> getStatus(Map<String, String> status) {
+        return status.entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey,
                 pair -> {
                     if (pair.getValue().toLowerCase(Locale.ROOT).equals("true")) {
@@ -40,10 +38,10 @@ public class PodItem extends Item {
                 }));
     }
 
-    public static List<Item> getPodItems(KubernetesClient client) {
+    public static List<K8sItem> getPodItems(KubernetesClient client) {
         var pods = client.pods().list().getItems();
         return pods.stream().map(pod -> {
-            var podItem = new PodItem(pod.getMetadata().getName(), pod.getMetadata().getUid(), ItemType.POD, pod, new LevelDecorator(2));
+            var podItem = new K8sItem(pod.getMetadata().getName(), pod.getMetadata().getUid(), ItemType.POD, new LevelDecorator(2), new PodItem(pod));
             pod.getStatus().getConditions().forEach(condition -> podItem.addStatus(condition.getType(), condition.getStatus()));
             return podItem;
         }).collect(Collectors.toList());

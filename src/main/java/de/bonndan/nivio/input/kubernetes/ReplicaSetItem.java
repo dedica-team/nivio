@@ -14,23 +14,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ReplicaSetItem extends Item {
+public class ReplicaSetItem implements Item {
     private final ReplicaSet replicaSet;
 
-    protected ReplicaSetItem(String name, String uid, String type, ReplicaSet replicaSet, LevelDecorator levelDecorator) {
-        super(name, uid, type, levelDecorator);
+    public ReplicaSetItem(ReplicaSet replicaSet) {
         this.replicaSet = replicaSet;
     }
 
-    @Override
     @NonNull
     public HasMetadata getWrappedItem() {
         return replicaSet;
     }
 
-    @Override
     @NonNull
-    public Map<String, String> getStatus() {
+    public Map<String, String> getStatus(Map<String, String> status) {
         var replicaCount = replicaSet.getSpec().getReplicas();
         var replicaCountDesired = Integer.valueOf(replicaSet.getMetadata().getAnnotations().get("deployment.kubernetes.io/desired-replicas"));
         var message = String.format("%s of %s Pods are ready", replicaCount, replicaCountDesired);
@@ -42,10 +39,10 @@ public class ReplicaSetItem extends Item {
             return new SingletonMap(message, Status.ORANGE.toString());
     }
 
-    public static List<Item> getReplicaSetItems(KubernetesClient client) {
+    public static List<K8sItem> getReplicaSetItems(KubernetesClient client) {
         var replicaSetList = client.apps().replicaSets().list().getItems();
         return replicaSetList.stream().map(replicaSet -> {
-            var replicaSetItem = new ReplicaSetItem(replicaSet.getMetadata().getName(), replicaSet.getMetadata().getUid(), ItemType.REPLICASET, replicaSet, new LevelDecorator(3));
+            var replicaSetItem = new K8sItem(replicaSet.getMetadata().getName(), replicaSet.getMetadata().getUid(), ItemType.DEPLOYMENT, new LevelDecorator(4), new ReplicaSetItem(replicaSet));
             replicaSet.getStatus().getConditions().forEach(condition -> replicaSetItem.addStatus(condition.getType(), condition.getStatus()));
             return replicaSetItem;
         }).collect(Collectors.toList());
