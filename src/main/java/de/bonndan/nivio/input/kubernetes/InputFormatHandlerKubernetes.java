@@ -5,22 +5,20 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import io.fabric8.kubernetes.api.model.OwnerReference;
 import io.fabric8.kubernetes.api.model.PersistentVolume;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.input.kubernetes.DeploymentItem.getDeploymentItems;
@@ -72,9 +70,12 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         crossReferenceService(serviceItems, deploymentItems);
         crossReferenceService(serviceItems, statefulSetItems);
 
+        var podItems = getPodItems(client);
+        crossReferenceVolumes(persistentVolumeClaims, podItems);
+
         var itemList = new ArrayList<K8sItem>();
         itemList.addAll(getReplicaSetItems(client));
-        itemList.addAll(getPodItems(client));
+        itemList.addAll(podItems);
         itemList.addAll(serviceItems);
         itemList.addAll(deploymentItems);
         itemList.addAll(statefulSetItems);
@@ -83,8 +84,22 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         itemList.addAll(persistentVolumeClaims);
         itemList.addAll(persistentVolumes);
 
+        crossReferenceLabel(itemList);
+
         landscapeDescription.mergeItems(createItemDescription(itemList));
     }
+
+    private void crossReferenceLabel(ArrayList<K8sItem> items) {
+        items.forEach(item -> {
+            var ownerList = items.stream().filter(
+                    item1 -> CollectionUtils.intersection(Objects.requireNonNullElse(item.getItemContainer().getWrappedItem().getMetadata().getLabels(), new HashMap<String, String>()).values(),
+                            Objects.requireNonNullElse(item1.getItemContainer().getWrappedItem().getMetadata().getLabels(), new HashMap<String, String>()).values())
+                            .size() >= 2 && item1.getLevelDecorator().getLevel() != -1 && item.getLevelDecorator().getLevel() != -1 &&
+                            (item1.getLevelDecorator().getLevel() - item.getLevelDecorator().getLevel()) == 1).collect(Collectors.toList());
+            ownerList.forEach(item::addOwner);
+        });
+    }
+
 
     private List<ItemDescription> createItemDescription(List<K8sItem> itemList) {
         return itemList.stream().map(item -> {
@@ -98,10 +113,19 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
             itemDescription.setGroup(item.getGroup());
             item.getOwner().forEach(owner -> itemDescription.addRelation(new RelationDescription(owner.getUid(), item.getUid())));
             if (!item.getStatus().isEmpty()) {
-                item.getStatus().forEach((k, v) -> itemDescription.setLabel(Label.condition.withPrefix(k), v));
+                item.getStatus().forEach(itemDescription::setLabel);
             }
             return itemDescription;
         }).collect(Collectors.toList());
+    }
+
+    private void crossReferenceVolumes(List<K8sItem> persistentVolumeClaimList, List<K8sItem> podList) {
+        persistentVolumeClaimList.forEach(item -> {
+            var owners = new ArrayList<K8sItem>();
+            owners = (ArrayList<K8sItem>) podList.stream().filter(pod -> ((Pod) pod.getItemContainer().getWrappedItem()).getSpec().getVolumes().stream().filter(volume -> volume.getPersistentVolumeClaim() != null).map(volumeNonNull -> volumeNonNull.getPersistentVolumeClaim().getClaimName()).collect(Collectors.toList()).contains(item.getName()))
+                    .collect(Collectors.toList());
+            owners.forEach(item::addOwner);
+        });
     }
 
     private void crossReferenceOwner(ArrayList<K8sItem> items) {

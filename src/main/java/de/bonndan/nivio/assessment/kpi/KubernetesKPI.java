@@ -5,6 +5,7 @@ import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Labeled;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -16,11 +17,12 @@ public class KubernetesKPI implements KPI {
 
 
     @Override
+    @NonNull
     public List<StatusValue> getStatusValues(Component component) {
         if (!(component instanceof Labeled))
             return new ArrayList<>();
 
-        var status = Status.UNKNOWN;
+
         var statusList = new ArrayList<StatusValue>();
         var id = 1;
         for (Map.Entry<String, String> entry : ((Labeled) component).getLabels(Label.condition).entrySet()) {

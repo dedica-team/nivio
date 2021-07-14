@@ -28,7 +28,7 @@ public class PodItem implements Item {
     @NonNull
     public Map<String, String> getStatus(Map<String, String> status) {
         return status.entrySet().stream().collect(Collectors.toMap(
-                Map.Entry::getKey,
+                pair -> "condition." + pair.getKey().toLowerCase(),
                 pair -> {
                     if (pair.getValue().toLowerCase(Locale.ROOT).equals("true")) {
                         return Status.GREEN.toString();
@@ -38,10 +38,15 @@ public class PodItem implements Item {
                 }));
     }
 
+    @Override
+    public Map<String, String> getDetails() {
+        return null;
+    }
+
     public static List<K8sItem> getPodItems(KubernetesClient client) {
         var pods = client.pods().list().getItems();
         return pods.stream().map(pod -> {
-            var podItem = new K8sItem(pod.getMetadata().getName(), pod.getMetadata().getUid(), ItemType.POD, new LevelDecorator(2), new PodItem(pod));
+            var podItem = new K8sItem(pod.getMetadata().getName(), pod.getMetadata().getUid(), ItemType.POD, new LevelDecorator(-1), new PodItem(pod));
             pod.getStatus().getConditions().forEach(condition -> podItem.addStatus(condition.getType(), condition.getStatus()));
             return podItem;
         }).collect(Collectors.toList());

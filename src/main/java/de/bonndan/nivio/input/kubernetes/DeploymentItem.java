@@ -6,6 +6,7 @@ import de.bonndan.nivio.input.ItemType;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import org.apache.commons.collections.map.SingletonMap;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class DeploymentItem implements Item {
     @NonNull
     public Map<String, String> getStatus(Map<String, String> status) {
         return status.entrySet().stream().collect(Collectors.toMap(
-                Map.Entry::getKey,
+                pair -> "condition." + pair.getKey().toLowerCase(),
                 pair -> {
                     if (pair.getValue().toLowerCase(Locale.ROOT).equals("true")) {
                         return Status.GREEN.toString();
@@ -36,6 +37,11 @@ public class DeploymentItem implements Item {
                         return Status.RED.toString();
                     }
                 }));
+    }
+
+    @Override
+    public Map<String, String> getDetails() {
+        return new SingletonMap("strategy", deployment.getSpec().getStrategy().getType());
     }
 
     public static List<K8sItem> getDeploymentItems(@NonNull KubernetesClient client) {

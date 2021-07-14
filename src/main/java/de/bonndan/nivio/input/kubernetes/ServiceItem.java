@@ -6,6 +6,7 @@ import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.springframework.lang.NonNull;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,8 +28,17 @@ public class ServiceItem implements Item {
         return null;
     }
 
+    @Override
+    public Map<String, String> getDetails() {
+        var details = new HashMap<String, String>();
+        details.put("cluster IP", service.getSpec().getClusterIP());
+        details.put("service type", service.getSpec().getType());
+        details.put("session affinity", service.getSpec().getSessionAffinity());
+        return details;
+    }
+
     public static List<K8sItem> getServiceItems(KubernetesClient client) {
         var serviceList = client.services().list().getItems();
-        return serviceList.stream().map(service -> new K8sItem(service.getMetadata().getName(), service.getMetadata().getUid(), ItemType.DEPLOYMENT, new LevelDecorator(4), new ServiceItem(service))).collect(Collectors.toList());
+        return serviceList.stream().map(service -> new K8sItem(service.getMetadata().getName(), service.getMetadata().getUid(), ItemType.SERVICE, new LevelDecorator(-1), new ServiceItem(service))).collect(Collectors.toList());
     }
 }

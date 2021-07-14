@@ -58,10 +58,11 @@ public class SourceReferencesResolver {
                 log.error(message);
                 eventPublisher.publishEvent(new ProcessingErrorEvent(landscapeDescription.getFullyQualifiedIdentifier(), ex));
                 landscapeDescription.setIsPartial(true);
-            } catch (RuntimeException ex) {
+            }
+            /*catch (RuntimeException ex) {
                 log.warn(ex.getMessage());
                 landscapeDescription.setIsPartial(true);
-            }
+            }*/
         });
     }
 

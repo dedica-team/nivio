@@ -154,14 +154,14 @@
             "type" : "string",
             "description" : "A brief description."
           },
-          "contact" : {
-            "type" : "string",
-            "description" : "The primary way to contact a responsible person or team. Preferably use an email address.",
-            "example" : "johnson@acme.com"
+          "contact": {
+            "type": "string",
+            "description": "The primary way to contact a responsible person or team. Preferably use an email address.",
+            "example": "johnson@acme.com"
           },
-          "group" : {
-            "type" : "string",
-            "description" : "The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to common.",
+          "group": {
+            "type": "string",
+            "description": "The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to common.",
             "example": "shipping"
           },
           "interfaces": {
@@ -200,20 +200,7 @@
             "description": "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
             "example": "service|database|volume"
           },
-          "lifecycle": {
-            "type": "string",
-            "description": "The lifecycle state of an item.",
-            "writeOnly": true,
-            "enum": [
-              "PLANNED",
-              "INTEGRATION",
-              "TEST",
-              "PRODUCTION",
-              "END_OF_LIFE",
-              "EOL"
-            ]
-          },
-          "status": {
+          "statuses": {
             "type": "array",
             "description": "A list of statuses that works like hardcoded KPIs.",
             "writeOnly": true,
@@ -226,7 +213,7 @@
               "description": "A list of statuses that works like hardcoded KPIs."
             }
           },
-          "statuses": {
+          "status": {
             "type": "array",
             "description": "A list of statuses that works like hardcoded KPIs.",
             "writeOnly": true,
@@ -249,6 +236,19 @@
             "description": "The parts used to create the item. Usually refers to technical frameworks.",
             "writeOnly": true,
             "example": "java: 8"
+          },
+          "lifecycle": {
+            "type": "string",
+            "description": "The lifecycle state of an item.",
+            "writeOnly": true,
+            "enum": [
+              "PLANNED",
+              "INTEGRATION",
+              "TEST",
+              "PRODUCTION",
+              "END_OF_LIFE",
+              "EOL"
+            ]
           },
           "tags": {
             "type": "array",
@@ -375,13 +375,13 @@
           },
           "contact" : {
             "type" : "string",
-            "description" : "Primary contact method, preferably an email address."
+            "description": "Primary contact method, preferably an email address."
           },
-          "description" : {
-            "type" : "string",
-            "description" : "A brief description of the landscape."
+          "description": {
+            "type": "string",
+            "description": "A brief description of the landscape."
           },
-          "owner" : {
+          "owner": {
             "type": "string",
             "description": "The business owner (person or team), preferably an email address."
           },

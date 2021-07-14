@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input.kubernetes;
 
+import com.google.common.collect.Ordering;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import org.springframework.lang.NonNull;
 
@@ -66,7 +67,13 @@ public class K8sItem {
 
     @NonNull
     public Map<String, String> getStatus() {
-        return Objects.requireNonNullElse(itemContainer.getStatus(this.status), this.status);
+        var labels = new TreeMap<String, String>(Ordering.natural());
+        labels.putAll(Objects.requireNonNullElse(itemContainer.getStatus(this.status), this.status));
+        labels.putIfAbsent("name", itemContainer.getWrappedItem().getMetadata().getName());
+        labels.putIfAbsent("namespace", itemContainer.getWrappedItem().getMetadata().getNamespace());
+        labels.putIfAbsent("creation", itemContainer.getWrappedItem().getMetadata().getCreationTimestamp());
+        labels.putAll(Objects.requireNonNullElse(itemContainer.getDetails(), new HashMap<>()));
+        return labels;
     }
 
     @NonNull

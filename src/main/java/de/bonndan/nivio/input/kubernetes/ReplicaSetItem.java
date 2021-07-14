@@ -30,19 +30,25 @@ public class ReplicaSetItem implements Item {
     public Map<String, String> getStatus(Map<String, String> status) {
         var replicaCount = replicaSet.getSpec().getReplicas();
         var replicaCountDesired = Integer.valueOf(replicaSet.getMetadata().getAnnotations().get("deployment.kubernetes.io/desired-replicas"));
-        var message = String.format("%s of %s Pods are ready", replicaCount, replicaCountDesired);
+        var message = String.format("condition.%s of %s Pods are ready", replicaCount, replicaCountDesired);
+        //TODO Check if containers a up
         if (Objects.equals(replicaCount, replicaCountDesired)) {
-            return new SingletonMap(message, Status.GREEN.toString());
+            return new SingletonMap("condition.all pods are ready", Status.GREEN.toString());
         } else if (replicaCount == 0) {
             return new SingletonMap(message, Status.RED.toString());
         } else
             return new SingletonMap(message, Status.ORANGE.toString());
     }
 
+    @Override
+    public Map<String, String> getDetails() {
+        return null;
+    }
+
     public static List<K8sItem> getReplicaSetItems(KubernetesClient client) {
         var replicaSetList = client.apps().replicaSets().list().getItems();
         return replicaSetList.stream().map(replicaSet -> {
-            var replicaSetItem = new K8sItem(replicaSet.getMetadata().getName(), replicaSet.getMetadata().getUid(), ItemType.DEPLOYMENT, new LevelDecorator(4), new ReplicaSetItem(replicaSet));
+            var replicaSetItem = new K8sItem(replicaSet.getMetadata().getName(), replicaSet.getMetadata().getUid(), ItemType.REPLICASET, new LevelDecorator(-1), new ReplicaSetItem(replicaSet));
             replicaSet.getStatus().getConditions().forEach(condition -> replicaSetItem.addStatus(condition.getType(), condition.getStatus()));
             return replicaSetItem;
         }).collect(Collectors.toList());

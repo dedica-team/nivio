@@ -8,4 +8,6 @@ public interface Item {
     HasMetadata getWrappedItem();
 
     Map<String, String> getStatus(Map<String, String> status);
+
+    Map<String, String> getDetails();
 }
