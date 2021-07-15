@@ -1,0 +1,10 @@
+{
+  "namespace": "default",
+  "experimentalFeatureLabel": {
+    "active": "true",
+    "level": {
+      "StatefulSetItem": "0",
+      "DeploymentItem": "1"
+    }
+  }
+}

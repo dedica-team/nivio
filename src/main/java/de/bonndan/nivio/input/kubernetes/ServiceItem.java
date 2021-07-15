@@ -39,6 +39,6 @@ public class ServiceItem implements Item {
 
     public static List<K8sItem> getServiceItems(KubernetesClient client) {
         var serviceList = client.services().list().getItems();
-        return serviceList.stream().map(service -> new K8sItem(service.getMetadata().getName(), service.getMetadata().getUid(), ItemType.SERVICE, new LevelDecorator(-1), new ServiceItem(service))).collect(Collectors.toList());
+        return serviceList.stream().map(service -> new K8sItem(service.getMetadata().getName(), service.getMetadata().getUid(), ItemType.SERVICE, new ServiceItem(service))).collect(Collectors.toList());
     }
 }

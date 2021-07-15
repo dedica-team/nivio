@@ -127,32 +127,32 @@
         "required" : [ "identifier" ],
         "type" : "object",
         "properties" : {
-          "labels" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string",
-              "description" : "Key-value pair labels for an item."
+          "labels": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "Key-value pair labels for an item."
             },
-            "description" : "Key-value pair labels for an item."
+            "description": "Key-value pair labels for an item."
           },
-          "identifier" : {
-            "pattern" : "^[a-zA-Z0-9\\.\\:_-]{2,256}$",
-            "type" : "string",
-            "description" : "Immutable unique identifier (maybe use an URN). Primary means to identify items in searches."
+          "identifier": {
+            "pattern": "^[a-zA-Z0-9\\.\\:_-]{2,256}$",
+            "type": "string",
+            "description": "Immutable unique identifier (maybe use an URN). Primary means to identify items in searches."
           },
-          "name" : {
-            "type" : "string",
-            "description" : "A human readable name/title. The name is considered when items are searched.",
-            "example" : "my beautiful service"
+          "name": {
+            "type": "string",
+            "description": "A human readable name/title. The name is considered when items are searched.",
+            "example": "my beautiful service"
           },
-          "owner" : {
-            "type" : "string",
-            "description" : "The business owner of the item. Preferably use an email address.",
-            "example" : "johnson@acme.com"
+          "owner": {
+            "type": "string",
+            "description": "The business owner of the item. Preferably use an email address.",
+            "example": "johnson@acme.com"
           },
-          "description" : {
-            "type" : "string",
-            "description" : "A brief description."
+          "description": {
+            "type": "string",
+            "description": "A brief description."
           },
           "contact": {
             "type": "string",
@@ -200,6 +200,19 @@
             "description": "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
             "example": "service|database|volume"
           },
+          "lifecycle": {
+            "type": "string",
+            "description": "The lifecycle state of an item.",
+            "writeOnly": true,
+            "enum": [
+              "PLANNED",
+              "INTEGRATION",
+              "TEST",
+              "PRODUCTION",
+              "END_OF_LIFE",
+              "EOL"
+            ]
+          },
           "statuses": {
             "type": "array",
             "description": "A list of statuses that works like hardcoded KPIs.",
@@ -236,19 +249,6 @@
             "description": "The parts used to create the item. Usually refers to technical frameworks.",
             "writeOnly": true,
             "example": "java: 8"
-          },
-          "lifecycle": {
-            "type": "string",
-            "description": "The lifecycle state of an item.",
-            "writeOnly": true,
-            "enum": [
-              "PLANNED",
-              "INTEGRATION",
-              "TEST",
-              "PRODUCTION",
-              "END_OF_LIFE",
-              "EOL"
-            ]
           },
           "tags": {
             "type": "array",
@@ -364,17 +364,17 @@
         "required" : [ "identifier", "name" ],
         "type" : "object",
         "properties" : {
-          "identifier" : {
-            "pattern" : "^[a-zA-Z0-9\\.\\:_-]{2,256}$",
-            "type" : "string",
-            "description" : "Immutable unique identifier. Maybe use an URN."
+          "identifier": {
+            "pattern": "^[a-zA-Z0-9\\.\\:_-]{2,256}$",
+            "type": "string",
+            "description": "Immutable unique identifier. Maybe use an URN."
           },
-          "name" : {
-            "type" : "string",
-            "description" : "Human readable name."
+          "name": {
+            "type": "string",
+            "description": "Human readable name."
           },
-          "contact" : {
-            "type" : "string",
+          "contact": {
+            "type": "string",
             "description": "Primary contact method, preferably an email address."
           },
           "description": {

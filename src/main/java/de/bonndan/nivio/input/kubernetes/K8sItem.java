@@ -17,8 +17,8 @@ public class K8sItem {
     private final String type;
     private final String uid;
 
-    public K8sItem(String name, String uid, String type, LevelDecorator levelDecorator, Item itemContainer) {
-        this.levelDecorator = levelDecorator;
+    public K8sItem(String name, String uid, String type, Item itemContainer) {
+        this.levelDecorator = new LevelDecorator(K8sJsonParser.getExperimentalLevel(itemContainer.getClass()));
         this.itemContainer = itemContainer;
         this.name = name;
         this.type = type;

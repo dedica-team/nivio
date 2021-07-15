@@ -38,6 +38,6 @@ public class PersistentVolumeClaimItem implements Item {
 
     public static List<K8sItem> getPersistentVolumeClaimItems(KubernetesClient client) {
         var getPersistentVolumeClaimsList = client.persistentVolumeClaims().list().getItems();
-        return getPersistentVolumeClaimsList.stream().map(persistentVolumeClaims -> new K8sItem(persistentVolumeClaims.getMetadata().getName(), persistentVolumeClaims.getMetadata().getUid(), ItemType.VOLUME, new LevelDecorator(-1), new PersistentVolumeClaimItem(persistentVolumeClaims))).collect(Collectors.toList());
+        return getPersistentVolumeClaimsList.stream().map(persistentVolumeClaims -> new K8sItem(persistentVolumeClaims.getMetadata().getName(), persistentVolumeClaims.getMetadata().getUid(), ItemType.VOLUME, new PersistentVolumeClaimItem(persistentVolumeClaims))).collect(Collectors.toList());
     }
 }

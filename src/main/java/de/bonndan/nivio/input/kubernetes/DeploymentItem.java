@@ -47,7 +47,7 @@ public class DeploymentItem implements Item {
     public static List<K8sItem> getDeploymentItems(@NonNull KubernetesClient client) {
         var deploymentList = client.apps().deployments().list().getItems();
         return deploymentList.stream().map(deployment -> {
-            var deploymentItem = new K8sItem(deployment.getMetadata().getName(), deployment.getMetadata().getUid(), ItemType.DEPLOYMENT, new LevelDecorator(4), new DeploymentItem(deployment));
+            var deploymentItem = new K8sItem(deployment.getMetadata().getName(), deployment.getMetadata().getUid(), ItemType.DEPLOYMENT, new DeploymentItem(deployment));
             deployment.getStatus().getConditions().forEach(condition -> deploymentItem.addStatus(condition.getType(), condition.getStatus()));
             return deploymentItem;
         }).collect(Collectors.toList());

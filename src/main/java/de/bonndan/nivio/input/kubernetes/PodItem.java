@@ -46,7 +46,7 @@ public class PodItem implements Item {
     public static List<K8sItem> getPodItems(KubernetesClient client) {
         var pods = client.pods().list().getItems();
         return pods.stream().map(pod -> {
-            var podItem = new K8sItem(pod.getMetadata().getName(), pod.getMetadata().getUid(), ItemType.POD, new LevelDecorator(-1), new PodItem(pod));
+            var podItem = new K8sItem(pod.getMetadata().getName(), pod.getMetadata().getUid(), ItemType.POD, new PodItem(pod));
             pod.getStatus().getConditions().forEach(condition -> podItem.addStatus(condition.getType(), condition.getStatus()));
             return podItem;
         }).collect(Collectors.toList());

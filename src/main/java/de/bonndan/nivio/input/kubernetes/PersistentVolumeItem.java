@@ -46,6 +46,6 @@ public class PersistentVolumeItem implements Item {
 
     public static List<K8sItem> getPersistentVolumeItems(KubernetesClient client) {
         var getPersistentVolumeList = client.persistentVolumes().list().getItems();
-        return getPersistentVolumeList.stream().map(persistentVolume -> new K8sItem(persistentVolume.getMetadata().getName(), persistentVolume.getMetadata().getUid(), ItemType.VOLUME, new LevelDecorator(-1), new PersistentVolumeItem(persistentVolume))).collect(Collectors.toList());
+        return getPersistentVolumeList.stream().map(persistentVolume -> new K8sItem(persistentVolume.getMetadata().getName(), persistentVolume.getMetadata().getUid(), ItemType.VOLUME, new PersistentVolumeItem(persistentVolume))).collect(Collectors.toList());
     }
 }

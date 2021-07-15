@@ -35,6 +35,6 @@ public class StatefulSetItem implements Item {
 
     public static List<K8sItem> getStatefulSetItems(KubernetesClient client) {
         var statefulSetList = client.apps().statefulSets().list().getItems();
-        return statefulSetList.stream().map(statefulSet -> new K8sItem(statefulSet.getMetadata().getName(), statefulSet.getMetadata().getUid(), ItemType.STATEFULSET, new LevelDecorator(3), new StatefulSetItem(statefulSet))).collect(Collectors.toList());
+        return statefulSetList.stream().map(statefulSet -> new K8sItem(statefulSet.getMetadata().getName(), statefulSet.getMetadata().getUid(), ItemType.STATEFULSET, new StatefulSetItem(statefulSet))).collect(Collectors.toList());
     }
 }

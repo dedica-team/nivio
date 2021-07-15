@@ -12,6 +12,7 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClientException;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,16 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
 
         this.client = getClient(reference.getUrl());
 
+        try {
+            client.getVersion();
+            landscapeDescription.mergeItems(getItemDescription(client));
+        } catch (KubernetesClientException n) {
+            LOGGER.error(n.getMessage());
+            LOGGER.error("Kubernetes might not be available");
+        }
+    }
+
+    private List<ItemDescription> getItemDescription(KubernetesClient client) {
         var persistentVolumeClaims = getPersistentVolumeClaimItems(client);
         var persistentVolumes = getPersistentVolumeItems(client);
         crossReferenceClaimer(persistentVolumeClaims, persistentVolumes);
@@ -83,23 +94,11 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
 
         itemList.addAll(persistentVolumeClaims);
         itemList.addAll(persistentVolumes);
-
-        crossReferenceLabel(itemList);
-
-        landscapeDescription.mergeItems(createItemDescription(itemList));
+        if (K8sJsonParser.getExperimentalActive()) {
+            crossReferenceLabel(itemList);
+        }
+        return createItemDescription(itemList);
     }
-
-    private void crossReferenceLabel(ArrayList<K8sItem> items) {
-        items.forEach(item -> {
-            var ownerList = items.stream().filter(
-                    item1 -> CollectionUtils.intersection(Objects.requireNonNullElse(item.getItemContainer().getWrappedItem().getMetadata().getLabels(), new HashMap<String, String>()).values(),
-                            Objects.requireNonNullElse(item1.getItemContainer().getWrappedItem().getMetadata().getLabels(), new HashMap<String, String>()).values())
-                            .size() >= 2 && item1.getLevelDecorator().getLevel() != -1 && item.getLevelDecorator().getLevel() != -1 &&
-                            (item1.getLevelDecorator().getLevel() - item.getLevelDecorator().getLevel()) == 1).collect(Collectors.toList());
-            ownerList.forEach(item::addOwner);
-        });
-    }
-
 
     private List<ItemDescription> createItemDescription(List<K8sItem> itemList) {
         return itemList.stream().map(item -> {
@@ -117,6 +116,17 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
             }
             return itemDescription;
         }).collect(Collectors.toList());
+    }
+
+    private void crossReferenceLabel(ArrayList<K8sItem> items) {
+        items.forEach(item -> {
+            var ownerList = items.stream().filter(
+                    item1 -> CollectionUtils.intersection(Objects.requireNonNullElse(item.getItemContainer().getWrappedItem().getMetadata().getLabels(), new HashMap<String, String>()).values(),
+                            Objects.requireNonNullElse(item1.getItemContainer().getWrappedItem().getMetadata().getLabels(), new HashMap<String, String>()).values())
+                            .size() >= 2 && item1.getLevelDecorator().getLevel() != -1 && item.getLevelDecorator().getLevel() != -1 &&
+                            (item1.getLevelDecorator().getLevel() - item.getLevelDecorator().getLevel()) == 1).collect(Collectors.toList());
+            ownerList.forEach(item::addOwner);
+        });
     }
 
     private void crossReferenceVolumes(List<K8sItem> persistentVolumeClaimList, List<K8sItem> podList) {

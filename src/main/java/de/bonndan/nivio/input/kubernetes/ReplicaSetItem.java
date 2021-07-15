@@ -48,7 +48,7 @@ public class ReplicaSetItem implements Item {
     public static List<K8sItem> getReplicaSetItems(KubernetesClient client) {
         var replicaSetList = client.apps().replicaSets().list().getItems();
         return replicaSetList.stream().map(replicaSet -> {
-            var replicaSetItem = new K8sItem(replicaSet.getMetadata().getName(), replicaSet.getMetadata().getUid(), ItemType.REPLICASET, new LevelDecorator(-1), new ReplicaSetItem(replicaSet));
+            var replicaSetItem = new K8sItem(replicaSet.getMetadata().getName(), replicaSet.getMetadata().getUid(), ItemType.REPLICASET, new ReplicaSetItem(replicaSet));
             replicaSet.getStatus().getConditions().forEach(condition -> replicaSetItem.addStatus(condition.getType(), condition.getStatus()));
             return replicaSetItem;
         }).collect(Collectors.toList());
