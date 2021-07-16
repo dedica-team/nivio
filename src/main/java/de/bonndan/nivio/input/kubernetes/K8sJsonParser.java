@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input.kubernetes;
 
+import de.bonndan.nivio.input.kubernetes.items.Item;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;

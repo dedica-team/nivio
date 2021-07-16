@@ -1,25 +1,31 @@
 package de.bonndan.nivio.input.kubernetes;
 
-import com.google.common.collect.Ordering;
 import de.bonndan.nivio.input.dto.RelationDescription;
+import de.bonndan.nivio.input.kubernetes.details.Details;
+import de.bonndan.nivio.input.kubernetes.items.Item;
+import de.bonndan.nivio.input.kubernetes.status.Status;
 import org.springframework.lang.NonNull;
 
 import java.util.*;
 
 public class K8sItem {
     private final List<RelationDescription> relationDescriptionList = new ArrayList<>();
-    private final Map<String, String> status = new HashMap<>();
+    private final Map<String, String> labelMap = new HashMap<>();
     private final List<K8sItem> owners = new ArrayList<>();
 
     private final LevelDecorator levelDecorator;
     private final Item itemContainer;
+    private final Details details;
+    private final Status status;
     private final String name;
     private final String type;
     private final String uid;
 
-    public K8sItem(String name, String uid, String type, Item itemContainer) {
+    public K8sItem(String name, String uid, String type, Item itemContainer, Status status, Details details) {
         this.levelDecorator = new LevelDecorator(K8sJsonParser.getExperimentalLevel(itemContainer.getClass()));
         this.itemContainer = itemContainer;
+        this.details = details;
+        this.status = status;
         this.name = name;
         this.type = type;
         this.uid = uid;
@@ -34,7 +40,7 @@ public class K8sItem {
     }
 
     public void addStatus(@NonNull String key, @NonNull String value) {
-        status.put(Objects.requireNonNull(key), Objects.requireNonNull(value));
+        labelMap.put(Objects.requireNonNull(key), Objects.requireNonNull(value));
     }
 
     @NonNull
@@ -66,14 +72,11 @@ public class K8sItem {
     }
 
     @NonNull
-    public Map<String, String> getStatus() {
-        var labels = new TreeMap<String, String>(Ordering.natural());
-        labels.putAll(Objects.requireNonNullElse(itemContainer.getStatus(this.status), this.status));
-        labels.putIfAbsent("name", itemContainer.getWrappedItem().getMetadata().getName());
-        labels.putIfAbsent("namespace", itemContainer.getWrappedItem().getMetadata().getNamespace());
-        labels.putIfAbsent("creation", itemContainer.getWrappedItem().getMetadata().getCreationTimestamp());
-        labels.putAll(Objects.requireNonNullElse(itemContainer.getDetails(), new HashMap<>()));
-        return labels;
+    public Map<String, String> getDetails() {
+        var newLabelMap = new HashMap<>(status.getExtendedStatus(labelMap, itemContainer));
+        var test = details.getExtendedDetails(labelMap, itemContainer);
+        newLabelMap.putAll(test);
+        return newLabelMap;
     }
 
     @NonNull

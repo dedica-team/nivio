@@ -22,13 +22,13 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.input.kubernetes.DeploymentItem.getDeploymentItems;
-import static de.bonndan.nivio.input.kubernetes.PersistentVolumeClaimItem.getPersistentVolumeClaimItems;
-import static de.bonndan.nivio.input.kubernetes.PersistentVolumeItem.getPersistentVolumeItems;
-import static de.bonndan.nivio.input.kubernetes.PodItem.getPodItems;
-import static de.bonndan.nivio.input.kubernetes.ReplicaSetItem.getReplicaSetItems;
-import static de.bonndan.nivio.input.kubernetes.ServiceItem.getServiceItems;
-import static de.bonndan.nivio.input.kubernetes.StatefulSetItem.getStatefulSetItems;
+import static de.bonndan.nivio.input.kubernetes.items.DeploymentItem.getDeploymentItems;
+import static de.bonndan.nivio.input.kubernetes.items.PersistentVolumeClaimItem.getPersistentVolumeClaimItems;
+import static de.bonndan.nivio.input.kubernetes.items.PersistentVolumeItem.getPersistentVolumeItems;
+import static de.bonndan.nivio.input.kubernetes.items.PodItem.getPodItems;
+import static de.bonndan.nivio.input.kubernetes.items.ReplicaSetItem.getReplicaSetItems;
+import static de.bonndan.nivio.input.kubernetes.items.ServiceItem.getServiceItems;
+import static de.bonndan.nivio.input.kubernetes.items.StatefulSetItem.getStatefulSetItems;
 
 /**
  * Scans the k8s api for services, pods, volumes etc.
@@ -111,8 +111,8 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
             }
             itemDescription.setGroup(item.getGroup());
             item.getOwner().forEach(owner -> itemDescription.addRelation(new RelationDescription(owner.getUid(), item.getUid())));
-            if (!item.getStatus().isEmpty()) {
-                item.getStatus().forEach(itemDescription::setLabel);
+            if (!item.getDetails().isEmpty()) {
+                item.getDetails().forEach(itemDescription::setLabel);
             }
             return itemDescription;
         }).collect(Collectors.toList());
