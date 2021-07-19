@@ -42,7 +42,7 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
 
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent event) {
-        if (!StringUtils.isEmpty(seedProperties.getSeed().isEmpty())) {
+        if (!StringUtils.isEmpty(seedProperties.getDemo())) {
             LOGGER.info("Running in demo mode");
         }
 
