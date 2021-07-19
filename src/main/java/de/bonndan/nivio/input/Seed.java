@@ -66,10 +66,10 @@ public class Seed {
      */
     public List<URL> getDemoFiles() {
         List<URL> demoFiles = new ArrayList<>();
-        if (seedProperties.getSeed().isEmpty()) {
+        if (StringUtils.isEmpty(seedProperties.getDemo())) {
             return demoFiles;
         }
-        String value = seedProperties.getSeed();
+        String value = seedProperties.getDemo();
 
         Path currentRelativePath = Paths.get("");
         String absPath = currentRelativePath.toAbsolutePath().toString();
