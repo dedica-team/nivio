@@ -1,4 +1,4 @@
-package de.bonndan.nivio.input.kubernetes.items;
+package de.bonndan.nivio.input.kubernetes.itemadapters;
 
 
 import de.bonndan.nivio.input.ItemType;
@@ -15,10 +15,10 @@ import org.springframework.lang.NonNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DeploymentItem implements Item {
+public class DeploymentItemAdapter implements ItemAdapter {
     private final Deployment deployment;
 
-    public DeploymentItem(Deployment deployment) {
+    public DeploymentItemAdapter(Deployment deployment) {
         this.deployment = deployment;
     }
 
@@ -27,10 +27,34 @@ public class DeploymentItem implements Item {
         return deployment;
     }
 
+    @Override
+    public String getUid() {
+        return deployment.getMetadata().getUid();
+    }
+
+    @Override
+    public String getName() {
+        return deployment.getMetadata().getName();
+    }
+
+    @Override
+    public String getNamespace() {
+        return deployment.getMetadata().getNamespace();
+    }
+
+    @Override
+    public String getCreationTimestamp() {
+        return deployment.getMetadata().getCreationTimestamp();
+    }
+
+    public String getStrategyType() {
+        return deployment.getSpec().getStrategy().getType();
+    }
+
     public static List<K8sItem> getDeploymentItems(@NonNull KubernetesClient client) {
         var deploymentList = client.apps().deployments().list().getItems();
         return deploymentList.stream().map(deployment -> {
-            var deploymentItem = new K8sItemBuilder(deployment.getMetadata().getName(), deployment.getMetadata().getUid(), ItemType.DEPLOYMENT, new DeploymentItem(deployment)).addStatus(new BoolStatus()).addDetails(new DeploymentDetails(new DefaultDetails())).build();
+            var deploymentItem = new K8sItemBuilder(ItemType.DEPLOYMENT, new DeploymentItemAdapter(deployment)).addStatus(new BoolStatus()).addDetails(new DeploymentDetails(new DefaultDetails())).build();
             deployment.getStatus().getConditions().forEach(condition -> deploymentItem.addStatus(condition.getType(), condition.getStatus()));
             return deploymentItem;
         }).collect(Collectors.toList());

@@ -1,4 +1,4 @@
-package de.bonndan.nivio.input.kubernetes.items;
+package de.bonndan.nivio.input.kubernetes.itemadapters;
 
 
 import de.bonndan.nivio.input.ItemType;
@@ -13,10 +13,10 @@ import org.springframework.lang.NonNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ReplicaSetItem implements Item {
+public class ReplicaSetItemAdapter implements ItemAdapter {
     private final ReplicaSet replicaSet;
 
-    public ReplicaSetItem(ReplicaSet replicaSet) {
+    public ReplicaSetItemAdapter(ReplicaSet replicaSet) {
         this.replicaSet = replicaSet;
     }
 
@@ -26,11 +26,39 @@ public class ReplicaSetItem implements Item {
         return replicaSet;
     }
 
+    @Override
+    public String getName() {
+        return replicaSet.getMetadata().getName();
+    }
+
+    @Override
+    public String getUid() {
+        return replicaSet.getMetadata().getUid();
+    }
+
+    @Override
+    public String getNamespace() {
+        return replicaSet.getMetadata().getNamespace();
+    }
+
+    @Override
+    public String getCreationTimestamp() {
+        return replicaSet.getMetadata().getCreationTimestamp();
+    }
+
+    public Integer getReadyReplicas() {
+        return replicaSet.getStatus().getReadyReplicas();
+    }
+
+    public Integer getReplicas() {
+        return replicaSet.getSpec().getReplicas();
+    }
+
 
     public static List<K8sItem> getReplicaSetItems(KubernetesClient client) {
         var replicaSetList = client.apps().replicaSets().list().getItems();
         return replicaSetList.stream().map(replicaSet -> {
-            var replicaSetItem = new K8sItemBuilder(replicaSet.getMetadata().getName(), replicaSet.getMetadata().getUid(), ItemType.REPLICASET, new ReplicaSetItem(replicaSet)).addStatus(new ReplicaStatus()).build();
+            var replicaSetItem = new K8sItemBuilder(ItemType.REPLICASET, new ReplicaSetItemAdapter(replicaSet)).addStatus(new ReplicaStatus()).build();
             replicaSet.getStatus().getConditions().forEach(condition -> replicaSetItem.addStatus(condition.getType(), condition.getStatus()));
             return replicaSetItem;
         }).collect(Collectors.toList());

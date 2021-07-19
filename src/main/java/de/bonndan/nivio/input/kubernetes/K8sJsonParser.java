@@ -1,6 +1,6 @@
 package de.bonndan.nivio.input.kubernetes;
 
-import de.bonndan.nivio.input.kubernetes.items.Item;
+import de.bonndan.nivio.input.kubernetes.itemadapters.ItemAdapter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -26,12 +26,12 @@ public class K8sJsonParser {
             var companyList = (JSONObject) jsonObject.get("experimentalFeatureLabel");
             active = Boolean.parseBoolean(companyList.get("active").toString());
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.warn(e.getMessage());
         }
         return active;
     }
 
-    public static int getExperimentalLevel(Class<? extends Item> classToParse) {
+    public static int getExperimentalLevel(Class<? extends ItemAdapter> classToParse) {
         var objectName = classToParse.getSimpleName();
         if (cacheMap.containsKey(objectName)) {
             return cacheMap.get(objectName);

@@ -1,4 +1,4 @@
-package de.bonndan.nivio.input.kubernetes.items;
+package de.bonndan.nivio.input.kubernetes.itemadapters;
 
 import de.bonndan.nivio.input.ItemType;
 import de.bonndan.nivio.input.kubernetes.K8sItem;
@@ -12,10 +12,10 @@ import org.springframework.lang.NonNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PodItem implements Item {
+public class PodItemAdapter implements ItemAdapter {
     private final Pod pod;
 
-    public PodItem(Pod pod) {
+    public PodItemAdapter(Pod pod) {
         this.pod = pod;
     }
 
@@ -24,11 +24,30 @@ public class PodItem implements Item {
         return pod;
     }
 
+    @Override
+    public String getName() {
+        return pod.getMetadata().getName();
+    }
+
+    @Override
+    public String getUid() {
+        return pod.getMetadata().getUid();
+    }
+
+    @Override
+    public String getNamespace() {
+        return pod.getMetadata().getNamespace();
+    }
+
+    @Override
+    public String getCreationTimestamp() {
+        return pod.getMetadata().getCreationTimestamp();
+    }
 
     public static List<K8sItem> getPodItems(KubernetesClient client) {
         var pods = client.pods().list().getItems();
         return pods.stream().map(pod -> {
-            var podItem = new K8sItemBuilder(pod.getMetadata().getName(), pod.getMetadata().getUid(), ItemType.POD, new PodItem(pod)).addStatus(new BoolStatus()).build();
+            var podItem = new K8sItemBuilder(ItemType.POD, new PodItemAdapter(pod)).addStatus(new BoolStatus()).build();
             pod.getStatus().getConditions().forEach(condition -> podItem.addStatus(condition.getType(), condition.getStatus()));
             return podItem;
         }).collect(Collectors.toList());

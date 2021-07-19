@@ -213,7 +213,7 @@
               "EOL"
             ]
           },
-          "statuses": {
+          "status": {
             "type": "array",
             "description": "A list of statuses that works like hardcoded KPIs.",
             "writeOnly": true,
@@ -226,7 +226,7 @@
               "description": "A list of statuses that works like hardcoded KPIs."
             }
           },
-          "status": {
+          "statuses": {
             "type": "array",
             "description": "A list of statuses that works like hardcoded KPIs.",
             "writeOnly": true,

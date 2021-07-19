@@ -2,7 +2,7 @@ package de.bonndan.nivio.input.kubernetes;
 
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.kubernetes.details.Details;
-import de.bonndan.nivio.input.kubernetes.items.Item;
+import de.bonndan.nivio.input.kubernetes.itemadapters.ItemAdapter;
 import de.bonndan.nivio.input.kubernetes.status.Status;
 import org.springframework.lang.NonNull;
 
@@ -14,21 +14,17 @@ public class K8sItem {
     private final List<K8sItem> owners = new ArrayList<>();
 
     private final LevelDecorator levelDecorator;
-    private final Item itemContainer;
+    private final ItemAdapter itemAdapter;
     private final Details details;
     private final Status status;
-    private final String name;
     private final String type;
-    private final String uid;
 
-    public K8sItem(String name, String uid, String type, Item itemContainer, Status status, Details details) {
-        this.levelDecorator = new LevelDecorator(K8sJsonParser.getExperimentalLevel(itemContainer.getClass()));
-        this.itemContainer = itemContainer;
+    public K8sItem(String type, ItemAdapter itemAdapter, Status status, Details details) {
+        this.levelDecorator = new LevelDecorator(K8sJsonParser.getExperimentalLevel(itemAdapter.getClass()));
+        this.itemAdapter = itemAdapter;
         this.details = details;
         this.status = status;
-        this.name = name;
         this.type = type;
-        this.uid = uid;
     }
 
     public void addOwner(@NonNull K8sItem owner) {
@@ -46,7 +42,7 @@ public class K8sItem {
     @NonNull
     public String getGroup() {
         if (this.getOwner().isEmpty()) {
-            return name;
+            return itemAdapter.getName();
         } else {
             return this.getOwner().get(0).getGroup();
         }
@@ -58,7 +54,7 @@ public class K8sItem {
 
     @NonNull
     public String getName() {
-        return name;
+        return itemAdapter.getName();
     }
 
     @NonNull
@@ -73,8 +69,11 @@ public class K8sItem {
 
     @NonNull
     public Map<String, String> getDetails() {
-        var newLabelMap = new HashMap<>(status.getExtendedStatus(labelMap, itemContainer));
-        var test = details.getExtendedDetails(labelMap, itemContainer);
+        var newLabelMap = new HashMap<String, String>();
+        if (status != null) {
+            newLabelMap.putAll(status.getExtendedStatus(labelMap, itemAdapter));
+        }
+        var test = details.getExtendedDetails(labelMap, itemAdapter);
         newLabelMap.putAll(test);
         return newLabelMap;
     }
@@ -86,12 +85,12 @@ public class K8sItem {
 
     @NonNull
     public String getUid() {
-        return uid;
+        return itemAdapter.getUid();
     }
 
     @NonNull
-    public Item getItemContainer() {
-        return itemContainer;
+    public ItemAdapter getItemAdapter() {
+        return itemAdapter;
     }
 
 }

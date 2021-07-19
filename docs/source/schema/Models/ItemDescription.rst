@@ -83,12 +83,12 @@ List of configuration sources. Handled in the given order, latter extend/overwri
      - The lifecycle state of an item.
      - optional, defaults to null
      - null
-   * - statuses
+   * - status
      - List<map>
      - A list of statuses that works like hardcoded KPIs.
      - optional, defaults to null
      - null
-   * - status
+   * - statuses
      - List<map>
      - A list of statuses that works like hardcoded KPIs.
      - optional, defaults to null

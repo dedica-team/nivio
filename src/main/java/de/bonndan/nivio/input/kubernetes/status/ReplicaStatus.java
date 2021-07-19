@@ -1,8 +1,8 @@
 package de.bonndan.nivio.input.kubernetes.status;
 
-import de.bonndan.nivio.input.kubernetes.items.Item;
-import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
-import io.fabric8.kubernetes.api.model.apps.StatefulSet;
+import de.bonndan.nivio.input.kubernetes.itemadapters.ItemAdapter;
+import de.bonndan.nivio.input.kubernetes.itemadapters.ReplicaSetItemAdapter;
+import de.bonndan.nivio.input.kubernetes.itemadapters.StatefulSetItemAdapter;
 
 import java.util.Collections;
 import java.util.Map;
@@ -11,17 +11,17 @@ import java.util.Objects;
 public class ReplicaStatus implements Status {
 
     @Override
-    public Map<String, String> getExtendedStatus(Map<String, String> statusMap, Item item) {
+    public Map<String, String> getExtendedStatus(Map<String, String> statusMap, ItemAdapter itemAdapter) {
         Integer replicaCount;
         Integer replicaCountDesired;
-        if (item.getWrappedItem() instanceof ReplicaSet) {
-            var concreteItem = (ReplicaSet) item.getWrappedItem();
-            replicaCount = concreteItem.getStatus().getReadyReplicas();
-            replicaCountDesired = concreteItem.getSpec().getReplicas();
-        } else if (item.getWrappedItem() instanceof StatefulSet) {
-            var concreteItem = (StatefulSet) item.getWrappedItem();
-            replicaCount = concreteItem.getStatus().getReadyReplicas();
-            replicaCountDesired = concreteItem.getSpec().getReplicas();
+        if (itemAdapter instanceof ReplicaSetItemAdapter) {
+            var concreteItem = (ReplicaSetItemAdapter) itemAdapter;
+            replicaCount = concreteItem.getReadyReplicas();
+            replicaCountDesired = concreteItem.getReplicas();
+        } else if (itemAdapter instanceof StatefulSetItemAdapter) {
+            var concreteItem = (StatefulSetItemAdapter) itemAdapter;
+            replicaCount = concreteItem.getReadyReplicas();
+            replicaCountDesired = concreteItem.getReplicas();
         } else {
             return statusMap;
         }
