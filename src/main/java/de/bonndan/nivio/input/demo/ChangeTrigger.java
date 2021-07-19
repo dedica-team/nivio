@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -36,7 +37,7 @@ public class ChangeTrigger {
     @Scheduled(initialDelay = 20000, fixedDelay = 30000)
     public void trigger() {
 
-        if (seedProperties.getSeed().isEmpty()) {
+        if (StringUtils.isEmpty(seedProperties.getDemo())) {
             LOGGER.debug("DEMO not set, not simulating any pet clinic events.");
             return;
         }
