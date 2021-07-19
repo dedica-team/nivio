@@ -21,4 +21,11 @@ public class SeedProperties {
     public String getDemo(){return demo;}
 
     public void setDemo(String demo){this.demo = demo;}
+
+    public SeedProperties(String seed, String demo)
+    {
+        this.seed = seed;
+        this.demo = demo;
+    }
+
 }
