@@ -49,7 +49,7 @@ public class ChangeTrigger {
         String demoFile = absPath + "/src/test/resources/example/pet_clinic.yml";
         File file = new File(demoFile);
         if (!file.exists()) {
-            LOGGER.error(String.format("Failed to read pet clinic demo data from %s", demoFile));
+            LOGGER.error("Failed to read pet clinic demo data from {}", demoFile);
             return Optional.empty();
         }
 

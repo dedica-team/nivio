@@ -14,6 +14,8 @@ public class LandscapeFactory {
 
     private static final KPIFactory kpiFactory = new KPIFactory();
 
+    private LandscapeFactory() {}
+
     /**
      * Creates a new landscape impl.
      *
@@ -21,7 +23,7 @@ public class LandscapeFactory {
      */
     public static Landscape createFromInput(@NonNull final LandscapeDescription input) {
 
-        Landscape landscape = new Landscape(
+        var landscape = new Landscape(
                 input.getIdentifier(),
                 getGroups(input.getIdentifier()),
                 input.getName(),
@@ -30,7 +32,7 @@ public class LandscapeFactory {
                 input.getDescription(),
                 input.getSource(),
                 input.getConfig(),
-                new ProcessLog(LoggerFactory.getLogger(Landscape.class), input.getIdentifier()),
+                new ProcessLog(LoggerFactory.getLogger(LandscapeFactory.class), input.getIdentifier()),
                 kpiFactory.getConfiguredKPIs(input.getConfig().getKPIs())
         );
         input.getLabels().forEach((s, s2) -> landscape.getLabels().put(s, s2));

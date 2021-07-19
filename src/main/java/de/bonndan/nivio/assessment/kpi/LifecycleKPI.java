@@ -21,12 +21,17 @@ public class LifecycleKPI extends CustomKPI {
                 .map(lifecycle -> "Phase: " + lifecycle.name().toLowerCase(Locale.ROOT).replace("_", " "))
                 .orElse("unknown");
 
+        matchers = Map.of(
+                Status.GREEN, List.of(Lifecycle.PRODUCTION.name()),
+                Status.ORANGE, List.of(Lifecycle.END_OF_LIFE.name())
+        );
+
         setDescription("This KPI evaluates the lifecycle label for known values (PLANNED, PRODUCTION).");
     }
 
     @Override
     protected List<StatusValue> getStatusValues(String value, String message) {
-        Lifecycle lifecycle = Lifecycle.from(value);
+        var lifecycle = Lifecycle.from(value);
         if (Lifecycle.PRODUCTION.equals(lifecycle)) {
             return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.GREEN, message));
         }

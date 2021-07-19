@@ -288,8 +288,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
      *
      * @return kpis, configured and initialized
      */
-    @JsonIgnore
-    public Map<String, KPI> getKpis() {
+    public Map<String, KPI>  getKpis() {
         return kpis;
     }
 

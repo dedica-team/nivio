@@ -3,6 +3,8 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.LandscapeSource;
 import de.bonndan.nivio.util.URLHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 
@@ -14,6 +16,8 @@ import java.util.Objects;
  * Resolves source references into collections of item descriptions.
  */
 public class SourceReferencesResolver {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SourceReferencesResolver.class);
 
     private final InputFormatHandlerFactory formatFactory;
     private final ProcessLog log;
@@ -30,7 +34,7 @@ public class SourceReferencesResolver {
 
     public void resolve(final LandscapeDescription landscapeDescription) {
 
-        final URL baseUrl = getBaseUrl(landscapeDescription.getSource());
+        final var baseUrl = getBaseUrl(landscapeDescription.getSource());
 
         landscapeDescription.getSourceReferences().forEach(ref -> {
             InputFormatHandler formatHandler;
@@ -58,16 +62,16 @@ public class SourceReferencesResolver {
                 log.error(message);
                 eventPublisher.publishEvent(new ProcessingErrorEvent(landscapeDescription.getFullyQualifiedIdentifier(), ex));
                 landscapeDescription.setIsPartial(true);
-            }
-            /*catch (RuntimeException ex) {
-                log.warn(ex.getMessage());
+            } catch (RuntimeException ex) {
+                LOGGER.warn("Could not resolve source reference {}: {}", ref, ex.getMessage(), ex);
+                log.warn(String.format("Failed to resolve source reference %s properly.", ref.getUrl()));
                 landscapeDescription.setIsPartial(true);
-            }*/
+            }
         });
     }
 
     private URL getBaseUrl(LandscapeSource source) {
-        if(source != null) {
+        if (source != null) {
             return source.getURL().flatMap(URLHelper::getParentPath).orElse(null);
         }
         return null;
@@ -77,7 +81,7 @@ public class SourceReferencesResolver {
     private String getCauseMessage(Throwable cause) {
         String s = cause.getMessage().split("\\[")[0];
         if (s.endsWith("at ")) {
-            s = s.substring(0, s.length()-3);
+            s = s.substring(0, s.length() - 3);
         }
 
         return s.trim();
