@@ -213,7 +213,7 @@
               "EOL"
             ]
           },
-          "status": {
+          "statuses": {
             "type": "array",
             "description": "A list of statuses that works like hardcoded KPIs.",
             "writeOnly": true,
@@ -226,7 +226,7 @@
               "description": "A list of statuses that works like hardcoded KPIs."
             }
           },
-          "statuses": {
+          "status": {
             "type": "array",
             "description": "A list of statuses that works like hardcoded KPIs.",
             "writeOnly": true,
@@ -423,6 +423,10 @@
           "icon": {
             "type": "string"
           },
+          "partial": {
+            "type": "boolean",
+            "description": "marks that the landscape is not complete, but an update"
+          },
           "items": {
             "type": "array",
             "description": "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.",
@@ -430,10 +434,6 @@
             "items": {
               "$ref": "#/components/schemas/ItemDescription"
             }
-          },
-          "partial": {
-            "type": "boolean",
-            "description": "marks that the landscape is not complete, but an update"
           },
           "links": {
             "type": "object",

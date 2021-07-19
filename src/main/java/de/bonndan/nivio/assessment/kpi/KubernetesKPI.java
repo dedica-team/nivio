@@ -6,7 +6,7 @@ import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Labeled;
 import org.springframework.lang.NonNull;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class KubernetesKPI implements KPI {
         for (Map.Entry<String, String> entry : ((Labeled) component).getLabels(Label.condition).entrySet()) {
             String key = entry.getKey();
             String flag = entry.getValue();
-            if (StringUtils.isEmpty(flag))
+            if (ObjectUtils.isEmpty(flag))
                 continue;
             if (key.startsWith("condition.")) {
                 var message = key.replaceFirst("condition.", "");
@@ -47,5 +47,15 @@ public class KubernetesKPI implements KPI {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public Map<Status, RangeApiModel> getRanges() {
+        return null;
+    }
+
+    @Override
+    public Map<Status, List<String>> getMatches() {
+        return null;
     }
 }

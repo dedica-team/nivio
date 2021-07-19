@@ -25,7 +25,7 @@ public class PersistentVolumeDetails extends DetailDecorator {
             newDetailMap.put("reclaim policy", persistentVolume.getPersistentVolumeReclaimPolicy());
             var accessMode = new StringBuilder();
             for (String entity : persistentVolume.getAccessModes()) {
-                accessMode.append(entity).append("\n");
+                accessMode.append(entity);
             }
             newDetailMap.put("storage mode", accessMode.toString());
             persistentVolume.getCapacity().forEach((key, value) -> newDetailMap.put(key, value.getAmount() + value.getFormat()));

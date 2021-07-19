@@ -27,20 +27,21 @@ class PersistentVolumeClaimDetailsTest {
         Mockito.when(itemAdapter.getPhase()).thenReturn("phase");
         Mockito.when(itemAdapter.getPersistentVolumeReclaimPolicy()).thenReturn("persistentVolumeReclaimPolicy");
         Mockito.when(itemAdapter.getCapacity()).thenReturn(Map.of("testCapacity", new Quantity("8", "gi")));
+        Mockito.when(itemAdapter.getStorageClassName()).thenReturn("testStorage");
     }
 
     @Test
     void testGetExtendedDetails() {
         persistentVolumeDetails = new PersistentVolumeDetails(new DefaultDetails());
         Map<String, String> result = persistentVolumeDetails.getExtendedDetails(Map.of(), itemAdapter);
-        assertThat(result).isEqualTo(Map.of("name", "name", "namespace", "namespace", "strategy", "strategyType", "creation", "creationTimestamp"));
+        assertThat(result).isEqualTo(Map.of("creation", "creationTimestamp", "name", "name", "namespace", "namespace", "phase status", "phase", "reclaim policy", "persistentVolumeReclaimPolicy", "storage class", "testStorage", "storage mode", "testMode", "testCapacity", "8gi"));
     }
 
     @Test
     void testGetExtendedDetailsClassCastException() {
         ServiceDetails serviceDetails = new ServiceDetails(new PersistentVolumeDetails(new DefaultDetails()));
         Map<String, String> result = serviceDetails.getExtendedDetails(Map.of(), itemAdapter);
-        assertThat(result).isEqualTo(Map.of("name", "name", "namespace", "namespace", "strategy", "strategyType", "creation", "creationTimestamp"));
+        assertThat(result).isEqualTo(Map.of("creation", "creationTimestamp", "name", "name", "namespace", "namespace", "phase status", "phase", "reclaim policy", "persistentVolumeReclaimPolicy", "storage class", "testStorage", "storage mode", "testMode", "testCapacity", "8gi"));
     }
 
 
