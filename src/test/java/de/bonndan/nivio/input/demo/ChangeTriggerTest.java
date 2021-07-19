@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input.demo;
 
+import de.bonndan.nivio.config.SeedProperties;
 import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,12 +14,14 @@ class ChangeTriggerTest {
     private LandscapeDescriptionFactory factory;
     private ApplicationEventPublisher publisher;
     private ChangeTrigger trigger;
+    private SeedProperties seedProperties;
 
     @BeforeEach
     void setUp() {
         factory = mock(LandscapeDescriptionFactory.class);
         publisher = mock(ApplicationEventPublisher.class);
-        trigger = new ChangeTrigger(factory, publisher);
+        seedProperties = mock(SeedProperties.class);
+        trigger = new ChangeTrigger(factory, publisher,seedProperties);
     }
 
     @Test

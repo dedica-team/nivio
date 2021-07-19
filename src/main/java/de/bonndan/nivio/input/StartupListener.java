@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.config.ConfigurableEnvVars;
+import de.bonndan.nivio.config.SeedProperties;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -27,19 +29,23 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
     private final LandscapeDescriptionFactory landscapeDescriptionFactory;
     private final ApplicationEventPublisher publisher;
     private final Seed seed;
+    private final SeedProperties seedProperties;
+
+
 
     public StartupListener(LandscapeDescriptionFactory landscapeDescriptionFactory,
                            ApplicationEventPublisher publisher,
-                           Seed seed
+                           Seed seed,SeedProperties seedProperties
     ) {
-        this.landscapeDescriptionFactory = landscapeDescriptionFactory;
-        this.publisher = publisher;
-        this.seed = seed;
+        this.landscapeDescriptionFactory = Objects.requireNonNull(landscapeDescriptionFactory);
+        this.publisher = Objects.requireNonNull(publisher);
+        this.seed = Objects.requireNonNull(seed);
+        this.seedProperties = Objects.requireNonNull(seedProperties);
     }
 
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent event) {
-        if (!StringUtils.isEmpty(ConfigurableEnvVars.DEMO.value().orElse(""))) {
+        if (!StringUtils.isEmpty(seedProperties.getDemo())) {
             LOGGER.info("Running in demo mode");
         }
 
