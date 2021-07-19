@@ -26,20 +26,20 @@ class StartupListenerTest {
     private SeedProperties seedProperties;
     private Seed seed = new Seed(Optional.empty(), null); // will use Seed.NIVIO_ENV_DIRECTORY
 
-    
+
     @BeforeEach
     public void setup() {
         factory = mock(LandscapeDescriptionFactory.class);
         publisher = mock(ApplicationEventPublisher.class);
-        startupListener = new StartupListener(factory, publisher, seed,seedProperties);
+        seedProperties = mock(SeedProperties.class);
+        startupListener = new StartupListener(factory, publisher, seed, null);
     }
 
     @Test
     public void fires() throws MalformedURLException {
-
         //given
         seed = new Seed(Optional.of("https://dedica.team"),null);
-        startupListener = new StartupListener(factory, publisher, seed,seedProperties);
+        startupListener = new StartupListener(factory, publisher, seed, null);
 
         LandscapeDescription landscapeDescription = new LandscapeDescription("foo", "bar", null);
         landscapeDescription.setSource(new LandscapeSource(new URL("https://dedica.team")));
