@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.13.RELEASE</version>
+        <version>2.5.2</version>
     </parent>
 
     <packaging>jar</packaging>
@@ -19,12 +19,13 @@
         <java.version>1.11</java.version>
         <maven.compiler.release>11</maven.compiler.release>
         <junit-jupiter.version>5.4.0</junit-jupiter.version>
-        <mockito.version>2.24.0</mockito.version>
+        <mockito.version>3.11.2</mockito.version>
+        <archunit.version>0.20.1</archunit.version>
         <jacoco.version>0.8.6</jacoco.version>
         <frontend-src-dir>${project.basedir}/src/main/app</frontend-src-dir>
         <node.version>v12.18.2</node.version>
         <yarnVersion>v1.22.4</yarnVersion>
-        <frontend-maven-plugin.version>1.10.0</frontend-maven-plugin.version>
+        <frontend-maven-plugin.version>1.12.0</frontend-maven-plugin.version>
         <lucene.version>8.8.2</lucene.version>
         <sonar.projectKey>dedica-team_nivio</sonar.projectKey>
         <sonar.organization>dedica-team</sonar.organization>
@@ -71,44 +72,52 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-            <exclusions><!-- fix warning, also see https://github.com/spring-projects/spring-boot/issues/9630 -->
+            <exclusions>
                 <exclusion>
-                    <groupId>com.vaadin.external.google</groupId>
-                    <artifactId>android-json</artifactId>
+                    <groupId>org.junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mockito</groupId>
+                    <artifactId>mockito-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mockito</groupId>
+                    <artifactId>mockito-all</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.4.0</version>
+            <version>${junit-jupiter.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.4.0</version>
+            <version>${junit-jupiter.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>2.25.0</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
-            <version>0.19.0</version>
+            <version>${archunit.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit</artifactId>
-            <version>0.14.1</version>
+            <version>${archunit.version}</version>
             <scope>test</scope>
         </dependency>
 
