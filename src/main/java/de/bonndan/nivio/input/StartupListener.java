@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -30,14 +31,16 @@ public class StartupListener implements ApplicationListener<ApplicationReadyEven
     private final Seed seed;
     private final SeedProperties seedProperties;
 
+
+
     public StartupListener(LandscapeDescriptionFactory landscapeDescriptionFactory,
                            ApplicationEventPublisher publisher,
                            Seed seed,SeedProperties seedProperties
     ) {
-        this.landscapeDescriptionFactory = landscapeDescriptionFactory;
-        this.publisher = publisher;
-        this.seed = seed;
-        this.seedProperties = seedProperties;
+        this.landscapeDescriptionFactory = Objects.requireNonNull(landscapeDescriptionFactory);
+        this.publisher = Objects.requireNonNull(publisher);
+        this.seed = Objects.requireNonNull(seed);
+        this.seedProperties = Objects.requireNonNull(seedProperties);
     }
 
     @Override
