@@ -12,7 +12,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class PersistentVolumeClaimDetailsTest {
+class PersistentVolumeDetailsTest {
 
     PersistentVolumeDetails persistentVolumeDetails;
     PersistentVolumeItemAdapter itemAdapter;
@@ -39,8 +39,8 @@ class PersistentVolumeClaimDetailsTest {
 
     @Test
     void testGetExtendedDetailsClassCastException() {
-        ServiceDetails serviceDetails = new ServiceDetails(new PersistentVolumeDetails(new DefaultDetails()));
-        Map<String, String> result = serviceDetails.getExtendedDetails(Map.of(), itemAdapter);
+        persistentVolumeDetails = new PersistentVolumeDetails(new ServiceDetails(new DefaultDetails()));
+        Map<String, String> result = PersistentVolumeDetailsTest.this.persistentVolumeDetails.getExtendedDetails(Map.of(), itemAdapter);
         assertThat(result).isEqualTo(Map.of("creation", "creationTimestamp", "name", "name", "namespace", "namespace", "phase status", "phase", "reclaim policy", "persistentVolumeReclaimPolicy", "storage class", "testStorage", "storage mode", "testMode", "testCapacity", "8gi"));
     }
 

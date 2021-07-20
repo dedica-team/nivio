@@ -2,6 +2,7 @@
   "namespace": "default",
   "experimentalFeatureLabel": {
     "active": "true",
+    "min_matching_label": "2",
     "level": {
       "StatefulSetItem": "0",
       "DeploymentItem": "1"

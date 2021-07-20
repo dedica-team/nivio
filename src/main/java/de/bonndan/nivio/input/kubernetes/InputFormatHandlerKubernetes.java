@@ -22,13 +22,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.input.kubernetes.itemadapters.DeploymentItemAdapter.getDeploymentItems;
-import static de.bonndan.nivio.input.kubernetes.itemadapters.PersistentVolumeClaimItemAdapter.getPersistentVolumeClaimItems;
-import static de.bonndan.nivio.input.kubernetes.itemadapters.PersistentVolumeItemAdapter.getPersistentVolumeItems;
-import static de.bonndan.nivio.input.kubernetes.itemadapters.PodItemAdapter.getPodItems;
-import static de.bonndan.nivio.input.kubernetes.itemadapters.ReplicaSetItemAdapter.getReplicaSetItems;
-import static de.bonndan.nivio.input.kubernetes.itemadapters.ServiceItemAdapter.getServiceItems;
-import static de.bonndan.nivio.input.kubernetes.itemadapters.StatefulSetItemAdapter.getStatefulSetItems;
+import static de.bonndan.nivio.input.kubernetes.CreateItems.*;
 
 /**
  * Scans the k8s api for services, pods, volumes etc.
@@ -68,6 +62,13 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
             LOGGER.error("Kubernetes might not be available");
         }
     }
+
+    /**
+     * This method collects all Kubernetes objects encapsulated in K8sItems and creates ItemDescription from them
+     *
+     * @param client the KubernetesClient is used to get the K8s Objects
+     * @return a list of ItemDescriptions
+     */
 
     private List<ItemDescription> getItemDescription(KubernetesClient client) {
         var persistentVolumeClaims = getPersistentVolumeClaimItems(client);
@@ -118,12 +119,18 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         }).collect(Collectors.toList());
     }
 
+    /**
+     * The crossReferenceLevel Method tries to match K8sItems via their Label. It is restricted via the level of a K8sItem and a minimal of matching labels.
+     *
+     * @param itemList all K8sItems
+     */
+
     private void crossReferenceLabel(ArrayList<K8sItem> itemList) {
         itemList.forEach(ownedItem -> {
             var ownerList = itemList.stream().filter(
                     ownerItem -> CollectionUtils.intersection(Objects.requireNonNullElse(ownedItem.getItemAdapter().getWrappedItem().getMetadata().getLabels(), new HashMap<String, String>()).values(),
                             Objects.requireNonNullElse(ownerItem.getItemAdapter().getWrappedItem().getMetadata().getLabels(), new HashMap<String, String>()).values())
-                            .size() >= 2 && ownerItem.getLevelDecorator().getLevel() != -1 && ownedItem.getLevelDecorator().getLevel() != -1 &&
+                            .size() >= K8sJsonParser.getMinMatchingLevel() && ownerItem.getLevelDecorator().getLevel() != -1 && ownedItem.getLevelDecorator().getLevel() != -1 &&
                             (ownerItem.getLevelDecorator().getLevel() - ownedItem.getLevelDecorator().getLevel()) == 1).collect(Collectors.toList());
             ownerList.forEach(ownedItem::addOwner);
         });
@@ -132,8 +139,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
     private void crossReferenceVolumes(List<K8sItem> persistentVolumeClaimList, List<K8sItem> podList) {
         persistentVolumeClaimList.forEach(persistentVolume -> {
             var owners = new ArrayList<K8sItem>();
-            owners = (ArrayList<K8sItem>) podList.stream().filter(pod -> ((Pod) pod.getItemAdapter().getWrappedItem()).getSpec().getVolumes().stream().filter(volume -> volume.getPersistentVolumeClaim() != null).map(volumeNonNull -> volumeNonNull.getPersistentVolumeClaim().getClaimName()).collect(Collectors.toList()).contains(persistentVolume.getName()))
-                    .collect(Collectors.toList());
+            owners = (ArrayList<K8sItem>) podList.stream().filter(pod -> ((Pod) pod.getItemAdapter().getWrappedItem()).getSpec().getVolumes().stream().anyMatch(volume -> volume.getPersistentVolumeClaim() != null && volume.getPersistentVolumeClaim().getClaimName().equals(persistentVolume.getName()))).collect(Collectors.toList());
             owners.forEach(persistentVolume::addOwner);
         });
     }

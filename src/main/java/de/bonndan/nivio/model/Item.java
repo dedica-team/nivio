@@ -184,10 +184,9 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
      *
      * @param relation to add or replace
      */
-    //TODO uncomment
     public void addOrReplace(@NonNull final Relation relation) {
         if (relation.getSource() != this && relation.getTarget() != this) {
-            //throw new IllegalArgumentException(String.format("Relation contains no reference to item.%s %s", relation.getIdentifier(), this));
+            throw new IllegalArgumentException(String.format("Relation contains no reference to item.%s %s", relation.getIdentifier(), this));
         }
 
         getSimilar(relation).map(relations::remove);

@@ -1,17 +1,8 @@
 package de.bonndan.nivio.input.kubernetes.itemadapters;
 
-import de.bonndan.nivio.input.ItemType;
-import de.bonndan.nivio.input.kubernetes.K8sItem;
-import de.bonndan.nivio.input.kubernetes.K8sItemBuilder;
-import de.bonndan.nivio.input.kubernetes.details.DefaultDetails;
-import de.bonndan.nivio.input.kubernetes.details.PersistentVolumeClaimDetails;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import org.springframework.lang.NonNull;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class PersistentVolumeClaimItemAdapter implements ItemAdapter {
     private final PersistentVolumeClaim persistentVolumeClaim;
@@ -53,8 +44,5 @@ public class PersistentVolumeClaimItemAdapter implements ItemAdapter {
         return persistentVolumeClaim.getSpec().getStorageClassName();
     }
 
-    public static List<K8sItem> getPersistentVolumeClaimItems(KubernetesClient client) {
-        var getPersistentVolumeClaimsList = client.persistentVolumeClaims().list().getItems();
-        return getPersistentVolumeClaimsList.stream().map(persistentVolumeClaims -> new K8sItemBuilder(ItemType.VOLUME, new PersistentVolumeClaimItemAdapter(persistentVolumeClaims)).addDetails(new PersistentVolumeClaimDetails(new DefaultDetails())).build()).collect(Collectors.toList());
-    }
+
 }

@@ -10,13 +10,8 @@ public class BoolStatus implements Status {
     @Override
     public Map<String, String> getExtendedStatus(Map<String, String> statusMap, ItemAdapter itemAdapter) {
         return statusMap.entrySet().stream().collect(Collectors.toMap(
-                pair -> "condition." + pair.getKey().toLowerCase(),
-                pair -> {
-                    if (pair.getValue().toLowerCase(Locale.ROOT).equals("true")) {
-                        return de.bonndan.nivio.assessment.Status.GREEN.toString();
-                    } else {
-                        return de.bonndan.nivio.assessment.Status.RED.toString();
-                    }
-                }));
+                pair -> "k8s.boolcondition." + pair.getKey().toLowerCase(),
+                pair -> pair.getValue().toLowerCase(Locale.ROOT)
+        ));
     }
 }

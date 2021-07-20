@@ -417,15 +417,15 @@
             },
             "description": "Additional labels for the landscape."
           },
+          "partial": {
+            "type": "boolean",
+            "description": "marks that the landscape is not complete, but an update"
+          },
           "color": {
             "type": "string"
           },
           "icon": {
             "type": "string"
-          },
-          "partial": {
-            "type": "boolean",
-            "description": "marks that the landscape is not complete, but an update"
           },
           "items": {
             "type": "array",

@@ -63,6 +63,11 @@ LandscapeDescription
      - Additional labels for the landscape.
      - optional, defaults to null
      - null
+   * - partial
+     - Boolean
+     - marks that the landscape is not complete, but an update
+     - optional, defaults to null
+     - null
    * - color
      - String
      - 
@@ -71,11 +76,6 @@ LandscapeDescription
    * - icon
      - String
      - 
-     - optional, defaults to null
-     - null
-   * - partial
-     - Boolean
-     - marks that the landscape is not complete, but an update
      - optional, defaults to null
      - null
    * - items

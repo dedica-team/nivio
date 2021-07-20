@@ -8,6 +8,11 @@ import org.springframework.lang.NonNull;
 
 import java.util.*;
 
+/**
+ * The K8sItem Class is intended to unify the K8s Objects up to an certain point and to store relation data between those.
+ */
+
+
 public class K8sItem {
     private final List<RelationDescription> relationDescriptionList = new ArrayList<>();
     private final Map<String, String> labelMap = new HashMap<>();
