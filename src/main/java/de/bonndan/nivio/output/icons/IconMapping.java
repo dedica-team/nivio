@@ -14,6 +14,8 @@ public enum IconMapping {
     BACKEND("application-cog"),
     CACHE("flash-circle"),
     CONTAINER("inbox"),
+    DEPLOYMENT("rocket-launch"),
+    POD("application"),
     FIREWALL("wall"),
     FRONTEND("television-guide"),
     HUMANUSER("account"),
@@ -22,10 +24,12 @@ public enum IconMapping {
     LOADBALANCER("call-split"),
     MESSAGEQUEUE("tray-full"),
     MOBILECLIENT("cellphone"),
-    SERVICE("application-cog"),
+    REPLICASET("content-copy"),
+    SERVICE("information-outline"),
+    SECRET("application-cog"),
+    STATEFULSET("harddisk-plus"),
     VOLUME("harddisk"),
-    WEBSERVICE("application"),
-    ;
+    WEBSERVICE("application");
 
     private final String icon;
 

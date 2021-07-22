@@ -1,11 +1,11 @@
 package de.bonndan.nivio.assessment.kpi;
 
-import de.bonndan.nivio.model.LandscapeConfig;
-import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.input.ProcessLog;
-import de.bonndan.nivio.model.LandscapeFactory;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeConfig;
+import de.bonndan.nivio.model.LandscapeFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -14,7 +14,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 class KPIFactoryTest {
 
@@ -39,7 +39,7 @@ class KPIFactoryTest {
 
         Map<String, KPI> configuredKPIs = kpiFactory.getConfiguredKPIs(landscapeConfig.getKPIs());
         assertNotNull(configuredKPIs);
-        assertEquals(4, configuredKPIs.size());
+        assertEquals(5, configuredKPIs.size());
         assertTrue(configuredKPIs.get(ScalingKPI.IDENTIFIER) instanceof ScalingKPI);
     }
 

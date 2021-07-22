@@ -12,7 +12,8 @@ import java.util.Set;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class LandscapeFactoryTest {
 
@@ -99,7 +100,7 @@ class LandscapeFactoryTest {
         Landscape landscape = LandscapeFactory.createFromInput(description);
 
         assertThat(landscape.getKpis()).isNotEmpty();
-        assertThat(landscape.getKpis()).hasSize(4);
+        assertThat(landscape.getKpis()).hasSize(5);
     }
 
     @Test
@@ -117,6 +118,6 @@ class LandscapeFactoryTest {
         Landscape landscape = LandscapeFactory.recreate(existing, description);
 
         assertThat(landscape.getKpis()).isNotEmpty();
-        assertThat(landscape.getKpis()).hasSize(4);
+        assertThat(landscape.getKpis()).hasSize(5);
     }
 }

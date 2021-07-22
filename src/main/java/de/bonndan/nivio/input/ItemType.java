@@ -12,4 +12,7 @@ public class ItemType {
     public static final String POD = "pod";
     public static final String DATABASE = "database";
     public static final String KEYVALUESTORE = "keyvaluestore";
+    public static final String DEPLOYMENT = "deployment";
+    public static final String REPLICASET = "replicaset";
+    public static final String STATEFULSET = "statefulset";
 }

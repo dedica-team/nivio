@@ -21,7 +21,8 @@ public class RelationDescription {
     @Schema(description = "The item identifier of the target. Prepend a group identifier if the simple item identifier is ambiguous.", example = "dataSink|groupB/dataSink")
     private String target;
 
-    public RelationDescription(){}
+    public RelationDescription() {
+    }
 
     public RelationDescription(String source, String target) {
         this.source = source;

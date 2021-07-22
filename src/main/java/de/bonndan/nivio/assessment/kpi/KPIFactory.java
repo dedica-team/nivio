@@ -24,6 +24,7 @@ public class KPIFactory {
         defaultKPIs.put(ScalingKPI.IDENTIFIER, ScalingKPI::new);
         defaultKPIs.put(ConditionKPI.IDENTIFIER, ConditionKPI::new);
         defaultKPIs.put(LifecycleKPI.IDENTIFIER, LifecycleKPI::new);
+        defaultKPIs.put(KubernetesKPI.IDENTIFIER, KubernetesKPI::new);
     }
 
     /**
