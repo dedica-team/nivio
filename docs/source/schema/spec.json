@@ -200,20 +200,13 @@
             "description" : "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
             "example" : "service|database|volume"
           },
-          "status" : {
-            "type" : "array",
-            "description" : "A list of statuses that works like hardcoded KPIs.",
+          "lifecycle" : {
+            "type" : "string",
+            "description" : "The lifecycle state of an item.",
             "writeOnly" : true,
-            "items" : {
-              "type" : "object",
-              "additionalProperties" : {
-                "type" : "string",
-                "description" : "A list of statuses that works like hardcoded KPIs."
-              },
-              "description" : "A list of statuses that works like hardcoded KPIs."
-            }
+            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
           },
-          "statuses" : {
+          "status" : {
             "type" : "array",
             "description" : "A list of statuses that works like hardcoded KPIs.",
             "writeOnly" : true,
@@ -237,11 +230,18 @@
             "writeOnly" : true,
             "example" : "java: 8"
           },
-          "lifecycle" : {
-            "type" : "string",
-            "description" : "The lifecycle state of an item.",
+          "statuses" : {
+            "type" : "array",
+            "description" : "A list of statuses that works like hardcoded KPIs.",
             "writeOnly" : true,
-            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string",
+                "description" : "A list of statuses that works like hardcoded KPIs."
+              },
+              "description" : "A list of statuses that works like hardcoded KPIs."
+            }
           },
           "tags" : {
             "type" : "array",
@@ -261,6 +261,7 @@
         "description" : "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc."
       },
       "KPIConfig" : {
+        "required" : [ "label" ],
         "type" : "object",
         "properties" : {
           "description" : {
@@ -407,14 +408,6 @@
             },
             "description" : "Additional labels for the landscape."
           },
-          "items" : {
-            "type" : "array",
-            "description" : "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.",
-            "writeOnly" : true,
-            "items" : {
-              "$ref" : "#/components/schemas/ItemDescription"
-            }
-          },
           "partial" : {
             "type" : "boolean",
             "description" : "marks that the landscape is not complete, but an update"
@@ -424,6 +417,14 @@
           },
           "color" : {
             "type" : "string"
+          },
+          "items" : {
+            "type" : "array",
+            "description" : "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.",
+            "writeOnly" : true,
+            "items" : {
+              "$ref" : "#/components/schemas/ItemDescription"
+            }
           },
           "links" : {
             "type" : "object",

@@ -21,7 +21,7 @@ The configuration of landscape specific key performance indicators that derive s
    * - label
      - String
      - Key of the label to evaluate
-     - optional, defaults to null
+     - **required**, defaults to null
      - costs
    * - messageTemplate
      - String
