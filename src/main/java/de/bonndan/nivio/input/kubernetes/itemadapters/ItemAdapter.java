@@ -1,10 +1,13 @@
 package de.bonndan.nivio.input.kubernetes.itemadapters;
 
-import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.OwnerReference;
+
+import java.util.List;
+import java.util.Map;
 
 public interface ItemAdapter {
 
-    HasMetadata getWrappedItem();
+    Map<String, String> getLabels();
 
     String getUid();
 
@@ -13,4 +16,6 @@ public interface ItemAdapter {
     String getNamespace();
 
     String getCreationTimestamp();
+
+    List<OwnerReference> getOwnerReferences();
 }

@@ -1,9 +1,11 @@
 package de.bonndan.nivio.input.kubernetes.itemadapters;
 
 
-import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.OwnerReference;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
-import org.springframework.lang.NonNull;
+
+import java.util.List;
+import java.util.Map;
 
 public class DeploymentItemAdapter implements ItemAdapter {
     private final Deployment deployment;
@@ -12,9 +14,14 @@ public class DeploymentItemAdapter implements ItemAdapter {
         this.deployment = deployment;
     }
 
-    @NonNull
-    public HasMetadata getWrappedItem() {
-        return deployment;
+    @Override
+    public Map<String, String> getLabels() {
+        return deployment.getMetadata().getLabels();
+    }
+
+    @Override
+    public List<OwnerReference> getOwnerReferences() {
+        return deployment.getMetadata().getOwnerReferences();
     }
 
     @Override

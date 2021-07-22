@@ -60,7 +60,7 @@ class PersistentVolumeDetailsTest {
         serviceDetails.getExtendedDetails(Map.of(), itemAdapter);
         List<ILoggingEvent> logsList = listAppender.list;
         var className = itemAdapter.getClass().getCanonicalName();
-        assertThat(logsList.get(0).getMessage()).isEqualTo("class " + className + " cannot be cast to class de.bonndan.nivio.input.kubernetes.itemadapters.DeploymentItemAdapter (" + className + " and de.bonndan.nivio.input.kubernetes.itemadapters.DeploymentItemAdapter are in unnamed module of loader 'app')");
+        assertThat(logsList.get(0).getMessage()).isEqualTo("class " + className + " cannot be cast to class de.bonndan.nivio.input.kubernetes.itemadapters.PersistentVolumeItemAdapter (" + className + " and de.bonndan.nivio.input.kubernetes.itemadapters.PersistentVolumeItemAdapter are in unnamed module of loader 'app')");
         assertThat(logsList.get(0).getLevel()).isEqualTo(Level.WARN);
     }
 

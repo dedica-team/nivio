@@ -5,10 +5,10 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.input.kubernetes.itemadapters.PersistentVolumeItemAdapter;
+import de.bonndan.nivio.input.kubernetes.itemadapters.PodItemAdapter;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import io.fabric8.kubernetes.api.model.OwnerReference;
-import io.fabric8.kubernetes.api.model.PersistentVolume;
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -128,8 +128,8 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
     private void crossReferenceLabel(ArrayList<K8sItem> itemList) {
         itemList.forEach(ownedItem -> {
             var ownerList = itemList.stream().filter(
-                    ownerItem -> CollectionUtils.intersection(Objects.requireNonNullElse(ownedItem.getItemAdapter().getWrappedItem().getMetadata().getLabels(), new HashMap<String, String>()).values(),
-                            Objects.requireNonNullElse(ownerItem.getItemAdapter().getWrappedItem().getMetadata().getLabels(), new HashMap<String, String>()).values())
+                    ownerItem -> CollectionUtils.intersection(Objects.requireNonNullElse(ownedItem.getItemAdapter().getLabels(), new HashMap<String, String>()).values(),
+                            Objects.requireNonNullElse(ownerItem.getItemAdapter().getLabels(), new HashMap<String, String>()).values())
                             .size() >= K8sJsonParser.getMinMatchingLevel() && ownerItem.getLevelDecorator().getLevel() != -1 && ownedItem.getLevelDecorator().getLevel() != -1 &&
                             (ownerItem.getLevelDecorator().getLevel() - ownedItem.getLevelDecorator().getLevel()) == 1).collect(Collectors.toList());
             ownerList.forEach(ownedItem::addOwner);
@@ -139,7 +139,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
     private void crossReferenceVolumes(List<K8sItem> persistentVolumeClaimList, List<K8sItem> podList) {
         persistentVolumeClaimList.forEach(persistentVolume -> {
             var owners = new ArrayList<K8sItem>();
-            owners = (ArrayList<K8sItem>) podList.stream().filter(pod -> ((Pod) pod.getItemAdapter().getWrappedItem()).getSpec().getVolumes().stream().anyMatch(volume -> volume.getPersistentVolumeClaim() != null && volume.getPersistentVolumeClaim().getClaimName().equals(persistentVolume.getName()))).collect(Collectors.toList());
+            owners = (ArrayList<K8sItem>) podList.stream().filter(pod -> ((PodItemAdapter) pod.getItemAdapter()).getVolumes().stream().anyMatch(volume -> volume.getPersistentVolumeClaim() != null && volume.getPersistentVolumeClaim().getClaimName().equals(persistentVolume.getName()))).collect(Collectors.toList());
             owners.forEach(persistentVolume::addOwner);
         });
     }
@@ -147,14 +147,14 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
     private void crossReferenceOwner(ArrayList<K8sItem> itemList) {
         itemList.forEach(ownedItem -> {
             var owners = new ArrayList<K8sItem>();
-            owners = (ArrayList<K8sItem>) itemList.stream().filter(ownerItem -> ownedItem.getItemAdapter().getWrappedItem().getMetadata().getOwnerReferences().stream().map(OwnerReference::getUid).collect(Collectors.toList()).contains(ownerItem.getUid())).collect(Collectors.toList());
+            owners = (ArrayList<K8sItem>) itemList.stream().filter(ownerItem -> ownedItem.getItemAdapter().getOwnerReferences().stream().map(OwnerReference::getUid).collect(Collectors.toList()).contains(ownerItem.getUid())).collect(Collectors.toList());
             owners.forEach(ownedItem::addOwner);
         });
     }
 
     private void crossReferenceClaimer(List<K8sItem> persistentVolumeClaims, List<K8sItem> persistentVolumes) {
         persistentVolumes.forEach(ownedItem -> {
-            var claimer = persistentVolumeClaims.stream().filter(claimItem -> ((PersistentVolume) ownedItem.getItemAdapter().getWrappedItem()).getSpec().getClaimRef().getUid().equals(claimItem.getUid())).collect(Collectors.toList());
+            var claimer = persistentVolumeClaims.stream().filter(claimItem -> ((PersistentVolumeItemAdapter) ownedItem.getItemAdapter()).getClaimRef().getUid().equals(claimItem.getUid())).collect(Collectors.toList());
             claimer.forEach(ownedItem::addOwner);
         });
     }

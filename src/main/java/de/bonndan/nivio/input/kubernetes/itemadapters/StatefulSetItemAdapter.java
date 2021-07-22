@@ -1,8 +1,10 @@
 package de.bonndan.nivio.input.kubernetes.itemadapters;
 
-import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.OwnerReference;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
-import org.springframework.lang.NonNull;
+
+import java.util.List;
+import java.util.Map;
 
 public class StatefulSetItemAdapter implements ItemAdapter {
     private final StatefulSet statefulSet;
@@ -12,9 +14,13 @@ public class StatefulSetItemAdapter implements ItemAdapter {
     }
 
     @Override
-    @NonNull
-    public HasMetadata getWrappedItem() {
-        return statefulSet;
+    public Map<String, String> getLabels() {
+        return statefulSet.getMetadata().getLabels();
+    }
+
+    @Override
+    public List<OwnerReference> getOwnerReferences() {
+        return statefulSet.getMetadata().getOwnerReferences();
     }
 
     @Override

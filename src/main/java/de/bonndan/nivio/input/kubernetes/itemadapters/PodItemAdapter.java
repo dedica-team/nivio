@@ -1,8 +1,11 @@
 package de.bonndan.nivio.input.kubernetes.itemadapters;
 
-import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.OwnerReference;
 import io.fabric8.kubernetes.api.model.Pod;
-import org.springframework.lang.NonNull;
+import io.fabric8.kubernetes.api.model.Volume;
+
+import java.util.List;
+import java.util.Map;
 
 public class PodItemAdapter implements ItemAdapter {
     private final Pod pod;
@@ -11,9 +14,14 @@ public class PodItemAdapter implements ItemAdapter {
         this.pod = pod;
     }
 
-    @NonNull
-    public HasMetadata getWrappedItem() {
-        return pod;
+    @Override
+    public Map<String, String> getLabels() {
+        return pod.getMetadata().getLabels();
+    }
+
+    @Override
+    public List<OwnerReference> getOwnerReferences() {
+        return pod.getMetadata().getOwnerReferences();
     }
 
     @Override
@@ -34,6 +42,10 @@ public class PodItemAdapter implements ItemAdapter {
     @Override
     public String getCreationTimestamp() {
         return pod.getMetadata().getCreationTimestamp();
+    }
+
+    public List<Volume> getVolumes() {
+        return pod.getSpec().getVolumes();
     }
 
 

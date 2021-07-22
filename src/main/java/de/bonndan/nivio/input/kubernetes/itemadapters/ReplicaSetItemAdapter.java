@@ -1,9 +1,11 @@
 package de.bonndan.nivio.input.kubernetes.itemadapters;
 
 
-import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.OwnerReference;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
-import org.springframework.lang.NonNull;
+
+import java.util.List;
+import java.util.Map;
 
 public class ReplicaSetItemAdapter implements ItemAdapter {
     private final ReplicaSet replicaSet;
@@ -12,10 +14,14 @@ public class ReplicaSetItemAdapter implements ItemAdapter {
         this.replicaSet = replicaSet;
     }
 
-    @NonNull
     @Override
-    public HasMetadata getWrappedItem() {
-        return replicaSet;
+    public Map<String, String> getLabels() {
+        return replicaSet.getMetadata().getLabels();
+    }
+
+    @Override
+    public List<OwnerReference> getOwnerReferences() {
+        return replicaSet.getMetadata().getOwnerReferences();
     }
 
     @Override

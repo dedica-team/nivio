@@ -1,9 +1,9 @@
 package de.bonndan.nivio.input.kubernetes.itemadapters;
 
-import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.ObjectReference;
+import io.fabric8.kubernetes.api.model.OwnerReference;
 import io.fabric8.kubernetes.api.model.PersistentVolume;
 import io.fabric8.kubernetes.api.model.Quantity;
-import org.springframework.lang.NonNull;
 
 import java.util.List;
 import java.util.Map;
@@ -15,10 +15,14 @@ public class PersistentVolumeItemAdapter implements ItemAdapter {
         this.persistentVolume = persistentVolume;
     }
 
+    @Override
+    public Map<String, String> getLabels() {
+        return persistentVolume.getMetadata().getLabels();
+    }
 
-    @NonNull
-    public HasMetadata getWrappedItem() {
-        return persistentVolume;
+    @Override
+    public List<OwnerReference> getOwnerReferences() {
+        return persistentVolume.getMetadata().getOwnerReferences();
     }
 
     @Override
@@ -61,5 +65,8 @@ public class PersistentVolumeItemAdapter implements ItemAdapter {
         return persistentVolume.getSpec().getCapacity();
     }
 
+    public ObjectReference getClaimRef() {
+        return persistentVolume.getSpec().getClaimRef();
+    }
 
 }

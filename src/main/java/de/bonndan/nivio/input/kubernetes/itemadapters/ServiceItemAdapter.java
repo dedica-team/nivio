@@ -1,8 +1,10 @@
 package de.bonndan.nivio.input.kubernetes.itemadapters;
 
-import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.OwnerReference;
 import io.fabric8.kubernetes.api.model.Service;
-import org.springframework.lang.NonNull;
+
+import java.util.List;
+import java.util.Map;
 
 public class ServiceItemAdapter implements ItemAdapter {
     private final Service service;
@@ -11,9 +13,14 @@ public class ServiceItemAdapter implements ItemAdapter {
         this.service = service;
     }
 
-    @NonNull
-    public HasMetadata getWrappedItem() {
-        return service;
+    @Override
+    public Map<String, String> getLabels() {
+        return service.getMetadata().getLabels();
+    }
+
+    @Override
+    public List<OwnerReference> getOwnerReferences() {
+        return service.getMetadata().getOwnerReferences();
     }
 
     @Override
