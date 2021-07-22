@@ -14,15 +14,15 @@ import java.util.Map;
  */
 public class Assessment {
 
-    private final Map<FullyQualifiedIdentifier, List<StatusValue>> results;
+    private final Map<String, List<StatusValue>> results;
     private final LocalDateTime date;
 
-    public Assessment(Map<FullyQualifiedIdentifier, List<StatusValue>> results) {
+    public Assessment(Map<String, List<StatusValue>> results) {
         date = LocalDateTime.now();
         this.results = results;
     }
 
-    public Map<FullyQualifiedIdentifier, List<StatusValue>> getResults() {
+    public Map<String, List<StatusValue>> getResults() {
         return results;
     }
 

@@ -3,7 +3,7 @@ package de.bonndan.nivio.input.compose2;
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.RelationBuilder;
+import de.bonndan.nivio.model.RelationFactory;
 
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +49,7 @@ public class ComposeService {
           link targets become providers
          */
         if (links != null) {
-            links.forEach(s -> description.addRelation(RelationBuilder.createProviderDescription(s, description.getFullyQualifiedIdentifier().toString())));
+            links.forEach(s -> description.addOrReplaceRelation(RelationFactory.createProviderDescription(s, description.getFullyQualifiedIdentifier().toString())));
         }
 
         return description;

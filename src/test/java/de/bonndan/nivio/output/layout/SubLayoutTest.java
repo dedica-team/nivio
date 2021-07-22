@@ -1,9 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
-import de.bonndan.nivio.model.LandscapeConfig;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Relation;
+import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -20,12 +17,13 @@ class SubLayoutTest {
         //given
         Group foo = new Group("foo", "landscapeIdentifier");
 
-        Item bar = getTestItem(foo.getIdentifier(), "bar");;
+        Item bar = getTestItem(foo.getIdentifier(), "bar");
+        ;
         foo.addItem(bar);
 
         Item baz = getTestItem(foo.getIdentifier(), "baz");
         foo.addItem(baz);
-        baz.addOrReplace(new Relation(baz, bar));
+        baz.addOrReplace(RelationFactory.createForTesting(baz, bar));
 
         HashSet<Item> objects = new HashSet<>();
         objects.add(bar);

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static de.bonndan.nivio.assessment.AssessmentFactory.ASSESSMENTERRORNULL;
+import static de.bonndan.nivio.assessment.AssessmentFactory.ASSESSMENT_ERROR_NULL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -43,8 +43,8 @@ class AssessmentFactoryTest {
     void getAssessmentFromFactoryMap() {
         var fqi = FullyQualifiedIdentifier.build("test1", "test2", "test3");
         var statusList = new ArrayList<StatusValue>();
-        var results = new HashMap<FullyQualifiedIdentifier, List<StatusValue>>();
-        results.put(fqi, statusList);
+        var results = new HashMap<String, List<StatusValue>>();
+        results.put(fqi.toString(), statusList);
         var assessment = AssessmentFactory.createAssessment(results);
         assertThat(assessment.getClass()).isEqualTo(Assessment.class);
     }
@@ -53,10 +53,10 @@ class AssessmentFactoryTest {
     @Test
     void testNullValues() {
         var exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment(null, null));
-        assertThat(exception.getMessage()).isEqualTo(ASSESSMENTERRORNULL);
+        assertThat(exception.getMessage()).isEqualTo(ASSESSMENT_ERROR_NULL);
         exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment((Landscape) null));
-        assertThat(exception.getMessage()).isEqualTo(ASSESSMENTERRORNULL);
-        exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment((Map<FullyQualifiedIdentifier, List<StatusValue>>) null));
-        assertThat(exception.getMessage()).isEqualTo(ASSESSMENTERRORNULL);
+        assertThat(exception.getMessage()).isEqualTo(ASSESSMENT_ERROR_NULL);
+        exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment((Map<String, List<StatusValue>>) null));
+        assertThat(exception.getMessage()).isEqualTo(ASSESSMENT_ERROR_NULL);
     }
 }

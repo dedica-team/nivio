@@ -8,6 +8,7 @@ import de.bonndan.nivio.observation.InputFormatObserver;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
@@ -27,7 +28,7 @@ public class InputFormatHandlerRancher1 implements InputFormatHandler {
     }
 
     @Override
-    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
+    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
 
         String landscape = reference.getLandscapeDescription().getIdentifier();
 
@@ -42,7 +43,7 @@ public class InputFormatHandlerRancher1 implements InputFormatHandler {
     }
 
     @Override
-    public InputFormatObserver getObserver(InputFormatObserver inner, SourceReference sourceReference) {
+    public InputFormatObserver getObserver(@NonNull InputFormatObserver inner, @NonNull SourceReference sourceReference) {
         //TODO add observer
         return null;
     }

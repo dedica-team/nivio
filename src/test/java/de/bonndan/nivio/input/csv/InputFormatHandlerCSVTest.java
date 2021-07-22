@@ -4,6 +4,7 @@ import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.observation.InputFormatObserver;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -75,6 +77,40 @@ class InputFormatHandlerCSVTest {
         assertEquals("Super Service", super1.getLabels().get("nivio.name"));
         assertTrue(super1.getLabels().containsKey("nivio.description"));
         assertEquals("superior", super1.getLabels().get("nivio.description"));
+    }
+
+    @Test
+    public void readRelationDescriptions() {
+
+        SourceReference file =  SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test_relation.csv"));
+
+        Map<String, String> mapping = new HashMap<>();
+        mapping.put("identifier", "1");
+        mapping.put("name", "0");
+        mapping.put("foo", "2");
+        mapping.put("bar", "3");
+        file.setProperty("mapping", mapping);
+        file.setProperty("skipLines", 1);
+        file.setProperty("separator", ";");
+
+        InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
+        LandscapeDescription landscapeDescription = new LandscapeDescription("test");
+
+        //when
+        factoryCSV.applyData(file, null, landscapeDescription);
+
+        //then
+        assertEquals(1, landscapeDescription.getItemDescriptions().all().size());
+        ItemDescription foo = landscapeDescription.getItemDescriptions().pick("foo", null);
+        assertNotNull(foo);
+
+        assertThat(foo.getRelations()).hasSize(1).satisfies(relationDescriptions -> {
+            RelationDescription next = relationDescriptions.iterator().next();
+            assertThat(next.getSource()).isEqualTo("foo");
+            assertThat(next.getTarget()).isEqualTo("bar");
+            assertThat(next.getLabel("nivio.name")).isEqualTo("a relation");
+            assertThat(next.getLabel("nivio.foo")).isEqualTo("This does nothing");
+        });
     }
 
     @Test

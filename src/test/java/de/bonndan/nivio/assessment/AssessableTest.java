@@ -4,7 +4,6 @@ import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.assessment.kpi.RangeApiModel;
 import de.bonndan.nivio.model.*;
-import org.apache.commons.lang3.Range;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;
 
@@ -34,7 +33,7 @@ class AssessableTest {
                 .max(new StatusValue.Comparator())
                 .orElse(new StatusValue(SUMMARY_LABEL, Status.UNKNOWN));
 
-        StatusValue summary = StatusValue.summary(SUMMARY_LABEL + "." + child1.getIdentifier(), max);
+        StatusValue summary = StatusValue.summary(SUMMARY_LABEL + "." + child1.getAssessmentIdentifier(), max);
         assertNotNull(summary);
         assertEquals(Status.RED, summary.getStatus());
         assertEquals("worst", summary.getMessage());
@@ -84,16 +83,16 @@ class AssessableTest {
         });
 
         //when
-        Map<FullyQualifiedIdentifier, List<StatusValue>> assessmentMap = item.applyKPIs(kpis);
+        Map<String, List<StatusValue>> assessmentMap = item.applyKPIs(kpis);
 
         //then
         assertNotNull(assessmentMap);
-        List<StatusValue> itemStatuses = assessmentMap.get(item.getFullyQualifiedIdentifier());
+        List<StatusValue> itemStatuses = assessmentMap.get(item.getFullyQualifiedIdentifier().toString());
         assertNotNull(itemStatuses);
 
-        StatusValue statusValue = itemStatuses.stream().filter(statusValue1 -> statusValue1.getField().equals("summary.bar")).findFirst().orElse(null);
+        StatusValue statusValue = itemStatuses.stream().filter(statusValue1 -> statusValue1.getField().equals("summary.test/foo/bar")).findFirst().orElse(null);
         assertNotNull(statusValue);
-        assertEquals("summary.bar", statusValue.getField());
+        assertEquals("summary.test/foo/bar", statusValue.getField());
 
         StatusValue something = itemStatuses.stream().filter(statusValue1 -> statusValue1.getField().equals("something")).findFirst().orElse(null);
         assertNotNull(something);
@@ -119,11 +118,11 @@ class AssessableTest {
         });
 
         //when
-        Map<FullyQualifiedIdentifier, List<StatusValue>> assessmentMap = item.applyKPIs(kpis);
+        Map<String, List<StatusValue>> assessmentMap = item.applyKPIs(kpis);
 
         //then
         assertNotNull(assessmentMap);
-        List<StatusValue> itemStatuses = assessmentMap.get(item.getFullyQualifiedIdentifier());
+        List<StatusValue> itemStatuses = assessmentMap.get(item.getFullyQualifiedIdentifier().toString());
         assertNotNull(itemStatuses);
 
         assertThat(itemStatuses).hasSize(2);
@@ -142,7 +141,7 @@ class AssessableTest {
         item2.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.RED.getName());
         item2.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
 
-        Group foo = new Group("foo", "landscapeIdentifier");
+        Group foo = new Group("foo", "test");
         foo.addItem(item);
         foo.addItem(item2);
 
@@ -155,19 +154,19 @@ class AssessableTest {
         });
 
         //when
-        Map<FullyQualifiedIdentifier, List<StatusValue>> groupStatuses = foo.applyKPIs(kpis);
+        Map<String, List<StatusValue>> groupStatuses = foo.applyKPIs(kpis);
 
         //then
-        List<StatusValue> statusValues = groupStatuses.get(foo.getFullyQualifiedIdentifier());
+        List<StatusValue> statusValues = groupStatuses.get(foo.getFullyQualifiedIdentifier().toString());
         assertNotNull(statusValues);
 
         //group summary
-        StatusValue statusValue = statusValues.stream().filter(statusValue1 -> statusValue1.getField().equals("summary.foo")).findFirst().orElse(null);
+        StatusValue statusValue = statusValues.stream().filter(statusValue1 -> statusValue1.getField().equals("summary.test/foo")).findFirst().orElse(null);
         assertNotNull(statusValue);
-        assertEquals("summary.foo", statusValue.getField());
+        assertEquals("summary.test/foo", statusValue.getField());
         assertEquals(Status.BROWN, statusValue.getStatus());
         assertEquals("very bad", statusValue.getMessage());
-        assertEquals("summary.bar", statusValue.getMaxField());
+        assertEquals("summary.test/foo/bar", statusValue.getMaxField());
     }
 
     @Test
@@ -191,10 +190,10 @@ class AssessableTest {
         });
 
         //when
-        Map<FullyQualifiedIdentifier, List<StatusValue>> statuses = item.applyKPIs(kpis);
+        Map<String, List<StatusValue>> statuses = item.applyKPIs(kpis);
 
         //then
-        List<StatusValue> statusValues = statuses.get(item.getFullyQualifiedIdentifier());
+        List<StatusValue> statusValues = statuses.get(item.getFullyQualifiedIdentifier().toString());
         assertNotNull(statusValues);
         assertEquals(4, statusValues.size());
         StatusValue summary = statusValues.get(0);
@@ -207,7 +206,7 @@ class AssessableTest {
         assertThat(s2.getStatus().compareTo(s3.getStatus())).isEqualTo(1);
     }
 
-    class TestAssessable implements Assessable {
+    static class TestAssessable implements Assessable {
 
         private final Set<StatusValue> statusValues = new HashSet<>();
         private final List<? extends Assessable> children;
@@ -225,51 +224,14 @@ class AssessableTest {
             getAdditionalStatusValues().add(statusValue);
         }
 
-        @Override
         @NonNull
         public String getIdentifier() {
             return "test";
         }
 
         @Override
-        @NonNull
-        public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
-            return FullyQualifiedIdentifier.build("test", null, null);
-        }
-
-        @Override
-        public String getName() {
+        public String getAssessmentIdentifier() {
             return "test";
-        }
-
-        @Override
-        public String getContact() {
-            return "test";
-        }
-
-        @Override
-        public String getDescription() {
-            return "test";
-        }
-
-        @Override
-        public String getOwner() {
-            return null;
-        }
-
-        @Override
-        public String getIcon() {
-            return null;
-        }
-
-        @Override
-        public String getColor() {
-            return null;
-        }
-
-        @Override
-        public String getAddress() {
-            return null;
         }
 
         @Override
@@ -279,7 +241,7 @@ class AssessableTest {
     }
 
     private abstract static class TestKPI extends AbstractKPI {
-        public TestKPI(Function<Component, String> valueFunction, Function<Component, String> msgFunction) {
+        public TestKPI(Function<Assessable, String> valueFunction, Function<Assessable, String> msgFunction) {
             super(valueFunction, msgFunction);
         }
 

@@ -60,6 +60,4 @@ public interface Component {
     @Nullable
     String getColor();
 
-    @Nullable
-    String getAddress();
 }

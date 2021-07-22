@@ -28,7 +28,7 @@ public interface InputFormatHandler {
      * @param baseUrl              parent config url
      * @param landscapeDescription the input dto to modify
      */
-    void applyData(SourceReference reference, @Nullable URL baseUrl, LandscapeDescription landscapeDescription);
+    void applyData(@NonNull final SourceReference reference, @Nullable URL baseUrl, LandscapeDescription landscapeDescription);
 
     /**
      * Returns an observer for the source reference.

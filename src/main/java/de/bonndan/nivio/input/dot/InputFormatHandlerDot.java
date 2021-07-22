@@ -43,7 +43,7 @@ public class InputFormatHandlerDot implements InputFormatHandler {
     }
 
     @Override
-    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
+    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
         List<ItemDescription> itemDescriptions = new ArrayList<>();
         String content = fileFetcher.get(reference, baseUrl);
         List<ItemDescription> items = new ArrayList<>();
@@ -81,7 +81,7 @@ public class InputFormatHandlerDot implements InputFormatHandler {
                                 break;
                         }
                     });
-                    itemDescription.addRelation(rel);
+                    itemDescription.addOrReplaceRelation(rel);
                 });
 
                 items.add(itemDescription);

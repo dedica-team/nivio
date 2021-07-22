@@ -78,12 +78,6 @@ public class GroupDescription implements ComponentDescription {
         return null;
     }
 
-    @JsonIgnore
-    @Override
-    public String getAddress() {
-        return null;
-    }
-
     public void setOwner(String owner) {
         this.owner = owner;
     }
@@ -135,6 +129,7 @@ public class GroupDescription implements ComponentDescription {
         this.contains = contains;
     }
 
+    @NonNull
     public Map<String, String> getLabels() {
         return labels;
     }

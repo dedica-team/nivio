@@ -35,7 +35,7 @@ public class ItemRelationProcessor extends Processor {
 
                 Relation current = getCurrentRelation(relationDescription, landscape, origin)
                         .map(relation -> {
-                            Relation update = RelationBuilder.update(relation, relationDescription, landscape);
+                            Relation update = RelationFactory.update(relation, relationDescription, landscape);
                             List<String> changes = relation.getChanges(update);
                             if (!changes.isEmpty()) {
                                 processLog.info(String.format(origin + ": Updating relation between %s and %s", update.getSource(), update.getTarget()));
@@ -44,7 +44,7 @@ public class ItemRelationProcessor extends Processor {
                             return update;
                         })
                         .orElseGet(() -> {
-                            Relation created = RelationBuilder.create(origin, relationDescription, landscape);
+                            Relation created = RelationFactory.create(origin, relationDescription, landscape);
                             processLog.info(String.format(origin + ": Adding relation between %s and %s", created.getSource(), created.getTarget()));
                             changelog.addEntry(created, ProcessingChangelog.ChangeType.CREATED, null);
                             return created;
@@ -123,11 +123,11 @@ public class ItemRelationProcessor extends Processor {
         Item target = landscape.findOneBy(relationDescription.getTarget(), origin.getGroup());
 
         Iterator<Relation> iterator = origin.getRelations().iterator();
-        Relation created = new Relation(source, target);
+        Relation virtual = RelationFactory.createForTesting(source, target);
         Relation existing;
         while (iterator.hasNext()) {
             existing = iterator.next();
-            if (existing.equals(created)) {
+            if (existing.equals(virtual)) {
                 return Optional.of(existing);
             }
         }

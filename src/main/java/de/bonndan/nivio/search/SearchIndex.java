@@ -85,14 +85,14 @@ public class SearchIndex {
     /**
      * Creates a search index based in a snapshot of current items state (later modifications won't be shown).
      */
-    private void indexItems(Set<Item> items, Map<FullyQualifiedIdentifier, List<StatusValue>> results) {
+    private void indexItems(Set<Item> items, Map<String, List<StatusValue>> results) {
         try {
             FacetsConfig config = SearchDocumentFactory.getConfig();
             TaxonomyWriter taxoWriter = new DirectoryTaxonomyWriter(taxoIndex, IndexWriterConfig.OpenMode.CREATE);
             IndexWriter writer = new IndexWriter(searchIndex, new IndexWriterConfig(new StandardAnalyzer()));
             writer.deleteAll();
             for (Item item : items) {
-                writer.addDocument(config.build(taxoWriter, from(item, results.get(item.getFullyQualifiedIdentifier()))));
+                writer.addDocument(config.build(taxoWriter, from(item, results.get(item.getFullyQualifiedIdentifier().toString()))));
             }
             IOUtils.close(writer, taxoWriter);
         } catch (IOException e) {

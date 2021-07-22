@@ -5,7 +5,7 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
-import de.bonndan.nivio.model.RelationBuilder;
+import de.bonndan.nivio.model.RelationFactory;
 import de.bonndan.nivio.model.RelationType;
 import org.junit.jupiter.api.Test;
 
@@ -79,17 +79,40 @@ class ItemDescriptionValuesTest {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
-        RelationDescription other = RelationBuilder.createDataflowDescription(sd1, "other");
-        sd1.addRelation(other);
+        RelationDescription other = RelationFactory.createDataflowDescription(sd1, "other");
+        sd1.addOrReplaceRelation(other);
 
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
-        RelationDescription another = RelationBuilder.createDataflowDescription(increment, "another");
-        increment.addRelation(another);
+        RelationDescription another = RelationFactory.createDataflowDescription(increment, "another");
+        increment.addOrReplaceRelation(another);
 
         ItemDescriptionValues.assignNotNull(sd1, increment);
 
         assertEquals(2, sd1.getRelations().size());
+    }
+
+    @Test
+    public void incrementUpdatesRelationDescription() {
+
+        ItemDescription sd1 = new ItemDescription();
+        sd1.setIdentifier("sd1");
+        RelationDescription other = RelationFactory.createDataflowDescription(sd1, "other");
+        sd1.addOrReplaceRelation(other);
+
+        ItemDescription increment = new ItemDescription();
+        increment.setIdentifier("sd1");
+        RelationDescription another = RelationFactory.createDataflowDescription(increment, "other");
+        another.setLabel("foo", "bar");
+        increment.addOrReplaceRelation(another);
+
+        //when
+        ItemDescriptionValues.assignNotNull(sd1, increment);
+
+
+        assertEquals(1, sd1.getRelations().size());
+        RelationDescription relationDescription = sd1.getRelations().iterator().next();
+        assertEquals("bar", relationDescription.getLabel("foo"));
     }
 
     @Test
@@ -113,14 +136,14 @@ class ItemDescriptionValuesTest {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
-        RelationDescription dbProvider = RelationBuilder.createProviderDescription(sd1, "db1");
-        sd1.addRelation(dbProvider);
+        RelationDescription dbProvider = RelationFactory.createProviderDescription(sd1, "db1");
+        sd1.addOrReplaceRelation(dbProvider);
 
 
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
-        RelationDescription redisProvider = RelationBuilder.createProviderDescription(sd1, "redis");
-        increment.addRelation(redisProvider);
+        RelationDescription redisProvider = RelationFactory.createProviderDescription(sd1, "redis");
+        increment.addOrReplaceRelation(redisProvider);
 
         ItemDescriptionValues.assignNotNull(sd1, increment);
 

@@ -20,7 +20,7 @@ import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
  *
  * Each item can only be member of one group.
  */
-public class Group implements Labeled, Linked, Assessable {
+public class Group implements Component, Labeled, Linked, Assessable {
 
     /**
      * Default group identifier (items are assigned to this group if no group is given
@@ -127,12 +127,6 @@ public class Group implements Labeled, Linked, Assessable {
         return color;
     }
 
-    @JsonIgnore
-    @Override
-    public String getAddress() {
-        return null;
-    }
-
     @Schema(name = "_links")
     public Map<String, Link> getLinks() {
         return links;
@@ -186,6 +180,11 @@ public class Group implements Labeled, Linked, Assessable {
         return StatusValue.fromMapping(indexedByPrefix(Label.status));
     }
 
+    @Override
+    public String getAssessmentIdentifier() {
+        return getFullyQualifiedIdentifier().toString();
+    }
+
     @JsonIgnore
     @Override
     @NonNull
@@ -212,7 +211,7 @@ public class Group implements Labeled, Linked, Assessable {
      * @throws IllegalArgumentException if the item group field mismatches
      */
     public void addItem(Item item) {
-        if (!item.getGroup().equals(identifier)) {
+        if (!identifier.equals(item.getGroup())) {
             throw new IllegalArgumentException(String.format("Item group '%s' cannot be added to group '%s'", item.getGroup(), identifier));
         }
 

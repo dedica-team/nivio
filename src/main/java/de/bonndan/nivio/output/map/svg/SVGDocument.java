@@ -84,7 +84,7 @@ public class SVGDocument extends Component {
                 SVGItemLabel label = new SVGItemLabel(item);
                 Point2D.Double pos = hexMap.hexForItem(item).toPixel();
 
-                List<StatusValue> itemStatuses = assessment.getResults().get(item.getFullyQualifiedIdentifier());
+                List<StatusValue> itemStatuses = assessment.getResults().get(item.getFullyQualifiedIdentifier().toString());
                 SVGItem SVGItem = new SVGItem(label.render(), layoutedItem, itemStatuses, pos);
                 items.add(SVGItem.render());
             });
@@ -94,7 +94,7 @@ public class SVGDocument extends Component {
         List<DomContent> groups = layouted.getChildren().stream().map(groupLayout -> {
             Group group = (Group) groupLayout.getComponent();
             Set<Hex> groupArea = hexMap.getGroupArea(group);
-            List<StatusValue> groupStatuses = assessment.getResults().get(group.getFullyQualifiedIdentifier());
+            List<StatusValue> groupStatuses = assessment.getResults().get(group.getFullyQualifiedIdentifier().toString());
             SVGGroupArea area = SVGGroupArea.forGroup(group, groupArea, Assessable.getWorst(groupStatuses), debug);
             groupAreas.add(area);
             return area.render();

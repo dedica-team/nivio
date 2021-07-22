@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.ItemFactory;
 import de.bonndan.nivio.model.Relation;
+import de.bonndan.nivio.model.RelationFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -59,7 +60,7 @@ class ProcessingChangelogTest {
     void addRelation() {
         //when
         Item bar = ItemFactory.getTestItem("foo", "bar");
-        Relation relation = new Relation(this.testItem, bar);
+        Relation relation = RelationFactory.createForTesting(this.testItem, bar);
         changelog.addEntry(relation, ProcessingChangelog.ChangeType.DELETED, null);
 
         //then

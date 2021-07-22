@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.Indexer;
 import de.bonndan.nivio.input.InputFormatHandlerFactory;
@@ -12,16 +11,11 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.output.RenderingTest;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.output.icons.ExternalIcons;
-import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
-import de.bonndan.nivio.output.map.svg.SVGDocument;
-import de.bonndan.nivio.output.map.svg.SVGRenderer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
@@ -36,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class OrganicLayouterTest extends RenderingTest {
 
@@ -135,7 +128,7 @@ class OrganicLayouterTest extends RenderingTest {
         for (int i = 0; i < 20; i++) {
             var source = descriptionList.get(i);
             var target = descriptionList.get(i + 20);
-            source.addRelation(new RelationDescription(source.getIdentifier(), target.getIdentifier()));
+            source.addOrReplaceRelation(new RelationDescription(source.getIdentifier(), target.getIdentifier()));
         }
 
         indexer.index(input);

@@ -15,11 +15,11 @@ public enum Status {
     RED("red", 4),
     BROWN("brown", 5);
 
-    private final String status;
+    private final String statusName;
     private final int order;
 
     Status(String status, int order) {
-        this.status = status;
+        this.statusName = status;
         this.order = order;
     }
 
@@ -51,7 +51,7 @@ public enum Status {
 
     @Override
     public String toString() {
-        return status;
+        return statusName;
     }
 
     public static class Comparator implements java.util.Comparator<Status> {

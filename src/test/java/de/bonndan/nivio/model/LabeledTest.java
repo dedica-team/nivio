@@ -131,4 +131,41 @@ class LabeledTest {
         //then
         assertThat(i.getLabel("foo")).isEqualTo("1");
     }
+
+    @Test
+    void merge() {
+        ItemDescription i = new ItemDescription();
+        i.setLabel("foo1", 1L);
+        i.setLabel("foo2", 1L);
+        ItemDescription target = new ItemDescription();
+        i.setLabel("foo1", 2L);
+        i.setLabel("bar", 2L);
+
+        //when
+        Labeled.merge(i, target);
+
+        //then
+        assertThat(target.getLabel("foo1")).isEqualTo("2");
+        assertThat(target.getLabel("foo2")).isEqualTo("1");
+        assertThat(target.getLabel("bar")).isEqualTo("2");
+    }
+
+    @Test
+    void add() {
+        ItemDescription i = new ItemDescription();
+        i.setLabel("foo1", "after");
+        i.setLabel("foo2", 1L);
+
+        ItemDescription target = new ItemDescription();
+        i.setLabel("foo1", "before");
+        i.setLabel("bar", 2L);
+
+        //when
+        Labeled.add(i, target);
+
+        //then
+        assertThat(target.getLabel("foo1")).isEqualTo("before");
+        assertThat(target.getLabel("foo2")).isEqualTo("1");
+        assertThat(target.getLabel("bar")).isEqualTo("2");
+    }
 }

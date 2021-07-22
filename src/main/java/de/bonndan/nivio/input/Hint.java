@@ -70,7 +70,7 @@ class Hint {
 
         RelationDescription relationDescription = existingRelation.orElseGet(() -> {
             RelationDescription relation = createRelation(item, target);
-            item.addRelation(relation);
+            item.addOrReplaceRelation(relation);
             return relation;
         });
 

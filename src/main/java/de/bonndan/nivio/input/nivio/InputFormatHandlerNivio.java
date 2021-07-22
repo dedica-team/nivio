@@ -11,6 +11,7 @@ import de.bonndan.nivio.observation.InputFormatObserver;
 import de.bonndan.nivio.input.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +42,7 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
     }
 
     @Override
-    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription description) {
+    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription description) {
 
         List<ItemDescription> descriptions = new ArrayList<>();
         String yml = fileFetcher.get(reference, baseUrl);
@@ -69,7 +70,7 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
 
     @Override
     @Nullable
-    public InputFormatObserver getObserver(InputFormatObserver inner, SourceReference sourceReference) {
+    public InputFormatObserver getObserver(@NonNull InputFormatObserver inner, @NonNull SourceReference sourceReference) {
         return inner;
     }
 }

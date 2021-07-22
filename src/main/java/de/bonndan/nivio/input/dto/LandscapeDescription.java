@@ -174,12 +174,6 @@ public class LandscapeDescription implements ComponentDescription {
         this.source = source;
     }
 
-    @JsonIgnore
-    @Override
-    public String getAddress() {
-        return null;
-    }
-
     public ItemIndex<ItemDescription> getItemDescriptions() {
         return itemDescriptions;
     }
@@ -287,6 +281,7 @@ public class LandscapeDescription implements ComponentDescription {
         return links;
     }
 
+    @NonNull
     public Map<String, String> getLabels() {
         return labels;
     }

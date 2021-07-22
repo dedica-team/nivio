@@ -150,6 +150,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         return description;
     }
 
+    @NonNull
     @JsonIgnore
     @Override
     public Map<String, String> getLabels() {
@@ -300,6 +301,15 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         return StatusValue.fromMapping(indexedByPrefix(Label.status));
     }
 
+    @Override
+    public String getAssessmentIdentifier() {
+        return getFullyQualifiedIdentifier().toString();
+    }
+
+    @Override
+    public List<? extends Assessable> getChildren() {
+        return getRelations().stream().filter(relation -> relation.getSource().equals(this)).collect(Collectors.toList());
+    }
 
     /**
      * Compare on field level against a newer version.
