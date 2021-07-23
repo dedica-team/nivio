@@ -8,7 +8,6 @@ import io.fabric8.kubernetes.api.model.apps.ReplicaSetBuilder;
 import io.fabric8.kubernetes.api.model.apps.StatefulSetBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.server.mock.EnableKubernetesMockClient;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -20,10 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @EnableKubernetesMockClient(crud = true, https = false)
 class CreateItemsTest {
     KubernetesClient kubernetesClient;
-
-    @BeforeEach
-    void setUp() {
-    }
 
     @Test
     void getDeploymentItems() {

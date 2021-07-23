@@ -55,7 +55,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         this.client = getClient(reference.getUrl());
 
         try {
-            client.getVersion();
+            client.apps().deployments();
             landscapeDescription.mergeItems(getItemDescription(client));
         } catch (KubernetesClientException n) {
             LOGGER.error(n.getMessage());
