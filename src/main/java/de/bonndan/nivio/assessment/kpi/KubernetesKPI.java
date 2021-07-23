@@ -6,6 +6,8 @@ import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Labeled;
 import org.apache.commons.collections.map.SingletonMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.util.ObjectUtils;
 
@@ -13,8 +15,10 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class KubernetesKPI implements KPI {
+    private static final Logger LOGGER = LoggerFactory.getLogger(KubernetesKPI.class);
     public static final String IDENTIFIER = "k8s";
 
+    private boolean enabled = true;
 
     @Override
     @NonNull
@@ -33,7 +37,9 @@ public class KubernetesKPI implements KPI {
                     statusList.add(new StatusValue(IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(boolCondition(value)), message));
                 } else if (message.startsWith("replicacondition.")) {
                     var splitValue = value.split(";");
-                    var replicaCondition = replicaCondition(Integer.parseInt(splitValue[0]), Integer.parseInt(splitValue[1]));
+                    var replicaCount = getIntegerValue(splitValue, 0);
+                    var replicaCountDesired = getIntegerValue(splitValue, 1);
+                    var replicaCondition = replicaCondition(replicaCount, replicaCountDesired);
                     statusList.add(new StatusValue(IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(String.valueOf(replicaCondition.getValue())), String.valueOf(replicaCondition.getKey())));
                 } else {
                     statusList.add(new StatusValue(IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(value), message));
@@ -42,6 +48,15 @@ public class KubernetesKPI implements KPI {
         });
         return statusList;
 
+    }
+
+    private Integer getIntegerValue(String[] splitValue, int position) {
+        try {
+            return Integer.parseInt(splitValue[position]);
+        } catch (NumberFormatException e) {
+            LOGGER.warn(e.getMessage());
+        }
+        return null;
     }
 
     private String boolCondition(String flag) {
@@ -73,7 +88,7 @@ public class KubernetesKPI implements KPI {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 
     @Override
@@ -84,5 +99,9 @@ public class KubernetesKPI implements KPI {
     @Override
     public Map<Status, List<String>> getMatches() {
         return null;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

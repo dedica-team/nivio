@@ -58,7 +58,7 @@ public enum Label {
 
     condition("Prefix for condition labels.", true),
 
-    k8s("Prefix for k8s labels.");
+    k8s("Prefix for k8s labels.", true);
 
     /**
      * Separator for label key parts.
