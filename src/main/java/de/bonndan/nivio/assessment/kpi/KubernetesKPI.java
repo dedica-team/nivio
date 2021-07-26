@@ -30,21 +30,24 @@ public class KubernetesKPI implements KPI {
         var statusList = new ArrayList<StatusValue>();
         var counter = new AtomicInteger(0);
         ((Labeled) component).getLabels(Label.k8s).forEach((key, value) -> {
-            if (!ObjectUtils.isEmpty(value)) {
-                var message = key.replaceFirst("k8s.", "");
-                if (message.startsWith("boolcondition.")) {
-                    message = message.replaceFirst("boolcondition.", "");
-                    statusList.add(new StatusValue(IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(boolCondition(value)), message));
-                } else if (message.startsWith("replicacondition.")) {
-                    var splitValue = value.split(";");
-                    var replicaCount = getIntegerValue(splitValue, 0);
-                    var replicaCountDesired = getIntegerValue(splitValue, 1);
-                    var replicaCondition = replicaCondition(replicaCount, replicaCountDesired);
-                    statusList.add(new StatusValue(IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(String.valueOf(replicaCondition.getValue())), String.valueOf(replicaCondition.getKey())));
-                } else {
-                    statusList.add(new StatusValue(IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(value), message));
-                }
+            if (ObjectUtils.isEmpty(value)) {
+                return;
             }
+            StatusValue statusValue;
+            var message = key.replaceFirst("k8s.", "");
+            if (message.startsWith("boolcondition.")) {
+                message = message.replaceFirst("boolcondition.", "");
+                statusValue = new StatusValue(IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(boolCondition(value)), message);
+            } else if (message.startsWith("replicacondition.")) {
+                var splitValue = value.split(";");
+                var replicaCount = getIntegerValue(splitValue, 0);
+                var replicaCountDesired = getIntegerValue(splitValue, 1);
+                var replicaCondition = replicaCondition(replicaCount, replicaCountDesired);
+                statusValue = new StatusValue(IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(String.valueOf(replicaCondition.getValue())), String.valueOf(replicaCondition.getKey()));
+            } else {
+                statusValue = new StatusValue(IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(value), message);
+            }
+            statusList.add(statusValue);
         });
         return statusList;
 
@@ -71,14 +74,17 @@ public class KubernetesKPI implements KPI {
         var message = String.format("%s of %s Pods are ready", replicaCount, replicaCountDesired);
         if (replicaCount == null) {
             return new SingletonMap("ReadyReplicas count was null", de.bonndan.nivio.assessment.Status.ORANGE.toString());
-        } else if (replicaCountDesired == null) {
+        }
+        if (replicaCountDesired == null) {
             return new SingletonMap("Replicas count was null", de.bonndan.nivio.assessment.Status.ORANGE.toString());
-        } else if (Objects.equals(replicaCount, replicaCountDesired)) {
+        }
+        if (Objects.equals(replicaCount, replicaCountDesired)) {
             return new SingletonMap("all pods are ready", de.bonndan.nivio.assessment.Status.GREEN.toString());
-        } else if (replicaCount == 0) {
+        }
+        if (replicaCount == 0) {
             return new SingletonMap(message, de.bonndan.nivio.assessment.Status.RED.toString());
-        } else
-            return new SingletonMap(message, de.bonndan.nivio.assessment.Status.YELLOW.toString());
+        }
+        return new SingletonMap(message, de.bonndan.nivio.assessment.Status.YELLOW.toString());
     }
 
     @Override

@@ -16,7 +16,11 @@ public class K8sJsonParser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(K8sJsonParser.class);
     private static final String FILEPATH = "src/main/resources/k8sLabelConfig.json";
-    private static K8sConfig k8sConfig = null;
+    private static K8sConfig k8sConfig;
+
+    static {
+        k8sConfig = getK8sConfig();
+    }
 
     private K8sJsonParser() {
     }
