@@ -257,7 +257,7 @@
         <dependency>
             <groupId>org.gitlab4j</groupId>
             <artifactId>gitlab4j-api</artifactId>
-            <version>4.16.0</version>
+            <version>4.17.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.codehaus.sonar/sonar-ws-client -->
