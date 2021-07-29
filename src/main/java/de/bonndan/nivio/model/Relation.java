@@ -54,7 +54,7 @@ public class Relation implements Serializable {
         }
 
         if (source.equals(target)) {
-            throw new IllegalArgumentException("Relation source and target are equal.");
+            throw new IllegalArgumentException(String.format("Relation source and target are equal.%s %s", source, target));
         }
 
         this.source = source;
