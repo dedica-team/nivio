@@ -17,7 +17,7 @@
     "@types/react-html-parser": "^2.0.2",
     "@types/react-router-dom": "^5.1.8",
     "@types/react-svg-pan-zoom": "^3.3.2",
-    "@types/react-transition-group": "^4.4.1",
+    "@types/react-transition-group": "^4.4.2",
     "axios": "^0.21.1",
     "classnames": "^2.3.0",
     "dateformat": "^3.0.3",
