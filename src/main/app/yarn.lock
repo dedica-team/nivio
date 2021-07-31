@@ -2248,10 +2248,10 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react-svg-pan-zoom@^3.3.1":
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/@types/react-svg-pan-zoom/-/react-svg-pan-zoom-3.3.1.tgz#ae210ffd20422515eaf5d54bfa8fe374be585b1e"
-  integrity sha512-N10C2gGqs6apsnTmmddCbAlNwb5VuX1DvosPV7NOmPPrSaKjMIRdgJ4luj9qipGHzafUU/T2JtM87RgvO/V+XA==
+"@types/react-svg-pan-zoom@^3.3.2":
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/@types/react-svg-pan-zoom/-/react-svg-pan-zoom-3.3.2.tgz#58a259db7c4c211880cc3c0759ed6f7c8aafe3bc"
+  integrity sha512-q1PVNhwaM8FaIv73hFfKgvqGzaExTtx9aBUi75lAJPK7TIhw8Ql990oE4RHQjIUmmxWU/lE/RSbv2c+2W/K5Sg==
   dependencies:
     "@types/react" "*"
 
