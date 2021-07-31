@@ -12,8 +12,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 /**
@@ -32,7 +32,7 @@ public class EventNotification {
     /**
      * @param processingEvent application event
      * @return api model
-     * @throws NullPointerException
+     * @throws NullPointerException if a required processing event field is empty
      */
     public static EventNotification from(ProcessingEvent processingEvent) {
         return new EventNotification(
@@ -113,9 +113,9 @@ public class EventNotification {
     }
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-    public LocalDateTime getDate() {
+    public ZonedDateTime getDate() {
         Instant instant = Instant.ofEpochMilli(timestamp);
-        return instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
     }
 
     @Schema(description = "In case of ProcessingFinishedEvent a changelog is contained.")
