@@ -205,7 +205,7 @@ public interface Labeled {
     }
 
     /**
-     * ADd all non-null labels from source to target where target labels are not set.
+     * Add all non-null labels from source to target where target labels are not set.
      *
      * @param source label source
      * @param target target

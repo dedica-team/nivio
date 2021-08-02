@@ -29,6 +29,7 @@ class SVGRelation extends Component {
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGRelation.class);
 
     public static final String MARKER_ID = "arrow";
+    public static final int BASIC_STROKE_WIDTH = 20;
 
     private final HexPath hexPath;
     private final String fill;
@@ -87,7 +88,7 @@ class SVGRelation extends Component {
             shadow = SvgTagCreator.path()
                     .attr("d", points)
                     .attr("stroke", statusColor)
-                    .attr("stroke-width", Math.round(20 * factor));
+                    .attr("stroke-width", Math.round(BASIC_STROKE_WIDTH * factor));
         }
 
         ContainerTag path = SvgTagCreator.path()

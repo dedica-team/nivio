@@ -246,9 +246,9 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
      */
     public void addOrReplaceRelation(@NonNull final RelationDescription description) {
         RelationDescription relationDescription = Objects.requireNonNull(description).findMatching(this.relations)
-                .map(relationDescription1 -> {
-                    relationDescription1.update(description);
-                    return relationDescription1;
+                .map(existingRelation -> {
+                    existingRelation.update(description);
+                    return existingRelation;
                 })
                 .orElse(description);
         this.relations.add(relationDescription);
