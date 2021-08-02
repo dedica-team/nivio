@@ -34,6 +34,8 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
 
     public static final String NAMESPACE = "namespace";
 
+    public static final String LABEL_PREFIX = "k8s.";
+
     private KubernetesClient client;
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
