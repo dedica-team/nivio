@@ -19,7 +19,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -269,7 +269,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     @JsonGetter("lastUpdate")
-    public LocalDateTime getLastUpdate() {
+    public ZonedDateTime getLastUpdate() {
         return this.processLog == null ? null : this.processLog.getLastUpdate();
     }
 
@@ -304,7 +304,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
      * @return all matched items
      */
     public Set<Item> search(String queryString) {
-        if (StringUtils.isEmpty(queryString)) {
+        if (!StringUtils.hasLength(queryString)) {
             return Collections.emptySet();
         }
         return items.retrieve(searchIndex.search(queryString));
