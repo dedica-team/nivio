@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ItemRelationProcessor;
+import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import de.bonndan.nivio.output.Color;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
@@ -160,10 +161,11 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
      * Returns the labels without the internal ones (having prefixes).
      *
      * @return filtered labels
+     * @todo find a better way to exclude label "namespaces". Here we introduce unnecessary coupling.
      */
     @JsonProperty("labels")
     public Map<String, String> getJSONLabels() {
-        return Labeled.withoutKeys(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG, Label.type.name(), Label.icon.name());
+        return Labeled.withoutKeys(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG, Label.type.name(), Label.icon.name(), InputFormatHandlerKubernetes.LABEL_PREFIX);
     }
 
     /**

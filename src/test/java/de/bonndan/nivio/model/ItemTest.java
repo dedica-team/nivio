@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -63,6 +64,20 @@ public class ItemTest {
         Map<String, String> labels = s1.getJSONLabels();
         assertThat(labels).containsKey("foo.one");
         assertThat(labels).containsKey("foo.two");
+    }
+
+    @Test
+    public void labelsAreExcluded() {
+
+        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
+
+        Item s1 = getTestItem("g1", "a", landscape);
+        s1.getLabels().put(InputFormatHandlerKubernetes.LABEL_PREFIX + "foo", "one");
+        s1.getLabels().put(Label.type.name(), "two");
+
+        Map<String, String> labels = s1.getJSONLabels();
+        assertThat(labels).doesNotContainKey(InputFormatHandlerKubernetes.LABEL_PREFIX + "foo");
+        assertThat(labels).doesNotContainKey(Label.type.name());
     }
 
     @Test
