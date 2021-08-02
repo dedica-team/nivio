@@ -11,4 +11,7 @@ public interface ItemComponent extends Component {
 
     @Nullable
     String getGroup();
+
+    @Nullable
+    String getAddress();
 }

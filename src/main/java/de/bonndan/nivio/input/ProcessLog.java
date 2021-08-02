@@ -4,11 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 import org.springframework.lang.NonNull;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -71,9 +70,9 @@ public class ProcessLog {
     }
 
     @JsonIgnore
-    public LocalDateTime getLastUpdate() {
+    public ZonedDateTime getLastUpdate() {
 
-        if (messages.size() > 0) {
+        if (!messages.isEmpty()) {
             return messages.get(messages.size() - 1).date;
         }
         return null;
@@ -86,18 +85,18 @@ public class ProcessLog {
         public final String message;
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-        public final LocalDateTime date;
+        public final ZonedDateTime date;
 
         public Entry(String level, String message) {
             this.level = level;
             this.message = message;
-            this.date = LocalDateTime.now();
+            this.date = ZonedDateTime.now();
         }
 
         public Entry(String level, ProcessingException e) {
             this.level = level;
             this.message = e.getMessage();
-            this.date = LocalDateTime.now();
+            this.date = ZonedDateTime.now();
         }
     }
 }

@@ -147,7 +147,7 @@ class APIWalker {
                     RelationDescription rd = new RelationDescription();
                     rd.setSource((String) value);
                     rd.setTarget(item.getIdentifier());
-                    item.addRelation(rd);
+                    item.addOrReplaceRelation(rd);
                 });
             }
 

@@ -52,7 +52,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
      * Created Items: service -> pod -> containers
      */
     @Override
-    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
+    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
 
         this.client = getClient(reference.getUrl());
 

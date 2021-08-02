@@ -27,6 +27,7 @@
         <yarnVersion>v1.22.4</yarnVersion>
         <frontend-maven-plugin.version>1.12.0</frontend-maven-plugin.version>
         <lucene.version>8.8.2</lucene.version>
+        <jackson.version>2.12.4</jackson.version>
         <sonar.projectKey>dedica-team_nivio</sonar.projectKey>
         <sonar.organization>dedica-team</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -51,11 +52,17 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.11.2</version>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>
@@ -180,7 +187,7 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-client</artifactId>
-            <version>5.0.2</version>
+            <version>5.5.0</version>
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
@@ -241,7 +248,7 @@
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>5.4</version>
+            <version>5.5</version>
         </dependency>
 
         <!-- swagger documentation -->
@@ -261,7 +268,7 @@
         <dependency>
             <groupId>org.gitlab4j</groupId>
             <artifactId>gitlab4j-api</artifactId>
-            <version>4.16.0</version>
+            <version>4.17.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.codehaus.sonar/sonar-ws-client -->
@@ -274,7 +281,7 @@
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>openapi-generator</artifactId>
-            <version>5.1.1</version>
+            <version>5.2.0</version>
         </dependency>
 
         <!-- dot parsing -->
