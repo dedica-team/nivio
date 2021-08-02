@@ -1,9 +1,8 @@
 package de.bonndan.nivio.assessment;
 
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +25,7 @@ public class Assessment {
         return results;
     }
 
-    public ZonedDateTime getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 }
