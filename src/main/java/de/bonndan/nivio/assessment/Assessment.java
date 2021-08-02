@@ -1,7 +1,6 @@
 package de.bonndan.nivio.assessment;
 
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -14,15 +13,15 @@ import java.util.Map;
  */
 public class Assessment {
 
-    private final Map<FullyQualifiedIdentifier, List<StatusValue>> results;
+    private final Map<String, List<StatusValue>> results;
     private final ZonedDateTime date;
 
-    public Assessment(Map<FullyQualifiedIdentifier, List<StatusValue>> results) {
+    public Assessment(Map<String, List<StatusValue>> results) {
         date = ZonedDateTime.now();
         this.results = results;
     }
 
-    public Map<FullyQualifiedIdentifier, List<StatusValue>> getResults() {
+    public Map<String, List<StatusValue>> getResults() {
         return results;
     }
 

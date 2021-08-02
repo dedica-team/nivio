@@ -1,15 +1,15 @@
 package de.bonndan.nivio.model;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.bonndan.nivio.assessment.Assessable;
+import de.bonndan.nivio.assessment.StatusValue;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static de.bonndan.nivio.model.ComponentDiff.compareOptionals;
 import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
@@ -17,11 +17,10 @@ import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
 /**
  * Indication of an incoming or outgoing relation like data flow or dependency (provider).
  *
- * <p>
  * Outgoing flows having a target which matches a service identifier will cause a relation to be created.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Relation implements Serializable {
+public class Relation implements Labeled, Assessable, Serializable {
 
     public static final String DELIMITER = ";";
 
@@ -37,11 +36,7 @@ public class Relation implements Serializable {
 
     private final RelationType type;
 
-    public Relation(@NonNull final Item source,
-                    @NonNull final Item target
-    ) {
-        this(source, target, null, null, null);
-    }
+    private final Map<String, String> labels = new HashMap<>();
 
     public Relation(@NonNull final Item source,
                     @NonNull final Item target,
@@ -49,16 +44,12 @@ public class Relation implements Serializable {
                     final String format,
                     final RelationType type
     ) {
-        if (source == null || target == null) {
-            throw new IllegalArgumentException("Null arguments passed.");
-        }
-
         if (source.equals(target)) {
             throw new IllegalArgumentException("Relation source and target are equal.");
         }
 
-        this.source = source;
-        this.target = target;
+        this.source = Objects.requireNonNull(source, "Source is null");
+        this.target = Objects.requireNonNull(target, "Target is null");
         this.description = description;
         this.format = format;
         this.type = type;
@@ -107,6 +98,37 @@ public class Relation implements Serializable {
         return "Relation{" + getIdentifier() + '}';
     }
 
+    @Override
+    public String getLabel(String key) {
+        return getLabels().get(key);
+    }
+
+    @NonNull
+    @Override
+    public Map<String, String> getLabels() {
+        return labels;
+    }
+
+    @Override
+    public void setLabel(String key, String value) {
+        labels.put(key, value);
+    }
+
+    @Override
+    public Set<StatusValue> getAdditionalStatusValues() {
+        return StatusValue.fromMapping(indexedByPrefix(Label.status));
+    }
+
+    @Override
+    public String getAssessmentIdentifier() {
+        return getIdentifier();
+    }
+
+    @Override
+    public List<? extends Assessable> getChildren() {
+        return new ArrayList<>();
+    }
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     static class ApiModel {
 
@@ -131,6 +153,8 @@ public class Relation implements Serializable {
 
         public final String direction;
 
+        public final Map<String, String> labels;
+
         ApiModel(@NonNull final Relation relation, @NonNull final Item owner) {
             source = relation.source;
             target = relation.target;
@@ -138,6 +162,7 @@ public class Relation implements Serializable {
             format = relation.format;
             type = relation.type;
             id = relation.getIdentifier();
+            labels = relation.getLabels();
 
             if (relation.source.equals(owner)) {
                 name = StringUtils.isEmpty(target.getName()) ? target.getIdentifier() : target.getName();
@@ -157,8 +182,8 @@ public class Relation implements Serializable {
      * @throws IllegalArgumentException if the arg is not comparable
      */
     public List<String> getChanges(Relation newer) {
-        if (!newer.equals(this)) {
-            throw new IllegalArgumentException("Cannot compare relation " + newer.toString() + " against " + this.toString());
+        if (!this.equals(newer)) {
+            throw new IllegalArgumentException(String.format("Cannot compare relation %s against %s", newer, this));
         }
 
         List<String> changes = new ArrayList<>();
