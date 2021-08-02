@@ -417,6 +417,10 @@
             },
             "description": "Additional labels for the landscape."
           },
+          "partial": {
+            "type": "boolean",
+            "description": "marks that the landscape is not complete, but an update"
+          },
           "color": {
             "type": "string"
           },
@@ -430,10 +434,6 @@
             "items": {
               "$ref": "#/components/schemas/ItemDescription"
             }
-          },
-          "partial": {
-            "type": "boolean",
-            "description": "marks that the landscape is not complete, but an update"
           },
           "links": {
             "type": "object",
