@@ -2,7 +2,7 @@ package de.bonndan.nivio.assessment;
 
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -14,10 +14,10 @@ import java.util.Map;
 public class Assessment {
 
     private final Map<String, List<StatusValue>> results;
-    private final LocalDateTime date;
+    private final ZonedDateTime date;
 
     public Assessment(Map<String, List<StatusValue>> results) {
-        date = LocalDateTime.now();
+        date = ZonedDateTime.now();
         this.results = results;
     }
 
@@ -25,7 +25,7 @@ public class Assessment {
         return results;
     }
 
-    public LocalDateTime getDate() {
+    public ZonedDateTime getDate() {
         return date;
     }
 }
