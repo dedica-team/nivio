@@ -34,6 +34,8 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
 
     public static final String NAMESPACE = "namespace";
 
+    public static final String LABEL_PREFIX = "k8s.";
+
     private KubernetesClient client;
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
@@ -50,7 +52,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
      * Created Items: service -> pod -> containers
      */
     @Override
-    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
+    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
 
         this.client = getClient(reference.getUrl());
 
@@ -111,7 +113,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
                 itemDescription.setOwner(item.getOwner().get(0).getName());
             }
             itemDescription.setGroup(item.getGroup());
-            item.getOwner().forEach(owner -> itemDescription.addRelation(new RelationDescription(owner.getUid(), item.getUid())));
+            item.getOwner().forEach(owner -> itemDescription.addOrReplaceRelation(new RelationDescription(owner.getUid(), item.getUid())));
             if (!item.getDetails().isEmpty()) {
                 item.getDetails().forEach(itemDescription::setLabel);
             }

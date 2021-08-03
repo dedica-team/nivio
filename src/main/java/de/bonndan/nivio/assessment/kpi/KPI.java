@@ -1,5 +1,6 @@
 package de.bonndan.nivio.assessment.kpi;
 
+import de.bonndan.nivio.assessment.Assessable;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.input.ProcessingException;
@@ -32,11 +33,11 @@ public interface KPI {
     /**
      * Returns the status evaluation of the component on the configured field.
      *
-     * @param component to assess
+     * @param assessable to assess
      * @return current status value, unknown if not present
      */
     @NonNull
-    List<StatusValue> getStatusValues(Component component);
+    List<StatusValue> getStatusValues(Assessable assessable);
 
     /**
      * Describes the meaning of the KPI.

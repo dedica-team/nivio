@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { IGroup, IItem, ILandscape } from '../../../interfaces';
+import { IGroup, IItem, ILandscape, IRelation } from "../../../interfaces";
 import { Button, Link, List, ListItem, ListItemText } from '@material-ui/core';
 
 /**
@@ -72,7 +72,7 @@ export const getLinks = (element: IGroup | IItem): ReactElement[] => {
   return links;
 };
 
-export const getLabels = (element: IGroup | IItem) => {
+export const getLabels = (element: IGroup | IItem | IRelation ) => {
   let labels: ReactElement[] = [];
   if (!element?.labels) {
     return null;

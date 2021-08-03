@@ -2,6 +2,7 @@ package de.bonndan.nivio.output;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.config.ApplicationConfig;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.CachedResponse;
@@ -43,11 +44,13 @@ public abstract class RenderingTest {
     protected Indexer indexer;
     protected LandscapeDescriptionFactory factory;
     protected HttpService httpService;
+    private ObjectMapper objectMapper;
 
     public void setup() throws URISyntaxException {
         landscapeRepository = new LandscapeRepository();
         formatFactory = new InputFormatHandlerFactory(List.of(new InputFormatHandlerNivio(new FileFetcher(new HttpService()))));
         httpService = mock(HttpService.class);
+        objectMapper = new ApplicationConfig().jackson2ObjectMapperBuilder().build();
 
         CachedResponse response = mock(CachedResponse.class);
         when(response.getBytes()).thenReturn("foo".getBytes());
@@ -89,7 +92,7 @@ public abstract class RenderingTest {
         when(mapStyleSheetFactory.getMapStylesheet(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn("");
 
         File json = new File(filename + "_debug.json");
-        new ObjectMapper().writeValue(json, layoutedComponent);
+        objectMapper.writeValue(json, layoutedComponent);
 
         SVGRenderer svgRenderer = new SVGRenderer(mapStyleSheetFactory);
         SVGDocument svg = svgRenderer.render(layoutedComponent, assessment, true);

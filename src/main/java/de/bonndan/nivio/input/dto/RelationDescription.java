@@ -1,10 +1,20 @@
 package de.bonndan.nivio.input.dto;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import de.bonndan.nivio.model.Labeled;
+import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
+import de.bonndan.nivio.search.ItemMatcher;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.lang.NonNull;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.*;
+
 
 @Schema(description = "A directed relation between two landscape items. Also known as edge in a directed graph.")
-public class RelationDescription {
+public class RelationDescription implements Labeled {
 
     @Schema(description = "The type of the relation, i.e. whether it is a hard or a soft dependency.")
     private RelationType type;
@@ -20,6 +30,9 @@ public class RelationDescription {
 
     @Schema(description = "The item identifier of the target. Prepend a group identifier if the simple item identifier is ambiguous.", example = "dataSink|groupB/dataSink")
     private String target;
+
+    @Schema(description = "Key-value pair labels for a relation.")
+    private final Map<String, String> labels = new HashMap<>();
 
     public RelationDescription() {
     }
@@ -78,5 +91,55 @@ public class RelationDescription {
                 ", source='" + source + '\'' +
                 ", target='" + target + '\'' +
                 '}';
+    }
+
+    @Override
+    public String getLabel(String key) {
+        return getLabels().get(key);
+    }
+
+    @Override
+    @NonNull
+    public Map<String, String> getLabels() {
+        return labels;
+    }
+
+    @Override
+    @JsonAnySetter
+    public void setLabel(String key, String value) {
+        getLabels().put(key, value);
+    }
+
+    /**
+     * Finds the first relation description with same source and target.
+     *
+     * @param relations a collection of existing relations
+     * @return the sibling
+     */
+    Optional<RelationDescription> findMatching(@NonNull final Collection<RelationDescription> relations) {
+        return Objects.requireNonNull(relations).stream()
+                .filter(rel -> matches(source, rel.getSource()))
+                .filter(rel -> matches(target, rel.getTarget()))
+                .findFirst();
+    }
+
+    private boolean matches(String end1, String end2) {
+        Optional<ItemMatcher> m1 = ItemMatcher.forTarget(end1);
+        Optional<ItemMatcher> m2 = ItemMatcher.forTarget(end2);
+        return m1.isPresent() && m2.isPresent() && m1.map(m -> m.equals(m2.get())).orElse(false);
+    }
+
+    /**
+     * Updates the current object with values from the param.
+     *
+     * @param newer update
+     */
+    public void update(@NonNull final RelationDescription newer) {
+        Objects.requireNonNull(newer);
+
+        setDescription(newer.description);
+        setFormat(newer.format);
+
+        Labeled.merge(newer, this);
     }
 }

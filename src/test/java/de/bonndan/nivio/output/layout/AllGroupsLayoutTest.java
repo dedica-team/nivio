@@ -36,8 +36,8 @@ class AllGroupsLayoutTest {
         Item item1 = a.getItems().iterator().next();
         Item item2 = b.getItems().iterator().next();
         Item item3 = c.getItems().iterator().next();
-        item1.addOrReplace(new Relation(item1, item2));
-        item2.addOrReplace(new Relation(item2, item3));
+        item1.addOrReplace(RelationFactory.createForTesting(item1, item2));
+        item2.addOrReplace(RelationFactory.createForTesting(item2, item3));
 
         Map<String, Group> groupMap = new LinkedHashMap<>();
         landscape.getGroups().forEach(groupMap::put);
@@ -64,7 +64,7 @@ class AllGroupsLayoutTest {
 
         Item baz = getTestItem(group.getIdentifier(), "baz" + group.getIdentifier());
         group.addItem(baz);
-        baz.addOrReplace(new Relation(baz, bar));
+        baz.addOrReplace(RelationFactory.createForTesting(baz, bar));
 
         return new SubLayout(group, Set.of(bar, baz), new LandscapeConfig.LayoutConfig());
     }
