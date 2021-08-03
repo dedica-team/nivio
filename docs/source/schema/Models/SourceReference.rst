@@ -13,9 +13,39 @@ This is a reference to a configuration file.
      - Remarks
      - Example
 
-   * - rel
+   * - assignTemplates
+     - Map<array>
+     - A map with template identifier as key and item identifier matchers as value
+     - optional, defaults to null
+     - endOfLife: [web, "java6*"]
+   * - basicAuthPassword
      - String
-     - hateoas relation type
+     - 
+     - optional, defaults to null
+     - null
+   * - basicAuthUsername
+     - String
+     - 
+     - optional, defaults to null
+     - null
+   * - deprecation
+     - String
+     - deprecation info (typically used in OpenAPI specs)
+     - optional, defaults to null
+     - null
+   * - format
+     - String
+     - The input format.
+     - optional, defaults to null
+     - null
+   * - headerTokenName
+     - String
+     - 
+     - optional, defaults to null
+     - null
+   * - headerTokenValue
+     - String
+     - 
      - optional, defaults to null
      - null
    * - href
@@ -33,6 +63,16 @@ This is a reference to a configuration file.
      - hateoas media type
      - optional, defaults to null
      - null
+   * - name
+     - String
+     - HateOAS / OpenAPI name
+     - optional, defaults to null
+     - null
+   * - rel
+     - String
+     - hateoas relation type
+     - optional, defaults to null
+     - null
    * - title
      - String
      - hateoas title
@@ -43,49 +83,9 @@ This is a reference to a configuration file.
      - 
      - optional, defaults to null
      - null
-   * - deprecation
-     - String
-     - deprecation info (typically used in OpenAPI specs)
-     - optional, defaults to null
-     - null
-   * - name
-     - String
-     - HateOAS / OpenAPI name
-     - optional, defaults to null
-     - null
-   * - basicAuthUsername
-     - String
-     - 
-     - optional, defaults to null
-     - null
-   * - basicAuthPassword
-     - String
-     - 
-     - optional, defaults to null
-     - null
-   * - headerTokenName
-     - String
-     - 
-     - optional, defaults to null
-     - null
-   * - headerTokenValue
-     - String
-     - 
-     - optional, defaults to null
-     - null
    * - url
      - String
      - A URL, but can also be a relative path.
      - optional, defaults to null
      - ./a/items.yaml
-   * - format
-     - String
-     - The input format.
-     - optional, defaults to null
-     - null
-   * - assignTemplates
-     - Map<array>
-     - A map with template identifier as key and item identifier matchers as value
-     - optional, defaults to null
-     - endOfLife: [web, "java6*"]
 
