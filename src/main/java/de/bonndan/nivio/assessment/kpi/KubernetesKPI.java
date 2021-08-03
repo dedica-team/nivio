@@ -1,8 +1,8 @@
 package de.bonndan.nivio.assessment.kpi;
 
+import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Labeled;
 import org.apache.commons.collections.map.SingletonMap;
@@ -22,14 +22,14 @@ public class KubernetesKPI implements KPI {
 
     @Override
     @NonNull
-    public List<StatusValue> getStatusValues(Component component) {
-        if (!(component instanceof Labeled))
+    public List<StatusValue> getStatusValues(Assessable assessable) {
+        if (!(assessable instanceof Labeled))
             return new ArrayList<>();
 
 
         var statusList = new ArrayList<StatusValue>();
         var counter = new AtomicInteger(0);
-        ((Labeled) component).getLabels(Label.k8s).forEach((key, value) -> {
+        ((Labeled) assessable).getLabels(Label.k8s).forEach((key, value) -> {
             if (ObjectUtils.isEmpty(value)) {
                 return;
             }
@@ -50,7 +50,6 @@ public class KubernetesKPI implements KPI {
             statusList.add(statusValue);
         });
         return statusList;
-
     }
 
     private Integer getIntegerValue(String[] splitValue, int position) {
