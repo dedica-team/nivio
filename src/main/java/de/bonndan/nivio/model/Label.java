@@ -56,7 +56,11 @@ public enum Label {
 
     status("Prefix for status labels. Can be used as prefix for all other labels to mark a status for the label.", true),
 
-    condition("Prefix for condition labels.", true);
+    condition("Prefix for condition labels.", true),
+
+    weight("Importance or relations. Used as factor for drawn width if numbers between 0 and 5 are given."),
+
+    k8s("Prefix for k8s labels.", true);
 
     /**
      * Separator for label key parts.

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ItemRelationProcessor;
+import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import de.bonndan.nivio.output.Color;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
@@ -150,6 +151,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         return description;
     }
 
+    @NonNull
     @JsonIgnore
     @Override
     public Map<String, String> getLabels() {
@@ -160,10 +162,11 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
      * Returns the labels without the internal ones (having prefixes).
      *
      * @return filtered labels
+     * @todo find a better way to exclude label "namespaces". Here we introduce unnecessary coupling.
      */
     @JsonProperty("labels")
     public Map<String, String> getJSONLabels() {
-        return Labeled.withoutKeys(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG, Label.type.name(), Label.icon.name());
+        return Labeled.withoutKeys(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG, Label.type.name(), Label.icon.name(), InputFormatHandlerKubernetes.LABEL_PREFIX);
     }
 
     /**
@@ -178,7 +181,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
 
     /**
      * Adds a relation or replaces the similar one.
-     *
+     * <p>
      * This is necessary because {@link Set} does not replace AND we need to check relation end equality on object level
      * because referenced source or target items will be replaced by new copies.
      *
@@ -186,7 +189,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
      */
     public void addOrReplace(@NonNull final Relation relation) {
         if (relation.getSource() != this && relation.getTarget() != this) {
-            throw new IllegalArgumentException("Relation contains no reference to item.");
+            throw new IllegalArgumentException(String.format("Relation contains no reference to item.%s %s", relation.getIdentifier(), this));
         }
 
         getSimilar(relation).map(relations::remove);
@@ -300,6 +303,15 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         return StatusValue.fromMapping(indexedByPrefix(Label.status));
     }
 
+    @Override
+    public String getAssessmentIdentifier() {
+        return getFullyQualifiedIdentifier().toString();
+    }
+
+    @Override
+    public List<? extends Assessable> getChildren() {
+        return getRelations().stream().filter(relation -> relation.getSource().equals(this)).collect(Collectors.toList());
+    }
 
     /**
      * Compare on field level against a newer version.

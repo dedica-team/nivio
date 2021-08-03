@@ -1,0 +1,8 @@
+{
+  "active": true,
+  "minMatchingLabel": 2,
+  "level": {
+    "DeploymentItemAdapter": 1,
+    "StatefulSetItemAdapter": 0
+  }
+}

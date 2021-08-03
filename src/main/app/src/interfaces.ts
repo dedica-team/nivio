@@ -139,6 +139,7 @@ export interface IRelation {
   name: string;
   id: string;
   direction: string;
+  labels: ILabels;
 }
 
 export interface ILabels {
