@@ -45,7 +45,7 @@ public class Relation implements Labeled, Assessable, Serializable {
                     final RelationType type
     ) {
         if (source.equals(target)) {
-            throw new IllegalArgumentException("Relation source and target are equal.");
+            throw new IllegalArgumentException(String.format("Relation source and target are equal.%s %s", source, target));
         }
 
         this.source = Objects.requireNonNull(source, "Source is null");

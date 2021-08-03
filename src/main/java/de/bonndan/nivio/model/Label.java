@@ -58,7 +58,9 @@ public enum Label {
 
     condition("Prefix for condition labels.", true),
 
-    weight("Importance or relations. Used as factor for drawn width if numbers between 0 and 5 are given.");
+    weight("Importance or relations. Used as factor for drawn width if numbers between 0 and 5 are given."),
+
+    k8s("Prefix for k8s labels.", true);
 
     /**
      * Separator for label key parts.
