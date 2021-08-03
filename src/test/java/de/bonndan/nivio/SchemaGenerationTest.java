@@ -19,14 +19,14 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class SchemaGenerationTest {
 
     @Test
     void generateDocs() {
         Components components = new Components();
-        Map<String, Schema> schema = ModelConverters.getInstance().readAll(new AnnotatedType(LandscapeDescription.class));
-        components.setSchemas(schema);
+        components.setSchemas(getSchemaMap());
         OpenAPI openAPI = new OpenAPI();
         openAPI.setComponents(components);
         openAPI.setPaths(new Paths());
@@ -54,5 +54,15 @@ public class SchemaGenerationTest {
                 .config(rstDocCodegen);
         defaultGenerator.opts(config);
         defaultGenerator.generate();
+    }
+
+    @SuppressWarnings("rawtypes")
+    private Map<String, Schema> getSchemaMap() {
+        Map<String, Schema> stringSchemaMap = ModelConverters.getInstance().readAll(new AnnotatedType(LandscapeDescription.class));
+        stringSchemaMap.keySet().forEach(s -> {
+            Schema schema = stringSchemaMap.get(s);
+            schema.setProperties(new TreeMap<String, Schema>(schema.getProperties()));
+        });
+        return stringSchemaMap;
     }
 }
