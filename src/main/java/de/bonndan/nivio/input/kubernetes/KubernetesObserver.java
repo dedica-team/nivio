@@ -10,6 +10,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
@@ -23,11 +24,16 @@ public class KubernetesObserver implements InputFormatObserver {
 
     private final Landscape landscape;
     private final ApplicationEventPublisher eventPublisher;
+    private final StaticApplicationContext applicationContext;
     private final KubernetesClient kubernetesClient;
     private List<Event> eventList = null;
 
-    public KubernetesObserver(@NonNull final Optional<Landscape> landscape, @NonNull final ApplicationEventPublisher eventPublisher, @NonNull final KubernetesClient kubernetesClient) {
-        this.landscape = landscape.get();
+    public KubernetesObserver(@NonNull final Landscape landscape,
+                              @NonNull final ApplicationEventPublisher eventPublisher,
+                              @NonNull final StaticApplicationContext applicationContext,
+                              @NonNull final KubernetesClient kubernetesClient) {
+        this.landscape = landscape;
+        this.applicationContext = applicationContext;
         this.kubernetesClient = kubernetesClient;
         this.eventPublisher = eventPublisher;
     }
