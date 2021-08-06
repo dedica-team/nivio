@@ -7,6 +7,7 @@ import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.kubernetes.itemadapters.PersistentVolumeItemAdapter;
 import de.bonndan.nivio.input.kubernetes.itemadapters.PodItemAdapter;
+import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import io.fabric8.kubernetes.api.model.OwnerReference;
 import io.fabric8.kubernetes.client.Config;
@@ -16,6 +17,7 @@ import io.fabric8.kubernetes.client.KubernetesClientException;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.lang.NonNull;
 
 import java.net.URL;
@@ -36,10 +38,11 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
 
     public static final String LABEL_PREFIX = "k8s.";
 
+    private LandscapeRepository landscapeRepository;
     private KubernetesClient client;
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public InputFormatHandlerKubernetes(Optional<KubernetesClient> client) {
+    public InputFormatHandlerKubernetes(Optional<KubernetesClient> client, LandscapeRepository landscapeRepository) {
         this.client = client.orElse(null);
     }
 
@@ -53,7 +56,6 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
      */
     @Override
     public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
-
         this.client = getClient(reference.getUrl());
 
         try {
@@ -170,7 +172,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
 
     @Override
     public InputFormatObserver getObserver(@NonNull final InputFormatObserver inner, @NonNull final SourceReference sourceReference) {
-        return null;
+        return new KubernetesObserver(landscapeRepository.findDistinctByIdentifier(sourceReference.getLandscapeDescription().getIdentifier()), new StaticApplicationContext(), this.client);
     }
 
     private KubernetesClient getClient(String context) {

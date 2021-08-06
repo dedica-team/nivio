@@ -4,6 +4,7 @@ import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.kubernetes.KubernetesObserver;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.observation.LandscapeObserverPool;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import org.slf4j.Logger;
@@ -27,9 +28,11 @@ public class KubernetesObserverRegistry {
 
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ThreadPoolTaskScheduler taskScheduler;
+    private final LandscapeRepository landscapeRepository;
 
-    public KubernetesObserverRegistry(ThreadPoolTaskScheduler taskScheduler, ApplicationEventPublisher applicationEventPublisher) {
+    public KubernetesObserverRegistry(ThreadPoolTaskScheduler taskScheduler, ApplicationEventPublisher applicationEventPublisher, LandscapeRepository landscapeRepository) {
         this.applicationEventPublisher = applicationEventPublisher;
+        this.landscapeRepository = landscapeRepository;
         this.taskScheduler = taskScheduler;
     }
 
@@ -38,17 +41,10 @@ public class KubernetesObserverRegistry {
         LandscapeDescription landscapeDescription = event.getInput();
         Landscape landscape = Objects.requireNonNull(event.getLandscape());
 
-        if (landscapeDescription == null) {
-            String msg = String.format("No landscape description (input) available. Landscape %s could not be registered for observation", landscape.getIdentifier());
-            landscape.getLog().warn(msg);
-            LOGGER.warn(msg);
-            return;
-        }
-
         LandscapeObserverPool pool = observerMap.computeIfAbsent(landscape.getIdentifier(), s -> {
             LOGGER.info("Registered landscape {} for observation.", landscapeDescription);
             return new LandscapeObserverPool(taskScheduler, 30 * 1000);
         });
-        pool.updateObservers(List.of(new KubernetesObserver(landscapeDescription, applicationEventPublisher, new DefaultKubernetesClient())));
+        pool.updateObservers(List.of(new KubernetesObserver(landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()), applicationEventPublisher, new DefaultKubernetesClient())));
     }
 }

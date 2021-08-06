@@ -1,8 +1,10 @@
 package de.bonndan.nivio.input.kubernetes;
 
-import de.bonndan.nivio.input.IndexEvent;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
+
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.observation.InputChangedEvent;
 import de.bonndan.nivio.observation.InputFormatObserver;
+import de.bonndan.nivio.observation.ObservedChange;
 import io.fabric8.kubernetes.api.model.events.v1.Event;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.slf4j.Logger;
@@ -11,6 +13,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -18,13 +21,13 @@ public class KubernetesObserver implements InputFormatObserver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KubernetesObserver.class);
 
-    private final LandscapeDescription landscapeDescription;
+    private final Landscape landscape;
     private final ApplicationEventPublisher eventPublisher;
     private final KubernetesClient kubernetesClient;
     private List<Event> eventList = null;
 
-    public KubernetesObserver(@NonNull final LandscapeDescription landscapeDescription, @NonNull final ApplicationEventPublisher eventPublisher, @NonNull final KubernetesClient kubernetesClient) {
-        this.landscapeDescription = landscapeDescription;
+    public KubernetesObserver(@NonNull final Optional<Landscape> landscape, @NonNull final ApplicationEventPublisher eventPublisher, @NonNull final KubernetesClient kubernetesClient) {
+        this.landscape = landscape.get();
         this.kubernetesClient = kubernetesClient;
         this.eventPublisher = eventPublisher;
     }
@@ -32,10 +35,15 @@ public class KubernetesObserver implements InputFormatObserver {
     @Override
     public void run() {
         while (true) {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             if (eventList == null) {
                 eventList = kubernetesClient.events().v1().events().list().getItems();
             } else {
-                if (compareEvents(eventList, kubernetesClient.events().v1().events().list().getItems())) {
+                if (!compareEvents(eventList, kubernetesClient.events().v1().events().list().getItems())) {
                     triggerChange();
                     return;
                 }
@@ -51,6 +59,6 @@ public class KubernetesObserver implements InputFormatObserver {
 
     private void triggerChange() {
         LOGGER.info("Kubernetes Observer published new IndexEvent");
-        eventPublisher.publishEvent(new IndexEvent(landscapeDescription, "testMessage"));
+        eventPublisher.publishEvent(new InputChangedEvent(new ObservedChange(landscape, "k8s cluster changed")));
     }
 }

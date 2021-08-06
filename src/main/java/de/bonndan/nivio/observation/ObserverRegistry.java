@@ -48,13 +48,6 @@ public class ObserverRegistry {
         LandscapeDescription landscapeDescription = event.getInput();
         Landscape landscape = Objects.requireNonNull(event.getLandscape());
 
-        if (landscapeDescription == null) {
-            String msg = String.format("No landscape description (input) available. Landscape %s could not be registered for observation", landscape.getIdentifier());
-            landscape.getLog().warn(msg);
-            LOGGER.warn(msg);
-            return;
-        }
-
         LandscapeObserverPool pool = observerMap.computeIfAbsent(landscape.getIdentifier(), s -> {
             LOGGER.info("Registered landscape {} for observation.", landscapeDescription);
             return new LandscapeObserverPool(taskScheduler, 30 * 1000);

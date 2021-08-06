@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.kubernetes;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
@@ -31,7 +32,7 @@ class InputFormatHandlerKubernetesTest {
     void setUp() {
         SourceReference sourceReference = new SourceReference(null, "k8s");
         sourceReference.setUrl("http://localhost:80?groupLabel=release&namespace=default");
-        inputFormatHandlerKubernetes = new InputFormatHandlerKubernetes(Optional.of(kubernetesClient));
+        inputFormatHandlerKubernetes = new InputFormatHandlerKubernetes(Optional.of(kubernetesClient), new LandscapeRepository());
     }
 
     @Test
