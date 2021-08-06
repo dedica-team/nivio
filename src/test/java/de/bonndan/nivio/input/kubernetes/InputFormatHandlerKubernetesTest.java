@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.kubernetes;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import io.fabric8.kubernetes.api.model.*;
@@ -13,6 +14,7 @@ import io.fabric8.kubernetes.client.server.mock.EnableKubernetesMockClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,7 +34,7 @@ class InputFormatHandlerKubernetesTest {
     void setUp() {
         SourceReference sourceReference = new SourceReference(null, "k8s");
         sourceReference.setUrl("http://localhost:80?groupLabel=release&namespace=default");
-        inputFormatHandlerKubernetes = new InputFormatHandlerKubernetes(Optional.of(kubernetesClient), new LandscapeRepository());
+        inputFormatHandlerKubernetes = new InputFormatHandlerKubernetes(Optional.of(kubernetesClient));
     }
 
     @Test
@@ -111,6 +113,6 @@ class InputFormatHandlerKubernetesTest {
 
     @Test
     void getObserver() {
-        assertNull(inputFormatHandlerKubernetes.getObserver(Mockito.mock(InputFormatObserver.class), Mockito.mock(SourceReference.class)));
+        assertNull(inputFormatHandlerKubernetes.getObserver(Mockito.mock(ApplicationEventPublisher.class), Mockito.mock(Landscape.class), Mockito.mock(SourceReference.class)));
     }
 }

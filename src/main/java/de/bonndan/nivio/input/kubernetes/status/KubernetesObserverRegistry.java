@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,6 @@ public class KubernetesObserverRegistry {
             LOGGER.info("Registered landscape {} for observation.", landscapeDescription);
             return new LandscapeObserverPool(taskScheduler, 30 * 1000);
         });
-        pool.updateObservers(List.of(new KubernetesObserver(landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()), applicationEventPublisher, new DefaultKubernetesClient())));
+        pool.updateObservers(List.of(new KubernetesObserver(landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow(), applicationEventPublisher, new StaticApplicationContext(), new DefaultKubernetesClient())));
     }
 }

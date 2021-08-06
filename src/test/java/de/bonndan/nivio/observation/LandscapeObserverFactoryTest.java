@@ -59,7 +59,7 @@ class LandscapeObserverFactoryTest {
 
         InputFormatHandler handler = mock(InputFormatHandler.class);
         InputFormatObserver mockObserver = mock(InputFormatObserver.class);
-        when(handler.getObserver(any(InputFormatObserver.class), any(SourceReference.class))).thenReturn(mockObserver);
+        when(handler.getObserver(any(ApplicationEventPublisher.class), any(Landscape.class), any(SourceReference.class))).thenReturn(mockObserver);
         when(formatFactory.getInputFormatHandler(any(SourceReference.class))).thenReturn(handler);
 
         when(fileFetcher.get(any(URL.class))).thenReturn("");
@@ -75,7 +75,7 @@ class LandscapeObserverFactoryTest {
 
 
         verify(formatFactory).getInputFormatHandler(eq(ref1));
-        verify(handler).getObserver(any(InputFormatObserver.class), eq(ref1));
+        verify(handler).getObserver(any(ApplicationEventPublisher.class), any(Landscape.class), eq(ref1));
     }
 
     @Test
@@ -91,7 +91,7 @@ class LandscapeObserverFactoryTest {
         description.getSourceReferences().add(ref1);
 
         InputFormatHandler handler = mock(InputFormatHandler.class);
-        when(handler.getObserver(any(InputFormatObserver.class), any(SourceReference.class))).thenReturn(mock(InputFormatObserver.class));
+        when(handler.getObserver(any(ApplicationEventPublisher.class), any(Landscape.class), any(SourceReference.class))).thenReturn(mock(InputFormatObserver.class));
         when(formatFactory.getInputFormatHandler(any(SourceReference.class))).thenReturn(handler);
 
         //when
@@ -104,7 +104,7 @@ class LandscapeObserverFactoryTest {
         assertEquals(1, observers.size());
 
         verify(formatFactory).getInputFormatHandler(eq(ref1));
-        verify(handler).getObserver(any(InputFormatObserver.class), eq(ref1));
+        verify(handler).getObserver(any(ApplicationEventPublisher.class), any(Landscape.class), eq(ref1));
     }
 
     private String getRootPath() {
