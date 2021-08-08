@@ -89,7 +89,6 @@ export interface IGroup {
   fullyQualifiedIdentifier: string;
   labels?: ILabels;
   _links?: ILinks;
-  links?: ILinks;
   items: IItem[];
 }
 

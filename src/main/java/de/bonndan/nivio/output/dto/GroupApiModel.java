@@ -26,6 +26,10 @@ public class GroupApiModel extends ComponentApiModel {
         return group.getName();
     }
 
+    public String getIdentifier() {
+        return group.getIdentifier();
+    }
+
     public String getOwner() {
         return group.getOwner();
     }
