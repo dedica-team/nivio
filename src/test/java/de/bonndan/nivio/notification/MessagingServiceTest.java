@@ -1,5 +1,7 @@
 package de.bonndan.nivio.notification;
 
+import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.assessment.AssessmentChangedEvent;
 import de.bonndan.nivio.input.ProcessingChangelog;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
@@ -64,6 +66,23 @@ class MessagingServiceTest {
         assertThat(value.getType()).isEqualTo("InputChangedEvent");
         assertThat(value.getLandscape()).isEqualTo("test");
         assertThat(value.getMessage()).isEqualTo("foo");
+    }
+
+    @Test
+    void onAssessmentChangeEvent() {
+        AssessmentChangedEvent event = new AssessmentChangedEvent(
+                LandscapeFactory.createForTesting("test", "testLandscape").build(), Assessment.empty()
+        );
+        messagingService.onAssessmentChangedEvent(event);
+
+        ArgumentCaptor<EventNotification> captor = ArgumentCaptor.forClass(EventNotification.class);
+        verify(tpl).convertAndSend(eq(WebSocketConfig.TOPIC + WebSocketConfig.EVENTS), captor.capture());
+
+        EventNotification value = captor.getValue();
+        assertNotNull(value);
+        assertThat(value.getLevel()).isEqualTo("info");
+        assertThat(value.getType()).isEqualTo("AssessmentChangedEvent");
+        assertThat(value.getLandscape()).isEqualTo("test");
     }
 
     @Test

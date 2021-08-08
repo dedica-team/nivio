@@ -74,7 +74,8 @@ public abstract class RenderingTest {
                 new AppearanceProcessor(iconService),
                 new OrganicLayouter(),
                 new SVGRenderer(mapStyleSheetFactory),
-                new RenderingRepository()
+                new RenderingRepository(),
+                mock(ApplicationEventPublisher.class)
         );
         indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class));
     }

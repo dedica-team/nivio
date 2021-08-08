@@ -55,7 +55,9 @@ const LandscapeContextProvider: React.FC<{}> = (props) => {
         const subscriptions: StompSubscription[] = [];
         const eventSubscription = client.subscribe('/topic/events', (message) => {
           const notificationMessage: INotificationMessage = JSON.parse(message.body);
-          setNotification(notificationMessage);
+          if (notificationMessage.type === 'LayoutChangedEvent') {
+            setNotification(notificationMessage);
+          }
         });
 
         subscriptions.push(eventSubscription);

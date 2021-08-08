@@ -9,6 +9,7 @@ import de.bonndan.nivio.output.map.RenderingRepository;
 import de.bonndan.nivio.output.map.svg.SVGDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Map;
 
@@ -23,6 +24,7 @@ class LayoutServiceTest {
     private RenderingRepository renderingRepository;
     private LayoutService service;
     private Renderer renderer;
+    private ApplicationEventPublisher eventPublisher;
 
     @BeforeEach
     void setUp() {
@@ -30,7 +32,8 @@ class LayoutServiceTest {
         layouter = mock(Layouter.class);
         renderer = mock(Renderer.class);
         renderingRepository = mock(RenderingRepository.class);
-        service = new LayoutService(appearanceProcessor, layouter, renderer, renderingRepository);
+        eventPublisher = mock(ApplicationEventPublisher.class);
+        service = new LayoutService(appearanceProcessor, layouter, renderer, renderingRepository, eventPublisher);
     }
 
     @Test

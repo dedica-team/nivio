@@ -7,6 +7,7 @@ import de.bonndan.nivio.output.Renderer;
 import de.bonndan.nivio.output.map.RenderingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -27,16 +28,19 @@ public class LayoutService implements ApplicationListener<AssessmentChangedEvent
     private final Layouter layouter;
     private final Renderer<?> renderer;
     private final RenderingRepository renderingRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public LayoutService(final AppearanceProcessor appearanceProcessor,
                          final Layouter layouter,
                          final Renderer<?> renderer,
-                         final RenderingRepository renderingRepository
+                         final RenderingRepository renderingRepository,
+                         final ApplicationEventPublisher eventPublisher
     ) {
         this.appearanceProcessor = appearanceProcessor;
         this.layouter = layouter;
         this.renderer = renderer;
         this.renderingRepository = renderingRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -50,6 +54,7 @@ public class LayoutService implements ApplicationListener<AssessmentChangedEvent
         LOGGER.info("Generating SVG rendering of landscape {} (debug: {})", landscape.getIdentifier(), debug);
         var artefact = renderer.render(layout, assessment, debug);
         renderingRepository.save(renderer.getArtefactType(), landscape, artefact, debug);
+        eventPublisher.publishEvent(new LayoutChangedEvent(landscape, "Rendered landscape " + landscape.getIdentifier()));
     }
 
     public LayoutedComponent layout(@NonNull final Landscape landscape) {
