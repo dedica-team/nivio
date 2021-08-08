@@ -109,7 +109,6 @@ export interface IItem {
   tags: Array<string>;
   color?: string;
   icon: string;
-  links?: Object;
   _links?: ILinks;
 }
 

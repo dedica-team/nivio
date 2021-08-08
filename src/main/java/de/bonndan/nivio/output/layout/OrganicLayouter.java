@@ -17,12 +17,9 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Applies {@link FastOrganicLayout} to landscape components and writes the rendered data to component labels.
  */
-public class OrganicLayouter implements Layouter<LayoutedComponent> {
+public class OrganicLayouter implements Layouter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrganicLayouter.class);
-
-    public OrganicLayouter() {
-    }
 
     @Override
     public LayoutedComponent layout(@NonNull final Landscape landscape) {

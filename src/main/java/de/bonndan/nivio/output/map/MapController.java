@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.map;
 import de.bonndan.nivio.api.NotFoundException;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
+import de.bonndan.nivio.output.map.svg.SVGDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -21,11 +22,11 @@ public class MapController {
     public static final String PATH = "/render";
 
     private final LandscapeRepository landscapeRepository;
-    private final RenderCache renderCache;
+    private final RenderingRepository renderingRepository;
 
-    public MapController(LandscapeRepository landscapeRepository, RenderCache renderCache) {
+    public MapController(LandscapeRepository landscapeRepository, RenderingRepository renderingRepository) {
         this.landscapeRepository = landscapeRepository;
-        this.renderCache = renderCache;
+        this.renderingRepository = renderingRepository;
     }
 
     @CrossOrigin(methods = RequestMethod.GET)
@@ -38,8 +39,9 @@ public class MapController {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_TYPE, "image/svg+xml");
+            SVGDocument svgDocument = renderingRepository.get(SVGDocument.class, landscape, debug).orElseThrow();
             return new ResponseEntity<>(
-                    renderCache.getSVG(landscape, debug),
+                    svgDocument.getXML(),
                     headers,
                     HttpStatus.OK
             );

@@ -15,6 +15,9 @@ spring:
           auth: true
           starttls.enable: true
 
+  mustache:
+    check-template-location: false
+
 logging:
   level:
     root: INFO

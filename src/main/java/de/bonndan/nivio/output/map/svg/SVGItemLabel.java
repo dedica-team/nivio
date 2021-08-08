@@ -18,7 +18,7 @@ class SVGItemLabel extends Component {
     private final String identifier;
 
     SVGItemLabel(Item item) {
-        name = StringUtils.isEmpty(item.getName()) ? item.getIdentifier() : item.getName();
+        name = !StringUtils.hasLength(item.getName()) ? item.getIdentifier() : item.getName();
         id = getId(item);
         identifier = item.getFullyQualifiedIdentifier().jsonValue();
     }

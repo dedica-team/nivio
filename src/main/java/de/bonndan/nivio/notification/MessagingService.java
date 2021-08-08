@@ -16,8 +16,6 @@ import static de.bonndan.nivio.notification.WebSocketConfig.EVENTS;
 
 /**
  * This services listens for events and broadcasts them to subscribed websocket clients.
- *
- *
  */
 @Component
 public class MessagingService {
@@ -35,7 +33,7 @@ public class MessagingService {
     public void onProcessingFinishedEvent(ProcessingFinishedEvent processingEvent) {
         EventNotification eventNotification = EventNotification.from(processingEvent);
         fifo.add(eventNotification);
-        LOGGER.debug("Broadcasting processing event: " + processingEvent.getType());
+        LOGGER.debug("Broadcasting processing event: {}", processingEvent.getType());
         this.template.convertAndSend(WebSocketConfig.TOPIC + EVENTS, eventNotification);
     }
 
@@ -43,7 +41,7 @@ public class MessagingService {
     public void onProcessingErrorEvent(ProcessingErrorEvent processingEvent) {
         EventNotification eventNotification = EventNotification.from(processingEvent);
         fifo.add(eventNotification);
-        LOGGER.debug("Broadcasting processing event: " + processingEvent.getType());
+        LOGGER.debug("Broadcasting processing event: {}", processingEvent.getType());
         this.template.convertAndSend(WebSocketConfig.TOPIC + EVENTS, eventNotification);
     }
 

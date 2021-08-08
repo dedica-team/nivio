@@ -280,7 +280,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
     @Override
     public String getIcon() {
-        return getLabel("icon");
+        return getLabel(Label.icon);
     }
 
     /**

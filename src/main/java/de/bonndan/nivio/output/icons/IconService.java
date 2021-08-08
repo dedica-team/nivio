@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.icons;
 
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.util.URLHelper;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -40,7 +39,7 @@ public class IconService {
 
         //icon label based
         String icon = item.getIcon();
-        if (!StringUtils.isEmpty(icon)) {
+        if (StringUtils.hasLength(icon)) {
 
             if (icon.startsWith(DataUrlHelper.DATA_IMAGE)) {
                 return icon;
@@ -66,7 +65,7 @@ public class IconService {
 
         //type based
         String type = item.getType();
-        if (StringUtils.isEmpty(type)) {
+        if (!StringUtils.hasLength(type)) {
             return localIcons.getDefaultIcon();
         }
 

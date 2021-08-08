@@ -48,6 +48,11 @@ public class SVGRenderer implements Renderer<SVGDocument> {
         }
     }
 
+    @Override
+    public Class<SVGDocument> getArtefactType() {
+        return SVGDocument.class;
+    }
+
     private String getStyles(Landscape landscape) {
         String css = "";
         try (InputStream resourceAsStream = getClass().getResourceAsStream("/static/css/svg.css")) {

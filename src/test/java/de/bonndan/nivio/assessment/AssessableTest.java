@@ -2,7 +2,7 @@ package de.bonndan.nivio.assessment;
 
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
-import de.bonndan.nivio.assessment.kpi.RangeApiModel;
+import de.bonndan.nivio.output.dto.RangeApiModel;
 import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;

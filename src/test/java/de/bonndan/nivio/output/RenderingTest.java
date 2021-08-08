@@ -14,8 +14,11 @@ import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.output.icons.ExternalIcons;
+import de.bonndan.nivio.output.layout.AppearanceProcessor;
+import de.bonndan.nivio.output.layout.LayoutService;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.layout.OrganicLayouter;
+import de.bonndan.nivio.output.map.RenderingRepository;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
 import de.bonndan.nivio.output.map.svg.SVGDocument;
 import de.bonndan.nivio.output.map.svg.SVGRenderer;
@@ -45,6 +48,8 @@ public abstract class RenderingTest {
     protected LandscapeDescriptionFactory factory;
     protected HttpService httpService;
     private ObjectMapper objectMapper;
+    private LayoutService layoutService;
+    private AppearanceProcessor appearanceProcessor;
 
     public void setup() throws URISyntaxException {
         landscapeRepository = new LandscapeRepository();
@@ -61,41 +66,46 @@ public abstract class RenderingTest {
 
         LinkHandlerFactory linkHandlerFactory = mock(LinkHandlerFactory.class);
         IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService));
-        indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class), iconService);
+
+        MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
+        when(mapStyleSheetFactory.getMapStylesheet(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn("");
+        appearanceProcessor = new AppearanceProcessor(new IconService(new LocalIcons(""), new ExternalIcons(httpService)));
+        layoutService = new LayoutService(
+                new AppearanceProcessor(iconService),
+                new OrganicLayouter(),
+                new SVGRenderer(mapStyleSheetFactory),
+                new RenderingRepository()
+        );
+        indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class));
     }
 
     protected Landscape getLandscape(String path) {
         File file = new File(RootPath.get() + path);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
         indexer.index(landscapeDescription);
-        return landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
+
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
+        appearanceProcessor.process(landscape);
+        return landscape;
     }
 
     protected LayoutedComponent debugRenderLandscape(String path, Landscape landscape) throws IOException {
 
-        OrganicLayouter layouter = new OrganicLayouter();
-        LayoutedComponent graph = layouter.layout(landscape);
-        toSVG(graph, new Assessment(landscape.applyKPIs(landscape.getKpis())), RootPath.get() + path);
+        LayoutedComponent graph = layoutService.layout(landscape);
+        toSVG(landscape, new Assessment(landscape.applyKPIs(landscape.getKpis())), RootPath.get() + path);
         return graph;
     }
 
     protected String renderLandscape(String path, Landscape landscape) throws IOException {
-
-        OrganicLayouter layouter = new OrganicLayouter();
-        LayoutedComponent graph = layouter.layout(landscape);
-        return toSVG(graph, new Assessment(landscape.applyKPIs(landscape.getKpis())), RootPath.get() + path);
+        return toSVG(landscape, new Assessment(landscape.applyKPIs(landscape.getKpis())), RootPath.get() + path);
     }
 
-    private String toSVG(LayoutedComponent layoutedComponent, Assessment assessment, String filename) throws IOException {
-
-        MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
-        when(mapStyleSheetFactory.getMapStylesheet(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn("");
+    private String toSVG(Landscape landscape, Assessment assessment, String filename) throws IOException {
 
         File json = new File(filename + "_debug.json");
-        objectMapper.writeValue(json, layoutedComponent);
+        objectMapper.writeValue(json, layoutService.layout(landscape));
 
-        SVGRenderer svgRenderer = new SVGRenderer(mapStyleSheetFactory);
-        SVGDocument svg = svgRenderer.render(layoutedComponent, assessment, true);
+        SVGDocument svg = (SVGDocument) layoutService.render(landscape, assessment, true);
 
         File svgFile = new File(filename + "_debug.svg");
         FileWriter fileWriter = new FileWriter(svgFile);

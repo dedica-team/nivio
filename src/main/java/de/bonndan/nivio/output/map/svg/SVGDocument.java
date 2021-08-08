@@ -75,9 +75,9 @@ public class SVGDocument extends Component {
 
                 Item item = (Item) layoutedItem.getComponent();
                 //collect patterns for icons
-                if (!StringUtils.isEmpty(layoutedItem.getFill())) {
-                    SVGPattern SVGPattern = new SVGPattern(layoutedItem.getFill());
-                    defs.add(SVGPattern.render());
+                if (StringUtils.hasLength(layoutedItem.getFill())) {
+                    SVGPattern svgPattern = new SVGPattern(layoutedItem.getFill());
+                    defs.add(svgPattern.render());
                 }
 
                 //render icons
@@ -85,8 +85,8 @@ public class SVGDocument extends Component {
                 Point2D.Double pos = hexMap.hexForItem(item).toPixel();
 
                 List<StatusValue> itemStatuses = assessment.getResults().get(item.getFullyQualifiedIdentifier().toString());
-                SVGItem SVGItem = new SVGItem(label.render(), layoutedItem, itemStatuses, pos);
-                items.add(SVGItem.render());
+                SVGItem svgItem = new SVGItem(label.render(), layoutedItem, itemStatuses, pos);
+                items.add(svgItem.render());
             });
         });
 
@@ -142,7 +142,7 @@ public class SVGDocument extends Component {
     private DomContent getLogo(SVGDimension dimension) {
         DomContent logo = null;
         String logoUrl = landscape.getIcon(); //has been set by appearance resolver
-        if (!StringUtils.isEmpty(logoUrl)) {
+        if (StringUtils.hasLength(logoUrl)) {
             logo = SvgTagCreator.image()
                     .attr("xlink:href", logoUrl)
                     .attr("x", dimension.cartesian.horMin - dimension.cartesian.padding)

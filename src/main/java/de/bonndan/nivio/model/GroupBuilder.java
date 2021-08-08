@@ -3,7 +3,7 @@ package de.bonndan.nivio.model;
 import java.util.HashMap;
 import java.util.Map;
 
-final class GroupBuilder {
+public final class GroupBuilder {
     private Map<String, Link> links = new HashMap<>();
     private String identifier;
     private String landscapeIdentifier;

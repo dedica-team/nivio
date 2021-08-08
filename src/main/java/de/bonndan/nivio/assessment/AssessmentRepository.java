@@ -1,14 +1,14 @@
 package de.bonndan.nivio.assessment;
 
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.Landscape;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Stores and loads and creates Assessments with FullyQualifiedIdentifier as key
@@ -16,30 +16,34 @@ import java.util.Optional;
 @Component
 public class AssessmentRepository {
 
-    private final HashMap<FullyQualifiedIdentifier, Assessment> repository;
+    private final Map<FullyQualifiedIdentifier, Assessment> repository;
 
     public AssessmentRepository() {
-        repository = new HashMap<>();
+        repository = new ConcurrentHashMap<>();
     }
 
     public void clean() {
         repository.clear();
     }
 
+    /**
+     * Returns the current assessment for the landscape.
+     *
+     * @param fullyQualifiedIdentifier landscape identifier
+     * @return an assessment if present
+     */
     @NonNull
-    public Assessment createAssessment(@NonNull Landscape landscape) {
-        var testedLandscape = Objects.requireNonNull(landscape, "Assessments can't be created from a null value");
-        var newAssessment = AssessmentFactory.createAssessment(testedLandscape);
-        storeAssessment(testedLandscape.getFullyQualifiedIdentifier(), newAssessment);
-        return newAssessment;
+    public Optional<Assessment> getAssessment(@NonNull final FullyQualifiedIdentifier fullyQualifiedIdentifier) {
+        return Optional.ofNullable(repository.get(Objects.requireNonNull(fullyQualifiedIdentifier, "Null instead of FQI given")));
     }
 
-    public Optional<Assessment> getAssessment(@Nullable FullyQualifiedIdentifier fullyQualifiedIdentifier) {
-        return Optional.ofNullable(repository.get(fullyQualifiedIdentifier));
+    /**
+     * Saves the given assessment
+     *
+     * @param fqi        landscape identifier
+     * @param assessment assessment
+     */
+    public void save(@NonNull final FullyQualifiedIdentifier fqi, @NonNull final Assessment assessment) {
+        repository.put(fqi, assessment);
     }
-
-    private void storeAssessment(@NonNull FullyQualifiedIdentifier fullyQualifiedIdentifier, @NonNull Assessment assessment) {
-        repository.put(fullyQualifiedIdentifier, assessment);
-    }
-
 }

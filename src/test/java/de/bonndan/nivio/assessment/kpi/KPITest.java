@@ -3,6 +3,7 @@ package de.bonndan.nivio.assessment.kpi;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.output.dto.RangeApiModel;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;

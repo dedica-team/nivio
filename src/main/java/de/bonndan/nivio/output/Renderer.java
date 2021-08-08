@@ -34,4 +34,9 @@ public interface Renderer<T> {
      * @throws IOException if file cannot be written
      */
     void render(@NonNull final LayoutedComponent landscape, @NonNull final Assessment assessment, @NonNull final File file, boolean debug) throws IOException;
+
+    /**
+     * @return the generated class of the impl
+     */
+    Class<T> getArtefactType();
 }
