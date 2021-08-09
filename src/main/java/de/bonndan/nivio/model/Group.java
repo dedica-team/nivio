@@ -193,11 +193,13 @@ public class Group implements Component, Labeled, Linked, Assessable {
      * @param item the item to add.
      * @throws IllegalArgumentException if the item group field mismatches
      */
-    public void addItem(Item item) {
+    public void addOrReplaceItem(Item item) {
         if (!identifier.equals(item.getGroup())) {
             throw new IllegalArgumentException(String.format("Item group '%s' cannot be added to group '%s'", item.getGroup(), identifier));
         }
 
+        //ensures that an existing item is removed from set
+        items.stream().filter(item1 -> item1.equals(item)).findFirst().ifPresent(this::removeItem);
         items.add(item);
     }
 

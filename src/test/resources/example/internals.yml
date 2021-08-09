@@ -28,6 +28,7 @@ items:
     icon: sprout
     relations:
       - target: config
+        type: provider
 
   - identifier: config
     name: Config Files
@@ -172,6 +173,7 @@ items:
     description: Loads the KPIs that have been configured for the landscape
     relations:
       - target: assessment/visitor
+        type: dataflow
 
   - identifier: visitor
     name: visit components

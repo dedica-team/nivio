@@ -19,7 +19,7 @@ public class GroupFactory {
      * @param added group that carries additional values
      * @return a new group, or the first one if the second one is null
      */
-    public static Group merge(final Group group, Group added) {
+    public static Group merge(final Group group, final Group added) {
 
         GroupBuilder builder = getBuilder(group);
 

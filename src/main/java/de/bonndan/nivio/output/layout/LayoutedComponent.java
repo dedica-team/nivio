@@ -30,9 +30,8 @@ public class LayoutedComponent {
     @Nullable
     private String defaultColor;
 
-    public LayoutedComponent(@NonNull Component component, List<Component> opposites) {
-        Objects.requireNonNull(component);
-        this.component = component;
+    public LayoutedComponent(@NonNull final Component component, List<Component> opposites) {
+        this.component = Objects.requireNonNull(component);
         this.opposites = opposites;
     }
 

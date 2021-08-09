@@ -108,7 +108,6 @@ public class SVGDocument extends Component {
         //render background hexes
         defs.add(SVGBackgroundFactory.getHex());
 
-
         List<DomContent> background = new ArrayList<>(
                 //SVGBackgroundFactory.getBackgroundTiles(dimension)
         );

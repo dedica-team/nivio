@@ -39,13 +39,13 @@ class AppearanceProcessorTest {
         Item s1 = getTestItemBuilder("g1", "s1").withLandscape(landscape).withType("loadbalancer").build();
 
         items.add(s1);
-        g1.addItem(s1);
+        g1.addOrReplaceItem(s1);
 
         Item s2 = getTestItem("g1", "s2", landscape);
 
         s2.setLabel(Label.icon, "https://foo.bar/icon.png");
         items.add(s2);
-        g1.addItem(s2);
+        g1.addOrReplaceItem(s2);
 
         landscape.setItems(new HashSet<>(items));
     }
