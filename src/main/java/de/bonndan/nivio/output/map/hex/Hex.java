@@ -40,9 +40,16 @@ public class Hex {
     //double DEFAULT_ICON_SIZE
     public static final int HEX_SIZE = 2 * DEFAULT_ICON_SIZE;
 
+    public static final int SOUTH_EAST = 0;
+    public static final int SOUTH = 1;
+    public static final int SOUTH_WEST = 2;
+    public static final int NORTH_WEST = 3;
+    public static final int NORTH = 4;
+    public static final int NORTH_EAST = 5;
+
     /**
      * q coordinate
-     * <p>
+     *
      * For coords see https://www.redblobgames.com/grids/hexagons/#coordinates
      */
     public final int q;
@@ -65,7 +72,7 @@ public class Hex {
      */
     public Hex(int q, int r, int s) {
         if (q + r + s != 0) {
-            throw new RuntimeException("q + r + s must be 0");
+            throw new IllegalArgumentException("q + r + s must be 0");
         }
         this.q = q;
         this.r = r;
@@ -100,7 +107,7 @@ public class Hex {
 
         double s = -q - r;
         if (Math.round(q + r + s) != 0) {
-            throw new RuntimeException("q + r + s must be 0");
+            throw new IllegalArgumentException("q + r + s must be 0");
         }
 
         int qi = (int) Math.round(q);
@@ -170,6 +177,16 @@ public class Hex {
         });
 
         return topLeft.get();
+    }
+
+    public int getDirectionTo(@NonNull final Hex hex) {
+        List<Hex> neighbours = neighbours();
+        for (int i = 0, neighboursSize = neighbours.size(); i < neighboursSize; i++) {
+            Hex hex1 = neighbours.get(i);
+            if (hex1.equals(hex)) return i;
+        }
+
+        throw new IllegalArgumentException("Not an adjacent hex given.");
     }
 
 

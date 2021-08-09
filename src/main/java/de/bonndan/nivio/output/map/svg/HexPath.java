@@ -14,7 +14,8 @@ public class HexPath {
 
     private final List<Hex> hexes;
     private final List<String> points = new ArrayList<>();
-    private final List<Hex> bends;
+    private List<Hex> bends;
+    private List<Integer> directions;
     private final Point2D.Double endPoint;
 
     /**
@@ -22,7 +23,7 @@ public class HexPath {
      */
     public HexPath(final List<Hex> hexes) {
         this.hexes = hexes;
-        this.bends = calcBends(hexes);
+        calcBends(hexes);
         this.endPoint = calcPoints();
     }
 
@@ -115,23 +116,38 @@ public class HexPath {
      * Returns the bends from a list of adjacent hexes (a chain).
      *
      * @param hexes the hex chain
-     * @return all hexes which are bends / curves
      */
-    public static List<Hex> calcBends(final List<Hex> hexes) {
+    void calcBends(final List<Hex> hexes) {
 
-        final List<Hex> bends = new ArrayList<>();
+        bends = new ArrayList<>();
+        directions = new ArrayList<>();
         var i = 0;
         for (i = 1; i < hexes.size() - 1; i++) {
             var prev = hexes.get(i - 1);
             var cur = hexes.get(i);
             var next = hexes.get(i + 1);
+
+            //bends
             var qBend = (prev.q == cur.q && next.q != cur.q) || (prev.q != cur.q && next.q == cur.q);
             var rBend = (prev.r == cur.r && next.r != cur.r) || (prev.r != cur.r && next.r == cur.r);
             if (qBend || rBend) {
                 bends.add(cur);
             }
-        }
 
-        return bends;
+            //directions
+            directions.add(prev.getDirectionTo(cur));
+
+            if (i == hexes.size() - 2) {
+                directions.add(cur.getDirectionTo(next));
+            }
+        }
+    }
+
+    public List<Hex> getBends() {
+        return Collections.unmodifiableList(bends);
+    }
+
+    public List<Integer> getDirections() {
+        return Collections.unmodifiableList(directions);
     }
 }
