@@ -51,9 +51,9 @@ public class LayoutService implements ApplicationListener<AssessmentChangedEvent
         LayoutedComponent layout = layout(landscape);
 
         var debug = false;
-        LOGGER.info("Generating SVG rendering of landscape {} (debug: {})", landscape.getIdentifier(), debug);
         var artefact = renderer.render(layout, assessment, debug);
-        renderingRepository.save(renderer.getArtefactType(), landscape, artefact, debug);
+        renderingRepository.save(renderer.getRenderingType(), landscape, artefact, debug);
+        LOGGER.info("Generated {} rendering of landscape {} (debug: {})", renderer.getRenderingType(), landscape.getIdentifier(), debug);
         eventPublisher.publishEvent(new LayoutChangedEvent(landscape, "Rendered landscape " + landscape.getIdentifier()));
     }
 

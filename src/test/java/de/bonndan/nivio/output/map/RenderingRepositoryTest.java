@@ -30,10 +30,10 @@ class RenderingRepositoryTest {
     void saveAndGet() {
         //given
         SVGDocument foo = mock(SVGDocument.class);
-        renderingRepository.save(SVGDocument.class, landscape, foo, false);
+        renderingRepository.save("foo", landscape, foo, false);
 
         //when
-        Optional<SVGDocument> first = renderingRepository.get(SVGDocument.class, landscape, false);
+        Optional<Object> first = renderingRepository.get("foo", landscape, false);
 
         //then
         assertThat(first).isPresent().get().isEqualTo(foo);

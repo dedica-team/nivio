@@ -45,7 +45,7 @@ public class SVGDocument extends Component {
         this.layouted = Objects.requireNonNull(layouted);
         this.landscape = (Landscape) layouted.getComponent();
         this.assessment = assessment == null ? AssessmentFactory.createAssessment(Map.of()) : assessment;
-        this.cssStyles = StringUtils.isEmpty(cssStyles) ? "" : cssStyles;
+        this.cssStyles = !StringUtils.hasLength(cssStyles) ? "" : cssStyles;
     }
 
     public void setDebug(boolean debug) {

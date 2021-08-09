@@ -3,7 +3,7 @@ package de.bonndan.nivio.output.map;
 import de.bonndan.nivio.api.NotFoundException;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
-import de.bonndan.nivio.output.map.svg.SVGDocument;
+import de.bonndan.nivio.output.map.svg.SVGRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -39,15 +39,15 @@ public class MapController {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_TYPE, "image/svg+xml");
-            SVGDocument svgDocument = renderingRepository.get(SVGDocument.class, landscape, debug).orElseThrow();
+            String xml = (String) renderingRepository.get(SVGRenderer.RENDERING_TYPE, landscape, debug).orElseThrow();
             return new ResponseEntity<>(
-                    svgDocument.getXML(),
+                    xml,
                     headers,
                     HttpStatus.OK
             );
         } catch (Exception ex) {
-            LOGGER.warn("Could not render svg: ", ex);
-            throw ex;
+            LOGGER.warn("Could not obtain svg: ", ex);
+            throw new RuntimeException("Failed to obtains svg", ex);
         }
     }
 

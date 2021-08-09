@@ -106,11 +106,10 @@ public abstract class RenderingTest {
         File json = new File(filename + "_debug.json");
         objectMapper.writeValue(json, layoutService.layout(landscape));
 
-        SVGDocument svg = (SVGDocument) layoutService.render(landscape, assessment, true);
+        String xml = (String) layoutService.render(landscape, assessment, true);
 
         File svgFile = new File(filename + "_debug.svg");
         FileWriter fileWriter = new FileWriter(svgFile);
-        String xml = svg.getXML();
         fileWriter.write(xml);
         fileWriter.close();
         return xml;

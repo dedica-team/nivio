@@ -15,6 +15,9 @@ groups:
   reports:
     name: Reporting
     description: Written Reports
+  observation:
+    name: Observation
+    description: Observation of input changed
 
 
 items:
@@ -33,6 +36,16 @@ items:
     icon: file-multiple
     relations:
       - target: sources/parsing
+        type: dataflow
+
+  - identifier: observerpool
+    name: Observer Pool
+    description: Observers for each landscape watching for changes
+    group: observation
+    relations:
+      - target: sources/parsing
+        type: dataflow
+        event: InputChangedEvent
 
   - identifier: parsing
     group: sources
@@ -40,6 +53,7 @@ items:
     icon: file-cog
     relations:
       - target: sources/factory
+        type: dataflow
 
   - identifier: factory
     group: sources
@@ -48,13 +62,15 @@ items:
     icon: factory
     relations:
       - target: sources/environment
+        type: dataflow
 
   - identifier: environment
     group: sources
-    description: A partial or complete landscape graph consisting of DTOs that is merge into the landscape graph.
+    description: A partial or complete landscape graph consisting of DTOs that is merged into the landscape graph.
     note: See LandscapeDescription.java
     relations:
       - target: indexing/indexing
+        type: dataflow
 
   - identifier: indexing
     group: indexing
@@ -62,6 +78,7 @@ items:
     note: See Indexer.java
     relations:
       - target: indexing/templates
+        type: dataflow
 
   - identifier: templates
     group: indexing
@@ -108,11 +125,12 @@ items:
       - target: indexing/magic
 
   - identifier: magic
-    name: magic relations
+    name: detect relations
     group: indexing
     description: Parses item labels to find clues on relations (like database links).
     relations:
       - target: indexing/relations
+        type: dataflow
 
   - identifier: relations
     name: relations
@@ -120,16 +138,17 @@ items:
     description: Sets regular relations
     relations:
       - target: indexing/enrich
+        type: dataflow
 
   - identifier: enrich
     name: enrich data
     group: indexing
-    lifecycle: PLAN
     description: Adds data to item fields from external sources (links)
     links:
       issue: https://github.com/dedica-team/nivio/issues/97
     relations:
       - target: graph/graph
+        type: dataflow
 
   #
   # graph
@@ -141,7 +160,7 @@ items:
     icon: graphql
     relations:
       - target: assessment/kpis
-      - target: rendering/sublayout
+        type: dataflow
       - target: reports/html
 
   #
@@ -164,6 +183,8 @@ items:
   - identifier: assessment
     group: assessment
     description: Collects all KPIs from all components as map (containing FullyQualifiedIdenfiers)
+    relations:
+      - target: rendering/sublayout
 
   #
   # rendering

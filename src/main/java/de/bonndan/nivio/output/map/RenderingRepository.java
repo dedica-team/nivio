@@ -28,24 +28,23 @@ public class RenderingRepository {
      * @return the svg as string
      */
     @NonNull
-    public <T> Optional<T> get(Class<T> artefactType, @NonNull final Landscape landscape, boolean debug) {
-        Object o = renderings.get(getKey(landscape, artefactType.getSimpleName(), debug));
-        return (Optional<T>) Optional.ofNullable(o);
-    }
-
-    private String getKey(Landscape landscape, String type, boolean debug) {
-        return Objects.requireNonNull(landscape).getFullyQualifiedIdentifier() + type + (debug ? "debug" : "");
+    public Optional<Object> get(@NonNull final String artefactType, @NonNull final Landscape landscape, boolean debug) {
+        return Optional.ofNullable(renderings.get(getKey(landscape, artefactType, debug)));
     }
 
     /**
      * Saves a rendered artefact.
      *
-     * @param artefactType classname of the artefact impl
+     * @param artefactType type artefact
      * @param landscape    the related landscape
      * @param artefact     the rendered artefact
      * @param debug        flag
      */
-    public void save(Class<?> artefactType, @NonNull final Landscape landscape, @NonNull final Object artefact, boolean debug) {
-        renderings.put(getKey(landscape, artefactType.getSimpleName(), debug), artefact);
+    public void save(String artefactType, @NonNull final Landscape landscape, @NonNull final Object artefact, boolean debug) {
+        renderings.put(getKey(landscape, artefactType, debug), artefact);
+    }
+
+    private String getKey(Landscape landscape, String type, boolean debug) {
+        return Objects.requireNonNull(landscape).getFullyQualifiedIdentifier() + Objects.requireNonNull(type) + (debug ? "debug" : "");
     }
 }

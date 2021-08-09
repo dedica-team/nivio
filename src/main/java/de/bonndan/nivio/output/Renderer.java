@@ -38,5 +38,5 @@ public interface Renderer<T> {
     /**
      * @return the generated class of the impl
      */
-    Class<T> getArtefactType();
+    String getRenderingType();
 }
