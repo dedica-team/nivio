@@ -50,8 +50,8 @@ class SVGRelation extends Component {
                 @Nullable final StatusValue statusValue
     ) {
         this.hexPath = hexPath;
-        if (StringUtils.isEmpty(fill)) {
-            throw new RuntimeException("Fill color cannot be empty.");
+        if (!StringUtils.hasLength(fill)) {
+            throw new IllegalArgumentException("Fill color cannot be empty.");
         }
         this.fill = fill;
         this.relation = relation;
@@ -121,7 +121,7 @@ class SVGRelation extends Component {
     }
 
     private ContainerTag addAttributes(ContainerTag g, Relation relation) {
-        String type = !StringUtils.isEmpty(relation.getType()) ? relation.getType().name() : "-";
+        String type = relation.getType() != null ? relation.getType().name() : "-";
         g.attr("data-type", type)
                 .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().jsonValue())
                 .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().jsonValue())
@@ -156,7 +156,7 @@ class SVGRelation extends Component {
                 .attr("x", xOffset)
                 .attr("y", 0)
                 .attr("font-size", "4em")
-                .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
+                .condAttr(StringUtils.hasLength(fillId), "fill", fillId)
                 .attr("transform", transform);
     }
 
