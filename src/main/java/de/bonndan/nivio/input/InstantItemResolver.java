@@ -46,9 +46,13 @@ public class InstantItemResolver extends Resolver {
         //other relations
         description.getRelations().forEach(rel -> {
             //inverse links, e.g. from docker compose
+            if (rel.getTarget() == null) {
+                processLog.warn("Found relation " + rel + " without target");
+                return;
+            }
             String target = rel.getTarget().equalsIgnoreCase(description.getIdentifier()) ?
                     rel.getSource() : rel.getTarget();
-            if (!StringUtils.isEmpty(target) && !hasTarget(target.toLowerCase(), allItems)) {
+            if (StringUtils.hasLength(target) && !hasTarget(target.toLowerCase(), allItems)) {
                 processLog.info(description + ": creating a new target item '" + target.toLowerCase() + "' instantly.");
                 newItems.add(createItem(rel.getTarget()));
             }
