@@ -17,6 +17,8 @@ public class RelationFactory {
         return createProviderDescription(source.getIdentifier(), target);
     }
 
+    private RelationFactory() {}
+
     /**
      * Factory method to create a provider type relation.
      *
@@ -78,7 +80,7 @@ public class RelationFactory {
                 landscape.findOneBy(description.getTarget(), existing.getTarget().getGroup()),
                 description.getDescription(),
                 description.getFormat(),
-                existing.getType()
+                description.getType()
         );
 
         Labeled.merge(description, relation);
