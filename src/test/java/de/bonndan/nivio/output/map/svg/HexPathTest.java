@@ -39,7 +39,7 @@ class HexPathTest {
 
     @Test
     void getEndPoint() {
-        assertThat(hexpath.getEndPoint()).isEqualTo(new Point2D.Double(275.0, 762.9165124598851));
+        assertThat(hexpath.getEndPoint()).isEqualTo(new Point2D.Double(290.0, 771.5767664977295));
     }
 
     @Test

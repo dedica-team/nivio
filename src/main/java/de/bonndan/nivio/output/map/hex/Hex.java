@@ -224,11 +224,14 @@ public class Hex {
 
     /**
      * see https://www.redblobgames.com/grids/hexagons/implementation.html#hex-geometry
+     *
+     * @param corner number
+     * @param size hex size
      */
-    private Point2D.Double hex_corner_offset(int corner, int s) {
-        Point2D.Double size = new Point2D.Double(s, s);
+    public static Point2D.Double getCornerCoordinates(float corner, int size) {
+        Point2D.Double point = new Point2D.Double(size, size);
         double angle = 2.0 * Math.PI * (startAngle + corner) / 6;
-        return new Point2D.Double(size.x * Math.cos(angle), size.y * Math.sin(angle));
+        return new Point2D.Double(point.x * Math.cos(angle), point.y * Math.sin(angle));
     }
 
     /**
@@ -242,7 +245,7 @@ public class Hex {
         ArrayList<Point2D.Double> corners = new ArrayList<>();
         Point2D.Double center = toPixel();
         for (int i = 0; i < 6; i++) {
-            Point2D.Double offset = hex_corner_offset(i, size);
+            Point2D.Double offset = getCornerCoordinates(i, size);
             corners.add(
                     new Point2D.Double(Math.round((center.x + offset.x)*10)/10f, Math.round((center.y + offset.y)*10)/10f)
             );

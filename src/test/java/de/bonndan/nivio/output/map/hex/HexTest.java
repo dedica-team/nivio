@@ -20,7 +20,7 @@ class HexTest {
         Hex hex = Hex.topLeft(area);
 
         //then
-        assertThat(hex).isNotNull().isEqualTo(new Hex(3,2));
+        assertThat(hex).isNotNull().isEqualTo(new Hex(0,-1));
     }
 
     @Test

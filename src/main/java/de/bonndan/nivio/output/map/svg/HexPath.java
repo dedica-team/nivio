@@ -28,7 +28,7 @@ public class HexPath {
     }
 
     /**
-     * @return a list of strings forming a path of cubic curves
+     * @return the endpoint of a list of strings forming a path of cubic curves
      */
     private Point2D.Double calcPoints() {
         points.add("M");
@@ -60,19 +60,21 @@ public class HexPath {
                     newAfter.y = next.y + (point.y - next.y) / 10;
                     points.addAll(List.of(String.valueOf(newAfter.x), ",", String.valueOf(newAfter.y)));
                     return new Point2D.Double(point.x, point.y);
-                } else {
-                    points.addAll(List.of(String.valueOf(newAfter.x), ",", String.valueOf(newAfter.y), " L"));
                 }
+
+                points.addAll(List.of(String.valueOf(newAfter.x), ",", String.valueOf(newAfter.y), " L"));
+
             } else {
                 if (isLast) {
                     var newAfter = new Point2D.Double();
-                    newAfter.x = point.x - (point.x - prev.x) / 2;
-                    newAfter.y = point.y - (point.y - prev.y) / 2;
+                    //2.5 to prevent that the same point is hit as above (results in broken dataflow markers)
+                    newAfter.x = point.x - (point.x - prev.x) / 2.5;
+                    newAfter.y = point.y - (point.y - prev.y) / 2.5;
                     points.addAll(List.of(" ", String.valueOf(newAfter.x), ",", String.valueOf(newAfter.y)));
                     return new Point2D.Double(newAfter.x, newAfter.y);
-                } else {
-                    points.addAll(List.of(" ", String.valueOf(point.x), ",", String.valueOf(point.y), " L"));
                 }
+
+                points.addAll(List.of(" ", String.valueOf(point.x), ",", String.valueOf(point.y), " L"));
             }
         }
         return null;
