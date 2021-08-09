@@ -175,7 +175,7 @@ class SVGRelation extends Component {
                 .attr("id", MARKER_ID)
                 .attr("markerWidth", DEFAULT_ICON_SIZE)
                 .attr("markerHeight", DEFAULT_ICON_SIZE)
-                .attr("refX", 15)
+                .attr("refX", 14)
                 .attr("refY", 5)
                 .attr("orient", "auto")
                 .attr("viewBox", "0 0 10 10")

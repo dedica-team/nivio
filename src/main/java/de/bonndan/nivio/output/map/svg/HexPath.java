@@ -67,9 +67,9 @@ public class HexPath {
             } else {
                 if (isLast) {
                     var newAfter = new Point2D.Double();
-                    //2.5 to prevent that the same point is hit as above (results in broken dataflow markers)
-                    newAfter.x = point.x - (point.x - prev.x) / 2.5;
-                    newAfter.y = point.y - (point.y - prev.y) / 2.5;
+                    //2.1 to prevent that the same point is hit as above (results in broken dataflow markers)
+                    newAfter.x = point.x - (point.x - prev.x) / 2.1;
+                    newAfter.y = point.y - (point.y - prev.y) / 2.1;
                     points.addAll(List.of(" ", String.valueOf(newAfter.x), ",", String.valueOf(newAfter.y)));
                     return new Point2D.Double(newAfter.x, newAfter.y);
                 }
