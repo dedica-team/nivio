@@ -82,7 +82,7 @@ class LandscapeApiModelTest {
 
     @Test
     void getLastUpdate() {
-        assertThat(landscapeApiModel.getLastUpdate().getClass()).isNull();
+        assertThat(landscapeApiModel.getLastUpdate()).isNull();
     }
 
     @Test
