@@ -3,8 +3,6 @@ package de.bonndan.nivio.input.kubernetes;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeRepository;
-import de.bonndan.nivio.observation.InputFormatObserver;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSetBuilder;
@@ -20,10 +18,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @EnableKubernetesMockClient(crud = true, https = false)
 class InputFormatHandlerKubernetesTest {
@@ -113,6 +111,6 @@ class InputFormatHandlerKubernetesTest {
 
     @Test
     void getObserver() {
-        assertNull(inputFormatHandlerKubernetes.getObserver(Mockito.mock(ApplicationEventPublisher.class), Mockito.mock(Landscape.class), Mockito.mock(SourceReference.class)));
+        assertThat(Objects.requireNonNull(inputFormatHandlerKubernetes.getObserver(Mockito.mock(ApplicationEventPublisher.class), Mockito.mock(Landscape.class), Mockito.mock(SourceReference.class))).getClass()).isEqualTo(KubernetesObserver.class);
     }
 }
