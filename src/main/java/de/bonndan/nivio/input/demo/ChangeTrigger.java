@@ -1,6 +1,6 @@
 package de.bonndan.nivio.input.demo;
 
-import de.bonndan.nivio.config.ConfigurableEnvVars;
+
 import de.bonndan.nivio.config.SeedProperties;
 import de.bonndan.nivio.input.IndexEvent;
 import de.bonndan.nivio.input.LandscapeDescriptionFactory;
