@@ -27,6 +27,18 @@ class GitLabConfigTest {
                 ()->assertEquals("abracadabra",gitLabProperties.getUsername()),
                 ()->assertEquals("123456789",gitLabProperties.getPassword())
         );
+        gitLabProperties.setHostUrl("http://gitlab.com");
+        gitLabProperties.setPersonalAccessToken("my_access_token");
+        gitLabProperties.setUsername("my_account");
+        gitLabProperties.setPassword("0123456789");
+
+        assertAll("hostUrl",()->assertEquals("http://gitlab.com",gitLabProperties.getHostUrl()),
+                ()->assertEquals("my_access_token",gitLabProperties.getPersonalAccessToken()),
+                ()->assertEquals("my_account",gitLabProperties.getUsername()),
+                ()->assertEquals("0123456789",gitLabProperties.getPassword())
+        );
+
+
     }
 
 
@@ -66,5 +78,25 @@ class GitLabConfigTest {
 
            );
     }
+    @Test
+    void getGitLabAPI(){
+        GitLabProperties gitLabProperties = new GitLabProperties("http://gitlab.example.com","token-string-here123","abracadabra","123456789");
+        Optional<String> hostUrl = Optional.ofNullable(gitLabProperties.getHostUrl());
+        Optional<String> personalAccessToken = Optional.ofNullable(gitLabProperties.getPersonalAccessToken());
+        Optional<String> username = Optional.ofNullable(gitLabProperties.getUsername());
+        Optional<String> password = Optional.ofNullable(gitLabProperties.getPassword());
+
+        assertNotNull(hostUrl.isEmpty());
+        assertNotNull(personalAccessToken.isEmpty());
+        assertNotNull(username.isEmpty());
+        assertNotNull(password.isEmpty());
+
+        assertTrue(hostUrl.isPresent());
+        assertTrue(personalAccessToken.isPresent());
+        assertTrue(username.isPresent());
+        assertTrue(password.isPresent());
+
+    }
+
 
 }
