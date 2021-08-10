@@ -22,6 +22,16 @@ class GitHubConfigTest {
                 ()->assertEquals("012345678",gitHubProperties.getPassword()),
                 ()-> assertEquals("4d98173f7c075527cb64878561d1fe70",gitHubProperties.getOauth()),
                 ()-> assertEquals("my_jwt_token",gitHubProperties.getJwt()));
+        gitHubProperties.setLogin("dedicaTest");
+        gitHubProperties.setPassword("123456789");
+        gitHubProperties.setOauth("abcdef12345");
+        gitHubProperties.setJwt("my_new_jwt");
+
+       assertEquals("123456789",gitHubProperties.getPassword());
+       assertEquals("abcdef12345",gitHubProperties.getOauth());
+       assertEquals("my_new_jwt",gitHubProperties.getJwt());
+       assertEquals("dedicaTest",gitHubProperties.getLogin());
+
 
     }
     @Test
