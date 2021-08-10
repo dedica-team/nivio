@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input.external.github;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.util.StringUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -74,6 +75,16 @@ class GitHubConfigTest {
 
         );
 
+    }
+    @Test
+    void testCheckAnyEnv(){
+
+        GitHubProperties gitHubProperties = new GitHubProperties("kohsuke","012345678","4d98173f7c075527cb64878561d1fe70","my_jwt_token");
+        boolean value = StringUtils.isEmpty(System.getenv(gitHubProperties.getLogin())) ||
+                StringUtils.isEmpty(System.getenv(gitHubProperties.getPassword())) ||
+                StringUtils.isEmpty(System.getenv(gitHubProperties.getOauth())) ||
+                StringUtils.isEmpty(System.getenv(gitHubProperties.getJwt()));
+        assertTrue(value);
     }
 
 }
