@@ -16,10 +16,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -86,7 +83,10 @@ public abstract class HtmlGenerator {
                 .map(mapEntry -> String.format("%s: %s", StringUtils.capitalize(Label.framework.unprefixed(mapEntry.getKey())), mapEntry.getValue()))
                 .collect(Collectors.toList());
 
-        List<StatusValue> statusValues = assessment.getResults().get(item.getFullyQualifiedIdentifier());
+        List<StatusValue> statusValues = assessment.getResults().get(item.getAssessmentIdentifier());
+        if (statusValues == null) {
+            statusValues = new ArrayList<>();
+        }
 
         return div(
                 div(

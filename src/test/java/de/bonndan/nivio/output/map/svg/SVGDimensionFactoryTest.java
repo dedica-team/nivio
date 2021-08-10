@@ -5,6 +5,7 @@ import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.ItemFactory;
 import de.bonndan.nivio.model.Relation;
+import de.bonndan.nivio.model.RelationFactory;
 import de.bonndan.nivio.output.map.hex.Hex;
 import org.junit.jupiter.api.Test;
 
@@ -57,7 +58,7 @@ class SVGDimensionFactoryTest {
 
         //when
         Hex three = new Hex(-10, -10);
-        SVGRelation svgRelation = new SVGRelation(new HexPath(List.of(three)), "aaccee", new Relation(ItemFactory.getTestItem("foo", "bar"), ItemFactory.getTestItem("foo", "baz")), null);
+        SVGRelation svgRelation = new SVGRelation(new HexPath(List.of(three)), "aaccee", RelationFactory.createForTesting(ItemFactory.getTestItem("foo", "bar"), ItemFactory.getTestItem("foo", "baz")), null);
         SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(svgGroupArea), List.of(svgRelation));
 
         //then

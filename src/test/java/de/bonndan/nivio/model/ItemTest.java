@@ -1,5 +1,7 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
+import de.bonndan.nivio.assessment.Assessable;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -63,6 +65,20 @@ public class ItemTest {
         Map<String, String> labels = s1.getJSONLabels();
         assertThat(labels).containsKey("foo.one");
         assertThat(labels).containsKey("foo.two");
+    }
+
+    @Test
+    public void labelsAreExcluded() {
+
+        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
+
+        Item s1 = getTestItem("g1", "a", landscape);
+        s1.getLabels().put(InputFormatHandlerKubernetes.LABEL_PREFIX + "foo", "one");
+        s1.getLabels().put(Label.type.name(), "two");
+
+        Map<String, String> labels = s1.getJSONLabels();
+        assertThat(labels).doesNotContainKey(InputFormatHandlerKubernetes.LABEL_PREFIX + "foo");
+        assertThat(labels).doesNotContainKey(Label.type.name());
     }
 
     @Test
@@ -151,11 +167,26 @@ public class ItemTest {
         Item s2 = getTestItemBuilder("g1", "b").build();
         Item s3 = getTestItemBuilder("g1", "c").build();
 
-        s1.setRelations(Set.of(new Relation(s1, s2)));
+        s1.setRelations(Set.of(RelationFactory.createForTesting(s1, s2)));
         assertThat(s1.getRelations()).hasSize(1);
 
         //when
-        s1.setRelations(Set.of(new Relation(s1, s3)));
+        s1.setRelations(Set.of(RelationFactory.createForTesting(s1, s3)));
         assertThat(s1.getRelations()).hasSize(1);
+    }
+
+    @Test
+    public void relationsAsAssessmentChildren() {
+
+        Item s1 = getTestItemBuilder("g1", "a").build();
+        Item s2 = getTestItemBuilder("g2", "b").build();
+        Relation forTesting = RelationFactory.createForTesting(s1, s2);
+        s1.addOrReplace(forTesting);
+
+        //when
+        List<? extends Assessable> children = s1.getChildren();
+        assertThat(children).hasSize(1);
+        assertThat(children.get(0)).isEqualTo(forTesting);
+
     }
 }

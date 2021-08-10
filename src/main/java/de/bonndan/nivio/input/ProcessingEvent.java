@@ -4,8 +4,8 @@ import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.springframework.context.ApplicationEvent;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 /**
  * Event that is emitted during processing of landscapes.
@@ -15,7 +15,7 @@ public abstract class ProcessingEvent extends ApplicationEvent {
     public static final String LOG_LEVEL_INFO = "info";
     public static final String LOG_LEVEL_ERROR = "error";
 
-    public ProcessingEvent(FullyQualifiedIdentifier source) {
+    protected ProcessingEvent(FullyQualifiedIdentifier source) {
         super(source);
     }
 
@@ -34,9 +34,9 @@ public abstract class ProcessingEvent extends ApplicationEvent {
      */
     public abstract String getMessage();
 
-    public LocalDateTime getDate() {
+    public ZonedDateTime getDate() {
         Instant instant = Instant.ofEpochMilli(getTimestamp());
-        return instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
     }
 
     @Override

@@ -39,15 +39,22 @@ kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin
 kubectl get secrets
 kubectl describe secret dashboard-admin-sa-token-*****
 ``` 
-* enter the k8s dashboard: go to http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/.
 
+* enter the k8s dashboard: go
+  to http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/.
 
-## Install example Helm Charts 
+## Install example Helm Charts
+
 * helm repo add bitnami https://charts.bitnami.com/bitnami
 * helm install redis bitnami/redis --set serviceType=NodePort
 * helm install nivio-wordpress bitnami/wordpress
 
+## Change URL in K8s config file
+
+* change URL under sources to K8s API URL
+
 ## Start nivio
+
 ```
 SEED=$(pwd)./src/test/resources/example/example_k8s.yml java -jar target/nivio.jar
 ``` 
