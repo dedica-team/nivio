@@ -12,6 +12,14 @@ public class SonarProperties {
     private String proxyHost;
     private String proxyPort;
 
+    public SonarProperties(String serverUrl,String login,String password,String proxyHost,String proxyPort){
+        this.serverUrl = serverUrl;
+        this.login = login;
+        this.password = password;
+        this.proxyHost = proxyHost;
+        this.proxyPort = proxyPort;
+    }
+
     public String getServerUrl() {
         return serverUrl;
     }
@@ -51,9 +59,5 @@ public class SonarProperties {
     public void setProxyPort(String proxyPort) {
         this.proxyPort = proxyPort;
     }
-
-
-
-
 
 }
