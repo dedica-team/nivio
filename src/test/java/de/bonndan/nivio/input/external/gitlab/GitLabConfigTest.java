@@ -1,9 +1,11 @@
 package de.bonndan.nivio.input.external.gitlab;
 
+import org.gitlab4j.api.GitLabApi;
 import org.junit.jupiter.api.Test;
 import java.util.Optional;
 
 import static java.util.Optional.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GitLabConfigTest {
@@ -80,22 +82,30 @@ class GitLabConfigTest {
     }
     @Test
     void getGitLabAPI(){
+        GitLabProperties gitLabProperties = new GitLabProperties("","token-string-here123","abracadabra","123456789");
+        GitLabConfig gitLabConfig = new GitLabConfig(gitLabProperties);
+        GitLabApi gitLabApi = gitLabConfig.getGitLabAPI();
+        assertNotNull(gitLabApi);
+        assertFalse(gitLabApi == null);
+        assertTrue(gitLabProperties.getHostUrl().isEmpty());
+    }
+
+    @Test
+    void testGetGitLabAPI(){
         GitLabProperties gitLabProperties = new GitLabProperties("http://gitlab.example.com","token-string-here123","abracadabra","123456789");
-        Optional<String> hostUrl = Optional.ofNullable(gitLabProperties.getHostUrl());
+        GitLabConfig gitLabConfig = new GitLabConfig(gitLabProperties);
+        String hostUrl = gitLabProperties.getHostUrl();
         Optional<String> personalAccessToken = Optional.ofNullable(gitLabProperties.getPersonalAccessToken());
         Optional<String> username = Optional.ofNullable(gitLabProperties.getUsername());
         Optional<String> password = Optional.ofNullable(gitLabProperties.getPassword());
 
-        assertNotNull(hostUrl.isEmpty());
-        assertNotNull(personalAccessToken.isEmpty());
-        assertNotNull(username.isEmpty());
-        assertNotNull(password.isEmpty());
-
-        assertTrue(hostUrl.isPresent());
-        assertTrue(personalAccessToken.isPresent());
-        assertTrue(username.isPresent());
-        assertTrue(password.isPresent());
-
+        GitLabApi gitLabApi = gitLabConfig.getGitLabAPI(hostUrl,personalAccessToken,username,password);
+        assertNotNull(gitLabApi);
+        assertFalse(gitLabApi == null);
+        assertThat(hostUrl.isEmpty());
+        assertThat(personalAccessToken.isPresent());
+        assertThat(username.isPresent());
+        assertThat(password.isPresent());
     }
 
 
