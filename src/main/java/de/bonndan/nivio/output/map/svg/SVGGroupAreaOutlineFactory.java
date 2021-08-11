@@ -77,7 +77,7 @@ class SVGGroupAreaOutlineFactory {
                 pointsPath = BorderHexesGroupOutline.getPath(borderHexes, groupArea);
                 /* style of multiple hexes*/
                 List<DomContent> territoryHexes = groupArea.stream()
-                        .map(hex -> new SVGHex(hex, fillId, fillId).render())
+                        .map(hex -> new SVGHex(hex, fillId, fillId, debug).render())
                         .collect(Collectors.toList());
                 containerTags.addAll(territoryHexes);
                 break;
@@ -99,7 +99,7 @@ class SVGGroupAreaOutlineFactory {
             ContainerTag svgPath = SvgTagCreator.path()
                     .attr("d", pointsPath)
                     .attr("fill", "none")
-                    .condAttr(!StringUtils.isEmpty(fillId), "stroke", fillId)
+                    .condAttr(StringUtils.hasLength(fillId), "stroke", fillId)
                     .attr("stroke-width", 3);
             containerTags.add(svgPath);
         }
@@ -143,7 +143,7 @@ class SVGGroupAreaOutlineFactory {
 
             //return the first group item in rotation direction
             if (allInGroup.contains(neighbour)) {
-                //Since we rotate clockwise we know that we hex adjacent to both start and neighbour must be free (otherwise
+                //Since we rotate clockwise we know that the hex adjacent to both start and neighbour must be free (otherwise
                 //that one would have been returned). Hence the next search should start there.
                 return new Position(neighbour, i - 1);
             }
@@ -154,12 +154,12 @@ class SVGGroupAreaOutlineFactory {
                     i = -1; //continue at zero in next cycle
                     repeats++;
                 } else {
-                    throw new RuntimeException("Could not pick non-empty neighbor");
+                    throw new IllegalStateException("Could not pick non-empty neighbor");
                 }
             }
         }
 
-        throw new RuntimeException("getNext starting at " + start + " could not find neighbour to follow " + neighbours);
+        throw new IllegalStateException("getNext starting at " + start + " could not find neighbour to follow " + neighbours);
     }
 
     static class Position {

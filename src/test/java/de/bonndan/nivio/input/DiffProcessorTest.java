@@ -40,8 +40,8 @@ public class DiffProcessorTest {
         items.add(s2);
         landscape.setItems(items);
 
-        g1.addItem(s1);
-        g1.addItem(s2);
+        g1.addOrReplaceItem(s1);
+        g1.addOrReplaceItem(s2);
     }
 
     @Test

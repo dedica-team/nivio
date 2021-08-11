@@ -57,7 +57,7 @@ public class RelationEndpointResolver extends Resolver {
 
     private Optional<ItemDescription> resolveOne(ItemDescription description, String term, ItemIndex<ItemDescription> allItems) {
 
-        if (StringUtils.isEmpty(term)) {
+        if (!StringUtils.hasLength(term)) {
             return Optional.of(description);
         }
 

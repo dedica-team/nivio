@@ -79,6 +79,7 @@ class RelationFactoryTest {
         RelationDescription providerDescription = RelationFactory.createProviderDescription("foo", "bar");
         providerDescription.setFormat("json");
         providerDescription.setDescription("huhu");
+        providerDescription.setType(RelationType.DATAFLOW);
         providerDescription.setLabel("foo1", "bar2");
         providerDescription.setLabel("foo2", "bar2");
 
@@ -89,6 +90,7 @@ class RelationFactoryTest {
         assertThat(newRelation.getSource()).isEqualTo(foo);
         assertThat(newRelation.getTarget()).isEqualTo(bar);
         assertThat(newRelation.getFormat()).isEqualTo("json");
+        assertThat(newRelation.getType()).isEqualTo(RelationType.DATAFLOW);
         assertThat(newRelation.getDescription()).isEqualTo("huhu");
         assertThat(newRelation.getLabel("foo1")).isEqualTo("bar2");
         assertThat(newRelation.getLabel("foo2")).isEqualTo("bar2");

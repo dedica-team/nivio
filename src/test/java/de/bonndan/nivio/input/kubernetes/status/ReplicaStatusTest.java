@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input.kubernetes.status;
 
+import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import de.bonndan.nivio.input.kubernetes.itemadapters.DeploymentItemAdapter;
 import de.bonndan.nivio.input.kubernetes.itemadapters.ReplicaSetItemAdapter;
 import de.bonndan.nivio.input.kubernetes.itemadapters.StatefulSetItemAdapter;
@@ -20,7 +21,7 @@ class ReplicaStatusTest {
         Mockito.when(itemAdapter.getReadyReplicas()).thenReturn(1);
         Mockito.when(itemAdapter.getReplicas()).thenReturn(1);
         var extendedStatus = replicaStatus.getExtendedStatus(Map.of("testKey", "testValue"), itemAdapter);
-        assertThat(extendedStatus).isEqualTo(Map.of("k8s.replicacondition.replicas", "1;1"));
+        assertThat(extendedStatus).isEqualTo(Map.of(InputFormatHandlerKubernetes.LABEL_PREFIX + ".replicacondition.replicas", "1;1"));
     }
 
     @Test
@@ -30,7 +31,7 @@ class ReplicaStatusTest {
         Mockito.when(itemAdapter.getReadyReplicas()).thenReturn(1);
         Mockito.when(itemAdapter.getReplicas()).thenReturn(1);
         var extendedStatus = replicaStatus.getExtendedStatus(Map.of("testKey", "testValue"), itemAdapter);
-        assertThat(extendedStatus).isEqualTo(Map.of("k8s.replicacondition.replicas", "1;1"));
+        assertThat(extendedStatus).isEqualTo(Map.of(InputFormatHandlerKubernetes.LABEL_PREFIX + ".replicacondition.replicas", "1;1"));
     }
 
     @Test

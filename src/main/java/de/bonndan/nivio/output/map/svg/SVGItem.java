@@ -64,7 +64,7 @@ class SVGItem extends Component {
     public DomContent render() {
 
         boolean hasText = false;
-        boolean hasFill = !StringUtils.isEmpty(layoutedComponent.getFill());
+        boolean hasFill = StringUtils.hasLength(layoutedComponent.getFill());
         var fillId = hasFill ? "url(#" + SVGPattern.idForLink(layoutedComponent.getFill()) + ")" : "white";
         DomContent content = null;
         Item item = (Item) layoutedComponent.getComponent();
@@ -73,7 +73,7 @@ class SVGItem extends Component {
          * use the shortname as text instead, if it is shorter than 3 chars (utf8: one "symbol"), font size is increased
          */
         String shortName = item.getLabel(Label.shortname);
-        if (!hasFill && StringUtils.isEmpty(item.getType()) && !StringUtils.isEmpty(shortName)) {
+        if (!hasFill && !StringUtils.hasLength(item.getType()) && StringUtils.hasLength(shortName)) {
             String className = shortName.length() < 3 ? "itemShortnameIcon" : "itemShortname";
             content = new SVGLabelText(shortName, "0", "3", className).render()
                     .attr("text-anchor", "middle");
@@ -82,7 +82,7 @@ class SVGItem extends Component {
         }
 
         DomContent icon = null;
-        if (!hasFill && !hasText && !StringUtils.isEmpty(layoutedComponent.getIcon())) {
+        if (!hasFill && !hasText && StringUtils.hasLength(layoutedComponent.getIcon())) {
             final int size = DEFAULT_ICON_SIZE * 3;
             final int trans = Math.round(size / 2f);
             icon = SvgTagCreator.image()
@@ -113,7 +113,7 @@ class SVGItem extends Component {
                 .attr("cx", 0)
                 .attr("cy", 0)
                 .attr("r", DEFAULT_ICON_SIZE * 2)
-                .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
+                .condAttr(StringUtils.hasLength(fillId), "fill", fillId)
                 .attr("stroke", stroke)
                 .attr("data-x", String.format(Locale.ENGLISH, "%.2f", pixel.x))
                 .attr("data-y", String.format(Locale.ENGLISH, "%.2f", pixel.y));

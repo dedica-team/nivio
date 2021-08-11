@@ -12,7 +12,7 @@ public enum RelationType {
 
     @JsonCreator
     public static RelationType from(String relationType) {
-        if (StringUtils.isEmpty(relationType)) {
+        if (!StringUtils.hasLength(relationType)) {
             return DATAFLOW;
         }
 

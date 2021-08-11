@@ -2,7 +2,6 @@ package de.bonndan.nivio.model;
 
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
-import de.bonndan.nivio.input.AppearanceProcessor;
 import de.bonndan.nivio.input.ProcessingException;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -84,7 +83,7 @@ public interface Labeled {
      * @param value label value (string|string[]|number|list|map)
      */
     default void setLabel(@NonNull final String key, final Object value) {
-        if (StringUtils.isEmpty(key)) {
+        if (!StringUtils.hasLength(key)) {
             throw new IllegalArgumentException("Label key is empty.");
         }
 
@@ -239,13 +238,15 @@ public interface Labeled {
         List<String> diff = new ArrayList<>();
         MapDifference<String, String> difference = Maps.difference(Objects.requireNonNull(before).getLabels(), getLabels());
         difference.entriesOnlyOnLeft().keySet().stream()
-                .filter(s -> !AppearanceProcessor.affectedLabels.contains(s))
+                .filter(s -> !s.startsWith(Label.INTERNAL_LABEL_PREFIX))
                 .forEach(s -> diff.add(String.format("Label '%s' has been removed", s)));
         difference.entriesOnlyOnRight().keySet().stream()
-                .filter(s -> !AppearanceProcessor.affectedLabels.contains(s))
+                .filter(s -> !s.startsWith(Label.INTERNAL_LABEL_PREFIX))
                 .forEach(s -> diff.add(String.format("Label '%s' has been added", s)));
         difference.entriesDiffering().forEach((key, value) -> {
-            if (AppearanceProcessor.affectedLabels.contains(key)) return;
+            if (key.startsWith(Label.INTERNAL_LABEL_PREFIX)) {
+                return;
+            }
             String msg = String.format("Label '%s' has changed from '%s' to '%s'", key, value.leftValue(), value.rightValue());
             diff.add(msg);
         });
@@ -282,7 +283,7 @@ public interface Labeled {
      * @param suffixAndValue value (label suffix is the same as the value)
      */
     default void setPrefixed(String prefix, String suffixAndValue) {
-        if (StringUtils.isEmpty(prefix)) {
+        if (!StringUtils.hasLength(prefix)) {
             throw new IllegalArgumentException("Prefix is empty.");
         }
         if (!prefix.endsWith(Label.DELIMITER)) {

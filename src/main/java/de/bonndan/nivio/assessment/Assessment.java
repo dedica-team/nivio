@@ -8,8 +8,6 @@ import java.util.Map;
 
 /**
  * Result of a landscape (or group, or item) assessment using {@link AbstractKPI}s.
- *
- * 
  */
 public class Assessment {
 
@@ -19,6 +17,15 @@ public class Assessment {
     public Assessment(Map<String, List<StatusValue>> results) {
         date = ZonedDateTime.now();
         this.results = results;
+    }
+
+    /**
+     * Null-object
+     *
+     * @return an empty instance
+     */
+    public static Assessment empty() {
+        return new Assessment(Map.of());
     }
 
     public Map<String, List<StatusValue>> getResults() {

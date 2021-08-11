@@ -20,6 +20,7 @@ public final class ItemBuilder {
     private String group;
     private String color;
     private String icon;
+    private String type;
     private URI address;
     private Map<String, String> labels = new HashMap<>();
 
@@ -90,6 +91,11 @@ public final class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder withType(String type) {
+        this.type = type;
+        return this;
+    }
+
     public ItemBuilder withAddress(URI address) {
         this.address = address;
         return this;
@@ -97,7 +103,7 @@ public final class ItemBuilder {
 
     public Item build() {
         Item item = new Item(identifier, landscape, group, name, owner, contact,
-                description, color, icon, address);
+                description, color, icon, type, address);
         item.setLinks(links);
         item.getLabels().putAll(labels);
         item.setRelations(relations);

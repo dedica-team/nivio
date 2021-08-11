@@ -6,6 +6,7 @@ import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Labeled;
+import de.bonndan.nivio.output.dto.RangeApiModel;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
@@ -37,7 +38,7 @@ public class ConditionKPI implements KPI {
 
         var status = Status.UNKNOWN;
         var message = "";
-        for (Map.Entry<String, String> entry : ((Labeled) component).getLabels(Label.condition).entrySet()) {
+        for (Map.Entry<String, String> entry : ((Labeled) component).getLabels(Label._condition).entrySet()) {
             String key = entry.getKey();
             String flag = entry.getValue();
             if (StringUtils.isEmpty(flag))

@@ -19,10 +19,10 @@ class SubLayoutTest {
 
         Item bar = getTestItem(foo.getIdentifier(), "bar");
         ;
-        foo.addItem(bar);
+        foo.addOrReplaceItem(bar);
 
         Item baz = getTestItem(foo.getIdentifier(), "baz");
-        foo.addItem(baz);
+        foo.addOrReplaceItem(baz);
         baz.addOrReplace(RelationFactory.createForTesting(baz, bar));
 
         HashSet<Item> objects = new HashSet<>();

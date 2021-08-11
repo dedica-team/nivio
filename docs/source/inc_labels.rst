@@ -1,5 +1,5 @@
 * ``capability`` The capability the service provides for the business or, in case of infrastructure, the technical capability like enabling service discovery, configuration, secrets, or persistence.
-* ``color`` A hex color code to override the inherited group color
+* ``color`` A hex color code (items inherit group colors as default)
 * ``costs`` Running costs of the item.
 * ``fill`` Background image (for displaying purposes).
 * ``frameworks`` A comma-separated list of frameworks as key-value pairs (key is name, value is version).
@@ -14,7 +14,6 @@
 * ``software`` Software/OS name.
 * ``stability`` Description of the item's stability.
 * ``team`` Name of the responsible team (e.g. technical owner).
-* ``type`` The type (service, database, queue, load balancer, etc.).
 * ``version`` The version (e.g. software version or protocol version).
 * ``visibility`` Visibility to other items.
 * ``weight`` Importance or relations. Used as factor for drawn width if numbers between 0 and 5 are given.

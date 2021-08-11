@@ -9,10 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static de.bonndan.nivio.assessment.AssessmentFactory.ASSESSMENT_ERROR_NULL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 
 class AssessmentRepositoryTest {
 
@@ -34,15 +32,15 @@ class AssessmentRepositoryTest {
     }
 
     @Test
-    void testNull() {
-        var getValue = assessmentRepository.getAssessment(null);
-        assertThat(getValue).isNotPresent();
-    }
+    void testSaveAndGet() {
+        //given
+        var assessment = Assessment.empty();
+        assessmentRepository.save(landscape.getFullyQualifiedIdentifier(), assessment);
 
-    @Test
-    void testGetExistingElement() {
-        var assessment = assessmentRepository.createAssessment(landscape);
+        //when
         var storedAssessment = assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier());
+
+        //then
         assertThat(storedAssessment).isPresent().contains(assessment);
     }
 
@@ -55,8 +53,8 @@ class AssessmentRepositoryTest {
 
     @Test
     void testIllegalArgumentExceptionGet() {
-        var exception = assertThrows(NullPointerException.class, () -> assessmentRepository.createAssessment(null));
-        assertThat(exception.getMessage()).isEqualTo(ASSESSMENT_ERROR_NULL);
+        var exception = assertThrows(NullPointerException.class, () -> assessmentRepository.getAssessment(null));
+        assertThat(exception.getMessage()).isEqualTo("Null instead of FQI given");
     }
 
 }

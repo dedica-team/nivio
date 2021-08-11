@@ -1,4 +1,4 @@
-package de.bonndan.nivio.assessment.kpi;
+package de.bonndan.nivio.output.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.Range;

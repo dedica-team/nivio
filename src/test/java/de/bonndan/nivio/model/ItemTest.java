@@ -13,10 +13,10 @@ import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ItemTest {
+class ItemTest {
 
     @Test
-    public void equalsWithGroup() {
+    void equalsWithGroup() {
 
         Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
@@ -38,7 +38,7 @@ public class ItemTest {
     }
 
     @Test
-    public void equalsWithLandscape() {
+    void equalsWithLandscape() {
 
         Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
@@ -53,36 +53,10 @@ public class ItemTest {
         assertNotEquals(s1, s3);
     }
 
-    @Test
-    public void labelsAreNotGroupedInApi() {
 
-        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
-
-        Item s1 = getTestItem("g1", "a", landscape);
-        s1.getLabels().put("foo.one", "one");
-        s1.getLabels().put("foo.two", "two");
-
-        Map<String, String> labels = s1.getJSONLabels();
-        assertThat(labels).containsKey("foo.one");
-        assertThat(labels).containsKey("foo.two");
-    }
 
     @Test
-    public void labelsAreExcluded() {
-
-        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
-
-        Item s1 = getTestItem("g1", "a", landscape);
-        s1.getLabels().put(InputFormatHandlerKubernetes.LABEL_PREFIX + "foo", "one");
-        s1.getLabels().put(Label.type.name(), "two");
-
-        Map<String, String> labels = s1.getJSONLabels();
-        assertThat(labels).doesNotContainKey(InputFormatHandlerKubernetes.LABEL_PREFIX + "foo");
-        assertThat(labels).doesNotContainKey(Label.type.name());
-    }
-
-    @Test
-    public void getChangesInLabels() {
+    void getChangesInLabels() {
         Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
         Item s1 = getTestItem("g1", "a", landscape);
@@ -97,7 +71,7 @@ public class ItemTest {
     }
 
     @Test
-    public void getChangesInName() {
+    void getChangesInName() {
 
         Item s1 = getTestItemBuilder("g1", "a")
                 .withName("foo")
@@ -113,7 +87,7 @@ public class ItemTest {
     }
 
     @Test
-    public void getChangesInDescription() {
+    void getChangesInDescription() {
 
         Item s1 = getTestItemBuilder("g1", "a")
                 .withDescription("foo")
@@ -129,7 +103,7 @@ public class ItemTest {
     }
 
     @Test
-    public void getChangesInOwner() {
+    void getChangesInOwner() {
 
         Item s1 = getTestItemBuilder("g1", "a")
                 .withOwner("foo")
@@ -145,7 +119,7 @@ public class ItemTest {
     }
 
     @Test
-    public void getChangesInLinks() {
+    void getChangesInLinks() {
 
         Item s1 = getTestItemBuilder("g1", "a")
                 .withLinks(Map.of("foo", new Link("https://acme.com")))
@@ -161,7 +135,7 @@ public class ItemTest {
     }
 
     @Test
-    public void setRelations() {
+    void setRelations() {
 
         Item s1 = getTestItemBuilder("g1", "a").build();
         Item s2 = getTestItemBuilder("g1", "b").build();
@@ -176,7 +150,7 @@ public class ItemTest {
     }
 
     @Test
-    public void relationsAsAssessmentChildren() {
+    void relationsAsAssessmentChildren() {
 
         Item s1 = getTestItemBuilder("g1", "a").build();
         Item s2 = getTestItemBuilder("g2", "b").build();

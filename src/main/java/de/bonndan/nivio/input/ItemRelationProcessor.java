@@ -38,7 +38,7 @@ public class ItemRelationProcessor extends Processor {
                             Relation update = RelationFactory.update(relation, relationDescription, landscape);
                             List<String> changes = relation.getChanges(update);
                             if (!changes.isEmpty()) {
-                                processLog.info(String.format(origin + ": Updating relation between %s and %s", update.getSource(), update.getTarget()));
+                                processLog.info(String.format("%s: Updating relation between %s and %s", origin, update.getSource(), update.getTarget()));
                                 changelog.addEntry(update, ProcessingChangelog.ChangeType.UPDATED, String.join(";", changes));
                             }
                             return update;
