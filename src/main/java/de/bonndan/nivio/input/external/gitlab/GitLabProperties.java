@@ -11,7 +11,6 @@ public class GitLabProperties {
     private String password;
 
     public GitLabProperties() {
-
     }
 
     public GitLabProperties(String hostUrl, String personalAccessToken, String username, String password) {

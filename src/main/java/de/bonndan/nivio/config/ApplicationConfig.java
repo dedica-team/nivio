@@ -16,7 +16,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.ZonedDateTime;
-import java.util.Optional;
+
 import static de.bonndan.nivio.output.icons.LocalIcons.DEFAULT_ICONS_FOLDER;
 
 @Configuration
@@ -46,7 +46,7 @@ public class ApplicationConfig {
 
     @Bean
     public Seed seed() {
-        return new Seed(Optional.ofNullable(seedProperties.getDemo()), seedProperties);
+        return new Seed(seedProperties.getSeed(), seedProperties.getDemo());
     }
 
     @Bean

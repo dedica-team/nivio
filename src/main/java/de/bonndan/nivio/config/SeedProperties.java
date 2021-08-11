@@ -7,8 +7,8 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 @ConstructorBinding
 public class SeedProperties {
 
-    private String seed;
-    private String demo; // add this attribute for the environment variable DEMO
+    private final String seed;
+    private final String demo; // add this attribute for the environment variable DEMO
 
     public String getSeed() {
         return seed;

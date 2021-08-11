@@ -24,7 +24,7 @@ class StartupListenerTest {
     private ApplicationEventPublisher publisher;
     private StartupListener startupListener;
     private SeedProperties seedProperties = new SeedProperties("src/test/resources/example/inout.yml","1");
-    private Seed seed = new Seed(Optional.empty(), seedProperties); // will use Seed.NIVIO_ENV_DIRECTORY
+    private Seed seed = new Seed(seedProperties.getSeed(), seedProperties.getDemo()); // will use Seed.NIVIO_ENV_DIRECTORY
 
 
     @BeforeEach
@@ -36,9 +36,9 @@ class StartupListenerTest {
     }
 
     @Test
-    public void fires() throws MalformedURLException {
+    void fires() throws MalformedURLException {
         //given
-        seed = new Seed(Optional.of("https://dedica.team"),seedProperties);
+        seed = new Seed("https://dedica.team", seedProperties.getDemo());
         startupListener = new StartupListener(factory, publisher, seed,seedProperties);
 
         LandscapeDescription landscapeDescription = new LandscapeDescription("foo", "bar", null);

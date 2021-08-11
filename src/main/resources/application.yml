@@ -51,7 +51,8 @@ nivio:
   brandingSecondary: ${NIVIO_BRANDING_SECONDARY:22F2C2}
   brandingLogoUrl: ${NIVIO_BRANDING_LOGO_URL:}
   brandingMessage: ${NIVIO_BRANDING_MESSAGE:All Landscapes}
-  seed: ${SEED:} # add a new environment variable
+  seed: ${SEED:}
+  demo: ${DEMO:}
 
 
 gitlab:  # add new environment variables
