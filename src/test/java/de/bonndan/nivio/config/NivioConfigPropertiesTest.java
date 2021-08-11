@@ -95,4 +95,7 @@ class NivioConfigPropertiesTest {
         ConstraintViolation<NivioConfigProperties>[] constraintViolations = (ConstraintViolation<NivioConfigProperties>[]) validate.toArray(ConstraintViolation[]::new);
         assertThat(constraintViolations[0].getMessage()).isEqualTo("brandingMessage must be a valid string");
     }
+
+
+
 }
