@@ -207,7 +207,6 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   }, [identifier, setData]);
 
   useEffect(() => {
-    console.log('loading map', new Date());
     loadMap();
     setSidebarContent(null);
   }, [identifier, loadMap, setSidebarContent]);
