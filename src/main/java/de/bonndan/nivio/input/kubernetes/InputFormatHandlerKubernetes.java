@@ -101,6 +101,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         if (K8sJsonParser.getExperimentalActive()) {
             crossReferenceLabel(itemList);
         }
+        LOGGER.error("Found " + itemList.size() + " items");
         return createItemDescription(itemList);
     }
 
@@ -132,7 +133,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         itemList.forEach(ownedItem -> {
             var ownerList = itemList.stream().filter(
                     ownerItem -> CollectionUtils.intersection(Objects.requireNonNullElse(ownedItem.getItemAdapter().getLabels(), new HashMap<String, String>()).values(),
-                            Objects.requireNonNullElse(ownerItem.getItemAdapter().getLabels(), new HashMap<String, String>()).values())
+                                    Objects.requireNonNullElse(ownerItem.getItemAdapter().getLabels(), new HashMap<String, String>()).values())
                             .size() >= K8sJsonParser.getMinMatchingLevel() && ownerItem.getLevelDecorator().getLevel() != -1 && ownedItem.getLevelDecorator().getLevel() != -1 &&
                             (ownerItem.getLevelDecorator().getLevel() - ownedItem.getLevelDecorator().getLevel()) == 1).collect(Collectors.toList());
             ownerList.forEach(ownedItem::addOwner);
