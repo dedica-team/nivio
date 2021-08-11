@@ -169,6 +169,7 @@ items:
   #
   - identifier: kpis
     name: load KPIs
+    icon: tray-arrow-up
     group: assessment
     description: Loads the KPIs that have been configured for the landscape
     relations:
