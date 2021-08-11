@@ -1,41 +1,38 @@
 package de.bonndan.nivio.search;
 
 import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.assessment.AssessmentChangedEvent;
 import de.bonndan.nivio.assessment.AssessmentFactory;
-import de.bonndan.nivio.assessment.AssessmentRepository;
 import de.bonndan.nivio.input.ProcessingChangelog;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
 class SearchIndexingEventListenerTest {
 
-    private AssessmentRepository assessmentRepository;
     private Landscape landscape;
     private SearchIndexingEventListener listener;
 
     @BeforeEach
     void setUp() {
-        assessmentRepository = mock(AssessmentRepository.class);
         landscape = mock(Landscape.class);
-        listener = new SearchIndexingEventListener(assessmentRepository);
+        when(landscape.getFullyQualifiedIdentifier()).thenReturn(FullyQualifiedIdentifier.from("foo"));
+        listener = new SearchIndexingEventListener();
     }
 
     @Test
-    void onProcessingFinishedEvent() {
+    void onAssessmentChangedEvent() {
         //given
-        var assessment = AssessmentFactory.createAssessment(landscape);
-        when(assessmentRepository.createAssessment(eq(landscape))).thenReturn(assessment);
-        ProcessingFinishedEvent e = new ProcessingFinishedEvent(new LandscapeDescription("foo"), landscape, new ProcessingChangelog());
+        AssessmentChangedEvent e = new AssessmentChangedEvent(landscape, Assessment.empty());
         SearchIndex searchIndex = mock(SearchIndex.class);
         when(landscape.getSearchIndex()).thenReturn(searchIndex);
         ItemIndex<Item> itemIndex = mock(ItemIndex.class);
@@ -47,32 +44,6 @@ class SearchIndexingEventListenerTest {
 
         //then
         verify(landscape).getSearchIndex();
-        verify(landscape).getKpis();
-        verify(landscape).applyKPIs(any());
-        verify(assessmentRepository).createAssessment(eq(landscape));
-        verify(searchIndex).indexForSearch(eq(landscape), any(Assessment.class));
-    }
-
-    @Test
-    void onProcessingFinishedEventAssessmentRepoNull() {
-        //given
-        var assessment = AssessmentFactory.createAssessment(landscape);
-        when(assessmentRepository.getAssessment(Mockito.any())).thenReturn(Optional.empty());
-        when(assessmentRepository.createAssessment(Mockito.any())).thenReturn(assessment);
-        ProcessingFinishedEvent e = new ProcessingFinishedEvent(new LandscapeDescription("foo"), landscape, new ProcessingChangelog());
-        SearchIndex searchIndex = mock(SearchIndex.class);
-        when(landscape.getSearchIndex()).thenReturn(searchIndex);
-        ItemIndex<Item> itemIndex = mock(ItemIndex.class);
-        when(landscape.getItems()).thenReturn(itemIndex);
-        when(landscape.getKpis()).thenReturn(Map.of());
-
-        //when
-        listener.onProcessingFinishedEvent(e);
-
-        //then
-        verify(landscape).getSearchIndex();
-        verify(landscape).getKpis();
-        verify(landscape).applyKPIs(any());
         verify(searchIndex).indexForSearch(eq(landscape), any(Assessment.class));
     }
 }

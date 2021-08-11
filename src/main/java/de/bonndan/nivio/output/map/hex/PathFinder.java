@@ -41,14 +41,11 @@ class PathFinder {
         for (int i = open.size() - 1; i >= 0; i--) {
 
             // pick the lowest sum of move and heuristic
-            if (open.get(i).sumCosts < tmp.sumCosts) {
-                tmp = open.get(i);
-
-                //or equal sum and lower heuristic
-            } else if (open.get(i).sumCosts == tmp.sumCosts && open.get(i).heuristicCosts < tmp.heuristicCosts) {
+            boolean lowestCost = open.get(i).sumCosts < tmp.sumCosts;
+            boolean equalCostLowerHeuristic = open.get(i).sumCosts == tmp.sumCosts && open.get(i).heuristicCosts < tmp.heuristicCosts;
+            if (lowestCost || equalCostLowerHeuristic) {
                 tmp = open.get(i);
             }
-
         }
 
         open.remove(tmp);
@@ -84,7 +81,7 @@ class PathFinder {
              * Limit the amount of loops for better performance
              */
             if (depth >= DEPTH_MAX) {
-                LOGGER.error(String.format("Max depth exceeded searching path from %s to %s", startHex, destHex));
+                LOGGER.error("Max depth exceeded searching path from {} to {}", startHex, destHex);
                 return Optional.empty();
             }
 
@@ -166,10 +163,10 @@ class PathFinder {
 
             tileBetween = tileBetween.getParent();
             if (path.contains(tileBetween)) { //already contains the parent
-                throw new RuntimeException("Path already contains the parent.");
+                throw new IllegalStateException("Path already contains the parent.");
             }
             if (!dst.equals(tileBetween) && !start.equals(tileBetween) && tileBetween.hex.item != null) {
-                throw new RuntimeException(String.format("Path from %s to %s runs through item %s!", start, dst, tileBetween));
+                throw new IllegalStateException(String.format("Path from %s to %s runs through item %s!", start, dst, tileBetween));
             }
 
             path.add(tileBetween);
@@ -189,7 +186,6 @@ class PathFinder {
 
         return Optional.of(new HexPath(path.stream().map(tile -> tile.hex).collect(Collectors.toList())));
     }
-
 
     private List<Tile> getNeighbours(Tile current) {
 

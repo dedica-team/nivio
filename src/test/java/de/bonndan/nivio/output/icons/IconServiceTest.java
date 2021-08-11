@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.Optional;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
@@ -30,35 +31,40 @@ class IconServiceTest {
 
 
     @Test
-    public void returnsServiceWithUnknownType() {
-        Item item = getTestItem("test", "a");
-        item.setLabel(Label.type, "asb");
+    void returnsServiceWithUnknownType() {
+        Item item = getTestItemBuilder("test", "a").withType("abs").build();
+        String expected = localIcons.getIconUrl(IconMapping.DEFAULT_ICON.getIcon()).orElseThrow();
 
-        String icon = localIcons.getIconUrl(IconMapping.DEFAULT_ICON.getIcon()).orElseThrow();
-        assertThat(iconService.getIconUrl(getTestItem("test", "a"))).isEqualTo(icon);
+        //when
+        String iconUrl = iconService.getIconUrl(item);
+
+        assertThat(iconUrl).isEqualTo(expected);
 
     }
 
     @Test
-    public void returnsType() {
-        Item item = getTestItem("test", "a");
-        item.setLabel(Label.type, "account");
+    void returnsType() {
+        Item item = getTestItemBuilder("test", "a").withType("account").build();
 
         String icon = localIcons.getIconUrl("account").orElseThrow();
         assertThat(iconService.getIconUrl(item)).isEqualTo(icon);
     }
 
     @Test
-    public void doesNotResolvesIconTwice() {
+    void doesNotResolvesDataUrl() {
         Item item = getTestItem("test", "a");
-        item.setLabel(Label.icon, DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foobar");
+        String dataUrl = DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foobar";
+        item.setLabel(Label.icon, dataUrl);
+
+        //when
+        assertThat(iconService.getIconUrl(item)).isEqualTo(dataUrl);
 
         verify(externalIcons, never()).getUrl(any(String.class));
         verify(externalIcons, never()).getUrl(any(URL.class));
     }
 
     @Test
-    public void returnsCustomIcon() {
+    void returnsCustomIcon() {
         Item item = getTestItem("test", "a");
         item.setLabel(Label.icon, "http://my.icon");
 
@@ -66,7 +72,7 @@ class IconServiceTest {
     }
 
     @Test
-    public void returnsVendorIcon() throws MalformedURLException {
+    void returnsVendorIcon() throws MalformedURLException {
         Item item = getTestItem("test", "a");
         item.setLabel(Label.icon, "vendor://redis");
 
@@ -80,7 +86,7 @@ class IconServiceTest {
     }
 
     @Test
-    public void getFillUrl() throws MalformedURLException {
+    void getFillUrl() throws MalformedURLException {
         when(externalIcons.getUrl(any(URL.class))).thenReturn(Optional.empty());
 
         Optional<String> fillUrl = iconService.getExternalUrl(new URL("http://my.icon"));

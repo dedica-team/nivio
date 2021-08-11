@@ -45,7 +45,7 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void read() throws MalformedURLException {
+    void read() throws MalformedURLException {
         File file = new File(FILE_PATH_ENV);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
         assertEquals("Landscape example", landscapeDescription.getName());
@@ -62,19 +62,19 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void readsMinimalWithIdentifier() {
+    void readsMinimalWithIdentifier() {
         assertDoesNotThrow(() -> new LandscapeDescriptionFactory(mock(FileFetcher.class))
                 .fromString("yaml", ""));
     }
 
     @Test
-    public void readFails() {
+    void readFails() {
         assertThrows(ReadingException.class, () -> new LandscapeDescriptionFactory(mock(FileFetcher.class))
                 .fromString("", ""));
     }
 
     @Test
-    public void readYamlStr() throws IOException {
+    void readYamlStr() throws IOException {
         File file = new File(FILE_PATH_ENV);
         String yaml = new String(Files.readAllBytes(file.toPath()));
         LandscapeDescription landscapeDescription = factory.fromString(yaml, file.toString());
@@ -91,7 +91,7 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void readYamlStrWithUrlSource() throws IOException {
+    void readYamlStrWithUrlSource() throws IOException {
 
         File file = new File(FILE_PATH_ENV);
         String yaml = new String(Files.readAllBytes(file.toPath()));
@@ -100,7 +100,7 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void readUrl() throws IOException {
+    void readUrl() throws IOException {
 
         //given
         File file = new File(FILE_PATH_ENV);
@@ -114,7 +114,7 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void readIncremental() {
+    void readIncremental() {
         final String FILE_PATH_INCREMENTAL_ENV = FILE_PATH + "example_incremental_env.yml";
         File file = new File(FILE_PATH_INCREMENTAL_ENV);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
@@ -124,7 +124,7 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void readEnvVars() throws IOException {
+    void readEnvVars() throws IOException {
         final String FILE_PATH_ENVIRONMENT_VARS;
         final String user;
         if (SystemUtils.IS_OS_WINDOWS) {
@@ -143,7 +143,7 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void customLabels() {
+    void customLabels() {
         final String FILE_PATH_ENVIRONMENT_VARS = FILE_PATH + "example_items_extrafields.yml";
         File file = new File(FILE_PATH_ENVIRONMENT_VARS);
 
@@ -156,7 +156,7 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void environmentTemplatesRead() {
+    void environmentTemplatesRead() {
         File file = new File(FILE_PATH_TEMPLATES);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
         assertNotNull(landscapeDescription);
@@ -170,18 +170,18 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void environmentTemplatesSanitized() {
+    void environmentTemplatesSanitized() {
         File file = new File(FILE_PATH_TEMPLATES);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
 
         ItemDescription template = landscapeDescription.getTemplates().get("myfirsttemplate");
 
-        assertEquals("webservice", template.getLabel(Label.type));
+        assertEquals("webservice", template.getType());
         assertTrue(template.getName().isEmpty());
     }
 
     @Test
-    public void templatesAssigned() {
+    void templatesAssigned() {
         File file = new File(FILE_PATH_TEMPLATES);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
 
@@ -195,7 +195,7 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void templatesAssignedWithDataflow() {
+    void templatesAssignedWithDataflow() {
         final String FILE_PATH_TEMPLATES_2 = FILE_PATH + "example_templates2.yml";
         File file = new File(FILE_PATH_TEMPLATES_2);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
@@ -206,7 +206,7 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void configRead() {
+    void configRead() {
         final String FILE_PATH_CONFIG = FILE_PATH + "example_config.yml";
         File file = new File(FILE_PATH_CONFIG);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
@@ -219,7 +219,7 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void testReadUnknownFile() {
+    void testReadUnknownFile() {
         final String FILE_PATH_UNKNOWN = FILE_PATH + "example_xxx.yml";
         File file = new File(FILE_PATH_UNKNOWN);
 
@@ -235,7 +235,7 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void testReadGroups() {
+    void testReadGroups() {
         final String FILE_PATH_GROUPS = FILE_PATH + "example_groups.yml";
         File file = new File(FILE_PATH_GROUPS);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
@@ -253,7 +253,7 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void testGroupsHaveEnv() {
+    void testGroupsHaveEnv() {
         final String FILE_PATH_GROUPS = FILE_PATH + "example_groups.yml";
         File file = new File(FILE_PATH_GROUPS);
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
@@ -271,12 +271,12 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void testUnknownProperty() {
+    void testUnknownProperty() {
         factory.fromYaml(new File(FILE_PATH + "example_typo.yml"));
     }
 
     @Test
-    public void readCustomKPIs() {
+    void readCustomKPIs() {
         File file = new File(RootPath.get() + "/src/test/resources/example/example_kpis.yml");
         LandscapeDescription landscapeDescription = factory.fromYaml(file);
         LandscapeConfig config = landscapeDescription.getConfig();
@@ -304,7 +304,7 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
-    public void fromBodyItem() {
+     void fromBodyItem() {
 
         //when
         LandscapeDescription landscapeDescription = factory.fromBodyItems("foo", "nivio", "body");

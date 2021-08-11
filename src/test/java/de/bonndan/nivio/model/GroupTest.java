@@ -25,7 +25,7 @@ class GroupTest {
     void addItemAllowed() {
         Group g = new Group("foo", "test");
         Item item = getTestItem("foo", "b");
-        g.addItem(item);
+        g.addOrReplaceItem(item);
         assertEquals(1, g.getItems().size());
     }
 
@@ -33,14 +33,29 @@ class GroupTest {
     void addItemForbidden() {
         Group g = new Group("foo", "test");
         Item item = getTestItem("a", "b");
-        assertThrows(IllegalArgumentException.class, () -> g.addItem(item));
+        assertThrows(IllegalArgumentException.class, () -> g.addOrReplaceItem(item));
+    }
+
+    @Test
+    void replacesItem() {
+        Group g = new Group("foo", "test");
+        Item one = getTestItem("foo", "one");
+        g.addOrReplaceItem(one);
+        assertThat(g.getItems()).containsExactly(one);
+
+        Item copy = getTestItem("foo", "one");
+        copy.setLabel(Label.version, "1");
+
+        g.addOrReplaceItem(copy);
+        assertThat(g.getItems()).containsExactly(copy);
+        assertThat(g.getItems().iterator().next().getLabel(Label.version)).isEqualTo("1");
     }
 
     @Test
     void removeItem() {
         Group g = new Group("foo", "test");
         Item item = getTestItem("foo", "b");
-        g.addItem(item);
+        g.addOrReplaceItem(item);
         assertEquals(1, g.getItems().size());
 
         boolean b = g.removeItem(item);
@@ -52,7 +67,7 @@ class GroupTest {
     void removeItemFails() {
         Group g = new Group("foo", "test");
         Item item = getTestItem("foo", "b");
-        g.addItem(item);
+        g.addOrReplaceItem(item);
 
         boolean b = g.removeItem(getTestItem("foo", "c"));
         assertThat(b).isFalse();

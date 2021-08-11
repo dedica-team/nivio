@@ -60,10 +60,10 @@ class AllGroupsLayoutTest {
     private SubLayout getSubLayout(Group group) {
 
         Item bar = getTestItem(group.getIdentifier(), "bar" + group.getIdentifier());
-        group.addItem(bar);
+        group.addOrReplaceItem(bar);
 
         Item baz = getTestItem(group.getIdentifier(), "baz" + group.getIdentifier());
-        group.addItem(baz);
+        group.addOrReplaceItem(baz);
         baz.addOrReplace(RelationFactory.createForTesting(baz, bar));
 
         return new SubLayout(group, Set.of(bar, baz), new LandscapeConfig.LayoutConfig());

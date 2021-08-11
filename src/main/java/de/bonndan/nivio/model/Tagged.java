@@ -7,7 +7,7 @@ import org.springframework.util.StringUtils;
  */
 public interface Tagged extends Labeled {
 
-    String LABEL_PREFIX_TAG = "tag.";
+    String LABEL_PREFIX_TAG = Label.INTERNAL_LABEL_PREFIX + "tag.";
 
     /**
      * Returns a copy of the components tags.
@@ -26,7 +26,7 @@ public interface Tagged extends Labeled {
     default void setTags(String[] tags) {
 
         for (String tag : tags) {
-            if (!StringUtils.isEmpty(tag)) {
+            if (StringUtils.hasLength(tag)) {
                 tag = tag.toLowerCase();
                 setLabel(LABEL_PREFIX_TAG + tag, tag);
             }

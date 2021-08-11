@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ItemFactoryTest {
+class ItemFactoryTest {
 
     private ItemDescription landscapeItem;
 
@@ -40,7 +40,7 @@ public class ItemFactoryTest {
     }
 
     @Test
-    public void testCreate() {
+    void testCreate() {
         Landscape l = LandscapeFactory.createForTesting("testLandscape", "testLandscape").build();
 
         Item created = ItemFactory.fromDescription(landscapeItem, l);
@@ -70,7 +70,7 @@ public class ItemFactoryTest {
     }
 
     @Test
-    public void testAssignAll() {
+    void testAssignAll() {
 
         //given
         Landscape l = LandscapeFactory.createForTesting("testLandscape", "testLandscape").build();
@@ -79,6 +79,7 @@ public class ItemFactoryTest {
         update.setDescription("123");
         update.setLabel(Label.version, "2000");
         update.setLabel("newlabel", "foo");
+        update.setType("firewall");
 
         //when
         Item updated = ItemFactory.assignAll(existing, update);
@@ -86,6 +87,7 @@ public class ItemFactoryTest {
         //then
         assertThat(updated).isNotNull();
         assertThat(updated.getDescription()).isEqualTo("123");
+        assertThat(updated.getType()).isEqualTo("firewall");
         assertThat(updated.getLabel(Label.version)).isEqualTo("2000");
         assertThat(updated.getLabel("newlabel")).isEqualTo("foo");
     }

@@ -33,7 +33,7 @@ const Notification: React.FC<Props> = ({ setSidebarContent }) => {
   }, [landscapeContext.notification]);
 
   return (
-    <Badge color='secondary' variant='dot' overlap='circle' invisible={!newChanges} title={'Recent changes'}>
+    <Badge color='secondary' variant='dot' overlap='circular' invisible={!newChanges} title={'Recent changes'}>
       <IconButton
         size={'small'}
         className={classes.navigationButton}

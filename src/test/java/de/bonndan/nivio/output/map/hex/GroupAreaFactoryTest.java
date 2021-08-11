@@ -50,8 +50,8 @@ class GroupAreaFactoryTest {
         Item target = getTestItem("group", "target");
 
         Group group = new Group("group", "landscapeIdentifier");
-        group.addItem(landscapeItem);
-        group.addItem(target);
+        group.addOrReplaceItem(landscapeItem);
+        group.addOrReplaceItem(target);
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
         hexesToItems.put(one, landscapeItem);
@@ -78,7 +78,7 @@ class GroupAreaFactoryTest {
         Item target = getTestItem("group", "target");
 
         Group group = new Group("group", "landscapeIdentifier");
-        group.addItem(landscapeItem);
+        group.addOrReplaceItem(landscapeItem);
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
         hexesToItems.put(one, landscapeItem);
@@ -101,7 +101,7 @@ class GroupAreaFactoryTest {
         Item target = getTestItem("group", "target");
 
         Group group = new Group("group", "landscapeIdentifier");
-        group.addItem(landscapeItem);
+        group.addOrReplaceItem(landscapeItem);
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
         hexesToItems.put(one, landscapeItem);
@@ -124,8 +124,8 @@ class GroupAreaFactoryTest {
         Item target = getTestItem("group", "target");
 
         Group group = new Group("group", "landscapeIdentifier");
-        group.addItem(landscapeItem);
-        group.addItem(target);
+        group.addOrReplaceItem(landscapeItem);
+        group.addOrReplaceItem(target);
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
         hexesToItems.put(one, landscapeItem);
@@ -148,7 +148,7 @@ class GroupAreaFactoryTest {
         Item target = getTestItem("group", "target");
 
         Group group = new Group("group", "landscapeIdentifier");
-        group.addItem(landscapeItem);
+        group.addOrReplaceItem(landscapeItem);
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
         hexesToItems.put(one, landscapeItem);

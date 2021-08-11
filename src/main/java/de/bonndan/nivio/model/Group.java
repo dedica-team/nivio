@@ -1,7 +1,6 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.output.Color;
@@ -141,27 +140,11 @@ public class Group implements Component, Labeled, Linked, Assessable {
         return Collections.unmodifiableSet(items);
     }
 
-    @JsonIgnore
     @Override
     @NonNull
     public Map<String, String> getLabels() {
         return labels;
     }
-
-    /**
-     * Returns the labels without the internal ones (having prefixes).
-     *
-     * @return filtered labels
-     */
-    @JsonProperty("labels")
-    public Map<String, String> getJSONLabels() {
-
-        return Labeled.groupedByPrefixes(
-                Labeled.withoutKeys(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG),
-                ","
-        );
-    }
-
 
     @Override
     @Nullable
@@ -185,7 +168,7 @@ public class Group implements Component, Labeled, Linked, Assessable {
         return getFullyQualifiedIdentifier().toString();
     }
 
-    @JsonIgnore
+    @JsonIgnore //for internal debugging
     @Override
     @NonNull
     public List<? extends Assessable> getChildren() {
@@ -210,11 +193,13 @@ public class Group implements Component, Labeled, Linked, Assessable {
      * @param item the item to add.
      * @throws IllegalArgumentException if the item group field mismatches
      */
-    public void addItem(Item item) {
+    public void addOrReplaceItem(Item item) {
         if (!identifier.equals(item.getGroup())) {
             throw new IllegalArgumentException(String.format("Item group '%s' cannot be added to group '%s'", item.getGroup(), identifier));
         }
 
+        //ensures that an existing item is removed from set
+        items.stream().filter(item1 -> item1.equals(item)).findFirst().ifPresent(this::removeItem);
         items.add(item);
     }
 

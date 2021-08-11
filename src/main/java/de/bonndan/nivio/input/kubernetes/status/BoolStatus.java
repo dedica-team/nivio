@@ -14,7 +14,7 @@ public class BoolStatus implements Status {
     @Override
     public Map<String, String> getExtendedStatus(@NonNull Map<String, String> statusMap, @Nullable ItemAdapter itemAdapter) {
         return statusMap.entrySet().stream().collect(Collectors.toMap(
-                pair -> InputFormatHandlerKubernetes.LABEL_PREFIX + "boolcondition." + pair.getKey().toLowerCase(),
+                pair -> InputFormatHandlerKubernetes.LABEL_PREFIX + ".boolcondition." + pair.getKey().toLowerCase(),
                 pair -> pair.getValue().toLowerCase(Locale.ROOT)
         ));
     }

@@ -1,12 +1,9 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import org.springframework.lang.NonNull;
-import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -19,15 +16,14 @@ import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
  *
  * Outgoing flows having a target which matches a service identifier will cause a relation to be created.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Relation implements Labeled, Assessable, Serializable {
 
     public static final String DELIMITER = ";";
 
-    @JsonIdentityReference(alwaysAsId = true)
+    @JsonIdentityReference(alwaysAsId = true) //needed for debugging internal models
     private final Item source;
 
-    @JsonIdentityReference(alwaysAsId = true)
+    @JsonIdentityReference(alwaysAsId = true) //needed for debugging internal models
     private final Item target;
 
     private final String description;
@@ -127,51 +123,6 @@ public class Relation implements Labeled, Assessable, Serializable {
     @Override
     public List<? extends Assessable> getChildren() {
         return new ArrayList<>();
-    }
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    static class ApiModel {
-
-        public static final String INBOUND = "inbound";
-        public static final String OUTBOUND = "outbound";
-
-        @JsonIdentityReference(alwaysAsId = true)
-        public final Item source;
-
-        @JsonIdentityReference(alwaysAsId = true)
-        public final Item target;
-
-        public final String description;
-
-        public final String format;
-
-        public final RelationType type;
-
-        public final String name;
-
-        public final String id;
-
-        public final String direction;
-
-        public final Map<String, String> labels;
-
-        ApiModel(@NonNull final Relation relation, @NonNull final Item owner) {
-            source = relation.source;
-            target = relation.target;
-            description = relation.description;
-            format = relation.format;
-            type = relation.type;
-            id = relation.getIdentifier();
-            labels = relation.getLabels();
-
-            if (relation.source.equals(owner)) {
-                name = StringUtils.isEmpty(target.getName()) ? target.getIdentifier() : target.getName();
-                direction = OUTBOUND;
-            } else {
-                name = StringUtils.isEmpty(source.getName()) ? source.getIdentifier() : source.getName();
-                direction = INBOUND;
-            }
-        }
     }
 
     /**

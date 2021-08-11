@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.awt.geom.Point2D;
 import java.util.List;
 
+import static de.bonndan.nivio.output.map.hex.Hex.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class HexPathTest {
 
@@ -39,13 +39,19 @@ class HexPathTest {
 
     @Test
     void getEndPoint() {
-        assertThat(hexpath.getEndPoint()).isEqualTo(new Point2D.Double(275.0, 762.9165124598851));
+        assertThat(hexpath.getEndPoint()).isEqualTo(new Point2D.Double(278.57142857142856, 764.9784777069909));
     }
 
     @Test
     void calcBends() {
-        List<Hex> bends = HexPath.calcBends(this.hexes);
-        assertThat(bends).isNotEmpty().hasSize(1);
-        assertThat(bends).contains(new Hex(0,3));
+        hexpath.calcBends(this.hexes);
+        List<Hex> bends = hexpath.getBends();
+        assertThat(bends).isNotEmpty()
+                .hasSize(1)
+                .contains(new Hex(0,3));
+
+        List<Integer> directions = hexpath.getDirections();
+        assertThat(directions).isNotEmpty().hasSize(3);
+        assertThat(directions).isEqualTo(List.of(SOUTH, SOUTH, SOUTH_EAST));
     }
 }

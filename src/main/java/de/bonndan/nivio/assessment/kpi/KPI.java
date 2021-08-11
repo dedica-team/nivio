@@ -6,6 +6,7 @@ import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Component;
+import de.bonndan.nivio.output.dto.RangeApiModel;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 

@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input.kubernetes.status;
 
+import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import de.bonndan.nivio.input.kubernetes.itemadapters.ItemAdapter;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -14,8 +15,8 @@ class BoolStatusTest {
     void getExtendedStatus() {
         var boolStatus = new BoolStatus();
         var extendedStatus = boolStatus.getExtendedStatus(Map.of("testKey", "testValue"), Mockito.mock(ItemAdapter.class));
-        assertThat(extendedStatus).isEqualTo(Map.of("k8s.boolcondition.testkey", "testvalue"));
+        assertThat(extendedStatus).isEqualTo(Map.of(InputFormatHandlerKubernetes.LABEL_PREFIX + ".boolcondition.testkey", "testvalue"));
         extendedStatus = boolStatus.getExtendedStatus(Map.of("testKey", "testValue"), null);
-        assertThat(extendedStatus).isEqualTo(Map.of("k8s.boolcondition.testkey", "testvalue"));
+        assertThat(extendedStatus).isEqualTo(Map.of(InputFormatHandlerKubernetes.LABEL_PREFIX + ".boolcondition.testkey", "testvalue"));
     }
 }

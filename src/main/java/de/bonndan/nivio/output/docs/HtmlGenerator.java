@@ -24,6 +24,7 @@ import static de.bonndan.nivio.model.Relation.DELIMITER;
 import static de.bonndan.nivio.output.FormatUtils.ifPresent;
 import static de.bonndan.nivio.output.FormatUtils.nice;
 import static j2html.TagCreator.*;
+import static org.springframework.util.StringUtils.hasLength;
 import static org.springframework.util.StringUtils.isEmpty;
 
 
@@ -90,10 +91,10 @@ public abstract class HtmlGenerator {
 
         return div(
                 div(
-                        iff(!isEmpty(item.getLabel(Label.note)), div(item.getLabel(Label.note)).attr("class", "alert alert-warning float float-right")),
+                        iff(hasLength(item.getLabel(Label.note)), div(item.getLabel(Label.note)).attr("class", "alert alert-warning float float-right")),
                         a().attr("id", item.getFullyQualifiedIdentifier().toString()),
                         h3(
-                                img().attr("src", iconService.getIconUrl(item)).attr("width", "30px").attr("class", "img-fluid"),
+                                img().attr("src", item.getLabel(Label._icondata)).attr("width", "30px").attr("class", "img-fluid"),
                                 rawHtml(" "),
                                 rawHtml(isEmpty(item.getName()) ? item.getIdentifier() : item.getName())
                         ),
@@ -101,13 +102,13 @@ public abstract class HtmlGenerator {
 
 
                         ul().with(
-                                iff(!isEmpty(item.getName()), li("Name: " + FormatUtils.nice(item.getName())))
-                                , iff(!isEmpty(item.getFullyQualifiedIdentifier().toString()), li("Full identifier: " + item.getFullyQualifiedIdentifier()))
-                                , iff(!isEmpty(item.getIdentifier()), li("Identifier: " + item.getIdentifier()))
-                                , iff(!isEmpty(item.getGroup()), li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">" + GROUP_CIRCLE + "</span> " + FormatUtils.nice(item.getGroup()))))
-                                , iff(!isEmpty(item.getContact()), li("Contact: " + FormatUtils.nice(item.getContact())))
-                                , iff(!isEmpty(item.getOwner()), li("Owner: " + FormatUtils.nice(item.getOwner())))
-                                , iff(!isEmpty(item.getType()), li("Type: " + item.getType()))
+                                iff(hasLength(item.getName()), li("Name: " + FormatUtils.nice(item.getName())))
+                                , iff(hasLength(item.getFullyQualifiedIdentifier().toString()), li("Full identifier: " + item.getFullyQualifiedIdentifier()))
+                                , iff(hasLength(item.getIdentifier()), li("Identifier: " + item.getIdentifier()))
+                                , iff(hasLength(item.getGroup()), li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">" + GROUP_CIRCLE + "</span> " + FormatUtils.nice(item.getGroup()))))
+                                , iff(hasLength(item.getContact()), li("Contact: " + FormatUtils.nice(item.getContact())))
+                                , iff(hasLength(item.getOwner()), li("Owner: " + FormatUtils.nice(item.getOwner())))
+                                , iff(hasLength(item.getType()), li("Type: " + item.getType()))
                                 , iff(links.size() > 1, li("Links: ").with(links))
                                 , iff(frameworks.size() > 0, li("Frameworks: " + String.join(String.format("%s ", DELIMITER), frameworks)))
                         ).with(labelList),
@@ -128,8 +129,7 @@ public abstract class HtmlGenerator {
                                                                 .attr("class", "badge")
                                                                 .attr("style", "background-color: " + statusItem.getStatus() + " !important")
                                                 ),
-                                                iff(
-                                                        !isEmpty(statusItem.getMessage()) && !"summary".equals(statusItem.getMessage()),
+                                                iff(hasLength(statusItem.getMessage()) && !"summary".equals(statusItem.getMessage()),
                                                         dd(span(" " + FormatUtils.nice(statusItem.getMessage())))
                                                 )
                                         )
@@ -180,22 +180,13 @@ public abstract class HtmlGenerator {
 
     protected List<ContainerTag> getLabelList(Item item) {
         Function<Map.Entry<String, String>, Boolean> filter = s -> {
-            if (isEmpty(s.getValue())) {
-                return false;
-            }
-            if (Label.type.name().equals(s.getKey())) {
+            if (!hasLength(s.getValue())) {
                 return false;
             }
             if (Label.framework.name().equals(s.getKey())) {
                 return false;
             }
-            if (Label.icon.name().equals(s.getKey())) {
-                return false;
-            }
-            if (Label.color.name().equals(s.getKey())) {
-                return false;
-            }
-            if (Label.fill.name().equals(s.getKey())) {
+            if (s.getKey().startsWith(Label.INTERNAL_LABEL_PREFIX)) {
                 return false;
             }
             //filter out statuses, they are part of the assessment

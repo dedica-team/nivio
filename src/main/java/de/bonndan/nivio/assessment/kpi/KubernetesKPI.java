@@ -3,8 +3,9 @@ package de.bonndan.nivio.assessment.kpi;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import de.bonndan.nivio.model.Labeled;
+import de.bonndan.nivio.output.dto.RangeApiModel;
 import org.apache.commons.collections.map.SingletonMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,18 +24,18 @@ public class KubernetesKPI implements KPI {
     @Override
     @NonNull
     public List<StatusValue> getStatusValues(Assessable assessable) {
-        if (!(assessable instanceof Labeled))
+        if (!(assessable instanceof Labeled)) {
             return new ArrayList<>();
-
+        }
 
         var statusList = new ArrayList<StatusValue>();
         var counter = new AtomicInteger(0);
-        ((Labeled) assessable).getLabels(Label.k8s).forEach((key, value) -> {
+        ((Labeled) assessable).getLabels(InputFormatHandlerKubernetes.LABEL_PREFIX).forEach((key, value) -> {
             if (ObjectUtils.isEmpty(value)) {
                 return;
             }
             StatusValue statusValue;
-            var message = key.replaceFirst("k8s.", "");
+            var message = key.replaceFirst(InputFormatHandlerKubernetes.LABEL_PREFIX + ".", "");
             if (message.startsWith("boolcondition.")) {
                 message = message.replaceFirst("boolcondition.", "");
                 statusValue = new StatusValue(IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(boolCondition(value)), message);

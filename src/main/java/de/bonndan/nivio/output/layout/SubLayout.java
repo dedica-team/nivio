@@ -12,7 +12,7 @@ import java.util.Set;
 
 /**
  * Layout for one group (for the items INSIDE the group).
- * <p>
+ *
  */
 public class SubLayout {
 
@@ -42,11 +42,12 @@ public class SubLayout {
                     return;
 
                 Item other = relationItem.getTarget();
-                if (item.getGroup() == null)
-                    throw new RuntimeException("Item " + item + "has no group");
-                if (other.getGroup() == null)
-                    throw new RuntimeException("Item " + other + "has no group");
-
+                if (item.getGroup() == null) {
+                    throw new IllegalStateException(String.format("Item %s has no group", item));
+                }
+                if (other.getGroup() == null) {
+                    throw new IllegalStateException(String.format("Item %s has no group", other));
+                }
 
                 if (item.getGroup().equals(other.getGroup())) {
                     relationTargets.add(other);

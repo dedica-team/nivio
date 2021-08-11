@@ -70,6 +70,9 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     @Schema(description = "The technical address of the item (should be an URI). Taken into account when matching relation endpoints.")
     private String address;
 
+    @Schema(description = "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.", example = "service|database|volume")
+    private String type;
+
     public ItemDescription() {
     }
 
@@ -105,14 +108,12 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         this.environment = environment;
     }
 
-    @Schema(description = "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
-            example = "service|database|volume")
     public String getType() {
-        return getLabel(Label.type);
+        return type;
     }
 
     public void setType(String type) {
-        this.setLabel(Label.type, type);
+        this.type = type;
     }
 
     public String getName() {

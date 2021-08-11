@@ -20,11 +20,12 @@ import java.io.InputStream;
  * Turns the layouted landscape into a SVG image.
  */
 @Service
-public class SVGRenderer implements Renderer<SVGDocument> {
+public class SVGRenderer implements Renderer<String> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGRenderer.class);
 
     public static final int DEFAULT_ICON_SIZE = 50;
+    public static final String RENDERING_TYPE = "svg";
 
     private final MapStyleSheetFactory mapStyleSheetFactory;
 
@@ -33,19 +34,27 @@ public class SVGRenderer implements Renderer<SVGDocument> {
     }
 
     @Override
-    public SVGDocument render(@NonNull final LayoutedComponent landscape, @Nullable final Assessment assessment, boolean debug) {
+    public String render(@NonNull final LayoutedComponent landscape, @Nullable final Assessment assessment, boolean debug) {
         SVGDocument svgDocument = new SVGDocument(landscape, assessment, getStyles((Landscape) landscape.getComponent()));
         svgDocument.setDebug(debug);
-        return svgDocument;
+        return svgDocument.getXML();
     }
 
     @Override
-    public void render(@NonNull final LayoutedComponent landscape, @NonNull final Assessment assessment, @NonNull final File file, boolean debug) {
+    public void render(@NonNull final LayoutedComponent landscape,
+                       @NonNull final Assessment assessment,
+                       @NonNull final File file, boolean debug
+    ) {
         try (FileWriter fileWriter = new FileWriter(file)) {
-            fileWriter.write(render(landscape, assessment, debug).getXML());
+            fileWriter.write(render(landscape, assessment, debug));
         } catch (IOException e) {
             LOGGER.error("Failed to render to file", e);
         }
+    }
+
+    @Override
+    public String getRenderingType() {
+        return RENDERING_TYPE;
     }
 
     private String getStyles(Landscape landscape) {

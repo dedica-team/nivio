@@ -1,14 +1,11 @@
 package de.bonndan.nivio.output.icons;
 
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Label;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
 import java.util.Optional;
 
-import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -22,12 +19,12 @@ class LocalIconsTest {
     }
 
     @Test
-    public void throwsIfIconsMissing() {
+    void throwsIfIconsMissing() {
         assertThrows(RuntimeException.class, () -> new LocalIcons(System.getProperty("java.io.tmpdir")));
     }
 
     @Test
-    public void encodesBase64DataUrls() {
+    void encodesBase64DataUrls() {
         Optional<String> icon = localIcons.getIconUrl(IconMapping.DEFAULT_ICON.getIcon());
         assertThat(icon).isNotEmpty();
 
@@ -37,7 +34,7 @@ class LocalIconsTest {
     }
 
     @Test
-    public void returnsDefault() {
+    void returnsDefault() {
         String icon = localIcons.getDefaultIcon();
         assertThat(icon).isNotEmpty();
 
@@ -47,10 +44,7 @@ class LocalIconsTest {
     }
 
     @Test
-    public void returnsTypeIgnoreCase() {
-        Item item = getTestItem("test", "a");
-        item.setLabel(Label.type, "");
-
+    void returnsTypeIgnoreCase() {
         assertThat(localIcons.getIconUrl("AccOunT")).isNotEmpty();
     }
 }

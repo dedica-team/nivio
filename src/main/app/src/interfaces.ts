@@ -89,7 +89,6 @@ export interface IGroup {
   fullyQualifiedIdentifier: string;
   labels?: ILabels;
   _links?: ILinks;
-  links?: ILinks;
   items: IItem[];
 }
 
@@ -109,7 +108,6 @@ export interface IItem {
   tags: Array<string>;
   color?: string;
   icon: string;
-  links?: Object;
   _links?: ILinks;
 }
 

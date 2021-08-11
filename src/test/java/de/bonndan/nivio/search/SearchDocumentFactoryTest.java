@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static de.bonndan.nivio.search.SearchDocumentFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SearchDocumentFactoryTest {
@@ -34,12 +33,12 @@ class SearchDocumentFactoryTest {
                 .withDescription("Lorem ipsum")
                 .withContact("info@acme.com")
                 .withOwner("Marketing")
+                .withType("app")
                 .build();
         item.setLabel("foo", "bar");
         item.setLabel("foo2", "bar2");
         item.setLabel(Label.network + ".foonet", "foonet");
         item.setLabel(Label.network + ".barnet", "barnet");
-        item.setLabel(Label.type, "app");
         item.setLink("wiki", new URL("http://foo.bar.baz"));
         item.setTags(new String[]{"one", "two"});
         item.setLabel(Label.framework.withPrefix("java"), "8");
@@ -47,7 +46,7 @@ class SearchDocumentFactoryTest {
     }
 
     @Test
-    public void generatesDocument() {
+    void generatesDocument() {
         //given
 
 
@@ -64,7 +63,7 @@ class SearchDocumentFactoryTest {
 
         assertEquals(item.getLabel("foo"), document.get("foo"));
         assertEquals(item.getLabel("foo2"), document.get("foo2"));
-        assertEquals(item.getLabel(Label.type), document.get("type"));
+        assertEquals(item.getType(), document.get("type"));
 
         assertEquals(item.getLinks().get("wiki").getHref().toString(), document.get("wiki"));
         String[] tag = document.getValues("tag");
@@ -78,8 +77,7 @@ class SearchDocumentFactoryTest {
         assertTrue(networks.contains("barnet"));
 
         List<String> frameworksValue = Arrays.asList(document.getValues(LUCENE_FIELD_FRAMEWORK));
-        assertThat(frameworksValue).contains("java");
-        assertThat(frameworksValue).contains("spring boot");
+        assertThat(frameworksValue).contains("java").contains("spring boot");
         //per-framework field
         List<String> frameworks = document.getFields().stream().map(indexableField -> indexableField.name()).collect(Collectors.toList());
         assertThat(frameworks).contains("java");
@@ -88,7 +86,7 @@ class SearchDocumentFactoryTest {
     }
 
     @Test
-    public void addsKPIFacets() {
+    void addsKPIFacets() {
         //given
         List<StatusValue> statusValues = new ArrayList<>();
         StatusValue foo = new StatusValue("foo", Status.RED, "xyz");
@@ -111,7 +109,7 @@ class SearchDocumentFactoryTest {
         assertThat(barFacet).isNotNull();
         assertThat(barFacet.path[0]).isEqualTo("GREEN");
 
-        FacetField summaryFacet = getField(KPI_FACET_PREFIX +  StatusValue.SUMMARY_LABEL, document.getFields());
+        FacetField summaryFacet = getField(KPI_FACET_PREFIX + StatusValue.SUMMARY_LABEL, document.getFields());
         assertThat(summaryFacet).isNotNull();
         assertThat(summaryFacet.path[0]).isEqualTo("RED");
     }

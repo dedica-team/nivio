@@ -24,7 +24,7 @@ class SVGDocumentTest extends RenderingTest {
     }
 
     @Test
-    public void renderInout() throws IOException {
+    void renderInout() throws IOException {
         String path = "/src/test/resources/example/inout";
         Landscape landscape = getLandscape(path + ".yml");
         String svg = renderLandscape(path, landscape);
@@ -35,9 +35,9 @@ class SVGDocumentTest extends RenderingTest {
     }
 
     @Test
-    public void renderCustomFill() throws IOException {
-        String path = "/src/test/resources/example/dedica";
+    void renderCustomFill() throws IOException {
 
+        String path = "/src/test/resources/example/dedica";
         Landscape landscape = getLandscape(path + ".yml");
 
         //when
@@ -52,7 +52,7 @@ class SVGDocumentTest extends RenderingTest {
     }
 
     @Test
-    public void embedsExternalImages() throws IOException, URISyntaxException {
+    void embedsExternalImages() throws IOException, URISyntaxException {
         String path = "/src/test/resources/example/dedica";
         CachedResponse response = mock(CachedResponse.class);
         when(response.getBytes()).thenReturn("foo".getBytes());
@@ -64,10 +64,11 @@ class SVGDocumentTest extends RenderingTest {
         String svg = renderLandscape(path, landscape);
 
         //then
-        assertThat(svg).doesNotContain("https://dedica.team/images/logo_orange_weiss.png"); //external image, to be replaced
-        assertThat(svg).doesNotContain("https://dedica.team/images/logo.png"); //map logo
-        assertThat(svg).doesNotContain("danielpozzi.jpg"); //external image, to be replaced
-        assertThat(svg).contains("fill=\"url(#Wm05dg==)\""); //pattern for "foo" response
+        assertThat(svg)
+                .doesNotContain("https://dedica.team/images/logo_orange_weiss.png") //external image, to be replaced
+                .doesNotContain("https://dedica.team/images/logo.png") //map logo
+                .doesNotContain("danielpozzi.jpg") //external image, to be replaced
+                .contains("fill=\"url(#Wm05dg==)\""); //pattern for "foo" response
 
     }
 }

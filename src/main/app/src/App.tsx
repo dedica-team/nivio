@@ -7,7 +7,7 @@ import Man from './Components/Manual/Man';
 import Layout from './Components/Layout/Layout';
 import { Routes } from './interfaces';
 import { Box, CssBaseline, Theme } from '@material-ui/core';
-import { createMuiTheme, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
 import { get } from './utils/API/APIClient';
 import defaultThemeVariables from './Resources/styling/theme';
 
@@ -77,7 +77,7 @@ const App: React.FC = () => {
       if (index.config.brandingLogoUrl && index.config.brandingLogoUrl.length) {
         setLogo(index.config.brandingLogoUrl);
       }
-      setTheme(createMuiTheme(tv));
+      setTheme(createTheme(tv));
     });
   }, [setTheme, setLogo]);
 
