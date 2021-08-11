@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ItemRelationProcessor;
-import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import de.bonndan.nivio.output.Color;
-import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
@@ -19,8 +17,7 @@ import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.model.ComponentDiff.*;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier")
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier") //needed when internal models are serialized for debugging
 public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent {
 
     public static final String LAYER_INFRASTRUCTURE = "infrastructure";
@@ -34,8 +31,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     private final String identifier;
 
     @NotNull
-    @JsonIgnore
-    @Schema(hidden = true)
+    @JsonIgnore //needed when internal models are serialized for debugging
     private final Landscape landscape;
 
     private final String name;
@@ -47,6 +43,8 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     private final String description;
 
     private final String group;
+
+    private final String type;
 
     /**
      * technical address
@@ -74,24 +72,25 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
                 final String description,
                 final String color,
                 final String icon,
+                final String type,
                 final URI address
     ) {
-        if (StringUtils.isEmpty(identifier)) {
-            throw new RuntimeException("Identifier must not be empty");
+        if (!StringUtils.hasLength(identifier)) {
+            throw new IllegalArgumentException("Identifier must not be empty");
         }
         this.identifier = identifier.toLowerCase();
 
         this.landscape = Objects.requireNonNull(landscape, "Landscape must not be null");
-        if (StringUtils.isEmpty(group)) {
-            throw new RuntimeException("Group identifier must not be empty");
+        if (!StringUtils.hasLength(group)) {
+            throw new IllegalArgumentException("Group identifier must not be empty");
         }
         this.group = group;
-
         this.name = name;
         this.owner = owner;
         this.contact = contact;
         this.description = description;
         this.address = address;
+        this.type = type;
 
         //these are effectively mutable
         this.setLabel(Label.color, Color.safe(color));
@@ -137,7 +136,6 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         return contact;
     }
 
-    @Schema(name = "_links")
     public Map<String, Link> getLinks() {
         return links;
     }
@@ -152,21 +150,9 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     }
 
     @NonNull
-    @JsonIgnore
     @Override
     public Map<String, String> getLabels() {
         return labels;
-    }
-
-    /**
-     * Returns the labels without the internal ones (having prefixes).
-     *
-     * @return filtered labels
-     * @todo find a better way to exclude label "namespaces". Here we introduce unnecessary coupling.
-     */
-    @JsonProperty("labels")
-    public Map<String, String> getJSONLabels() {
-        return Labeled.withoutKeys(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG, Label.type.name(), Label.icon.name(), InputFormatHandlerKubernetes.LABEL_PREFIX);
     }
 
     /**
@@ -174,7 +160,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
      *
      * @return immutable set
      */
-    @JsonIgnore
+    @JsonIgnore //needed for internal debugging
     public Set<Relation> getRelations() {
         return Set.copyOf(relations);
     }
@@ -214,25 +200,13 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
                 .findFirst();
     }
 
-    @JsonProperty("relations")
-    public Map<String, Relation.ApiModel> getJSONRelations() {
-        Map<String, Relation.ApiModel> map = new HashMap<>();
-
-        relations.forEach(relation -> {
-            Relation.ApiModel apiModel = new Relation.ApiModel(relation, this);
-            map.put(apiModel.id, apiModel);
-        });
-
-        return map;
-    }
-
     void setRelations(Set<Relation> outgoing) {
         this.relations.clear();
         this.relations.addAll(outgoing);
     }
 
     public String getType() {
-        return getLabel(Label.type);
+        return type;
     }
 
     public String getAddress() {
@@ -248,7 +222,6 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     }
 
     @Override
-    @JsonAnyGetter
     public String getLabel(String key) {
         return labels.get(key);
     }
@@ -259,7 +232,6 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     }
 
     @Override
-    @JsonAnySetter
     public void setLabel(String key, String value) {
         labels.put(key, value);
     }
@@ -330,6 +302,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         changes.addAll(compareStrings(this.description, newer.description, "Description"));
         changes.addAll(compareStrings(this.name, newer.name, "Name"));
         changes.addAll(compareStrings(this.owner, newer.owner, "Owner"));
+        changes.addAll(compareStrings(this.type, newer.type, "Type"));
         changes.addAll(compareOptionals(Optional.ofNullable(this.address), Optional.ofNullable(newer.address), "Address"));
         changes.addAll(compareCollections(this.links.keySet(), newer.links.keySet(), "Links"));
         changes.addAll(newer.diff(this));

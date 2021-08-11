@@ -70,7 +70,7 @@ public class Seed {
         Path currentRelativePath = Paths.get("");
         String absPath = currentRelativePath.toAbsolutePath().toString();
         try {
-            demoFiles.add(new File(absPath + "/src/test/resources/example/example_k8s.yml").toURI().toURL());
+            demoFiles.add(new File(absPath + "/src/test/resources/example/pet_clinic.yml").toURI().toURL());
             if (value.equalsIgnoreCase("all")) {
                 demoFiles.add(new File(absPath + "/src/test/resources/example/inout.yml").toURI().toURL());
                 demoFiles.add(new File(absPath + "/src/test/resources/example/internals.yml").toURI().toURL());

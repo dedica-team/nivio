@@ -6,7 +6,6 @@ import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeRepository;
-import de.bonndan.nivio.output.icons.IconService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
@@ -20,19 +19,16 @@ public class Indexer {
     private final InputFormatHandlerFactory formatFactory;
     private final LinkHandlerFactory linkHandlerFactory;
     private final ApplicationEventPublisher eventPublisher;
-    private final IconService iconService;
 
     public Indexer(LandscapeRepository landscapeRepository,
                    InputFormatHandlerFactory formatFactory,
                    LinkHandlerFactory linkHandlerFactory,
-                   ApplicationEventPublisher eventPublisher,
-                   IconService iconService
+                   ApplicationEventPublisher eventPublisher
     ) {
         this.landscapeRepo = landscapeRepository;
         this.formatFactory = formatFactory;
         this.linkHandlerFactory = linkHandlerFactory;
         this.eventPublisher = eventPublisher;
-        this.iconService = iconService;
     }
 
     /**
@@ -110,9 +106,6 @@ public class Indexer {
 
         // create relations between items
         changelog.merge(new ItemRelationProcessor(logger).process(input, landscape));
-
-        // ensures that items have a resolved icon in the api
-        new AppearanceProcessor(logger, iconService).process(input, landscape);
 
         return changelog;
     }

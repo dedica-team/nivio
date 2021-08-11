@@ -15,7 +15,7 @@ interface Props {
 const ItemAvatar: React.FC<Props> = ({ item, statusColor }) => {
   return (
     <StatusBadge
-      overlap={'circle'}
+      overlap={'circular'}
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'right',

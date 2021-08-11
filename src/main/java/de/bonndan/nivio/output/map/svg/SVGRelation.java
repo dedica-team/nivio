@@ -6,6 +6,7 @@ import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
+import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
+import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 import static de.bonndan.nivio.output.map.svg.SvgTagCreator.g;
 
 /**
@@ -50,8 +52,8 @@ class SVGRelation extends Component {
                 @Nullable final StatusValue statusValue
     ) {
         this.hexPath = hexPath;
-        if (StringUtils.isEmpty(fill)) {
-            throw new RuntimeException("Fill color cannot be empty.");
+        if (!StringUtils.hasLength(fill)) {
+            throw new IllegalArgumentException("Fill color cannot be empty.");
         }
         this.fill = fill;
         this.relation = relation;
@@ -102,7 +104,7 @@ class SVGRelation extends Component {
 
         ContainerTag endMarker = null;
         if (RelationType.DATAFLOW.equals(relation.getType())) {
-            //path.attr("marker-mid", String.format("url(#%s)", SVGRelation.MARKER_ID));
+            path.attr("marker-end", String.format("url(#%s)", SVGRelation.MARKER_ID));
             path.attr("fill", fillId);
             path.attr("stroke-dasharray", 15);
         } else {
@@ -113,7 +115,7 @@ class SVGRelation extends Component {
                     .attr("fill", fillId);
         }
 
-        return addAttributes(g(shadow, endMarker, path, label(bezierPath, fillId)), relation);
+        return addAttributes(g(shadow, path, endMarker, label(bezierPath, fillId)), relation);
     }
 
     public HexPath getHexPath() {
@@ -121,7 +123,7 @@ class SVGRelation extends Component {
     }
 
     private ContainerTag addAttributes(ContainerTag g, Relation relation) {
-        String type = !StringUtils.isEmpty(relation.getType()) ? relation.getType().name() : "-";
+        String type = relation.getType() != null ? relation.getType().name() : "-";
         g.attr("data-type", type)
                 .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().jsonValue())
                 .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().jsonValue())
@@ -156,7 +158,7 @@ class SVGRelation extends Component {
                 .attr("x", xOffset)
                 .attr("y", 0)
                 .attr("font-size", "4em")
-                .condAttr(!StringUtils.isEmpty(fillId), "fill", fillId)
+                .condAttr(StringUtils.hasLength(fillId), "fill", fillId)
                 .attr("transform", transform);
     }
 
@@ -167,13 +169,13 @@ class SVGRelation extends Component {
      */
     public static ContainerTag dataflowMarker() {
         ContainerTag path = SvgTagCreator.path().attr("d", "M 0 0 L 10 5 L 0 10 z")
-                .attr("fill", "#ffffff");
+                .attr("fill", "grey");
 
         return SvgTagCreator.marker()
                 .attr("id", MARKER_ID)
-                .attr("markerWidth", 10)
-                .attr("markerHeight", 10)
-                .attr("refX", 0)
+                .attr("markerWidth", DEFAULT_ICON_SIZE)
+                .attr("markerHeight", DEFAULT_ICON_SIZE)
+                .attr("refX", 14)
                 .attr("refY", 5)
                 .attr("orient", "auto")
                 .attr("viewBox", "0 0 10 10")

@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.api.NotFoundException;
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.assessment.AssessmentRepository;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
@@ -39,7 +40,7 @@ public class DocsController {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
         return new ResponseEntity<>(
-                generator.toDocument(landscape, assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier()).orElse(assessmentRepository.createAssessment(landscape)),
+                generator.toDocument(landscape, assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier()).orElse(Assessment.empty()),
                         new SearchConfig(request.getParameterMap())),
                 headers,
                 HttpStatus.OK

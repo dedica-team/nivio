@@ -32,7 +32,7 @@ public class AssessmentController {
 
         var optionalAssessment = assessmentRepository.getAssessment(fqi);
         if (optionalAssessment.isEmpty()) {
-            return new ResponseEntity<>(assessmentRepository.createAssessment(landscape), HttpStatus.OK);
+            return new ResponseEntity<>(assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier()).orElse(Assessment.empty()), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(optionalAssessment.get(), HttpStatus.OK);
         }

@@ -36,7 +36,7 @@ class CreateItemsTest {
         assertThat(deploymentList.get(0).getItemAdapter().getOwnerReferences().get(0).getUid()).isEqualTo("testOwnerUid");
         assertThat(deploymentList.get(0).getUid()).isEqualTo("testUid");
         assertThat(deploymentList.get(0).getClass()).isEqualTo(K8sItem.class);
-        assertThat(deploymentList.get(0).getDetails()).isEqualTo(Map.of("creation", "testCreation", "k8s.boolcondition.testtype", "teststatus", "name", "deployment", "namespace", "test", "strategy", "strategyType"));
+        assertThat(deploymentList.get(0).getDetails()).isEqualTo(Map.of("creation", "testCreation", InputFormatHandlerKubernetes.LABEL_PREFIX + ".boolcondition.testtype", "teststatus", "name", "deployment", "namespace", "test", "strategy", "strategyType"));
         assertThat(deploymentList.get(0).getItemAdapter()).isEqualToComparingFieldByField(new DeploymentItemAdapter(deployment));
         assertThat(deploymentList.get(0).getType()).isEqualTo(ItemType.DEPLOYMENT);
     }
@@ -99,7 +99,7 @@ class CreateItemsTest {
         assertThat(podList.get(0).getItemAdapter().getOwnerReferences().get(0).getUid()).isEqualTo("testOwnerUid");
         assertThat(podList.get(0).getUid()).isEqualTo("testUid");
         assertThat(podList.get(0).getClass()).isEqualTo(K8sItem.class);
-        assertThat(podList.get(0).getDetails()).isEqualTo(Map.of("creation", "testCreation", "k8s.boolcondition.testtype", "teststatus", "name", "pod", "namespace", "test"));
+        assertThat(podList.get(0).getDetails()).isEqualTo(Map.of("creation", "testCreation", InputFormatHandlerKubernetes.LABEL_PREFIX + ".boolcondition.testtype", "teststatus", "name", "pod", "namespace", "test"));
         assertThat(podList.get(0).getItemAdapter()).isEqualToComparingFieldByField(new PodItemAdapter(pod));
         assertThat(((PodItemAdapter) podList.get(0).getItemAdapter()).getVolumes().size()).isOne();
         assertThat(((PodItemAdapter) podList.get(0).getItemAdapter()).getVolumes().get(0).getPersistentVolumeClaim().getClaimName()).isEqualTo("testClaimName");
@@ -122,7 +122,7 @@ class CreateItemsTest {
         assertThat(replicaSetList.get(0).getItemAdapter().getOwnerReferences().get(0).getUid()).isEqualTo("testOwnerUid");
         assertThat(replicaSetList.get(0).getUid()).isEqualTo("testUid");
         assertThat(replicaSetList.get(0).getClass()).isEqualTo(K8sItem.class);
-        assertThat(replicaSetList.get(0).getDetails()).isEqualTo(Map.of("creation", "testCreation", "k8s.replicacondition.replicas", "1;1", "name", "replicaSet", "namespace", "test"));
+        assertThat(replicaSetList.get(0).getDetails()).isEqualTo(Map.of("creation", "testCreation", InputFormatHandlerKubernetes.LABEL_PREFIX + ".replicacondition.replicas", "1;1", "name", "replicaSet", "namespace", "test"));
         assertThat(replicaSetList.get(0).getItemAdapter()).isEqualToComparingFieldByField(new ReplicaSetItemAdapter(replicaSet));
         assertThat(replicaSetList.get(0).getType()).isEqualTo(ItemType.REPLICASET);
     }
@@ -163,7 +163,7 @@ class CreateItemsTest {
         assertThat(statefulSetList.get(0).getItemAdapter().getOwnerReferences().get(0).getUid()).isEqualTo("testOwnerUid");
         assertThat(statefulSetList.get(0).getUid()).isEqualTo("testUid");
         assertThat(statefulSetList.get(0).getClass()).isEqualTo(K8sItem.class);
-        assertThat(statefulSetList.get(0).getDetails()).isEqualTo(Map.of("creation", "testCreation", "k8s.replicacondition.replicas", "1;1", "name", "statefulSet", "namespace", "test"));
+        assertThat(statefulSetList.get(0).getDetails()).isEqualTo(Map.of("creation", "testCreation", InputFormatHandlerKubernetes.LABEL_PREFIX + ".replicacondition.replicas", "1;1", "name", "statefulSet", "namespace", "test"));
         assertThat(statefulSetList.get(0).getItemAdapter()).isEqualToComparingFieldByField(new StatefulSetItemAdapter(statefulSet));
         assertThat(statefulSetList.get(0).getType()).isEqualTo(ItemType.STATEFULSET);
     }

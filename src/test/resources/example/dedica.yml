@@ -5,11 +5,11 @@ identifier: dedica.team
 name: The dedica Consulting Team
 contact: info@dedica.team
 description: The IT consulting team.
+icon: https://dedica.team/images/logo.png
 
 config:
   branding:
     mapStylesheet: http://localhost:8080/css/dedica_map.css
-    mapLogo: https://dedica.team/images/logo.png
 
 groups:
   dedica:

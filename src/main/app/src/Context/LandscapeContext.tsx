@@ -55,7 +55,7 @@ const LandscapeContextProvider: React.FC<{}> = (props) => {
         const subscriptions: StompSubscription[] = [];
         const eventSubscription = client.subscribe('/topic/events', (message) => {
           const notificationMessage: INotificationMessage = JSON.parse(message.body);
-          if (notificationMessage.type === 'ProcessingFinishedEvent') {
+          if (notificationMessage.type === 'LayoutChangedEvent') {
             setNotification(notificationMessage);
           }
         });
@@ -89,11 +89,11 @@ const LandscapeContextProvider: React.FC<{}> = (props) => {
 
     get(`/api/${identifier}`).then((response) => {
       setLandscape(response);
-      console.debug(`Loaded landscape data for ${identifier}`);
+      console.debug(`Loaded landscape data after identifier change: ${identifier}`);
     });
     get(`/assessment/${identifier}`).then((response) => {
       setAssessment(response);
-      console.debug(`Loaded assessment data for ${identifier}`);
+      console.debug(`Loaded assessment data after identifier change: ${identifier}`);
     });
   }, [identifier]);
 
@@ -107,8 +107,8 @@ const LandscapeContextProvider: React.FC<{}> = (props) => {
     }
 
     get(`/assessment/${identifier}`).then((response) => {
+      console.log(`Loaded assessment data for ${identifier}`, response);
       setAssessment(response);
-      console.debug(`Loaded assessment data for ${identifier}`);
     });
   }, [identifier, notification]);
 

@@ -29,10 +29,10 @@ class SVGRendererTest {
         LayoutedComponent lc = getLayoutedLandscape(foo);
 
         //when
-        SVGDocument render = svgRenderer.render(lc, new Assessment(foo.applyKPIs(foo.getKpis())),true);
+        String rendered = svgRenderer.render(lc, new Assessment(foo.applyKPIs(foo.getKpis())),true);
 
         //check svg xml is returned
-        assertTrue(render.getXML().contains("svg version=\"1.1\""));
+        assertTrue(rendered.contains("svg version=\"1.1\""));
     }
 
     private LayoutedComponent getLayoutedLandscape(Landscape foo) {

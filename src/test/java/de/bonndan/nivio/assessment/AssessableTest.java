@@ -2,7 +2,7 @@ package de.bonndan.nivio.assessment;
 
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
-import de.bonndan.nivio.assessment.kpi.RangeApiModel;
+import de.bonndan.nivio.output.dto.RangeApiModel;
 import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;
@@ -142,8 +142,8 @@ class AssessableTest {
         item2.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
 
         Group foo = new Group("foo", "test");
-        foo.addItem(item);
-        foo.addItem(item2);
+        foo.addOrReplaceItem(item);
+        foo.addOrReplaceItem(item2);
 
         Map<String, KPI> kpis = new HashMap<>();
         kpis.put("on", new TestKPI(component -> null, null) {
