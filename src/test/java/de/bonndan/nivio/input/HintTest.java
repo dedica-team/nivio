@@ -100,7 +100,7 @@ class HintTest {
 
         RelationDescription relation = new RelationDescription(source.getIdentifier(), target.getIdentifier());
         relation.setType(RelationType.DATAFLOW);
-        source.addRelation(relation);
+        source.addOrReplaceRelation(relation);
 
         //when
         hint.use(source, target, Optional.of(relation));
@@ -118,7 +118,7 @@ class HintTest {
         Hint hint = new Hint(ItemType.DATABASE, RelationType.PROVIDER, null);
 
         RelationDescription relation = new RelationDescription(source.getIdentifier(), target.getIdentifier());
-        source.addRelation(relation);
+        source.addOrReplaceRelation(relation);
 
         //when
         hint.use(source, target, Optional.of(relation));

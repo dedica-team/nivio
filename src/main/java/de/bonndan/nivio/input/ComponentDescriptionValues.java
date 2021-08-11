@@ -52,7 +52,7 @@ public class ComponentDescriptionValues {
         assignSafeIfAbsent(increment.getOwner(), component.getOwner(), component::setOwner);
         assignSafeIfAbsent(increment.getContact(), component.getContact(), component::setContact);
 
-        Labeled.merge(increment, component);
+        Labeled.add(increment, component);
 
         increment.getLinks().entrySet().stream()
                 .filter(entry -> !component.getLinks().containsKey(entry.getKey()))

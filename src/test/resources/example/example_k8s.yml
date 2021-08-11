@@ -2,7 +2,7 @@ identifier: k8s:example
 name: Kubernetes example
 sources:
   - format: kubernetes
-    url: http://192.168.99.100:8080?namespace=default&groupLabel=release
+    url: http://10.96.0.1:8443?namespace=default&groupLabel=release
 
 config:
   kpis:

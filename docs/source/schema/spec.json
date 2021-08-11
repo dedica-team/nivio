@@ -11,15 +11,15 @@
       "Branding" : {
         "type" : "object",
         "properties" : {
-          "mapStylesheet" : {
-            "type" : "string",
-            "description" : "A resolvable URL pointing to a CSS stylesheet. This stylesheet is included in the generated SVG map. Use is to style the appearance of the map.",
-            "example" : "https://acme.com/css/acme.css"
-          },
           "mapLogo" : {
             "type" : "string",
             "description" : "A resolvable URL pointing to an image. This image is included (embedded as data-url) in the generated SVG map.",
             "example" : "https://acme.com/images/logo.png"
+          },
+          "mapStylesheet" : {
+            "type" : "string",
+            "description" : "A resolvable URL pointing to a CSS stylesheet. This stylesheet is included in the generated SVG map. Use is to style the appearance of the map.",
+            "example" : "https://acme.com/css/acme.css"
           }
         },
         "description" : "Map branding (tweaks visuals)"
@@ -28,35 +28,14 @@
         "required" : [ "identifier" ],
         "type" : "object",
         "properties" : {
-          "labels" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string",
-              "description" : "Labels related to the group."
-            },
-            "description" : "Labels related to the group."
-          },
-          "identifier" : {
-            "type" : "string",
-            "description" : "A unique identifier for the group (also used as name). Descriptions are merged based on the identifier.",
-            "example" : "shipping"
-          },
-          "owner" : {
-            "type" : "string",
-            "description" : "The business owner of the group."
-          },
-          "description" : {
-            "type" : "string",
-            "description" : "A brief description."
-          },
-          "contact" : {
-            "type" : "string",
-            "description" : "A contact method, preferably email."
-          },
           "color" : {
             "type" : "string",
             "description" : "The HTML (hexcode only!) color used to draw the group and its items. If no color is given, one is computed.",
             "example" : "05ffaa"
+          },
+          "contact" : {
+            "type" : "string",
+            "description" : "A contact method, preferably email."
           },
           "contains" : {
             "type" : "array",
@@ -68,8 +47,22 @@
               "example" : "identifier LIKE 'DB1'"
             }
           },
-          "name" : {
-            "type" : "string"
+          "description" : {
+            "type" : "string",
+            "description" : "A brief description."
+          },
+          "identifier" : {
+            "type" : "string",
+            "description" : "A unique identifier for the group (also used as name). Descriptions are merged based on the identifier.",
+            "example" : "shipping"
+          },
+          "labels" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string",
+              "description" : "Labels related to the group."
+            },
+            "description" : "Labels related to the group."
           },
           "links" : {
             "type" : "object",
@@ -78,6 +71,13 @@
             },
             "description" : "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
             "example" : "github: https://github.com/dedica-team/nivio"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "owner" : {
+            "type" : "string",
+            "description" : "The business owner of the group."
           }
         },
         "description" : "A group of items. Could be used as bounded context, for instance."
@@ -85,6 +85,9 @@
       "InterfaceDescription" : {
         "type" : "object",
         "properties" : {
+          "deprecated" : {
+            "type" : "boolean"
+          },
           "description" : {
             "type" : "string",
             "description" : "A brief description."
@@ -93,32 +96,29 @@
             "type" : "string",
             "description" : "The payload format."
           },
-          "url" : {
-            "type" : "string",
-            "description" : "A URL describing the endpoint.",
-            "format" : "url"
-          },
-          "protection" : {
-            "type" : "string",
-            "description" : "A description of the interface protection method."
-          },
-          "deprecated" : {
-            "type" : "boolean"
-          },
           "name" : {
             "type" : "string"
           },
-          "payload" : {
+          "parameters" : {
             "type" : "string"
           },
           "path" : {
             "type" : "string"
           },
+          "payload" : {
+            "type" : "string"
+          },
+          "protection" : {
+            "type" : "string",
+            "description" : "A description of the interface protection method."
+          },
           "summary" : {
             "type" : "string"
           },
-          "parameters" : {
-            "type" : "string"
+          "url" : {
+            "type" : "string",
+            "description" : "A URL describing the endpoint.",
+            "format" : "url"
           }
         },
         "description" : "Describes a low-level interface of an item."
@@ -127,6 +127,57 @@
         "required" : [ "identifier" ],
         "type" : "object",
         "properties" : {
+          "address" : {
+            "type" : "string",
+            "description" : "The technical address of the item (should be an URI). Taken into account when matching relation endpoints."
+          },
+          "color" : {
+            "type" : "string",
+            "description" : "Overrides the group color. Use an HTML hex color code without the leading hash.",
+            "example" : "4400FF"
+          },
+          "contact" : {
+            "type" : "string",
+            "description" : "The primary way to contact a responsible person or team. Preferably use an email address.",
+            "example" : "johnson@acme.com"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "A brief description."
+          },
+          "frameworks" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string",
+              "description" : "The parts used to create the item. Usually refers to technical frameworks.",
+              "example" : "java: 8"
+            },
+            "description" : "The parts used to create the item. Usually refers to technical frameworks.",
+            "writeOnly" : true,
+            "example" : "java: 8"
+          },
+          "group" : {
+            "type" : "string",
+            "description" : "The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to common.",
+            "example" : "shipping"
+          },
+          "icon" : {
+            "type" : "string",
+            "description" : "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work)."
+          },
+          "identifier" : {
+            "pattern" : "^[a-zA-Z0-9\\.\\:_-]{2,256}$",
+            "type" : "string",
+            "description" : "Immutable unique identifier (maybe use an URN). Primary means to identify items in searches."
+          },
+          "interfaces" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "description" : "A collection of low level interfaces. Can be used to describe HTTP API endpoints for instance.",
+            "items" : {
+              "$ref" : "#/components/schemas/InterfaceDescription"
+            }
+          },
           "labels" : {
             "type" : "object",
             "additionalProperties" : {
@@ -135,10 +186,19 @@
             },
             "description" : "Key-value pair labels for an item."
           },
-          "identifier" : {
-            "pattern" : "^[a-zA-Z0-9\\.\\:_-]{2,256}$",
+          "lifecycle" : {
             "type" : "string",
-            "description" : "Immutable unique identifier (maybe use an URN). Primary means to identify items in searches."
+            "description" : "The lifecycle state of an item.",
+            "writeOnly" : true,
+            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
+          },
+          "links" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Link"
+            },
+            "description" : "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
+            "example" : "github: https://github.com/dedica-team/nivio"
           },
           "name" : {
             "type" : "string",
@@ -150,28 +210,6 @@
             "description" : "The business owner of the item. Preferably use an email address.",
             "example" : "johnson@acme.com"
           },
-          "description" : {
-            "type" : "string",
-            "description" : "A brief description."
-          },
-          "contact" : {
-            "type" : "string",
-            "description" : "The primary way to contact a responsible person or team. Preferably use an email address.",
-            "example" : "johnson@acme.com"
-          },
-          "group" : {
-            "type" : "string",
-            "description" : "The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to common.",
-            "example" : "shipping"
-          },
-          "interfaces" : {
-            "uniqueItems" : true,
-            "type" : "array",
-            "description" : "A collection of low level interfaces. Can be used to describe HTTP API endpoints for instance.",
-            "items" : {
-              "$ref" : "#/components/schemas/InterfaceDescription"
-            }
-          },
           "providedBy" : {
             "type" : "array",
             "description" : "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.",
@@ -181,24 +219,6 @@
               "description" : "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.",
               "example" : "shipping-mysqldb"
             }
-          },
-          "icon" : {
-            "type" : "string",
-            "description" : "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work)."
-          },
-          "color" : {
-            "type" : "string",
-            "description" : "Overrides the group color. Use an HTML hex color code without the leading hash.",
-            "example" : "4400FF"
-          },
-          "address" : {
-            "type" : "string",
-            "description" : "The technical address of the item (should be an URI). Taken into account when matching relation endpoints."
-          },
-          "type" : {
-            "type" : "string",
-            "description" : "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
-            "example" : "service|database|volume"
           },
           "status" : {
             "type" : "array",
@@ -226,51 +246,46 @@
               "description" : "A list of statuses that works like hardcoded KPIs."
             }
           },
-          "frameworks" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string",
-              "description" : "The parts used to create the item. Usually refers to technical frameworks.",
-              "example" : "java: 8"
-            },
-            "description" : "The parts used to create the item. Usually refers to technical frameworks.",
-            "writeOnly" : true,
-            "example" : "java: 8"
-          },
-          "lifecycle" : {
-            "type" : "string",
-            "description" : "The lifecycle state of an item.",
-            "writeOnly" : true,
-            "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
-          },
           "tags" : {
             "type" : "array",
             "items" : {
               "type" : "string"
             }
           },
-          "links" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "$ref" : "#/components/schemas/Link"
-            },
-            "description" : "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
-            "example" : "github: https://github.com/dedica-team/nivio"
+          "type" : {
+            "type" : "string",
+            "description" : "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
+            "example" : "service|database|volume"
           }
         },
         "description" : "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc."
       },
       "KPIConfig" : {
+        "required" : [ "label" ],
         "type" : "object",
         "properties" : {
           "description" : {
             "type" : "string",
             "description" : "Description of the purpose of the KPI"
           },
+          "enabled" : {
+            "type" : "boolean",
+            "description" : "A flag indicating that the KPI is active. Can be used to disable default kpis."
+          },
           "label" : {
             "type" : "string",
             "description" : "Key of the label to evaluate",
             "example" : "costs"
+          },
+          "matches" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string",
+              "description" : "A map of string based matchers that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate matchers.",
+              "example" : "RED: BAD;err.*"
+            },
+            "description" : "A map of string based matchers that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate matchers.",
+            "example" : "RED: BAD;err.*"
           },
           "messageTemplate" : {
             "type" : "string",
@@ -286,20 +301,6 @@
             },
             "description" : "A map of number based ranges that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate upper and lower bounds. Tries to evaluate label values as numbers.",
             "example" : "GREEN: 0;99.999999"
-          },
-          "matches" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string",
-              "description" : "A map of string based matchers that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate matchers.",
-              "example" : "RED: BAD;err.*"
-            },
-            "description" : "A map of string based matchers that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate matchers.",
-            "example" : "RED: BAD;err.*"
-          },
-          "enabled" : {
-            "type" : "boolean",
-            "description" : "A flag indicating that the KPI is active. Can be used to disable default kpis."
           }
         },
         "description" : "The configuration of landscape specific key performance indicators that derive status information from landscape components. Usually the KPIs work on labels"
@@ -307,15 +308,12 @@
       "LandscapeConfig" : {
         "type" : "object",
         "properties" : {
+          "branding" : {
+            "$ref" : "#/components/schemas/Branding"
+          },
           "greedy" : {
             "type" : "boolean",
             "description" : "Flag that enables instant creation items based relation targets that cannot be found in the sources."
-          },
-          "groupLayoutConfig" : {
-            "$ref" : "#/components/schemas/LayoutConfig"
-          },
-          "itemLayoutConfig" : {
-            "$ref" : "#/components/schemas/LayoutConfig"
           },
           "groupBlacklist" : {
             "type" : "array",
@@ -327,6 +325,19 @@
               "example" : ".*infra.*"
             }
           },
+          "groupLayoutConfig" : {
+            "$ref" : "#/components/schemas/LayoutConfig"
+          },
+          "itemLayoutConfig" : {
+            "$ref" : "#/components/schemas/LayoutConfig"
+          },
+          "kpis" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/KPIConfig"
+            },
+            "description" : "Key performance indicator configs. Each KPI must have a unique identifier."
+          },
           "labelBlacklist" : {
             "type" : "array",
             "description" : "Names or patterns of labels that should be ignored. Used to improve automatic scanning results.",
@@ -336,16 +347,6 @@
               "description" : "Names or patterns of labels that should be ignored. Used to improve automatic scanning results.",
               "example" : ".*COMPOSITION.*"
             }
-          },
-          "branding" : {
-            "$ref" : "#/components/schemas/Branding"
-          },
-          "kpis" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "$ref" : "#/components/schemas/KPIConfig"
-            },
-            "description" : "Key performance indicator configs. Each KPI must have a unique identifier."
           }
         },
         "description" : "Configuration of key performance indicators (i.e. status indicators) and layouting tweaks."
@@ -354,14 +355,11 @@
         "required" : [ "identifier", "name" ],
         "type" : "object",
         "properties" : {
-          "identifier" : {
-            "pattern" : "^[a-zA-Z0-9\\.\\:_-]{2,256}$",
-            "type" : "string",
-            "description" : "Immutable unique identifier. Maybe use an URN."
+          "color" : {
+            "type" : "string"
           },
-          "name" : {
-            "type" : "string",
-            "description" : "Human readable name."
+          "config" : {
+            "$ref" : "#/components/schemas/LandscapeConfig"
           },
           "contact" : {
             "type" : "string",
@@ -371,27 +369,6 @@
             "type" : "string",
             "description" : "A brief description of the landscape."
           },
-          "owner" : {
-            "type" : "string",
-            "description" : "The business owner (person or team), preferably an email address."
-          },
-          "templates" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "$ref" : "#/components/schemas/ItemDescription"
-            },
-            "description" : "Item descriptions to be used as templates. All values except identifier and name will be applied to the assigned items."
-          },
-          "sources" : {
-            "type" : "array",
-            "writeOnly" : true,
-            "items" : {
-              "$ref" : "#/components/schemas/SourceReference"
-            }
-          },
-          "config" : {
-            "$ref" : "#/components/schemas/LandscapeConfig"
-          },
           "groups" : {
             "type" : "object",
             "additionalProperties" : {
@@ -399,13 +376,13 @@
             },
             "description" : "Description of item groups (optional, can also be given in sources)."
           },
-          "labels" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string",
-              "description" : "Additional labels for the landscape."
-            },
-            "description" : "Additional labels for the landscape."
+          "icon" : {
+            "type" : "string"
+          },
+          "identifier" : {
+            "pattern" : "^[a-zA-Z0-9\\.\\:_-]{2,256}$",
+            "type" : "string",
+            "description" : "Immutable unique identifier. Maybe use an URN."
           },
           "items" : {
             "type" : "array",
@@ -415,15 +392,13 @@
               "$ref" : "#/components/schemas/ItemDescription"
             }
           },
-          "partial" : {
-            "type" : "boolean",
-            "description" : "marks that the landscape is not complete, but an update"
-          },
-          "icon" : {
-            "type" : "string"
-          },
-          "color" : {
-            "type" : "string"
+          "labels" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string",
+              "description" : "Additional labels for the landscape."
+            },
+            "description" : "Additional labels for the landscape."
           },
           "links" : {
             "type" : "object",
@@ -432,17 +407,38 @@
             },
             "description" : "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
             "example" : "github: https://github.com/dedica-team/nivio"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Human readable name."
+          },
+          "owner" : {
+            "type" : "string",
+            "description" : "The business owner (person or team), preferably an email address."
+          },
+          "partial" : {
+            "type" : "boolean",
+            "description" : "marks that the landscape is not complete, but an update"
+          },
+          "sources" : {
+            "type" : "array",
+            "writeOnly" : true,
+            "items" : {
+              "$ref" : "#/components/schemas/SourceReference"
+            }
+          },
+          "templates" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/ItemDescription"
+            },
+            "description" : "Item descriptions to be used as templates. All values except identifier and name will be applied to the assigned items."
           }
         }
       },
       "LayoutConfig" : {
         "type" : "object",
         "properties" : {
-          "maxIterations" : {
-            "type" : "integer",
-            "description" : "The maximum number of iterations. More iterations theoretically lead to better results.",
-            "format" : "int32"
-          },
           "forceConstantFactor" : {
             "type" : "number",
             "description" : "A factor to influence the attracting and repulsive forces in a layout.",
@@ -452,6 +448,11 @@
             "type" : "number",
             "description" : "A factor to influence maximum distance where forces are applied.",
             "format" : "float"
+          },
+          "maxIterations" : {
+            "type" : "integer",
+            "description" : "The maximum number of iterations. More iterations theoretically lead to better results.",
+            "format" : "int32"
           },
           "minDistanceLimitFactor" : {
             "type" : "number",
@@ -465,9 +466,25 @@
         "required" : [ "href" ],
         "type" : "object",
         "properties" : {
-          "rel" : {
+          "basicAuthPassword" : {
             "type" : "string",
-            "description" : "hateoas relation type"
+            "writeOnly" : true
+          },
+          "basicAuthUsername" : {
+            "type" : "string",
+            "writeOnly" : true
+          },
+          "deprecation" : {
+            "type" : "string",
+            "description" : "deprecation info (typically used in OpenAPI specs)"
+          },
+          "headerTokenName" : {
+            "type" : "string",
+            "writeOnly" : true
+          },
+          "headerTokenValue" : {
+            "type" : "string",
+            "writeOnly" : true
           },
           "href" : {
             "type" : "string",
@@ -482,36 +499,20 @@
             "type" : "string",
             "description" : "hateoas media type"
           },
+          "name" : {
+            "type" : "string",
+            "description" : "HateOAS / OpenAPI name"
+          },
+          "rel" : {
+            "type" : "string",
+            "description" : "hateoas relation type"
+          },
           "title" : {
             "type" : "string",
             "description" : "hateoas title"
           },
           "type" : {
             "type" : "string"
-          },
-          "deprecation" : {
-            "type" : "string",
-            "description" : "deprecation info (typically used in OpenAPI specs)"
-          },
-          "name" : {
-            "type" : "string",
-            "description" : "HateOAS / OpenAPI name"
-          },
-          "basicAuthUsername" : {
-            "type" : "string",
-            "writeOnly" : true
-          },
-          "basicAuthPassword" : {
-            "type" : "string",
-            "writeOnly" : true
-          },
-          "headerTokenName" : {
-            "type" : "string",
-            "writeOnly" : true
-          },
-          "headerTokenValue" : {
-            "type" : "string",
-            "writeOnly" : true
           }
         },
         "description" : "A link to an external resource. Contains a href (URL) plus various attributes for authentication and/or hateoas.",
@@ -521,64 +522,6 @@
         "required" : [ "href" ],
         "type" : "object",
         "properties" : {
-          "rel" : {
-            "type" : "string",
-            "description" : "hateoas relation type"
-          },
-          "href" : {
-            "type" : "string",
-            "description" : "The link target.",
-            "format" : "url"
-          },
-          "hreflang" : {
-            "type" : "string",
-            "description" : "hateoas language"
-          },
-          "media" : {
-            "type" : "string",
-            "description" : "hateoas media type"
-          },
-          "title" : {
-            "type" : "string",
-            "description" : "hateoas title"
-          },
-          "type" : {
-            "type" : "string"
-          },
-          "deprecation" : {
-            "type" : "string",
-            "description" : "deprecation info (typically used in OpenAPI specs)"
-          },
-          "name" : {
-            "type" : "string",
-            "description" : "HateOAS / OpenAPI name"
-          },
-          "basicAuthUsername" : {
-            "type" : "string",
-            "writeOnly" : true
-          },
-          "basicAuthPassword" : {
-            "type" : "string",
-            "writeOnly" : true
-          },
-          "headerTokenName" : {
-            "type" : "string",
-            "writeOnly" : true
-          },
-          "headerTokenValue" : {
-            "type" : "string",
-            "writeOnly" : true
-          },
-          "url" : {
-            "type" : "string",
-            "description" : "A URL, but can also be a relative path.",
-            "example" : "./a/items.yaml"
-          },
-          "format" : {
-            "type" : "string",
-            "description" : "The input format.",
-            "enum" : [ "nivio", "csv", "k8s", "rancher", "docker-compose-v2" ]
-          },
           "assignTemplates" : {
             "type" : "object",
             "additionalProperties" : {
@@ -593,6 +536,64 @@
             },
             "description" : "A map with template identifier as key and item identifier matchers as value",
             "example" : "endOfLife: [web, \"java6*\"]"
+          },
+          "basicAuthPassword" : {
+            "type" : "string",
+            "writeOnly" : true
+          },
+          "basicAuthUsername" : {
+            "type" : "string",
+            "writeOnly" : true
+          },
+          "deprecation" : {
+            "type" : "string",
+            "description" : "deprecation info (typically used in OpenAPI specs)"
+          },
+          "format" : {
+            "type" : "string",
+            "description" : "The input format.",
+            "enum" : [ "nivio", "csv", "k8s", "rancher", "docker-compose-v2" ]
+          },
+          "headerTokenName" : {
+            "type" : "string",
+            "writeOnly" : true
+          },
+          "headerTokenValue" : {
+            "type" : "string",
+            "writeOnly" : true
+          },
+          "href" : {
+            "type" : "string",
+            "description" : "The link target.",
+            "format" : "url"
+          },
+          "hreflang" : {
+            "type" : "string",
+            "description" : "hateoas language"
+          },
+          "media" : {
+            "type" : "string",
+            "description" : "hateoas media type"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "HateOAS / OpenAPI name"
+          },
+          "rel" : {
+            "type" : "string",
+            "description" : "hateoas relation type"
+          },
+          "title" : {
+            "type" : "string",
+            "description" : "hateoas title"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "url" : {
+            "type" : "string",
+            "description" : "A URL, but can also be a relative path.",
+            "example" : "./a/items.yaml"
           }
         },
         "description" : "This is a reference to a configuration file."

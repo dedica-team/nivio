@@ -1,7 +1,7 @@
 package de.bonndan.nivio.assessment.kpi;
 
+import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.model.Component;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -18,10 +18,10 @@ public abstract class AbstractKPI implements KPI {
     protected String description;
     private boolean enabled = true;
 
-    protected Function<Component, String> valueFunction;
+    protected Function<Assessable, String> valueFunction;
 
     @NonNull
-    protected Function<Component, String> msgFunction = component -> String.format(messageTemplate, valueFunction.apply(component));
+    protected Function<Assessable, String> msgFunction = component -> String.format(messageTemplate, valueFunction.apply(component));
 
     protected AbstractKPI() {
     }
@@ -30,8 +30,8 @@ public abstract class AbstractKPI implements KPI {
      * @param valueFunction a function returning the value to assess
      * @param msgFunction   a function returning the status message
      */
-    protected AbstractKPI(@NonNull Function<Component, String> valueFunction,
-                       @Nullable Function<Component, String> msgFunction
+    public AbstractKPI(@NonNull Function<Assessable, String> valueFunction,
+                       @Nullable Function<Assessable, String> msgFunction
     ) {
         this.valueFunction = Objects.requireNonNull(valueFunction);
         if (msgFunction != null) {
@@ -46,7 +46,7 @@ public abstract class AbstractKPI implements KPI {
      * @return current status value, unknown if not present
      */
     @NonNull
-    public List<StatusValue> getStatusValues(Component component) {
+    public List<StatusValue> getStatusValues(Assessable component) {
 
         if (valueFunction == null) {
             throw new IllegalStateException("Value function not initialized ");

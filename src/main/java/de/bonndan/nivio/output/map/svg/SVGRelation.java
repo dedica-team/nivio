@@ -2,11 +2,14 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -23,7 +26,10 @@ import static de.bonndan.nivio.output.map.svg.SvgTagCreator.g;
  */
 class SVGRelation extends Component {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SVGRelation.class);
+
     public static final String MARKER_ID = "arrow";
+    public static final int BASIC_STROKE_WIDTH = 20;
 
     private final HexPath hexPath;
     private final String fill;
@@ -64,13 +70,25 @@ class SVGRelation extends Component {
 
 
         ContainerTag shadow = null;
-        int innerStrokeWidth = 20;
+        float factor = Optional.ofNullable(relation.getLabel(Label.weight)).map(s -> {
+            try {
+                float v = Float.parseFloat(s);
+                if (v > 5f) {
+                    v = 5;
+                }
+                return v;
+            } catch (NumberFormatException e) {
+                LOGGER.warn("Invalid weight: {}", s);
+                return 1f;
+            }
+        }).orElse(1f);
+        int innerStrokeWidth = Math.round(5 * factor);
         if (statusValue != null && !statusValue.getStatus().equals(Status.UNKNOWN)) {
             String statusColor = statusValue.getStatus().getName();
             shadow = SvgTagCreator.path()
                     .attr("d", points)
                     .attr("stroke", statusColor)
-                    .attr("stroke-width", 24);
+                    .attr("stroke-width", Math.round(BASIC_STROKE_WIDTH * factor));
         }
 
         ContainerTag path = SvgTagCreator.path()

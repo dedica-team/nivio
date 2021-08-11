@@ -13,11 +13,6 @@ Layout configuration. See https://jgraph.github.io/mxgraph/java/docs/com/mxgraph
      - Remarks
      - Example
 
-   * - maxIterations
-     - Integer
-     - The maximum number of iterations. More iterations theoretically lead to better results.
-     - optional, defaults to null
-     - null
    * - forceConstantFactor
      - Float
      - A factor to influence the attracting and repulsive forces in a layout.
@@ -26,6 +21,11 @@ Layout configuration. See https://jgraph.github.io/mxgraph/java/docs/com/mxgraph
    * - maxDistanceLimitFactor
      - Float
      - A factor to influence maximum distance where forces are applied.
+     - optional, defaults to null
+     - null
+   * - maxIterations
+     - Integer
+     - The maximum number of iterations. More iterations theoretically lead to better results.
      - optional, defaults to null
      - null
    * - minDistanceLimitFactor

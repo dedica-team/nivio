@@ -193,6 +193,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         }
     }
 
+    @NonNull
     @Override
     public Map<String, String> getLabels() {
         return labels;
@@ -232,13 +233,25 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     public void setRelations(List<String> relations) {
         relations.stream()
                 .filter(s -> !StringUtils.isEmpty(s))
-                .map(s -> RelationBuilder.createDataflowDescription(this, s))
-                .forEach(this::addRelation);
+                .map(s -> RelationFactory.createDataflowDescription(this, s))
+                .forEach(this::addOrReplaceRelation);
     }
 
-    public void addRelation(RelationDescription relationItem) {
-        Objects.requireNonNull(relationItem);
-        this.relations.add(relationItem);
+    /**
+     * Add or update a relation description.
+     *
+     * If an equal relation description exist, it is updated with values from the newer one.
+     *
+     * @param description relation dto to be added
+     */
+    public void addOrReplaceRelation(@NonNull final RelationDescription description) {
+        RelationDescription relationDescription = Objects.requireNonNull(description).findMatching(this.relations)
+                .map(existingRelation -> {
+                    existingRelation.update(description);
+                    return existingRelation;
+                })
+                .orElse(description);
+        this.relations.add(relationDescription);
     }
 
     public String getAddress() {
