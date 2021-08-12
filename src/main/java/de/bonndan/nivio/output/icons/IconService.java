@@ -20,10 +20,12 @@ public class IconService {
 
     private final LocalIcons localIcons;
     private final ExternalIcons externalIcons;
+    private final IconMapping iconMapping;
 
     public IconService(LocalIcons localIcons, ExternalIcons externalIcons) {
         this.localIcons = localIcons;
         this.externalIcons = externalIcons;
+        this.iconMapping = new IconMapping();
     }
 
     /**
@@ -70,7 +72,7 @@ public class IconService {
         }
 
         //fallback to item.type
-        String iconName = IconMapping.of(type.toLowerCase()).map(IconMapping::getIcon).orElseGet(type::toLowerCase);
+        String iconName = iconMapping.getIcon(type.toLowerCase()).orElseGet(type::toLowerCase);
         return localIcons.getIconUrl(iconName).orElse(localIcons.getDefaultIcon());
     }
 

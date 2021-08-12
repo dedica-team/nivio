@@ -33,7 +33,7 @@ class IconServiceTest {
     @Test
     void returnsServiceWithUnknownType() {
         Item item = getTestItemBuilder("test", "a").withType("abs").build();
-        String expected = localIcons.getIconUrl(IconMapping.DEFAULT_ICON.getIcon()).orElseThrow();
+        String expected = localIcons.getIconUrl(IconMapping.DEFAULT_ICON).orElseThrow();
 
         //when
         String iconUrl = iconService.getIconUrl(item);

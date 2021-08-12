@@ -25,7 +25,7 @@ class LocalIconsTest {
 
     @Test
     void encodesBase64DataUrls() {
-        Optional<String> icon = localIcons.getIconUrl(IconMapping.DEFAULT_ICON.getIcon());
+        Optional<String> icon = localIcons.getIconUrl(IconMapping.DEFAULT_ICON);
         assertThat(icon).isNotEmpty();
 
         String payload = icon.get().replace(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64, "");
