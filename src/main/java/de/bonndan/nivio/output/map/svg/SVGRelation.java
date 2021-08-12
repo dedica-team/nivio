@@ -6,7 +6,6 @@ import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
-import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.slf4j.Logger;
@@ -115,7 +114,7 @@ class SVGRelation extends Component {
                     .attr("fill", fillId);
         }
 
-        return addAttributes(g(shadow, path, endMarker, label(bezierPath, fillId)), relation);
+        return addAttributes(g(shadow, path, endMarker, label(relation.getLabel(Label.label), bezierPath, fillId)), relation);
     }
 
     public HexPath getHexPath() {
@@ -133,14 +132,13 @@ class SVGRelation extends Component {
         return g;
     }
 
-    private ContainerTag label(BezierPath bezierPath, String fillId) {
+    private ContainerTag label(String text, BezierPath bezierPath, String fillId) {
+        if (!StringUtils.hasLength(text)) {
+            return null;
+        }
         Point2D.Float point = bezierPath.eval(0.49f);
         Point2D.Float point2 = bezierPath.eval(0.51f);
-        return alongPath(getText(), point, point2, fillId, 0, true);
-    }
-
-    private String getText() {
-        return Optional.ofNullable(relation.getFormat()).orElse("");
+        return alongPath(text, point, point2, fillId, 0, true);
     }
 
     private ContainerTag alongPath(String text, Point2D.Float point, Point2D.Float point2, String fillId, int xOffset, boolean upright) {
@@ -157,7 +155,8 @@ class SVGRelation extends Component {
         return SvgTagCreator.text(text)
                 .attr("x", xOffset)
                 .attr("y", 0)
-                .attr("font-size", "4em")
+                .attr("text-anchor", "middle")
+                .attr("font-size", "1.5em")
                 .condAttr(StringUtils.hasLength(fillId), "fill", fillId)
                 .attr("transform", transform);
     }
