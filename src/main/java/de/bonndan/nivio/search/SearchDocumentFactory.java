@@ -3,7 +3,6 @@ package de.bonndan.nivio.search;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.Labeled;
 import joptsimple.internal.Strings;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -48,6 +47,10 @@ public class SearchDocumentFactory {
     public static final String LUCENE_FIELD_FRAMEWORK = Label.framework.name();
     public static final String KPI_FACET_PREFIX = "kpi_";
 
+    private SearchDocumentFactory() {
+
+    }
+
     public static FacetsConfig getConfig() {
         FacetsConfig config = new FacetsConfig();
         config.setMultiValued(LUCENE_FIELD_TAG, true);
@@ -71,7 +74,6 @@ public class SearchDocumentFactory {
         }
 
         Document document = new Document();
-        List<String> genericStrings = new ArrayList<>();
         BiConsumer<String, String> addTextField = (field, value) -> Optional.ofNullable(value)
                 .ifPresentOrElse(
                         val -> document.add(new TextField(field, val, Field.Store.YES)),
@@ -88,9 +90,10 @@ public class SearchDocumentFactory {
         addTextField.accept(LUCENE_FIELD_ITEM_TYPE, item.getType());
         addTextField.accept(LUCENE_FIELD_OWNER, item.getOwner());
 
+        List<String> genericStrings = new ArrayList<>();
         //add all labels by their key
         item.getLabels().forEach((labelKey, val) -> {
-            if (StringUtils.isEmpty(val)) {
+            if (!StringUtils.hasLength(val)) {
                 return;
             }
             addTextField.accept(labelKey, val);
@@ -105,7 +108,7 @@ public class SearchDocumentFactory {
         item.getLinks().forEach((s, link) -> {
             if (link == null)
                 return;
-            String val = StringUtils.isEmpty(link.getName()) ? "" : link.getName() + " ";
+            String val = !StringUtils.hasLength(link.getName()) ? "" : link.getName() + " ";
             val += link.getHref();
             addTextField.accept(s, val);
         });
