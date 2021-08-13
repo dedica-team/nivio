@@ -2,7 +2,6 @@ package de.bonndan.nivio.input.dto;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import de.bonndan.nivio.model.Labeled;
-import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.search.ItemMatcher;
 import io.swagger.v3.oas.annotations.media.Schema;

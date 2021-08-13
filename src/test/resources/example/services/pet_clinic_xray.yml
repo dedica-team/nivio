@@ -17,7 +17,8 @@ items:
 
   - identifier: sensor
     group: xray
-    type: radioactive
+    type: sensor
+    icon: radioactive
     statuses:
       - label: radiation
         status: red

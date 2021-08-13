@@ -109,3 +109,4 @@ Service references are required to describe a ``provider`` relation or ``dataflo
           - target: anothergroup/anotherservice
             format: json
             type: dataflow
+            label: Data Sync
