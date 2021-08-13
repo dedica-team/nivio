@@ -35,18 +35,14 @@ public class KubernetesObserver implements InputFormatObserver {
 
     @Override
     public void run() {
-        while (true) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignored) {
-                LOGGER.warn("Thread sleep failed 1000");
-            }
+        var change = false;
+        while (!change) {
             if (eventList == null) {
                 eventList = kubernetesClient.events().v1().events().list().getItems();
             } else {
                 if (!compareEvents(eventList, kubernetesClient.events().v1().events().list().getItems())) {
                     triggerChange();
-                    return;
+                    change = true;
                 }
             }
         }
