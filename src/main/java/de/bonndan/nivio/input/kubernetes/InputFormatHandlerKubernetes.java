@@ -7,8 +7,8 @@ import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.kubernetes.itemadapters.PersistentVolumeItemAdapter;
 import de.bonndan.nivio.input.kubernetes.itemadapters.PodItemAdapter;
-import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import io.fabric8.kubernetes.api.model.OwnerReference;
 import io.fabric8.kubernetes.client.Config;
@@ -102,7 +102,6 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         if (K8sJsonParser.getExperimentalActive()) {
             crossReferenceLabel(itemList);
         }
-        LOGGER.error("Found " + itemList.size() + " items");
         return createItemDescription(itemList);
     }
 

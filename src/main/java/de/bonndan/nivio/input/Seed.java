@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.config.ConfigurableEnvVars;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +68,7 @@ public class Seed {
         if (!StringUtils.hasLength(demo)) {
             return demoFiles;
         }
+        String value = ConfigurableEnvVars.DEMO.value().get();
 
         Path currentRelativePath = Paths.get("");
         String absPath = currentRelativePath.toAbsolutePath().toString();
