@@ -68,7 +68,7 @@ public enum Label {
      * Separator for label key parts.
      * Should not be used outside this package. Use key() methods instead.
      */
-    static final String DELIMITER = ".";
+    public static final String DELIMITER = ".";
 
     /**
      * Internal labels start with an underscore. They are not diffed and not part of the public api.
