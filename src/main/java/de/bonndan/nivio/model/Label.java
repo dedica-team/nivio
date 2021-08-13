@@ -30,6 +30,8 @@ public enum Label {
 
     health("Description of the item's health status."),
 
+    label("A custom label (like a note, but very short)."),
+
     layer("A technical layer."),
 
     lifecycle("A lifecycle phase (``PLANNED|plan``, ``INTEGRATION|int``, ``PRODUCTION|prod``, ``END_OF_LIFE|eol|end``)."),
@@ -66,7 +68,7 @@ public enum Label {
      * Separator for label key parts.
      * Should not be used outside this package. Use key() methods instead.
      */
-    static final String DELIMITER = ".";
+    public static final String DELIMITER = ".";
 
     /**
      * Internal labels start with an underscore. They are not diffed and not part of the public api.

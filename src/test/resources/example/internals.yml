@@ -38,6 +38,7 @@ items:
     relations:
       - target: sources/parsing
         type: dataflow
+        label: IndexEvent
 
   - identifier: observerpool
     name: Observer Pool
@@ -46,7 +47,7 @@ items:
     relations:
       - target: sources/parsing
         type: dataflow
-        event: InputChangedEvent
+        label: InputChangedEvent
 
   - identifier: parsing
     group: sources
@@ -86,12 +87,14 @@ items:
     description: Dynamic batch assignment of item values based on templates
     relations:
       - target: indexing/speciallabels
+        type: dataflow
 
   - identifier: speciallabels
     group: indexing
     description: Applies labels prefixed with "nivio" to item fields.
     relations:
       - target: indexing/greedy
+        type: dataflow
 
   - identifier: greedy
     name: items on the fly
@@ -99,6 +102,7 @@ items:
     description: Creates items on the fly if nivio is configured "greedy".
     relations:
       - target: indexing/dynrelations
+        type: dataflow
 
   - identifier: dynrelations
     group: indexing
@@ -106,24 +110,28 @@ items:
     description: Finds relation endpoints based on regexes or queries
     relations:
       - target: indexing/groups
+        type: dataflow
 
   - identifier: groups
     group: indexing
     description: Adds groups
     relations:
       - target: indexing/diff
+        type: dataflow
 
   - identifier: diff
     group: indexing
     description: Updates item fiels, adds and removes items
     relations:
       - target: indexing/grouping
+        type: dataflow
 
   - identifier: grouping
     group: indexing
     description: Resolves grouping queries to assign items to groups
     relations:
       - target: indexing/magic
+        type: dataflow
 
   - identifier: magic
     name: detect relations
@@ -162,6 +170,7 @@ items:
     relations:
       - target: assessment/kpis
         type: dataflow
+        label: ProcessingFinishedEvent
       - target: reports/html
 
   #
@@ -181,12 +190,28 @@ items:
     description: Visits all landscape components in order to apply KPIs
     relations:
       - target: assessment/assessment
+        type: dataflow
 
   - identifier: assessment
     group: assessment
     description: Collects all KPIs from all components as map (containing FullyQualifiedIdenfiers)
     relations:
       - target: rendering/sublayout
+        type: dataflow
+        label: AssessmentChangedEvent
+      - target: search/search
+        type: dataflow
+        label: AssessmentChangedEvent
+
+  #
+  # search
+  #
+  - identifier: search
+    name: in-group layout
+    group: search
+    icon: search
+    description: Indexes the landscape and the assessments
+
 
   #
   # rendering
@@ -198,6 +223,7 @@ items:
     description: Layouts the items of one group and provides a container for the group to hold all items
     relations:
       - target: rendering/layout
+        type: dataflow
 
   - identifier: layout
     name: group layout
@@ -206,6 +232,7 @@ items:
     description: Layouts the group containers as graph nodes, edges are connections between items of different groups
     relations:
       - target: rendering/hex
+        type: dataflow
 
   - identifier: hex
     name: hex mapping
@@ -214,6 +241,7 @@ items:
     description: Projection of items onto a hex map by transforming previously calculated x-y coordinates to q-r hex coordinates
     relations:
       - target: rendering/pathfinding
+        type: dataflow
 
   - identifier: pathfinding
     note: see PathFinder.java
@@ -222,8 +250,11 @@ items:
     description: A* pathfinding to draw item relations (graph edges)
     relations:
       - target: rendering/svg
+        type: dataflow
+        label: LayoutChangedEvent
 
   - identifier: svg
+    name: RenderCache
     group: rendering
     shortname: 🌈
     description: Renders item, pathes and groups

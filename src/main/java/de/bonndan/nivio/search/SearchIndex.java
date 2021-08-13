@@ -50,6 +50,12 @@ public class SearchIndex {
     public static final String WILDCARD = "*";
     public static final String WHITESPACE = " ";
     public static final String FACET_DELIMITER = ":";
+    private static final String[] MULTI_FIELD_QUERY_FIELDS = {
+            LUCENE_FIELD_IDENTIFIER,
+            LUCENE_FIELD_NAME,
+            LUCENE_FIELD_DESCRIPTION,
+            LUCENE_FIELD_GENERIC,
+    };
 
     private final Directory searchIndex;
     private final Directory taxoIndex;
@@ -161,7 +167,7 @@ public class SearchIndex {
             LOGGER.warn("Unable to get the facets for the given query error: ", e);
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
     private List<Document> documentSearch(String queryString) throws IOException, ParseException {
@@ -169,7 +175,7 @@ public class SearchIndex {
         DirectoryReader ireader = DirectoryReader.open(searchIndex);
         IndexSearcher isearcher = new IndexSearcher(ireader);
         // Parse a simple query that searches for "text":
-        QueryParser parser = new MultiFieldQueryParser(new String[]{LUCENE_FIELD_IDENTIFIER, LUCENE_FIELD_NAME, LUCENE_FIELD_DESCRIPTION}, new StandardAnalyzer());
+        QueryParser parser = new MultiFieldQueryParser(MULTI_FIELD_QUERY_FIELDS, new StandardAnalyzer());
         parser.setAllowLeadingWildcard(true);
         parser.setSplitOnWhitespace(true);
         parser.setDefaultOperator(QueryParser.Operator.AND);

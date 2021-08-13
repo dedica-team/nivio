@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer;
 import de.bonndan.nivio.input.Seed;
 import de.bonndan.nivio.output.icons.LocalIcons;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -19,7 +20,14 @@ import java.time.ZonedDateTime;
 import static de.bonndan.nivio.output.icons.LocalIcons.DEFAULT_ICONS_FOLDER;
 
 @Configuration
+@EnableConfigurationProperties(SeedProperties.class)
 public class ApplicationConfig {
+
+    private final SeedProperties seedProperties;
+
+    public ApplicationConfig(SeedProperties seedProperties) {
+        this.seedProperties = seedProperties;
+    }
 
     @Bean
     public WebMvcConfigurer configurer() {
@@ -38,7 +46,7 @@ public class ApplicationConfig {
 
     @Bean
     public Seed seed() {
-        return new Seed(ConfigurableEnvVars.SEED.value());
+        return new Seed(seedProperties.getSeed(), seedProperties.getDemo());
     }
 
     @Bean

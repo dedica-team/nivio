@@ -5,6 +5,7 @@
 * ``frameworks`` A comma-separated list of frameworks as key-value pairs (key is name, value is version).
 * ``health`` Description of the item's health status.
 * ``icon`` Icon/image (for displaying purposes).
+* ``label`` A custom label (like a note, but very short).
 * ``layer`` A technical layer.
 * ``lifecycle`` A lifecycle phase (``PLANNED|plan``, ``INTEGRATION|int``, ``PRODUCTION|prod``, ``END_OF_LIFE|eol|end``).
 * ``note`` A custom note.

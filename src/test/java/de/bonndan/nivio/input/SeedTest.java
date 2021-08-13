@@ -17,7 +17,7 @@ public class SeedTest {
     public void twoLocal() throws MalformedURLException {
         Path currentRelativePath = Paths.get("");
         String root = currentRelativePath.toAbsolutePath().toString();
-        Seed seed = new Seed(java.util.Optional.of(root + "/src/test/resources/example/example_env.yml," + root + "/src/test/resources/example/inout.yml"));
+        Seed seed = new Seed(root + "/src/test/resources/example/example_env.yml," + root + "/src/test/resources/example/inout.yml", null);
         List<URL> locations = seed.getLocations();
 
         assertFalse(locations.isEmpty());
@@ -30,7 +30,7 @@ public class SeedTest {
     public void http() {
         Path currentRelativePath = Paths.get("");
         String root = currentRelativePath.toAbsolutePath().toString();
-        Seed seed = new Seed(java.util.Optional.of(root + "/src/test/resources/example/example_env.yml,http://somehost.com/somefile.yml"));
+        Seed seed = new Seed(root + "/src/test/resources/example/example_env.yml,http://somehost.com/somefile.yml", null);
         List<URL> locations = seed.getLocations();
 
         assertFalse(locations.isEmpty());
@@ -40,6 +40,6 @@ public class SeedTest {
 
     @Test
     public void fails() {
-        assertThrows(RuntimeException.class, () -> new Seed(java.util.Optional.of(" :xxx")));
+        assertThrows(RuntimeException.class, () -> new Seed(" :xxx", null));
     }
 }

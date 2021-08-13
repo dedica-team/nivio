@@ -46,19 +46,14 @@ like "account".
       - identifier: bar
         type: account
 
-The following types are translated icons to maintain backward compatibility:
+Alternatively you can use any icon name on the icon field.
 
-* CACHE -> "flash-circle"
-* CONTAINER -> "inbox"
-* FIREWALL -> "wall"
-* HUMANUSER -> "account"
-* INTERFACE -> "connection"
-* KEYVALUESTORE -> "keyvaluestore"
-* LOADBALANCER -> "loadbalancer"
-* MESSAGEQUEUE -> "tray-full"
-* MOBILECLIENT -> "cellphone"
-* VOLUME -> "harddisk"
-* WEBSERVICE -> "application"
+.. code-block:: yaml
+   :linenos:
+
+    items:
+      - identifier: bar
+        icon: flash-circle
 
 Vendor Logos
 ^^^^^^^^^^^^^

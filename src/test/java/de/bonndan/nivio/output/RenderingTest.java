@@ -3,6 +3,7 @@ package de.bonndan.nivio.output;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.config.ApplicationConfig;
+import de.bonndan.nivio.config.SeedProperties;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.CachedResponse;
@@ -55,7 +56,7 @@ public abstract class RenderingTest {
         landscapeRepository = new LandscapeRepository();
         formatFactory = new InputFormatHandlerFactory(List.of(new InputFormatHandlerNivio(new FileFetcher(new HttpService()))));
         httpService = mock(HttpService.class);
-        objectMapper = new ApplicationConfig().jackson2ObjectMapperBuilder().build();
+        objectMapper = new ApplicationConfig(null).jackson2ObjectMapperBuilder().build();
 
         CachedResponse response = mock(CachedResponse.class);
         when(response.getBytes()).thenReturn("foo".getBytes());
