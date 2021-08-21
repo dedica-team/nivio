@@ -4,6 +4,8 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.*;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
 import java.util.*;
@@ -12,6 +14,8 @@ import java.util.*;
  * Creates {@link Relation}s between {@link Item}s.
  */
 public class ItemRelationProcessor extends Processor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemRelationProcessor.class);
 
     protected ItemRelationProcessor(ProcessLog processLog) {
         super(processLog);
@@ -45,7 +49,7 @@ public class ItemRelationProcessor extends Processor {
                         })
                         .orElseGet(() -> {
                             Relation created = RelationFactory.create(origin, relationDescription, landscape);
-                            processLog.info(String.format(origin + ": Adding relation between %s and %s", created.getSource(), created.getTarget()));
+                            processLog.info(String.format("%s: Adding relation between %s and %s", origin, created.getSource(), created.getTarget()));
                             changelog.addEntry(created, ProcessingChangelog.ChangeType.CREATED, null);
                             return created;
                         });
@@ -66,27 +70,37 @@ public class ItemRelationProcessor extends Processor {
                     .filter(relation -> !processed.contains(relation))
                     .filter(relation -> origin.equals(relation.getSource()))
                     .forEach(relation -> {
-                        processLog.info(String.format(origin + ": Removing relation between %s and %s", relation.getSource(), relation.getTarget()));
-                        Item currentSource = landscape.getItems().pick(
-                                relation.getSource().getFullyQualifiedIdentifier().getItem(),
-                                relation.getSource().getFullyQualifiedIdentifier().getGroup()
-                        );
-                        if (!currentSource.removeRelation(relation)) {
-                            processLog.warn(String.format("Could not remove relation %s from source %s", relation, relation.getSource()));
-                        }
-
-                        Item currentTarget = landscape.getItems().pick(
-                                relation.getTarget().getFullyQualifiedIdentifier().getItem(),
-                                relation.getTarget().getFullyQualifiedIdentifier().getGroup()
-                        );
-                        if (!currentTarget.removeRelation(relation)) {
-                            processLog.warn(String.format("Could not remove relation %s from target %s", relation, relation.getSource()));
-                        }
+                        processLog.info(String.format("%s: Removing relation between %s and %s", origin, relation.getSource(), relation.getTarget()));
+                        removeRelationFromItem(landscape, relation, relation.getSource());
+                        removeRelationFromItem(landscape, relation, relation.getTarget());
                         changelog.addEntry(relation, ProcessingChangelog.ChangeType.DELETED, null);
                     });
         });
 
         return changelog;
+    }
+
+    /**
+     * Gracefully finds the relation end item in the landscape and tries to remove the relation.
+     *
+     * @param landscape the current landscape
+     * @param relation the relation to remove
+     * @param relationEnd the relation source or target
+     */
+    private void removeRelationFromItem(Landscape landscape, Relation relation, Item relationEnd) {
+        var fqi = relationEnd.getFullyQualifiedIdentifier();
+        landscape.getItems().find(fqi.getItem(), fqi.getGroup())
+                .ifPresentOrElse(item -> {
+                    if (!item.removeRelation(relation)) {
+                        processLog.warn(String.format("Could not remove relation %s from item %s", relation, relationEnd));
+                    }
+                },
+                () -> {
+                    String msg = String.format("Could not find relation end %s from relation %s", relationEnd, relation);
+                    processLog.warn(msg);
+                    LOGGER.error(msg, new IllegalStateException());
+                }
+        );
     }
 
     private boolean isValid(RelationDescription relationDescription, Landscape landscape) {
