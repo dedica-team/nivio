@@ -24,6 +24,8 @@ public class SearchDocumentFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SearchDocumentFactory.class);
 
+    private SearchDocumentFactory() {}
+
     public static final String LUCENE_FIELD_IDENTIFIER = "identifier";
     public static final String LUCENE_FIELD_NAME = "name";
     public static final String LUCENE_FIELD_DESCRIPTION = "description";
@@ -83,7 +85,7 @@ public class SearchDocumentFactory {
 
         //add all labels by their key
         item.getLabels().forEach((labelKey, val) -> {
-            if (StringUtils.isEmpty(val))
+            if (!StringUtils.hasLength(val))
                 return;
             addTextField.accept(labelKey, val);
         });
@@ -92,7 +94,7 @@ public class SearchDocumentFactory {
         item.getLinks().forEach((s, link) -> {
             if (link == null)
                 return;
-            String val = StringUtils.isEmpty(link.getName()) ? "" : link.getName() + " ";
+            String val = !StringUtils.hasLength(link.getName()) ? "" : link.getName() + " ";
             val += link.getHref();
             addTextField.accept(s, val);
         });
