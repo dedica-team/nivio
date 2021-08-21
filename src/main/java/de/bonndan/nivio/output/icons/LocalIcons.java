@@ -43,12 +43,12 @@ public class LocalIcons {
      * @param iconFolder optional dir containing a different icon set
      */
     public LocalIcons(@NonNull final String iconFolder) {
-        if (!StringUtils.isEmpty(Objects.requireNonNull(iconFolder))) {
+        if (StringUtils.hasLength(Objects.requireNonNull(iconFolder))) {
             this.iconFolder = iconFolder.endsWith("/") || iconFolder.endsWith("\\") ? iconFolder : iconFolder + File.separator;
         } else {
             this.iconFolder = DEFAULT_ICONS_FOLDER;
         }
-        defaultIcon = getIconUrl(DEFAULT_ICON.getIcon()).orElseThrow(() -> {
+        defaultIcon = getIconUrl(DEFAULT_ICON).orElseThrow(() -> {
             throw new RuntimeException(String.format(initErrorMsg, this.iconFolder));
         });
     }
@@ -63,7 +63,7 @@ public class LocalIcons {
      * @return an url pointing to a file or a data url
      */
     Optional<String> getIconUrl(String icon) {
-        if (StringUtils.isEmpty(icon)) {
+        if (!StringUtils.hasLength(icon)) {
             return Optional.empty();
         }
 
@@ -105,9 +105,7 @@ public class LocalIcons {
         Optional<String> dataUrl = DataUrlHelper.asBase64(path).map(s -> DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + s);
         dataUrl.ifPresentOrElse(
                 s -> iconDataUrls.put(path, s),
-                () -> {
-                    LOGGER.warn("Failed to load svg icon {}", path);
-                }
+                () -> LOGGER.warn("Failed to load svg icon {}", path)
         );
         return dataUrl;
     }

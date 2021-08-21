@@ -14,7 +14,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import java.awt.geom.Point2D;
 import java.util.Optional;
 
 import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
@@ -114,7 +113,7 @@ class SVGRelation extends Component {
                     .attr("fill", fillId);
         }
 
-        return addAttributes(g(shadow, path, endMarker, label(bezierPath, fillId)), relation);
+        return addAttributes(g(shadow, path, endMarker, label(relation.getLabel(Label.label), bezierPath, fillId)), relation);
     }
 
     public HexPath getHexPath() {
@@ -132,33 +131,12 @@ class SVGRelation extends Component {
         return g;
     }
 
-    private ContainerTag label(BezierPath bezierPath, String fillId) {
-        Point2D.Float point = bezierPath.eval(0.49f);
-        Point2D.Float point2 = bezierPath.eval(0.51f);
-        return alongPath(getText(), point, point2, fillId, 0, true);
-    }
-
-    private String getText() {
-        return Optional.ofNullable(relation.getFormat()).orElse("");
-    }
-
-    private ContainerTag alongPath(String text, Point2D.Float point, Point2D.Float point2, String fillId, int xOffset, boolean upright) {
-
-        var degrees = Math.atan2((point2.y - point.y), (point2.x - point.x)) * 180 / Math.PI;
-        if (upright && (degrees > 90 || degrees < -90)) {
-            degrees += 180; //always upright
+    @Nullable
+    private ContainerTag label(String text, BezierPath bezierPath, String fillId) {
+        if (!StringUtils.hasLength(text)) {
+            return null;
         }
-        String transform = "translate(" + round(point.getX()) + ' ' + round(point.getY() - 10) + ") rotate(" + round(degrees) + " 0 0)";
-
-        if (text == null) {
-            text = "";
-        }
-        return SvgTagCreator.text(text)
-                .attr("x", xOffset)
-                .attr("y", 0)
-                .attr("font-size", "4em")
-                .condAttr(StringUtils.hasLength(fillId), "fill", fillId)
-                .attr("transform", transform);
+        return new SvgRelationLabel(text, bezierPath.eval(0.49f), bezierPath.eval(0.51f), fillId, true).render();
     }
 
     /**
