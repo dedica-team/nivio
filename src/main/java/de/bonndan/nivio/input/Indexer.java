@@ -70,14 +70,14 @@ public class Indexer {
         // apply template values to items
         new TemplateResolver(logger).resolve(input);
 
+        // read special labels on items and assign the values to fields (must be run before links resolver)
+        new LabelToFieldResolver(logger).resolve(input);
+
         // resolve links on components to gather more data.
         new LinksResolver(logger, linkHandlerFactory).resolve(input);
 
         // mask any label containing secrets
         new SecureLabelsResolver(logger).resolve(input);
-
-        // read special labels on items and assign the values to fields
-        new LabelToFieldResolver(logger).resolve(input);
 
         // create relation targets on the fly if the landscape is configured "greedy"
         new InstantItemResolver(logger).resolve(input);
