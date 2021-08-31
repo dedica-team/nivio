@@ -122,6 +122,32 @@ public class FileFetcher {
     }
 
     /**
+     * @param part    url or partial path
+     * @param baseUrl optional base url
+     * @return the file/url contents
+     */
+    @Nullable
+    public String get(@NonNull final String part, @Nullable final URL baseUrl) {
+
+        try {
+            //we have no base url or source ref has absolute url
+            if (baseUrl == null || Objects.requireNonNull(part).startsWith("http")) {
+                return get(new URL(part));
+            }
+
+            //assemble new absolute url
+            String combined = URLHelper.combine(baseUrl, part);
+            URL url = new URL(combined);
+            if (URLHelper.isLocal(url)) {
+                return get(url);
+            }
+            return get(url);
+        } catch (MalformedURLException e) {
+            throw new ReadingException(String.format("Failed to build URL of %s with base url '%s'", part, baseUrl), e);
+        }
+    }
+
+    /**
      * @param ref
      * @param baseUrl
      * @return

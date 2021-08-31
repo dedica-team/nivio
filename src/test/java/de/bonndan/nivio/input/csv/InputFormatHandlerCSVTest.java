@@ -32,9 +32,9 @@ class InputFormatHandlerCSVTest {
     }
 
     @Test
-    public void read() {
+    void read() {
 
-        SourceReference file =  SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test.csv"));
+        SourceReference file = SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test.csv"));
 
         Map<String, String> mapping = new HashMap<>();
         mapping.put("identifier", "1");
@@ -80,9 +80,9 @@ class InputFormatHandlerCSVTest {
     }
 
     @Test
-    public void readRelationDescriptions() {
+    void readRelationDescriptions() {
 
-        SourceReference file =  SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test_relation.csv"));
+        SourceReference file = SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test_relation.csv"));
 
         Map<String, String> mapping = new HashMap<>();
         mapping.put("identifier", "1");
@@ -114,7 +114,7 @@ class InputFormatHandlerCSVTest {
     }
 
     @Test
-    public void failsWithoutMapping() {
+    void failsWithoutMapping() {
 
         SourceReference file = SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test.csv"));
         InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
@@ -125,7 +125,7 @@ class InputFormatHandlerCSVTest {
     }
 
     @Test
-    public void failsWithoutIdentifierInMapping() {
+    void failsWithoutIdentifierInMapping() {
 
         SourceReference file = SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test.csv"));
         Map<String, String> mapping = new HashMap<>();

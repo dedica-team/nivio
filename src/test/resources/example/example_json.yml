@@ -1,0 +1,12 @@
+identifier: k8s:example
+name: Kubernetes example
+sources:
+  - format: json
+    url: ./services/items.json
+    mapping:
+      items: "$.items"
+      item:
+        identifier: "$.id"
+        endOfLife: "$.end_of_life.date"
+        nivio.link.homepage: "$.a_named_link"
+        nivio.relations.upstream: "$.@dependencies.@upstream|fetch|$.items[*].id"
