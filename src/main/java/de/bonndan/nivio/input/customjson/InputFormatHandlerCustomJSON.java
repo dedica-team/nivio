@@ -12,6 +12,7 @@ import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.InputFormatHandler;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -30,6 +32,8 @@ import java.net.URL;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static de.bonndan.nivio.input.LabelToFieldResolver.COLLECTION_DELIMITER;
 
 @Service
 public class InputFormatHandlerCustomJSON implements InputFormatHandler {
@@ -79,24 +83,30 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
     @Override
     public void applyData(@NonNull final SourceReference reference, @Nullable final URL baseUrl, @NonNull final LandscapeDescription landscapeDescription) {
         String itemsPath = getPath(reference, ITEMS_PATH_KEY);
+        if (!StringUtils.hasLength(itemsPath)) {
+            LOGGER.warn("No items path configured in mapping, cannot process custom JSON");
+            return;
+        }
         String dataSource = fileFetcher.get(reference, baseUrl);
 
         //assemble new absolute url
-        URL relativeBaseURL = getNewBaseUrl(baseUrl, reference.getUrl());
+        URL currentFileBaseURL = getNewBaseUrl(baseUrl, reference.getUrl());
 
         ArrayNode items = JsonPath.parse(dataSource).read(itemsPath);
         items.forEach(jsonNode -> {
             Map<String, Object> itemMap = new HashMap<>();
 
             //handle defined paths
-            Map<String, List<Function<String, String>>> paths = getPaths(reference, ITEM_PATH_KEY, relativeBaseURL);
+            Map<String, List<Function<String, String>>> paths = getPaths(reference, ITEM_PATH_KEY, currentFileBaseURL);
             paths.forEach((s, functions) -> {
                 var text = jsonNode.toString();
-                for (Function<String, String> function : functions) {
-                    text = function.apply(text);
+                try {
+                    //https://stackoverflow.com/a/44521687
+                    text = functions.stream().reduce(Function.identity(), Function::andThen).apply(text);
+                    itemMap.put(s, text);
+                } catch (Exception e) {
+                    throw new ProcessingException(String.format("Failed to handle mapping for field '%s': %s", s, e.getMessage()), e);
                 }
-
-                itemMap.put(s, text);
             });
 
             //copy all non-containers as text
@@ -131,20 +141,30 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
     }
 
     private String getPath(SourceReference reference, String key) {
-        LinkedHashMap<String, Object> mapping = (LinkedHashMap<String, Object>) reference.getProperty("mapping");
-        return (String) mapping.get(key);
+        LinkedHashMap<String, Object> mapping = getMapping(reference);
+        return Optional.ofNullable(mapping.get(key)).map(o -> (String) o).orElse(null);
     }
 
     private Map<String, List<Function<String, String>>> getPaths(SourceReference reference, String key, URL baseUrl) {
-        LinkedHashMap<String, Object> mapping = (LinkedHashMap<String, Object>) reference.getProperty("mapping");
+        LinkedHashMap<String, Object> mapping = getMapping(reference);
         Map<String, String> stringStringMap = (Map<String, String>) mapping.get(key);
         Map<String, List<Function<String, String>>> paths = new LinkedHashMap<>();
-        stringStringMap.forEach((key1, value) -> paths.put(key1, asFunctions(value, baseUrl)));
+        if (stringStringMap != null) {
+            stringStringMap.forEach((key1, value) -> paths.put(key1, asFunctions(value, baseUrl)));
+        }
         return paths;
     }
 
+    private LinkedHashMap<String, Object> getMapping(SourceReference reference) {
+        LinkedHashMap<String, Object> mapping = (LinkedHashMap<String, Object>) reference.getProperty("mapping");
+        if (mapping == null) {
+            return new LinkedHashMap<>();
+        }
+        return mapping;
+    }
+
     /**
-     * Returns a list of functions pipe the input.
+     * Returns a list of functions that pipe the input and throw exceptions
      *
      * @param value   mapping entry
      * @param baseUrl optional base url
@@ -164,7 +184,7 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
                 if (parsed instanceof ArrayNode) {
                     List<String> values = new ArrayList<>();
                     parsed.elements().forEachRemaining(stringJsonNodeEntry -> values.add(stringJsonNodeEntry.textValue()));
-                    return String.join(",", values);
+                    return String.join(COLLECTION_DELIMITER, values);
                 }
                 return parsed.textValue();
             };

@@ -3,6 +3,7 @@ package de.bonndan.nivio.input.customjson;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.LandscapeDescriptionFactory;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
@@ -14,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class InputFormatHandlerCustomJSONTest {
@@ -73,8 +74,6 @@ class InputFormatHandlerCustomJSONTest {
     void handlesPiping() throws MalformedURLException {
 
         //given
-        File file = new File(RootPath.get() + "/src/test/resources/example/example_json.yml");
-        LandscapeDescription landscapeDescription = factory.fromYaml(file);
         SourceReference json = landscapeDescription.getSourceReferences().get(0);
 
         //when
@@ -85,5 +84,46 @@ class InputFormatHandlerCustomJSONTest {
         ItemDescription asd = landscapeDescription.getItemDescriptions().findOneBy("asd", null);
         assertThat(asd).isNotNull();
         assertThat(asd.getLabel("nivio.relations.upstream")).isEqualTo("foo,bar");
+    }
+
+    @Test
+    void handlesPipingWithBrokenUrls() throws MalformedURLException {
+        //given
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_json_broken2.yml");
+        landscapeDescription = factory.fromYaml(file);
+        SourceReference json = landscapeDescription.getSourceReferences().get(0);
+
+        //when
+        handler.applyData(json, file.getParentFile().toURI().toURL(), landscapeDescription);
+
+        //then
+        assertThat(landscapeDescription.getItemDescriptions().all()).isNotEmpty();
+        ItemDescription asd = landscapeDescription.getItemDescriptions().findOneBy("asd", null);
+        assertThat(asd).isNotNull();
+    }
+
+    @Test
+    void handlesBrokenPaths() {
+        //given
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_json_broken1.yml");
+        landscapeDescription = factory.fromYaml(file);
+        SourceReference json = landscapeDescription.getSourceReferences().get(0);
+
+        //when
+        assertThatExceptionOfType(ProcessingException.class).isThrownBy(() -> handler.applyData(json, file.getParentFile().toURI().toURL(), landscapeDescription));
+    }
+
+    @Test
+    void withoutMapping() {
+        //given
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_json_bare.yml");
+        landscapeDescription = factory.fromYaml(file);
+        SourceReference json = landscapeDescription.getSourceReferences().get(0);
+
+        //when
+        assertThatNoException().isThrownBy(() -> handler.applyData(json, file.getParentFile().toURI().toURL(), landscapeDescription));
+
+        //then
+        assertThat(landscapeDescription.getItemDescriptions().all()).isEmpty();
     }
 }

@@ -1,0 +1,5 @@
+identifier: example:customjson
+name: Custom JSON example
+sources:
+  - format: customJSON
+    url: ./services/items.json
