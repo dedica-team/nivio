@@ -71,6 +71,29 @@ skip (usually 1 for the header row) can be set.
        skipLines: 1
 
 
+Reading and Mapping from JSON
+-----------------------------
+
+Any JSON file or URL can be parsed and mapped into a landscape description. Existing structures are mapped to landscape
+components using JSONPath, a query language to traverse JSON objects and select specific properties.
+
+.. code-block:: yaml
+   :linenos:
+
+   identifier: example:customjson
+   name: Custom JSON example
+   sources:
+     - format: customJSON
+       url: /mnt/items.json
+       mapping:
+         items: "$.items"
+         item:
+           identifier: "$.id"
+           endOfLife: "$.end_of_life.date"
+           nivio.link.homepage: "$.a_named_link"
+           nivio.relations.upstream: "$.@dependencies.@upstream|fetch|$.items[*].id"
+
+
 Reading from GraphViz dot files
 -------------------------------
 
