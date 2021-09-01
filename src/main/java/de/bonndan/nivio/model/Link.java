@@ -2,6 +2,7 @@ package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.net.MalformedURLException;
@@ -49,15 +50,15 @@ public class Link {
     @Schema(description = "A map of arbitrary properties.")
     private final Map<String, Object> props = new HashMap<>();
 
-    public Link(String href) {
-        if (StringUtils.isEmpty(href)) {
+    public Link(@Nullable final String href) {
+        if (!StringUtils.hasLength(href)) {
             this.href = null;
             return;
         }
         try {
             this.href = new URL(href);
         } catch (MalformedURLException e) {
-            throw new RuntimeException("Failed to create link with href " + href);
+            throw new RuntimeException(String.format("Failed to create link with href %s", href));
         }
     }
 
@@ -104,7 +105,7 @@ public class Link {
 
     @JsonIgnore
     public boolean hasBasicAuth() {
-        return !StringUtils.isEmpty(basicAuthUsername) && !StringUtils.isEmpty(basicAuthPassword);
+        return StringUtils.hasLength(basicAuthUsername) && StringUtils.hasLength(basicAuthPassword);
     }
 
     @JsonIgnore

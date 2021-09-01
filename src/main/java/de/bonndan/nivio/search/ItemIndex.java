@@ -10,6 +10,7 @@ import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.ItemComponent;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
@@ -313,5 +314,9 @@ public class ItemIndex<T extends ItemComponent> {
     public Set<T> retrieve(@NonNull Set<FullyQualifiedIdentifier> fullyQualifiedIdentifiers) {
         Query<T> nativeQuery = in(CQE_ATTR_FQI, fullyQualifiedIdentifiers);
         return index.retrieve(nativeQuery).stream().collect(Collectors.toUnmodifiableSet());
+    }
+
+    public T pick(FullyQualifiedIdentifier fqi) {
+        return pick(fqi.getItem(), fqi.getGroup());
     }
 }

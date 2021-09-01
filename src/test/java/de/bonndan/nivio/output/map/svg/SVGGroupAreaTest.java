@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SVGGroupAreaTest {
 
     @Test
-    public void hasFQI() {
+    void hasFQI() {
         Hex e1 = new Hex(1, 1, -2);
         Hex e2 = new Hex(3, 3, -6);
 
@@ -34,14 +34,14 @@ class SVGGroupAreaTest {
         hexesToItems.put(e1, landscapeItem);
         hexesToItems.put(e2, landscapeItem2);
 
-        Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
+        Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group, Set.of(landscapeItem, landscapeItem2));
         SVGGroupArea svgGroupArea = SVGGroupArea.forGroup(group, area, new StatusValue("foo", Status.GREEN), false);
 
         assertThat(svgGroupArea.render().render()).contains(group.getFullyQualifiedIdentifier().jsonValue());
     }
 
     @Test
-    public void supportsVisualFocus() {
+    void supportsVisualFocus() {
         Hex e1 = new Hex(1, 1, -2);
         Hex e2 = new Hex(3, 3, -6);
 
@@ -56,7 +56,7 @@ class SVGGroupAreaTest {
         hexesToItems.put(e1, landscapeItem);
         hexesToItems.put(e2, landscapeItem2);
 
-        Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
+        Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group, Set.of(landscapeItem, landscapeItem2));
         SVGGroupArea svgGroupArea = SVGGroupArea.forGroup(group, area, new StatusValue("foo", Status.GREEN), false);
 
         //then

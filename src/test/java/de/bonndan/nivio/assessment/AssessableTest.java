@@ -145,6 +145,8 @@ class AssessableTest {
         foo.addOrReplaceItem(item);
         foo.addOrReplaceItem(item2);
 
+        AssessableGroup assessableGroup = new AssessableGroup(foo, Set.of(item, item2));
+
         Map<String, KPI> kpis = new HashMap<>();
         kpis.put("on", new TestKPI(component -> null, null) {
             @Override
@@ -154,7 +156,7 @@ class AssessableTest {
         });
 
         //when
-        Map<String, List<StatusValue>> groupStatuses = foo.applyKPIs(kpis);
+        Map<String, List<StatusValue>> groupStatuses = assessableGroup.applyKPIs(kpis);
 
         //then
         List<StatusValue> statusValues = groupStatuses.get(foo.getFullyQualifiedIdentifier().toString());

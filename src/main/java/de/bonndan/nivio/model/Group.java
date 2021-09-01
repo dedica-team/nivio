@@ -1,8 +1,5 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.bonndan.nivio.assessment.Assessable;
-import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.output.Color;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
@@ -19,7 +16,7 @@ import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
  *
  * Each item can only be member of one group.
  */
-public class Group implements Component, Labeled, Linked, Assessable {
+public class Group implements Component, Labeled, Linked {
 
     /**
      * Default group identifier (items are assigned to this group if no group is given
@@ -37,7 +34,7 @@ public class Group implements Component, Labeled, Linked, Assessable {
      * Items belonging to this group. Order is important for layouting (until items are ordered there).
      */
     @NonNull
-    private final Set<Item> items = new LinkedHashSet<>();
+    private final Set<FullyQualifiedIdentifier> items = new LinkedHashSet<>();
 
     @NonNull
     private final String identifier;
@@ -136,7 +133,7 @@ public class Group implements Component, Labeled, Linked, Assessable {
      *
      * @return immutable copy
      */
-    public Set<Item> getItems() {
+    public Set<FullyQualifiedIdentifier> getItems() {
         return Collections.unmodifiableSet(items);
     }
 
@@ -155,24 +152,6 @@ public class Group implements Component, Labeled, Linked, Assessable {
     @Override
     public void setLabel(String key, String value) {
         labels.put(key, value);
-    }
-
-    @Override
-    @NonNull
-    public Set<StatusValue> getAdditionalStatusValues() {
-        return StatusValue.fromMapping(indexedByPrefix(Label.status));
-    }
-
-    @Override
-    public String getAssessmentIdentifier() {
-        return getFullyQualifiedIdentifier().toString();
-    }
-
-    @JsonIgnore //for internal debugging
-    @Override
-    @NonNull
-    public List<? extends Assessable> getChildren() {
-        return new ArrayList<>(getItems());
     }
 
     @Override
@@ -199,8 +178,9 @@ public class Group implements Component, Labeled, Linked, Assessable {
         }
 
         //ensures that an existing item is removed from set
-        items.stream().filter(item1 -> item1.equals(item)).findFirst().ifPresent(this::removeItem);
-        items.add(item);
+        FullyQualifiedIdentifier fqi = item.getFullyQualifiedIdentifier();
+        items.stream().filter(item1 -> item1.equals(fqi)).findFirst().ifPresent(items::remove);
+        items.add(fqi);
     }
 
     /**
@@ -213,7 +193,7 @@ public class Group implements Component, Labeled, Linked, Assessable {
         if (item == null) {
             return false;
         }
-        return items.remove(item);
+        return items.remove(item.getFullyQualifiedIdentifier());
     }
 
     public String getLandscapeIdentifier() {

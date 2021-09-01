@@ -260,7 +260,9 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
     @Override
     public List<? extends Assessable> getChildren() {
-        return getGroups().values().stream().map(groupItem -> (Assessable) groupItem).collect(Collectors.toList());
+        return getGroups().values().stream()
+                .map(group -> new AssessableGroup(group, getItems().retrieve(group.getItems())))
+                .collect(Collectors.toList());
     }
 
     @Schema(name = "_links")
