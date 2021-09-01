@@ -1,7 +1,8 @@
-package de.bonndan.nivio.model;
+package de.bonndan.nivio.assessment;
 
-import de.bonndan.nivio.assessment.Assessable;
-import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
 import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;

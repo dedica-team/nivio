@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.assessment.Assessable;
+import de.bonndan.nivio.assessment.AssessableGroup;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.ProcessLog;
@@ -115,7 +116,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     private String validateIdentifier(String identifier) {
-        if (StringUtils.isEmpty(identifier) || !identifier.matches(IDENTIFIER_VALIDATION)) {
+        if (!StringUtils.hasLength(identifier) || !identifier.matches(IDENTIFIER_VALIDATION)) {
             throw new IllegalArgumentException("Invalid landscape identifier given: '" + identifier + "', it must match " + IDENTIFIER_VALIDATION);
         }
         return StringUtils.trimAllWhitespace(identifier);
