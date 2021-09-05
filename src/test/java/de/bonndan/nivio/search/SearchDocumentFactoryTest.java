@@ -94,11 +94,11 @@ class SearchDocumentFactoryTest {
     void addsKPIFacets() {
         //given
         List<StatusValue> statusValues = new ArrayList<>();
-        StatusValue foo = new StatusValue("foo", Status.RED, "xyz");
+        StatusValue foo = new StatusValue("test", "foo", Status.RED, "xyz");
         statusValues.add(foo);
-        StatusValue bar = new StatusValue("bar", Status.GREEN, "bar");
+        StatusValue bar = new StatusValue("test", "bar", Status.GREEN, "bar");
         statusValues.add(bar);
-        StatusValue summary = new StatusValue(StatusValue.SUMMARY_LABEL + ".foo", Status.RED, "");
+        StatusValue summary = StatusValue.summary("test", List.of(foo, bar));
         statusValues.add(summary);
 
         //when
@@ -114,7 +114,7 @@ class SearchDocumentFactoryTest {
         assertThat(barFacet).isNotNull();
         assertThat(barFacet.path[0]).isEqualTo("GREEN");
 
-        FacetField summaryFacet = getField(KPI_FACET_PREFIX + StatusValue.SUMMARY_LABEL, document.getFields());
+        FacetField summaryFacet = getField(KPI_FACET_PREFIX + StatusValue.SUMMARY, document.getFields());
         assertThat(summaryFacet).isNotNull();
         assertThat(summaryFacet.path[0]).isEqualTo("RED");
     }

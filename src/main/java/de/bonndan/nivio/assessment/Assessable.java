@@ -7,8 +7,12 @@ import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.springframework.lang.NonNull;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static de.bonndan.nivio.assessment.StatusValue.SUMMARY_LABEL;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Interface for components that can be assessed and can have assigned {@link StatusValue}s.
@@ -23,6 +27,7 @@ public interface Assessable {
      * @return a distinct (by field) set
      */
     @JsonIgnore
+    @NonNull
     Set<StatusValue> getAdditionalStatusValues();
 
     /**
@@ -31,12 +36,14 @@ public interface Assessable {
      * @return map key / identifier
      */
     @JsonIgnore
+    @NonNull
     String getAssessmentIdentifier();
 
     /**
      * Returns the components to be assessed before this (e.g. group items).
      */
     @JsonIgnore
+    @NonNull
     List<? extends Assessable> getChildren();
 
     /**
@@ -76,9 +83,10 @@ public interface Assessable {
         });
 
         replaceAll(childrenValues, map.get(fqi));
-        replace(map.get(fqi), StatusValue.summary(SUMMARY_LABEL + "." + getAssessmentIdentifier(), getWorst(childrenValues)));
+        List<StatusValue> worst = getWorst(childrenValues);
+        replace(map.get(fqi), StatusValue.summary(getAssessmentIdentifier(), worst));
 
-        //sort in descending order, worst first
+        //sort in descending order, the worst first
         map.get(fqi).sort(Collections.reverseOrder(new StatusValue.Comparator()));
         return map;
     }
@@ -88,15 +96,22 @@ public interface Assessable {
     }
 
     private void replace(List<StatusValue> present, StatusValue added) {
-        present.remove(added);
+        List<StatusValue> removables = present.stream()
+                .filter(statusValue -> statusValue.equals(added))
+                .collect(Collectors.toUnmodifiableList());
+        present.removeAll(removables);
         present.add(added);
     }
 
     @NonNull
-    static StatusValue getWorst(List<StatusValue> values) {
-        return values.stream()
-                .filter(Objects::nonNull)
-                .max(new StatusValue.Comparator())
-                .orElse(new StatusValue(SUMMARY_LABEL, Status.UNKNOWN));
+    static List<StatusValue> getWorst(List<StatusValue> values) {
+        if (values == null || values.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        values.sort(new StatusValue.Comparator());
+        Status worstStatus = values.get(values.size()-1).getStatus();
+
+        return values.stream().filter(statusValue -> statusValue.getStatus().equals(worstStatus)).collect(Collectors.toUnmodifiableList());
     }
 }

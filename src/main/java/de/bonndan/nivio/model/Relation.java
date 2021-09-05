@@ -111,16 +111,19 @@ public class Relation implements Labeled, Assessable, Serializable {
     }
 
     @Override
+    @NonNull
     public Set<StatusValue> getAdditionalStatusValues() {
-        return StatusValue.fromMapping(indexedByPrefix(Label.status));
+        return StatusValue.fromMapping(getAssessmentIdentifier(), indexedByPrefix(Label.status));
     }
 
     @Override
+    @NonNull
     public String getAssessmentIdentifier() {
         return getIdentifier();
     }
 
     @Override
+    @NonNull
     public List<? extends Assessable> getChildren() {
         return new ArrayList<>();
     }

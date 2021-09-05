@@ -13,14 +13,15 @@ class StatusValueTest {
 
     @Test
     void mustHaveField() {
-        assertThrows(IllegalArgumentException.class, () -> {new StatusValue(null, Status.GREEN);});
+        assertThrows(IllegalArgumentException.class, () -> new StatusValue(null, "foo", Status.GREEN, ""));
+        assertThrows(IllegalArgumentException.class, () -> new StatusValue("foo", null, Status.GREEN, ""));
     }
 
     @Test
     void comparator() {
-        StatusValue green = new StatusValue("foo", Status.GREEN);
-        StatusValue red = new StatusValue("foo", Status.RED);
-        StatusValue yellow = new StatusValue("foo", Status.YELLOW);
+        StatusValue green = new StatusValue("foo", "bar", Status.GREEN, "");
+        StatusValue red = new StatusValue("foo", "bar", Status.RED, "");
+        StatusValue yellow = new StatusValue("foo", "bar", Status.YELLOW, "");
         assertEquals(-3, new StatusValue.Comparator().compare(green, red));
         assertEquals(0, new StatusValue.Comparator().compare(green, green));
         assertEquals(1, new StatusValue.Comparator().compare(yellow, green));
@@ -29,19 +30,19 @@ class StatusValueTest {
 
     @Test
     void isNotSummary() {
-        StatusValue statusValue = new StatusValue("security", Status.BROWN, "epically broken");
+        StatusValue statusValue = new StatusValue("foo", "security", Status.BROWN, "epically broken");
         assertFalse(statusValue.isSummary());
     }
 
 
     @Test
     void summary() {
-        StatusValue summary = StatusValue.summary("foo.bar", new StatusValue("security", Status.BROWN, "epically broken"));
+        StatusValue summary = StatusValue.summary("foo",  Collections.singletonList(new StatusValue("foo", "security", Status.BROWN, "epically broken")));
         assertNotNull(summary);
-        assertEquals("foo.bar", summary.getField());
-        assertEquals("epically broken", summary.getMessage());
+        assertEquals("foo", summary.getIdentifier());
+        assertEquals(StatusValue.SUMMARY, summary.getField());
+        assertThat(summary.getMessage()).contains("epically broken").contains("security");
         assertEquals(Status.BROWN, summary.getStatus());
-        assertEquals("security", summary.getMaxField());
         assertTrue(summary.isSummary());
     }
 
@@ -55,7 +56,7 @@ class StatusValueTest {
         input.get("security").put(LABEL_SUFFIX_MESSAGE, "foobar");
 
         //when
-        Set<StatusValue> statusValues = StatusValue.fromMapping(input);
+        Set<StatusValue> statusValues = StatusValue.fromMapping("foo", input);
         assertFalse(statusValues.isEmpty());
         StatusValue security = statusValues.iterator().next();
         assertEquals("security", security.getField());
@@ -66,6 +67,9 @@ class StatusValueTest {
     @Test
     void isEqual() {
         //equality on field basis only to guarantee uniqueness
-        assertThat(new StatusValue("foo", Status.GREEN)).isEqualTo(new StatusValue("foo", Status.RED));
+        assertThat(new StatusValue("foo", "bar", Status.GREEN, ""))
+                .isEqualTo(new StatusValue("foo", "bar", Status.RED, ""));
+        assertThat(new StatusValue("baz", "bar", Status.GREEN, ""))
+                .isNotEqualTo(new StatusValue("foo", "bar", Status.RED, ""));
     }
 }

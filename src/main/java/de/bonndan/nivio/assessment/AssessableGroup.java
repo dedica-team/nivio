@@ -27,16 +27,19 @@ public class AssessableGroup implements Assessable {
     }
 
     @Override
+    @NonNull
     public Set<StatusValue> getAdditionalStatusValues() {
-        return StatusValue.fromMapping(group.indexedByPrefix(Label.status));
+        return StatusValue.fromMapping(getAssessmentIdentifier(), group.indexedByPrefix(Label.status));
     }
 
     @Override
+    @NonNull
     public String getAssessmentIdentifier() {
         return group.getFullyQualifiedIdentifier().toString();
     }
 
     @Override
+    @NonNull
     public List<? extends Assessable> getChildren() {
         return items;
     }

@@ -1,10 +1,8 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.Status;
-import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.ItemFactory;
-import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationFactory;
 import de.bonndan.nivio.output.map.hex.Hex;
 import org.junit.jupiter.api.Test;
@@ -24,7 +22,7 @@ class SVGDimensionFactoryTest {
         Hex one = new Hex(-3, -3);
         Hex two = new Hex(10, 10);
         Set<Hex> hexes = Set.of(one, two); //usually would be much more, but here it is sufficient
-        SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of(), new StatusValue("foo", Status.GREEN));
+        SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of(), Status.GREEN);
 
         //when
         SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(svgGroupArea), List.of());
@@ -54,7 +52,7 @@ class SVGDimensionFactoryTest {
         Hex one = new Hex(-3, -3);
         Hex two = new Hex(10, 10);
         Set<Hex> hexes = Set.of(one, two); //usually would be much more, but here it is sufficient
-        SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of(), new StatusValue("foo", Status.GREEN));
+        SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of(), Status.GREEN);
 
         //when
         Hex three = new Hex(-10, -10);

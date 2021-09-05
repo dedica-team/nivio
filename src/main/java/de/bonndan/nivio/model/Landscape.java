@@ -250,16 +250,19 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     @Override
+    @NonNull
     public Set<StatusValue> getAdditionalStatusValues() {
-        return StatusValue.fromMapping(indexedByPrefix(Label.status));
+        return StatusValue.fromMapping(getAssessmentIdentifier(), indexedByPrefix(Label.status));
     }
 
     @Override
+    @NonNull
     public String getAssessmentIdentifier() {
         return getFullyQualifiedIdentifier().toString();
     }
 
     @Override
+    @NonNull
     public List<? extends Assessable> getChildren() {
         return getGroups().values().stream()
                 .map(group -> new AssessableGroup(group, getItems().retrieve(group.getItems())))
@@ -291,7 +294,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
      *
      * @return kpis, configured and initialized
      */
-    public Map<String, KPI>  getKpis() {
+    public Map<String, KPI> getKpis() {
         return kpis;
     }
 

@@ -17,7 +17,8 @@ import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.model.ComponentDiff.*;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier") //needed when internal models are serialized for debugging
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier")
+//needed when internal models are serialized for debugging
 public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent {
 
     public static final String LAYER_INFRASTRUCTURE = "infrastructure";
@@ -271,16 +272,19 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     }
 
     @Override
+    @NonNull
     public Set<StatusValue> getAdditionalStatusValues() {
-        return StatusValue.fromMapping(indexedByPrefix(Label.status));
+        return StatusValue.fromMapping(getAssessmentIdentifier(), indexedByPrefix(Label.status));
     }
 
     @Override
+    @NonNull
     public String getAssessmentIdentifier() {
         return getFullyQualifiedIdentifier().toString();
     }
 
     @Override
+    @NonNull
     public List<? extends Assessable> getChildren() {
         return getRelations().stream().filter(relation -> relation.getSource().equals(this)).collect(Collectors.toList());
     }
