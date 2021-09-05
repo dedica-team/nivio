@@ -62,12 +62,12 @@ public class Group implements Component, Labeled, Linked {
                  @Nullable final String icon,
                  @Nullable final String color
     ) {
-        if (StringUtils.isEmpty(identifier)) {
+        if (!StringUtils.hasLength(identifier)) {
             throw new IllegalArgumentException("Group identifier must not be empty");
         }
         this.identifier = identifier;
 
-        if (StringUtils.isEmpty(landscapeIdentifier)) {
+        if (!StringUtils.hasLength(landscapeIdentifier)) {
             throw new IllegalArgumentException("Landscape identifier must not be empty");
         }
         this.landscapeIdentifier = landscapeIdentifier;
@@ -129,12 +129,12 @@ public class Group implements Component, Labeled, Linked {
     }
 
     /**
-     * Returns an immutable copy of the items.
+     * Returns a copy of the items.
      *
      * @return immutable copy
      */
     public Set<FullyQualifiedIdentifier> getItems() {
-        return Collections.unmodifiableSet(items);
+        return new LinkedHashSet<>(items);
     }
 
     @Override

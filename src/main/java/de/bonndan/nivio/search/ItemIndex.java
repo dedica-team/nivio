@@ -9,6 +9,7 @@ import com.googlecode.cqengine.query.parser.common.InvalidQueryException;
 import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.ItemComponent;
@@ -189,7 +190,7 @@ public class ItemIndex<T extends ItemComponent> {
         }
 
         return find(identifier, group).orElseThrow(() ->
-                new RuntimeException(String.format("Element '%s' not found  in collection %s.", identifier , all()))
+                new RuntimeException(String.format("Element '%s' not found  in collection %s.", identifier, all()))
         );
     }
 
@@ -309,11 +310,17 @@ public class ItemIndex<T extends ItemComponent> {
      * Retrieves all Items corresponding the set of FQIs.
      *
      * @param fullyQualifiedIdentifiers a set of fqis
-     * @return a set of components (e.g. items)
+     * @return a set of components (e.g. items) in the same order as the given FQIs
      */
     public Set<T> retrieve(@NonNull Set<FullyQualifiedIdentifier> fullyQualifiedIdentifiers) {
         Query<T> nativeQuery = in(CQE_ATTR_FQI, fullyQualifiedIdentifiers);
-        return index.retrieve(nativeQuery).stream().collect(Collectors.toUnmodifiableSet());
+        Map<FullyQualifiedIdentifier, T> collect = index.retrieve(nativeQuery).stream().collect(Collectors.toMap(Component::getFullyQualifiedIdentifier, o -> o));
+        LinkedHashSet<T> result = new LinkedHashSet<>();
+        fullyQualifiedIdentifiers.forEach(fqi -> result.add(
+                Optional.ofNullable(collect.get(fqi))
+                        .orElseThrow(() -> new NoSuchElementException(String.format("Could not retrieve item with fqi %s: Mismatching state of item index?", fqi)))
+        ));
+        return result;
     }
 
     public T pick(FullyQualifiedIdentifier fqi) {

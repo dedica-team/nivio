@@ -68,7 +68,7 @@ public class AllGroupsLayout {
 
         items.forEach(item -> {
             final String group;
-            if (StringUtils.isEmpty(item.getGroup())) {
+            if (!StringUtils.hasLength(item.getGroup())) {
                 LOGGER.warn("Item {} has no group, using " + Group.COMMON, item);
                 group = Group.COMMON;
             } else {
