@@ -88,7 +88,7 @@ class AssessableTest {
         List<StatusValue> itemStatuses = assessmentMap.get(item.getFullyQualifiedIdentifier().toString());
         assertNotNull(itemStatuses);
 
-        StatusValue statusValue = itemStatuses.stream().filter(statusValue1 -> statusValue1.getField().equals(StatusValue.SUMMARY)).findFirst().orElse(null);
+        StatusValue statusValue = itemStatuses.stream().filter(statusValue1 -> statusValue1.getField().equals(StatusValue.SUMMARY_FIELD_VALUE)).findFirst().orElse(null);
         assertNotNull(statusValue);
 
         StatusValue something = itemStatuses.stream().filter(statusValue1 -> statusValue1.getField().equals("something")).findFirst().orElse(null);
@@ -160,7 +160,7 @@ class AssessableTest {
         assertNotNull(statusValues);
 
         //group summary
-        StatusValue statusValue = statusValues.stream().filter(statusValue1 -> statusValue1.getField().equals(StatusValue.SUMMARY)).findFirst().orElse(null);
+        StatusValue statusValue = statusValues.stream().filter(statusValue1 -> statusValue1.getField().equals(StatusValue.SUMMARY_FIELD_VALUE)).findFirst().orElse(null);
         assertNotNull(statusValue);
         assertEquals(Status.BROWN, statusValue.getStatus());
         assertEquals("test/foo/bar somekpi: very bad", statusValue.getMessage());

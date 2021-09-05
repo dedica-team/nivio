@@ -174,10 +174,10 @@ export interface IAssessmentResults {
 }
 
 export interface IAssessmentProps {
+  identifier: string;
   field: string;
   status: string;
   message: string;
-  maxField?: string;
   summary: boolean;
 }
 

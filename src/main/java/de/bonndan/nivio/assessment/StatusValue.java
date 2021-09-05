@@ -18,7 +18,7 @@ public class StatusValue {
 
     public static final String LABEL_SUFFIX_STATUS = "status";
     public static final String LABEL_SUFFIX_MESSAGE = "message";
-    public static final String SUMMARY = "summary";
+    public static final String SUMMARY_FIELD_VALUE = "summary";
 
     @NonNull
     private final String identifier;
@@ -79,7 +79,7 @@ public class StatusValue {
                 .filter(statusValue -> !statusValue.summary)
                 .map(statusValue -> String.format("%s %s: %s", statusValue.getIdentifier(), statusValue.getField(), statusValue.getMessage()))
                 .collect(Collectors.joining("; "));
-        StatusValue statusValue = new StatusValue(identifier, SUMMARY, status, message);
+        StatusValue statusValue = new StatusValue(identifier, SUMMARY_FIELD_VALUE, status, message);
         statusValue.summary = true;
         return statusValue;
     }

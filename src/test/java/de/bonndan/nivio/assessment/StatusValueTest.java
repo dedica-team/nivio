@@ -40,7 +40,7 @@ class StatusValueTest {
         StatusValue summary = StatusValue.summary("foo",  Collections.singletonList(new StatusValue("foo", "security", Status.BROWN, "epically broken")));
         assertNotNull(summary);
         assertEquals("foo", summary.getIdentifier());
-        assertEquals(StatusValue.SUMMARY, summary.getField());
+        assertEquals(StatusValue.SUMMARY_FIELD_VALUE, summary.getField());
         assertThat(summary.getMessage()).contains("epically broken").contains("security");
         assertEquals(Status.BROWN, summary.getStatus());
         assertTrue(summary.isSummary());

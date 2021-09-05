@@ -114,7 +114,7 @@ class SearchDocumentFactoryTest {
         assertThat(barFacet).isNotNull();
         assertThat(barFacet.path[0]).isEqualTo("GREEN");
 
-        FacetField summaryFacet = getField(KPI_FACET_PREFIX + StatusValue.SUMMARY, document.getFields());
+        FacetField summaryFacet = getField(KPI_FACET_PREFIX + StatusValue.SUMMARY_FIELD_VALUE, document.getFields());
         assertThat(summaryFacet).isNotNull();
         assertThat(summaryFacet.path[0]).isEqualTo("RED");
     }
