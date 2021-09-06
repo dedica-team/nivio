@@ -45,6 +45,7 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
     public static final String ITEMS_PATH_KEY = "items";
     public static final String ITEM_PATH_KEY = "item";
     public static final String FETCH = "fetch";
+    public static final String PIPE = "|";
 
     private final FileFetcher fileFetcher;
     private final ObjectMapper objectMapper;
@@ -173,7 +174,7 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
         if (value == null || value.isEmpty())
             return new ArrayList<>();
 
-        return Arrays.stream(value.split("\\|")).map(path -> {
+        return Arrays.stream(value.split("\\" + PIPE)).map(path -> {
             if (path.trim().equalsIgnoreCase(FETCH)) {
                 return (Function<String, String>) s -> fileFetcher.get(s, baseUrl);
             }

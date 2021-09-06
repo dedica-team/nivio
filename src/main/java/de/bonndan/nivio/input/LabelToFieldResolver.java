@@ -2,8 +2,10 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Link;
+import de.bonndan.nivio.model.RelationFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.PropertyAccessor;
@@ -24,6 +26,7 @@ public class LabelToFieldResolver extends Resolver {
     public static final String NIVIO_LABEL_PREFIX = "nivio.";
     public static final String COLLECTION_DELIMITER = ",";
     public static final String LINK_LABEL_PREFIX = "link.";
+    public static final String RELATIONS_LABEL_PREFIX = "relations.";
     public static final String LINKS_LABEL = "links";
     public static final String MAP_KEY_VALUE_DELIMITER = ":";
 
@@ -43,10 +46,7 @@ public class LabelToFieldResolver extends Resolver {
                 setValue(item, field, entry.getValue());
             });
 
-            nivioLabels.forEach(entry -> {
-                item.getLabels().remove(entry.getKey());
-            });
-
+            nivioLabels.forEach(entry -> item.getLabels().remove(entry.getKey()));
         });
     }
 
@@ -61,7 +61,7 @@ public class LabelToFieldResolver extends Resolver {
 
     private void setValue(ItemDescription item, String name, String value) {
 
-        if (StringUtils.isEmpty(value)) {
+        if (!StringUtils.hasLength(value)) {
             return;
         }
 
@@ -128,6 +128,25 @@ public class LabelToFieldResolver extends Resolver {
                     item.setFramework(frameworkParts[0], frameworkParts[1]);
                 }
             }
+            return true;
+        }
+
+        if (name.startsWith(RELATIONS_LABEL_PREFIX)) {
+            String[] endpoints = getParts(value);
+            boolean isProviders = name.toLowerCase(Locale.ROOT).contains("provider");
+            boolean isInbound = name.toLowerCase(Locale.ROOT).contains("inbound");
+
+            Arrays.stream(endpoints).map(endpoint -> {
+                        if (isProviders) {
+                            return RelationFactory.createProviderDescription(endpoint, item.getIdentifier());
+                        }
+                        if (isInbound) {
+                            return new RelationDescription(endpoint, item.getIdentifier());
+                        }
+                        return new RelationDescription(item.getIdentifier(), endpoint);
+                    })
+                    .forEach(item::addOrReplaceRelation);
+
             return true;
         }
 

@@ -91,7 +91,8 @@ components using JSONPath, a query language to traverse JSON objects and select 
            identifier: "$.id"
            endOfLife: "$.end_of_life.date"
            nivio.link.homepage: "$.a_named_link"
-           nivio.relations.upstream: "$.@dependencies.@upstream|fetch|$.items[*].id"
+           nivio.relations.inbound: "$.@dependencies.@upstream|fetch|$.items[*].id"
+           nivio.relations.providers: "$.infra|fetch|$.items[*].id"
 
 
 Reading from GraphViz dot files
