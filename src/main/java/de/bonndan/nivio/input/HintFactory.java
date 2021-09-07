@@ -83,9 +83,8 @@ public class HintFactory {
         }
         ItemDescription target;
         if (targets.size() == 0) {
-            LOGGER.info("Creating new relation target from value {}", value);
-            ItemDescription createdTarget = new ItemDescription();
-            createdTarget.setIdentifier(optionalURI.map(uri1 -> (uri1.getHost() + uri1.getPath()).replace("/", "_")).orElse(value));
+            LOGGER.info("Creating new relation target from label {} value {}", labelKey, value);
+            ItemDescription createdTarget = new ItemDescription(optionalURI.map(uri1 -> (uri1.getHost() + uri1.getPath()).replace("/", "_")).orElse(value));
             createdTarget.setName(value);
             createdTarget.setGroup(item.getGroup());
             createdTarget.setLabel(Label.note, String.format("Created from label %s of %s", labelKey, item));
@@ -97,12 +96,11 @@ public class HintFactory {
             target = targets.get(0);
         }
 
-
-        LOGGER.info(String.format("Found a target of relation from %s(%s) to target '%s' using '%s'", item.getIdentifier(), item.getName(), target, value));
-
         if (item.getIdentifier().equalsIgnoreCase(target.getIdentifier())) {
             return Optional.empty();
         }
+
+        LOGGER.info(String.format("Found a target of relation from %s(%s) to target '%s' using %s: '%s'", item.getIdentifier(), item.getName(), target, labelKey, value));
 
         //get a hint based on uri scheme
         Hint hint = uriHints.getOrDefault(optionalURI.map(URI::getScheme).orElse(""), Hint::new).get();

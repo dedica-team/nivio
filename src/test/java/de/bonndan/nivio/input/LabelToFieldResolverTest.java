@@ -136,7 +136,7 @@ class LabelToFieldResolverTest {
     @Test
     @DisplayName("Ensure inbound relations can be set via labels")
     void extendedRelationsInbound() {
-        ItemDescription item1 = new ItemDescription();
+        ItemDescription item1 = new ItemDescription("foo");
         item1.getLabels().put("nivio.relations.inbound", "foo, bar");
 
         LandscapeDescription input = new LandscapeDescription("identifier", "name", null);

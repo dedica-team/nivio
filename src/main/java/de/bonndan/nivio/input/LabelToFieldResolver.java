@@ -136,7 +136,9 @@ public class LabelToFieldResolver extends Resolver {
             boolean isProviders = name.toLowerCase(Locale.ROOT).contains("provider");
             boolean isInbound = name.toLowerCase(Locale.ROOT).contains("inbound");
 
-            Arrays.stream(endpoints).map(endpoint -> {
+            Arrays.stream(endpoints)
+                    .filter(endpoint -> RelationDescription.validateEndpoint(endpoint))
+                    .map(endpoint -> {
                         if (isProviders) {
                             return RelationFactory.createProviderDescription(endpoint, item.getIdentifier());
                         }
@@ -162,7 +164,7 @@ public class LabelToFieldResolver extends Resolver {
     }
 
     private static String[] getParts(String value) {
-        String[] split = StringUtils.split(value, COLLECTION_DELIMITER);
+        String[] split = value.split(COLLECTION_DELIMITER);
         if (split == null) {
             return new String[]{value.trim()};
         }

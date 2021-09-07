@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -27,7 +28,7 @@ public class InputFormatHandlerFactoryTest {
     }
 
     @Test
-    public void defaultIfNull() {
+     void defaultIfNull() {
         InputFormatHandler factory = formatFactory.getInputFormatHandler(
                 new SourceReference()
         );
@@ -37,14 +38,14 @@ public class InputFormatHandlerFactoryTest {
     }
 
     @Test
-    public void defaultIfOther() {
+     void defaultIfOther() {
         assertThrows(RuntimeException.class,() -> {
            formatFactory.getInputFormatHandler(new SourceReference(null, "abc"));
         });
     }
 
     @Test
-    public void compose2() {
+     void compose2() {
 
         InputFormatHandler factory = formatFactory.getInputFormatHandler(
                 new SourceReference(null, "docker-compose-v2")
@@ -52,5 +53,19 @@ public class InputFormatHandlerFactoryTest {
 
         assertTrue(factory instanceof InputFormatHandler);
         assertTrue(factory instanceof InputFormatHandlerCompose2);
+    }
+
+    @Test
+     void ignoresCase() {
+
+        //given
+        SourceReference ref = new SourceReference();
+        ref.setFormat("Docker-COMPOSE-v2");
+
+        //when
+        InputFormatHandler factory = formatFactory.getInputFormatHandler(ref);
+
+        //then
+        assertThat(factory).isNotNull();
     }
 }

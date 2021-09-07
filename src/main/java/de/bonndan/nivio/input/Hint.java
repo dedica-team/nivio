@@ -69,12 +69,14 @@ class Hint {
         itemDescriptions.add(target);
 
         RelationDescription relationDescription = existingRelation.orElseGet(() -> {
-            RelationDescription relation = createRelation(item, target);
-            item.addOrReplaceRelation(relation);
+            RelationDescription relation = createRelation(item, target).orElse(null);
+            if (relation != null) {
+                item.addOrReplaceRelation(relation);
+            }
             return relation;
         });
 
-        if (relationType != null && relationDescription.getType() == null) {
+        if (relationType != null && relationDescription != null && relationDescription.getType() == null) {
             relationDescription.setType(relationType);
         }
     }
@@ -86,16 +88,20 @@ class Hint {
      * @param target relation target (or relation source if provider)
      * @return new relation description
      */
-    private RelationDescription createRelation(ItemDescription item, ItemDescription target) {
+    private Optional<RelationDescription> createRelation(ItemDescription item, ItemDescription target) {
         RelationDescription relationDescription;
-        if (relationType == null || relationType != RelationType.PROVIDER) {
-            relationDescription = new RelationDescription(item.getIdentifier(), target.getIdentifier());
-        } else {
-            relationDescription = new RelationDescription(target.getIdentifier(), item.getIdentifier());
+        try {
+            if (relationType == null || relationType != RelationType.PROVIDER) {
+                relationDescription = new RelationDescription(item.getIdentifier(), target.getIdentifier());
+            } else {
+                relationDescription = new RelationDescription(target.getIdentifier(), item.getIdentifier());
+            }
+        } catch (IllegalArgumentException e) {
+
+            return Optional.empty();
         }
 
         Optional.ofNullable(relationType).ifPresent(relationDescription::setType);
-
-        return relationDescription;
+        return Optional.of(relationDescription);
     }
 }

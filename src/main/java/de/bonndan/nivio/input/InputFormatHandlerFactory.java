@@ -37,16 +37,16 @@ public class InputFormatHandlerFactory {
         List<InputFormatHandler> factories = new ArrayList<>();
         factoryListMap.entrySet().stream()
                 .filter(entry -> entry.getValue().stream().map(s -> {
-                    if (StringUtils.isEmpty(s))
+                    if (!StringUtils.hasLength(s))
                         return "";
                     return s.toLowerCase();
-                }).anyMatch(s -> s.equals(reference.getFormat()) || (StringUtils.isEmpty(s) && StringUtils.isEmpty(reference.getFormat()))))
+                }).anyMatch(s -> s.equalsIgnoreCase(reference.getFormat()) || (!StringUtils.hasLength(s) && !StringUtils.hasLength(reference.getFormat()))))
                 .forEach(entry -> factories.add(entry.getKey()));
 
         if (factories.isEmpty()) {
             List<String> knownFormats = new ArrayList<>();
             factoryListMap.values().forEach(knownFormats::addAll);
-            String msg = String.format("Unknown source reference format: '%s', known formats are: %s",
+            String msg = String.format("Unknown source reference format: '%s', known formats are: '%s'",
                     reference.getFormat(),
                     StringUtils.collectionToDelimitedString(knownFormats, ", ")
             );

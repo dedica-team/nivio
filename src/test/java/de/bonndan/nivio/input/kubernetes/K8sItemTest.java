@@ -39,7 +39,7 @@ class K8sItemTest {
     @Test
     void addGetRelation() {
         assertThat(k8sItem.getRelationDescriptionList().size()).isZero();
-        var relationDescription = new RelationDescription("1", "2");
+        var relationDescription = new RelationDescription("abc1", "abc2");
         k8sItem.addRelation(relationDescription);
         assertThat(k8sItem.getRelationDescriptionList().size()).isOne();
         assertThat(k8sItem.getRelationDescriptionList()).containsExactly(relationDescription);

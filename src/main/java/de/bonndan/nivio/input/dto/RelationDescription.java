@@ -6,12 +6,16 @@ import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.search.ItemMatcher;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
+import javax.validation.constraints.Null;
 import java.util.*;
 
 
 @Schema(description = "A directed relation between two landscape items. Also known as edge in a directed graph.")
 public class RelationDescription implements Labeled {
+
+    public static final String ENDPOINT_VALIDATION = "^[\\w.:\\-/]{2,256}$";
 
     @Schema(description = "The type of the relation, i.e. whether it is a hard or a soft dependency.")
     private RelationType type;
@@ -34,9 +38,19 @@ public class RelationDescription implements Labeled {
     public RelationDescription() {
     }
 
-    public RelationDescription(String source, String target) {
-        this.source = source;
-        this.target = target;
+    public RelationDescription(@NonNull final String source, @NonNull final String target) {
+        if (!validateEndpoint(source)) {
+            throw new IllegalArgumentException(String.format("Invalid source identifier used: '%s'", source));
+        }
+        if (!validateEndpoint(target)) {
+            throw new IllegalArgumentException(String.format("Invalid target identifier used: '%s'", target));
+        }
+        this.source = source.trim();
+        this.target = target.trim();
+    }
+
+    public static boolean validateEndpoint(@Nullable final String endpoint) {
+        return endpoint != null && endpoint.trim().matches(ENDPOINT_VALIDATION);
     }
 
     public String getDescription() {

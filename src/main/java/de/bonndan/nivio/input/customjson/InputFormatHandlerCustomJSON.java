@@ -104,7 +104,9 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
                 try {
                     //https://stackoverflow.com/a/44521687
                     text = functions.stream().reduce(Function.identity(), Function::andThen).apply(text);
-                    itemMap.put(s, text);
+                    if (StringUtils.hasLength(text)) {
+                        itemMap.put(s, text);
+                    }
                 } catch (Exception e) {
                     throw new ProcessingException(String.format("Failed to handle mapping for field '%s': %s", s, e.getMessage()), e);
                 }
