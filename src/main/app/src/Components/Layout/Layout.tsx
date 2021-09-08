@@ -11,6 +11,7 @@ interface Props {
   setSidebarContent: Function;
   pageTitle?: string;
   logo?: string;
+  version?: string;
 }
 
 const searchSupportWidth = 360;
@@ -64,7 +65,8 @@ const Layout: React.FC<Props> = ({
                                    sidebarContent,
                                    setSidebarContent,
                                    pageTitle,
-                                   logo
+                                   logo,
+                                   version
                                  }) => {
   const classes = useStyles();
   const [searchSupport, setSearchSupport] = React.useState<boolean>(false);
@@ -74,6 +76,7 @@ const Layout: React.FC<Props> = ({
       <main className={classes.main}>
         <Navigation
           logo={logo}
+          version={version}
           setSidebarContent={setSidebarContent}
           setSearchSupport={setSearchSupport}
           searchSupport={searchSupport}

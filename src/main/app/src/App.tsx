@@ -30,6 +30,7 @@ const App: React.FC = () => {
   const [pageTitle, setPageTitle] = useState<string>('');
   const [logo, setLogo] = useState<string>('');
   const [message, setMessage] = useState<string>('');
+  const [version, setVersion] = useState<string>();
   const [theme, setTheme] = useState<Theme>();
 
   useEffect(() => {
@@ -41,7 +42,7 @@ const App: React.FC = () => {
           color = '#' + color;
         }
       } else {
-        console.log('falling back to default color', defaultColor);
+        console.debug('falling back to default color', defaultColor);
       }
       return color;
     };
@@ -53,6 +54,7 @@ const App: React.FC = () => {
       const front = getColorSafely(index.config.brandingForeground, '#22F2C2');
       const secondary = getColorSafely(index.config.brandingSecondary, '#eeeeee');
       setMessage(index.config.brandingMessage);
+      setVersion(index.config.version);
 
       const tv: ThemeOptions = defaultThemeVariables;
       if (!tv.palette) return;
@@ -95,6 +97,7 @@ const App: React.FC = () => {
             setSidebarContent={setSidebarContent}
             logo={logo}
             pageTitle={pageTitle}
+            version={version}
           >
             <Route
               exact
