@@ -18,6 +18,7 @@ spring:
   mustache:
     check-template-location: false
 
+
 logging:
   level:
     root: INFO
@@ -43,7 +44,7 @@ management:
 
 nivio:
   baseUrl: ${NIVIO_BASE_URL:}
-  version: #project.version#
+  version: ^project.version^-^git.commit.id.abbrev^
   pollingMilliseconds: 30000 # 30 secs
   # iconFolder: /a/local/path
   brandingForeground: ${NIVIO_BRANDING_FOREGROUND:7022F2}
@@ -53,6 +54,8 @@ nivio:
   brandingMessage: ${NIVIO_BRANDING_MESSAGE:All Landscapes}
   seed: ${SEED:}
   demo: ${DEMO:}
+
+
 
 
 gitlab:  # add new environment variables
@@ -87,3 +90,5 @@ spring:
 
 server:
   port: 8080
+
+
