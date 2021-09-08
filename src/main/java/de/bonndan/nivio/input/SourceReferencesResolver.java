@@ -46,7 +46,7 @@ public class SourceReferencesResolver {
                 landscapeDescription.setIsPartial(true);
                 return;
             } catch (RuntimeException ex) {
-                String msg = "Failed to resolve source reference '" + ref.getUrl() + "': " + ex.getMessage();
+                String msg = String.format("Failed to resolve source reference '%s': %s", ref.getUrl(), ex.getMessage());
                 log.warn(msg);
                 landscapeDescription.setIsPartial(true);
                 return;

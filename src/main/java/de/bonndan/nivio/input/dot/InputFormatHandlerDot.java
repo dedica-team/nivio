@@ -43,8 +43,7 @@ public class InputFormatHandlerDot implements InputFormatHandler {
     }
 
     @Override
-    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
-        List<ItemDescription> itemDescriptions = new ArrayList<>();
+    public void applyData(@NonNull final SourceReference reference, final URL baseUrl, @NonNull final LandscapeDescription landscapeDescription) {
         String content = fileFetcher.get(reference, baseUrl);
         List<ItemDescription> items = new ArrayList<>();
         try {
@@ -95,7 +94,6 @@ public class InputFormatHandlerDot implements InputFormatHandler {
             LOGGER.warn("Failed to parse {}", reference, e);
             throw ReadingException.from(content, "Failed to parse dot input file from " + reference, e);
         }
-        landscapeDescription.mergeItems(itemDescriptions);
     }
 
     @Override

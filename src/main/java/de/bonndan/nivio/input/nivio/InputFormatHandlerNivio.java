@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.ReadingException;
-import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.observation.InputFormatObserver;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,7 +25,7 @@ import java.util.List;
 @Service
 public class InputFormatHandlerNivio implements InputFormatHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(InputFormatHandlerNivio.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InputFormatHandlerNivio.class);
     private static final ObjectMapper mapper = Mappers.gracefulYamlMapper;
 
     private final FileFetcher fileFetcher;
@@ -42,20 +40,19 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
     }
 
     @Override
-    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription description) {
+    public void applyData(@NonNull SourceReference reference, URL baseUrl, @NonNull LandscapeDescription description) {
 
-        List<ItemDescription> descriptions = new ArrayList<>();
         String yml = fileFetcher.get(reference, baseUrl);
         Source source;
         try {
             source = mapper.readValue(yml, Source.class);
         } catch (IOException e) {
-            logger.error("Failed to read yml", e);
+            LOGGER.error("Failed to read yml", e);
             throw new ReadingException("Failed to parse yaml service description", e);
         }
 
         if (source == null) {
-            logger.warn("Got null out of yml string " + yml);
+            LOGGER.warn("Got null out of yml string {}", yml);
             return;
         }
 
