@@ -1,22 +1,14 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.IntegrationTestSupport;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.search.ItemIndex;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -29,29 +21,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@ExtendWith(MockitoExtension.class)
-@ActiveProfiles("test")
-public class IndexerIntegrationTest {
+class IndexerIntegrationTest {
 
-    @Autowired
-    LandscapeRepository landscapeRepository;
+    private IntegrationTestSupport integrationTestSupport;
 
-    @Autowired
-    InputFormatHandlerFactory formatFactory;
-
-    @Autowired
-    LandscapeDescriptionFactory landscapeDescriptionFactory;
-
-    @Autowired
-    IconService iconService;
-
-    @Mock
-    LinkHandlerFactory linkHandlerFactory;
-
-    @Mock
-    ApplicationEventPublisher applicationEventPublisher;
+    @BeforeEach
+    void setup() {
+         integrationTestSupport = new IntegrationTestSupport();
+    }
 
     private Landscape index() {
         return index("/src/test/resources/example/example_env.yml");
@@ -59,16 +36,12 @@ public class IndexerIntegrationTest {
 
     private Landscape index(String path) {
         File file = new File(getRootPath() + path);
-        LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
-
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, applicationEventPublisher);
-
-        indexer.index(landscapeDescription);
-        return landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
+        return integrationTestSupport.getFirstIndexedLandscape(file);
     }
 
-    @Test //first pass
-    public void testIndexing() {
+    @Test
+        //first pass
+    void testIndexing() {
         Landscape landscape = index();
 
         Assertions.assertNotNull(landscape);
@@ -92,7 +65,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(webserver);
         assertEquals(1, RelationType.PROVIDER.filter(webserver.getRelations()).size());
 
-        Relation push = (Relation) blog.getRelations().stream()
+        Relation push = blog.getRelations().stream()
                 .filter(d -> "hourly push KPI data".equals(d.getDescription()))
                 .findFirst()
                 .orElse(null);
@@ -114,8 +87,9 @@ public class IndexerIntegrationTest {
         assertEquals("http://acme.io/create", i.getUrl().toString());
     }
 
-    @Test //second pass
-    public void testReIndexing() {
+    @Test
+        //second pass
+    void testReIndexing() {
         Landscape landscape = index();
 
         Assertions.assertNotNull(landscape);
@@ -164,7 +138,7 @@ public class IndexerIntegrationTest {
      * wordpress-web updates must not create new services
      */
     @Test
-    public void testIncrementalUpdate() {
+    void testIncrementalUpdate() {
         Landscape landscape = index();
         Item blog = landscape.getItems().pick("blog-server", null);
         int before = landscape.getItems().all().size();
@@ -184,11 +158,10 @@ public class IndexerIntegrationTest {
         exsistingWordPress.setName("Other name");
         landscapeDescription.getItemDescriptions().add(exsistingWordPress);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, applicationEventPublisher);
 
         //created
-        indexer.index(landscapeDescription);
-        landscape = landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
+        integrationTestSupport.getIndexer().index(landscapeDescription);
+        landscape = integrationTestSupport.getLandscapeRepository().findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
         blog = landscape.getItems().pick("blog-server", "completelyNewGroup");
         assertEquals("completelyNewGroup", blog.getGroup());
         assertEquals(before + 1, landscape.getItems().all().size());
@@ -200,7 +173,7 @@ public class IndexerIntegrationTest {
 
         //testing changelog
         ArgumentCaptor<ProcessingFinishedEvent> captor = ArgumentCaptor.forClass(ProcessingFinishedEvent.class);
-        verify(applicationEventPublisher, times(2)).publishEvent(captor.capture());
+        verify(integrationTestSupport.getEventPublisher(), times(2)).publishEvent(captor.capture());
         ProcessingFinishedEvent value = captor.getAllValues().get(1);
         assertThat(value).isNotNull();
         ProcessingChangelog changelog = value.getChangelog();
@@ -213,7 +186,7 @@ public class IndexerIntegrationTest {
      * Ensures that same names in different landscapes do not collide
      */
     @Test
-    public void testNameConflictDifferentLandscapes() {
+    void testNameConflictDifferentLandscapes() {
         Landscape landscape1 = index("/src/test/resources/example/example_env.yml");
         Landscape landscape2 = index("/src/test/resources/example/example_other.yml");
 
@@ -237,7 +210,7 @@ public class IndexerIntegrationTest {
      * Ensures that same names in different landscapes do not collide
      */
     @Test
-    public void testDataflow() {
+    void testDataflow() {
         Landscape landscape1 = index("/src/test/resources/example/example_dataflow.yml");
 
         Assertions.assertNotNull(landscape1);
@@ -257,7 +230,7 @@ public class IndexerIntegrationTest {
     }
 
     @Test
-    public void environmentTemplatesApplied() {
+    void environmentTemplatesApplied() {
         Landscape landscape = index("/src/test/resources/example/example_templates.yml");
 
         Item web = landscape.getItems().pick("web", null);
@@ -267,7 +240,7 @@ public class IndexerIntegrationTest {
     }
 
     @Test
-    public void readGroups() {
+    void readGroups() {
         Landscape landscape1 = index("/src/test/resources/example/example_env.yml");
         Map<String, Group> groups = landscape1.getGroups();
         assertTrue(groups.containsKey("content"));
@@ -282,7 +255,7 @@ public class IndexerIntegrationTest {
     }
 
     @Test
-    public void readGroupsContains() {
+    void readGroupsContains() {
         Landscape landscape1 = index("/src/test/resources/example/example_groups.yml");
         Group a = landscape1.getGroups().get("groupA");
         ItemIndex<Item> index = new ItemIndex<>(Item.class);
@@ -293,7 +266,7 @@ public class IndexerIntegrationTest {
     }
 
     @Test
-    public void masksSecrets() {
+    void masksSecrets() {
         Landscape landscape1 = index("/src/test/resources/example/example_secret.yml");
         Optional<Item> abc = landscape1.getItems().find("abc", null);
         assertThat(abc).isNotEmpty();
@@ -304,7 +277,7 @@ public class IndexerIntegrationTest {
     }
 
     @Test
-    public void labelRelations() {
+    void labelRelations() {
         Landscape landscape = index("/src/test/resources/example/example_label_relations.yml");
         assertEquals(2, landscape.getGroups().size()); //common group is present by default
         assertEquals(2, landscape.getItems().all().size());

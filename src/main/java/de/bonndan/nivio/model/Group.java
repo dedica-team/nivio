@@ -65,12 +65,12 @@ public class Group implements Component, Labeled, Linked, Assessable {
                  @Nullable final String icon,
                  @Nullable final String color
     ) {
-        if (StringUtils.isEmpty(identifier)) {
+        if (!StringUtils.hasLength(identifier)) {
             throw new IllegalArgumentException("Group identifier must not be empty");
         }
         this.identifier = identifier;
 
-        if (StringUtils.isEmpty(landscapeIdentifier)) {
+        if (!StringUtils.hasLength(landscapeIdentifier)) {
             throw new IllegalArgumentException("Landscape identifier must not be empty");
         }
         this.landscapeIdentifier = landscapeIdentifier;

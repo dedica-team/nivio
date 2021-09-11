@@ -1,26 +1,24 @@
 package de.bonndan.nivio.input.csv;
 
-import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.FileFetcher;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.observation.InputFormatObserver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 
 class InputFormatHandlerCSVTest {
 
@@ -32,9 +30,10 @@ class InputFormatHandlerCSVTest {
     }
 
     @Test
-    void read() {
+    void read() throws MalformedURLException {
 
-        SourceReference file = SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test.csv"));
+        File file1 = new File(getRootPath() + "/src/test/resources/example/services/test.csv");
+        SourceReference file = new SourceReference(file1.toURI().toURL());
 
         Map<String, String> mapping = new HashMap<>();
         mapping.put("identifier", "1");
@@ -48,7 +47,7 @@ class InputFormatHandlerCSVTest {
         LandscapeDescription landscapeDescription = new LandscapeDescription("test");
 
         //when
-        factoryCSV.applyData(file, null, landscapeDescription);
+        factoryCSV.applyData(file, landscapeDescription);
 
         assertEquals(3, landscapeDescription.getItemDescriptions().all().size());
         ItemDescription foo = landscapeDescription.getItemDescriptions().pick("foo", null);
@@ -80,9 +79,10 @@ class InputFormatHandlerCSVTest {
     }
 
     @Test
-    void readRelationDescriptions() {
+    void readRelationDescriptions() throws MalformedURLException {
 
-        SourceReference file = SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test_relation.csv"));
+        File file1 = new File(getRootPath() + "/src/test/resources/example/services/test_relation.csv");
+        SourceReference file = new SourceReference(file1.toURI().toURL());
 
         Map<String, String> mapping = new HashMap<>();
         mapping.put("identifier", "1");
@@ -97,7 +97,7 @@ class InputFormatHandlerCSVTest {
         LandscapeDescription landscapeDescription = new LandscapeDescription("test");
 
         //when
-        factoryCSV.applyData(file, null, landscapeDescription);
+        factoryCSV.applyData(file, landscapeDescription);
 
         //then
         assertEquals(1, landscapeDescription.getItemDescriptions().all().size());
@@ -114,20 +114,22 @@ class InputFormatHandlerCSVTest {
     }
 
     @Test
-    void failsWithoutMapping() {
+    void failsWithoutMapping() throws MalformedURLException {
 
-        SourceReference file = SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test.csv"));
+        File file1 = new File(getRootPath() + "/src/test/resources/example/services/test.csv");
+        SourceReference file = new SourceReference(file1.toURI().toURL());
         InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
 
         assertThrows(ProcessingException.class, () -> {
-            factoryCSV.applyData(file, null, new LandscapeDescription("test"));
+            factoryCSV.applyData(file, new LandscapeDescription("test"));
         });
     }
 
     @Test
-    void failsWithoutIdentifierInMapping() {
+    void failsWithoutIdentifierInMapping() throws MalformedURLException {
 
-        SourceReference file = SourceReference.of(new File(getRootPath() + "/src/test/resources/example/services/test.csv"));
+        File file1 = new File(getRootPath() + "/src/test/resources/example/services/test.csv");
+        SourceReference file = new SourceReference(file1.toURI().toURL());
         Map<String, String> mapping = new HashMap<>();
         mapping.put("name", "0");
         file.setProperty("mapping", mapping);
@@ -135,7 +137,7 @@ class InputFormatHandlerCSVTest {
         InputFormatHandlerCSV factoryCSV = new InputFormatHandlerCSV(fileFetcher);
 
         assertThrows(ProcessingException.class, () -> {
-            factoryCSV.applyData(file, null, new LandscapeDescription("test"));
+            factoryCSV.applyData(file, new LandscapeDescription("test"));
         });
     }
 

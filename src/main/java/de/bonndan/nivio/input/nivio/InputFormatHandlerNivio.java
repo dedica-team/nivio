@@ -1,13 +1,9 @@
 package de.bonndan.nivio.input.nivio;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.InputFormatHandler;
-import de.bonndan.nivio.input.ReadingException;
+import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.observation.InputFormatObserver;
-import de.bonndan.nivio.input.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -15,8 +11,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,9 +37,9 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
     }
 
     @Override
-    public void applyData(@NonNull SourceReference reference, URL baseUrl, @NonNull LandscapeDescription description) {
+    public List<LandscapeDescription> applyData(@NonNull final SourceReference reference, @NonNull final LandscapeDescription defaultLandscape) {
 
-        String yml = fileFetcher.get(reference, baseUrl);
+        String yml = fileFetcher.get(reference);
         Source source;
         try {
             source = mapper.readValue(yml, Source.class);
@@ -53,16 +50,17 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
 
         if (source == null) {
             LOGGER.warn("Got null out of yml string {}", yml);
-            return;
+            return new ArrayList<>();
         }
 
-        description.mergeItems(source.items);
-        description.mergeGroups(source.groups);
+        defaultLandscape.mergeItems(source.items);
+        defaultLandscape.mergeGroups(source.groups);
 
         if (source.templates != null) {
-            source.templates.forEach((s, template) -> description.getTemplates().put(s, template));
+            source.templates.forEach((s, template) -> defaultLandscape.getTemplates().put(s, template));
         }
 
+        return Collections.emptyList();
     }
 
     @Override

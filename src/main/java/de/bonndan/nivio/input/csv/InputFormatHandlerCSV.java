@@ -4,14 +4,10 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.InputFormatHandler;
-import de.bonndan.nivio.input.LabelToFieldResolver;
-import de.bonndan.nivio.input.ProcessingException;
+import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import org.springframework.lang.NonNull;
@@ -19,7 +15,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.StringReader;
-import java.net.URL;
 import java.util.*;
 
 /**
@@ -42,17 +37,18 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
     }
 
     @Override
-    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
+    public List<LandscapeDescription> applyData(@NonNull final SourceReference reference, @NonNull final LandscapeDescription landscapeDescription) {
+
         List<ItemDescription> itemDescriptions = new ArrayList<>();
-        String content = fileFetcher.get(reference, baseUrl);
+        String content = fileFetcher.get(reference);
         CSVReader reader = getReader(reference, content);
 
         Map<String, Object> mapping = (Map<String, Object>) reference.getProperty("mapping");
         if (mapping == null) {
-            throw new ProcessingException(reference.getLandscapeDescription(), "'mapping' must be present in configuration.");
+            throw new ProcessingException("'mapping' must be present in configuration.");
         }
         if (!mapping.containsKey(IDENTIFIER_KEY)) {
-            throw new ProcessingException(reference.getLandscapeDescription(), String.format("'%s' must be present in configured mapping.", IDENTIFIER_KEY));
+            throw new ProcessingException(String.format("'%s' must be present in configured mapping.", IDENTIFIER_KEY));
         }
 
         reader.iterator().forEachRemaining(strings -> {
@@ -97,7 +93,8 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
             itemDescriptions.add(itemDescription);
         });
 
-        landscapeDescription.mergeItems(itemDescriptions);
+        landscapeDescription.setItems(itemDescriptions);
+        return Collections.emptyList();
     }
 
     @Override

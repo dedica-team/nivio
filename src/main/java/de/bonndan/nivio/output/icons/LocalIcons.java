@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output.icons;
 
-import de.bonndan.nivio.util.URLHelper;
+import de.bonndan.nivio.util.URLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -67,10 +67,10 @@ public class LocalIcons {
             return Optional.empty();
         }
 
-        URL url = URLHelper.getURL(icon).orElse(null);
+        URL url = URLFactory.getURL(icon).orElse(null);
 
         //local icon urls are not supported
-        if (url != null && URLHelper.isLocal(url)) {
+        if (url != null && URLFactory.isLocal(url)) {
             url = null;
         }
 

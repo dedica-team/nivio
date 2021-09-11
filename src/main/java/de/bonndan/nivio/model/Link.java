@@ -1,13 +1,11 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import de.bonndan.nivio.util.URLFactory;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.springframework.util.StringUtils;
 
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A link.
@@ -16,13 +14,10 @@ import java.util.Map;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description = "A link to an external resource. Contains a href (URL) plus various attributes for authentication and/or hateoas.")
-public class Link {
+public class Link extends AbstractLink {
 
     @Schema(description = "hateoas relation type")
     private String rel;
-
-    @Schema(required = true, description = "The link target.")
-    private final URL href;
 
     @Schema(description = "hateoas language")
     private String hreflang;
@@ -40,42 +35,29 @@ public class Link {
     @Schema(description = "HateOAS / OpenAPI name")
     private String name;
 
-    private String basicAuthUsername;
-    private String basicAuthPassword;
+    /**
+     * String arg factory for jackson
+     */
+    @JsonCreator
+    public static Link create(String url) {
+        return new Link(URLFactory.getURL(url).orElse(null));
+    }
 
-    private String headerTokenName;
-    private String headerTokenValue;
-
-    @Schema(description = "A map of arbitrary properties.")
-    private final Map<String, Object> props = new HashMap<>();
-
-    public Link(String href) {
-        if (StringUtils.isEmpty(href)) {
-            this.href = null;
-            return;
-        }
-        try {
-            this.href = new URL(href);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Failed to create link with href " + href);
-        }
+    public Link() {
+        super(null);
     }
 
     public Link(URL href) {
-        this.href = href;
+        super(href);
     }
 
     public Link(URL href, String rel) {
-        this.href = href;
+        super(href);
         this.rel = rel;
     }
 
     public String getRel() {
         return rel;
-    }
-
-    public URL getHref() {
-        return href;
     }
 
     public String getHreflang() {
@@ -102,68 +84,9 @@ public class Link {
         return name;
     }
 
-    @JsonIgnore
-    public boolean hasBasicAuth() {
-        return !StringUtils.isEmpty(basicAuthUsername) && !StringUtils.isEmpty(basicAuthPassword);
-    }
-
-    @JsonIgnore
-    public String getBasicAuthUsername() {
-        return basicAuthUsername;
-    }
-
-    @JsonSetter
-    public void setBasicAuthUsername(String basicAuthUsername) {
-        this.basicAuthUsername = basicAuthUsername;
-    }
-
-    @JsonIgnore
-    public String getBasicAuthPassword() {
-        return basicAuthPassword;
-    }
-
-    @JsonSetter
-    public void setBasicAuthPassword(String basicAuthPassword) {
-        this.basicAuthPassword = basicAuthPassword;
-    }
-
-    public boolean hasHeaderToken() {
-        return !StringUtils.isEmpty(headerTokenName) && !StringUtils.isEmpty(headerTokenValue);
-    }
-
-    @JsonIgnore
-    public String getHeaderTokenName() {
-        return headerTokenName;
-    }
-
-    @JsonSetter
-    public void setHeaderTokenName(String headerTokenName) {
-        this.headerTokenName = headerTokenName;
-    }
-
-    @JsonIgnore
-    public String getHeaderTokenValue() {
-        return headerTokenValue;
-    }
-
-    @JsonSetter
-    public void setHeaderTokenValue(String headerTokenValue) {
-        this.headerTokenValue = headerTokenValue;
-    }
-
-    @JsonAnyGetter
-    public Object getProperty(String key) {
-        return props.get(key);
-    }
-
-    @JsonAnySetter
-    public void setProperty(String key, Object value) {
-        props.put(key, value);
-    }
-
     @Override
     public String toString() {
-        return "Link{" + "href=" + href + '}';
+        return "Link{" + "href=" + getHref() + '}';
     }
 
     public static final class LinkBuilder {
@@ -179,7 +102,6 @@ public class Link {
         private String basicAuthPassword;
         private String headerTokenName;
         private String headerTokenValue;
-        private final Map<String, Object> props = new HashMap<>();
 
         private LinkBuilder() {
         }

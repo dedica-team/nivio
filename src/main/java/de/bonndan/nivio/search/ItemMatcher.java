@@ -4,7 +4,7 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.util.URLHelper;
+import de.bonndan.nivio.util.URLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
@@ -64,7 +64,7 @@ public class ItemMatcher {
             return Optional.empty();
         }
 
-        if (URLHelper.getURL(string).isPresent()) {
+        if (URLFactory.getURL(string).isPresent()) {
             LOGGER.debug(String.format("ItemMatcher does not work with URLs: %s", string));
             return Optional.empty();
         }

@@ -35,7 +35,7 @@ class RemoteURLObserverTest {
     @Test
     public void detectsChange() {
         when(fileFetcher.get(any(URL.class))).thenReturn("foo", "bar");
-        remoteUrlObserver = new RemoteURLObserver(landscape, publisher, fileFetcher, url);
+        remoteUrlObserver = new RemoteURLObserver(publisher, fileFetcher, url);
 
         //call again (once in constructor)
         remoteUrlObserver.run();
@@ -47,7 +47,7 @@ class RemoteURLObserverTest {
     @Test
     public void hasSubsequentChange() {
         when(fileFetcher.get(any(URL.class))).thenReturn("foo", "bar", "baz");
-        remoteUrlObserver = new RemoteURLObserver(landscape, publisher, fileFetcher, url);
+        remoteUrlObserver = new RemoteURLObserver(publisher, fileFetcher, url);
 
         //call again (once in constructor)
         remoteUrlObserver.run();
@@ -62,7 +62,7 @@ class RemoteURLObserverTest {
     @Test
     public void hasNoChangeOnInit() {
         when(fileFetcher.get(any(URL.class))).thenReturn("foo");
-        remoteUrlObserver = new RemoteURLObserver(landscape, publisher, fileFetcher, url);
+        remoteUrlObserver = new RemoteURLObserver(publisher, fileFetcher, url);
 
         //when
         remoteUrlObserver.run();
@@ -74,7 +74,7 @@ class RemoteURLObserverTest {
     @Test
     public void hasNoChange() {
         when(fileFetcher.get(any(URL.class))).thenReturn("foo");
-        remoteUrlObserver = new RemoteURLObserver(landscape, publisher, fileFetcher, url);
+        remoteUrlObserver = new RemoteURLObserver(publisher, fileFetcher, url);
         remoteUrlObserver.run();
 
         //when
@@ -90,6 +90,6 @@ class RemoteURLObserverTest {
         when(fileFetcher.get(any(URL.class))).thenThrow(new ReadingException("foo", new RuntimeException("bar")));
 
         //when
-        assertThrows(ProcessingException.class, () -> new RemoteURLObserver(landscape, publisher, fileFetcher, url));
+        assertThrows(ProcessingException.class, () -> new RemoteURLObserver(publisher, fileFetcher, url));
     }
 }

@@ -11,7 +11,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

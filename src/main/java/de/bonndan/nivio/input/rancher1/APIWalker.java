@@ -3,7 +3,7 @@ package de.bonndan.nivio.input.rancher1;
 import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.input.rancher1.patches.ProjectServices;
 import de.bonndan.nivio.input.rancher1.patches.ProjectStacks;
 import de.bonndan.nivio.input.rancher1.patches.Service;
@@ -41,9 +41,7 @@ class APIWalker {
 
         String projectName = (String) reference.getProperty("projectName");
         Project project = getProject(projectName)
-                .orElseThrow(() -> new ProcessingException(reference.getLandscapeDescription(),
-                        "Error while reading rancher API: project " + projectName + " not found")
-                );
+                .orElseThrow(() -> new ProcessingException(String.format("Error while reading rancher API: project %s not found", projectName)));
         String accountId = project.getId();
 
         Map<String, Stack> stacks = getStacks(accountId);
@@ -59,7 +57,7 @@ class APIWalker {
         try {
             body = service.getServices(accountId).execute().body();
         } catch (IOException e) {
-            throw new ProcessingException(reference.getLandscapeDescription(), "Could not load services from Rancher API", e);
+            throw new ProcessingException(String.format("Source ref: %s: Could not load services from Rancher API", reference.getUrl()), e);
         }
 
         if (body == null) {
@@ -88,9 +86,9 @@ class APIWalker {
 
         TypeCollection<Stack> body;
         try {
-             body = stackService.getStacks(accountId).execute().body();
+            body = stackService.getStacks(accountId).execute().body();
         } catch (IOException e) {
-            throw new ProcessingException(reference.getLandscapeDescription(), "Could not access Rancher API", e);
+            throw new ProcessingException("Could not access Rancher API", e);
         }
 
         if (body == null) {
@@ -110,13 +108,9 @@ class APIWalker {
             Response<TypeCollection<Project>> response = projectService.list().execute();
             TypeCollection<Project> body = response.body();
             if (!response.isSuccessful() || body == null) {
-
-                throw new ProcessingException(
-                        reference.getLandscapeDescription(),
-                        "No projects found: code " + response.code()
-                );
+                throw new ProcessingException("No projects found: code " + response.code());
             }
-            projects =  body.getData();
+            projects = body.getData();
         } catch (IOException | NullPointerException e) {
             throw new ProcessingException("Could not load projects" + projectService.toString(), e);
         }

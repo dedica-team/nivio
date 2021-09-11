@@ -6,7 +6,6 @@ import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeFactory;
-import de.bonndan.nivio.util.URLHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

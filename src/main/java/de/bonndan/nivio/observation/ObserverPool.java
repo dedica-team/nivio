@@ -15,15 +15,15 @@ import java.util.concurrent.ScheduledFuture;
 /**
  * A wrapper around observers to reduce the async results to a single boolean.
  */
-public class LandscapeObserverPool {
+public class ObserverPool {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeObserverPool.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObserverPool.class);
 
     private final ThreadPoolTaskScheduler taskScheduler;
     private final Map<InputFormatObserver, ScheduledFuture<?>> scheduledTasks = new IdentityHashMap<>();
     private final long delay;
 
-    public LandscapeObserverPool(@NonNull final ThreadPoolTaskScheduler taskScheduler, long delay) {
+    public ObserverPool(@NonNull final ThreadPoolTaskScheduler taskScheduler, long delay) {
         this.taskScheduler = Objects.requireNonNull(taskScheduler);
         this.delay = delay;
     }

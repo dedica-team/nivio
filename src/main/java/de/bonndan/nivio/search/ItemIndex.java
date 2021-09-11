@@ -11,7 +11,7 @@ import com.googlecode.cqengine.resultset.ResultSet;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.ItemComponent;
-import de.bonndan.nivio.util.URLHelper;
+import de.bonndan.nivio.util.URLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -128,7 +128,7 @@ public class ItemIndex<T extends ItemComponent> {
 
         if (term.contains("/")) {
 
-            if (URLHelper.getURL(term).isPresent()) {
+            if (URLFactory.getURL(term).isPresent()) {
                 term = "address = '" + term + "'";
             } else if (!term.contains(" ")) {
                 Optional<ItemMatcher> itemMatcher = ItemMatcher.forTarget(term);

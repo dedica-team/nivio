@@ -15,9 +15,9 @@ import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.observation.InputFormatObserver;
-import de.bonndan.nivio.util.URLHelper;
+import de.bonndan.nivio.util.URLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -82,17 +82,19 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
     }
 
     @Override
-    public void applyData(@NonNull final SourceReference reference, @Nullable final URL baseUrl, @NonNull final LandscapeDescription landscapeDescription) {
+    public List<LandscapeDescription> applyData(@NonNull final SourceReference reference, @NonNull final LandscapeDescription landscapeDescription) {
         String itemsPath = getPath(reference, ITEMS_PATH_KEY);
         if (!StringUtils.hasLength(itemsPath)) {
             LOGGER.warn("No items path configured in mapping, cannot process custom JSON");
-            return;
+            return Collections.emptyList();
         }
-        String dataSource = fileFetcher.get(reference, baseUrl);
+        String dataSource = fileFetcher.get(reference);
 
         //assemble new absolute url
-        URL currentFileBaseURL = getNewBaseUrl(baseUrl, reference.getUrl());
+        URL currentFileBaseURL = getNewBaseUrl(reference.getSeedConfig().getBaseUrl(), reference.getUrl().toString());
 
+        Map<String, LandscapeDescription> landscapeDescriptionMap = new HashMap<>();
+        landscapeDescriptionMap.put(landscapeDescription.getIdentifier(), landscapeDescription);
         ArrayNode items = JsonPath.parse(dataSource).read(itemsPath);
         items.forEach(jsonNode -> {
             Map<String, Object> itemMap = new HashMap<>();
@@ -120,13 +122,22 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
                 }
             });
             ItemDescription itemDescription = objectMapper.convertValue(itemMap, ItemDescription.class);
-            landscapeDescription.getItemDescriptions().add(itemDescription);
+            if (!StringUtils.hasLength(itemDescription.getFullyQualifiedIdentifier().getLandscape())) {
+                itemDescription.setEnvironment(landscapeDescription.getIdentifier());
+            }
+            String landscapeId = itemDescription.getFullyQualifiedIdentifier().getLandscape();
+            LandscapeDescription applyToLandscape = landscapeDescriptionMap.computeIfAbsent(
+                    landscapeId, LandscapeDescription::new
+            );
+            applyToLandscape.getItemDescriptions().add(itemDescription);
         });
+
+        return landscapeDescriptionMap.values().stream().collect(Collectors.toUnmodifiableList());
     }
 
     @Nullable
     private URL getNewBaseUrl(URL baseUrl, String url) {
-        String combined = URLHelper.combine(baseUrl, url);
+        String combined = URLFactory.combine(baseUrl, url);
         try {
             URL relativeBaseURL = new URL(combined);
             URI uri = relativeBaseURL.toURI();
@@ -139,7 +150,7 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
     }
 
     @Override
-    public InputFormatObserver getObserver(InputFormatObserver inner, SourceReference sourceReference) {
+    public InputFormatObserver getObserver(@NonNull final InputFormatObserver inner, @NonNull final SourceReference sourceReference) {
         return null;
     }
 

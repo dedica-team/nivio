@@ -1,7 +1,8 @@
 package de.bonndan.nivio.input.kubernetes;
 
+import de.bonndan.nivio.input.SeedConfiguration;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
@@ -28,9 +29,9 @@ class InputFormatHandlerKubernetesTest {
     InputFormatHandlerKubernetes inputFormatHandlerKubernetes;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws MalformedURLException {
         SourceReference sourceReference = new SourceReference(null, "k8s");
-        sourceReference.setUrl("http://localhost:80?groupLabel=release&namespace=default");
+        sourceReference.setUrl(new URL("http://localhost:80?groupLabel=release&namespace=default"));
         inputFormatHandlerKubernetes = new InputFormatHandlerKubernetes(Optional.of(kubernetesClient));
     }
 
@@ -41,13 +42,18 @@ class InputFormatHandlerKubernetesTest {
 
     @Test
     void applyData() throws MalformedURLException {
-        var landscapeDescription = new LandscapeDescription("k8sLandscapeTest");
-        var url = new URL("https://dedica.team");
-        var sourceReference = new SourceReference("https://dedica.team", "");
-        inputFormatHandlerKubernetes.applyData(sourceReference, url, landscapeDescription);
+        var landscapeDescription = new LandscapeDescription("test");
+        var sourceReference = new SourceReference(new URL("https://dedica.team"), "");
+        sourceReference.setConfig(new SeedConfiguration("k8sLandscapeTest"));
+        inputFormatHandlerKubernetes.applyData(sourceReference, landscapeDescription);
         assertThat(landscapeDescription.getItemDescriptions().all().size()).isZero();
         setK8sTestEnvironment();
-        inputFormatHandlerKubernetes.applyData(sourceReference, url, landscapeDescription);
+
+        //when
+        landscapeDescription = new LandscapeDescription("test");
+        inputFormatHandlerKubernetes.applyData(sourceReference, landscapeDescription);
+
+        //then
         assertThat(landscapeDescription.getItemDescriptions().all().size()).isEqualTo(7);
         assertThat(landscapeDescription.getItemDescriptions().find("deploymentUid", "deployment").orElseThrow().getRelations().size()).isZero();
         assertThat(landscapeDescription.getItemDescriptions().find("replicaSetUid", "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo("deploymentUid");

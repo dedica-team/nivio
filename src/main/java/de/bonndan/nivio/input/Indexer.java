@@ -7,28 +7,33 @@ import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeRepository;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 /**
- * This component is a wrapper around all the steps to examine and index an landscape input dto.
+ * This component is a wrapper around all the steps to examine and index a landscape input dto.
  */
 @Component
 public class Indexer {
 
     private final LandscapeRepository landscapeRepo;
-    private final InputFormatHandlerFactory formatFactory;
     private final LinkHandlerFactory linkHandlerFactory;
     private final ApplicationEventPublisher eventPublisher;
 
     public Indexer(LandscapeRepository landscapeRepository,
-                   InputFormatHandlerFactory formatFactory,
                    LinkHandlerFactory linkHandlerFactory,
                    ApplicationEventPublisher eventPublisher
     ) {
         this.landscapeRepo = landscapeRepository;
-        this.formatFactory = formatFactory;
         this.linkHandlerFactory = linkHandlerFactory;
         this.eventPublisher = eventPublisher;
+    }
+
+    @EventListener(IndexEvent.class)
+    public void onIndexEvent(@NonNull final IndexEvent event) {
+        event.getLandscapeDescriptions().forEach(this::index);
+        event.getSeedConfiguration().ifPresent(seedConfiguration -> eventPublisher.publishEvent(new SeedConfigurationProcessedEvent(seedConfiguration)));
     }
 
     /**
@@ -63,9 +68,6 @@ public class Indexer {
 
         //a detailed textual log
         ProcessLog logger = landscape.getLog();
-
-        // read all input sources
-        new SourceReferencesResolver(formatFactory, logger, eventPublisher).resolve(input);
 
         // apply template values to items
         new TemplateResolver(logger).resolve(input);

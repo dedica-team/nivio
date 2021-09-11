@@ -1,14 +1,15 @@
-package de.bonndan.nivio.input.dto;
+package de.bonndan.nivio.input;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.bonndan.nivio.input.ComponentDescriptionValues;
+import de.bonndan.nivio.input.dto.GroupDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.Source;
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LandscapeConfig;
-import de.bonndan.nivio.input.ItemDescriptionValues;
-import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.search.ItemIndex;
+import de.bonndan.nivio.model.Link;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -24,13 +26,9 @@ import java.util.*;
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
 @JsonIgnoreType
-public class LandscapeDescription implements ComponentDescription {
+public class SeedConfiguration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeDescription.class);
-
-    public static final LandscapeDescription NONE = new LandscapeDescription(
-            "unknown landscape", "", ""
-    );
+    private static final Logger LOGGER = LoggerFactory.getLogger(SeedConfiguration.class);
 
     @NonNull
     @Schema(required = true,
@@ -55,17 +53,11 @@ public class LandscapeDescription implements ComponentDescription {
     @Schema(description = "Item descriptions to be used as templates. All values except identifier and name will be applied to the assigned items.")
     private Map<String, ItemDescription> templates = new HashMap<>();
 
-    @Schema(hidden = true)
-    private Source source;
-
-    /**
-     * descriptions of items fetched and parsed from sources
-     */
-    @Schema(hidden = true)
-    private final ItemIndex<ItemDescription> itemDescriptions = new ItemIndex<>(ItemDescription.class);
+    @Schema(description = "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.")
+    private List<SourceReference> sources = new ArrayList<>();
 
     @Schema(description = "Configuration of key performance indicators (i.e. status indicators) and layouting tweaks.")
-    private LandscapeConfig config = new LandscapeConfig();
+    private final LandscapeConfig config = new LandscapeConfig();
 
     @Schema(hidden = true)
     private boolean isPartial = false;
@@ -79,21 +71,21 @@ public class LandscapeDescription implements ComponentDescription {
     @Schema(description = "Additional labels for the landscape.")
     private Map<String, String> labels = new HashMap<>();
 
-    private Map<String, List<String>> assignTemplates = new HashMap<>();
+    private List<ItemDescription> items = new ArrayList<>();
+
+    private URL baseUrl;
+    private Source source;
 
     @JsonCreator
-    public LandscapeDescription(@NonNull final String identifier) {
-        if (!StringUtils.hasLength(identifier)) {
-            throw new IllegalArgumentException("A landscape description must be initialised with a valid identifier. Was empty.");
-        }
+    public SeedConfiguration(@NonNull String identifier) {
         this.identifier = identifier;
     }
 
     @JsonCreator
-    public LandscapeDescription(@JsonProperty("identifier") @NonNull String identifier,
-                                @JsonProperty("name") @NonNull String name,
-                                @JsonProperty("contact") @Nullable String contact) {
-        this(identifier);
+    public SeedConfiguration(@JsonProperty("identifier") @NonNull String identifier,
+                             @JsonProperty("name") @NonNull String name,
+                             @JsonProperty("contact") @Nullable String contact) {
+        this.identifier = Objects.requireNonNull(identifier);
         this.name = Objects.requireNonNull(name);
         this.contact = contact;
     }
@@ -112,18 +104,11 @@ public class LandscapeDescription implements ComponentDescription {
         return identifier;
     }
 
-    @Schema(hidden = true)
-    @NonNull
-    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
-        return FullyQualifiedIdentifier.build(identifier, null, null);
-    }
-
-    @NonNull
+    @Nullable
     public String getName() {
         return name;
     }
 
-    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -133,7 +118,6 @@ public class LandscapeDescription implements ComponentDescription {
         return contact;
     }
 
-    @Override
     public void setContact(String contact) {
         this.contact = contact;
     }
@@ -158,74 +142,22 @@ public class LandscapeDescription implements ComponentDescription {
         this.owner = owner;
     }
 
-    public Source getSource() {
-        return source;
+    @Schema(hidden = true)
+    public List<SourceReference> getSourceReferences() {
+        return sources;
     }
 
-    public void setSource(Source source) {
-        this.source = source;
+    public void setSources(List<SourceReference> sources) {
+        this.sources = sources;
     }
 
-    public ItemIndex<ItemDescription> getItemDescriptions() {
-        return itemDescriptions;
+    public Map<String, ItemDescription> getTemplates() {
+        return templates;
     }
 
-    public void merge(@NonNull final LandscapeDescription other) {
-        FullyQualifiedIdentifier otherFQI = Objects.requireNonNull(other).getFullyQualifiedIdentifier();
-        if (!getFullyQualifiedIdentifier().equals(otherFQI)) {
-            throw new IllegalArgumentException(String.format("Other landscape description has different fqi %s", otherFQI));
-        }
-
-        mergeGroups(other.getGroups());
-        mergeItems(other.getItemDescriptions().all());
-    }
-
-    /**
-     * Merges the incoming items with existing ones.
-     *
-     * Already existing ones are updated.
-     *
-     * @param incoming new data
-     */
-    public void mergeItems(@Nullable Collection<ItemDescription> incoming) {
-        if (incoming == null) {
-            return;
-        }
-
-        incoming.forEach(desc -> {
-            desc.setEnvironment(this.identifier);
-
-            ItemDescription existing = itemDescriptions.find(desc.getIdentifier(), desc.getGroup()).orElse(null);
-            if (existing != null) {
-                ItemDescriptionValues.assignNotNull(existing, desc);
-            } else {
-                this.itemDescriptions.add(desc);
-            }
-        });
-    }
-
-    /**
-     * Merges the incoming groups with existing ones.
-     *
-     * Already existing ones are updated.
-     *
-     * @param incoming new data
-     */
-    public void mergeGroups(@Nullable Map<String, GroupDescription> incoming) {
-        if (incoming == null) {
-            return;
-        }
-
-        incoming.forEach((s, groupDescription) -> {
-            groupDescription.setEnvironment(this.identifier);
-
-            GroupDescription existing = groups.get(s);
-            if (existing != null) {
-                ComponentDescriptionValues.assignNotNull(existing, groupDescription);
-            } else {
-                this.groups.put(s, groupDescription);
-            }
-        });
+    public void setTemplates(Map<String, ItemDescription> templates) {
+        templates.forEach((s, itemDescription) -> itemDescription.setIdentifier(s));
+        this.templates = templates;
     }
 
     /**
@@ -233,7 +165,11 @@ public class LandscapeDescription implements ComponentDescription {
      */
     @Schema(name = "items", description = "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.")
     public void setItems(List<ItemDescription> items) {
-        mergeItems(items);
+        this.items = items;
+    }
+
+    public List<ItemDescription> getItems() {
+        return items;
     }
 
     @Override
@@ -281,38 +217,31 @@ public class LandscapeDescription implements ComponentDescription {
         return labels;
     }
 
-    @Override
     public void setLabels(Map<String, String> labels) {
         this.labels = labels;
     }
 
-    @Override
     public String getLabel(String key) {
         return getLabels().get(key);
     }
 
-    @Override
     public void setLabel(String key, String value) {
         getLabels().put(key, value);
     }
 
-    public Map<String, ItemDescription> getTemplates() {
-        return templates;
+    public void setBaseUrl(URL baseUrl) {
+        this.baseUrl = baseUrl;
     }
 
-    public void setTemplates(Map<String, ItemDescription> templates) {
-        this.templates = templates;
+    public URL getBaseUrl() {
+        return baseUrl;
     }
 
-    public Map<String, List<String>>  getAssignTemplates() {
-        return assignTemplates;
+    public void setSource(Source source) {
+        this.source = source;
     }
 
-    public void setAssignTemplates(Map<String, List<String>> assignTemplates) {
-        this.assignTemplates.putAll(assignTemplates);
-    }
-
-    public void setConfig(LandscapeConfig config) {
-        this.config = config;
+    public Source getSource() {
+        return source;
     }
 }
