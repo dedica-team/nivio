@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 
 import static com.googlecode.cqengine.query.QueryFactory.attribute;
 import static com.googlecode.cqengine.query.QueryFactory.in;
-import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
+import static de.bonndan.nivio.model.IdentifierValidation.PATTERN;
 
 /**
  * A queryable index on all landscape items.
@@ -142,7 +142,7 @@ public class ItemIndex<T extends ItemComponent> {
         }
 
         //single word compared against identifier
-        String query = term.matches(IDENTIFIER_VALIDATION) ? selectByIdentifierOrName(term) : "SELECT * FROM items WHERE " + term;
+        String query = term.matches(PATTERN) ? selectByIdentifierOrName(term) : "SELECT * FROM items WHERE " + term;
         return cqnQueryOnIndex(query);
     }
 

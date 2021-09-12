@@ -29,13 +29,13 @@ public class LandscapeDescription implements ComponentDescription {
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeDescription.class);
 
     public static final LandscapeDescription NONE = new LandscapeDescription(
-            "unknown landscape", "", ""
+            "unknown", "", ""
     );
 
     @NonNull
     @Schema(required = true,
             description = "Immutable unique identifier. Maybe use an URN.",
-            pattern = Item.IDENTIFIER_VALIDATION)
+            pattern = IdentifierValidation.PATTERN)
     private final String identifier;
 
     @Schema(required = true,
@@ -79,14 +79,11 @@ public class LandscapeDescription implements ComponentDescription {
     @Schema(description = "Additional labels for the landscape.")
     private Map<String, String> labels = new HashMap<>();
 
-    private Map<String, List<String>> assignTemplates = new HashMap<>();
+    private final Map<String, List<String>> assignTemplates = new HashMap<>();
 
     @JsonCreator
     public LandscapeDescription(@NonNull final String identifier) {
-        if (!StringUtils.hasLength(identifier)) {
-            throw new IllegalArgumentException("A landscape description must be initialised with a valid identifier. Was empty.");
-        }
-        this.identifier = identifier;
+        this.identifier = IdentifierValidation.getValidIdentifier(identifier);
     }
 
     @JsonCreator

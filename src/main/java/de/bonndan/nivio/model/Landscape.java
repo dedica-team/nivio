@@ -23,7 +23,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
+import static de.bonndan.nivio.model.IdentifierValidation.PATTERN;
 
 /**
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
@@ -37,7 +37,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
      * Immutable unique identifier. Maybe use an URN.
      */
     @NonNull
-    @Pattern(regexp = IDENTIFIER_VALIDATION)
+    @Pattern(regexp = PATTERN)
     private final String identifier;
 
     /**
@@ -88,7 +88,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
                      @Nullable final ProcessLog processLog,
                      @NonNull final Map<String, KPI> kpis
     ) {
-        this.identifier = validateIdentifier(Objects.requireNonNull(identifier));
+        this.identifier = IdentifierValidation.getValidIdentifier(identifier);
         this.groups = groups;
         this.searchIndex = new SearchIndex(identifier);
         this.items = new ItemIndex<>(Item.class);
@@ -112,13 +112,6 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     @NonNull
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.build(identifier, null, null);
-    }
-
-    private String validateIdentifier(String identifier) {
-        if (StringUtils.isEmpty(identifier) || !identifier.matches(IDENTIFIER_VALIDATION)) {
-            throw new IllegalArgumentException("Invalid landscape identifier given: '" + identifier + "', it must match " + IDENTIFIER_VALIDATION);
-        }
-        return StringUtils.trimAllWhitespace(identifier);
     }
 
     @NonNull

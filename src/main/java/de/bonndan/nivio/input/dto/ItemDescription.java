@@ -34,7 +34,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
 
     @Schema(required = true,
             description = "Immutable unique identifier (maybe use an URN). Primary means to identify items in searches.",
-            pattern = Item.IDENTIFIER_VALIDATION)
+            pattern = IdentifierValidation.PATTERN)
     @NotEmpty
     private String identifier;
 
@@ -77,7 +77,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     }
 
     public ItemDescription(String identifier) {
-        this.identifier = identifier;
+        this.identifier = IdentifierValidation.getValidIdentifier(identifier);
     }
 
     public ItemDescription(FullyQualifiedIdentifier fqi) {
@@ -91,7 +91,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     }
 
     public void setIdentifier(String identifier) {
-        this.identifier = StringUtils.trimAllWhitespace(identifier);
+        this.identifier = IdentifierValidation.getValidIdentifier(identifier);
     }
 
     @Schema(hidden = true)

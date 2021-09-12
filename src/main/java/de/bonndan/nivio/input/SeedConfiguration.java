@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.Source;
-import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.IdentifierValidation;
 import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.model.Link;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,7 +33,7 @@ public class SeedConfiguration {
     @NonNull
     @Schema(required = true,
             description = "Immutable unique identifier. Maybe use an URN.",
-            pattern = Item.IDENTIFIER_VALIDATION)
+            pattern = IdentifierValidation.PATTERN)
     private final String identifier;
 
     @Schema(required = true,
