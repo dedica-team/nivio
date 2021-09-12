@@ -18,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Fetches files either from local file system or from remote http endpoint.
@@ -82,27 +81,12 @@ public class FileFetcher {
 
         try {
             URL url = ref.getUrl();
-            url.toURI(); //to force exception early
             if (URLFactory.isLocal(url)) {
                 return readFile(new File(url.toURI()));
             }
             return fetchRemoteUrl(ref);
         } catch (URISyntaxException e) {
-            if (ref.getSeedConfig() != null) {
-                Optional<URL> url = ref.getSeedConfig().getSource().getURL();
-                if (url.isPresent()) {
-                    File file;
-                    try {
-                        file = new File(url.get().toURI());
-                        String path = file.getParent() + "/" + ref.getUrl();
-                        File source = new File(path);
-                        return readFile(source);
-                    } catch (URISyntaxException uriSyntaxException) {
-                        LOGGER.error("failed to create uri from {}", url.get());
-                    }
-                }
-            }
-            throw new RuntimeException(String.format("Cannot get source reference content from %s", ref.getUrl()), e);
+            throw new ReadingException(String.format("Cannot get source reference content from %s", ref.getUrl()), e);
         }
     }
 

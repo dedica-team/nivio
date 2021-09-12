@@ -58,14 +58,7 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
             for (Map.Entry<String, Object> entry : mapping.entrySet()) {
                 String key = entry.getKey();
                 Object value = entry.getValue();
-                int colNum = 0;
-                if (value instanceof String) {
-                    colNum = Integer.parseInt((String) value);
-                }
-
-                if (value instanceof Integer) {
-                    colNum = (Integer) value;
-                }
+                int colNum = getColNum(value, 0);
 
                 String columnValue = strings[colNum];
                 if (IDENTIFIER_KEY.equals(key)) {
@@ -95,6 +88,17 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
 
         landscapeDescription.setItems(itemDescriptions);
         return Collections.emptyList();
+    }
+
+    private int getColNum(Object value, int colNum) {
+        if (value instanceof String) {
+            colNum = Integer.parseInt((String) value);
+        }
+
+        if (value instanceof Integer) {
+            colNum = (Integer) value;
+        }
+        return colNum;
     }
 
     @Override

@@ -122,7 +122,7 @@ class SeedConfigurationFactoryTest {
     }
 
     @Test
-    void readEnvVars() throws IOException {
+    void readEnvVars() {
         final String FILE_PATH_ENVIRONMENT_VARS;
         final String user;
         if (SystemUtils.IS_OS_WINDOWS) {
@@ -269,7 +269,7 @@ class SeedConfigurationFactoryTest {
 
     @Test
     void testUnknownProperty() {
-        factory.fromFile(new File(FILE_PATH + "example_typo.yml"));
+        assertDoesNotThrow(() ->factory.fromFile(new File(FILE_PATH + "example_typo.yml")));
     }
 
     @Test
