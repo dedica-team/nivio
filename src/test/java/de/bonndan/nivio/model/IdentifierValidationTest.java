@@ -2,17 +2,17 @@ package de.bonndan.nivio.model;
 
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class IdentifierValidationTest {
 
     @Test
     void assertValid() {
+        IdentifierValidation.assertValid("1");
         IdentifierValidation.assertValid("22");
         IdentifierValidation.assertValid("foo");
         IdentifierValidation.assertValid("foo245");
@@ -24,7 +24,6 @@ class IdentifierValidationTest {
     void assertInvalid() {
         assertThrows(IllegalArgumentException.class, () -> IdentifierValidation.assertValid(null));
         assertThrows(IllegalArgumentException.class, () -> IdentifierValidation.assertValid(""));
-        assertThrows(IllegalArgumentException.class, () -> IdentifierValidation.assertValid("1"));
         assertThrows(IllegalArgumentException.class, () -> IdentifierValidation.assertValid("1/1"));
 
         byte[] array = new byte[257]; // length is bounded by 7

@@ -161,7 +161,7 @@
             "description" : "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work)."
           },
           "identifier" : {
-            "pattern" : "^[\\w][\\w.:_-]{1,255}$",
+            "pattern" : "^[\\w][\\w.:_-]{0,255}$",
             "type" : "string",
             "description" : "Immutable unique identifier (maybe use an URN). Primary means to identify items in searches."
           },
@@ -384,7 +384,7 @@
             "type" : "string"
           },
           "identifier" : {
-            "pattern" : "^[\\w][\\w.:_-]{1,255}$",
+            "pattern" : "^[\\w][\\w.:_-]{0,255}$",
             "type" : "string",
             "description" : "Immutable unique identifier. Maybe use an URN."
           },
