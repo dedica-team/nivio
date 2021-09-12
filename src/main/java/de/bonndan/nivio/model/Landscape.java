@@ -92,7 +92,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         this.groups = groups;
         this.searchIndex = new SearchIndex(identifier);
         this.items = new ItemIndex<>(Item.class);
-        this.name = Objects.requireNonNull(name);
+        this.name = StringUtils.hasLength(name) ? name : this.identifier;
         this.contact = contact;
 
         this.owner = owner;

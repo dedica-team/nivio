@@ -42,7 +42,7 @@ public class ObserverRegistry {
         event.getSource().getSource().getURL().ifPresent(url -> {
             ObserverPool pool = observerMap.computeIfAbsent(url.toString(), url1 -> {
                 LOGGER.info("Registered seed config {} for observation.", url1);
-                return new ObserverPool(taskScheduler, 30 * 1000);
+                return new ObserverPool(taskScheduler, 30 * 1000L);
             });
             pool.updateObservers(observerPoolFactory.getObserversFor(event.getSource()));
         });

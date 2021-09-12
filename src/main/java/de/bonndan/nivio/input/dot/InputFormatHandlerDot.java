@@ -77,7 +77,7 @@ public class InputFormatHandlerDot implements InputFormatHandler {
             throw new ProcessingException("Failed to parse dot input file from " + reference, e);
         } catch (ParserException e) {
             LOGGER.warn("Failed to parse {}", reference, e);
-            throw ReadingException.fromMappingException(content, "Failed to parse dot input file from " + reference, e);
+            throw ReadingException.fromMappingException(content == null ? "" : content, "Failed to parse dot input file from " + reference, e);
         }
         return Collections.singletonList(landscapeDescription);
     }

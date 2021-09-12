@@ -5,13 +5,19 @@ import de.bonndan.nivio.input.dto.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.dto.Source;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.observation.InputChangedEvent;
+import de.bonndan.nivio.observation.ObservedChange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -23,6 +29,7 @@ class IndexingDispatcherTest {
     private ApplicationEventPublisher publisher;
     private ArgumentCaptor<IndexEvent> eventCaptor;
     private IndexingDispatcher dispatcher;
+    private SourceReferencesResolver resolver;
 
     @BeforeEach
     void setUp() {
@@ -30,7 +37,7 @@ class IndexingDispatcherTest {
         landscapeDescriptionFactory = mock(LandscapeDescriptionFactory.class);
         publisher = mock(ApplicationEventPublisher.class);
         eventCaptor = ArgumentCaptor.forClass(IndexEvent.class);
-        SourceReferencesResolver resolver = mock(SourceReferencesResolver.class);
+        resolver = mock(SourceReferencesResolver.class);
 
         dispatcher = new IndexingDispatcher(configurationFactory, landscapeDescriptionFactory, publisher, resolver);
     }
@@ -70,5 +77,32 @@ class IndexingDispatcherTest {
         IndexEvent value = eventCaptor.getValue();
         assertThat(value).isNotNull();
         assertThat(value.getSeedConfiguration()).isPresent().get().isEqualTo(configuration);
+    }
+
+    @Test
+    void onSeedConfigurationChangeEvent() {
+        SeedConfiguration configuration = new SeedConfiguration("foobar");
+        SeedConfigurationChangeEvent event = new SeedConfigurationChangeEvent(configuration, "");
+
+        //when
+        dispatcher.onSeedConfigurationChangeEvent(event);
+
+        verify(resolver).resolve(configuration);
+        verify(publisher).publishEvent(any(IndexEvent.class));
+    }
+
+    @Test
+    void onInputChangedEvent() throws MalformedURLException {
+        SeedConfiguration configuration = new SeedConfiguration("foobar");
+        InputChangedEvent event = new InputChangedEvent(new URL("http://foo.com"), new ObservedChange("test"));
+        when(configurationFactory.from(any(URL.class))).thenReturn(configuration);
+
+        //when
+        dispatcher.onInputChangedEvent(event);
+
+        //then
+        verify(resolver).resolve(configuration);
+        verify(configurationFactory).from(any(URL.class));
+        verify(publisher).publishEvent(any(IndexEvent.class));
     }
 }

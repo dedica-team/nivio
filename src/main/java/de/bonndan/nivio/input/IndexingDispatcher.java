@@ -44,19 +44,19 @@ public class IndexingDispatcher {
     }
 
     @EventListener(SeedConfigurationChangeEvent.class)
-    public void onApplicationEvent(SeedConfigurationChangeEvent event) {
+    public void onSeedConfigurationChangeEvent(SeedConfigurationChangeEvent event) {
         SeedConfiguration seedConfiguration = event.getConfiguration();
         LOGGER.info("Received index event for config {}", seedConfiguration.getIdentifier());
         handle(seedConfiguration);
     }
 
     @EventListener(InputChangedEvent.class)
-    public void onApplicationEvent(InputChangedEvent event) {
+    public void onInputChangedEvent(InputChangedEvent event) {
         URL source = event.getSource();
         LOGGER.info("Received input change for config at {}", source);
         SeedConfiguration seedConfiguration = seedConfigurationFactory.from(source);
         if (seedConfiguration == null) {
-            LOGGER.error("Could not handle InputChangedevent because seed config could not be reconstructed from {}", source);
+            LOGGER.error("Could not handle InputChangedEvent because seed config could not be reconstructed from {}", source);
             return;
         }
 

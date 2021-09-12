@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.test.context.event.ApplicationEvents;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -17,6 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.in;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,7 +43,26 @@ class IndexerIntegrationTest {
     }
 
     @Test
-        //first pass
+    void onIndexEvent() {
+        Indexer indexer = integrationTestSupport.getIndexer();
+        LandscapeDescription test = new LandscapeDescription("test");
+        SeedConfiguration configuration = new SeedConfiguration("test");
+        IndexEvent event = new IndexEvent(List.of(test), configuration, "");
+
+        //when
+        indexer.onIndexEvent(event);
+
+        //then
+        ArgumentCaptor<ApplicationEvent> captor = ArgumentCaptor.forClass(ApplicationEvent.class);
+        verify(integrationTestSupport.getEventPublisher(), times(2)).publishEvent(captor.capture());
+        ProcessingFinishedEvent value = (ProcessingFinishedEvent) captor.getAllValues().get(0);
+        assertThat(value.getInput()).isEqualTo(test);
+
+        SeedConfigurationProcessedEvent value2 = (SeedConfigurationProcessedEvent) captor.getAllValues().get(1);
+        assertThat(value2.getSource()).isEqualTo(configuration);
+    }
+
+    @Test
     void testIndexing() {
         Landscape landscape = index();
 
