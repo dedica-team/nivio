@@ -70,9 +70,14 @@ public class LabelToFieldResolver extends Resolver {
             name = descriptor.get().getName();
         }
 
-        if (handleLinksAndFrameworks(item, name, value))
+        if (handleLinksAndFrameworks(item, name, value)) {
             return;
+        }
 
+        setUsingAccessor(item, name, value);
+    }
+
+    private void setUsingAccessor(ItemDescription item, String name, String value) {
         PropertyAccessor myAccessor = PropertyAccessorFactory.forBeanPropertyAccess(item);
         Class<?> propertyType = myAccessor.getPropertyType(name);
 
@@ -104,40 +109,42 @@ public class LabelToFieldResolver extends Resolver {
             myAccessor.setPropertyValue(name, value.trim());
 
         } catch (NotWritablePropertyException e) {
-            processLog.debug("Failed to write field '" + name + "' via label");
+            processLog.debug(String.format("Failed to write field '%s' via label", name));
             item.getLabels().put(name, value);
         }
     }
 
     private boolean handleLinksAndFrameworks(ItemDescription item, String name, String value) {
-        if (LINKS_LABEL.equals(name)) {
-            processLog.info("Found list-style label named 'links'.");
-            String[] o = getParts(value);
-            for (int i = 0; i < o.length; i++) {
-                String key = String.valueOf(i + 1);
-                getLink(o[i]).ifPresent(link1 -> item.getLinks().put(key, link1));
+        if (handleLinksInLabels(item, name, value)) return true;
+        if (handleSingleLink(item, name, value)) return true;
+
+        if (handleFrameworksInLabels(item, name, value)) return true;
+
+        if (handleRelations(item, name, value)) return true;
+
+        return false;
+    }
+
+    private boolean handleSingleLink(ItemDescription item, String name, String value) {
+        if (name.startsWith(LINK_LABEL_PREFIX)) {
+            try {
+                item.setLink(name.replace(LINK_LABEL_PREFIX, ""), new URL(value));
+            } catch (MalformedURLException e) {
+                processLog.warn(String.format("Failed to add link '%s' via label because of malformed URL %s", name, value));
             }
             return true;
         }
+        return false;
+    }
 
-        if (Label.frameworks.name().equals(name)) {
-            String[] o = getParts(value);
-            for (String s : o) {
-                String[] frameworkParts = s.split(MAP_KEY_VALUE_DELIMITER);
-                if (frameworkParts.length == 2) {
-                    item.setFramework(frameworkParts[0], frameworkParts[1]);
-                }
-            }
-            return true;
-        }
-
+    private boolean handleRelations(ItemDescription item, String name, String value) {
         if (name.startsWith(RELATIONS_LABEL_PREFIX)) {
             String[] endpoints = getParts(value);
             boolean isProviders = name.toLowerCase(Locale.ROOT).contains("provider");
             boolean isInbound = name.toLowerCase(Locale.ROOT).contains("inbound");
 
             Arrays.stream(endpoints)
-                    .filter(endpoint -> RelationDescription.validateEndpoint(endpoint))
+                    .filter(RelationDescription::validateEndpoint)
                     .map(endpoint -> {
                         if (isProviders) {
                             return RelationFactory.createProviderDescription(endpoint, item.getIdentifier());
@@ -151,12 +158,30 @@ public class LabelToFieldResolver extends Resolver {
 
             return true;
         }
+        return false;
+    }
 
-        if (name.startsWith(LINK_LABEL_PREFIX)) {
-            try {
-                item.setLink(name.replace(LINK_LABEL_PREFIX, ""), new URL(value));
-            } catch (MalformedURLException e) {
-                processLog.warn(String.format("Failed to add link '%s' via label because of malformed URL %s", name, value));
+    private boolean handleFrameworksInLabels(ItemDescription item, String name, String value) {
+        if (Label.frameworks.name().equals(name)) {
+            String[] o = getParts(value);
+            for (String s : o) {
+                String[] frameworkParts = s.split(MAP_KEY_VALUE_DELIMITER);
+                if (frameworkParts.length == 2) {
+                    item.setFramework(frameworkParts[0], frameworkParts[1]);
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean handleLinksInLabels(ItemDescription item, String name, String value) {
+        if (LINKS_LABEL.equals(name)) {
+            processLog.info("Found list-style label named 'links'.");
+            String[] o = getParts(value);
+            for (int i = 0; i < o.length; i++) {
+                String key = String.valueOf(i + 1);
+                getLink(o[i]).ifPresent(link1 -> item.getLinks().put(key, link1));
             }
             return true;
         }
@@ -165,10 +190,6 @@ public class LabelToFieldResolver extends Resolver {
 
     private static String[] getParts(String value) {
         String[] split = value.split(COLLECTION_DELIMITER);
-        if (split == null) {
-            return new String[]{value.trim()};
-        }
-
         return Arrays.stream(split).map(String::trim).toArray(String[]::new);
     }
 
