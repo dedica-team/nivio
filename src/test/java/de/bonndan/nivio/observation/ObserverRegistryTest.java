@@ -50,10 +50,10 @@ class ObserverRegistryTest {
         observerRegistry.onProcessingFinishedEvent(event);
 
         //then
-        Set<URL> observedLandscapes = observerRegistry.getObserved();
-        assertNotNull(observedLandscapes);
-        assertEquals(1, observedLandscapes.size());
-        assertThat(observedLandscapes.iterator().next().toString()).contains(file.getName());
+        Set<String> observed = observerRegistry.getObserved();
+        assertNotNull(observed);
+        assertEquals(1, observed.size());
+        assertThat(observed.iterator().next()).contains(file.getName());
 
         verify(observerPoolFactory).getObserversFor(configuration);
     }

@@ -55,18 +55,7 @@ public class SourceReferencesResolver {
             }
             try {
                 formatHandler = formatFactory.getInputFormatHandler(ref);
-                formatHandler.applyData(ref, defaultLandscapeDTO)
-                        .forEach(landscapeDescription -> {
-                            if (ref.getAssignTemplates() != null) {
-                                landscapeDescription.setAssignTemplates(ref.getAssignTemplates());
-                            }
-                            Optional<LandscapeDescription> existing = Optional.ofNullable(map.get(landscapeDescription.getFullyQualifiedIdentifier()));
-                            if (existing.isPresent()) {
-                                existing.get().merge(landscapeDescription);
-                            } else {
-                                map.put(landscapeDescription.getFullyQualifiedIdentifier(), landscapeDescription);
-                            }
-                        });
+                formatHandler.applyData(ref, defaultLandscapeDTO).forEach(dto -> handleDTO(map, ref, dto));
             } catch (ProcessingException ex) {
                 String message = ex.getMessage();
                 if (ex instanceof ReadingException) {
@@ -86,6 +75,21 @@ public class SourceReferencesResolver {
         return map.values().stream()
                 .peek(landscapeDescription -> landscapeDescription.setIsPartial(seedConfiguration.isPartial()))
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    /**
+     * Ensures that the produced landscape description is merged or updated into the map
+     */
+    private void handleDTO(Map<FullyQualifiedIdentifier, LandscapeDescription> map, SourceReference ref, LandscapeDescription landscapeDescription) {
+        if (ref.getAssignTemplates() != null) {
+            landscapeDescription.setAssignTemplates(ref.getAssignTemplates());
+        }
+        Optional<LandscapeDescription> existing = Optional.ofNullable(map.get(landscapeDescription.getFullyQualifiedIdentifier()));
+        if (existing.isPresent()) {
+            existing.get().merge(landscapeDescription);
+        } else {
+            map.put(landscapeDescription.getFullyQualifiedIdentifier(), landscapeDescription);
+        }
     }
 
     //keeps human-readable message, removes part starting at  [Source: (StringReader); line: 11, column: 9]
