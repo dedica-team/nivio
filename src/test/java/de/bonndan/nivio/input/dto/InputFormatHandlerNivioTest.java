@@ -1,9 +1,9 @@
 package de.bonndan.nivio.input.dto;
 
-
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.FileFetcher;
+import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import de.bonndan.nivio.model.Item;
@@ -12,35 +12,36 @@ import de.bonndan.nivio.model.Lifecycle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class InputFormatHandlerNivioTest {
 
-    private InputFormatHandlerNivio descriptionFactory;
+    private InputFormatHandlerNivio formatHandlerNivio;
     private LandscapeDescription landscapeDescription;
 
     @BeforeEach
     public void setup() {
         FileFetcher fileFetcher = new FileFetcher(new HttpService());
-        descriptionFactory = new InputFormatHandlerNivio(fileFetcher);
+        formatHandlerNivio = new InputFormatHandlerNivio(fileFetcher);
         landscapeDescription = new LandscapeDescription("test");
     }
 
     @Test
-    public void readServiceAndInfra() {
+    void readServiceAndInfra() throws MalformedURLException {
 
-        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/wordpress.yml");
+        String s = getRootPath() + "/src/test/resources/example/services/wordpress.yml";
+        SourceReference file = new SourceReference(new File(s).toURI().toURL());
 
-        descriptionFactory.applyData(file, null, landscapeDescription);
+        formatHandlerNivio.applyData(file, landscapeDescription);
         ItemDescription service = landscapeDescription.getItemDescriptions().pick("blog-server", null);
         assertEquals("Demo Blog", service.getName());
         assertEquals("to be replaced", service.getLabel(Label.note));
@@ -92,12 +93,13 @@ class InputFormatHandlerNivioTest {
 
 
     @Test
-    public void mergeGroups() {
+    void mergeGroups() throws MalformedURLException {
 
-        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/dashboard.yml");
+        File s = new File(getRootPath() + "/src/test/resources/example/services/dashboard.yml");
+        SourceReference file = new SourceReference(s.toURI().toURL());
 
         //when
-        descriptionFactory.applyData(file, null, landscapeDescription);
+        formatHandlerNivio.applyData(file, landscapeDescription);
 
         //then
         Map<String, GroupDescription> groups = landscapeDescription.getGroups();
@@ -109,12 +111,12 @@ class InputFormatHandlerNivioTest {
     }
 
     @Test
-    public void mergeTemplates() {
-
-        SourceReference file = new SourceReference(getRootPath() + "/src/test/resources/example/services/dashboard.yml");
+    void mergeTemplates() throws MalformedURLException {
+        File s = new File(getRootPath() + "/src/test/resources/example/services/dashboard.yml");
+        SourceReference file = new SourceReference(s.toURI().toURL());
 
         //when
-        descriptionFactory.applyData(file, null, landscapeDescription);
+        formatHandlerNivio.applyData(file, landscapeDescription);
 
         //then
         Map<String, ItemDescription> templates = landscapeDescription.getTemplates();

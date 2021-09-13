@@ -7,17 +7,22 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.Optional;
 
-public class LandscapeSource {
+/**
+ * The origin of a {@link de.bonndan.nivio.input.SeedConfiguration} which can either be a URL or textual content.
+ *
+ *
+ */
+public class Source {
 
     public final URL url;
     public final String yaml;
 
-    public LandscapeSource(@NonNull final URL url) {
+    public Source(@NonNull final URL url) {
         this.url = Objects.requireNonNull(url);
         this.yaml = null;
     }
 
-    public LandscapeSource(@Nullable final String staticSource) {
+    public Source(@Nullable final String staticSource) {
         this.url = null;
         this.yaml = staticSource;
     }
@@ -35,6 +40,13 @@ public class LandscapeSource {
      */
     @Nullable
     public String getStaticSource() {
+        return yaml;
+    }
+
+    public String get() {
+        if (url != null)
+            return url.toString();
+
         return yaml;
     }
 }

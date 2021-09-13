@@ -1,12 +1,10 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import java.net.URL;
 import java.util.List;
 
 /**
@@ -22,15 +20,13 @@ public interface InputFormatHandler {
     List<String> getFormats();
 
     /**
-     * Add data (item descriptions, groups, kpis...) from a source reference to the landscape input data.
+     * Read DTOs (item descriptions, groups, kpis...) from a source reference to the landscape input data.
      *
-     * @param reference            the input source
-     * @param baseUrl              parent config url
-     * @param landscapeDescription the input dto to modify
+     * @param reference        the input source
+     * @param defaultLandscape the default DTO to apply components to if no other landscape are created bis this method
+     * @return all created landscapes. The default one does not need to be returned.
      */
-    void applyData(@NonNull final SourceReference reference,
-                   @Nullable final URL baseUrl,
-                   @NonNull final LandscapeDescription landscapeDescription);
+    List<LandscapeDescription> applyData(@NonNull final SourceReference reference, @NonNull final LandscapeDescription defaultLandscape);
 
     /**
      * Returns an observer for the source reference.

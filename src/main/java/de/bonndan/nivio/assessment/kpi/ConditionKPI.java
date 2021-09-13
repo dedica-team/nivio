@@ -41,7 +41,7 @@ public class ConditionKPI implements KPI {
         for (Map.Entry<String, String> entry : ((Labeled) component).getLabels(Label._condition).entrySet()) {
             String key = entry.getKey();
             String flag = entry.getValue();
-            if (StringUtils.isEmpty(flag))
+            if (!StringUtils.hasLength(flag))
                 continue;
             if (flag.equalsIgnoreCase("false")) {
                 status = Status.RED;

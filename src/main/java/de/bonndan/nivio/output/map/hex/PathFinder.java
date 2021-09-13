@@ -5,8 +5,10 @@ import org.apache.commons.collections4.BidiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * A* pathfinder based on https://github.com/helfsoft/astar (no license given).
@@ -19,8 +21,8 @@ class PathFinder {
 
     public boolean debug = false;
 
-    private final ArrayList<Tile> closed;
-    private final ArrayList<Tile> open;
+    private final ArrayList<PathTile> closed;
+    private final ArrayList<PathTile> open;
 
     public PathFinder(BidiMap<Hex, Object> hexesToItems) {
         this.hexesToItems = hexesToItems;
@@ -35,9 +37,9 @@ class PathFinder {
      *
      * @return The best tile for path in openlist
      */
-    private Tile getBest() {
+    private PathTile getBest() {
 
-        Tile tmp = open.get(open.size() - 1);
+        PathTile tmp = open.get(open.size() - 1);
         for (int i = open.size() - 1; i >= 0; i--) {
 
             // pick the lowest sum of move and heuristic
@@ -49,8 +51,8 @@ class PathFinder {
         }
 
         open.remove(tmp);
-        LOGGER.debug("returning best tile {} with sumCosts {} and heuristic {}", tmp, tmp.sumCosts, tmp.heuristicCosts);
 
+        if (debug) LOGGER.debug("returning best tile {} with sumCosts {} and heuristic {}", tmp, tmp.sumCosts, tmp.heuristicCosts);
         return tmp;
     }
 
@@ -64,11 +66,11 @@ class PathFinder {
     public Optional<HexPath> getPath(Hex startHex, Hex destHex) {
         closed.clear();
         open.clear();
-        var start = new Tile(startHex);
-        var dst = new Tile(destHex);
+        var start = new PathTile(startHex);
+        var dst = new PathTile(destHex);
 
 
-        Tile currentStep = start;
+        PathTile currentStep = start;
         open.add(0, currentStep);
 
         float G;
@@ -110,20 +112,19 @@ class PathFinder {
             /*
              * Check all neighbors of the currentstep.
              */
-            var neighbours = getNeighbours(currentStep);
+            var neighbours = getNeighbourTiles(currentStep);
             for (int i = 0; i < neighbours.size(); i++) {
 
-                Tile neighbour = neighbours.get(i);
+                PathTile neighbour = neighbours.get(i);
 
                 if (neighbour.equals(dst)) {
                     neighbour.setParent(currentStep);
                     currentStep = neighbour;
-                    LOGGER.debug("reached  {}", currentStep.hex);
+                    if (debug) LOGGER.debug("reached  {}", currentStep.hex);
                     break;
                 }
 
                 if (closed.contains(neighbour)) {
-                    //LOGGER.info("Already visited {}", neighbour.hex);
                     continue;
                 }
 
@@ -152,9 +153,9 @@ class PathFinder {
          * Build the path reversly iterating over the tiles by accessing their
          * parent tile.
          */
-        ArrayList<Tile> path = new ArrayList<>();
+        ArrayList<PathTile> path = new ArrayList<>();
         path.add(dst);
-        Tile tileBetween = dst;
+        PathTile tileBetween = dst;
         while (!start.equals(tileBetween)) {
 
             if (tileBetween.getParent() == null) {
@@ -184,20 +185,24 @@ class PathFinder {
             return Optional.empty();
         }
 
-        return Optional.of(new HexPath(path.stream().map(tile -> tile.hex).collect(Collectors.toList())));
+        List<Hex> hexes = new ArrayList<>();
+        for (PathTile tile : path) {
+            hexes.add(tile.hex);
+        }
+        return Optional.of(new HexPath(hexes));
     }
 
-    private List<Tile> getNeighbours(Tile current) {
+    private List<PathTile> getNeighbourTiles(PathTile current) {
 
-        return current.hex.neighbours().stream()
-                .map(hex -> {
-                    Object val = hexesToItems.get(hex);
-                    if (val != null) {
-                        hex = hexesToItems.inverseBidiMap().get(val);
-                    }
-                    return new Tile(hex);
-                })
-                .collect(Collectors.toList());
+        List<PathTile> neighbours = new ArrayList<>();
+        current.hex.neighbours().forEach(hex -> {
+            Object val = hexesToItems.get(hex);
+            if (val != null) {
+                hex = hexesToItems.inverseBidiMap().get(val);
+            }
+            neighbours.add(new PathTile(hex));
+        });
+        return neighbours;
     }
 
 }

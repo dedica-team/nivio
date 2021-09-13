@@ -1,15 +1,16 @@
 package de.bonndan.nivio.output;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.bonndan.nivio.IntegrationTestSupport;
 import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.config.ApplicationConfig;
-import de.bonndan.nivio.config.SeedProperties;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.CachedResponse;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.icons.IconService;
@@ -21,7 +22,6 @@ import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.layout.OrganicLayouter;
 import de.bonndan.nivio.output.map.RenderingRepository;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
-import de.bonndan.nivio.output.map.svg.SVGDocument;
 import de.bonndan.nivio.output.map.svg.SVGRenderer;
 import de.bonndan.nivio.util.RootPath;
 import org.mockito.ArgumentMatchers;
@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -46,26 +48,30 @@ public abstract class RenderingTest {
     protected LandscapeRepository landscapeRepository;
     protected InputFormatHandlerFactory formatFactory;
     protected Indexer indexer;
-    protected LandscapeDescriptionFactory factory;
+    protected SeedConfigurationFactory factory;
     protected HttpService httpService;
     private ObjectMapper objectMapper;
     private LayoutService layoutService;
     private AppearanceProcessor appearanceProcessor;
+    private IntegrationTestSupport integrationTestSupport;
 
     public void setup() throws URISyntaxException {
-        landscapeRepository = new LandscapeRepository();
+        integrationTestSupport = new IntegrationTestSupport();
         formatFactory = new InputFormatHandlerFactory(List.of(new InputFormatHandlerNivio(new FileFetcher(new HttpService()))));
-        httpService = mock(HttpService.class);
-        objectMapper = new ApplicationConfig(null).jackson2ObjectMapperBuilder().build();
+        httpService = integrationTestSupport.getHttpService();
+        objectMapper = integrationTestSupport.getObjectMapper();
+        landscapeRepository = integrationTestSupport.getLandscapeRepository();
 
         CachedResponse response = mock(CachedResponse.class);
         when(response.getBytes()).thenReturn("foo".getBytes());
         when(httpService.getResponse(any(URL.class))).thenReturn(response);
 
-        FileFetcher fileFetcher = new FileFetcher(httpService);
-        factory = new LandscapeDescriptionFactory(fileFetcher);
+        factory = integrationTestSupport.getSeedConfigurationFactory();
+        indexer = integrationTestSupport.getIndexer();
 
-        LinkHandlerFactory linkHandlerFactory = mock(LinkHandlerFactory.class);
+        /*
+         rendering stuff
+         */
         IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService));
 
         MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
@@ -78,17 +84,14 @@ public abstract class RenderingTest {
                 new RenderingRepository(),
                 mock(ApplicationEventPublisher.class)
         );
-        indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class));
+
     }
 
     protected Landscape getLandscape(String path) {
         File file = new File(RootPath.get() + path);
-        LandscapeDescription landscapeDescription = factory.fromYaml(file);
-        indexer.index(landscapeDescription);
-
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
-        appearanceProcessor.process(landscape);
-        return landscape;
+        Landscape landscape1 = integrationTestSupport.getFirstIndexedLandscape(file);
+        appearanceProcessor.process(landscape1);
+        return landscape1;
     }
 
     protected LayoutedComponent debugRenderLandscape(String path, Landscape landscape) throws IOException {

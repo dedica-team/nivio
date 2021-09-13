@@ -1,10 +1,10 @@
 package de.bonndan.nivio.input.kubernetes;
 
 import de.bonndan.nivio.input.InputFormatHandler;
+import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.kubernetes.itemadapters.PersistentVolumeItemAdapter;
 import de.bonndan.nivio.input.kubernetes.itemadapters.PodItemAdapter;
 import de.bonndan.nivio.model.Label;
@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
-import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,10 +52,10 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
      * Created Items: service -> pod -> containers
      */
     @Override
-    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
+    public List<LandscapeDescription> applyData(@NonNull final SourceReference reference, @NonNull final LandscapeDescription landscapeDescription) {
 
-        this.client = getClient(reference.getUrl());
-
+        this.client = getClient(reference.getUrl().toString());
+        // TODO we could now map namespaces to different landscapes
         try {
             client.apps().deployments();
             landscapeDescription.mergeItems(getItemDescription(client));
@@ -64,6 +63,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
             LOGGER.error(n.getMessage());
             LOGGER.error("Kubernetes might not be available");
         }
+        return Collections.emptyList();
     }
 
     /**
@@ -132,7 +132,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         itemList.forEach(ownedItem -> {
             var ownerList = itemList.stream().filter(
                     ownerItem -> CollectionUtils.intersection(Objects.requireNonNullElse(ownedItem.getItemAdapter().getLabels(), new HashMap<String, String>()).values(),
-                            Objects.requireNonNullElse(ownerItem.getItemAdapter().getLabels(), new HashMap<String, String>()).values())
+                                    Objects.requireNonNullElse(ownerItem.getItemAdapter().getLabels(), new HashMap<String, String>()).values())
                             .size() >= K8sJsonParser.getMinMatchingLevel() && ownerItem.getLevelDecorator().getLevel() != -1 && ownedItem.getLevelDecorator().getLevel() != -1 &&
                             (ownerItem.getLevelDecorator().getLevel() - ownedItem.getLevelDecorator().getLevel()) == 1).collect(Collectors.toList());
             ownerList.forEach(ownedItem::addOwner);

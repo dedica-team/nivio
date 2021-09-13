@@ -1,62 +1,57 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.config.ConfigurableEnvVars;
-import de.bonndan.nivio.config.SeedProperties;
-import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * After the application has booted the SEED ({@link Seed}) is processed.
+ *
+ * Publishes {@link SeedConfigurationChangeEvent}s for each of the resolved seed urls/files.
  */
 @Component
 public class StartupListener implements ApplicationListener<ApplicationReadyEvent> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StartupListener.class);
 
-    private final LandscapeDescriptionFactory landscapeDescriptionFactory;
+    private final SeedConfigurationFactory configurationFactory;
     private final ApplicationEventPublisher publisher;
     private final Seed seed;
-    private final SeedProperties seedProperties;
 
-
-
-    public StartupListener(LandscapeDescriptionFactory landscapeDescriptionFactory,
+    public StartupListener(SeedConfigurationFactory configurationFactory,
                            ApplicationEventPublisher publisher,
-                           Seed seed,SeedProperties seedProperties
+                           Seed seed
     ) {
-        this.landscapeDescriptionFactory = Objects.requireNonNull(landscapeDescriptionFactory);
+        this.configurationFactory = Objects.requireNonNull(configurationFactory);
         this.publisher = Objects.requireNonNull(publisher);
         this.seed = Objects.requireNonNull(seed);
-        this.seedProperties = Objects.requireNonNull(seedProperties);
     }
 
     @Override
-    public void onApplicationEvent(final ApplicationReadyEvent event) {
-        if (!StringUtils.isEmpty(seedProperties.getDemo())) {
+    public void onApplicationEvent(@NonNull final ApplicationReadyEvent event) {
+        if (StringUtils.hasLength(seed.getDemo())) {
             LOGGER.info("Running in demo mode");
         }
 
         getUrls(seed).stream()
-                .map(landscapeDescriptionFactory::from)
-                .forEach(description -> publisher.publishEvent(new IndexEvent(description, "Initialising from SEED")));
+                .map(configurationFactory::from)
+                .filter(Objects::nonNull)
+                .forEach(seedConfiguration -> publisher.publishEvent(new SeedConfigurationChangeEvent(seedConfiguration, "Initialising from SEED")));
     }
 
     private List<URL> getUrls(Seed seed) {
-        List<URL> landscapeDescriptionLocations = new ArrayList<>(seed.getDemoFiles());
-        landscapeDescriptionLocations.addAll(seed.getLocations());
-        return landscapeDescriptionLocations;
+        List<URL> configurations = new ArrayList<>(seed.getDemoFiles());
+        configurations.addAll(seed.getLocations());
+        return configurations;
     }
 }

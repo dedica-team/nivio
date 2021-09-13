@@ -1,11 +1,12 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.compose2.InputFormatHandlerCompose2;
-import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +29,9 @@ public class InputFormatHandlerFactoryTest {
     }
 
     @Test
-     void defaultIfNull() {
+    void defaultIfNull() throws MalformedURLException {
         InputFormatHandler factory = formatFactory.getInputFormatHandler(
-                new SourceReference()
+                new SourceReference(new URL("https://test.com"))
         );
 
         assertTrue(factory instanceof InputFormatHandler);
@@ -38,14 +39,14 @@ public class InputFormatHandlerFactoryTest {
     }
 
     @Test
-     void defaultIfOther() {
-        assertThrows(RuntimeException.class,() -> {
-           formatFactory.getInputFormatHandler(new SourceReference(null, "abc"));
+    void defaultIfOther() {
+        assertThrows(RuntimeException.class, () -> {
+            formatFactory.getInputFormatHandler(new SourceReference(null, "abc"));
         });
     }
 
     @Test
-     void compose2() {
+    void compose2() {
 
         InputFormatHandler factory = formatFactory.getInputFormatHandler(
                 new SourceReference(null, "docker-compose-v2")
@@ -56,10 +57,10 @@ public class InputFormatHandlerFactoryTest {
     }
 
     @Test
-     void ignoresCase() {
+    void ignoresCase() throws MalformedURLException {
 
         //given
-        SourceReference ref = new SourceReference();
+        SourceReference ref = new SourceReference(new URL("https://test.com"));
         ref.setFormat("Docker-COMPOSE-v2");
 
         //when

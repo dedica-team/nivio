@@ -4,9 +4,9 @@ import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.observation.InputFormatObserver;
+import guru.nidi.graphviz.model.Link;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
 import guru.nidi.graphviz.parse.ParserException;
@@ -17,8 +17,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -43,10 +43,10 @@ public class InputFormatHandlerDot implements InputFormatHandler {
     }
 
     @Override
-    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
-        List<ItemDescription> itemDescriptions = new ArrayList<>();
-        String content = fileFetcher.get(reference, baseUrl);
+    public List<LandscapeDescription> applyData(@NonNull final SourceReference reference, @NonNull final LandscapeDescription landscapeDescription) {
+        String content = fileFetcher.get(reference);
         List<ItemDescription> items = new ArrayList<>();
+
         try {
             MutableGraph g = new Parser().read(content);
             g.nodes().forEach(node -> {
@@ -64,23 +64,7 @@ public class InputFormatHandlerDot implements InputFormatHandler {
                         return;
                     }
                     RelationDescription rel = new RelationDescription(link.from().name().toString(), link.to().name().toString());
-                    link.attrs().forEach(entry -> {
-                        if (!entry.getKey().startsWith(NIVIO_LABEL_PREFIX)) {
-                            return;
-                        }
-                        final String key = entry.getKey().substring(NIVIO_LABEL_PREFIX.length()).toLowerCase(Locale.ROOT);
-                        switch (key) {
-                            case "format":
-                                rel.setFormat((String) entry.getValue());
-                                break;
-                            case "description":
-                                rel.setDescription((String) entry.getValue());
-                                break;
-                            case "type":
-                                rel.setType(RelationType.from((String) entry.getValue()));
-                                break;
-                        }
-                    });
+                    handleAttributes(link, rel);
                     itemDescription.addOrReplaceRelation(rel);
                 });
 
@@ -93,9 +77,29 @@ public class InputFormatHandlerDot implements InputFormatHandler {
             throw new ProcessingException("Failed to parse dot input file from " + reference, e);
         } catch (ParserException e) {
             LOGGER.warn("Failed to parse {}", reference, e);
-            throw ReadingException.from(content, "Failed to parse dot input file from " + reference, e);
+            throw ReadingException.fromMappingException(content == null ? "" : content, "Failed to parse dot input file from " + reference, e);
         }
-        landscapeDescription.mergeItems(itemDescriptions);
+        return Collections.singletonList(landscapeDescription);
+    }
+
+    private void handleAttributes(Link link, RelationDescription rel) {
+        link.attrs().forEach(entry -> {
+            if (!entry.getKey().startsWith(NIVIO_LABEL_PREFIX)) {
+                return;
+            }
+            final String key = entry.getKey().substring(NIVIO_LABEL_PREFIX.length()).toLowerCase(Locale.ROOT);
+            switch (key) {
+                case "format":
+                    rel.setFormat((String) entry.getValue());
+                    break;
+                case "description":
+                    rel.setDescription((String) entry.getValue());
+                    break;
+                case "type":
+                    rel.setType(RelationType.from((String) entry.getValue()));
+                    break;
+            }
+        });
     }
 
     @Override

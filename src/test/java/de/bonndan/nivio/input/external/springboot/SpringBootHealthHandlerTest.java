@@ -21,6 +21,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -56,7 +58,7 @@ class SpringBootHealthHandlerTest {
     }
 
     @Test
-    void resolvesHealth() throws ExecutionException, InterruptedException {
+    void resolvesHealth() throws ExecutionException, InterruptedException, MalformedURLException {
 
         //given
         String path = RootPath.get() + "/src/test/resources/example/springhealth.json";
@@ -70,7 +72,7 @@ class SpringBootHealthHandlerTest {
         );
 
         String url = String.format("http://localhost:%d/actuator/health", wireMockServer.port());
-        Link link = new Link(url);
+        Link link = new Link(new URL(url));
 
         //when
         CompletableFuture<ComponentDescription> resolve = handler.resolve(link);
@@ -83,7 +85,7 @@ class SpringBootHealthHandlerTest {
     }
 
     @Test
-    void badResponse() {
+    void badResponse() throws MalformedURLException {
 
         //given
         givenThat(
@@ -93,7 +95,7 @@ class SpringBootHealthHandlerTest {
         );
 
         String url = String.format("http://localhost:%d/actuator/health", wireMockServer.port());
-        Link link = new Link(url);
+        Link link = new Link(new URL(url));
 
         //when
         CompletableFuture<ComponentDescription> resolve = handler.resolve(link);
@@ -104,12 +106,12 @@ class SpringBootHealthHandlerTest {
     }
 
     @Test
-    void noConnection() {
+    void noConnection() throws MalformedURLException {
 
         //given
 
         String url = "http://totally.unknown/actuator/health";
-        Link link = new Link(url);
+        Link link = new Link(new URL(url));
 
         //when
         CompletableFuture<ComponentDescription> resolve = handler.resolve(link);

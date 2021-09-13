@@ -4,6 +4,8 @@ import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import de.bonndan.nivio.assessment.Assessable;
 import org.junit.jupiter.api.Test;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -119,14 +121,14 @@ class ItemTest {
     }
 
     @Test
-    void getChangesInLinks() {
+    void getChangesInLinks() throws MalformedURLException {
 
         Item s1 = getTestItemBuilder("g1", "a")
-                .withLinks(Map.of("foo", new Link("https://acme.com")))
+                .withLinks(Map.of("foo", new Link(new URL("https://acme.com"))))
                 .build();
 
         Item s2 = getTestItemBuilder("g1", "a")
-                .withLinks(Map.of("bar", new Link("https://acme.com")))
+                .withLinks(Map.of("bar", new Link(new URL("https://acme.com"))))
                 .build();
 
         List<String> changes = s1.getChanges(s2);

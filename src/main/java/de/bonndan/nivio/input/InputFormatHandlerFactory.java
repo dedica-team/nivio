@@ -1,6 +1,5 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.SourceReference;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -50,11 +49,7 @@ public class InputFormatHandlerFactory {
                     reference.getFormat(),
                     StringUtils.collectionToDelimitedString(knownFormats, ", ")
             );
-            if (reference.getLandscapeDescription() != null) {
-                throw new ProcessingException(reference.getLandscapeDescription(), msg);
-            } else {
-                throw new RuntimeException(msg);
-            }
+            throw new ProcessingException(msg);
         }
 
         //last one wins

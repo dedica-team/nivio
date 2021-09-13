@@ -18,6 +18,11 @@ public class ProcessingException extends RuntimeException {
         this.landscapeDescription = landscapeDescription;
     }
 
+    public ProcessingException(String message) {
+        super(message);
+        this.landscapeDescription = LandscapeDescription.NONE;
+    }
+
     public ProcessingException(String message, Throwable throwable) {
         super(message, throwable);
         this.landscapeDescription = LandscapeDescription.NONE;

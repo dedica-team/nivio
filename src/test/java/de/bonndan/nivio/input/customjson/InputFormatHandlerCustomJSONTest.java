@@ -1,51 +1,50 @@
 package de.bonndan.nivio.input.customjson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.LandscapeDescriptionFactory;
+import de.bonndan.nivio.IntegrationTestSupport;
 import de.bonndan.nivio.input.ProcessingException;
+import de.bonndan.nivio.input.SeedConfigurationFactory;
+import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 class InputFormatHandlerCustomJSONTest {
 
-    private LandscapeDescriptionFactory factory;
+    private SeedConfigurationFactory factory;
     private InputFormatHandlerCustomJSON handler;
     private File file;
-    private LandscapeDescription landscapeDescription;
+    private LandscapeDescription defaultLandscapeDTO;
 
     @BeforeEach
     public void setup() {
-        FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
-        factory = new LandscapeDescriptionFactory(fileFetcher);
-        handler = new InputFormatHandlerCustomJSON(fileFetcher, new ObjectMapper());
+        IntegrationTestSupport integrationTestSupport = new IntegrationTestSupport();
+        factory = integrationTestSupport.getSeedConfigurationFactory();
+        handler = new InputFormatHandlerCustomJSON(integrationTestSupport.getFileFetcher(), new ObjectMapper());
         file = new File(RootPath.get() + "/src/test/resources/example/example_json.yml");
-        landscapeDescription = factory.fromYaml(file);
+        defaultLandscapeDTO = new LandscapeDescription("test");
     }
 
     @Test
-    void readMappedFields() throws MalformedURLException {
+    void readMappedFields() {
 
         //given
-        SourceReference json = landscapeDescription.getSourceReferences().get(0);
+        SourceReference json = getSourceRef(file);
 
         //when
-        handler.applyData(json, file.getParentFile().toURI().toURL(), landscapeDescription);
+        handler.applyData(json, defaultLandscapeDTO);
 
         //then
-        assertThat(landscapeDescription.getItemDescriptions().all()).isNotEmpty();
-        ItemDescription asd = landscapeDescription.getItemDescriptions().findOneBy("asd", null);
+        assertThat(defaultLandscapeDTO.getItemDescriptions().all()).isNotEmpty();
+        ItemDescription asd = defaultLandscapeDTO.getItemDescriptions().findOneBy("asd", null);
         assertThat(asd).isNotNull();
         assertThat(asd.getIdentifier()).isEqualTo("asd");
         assertThat(asd.getLabel("endoflife")).isEqualTo("2022-12-31T00:00:00+01:00");
@@ -53,52 +52,52 @@ class InputFormatHandlerCustomJSONTest {
     }
 
     @Test
-    void assignsFieldsWithSameName() throws MalformedURLException {
+    void assignsFieldsWithSameName() {
 
         //given
-        File file = new File(RootPath.get() + "/src/test/resources/example/example_json.yml");
-        LandscapeDescription landscapeDescription = factory.fromYaml(file);
-        SourceReference json = landscapeDescription.getSourceReferences().get(0);
+        SourceReference json = getSourceRef(file);
 
         //when
-        handler.applyData(json, file.getParentFile().toURI().toURL(), landscapeDescription);
+        List<LandscapeDescription> landscapeDescriptions = handler.applyData(json, defaultLandscapeDTO);
 
         //then
-        assertThat(landscapeDescription.getItemDescriptions().all()).isNotEmpty();
-        ItemDescription asd = landscapeDescription.getItemDescriptions().findOneBy("asd", null);
+        Set<ItemDescription> items = defaultLandscapeDTO.getItemDescriptions().all();
+        assertThat(items).isNotEmpty();
+        ItemDescription asd = defaultLandscapeDTO.getItemDescriptions().findOneBy("asd", null);
         assertThat(asd).isNotNull();
         assertThat(asd.getContact()).isEqualTo("John Doe");
     }
 
     @Test
-    void handlesPiping() throws MalformedURLException {
+    void handlesPiping() {
 
         //given
-        SourceReference json = landscapeDescription.getSourceReferences().get(0);
+        SourceReference json = getSourceRef(file);
 
         //when
-        handler.applyData(json, file.getParentFile().toURI().toURL(), landscapeDescription);
+        handler.applyData(json, defaultLandscapeDTO);
 
         //then
-        assertThat(landscapeDescription.getItemDescriptions().all()).isNotEmpty();
-        ItemDescription asd = landscapeDescription.getItemDescriptions().findOneBy("asd", null);
+        assertThat(defaultLandscapeDTO.getItemDescriptions().all()).isNotEmpty();
+        ItemDescription asd = defaultLandscapeDTO.getItemDescriptions().findOneBy("asd", null);
         assertThat(asd).isNotNull();
         assertThat(asd.getLabel("nivio.relations.upstream")).isEqualTo("foo,bar");
     }
 
+
     @Test
-    void handlesPipingWithBrokenUrls() throws MalformedURLException {
+    void handlesPipingWithBrokenUrls() {
         //given
         File file = new File(RootPath.get() + "/src/test/resources/example/example_json_broken2.yml");
-        landscapeDescription = factory.fromYaml(file);
-        SourceReference json = landscapeDescription.getSourceReferences().get(0);
+        SourceReference json = getSourceRef(file);
 
         //when
-        handler.applyData(json, file.getParentFile().toURI().toURL(), landscapeDescription);
+        handler.applyData(json, defaultLandscapeDTO);
 
         //then
-        assertThat(landscapeDescription.getItemDescriptions().all()).isNotEmpty();
-        ItemDescription asd = landscapeDescription.getItemDescriptions().findOneBy("asd", null);
+        Set<ItemDescription> items = defaultLandscapeDTO.getItemDescriptions().all();
+        assertThat(items).isNotEmpty();
+        ItemDescription asd = defaultLandscapeDTO.getItemDescriptions().findOneBy("asd", null);
         assertThat(asd).isNotNull();
     }
 
@@ -106,24 +105,27 @@ class InputFormatHandlerCustomJSONTest {
     void handlesBrokenPaths() {
         //given
         File file = new File(RootPath.get() + "/src/test/resources/example/example_json_broken1.yml");
-        landscapeDescription = factory.fromYaml(file);
-        SourceReference json = landscapeDescription.getSourceReferences().get(0);
+        SourceReference json = getSourceRef(file);
 
         //when
-        assertThatExceptionOfType(ProcessingException.class).isThrownBy(() -> handler.applyData(json, file.getParentFile().toURI().toURL(), landscapeDescription));
+        assertThatExceptionOfType(ProcessingException.class).isThrownBy(() -> handler.applyData(json, defaultLandscapeDTO));
     }
 
     @Test
     void withoutMapping() {
         //given
         File file = new File(RootPath.get() + "/src/test/resources/example/example_json_bare.yml");
-        landscapeDescription = factory.fromYaml(file);
-        SourceReference json = landscapeDescription.getSourceReferences().get(0);
+        SourceReference json = getSourceRef(file);
 
         //when
-        assertThatNoException().isThrownBy(() -> handler.applyData(json, file.getParentFile().toURI().toURL(), landscapeDescription));
+        assertThatNoException().isThrownBy(() -> handler.applyData(json, defaultLandscapeDTO));
 
         //then
-        assertThat(landscapeDescription.getItemDescriptions().all()).isEmpty();
+        assertThat(defaultLandscapeDTO.getItemDescriptions().all()).isEmpty();
+    }
+
+    private SourceReference getSourceRef(File file) {
+        var seedConfiguration = factory.fromFile(file);
+        return seedConfiguration.getSourceReferences().get(0);
     }
 }

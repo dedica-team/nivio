@@ -125,8 +125,8 @@ public class ApiController {
      */
     @PostMapping(path = "/landscape")
     public ResponseEntity<Object> create(@RequestBody String body) {
-        LandscapeDescription env = indexingDispatcher.createFromBody(body);
-        Optional<URI> uriForDTO = getURIForDTO(env);
+        LandscapeDescription env = indexingDispatcher.createLandscapeDescriptionFromBody(body);
+        Optional<URI> uriForDTO = getURIForDTO(env.getFullyQualifiedIdentifier());
         return uriForDTO
                 .map(uri -> ResponseEntity.created(uri).build())
                 .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
@@ -138,8 +138,8 @@ public class ApiController {
             @RequestHeader(name = "format") String format,
             @RequestBody String body
     ) {
-        LandscapeDescription dto = indexingDispatcher.createFromBodyItems(identifier, format, body);
-        Optional<URI> uriForDTO = getURIForDTO(dto);
+        LandscapeDescription dto = indexingDispatcher.createFromLandscapeDescriptionBodyItems(identifier, body);
+        Optional<URI> uriForDTO = getURIForDTO(dto.getFullyQualifiedIdentifier());
         return uriForDTO
                 .map(uri -> ResponseEntity.created(uri).build())
                 .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
@@ -202,15 +202,15 @@ public class ApiController {
             return ResponseEntity.notFound().build();
         }
 
-        LandscapeDescription env = indexingDispatcher.fromIncoming(existing);
-        Optional<URI> uriForDTO = getURIForDTO(env);
+        indexingDispatcher.fromExistingLandscape(existing);
+        Optional<URI> uriForDTO = getURIForDTO(existing.getFullyQualifiedIdentifier());
         return uriForDTO
                 .map(uri -> ResponseEntity.created(uri).build())
                 .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
     }
 
-    private Optional<URI> getURIForDTO(LandscapeDescription env) {
-        Optional<Link> link = linkFactory.generateComponentLink(env.getFullyQualifiedIdentifier());
+    private Optional<URI> getURIForDTO(FullyQualifiedIdentifier fullyQualifiedIdentifier) {
+        Optional<Link> link = linkFactory.generateComponentLink(fullyQualifiedIdentifier);
         if (link.isEmpty()) {
             return Optional.empty();
         }

@@ -13,6 +13,11 @@ LandscapeDescription
      - Remarks
      - Example
 
+   * - assignTemplates
+     - Map<array>
+     - 
+     - optional, defaults to null
+     - null
    * - color
      - String
      - 
@@ -76,11 +81,6 @@ LandscapeDescription
    * - partial
      - Boolean
      - marks that the landscape is not complete, but an update
-     - optional, defaults to null
-     - null
-   * - sources
-     - List<SourceReference>
-     - 
      - optional, defaults to null
      - null
    * - templates

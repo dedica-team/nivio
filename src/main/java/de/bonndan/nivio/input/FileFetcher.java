@@ -1,8 +1,7 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.util.URLHelper;
+import de.bonndan.nivio.util.URLFactory;
 import org.apache.http.auth.AuthenticationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Fetches files either from local file system or from remote http endpoint.
@@ -52,26 +50,15 @@ public class FileFetcher {
     }
 
     /**
-     * Reads a local file.
-     *
-     * @param file the file to read
-     * @return the file content
-     * @throws ReadingException
-     */
-    public String get(File file) {
-        return readFile(file);
-    }
-
-    /**
      * Reads from an {@link URL}
      *
      * @param url remote or local address to read
      * @return the content
-     * @throws ReadingException
+     * @throws ReadingException on errors
      */
     public String get(URL url) {
         try {
-            if (URLHelper.isLocal(url)) {
+            if (URLFactory.isLocal(url)) {
                 return readFile(new File(url.toURI()));
             }
             return http.get(url);
@@ -93,31 +80,13 @@ public class FileFetcher {
     public String get(SourceReference ref) {
 
         try {
-            URL url = new URL(ref.getUrl());
-            url.toURI(); //to force exception early
-            if (URLHelper.isLocal(url)) {
+            URL url = ref.getUrl();
+            if (URLFactory.isLocal(url)) {
                 return readFile(new File(url.toURI()));
             }
             return fetchRemoteUrl(ref);
-        } catch (MalformedURLException | URISyntaxException e) {
-            String path = ref.getUrl();
-            if (path == null) {
-                return null;
-            }
-            if (ref.getLandscapeDescription() != null) {
-                Optional<URL> url = ref.getLandscapeDescription().getSource().getURL();
-                if (url.isPresent()) {
-                    File file = null;
-                    try {
-                        file = new File(url.get().toURI());
-                        path = file.getParent() + "/" + ref.getUrl();
-                    } catch (URISyntaxException uriSyntaxException) {
-                        LOGGER.error("failed to create uri from " + url.get());
-                    }
-                }
-            }
-            File source = new File(path);
-            return readFile(source);
+        } catch (URISyntaxException e) {
+            throw new ReadingException(String.format("Cannot get source reference content from %s", ref.getUrl()), e);
         }
     }
 
@@ -136,9 +105,9 @@ public class FileFetcher {
             }
 
             //assemble new absolute url
-            String combined = URLHelper.combine(baseUrl, part);
+            String combined = URLFactory.combine(baseUrl, part);
             URL url = new URL(combined);
-            if (URLHelper.isLocal(url)) {
+            if (URLFactory.isLocal(url)) {
                 return get(url);
             }
             return get(url);
@@ -147,42 +116,12 @@ public class FileFetcher {
         }
     }
 
-    /**
-     * @param ref
-     * @param baseUrl
-     * @return
-     */
-    @Nullable
-    public String get(@NonNull final SourceReference ref, @Nullable final URL baseUrl) {
-
-        //we have no base url or source ref has absolute url
-        if (baseUrl == null || ref.getUrl().startsWith("http")) {
-            return get(ref);
-        }
-
-        if (ref.getUrl() == null) {
-            return null;
-        }
-
-        //assemble new absolute url
-        String combined = URLHelper.combine(baseUrl, ref.getUrl());
-        try {
-            URL url = new URL(combined);
-            if (URLHelper.isLocal(url)) {
-                return get(url);
-            }
-            return fetchRemoteUrl(ref, url);
-        } catch (MalformedURLException e) {
-            throw new ReadingException("Failed to build URL of " + combined, e);
-        }
-    }
-
     private String fetchRemoteUrl(SourceReference ref) {
         try {
-            return fetchRemoteUrl(ref, new URL(ref.getUrl()));
-        } catch (IOException | RuntimeException e) {
+            return fetchRemoteUrl(ref, ref.getUrl());
+        } catch (RuntimeException e) {
             LOGGER.error(ERROR_MSG + ref.getUrl(), e);
-            throw new ReadingException(ref.getLandscapeDescription(), ERROR_MSG + ref.getUrl(), e);
+            throw new ReadingException(ERROR_MSG + ref.getUrl(), e);
         }
     }
 
@@ -198,7 +137,7 @@ public class FileFetcher {
             return http.get(url);
         } catch (IOException | AuthenticationException | URISyntaxException | RuntimeException e) {
             LOGGER.error(ERROR_MSG + ref.getUrl(), e);
-            throw new ReadingException(ref.getLandscapeDescription(), ERROR_MSG + ref.getUrl(), e);
+            throw new ReadingException(ERROR_MSG + ref.getUrl(), e);
         }
     }
 }

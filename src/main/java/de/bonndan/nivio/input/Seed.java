@@ -1,6 +1,6 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.util.URLHelper;
+import de.bonndan.nivio.util.URLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -44,7 +44,7 @@ public class Seed {
     }
 
     private URL asURL(String s) {
-        return URLHelper.getURL(s)
+        return URLFactory.getURL(s)
                 .or(() -> {
                     try {
                         File file = new File(s);
@@ -92,5 +92,9 @@ public class Seed {
     public List<URL> getLocations() {
         logger.info("Using seeds: {}", seedUrls);
         return seedUrls;
+    }
+
+    public String getDemo() {
+        return demo;
     }
 }

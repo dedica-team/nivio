@@ -2,7 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.util.URIHelper;
-import de.bonndan.nivio.util.URLHelper;
+import de.bonndan.nivio.util.URLFactory;
 import org.springframework.util.StringUtils;
 
 import java.net.URI;
@@ -55,7 +55,7 @@ public class SecureLabelsResolver extends Resolver {
         if (!(value instanceof String))
             return Optional.empty();
 
-        Optional<URL> url = URLHelper.getURL((String) value);
+        Optional<URL> url = URLFactory.getURL((String) value);
         if (url.isPresent()) {
             return Optional.ofNullable(replaceIfSecret(url.get()));
         }

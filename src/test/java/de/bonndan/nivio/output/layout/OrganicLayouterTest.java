@@ -1,24 +1,14 @@
 package de.bonndan.nivio.output.layout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.Indexer;
-import de.bonndan.nivio.input.InputFormatHandlerFactory;
-import de.bonndan.nivio.input.csv.InputFormatHandlerCSV;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.input.external.LinkHandlerFactory;
-import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.RenderingTest;
-import de.bonndan.nivio.output.icons.ExternalIcons;
-import de.bonndan.nivio.output.icons.IconService;
-import de.bonndan.nivio.output.icons.LocalIcons;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -28,7 +18,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
 
 class OrganicLayouterTest extends RenderingTest {
 
@@ -164,13 +153,6 @@ class OrganicLayouterTest extends RenderingTest {
 
     @Test
     void renderCSV() throws IOException {
-
-        HttpService httpService = new HttpService();
-        IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService));
-        formatFactory = new InputFormatHandlerFactory(List.of(new InputFormatHandlerCSV(new FileFetcher(httpService))));
-        LinkHandlerFactory linkHandlerFactory = mock(LinkHandlerFactory.class);
-        indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class));
-
         debugRender("/src/test/resources/example/example_csv", false);
     }
 
