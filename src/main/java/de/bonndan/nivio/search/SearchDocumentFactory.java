@@ -3,7 +3,6 @@ package de.bonndan.nivio.search;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
-import joptsimple.internal.Strings;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
@@ -24,6 +23,8 @@ import java.util.function.BiConsumer;
 public class SearchDocumentFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SearchDocumentFactory.class);
+
+    private SearchDocumentFactory() {}
 
     public static final String LUCENE_FIELD_IDENTIFIER = "identifier";
     public static final String LUCENE_FIELD_NAME = "name";
@@ -46,10 +47,6 @@ public class SearchDocumentFactory {
     private static final String LUCENE_FIELD_LAYER = Label.layer.name();
     public static final String LUCENE_FIELD_FRAMEWORK = Label.framework.name();
     public static final String KPI_FACET_PREFIX = "kpi_";
-
-    private SearchDocumentFactory() {
-
-    }
 
     public static FacetsConfig getConfig() {
         FacetsConfig config = new FacetsConfig();
@@ -93,9 +90,8 @@ public class SearchDocumentFactory {
         List<String> genericStrings = new ArrayList<>();
         //add all labels by their key
         item.getLabels().forEach((labelKey, val) -> {
-            if (!StringUtils.hasLength(val)) {
+            if (!StringUtils.hasLength(val))
                 return;
-            }
             addTextField.accept(labelKey, val);
 
             //add non-prefixed label values to generic field
@@ -140,7 +136,7 @@ public class SearchDocumentFactory {
         });
 
         //frameworks name (label keys)
-        addTextField.accept(LUCENE_FIELD_GENERIC, Strings.join(genericStrings, " "));
+        addTextField.accept(LUCENE_FIELD_GENERIC, StringUtils.collectionToDelimitedString(genericStrings, " "));
 
         addFacets(document, item, statusValues);
         return document;
