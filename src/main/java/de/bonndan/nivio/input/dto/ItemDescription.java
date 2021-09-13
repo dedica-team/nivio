@@ -54,6 +54,9 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
             example = "shipping")
     private String group;
 
+    @Schema(description = "The technical layer", example = "infrastructure")
+    private String layer;
+
     @Schema(description = "A collection of low level interfaces. Can be used to describe HTTP API endpoints for instance.")
     @JsonDeserialize(contentAs = InterfaceDescription.class)
     private Set<InterfaceDescription> interfaces = new HashSet<>();
@@ -349,5 +352,14 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
 
     public void setFramework(@NonNull final String key, String value) {
         setLabel(Label.framework.withPrefix(key), value);
+    }
+
+    @Override
+    public String getLayer() {
+        return layer;
+    }
+
+    public void setLayer(String layer) {
+        this.layer = layer;
     }
 }

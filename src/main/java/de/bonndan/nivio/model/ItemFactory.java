@@ -26,7 +26,7 @@ public class ItemFactory {
 
     public static Item getTestItem(String group, String identifier, Landscape landscape) {
         return new Item(identifier, landscape, group, null,null,null,
-                null, null, null, null, null);
+                null, null, null, null, null, null);
     }
 
     public static ItemBuilder getTestItemBuilder(String group, String identifier) {
@@ -46,6 +46,7 @@ public class ItemFactory {
                 .withGroup(description.getGroup())
                 .withIcon(description.getIcon())
                 .withType(description.getType())
+                .withLayer(description.getLayer())
                 .withLandscape(landscape);
 
         if (description.getAddress() != null) {
@@ -87,6 +88,7 @@ public class ItemFactory {
                 .withGroup(item.getGroup())
                 .withIcon(item.getIcon())
                 .withType(item.getType())
+                .withLayer(item.getLayer())
                 .withLandscape(item.getLandscape())
                 .withRelations(item.getRelations())
                 .withInterfaces(item.getInterfaces())
@@ -107,6 +109,7 @@ public class ItemFactory {
         builder.withIcon(description.getIcon());
         builder.withType(description.getType());
         builder.withContact(description.getContact());
+        builder.withLayer(description.getLayer());
         builder.withLabels(description.getLabels());
 
         return builder.build();

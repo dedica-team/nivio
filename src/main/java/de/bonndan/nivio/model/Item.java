@@ -46,6 +46,8 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
 
     private final String type;
 
+    private final String layer;
+
     /**
      * technical address
      */
@@ -73,7 +75,8 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
                 final String color,
                 final String icon,
                 final String type,
-                final URI address
+                final URI address,
+                final String layer
     ) {
         if (!StringUtils.hasLength(identifier)) {
             throw new IllegalArgumentException("Identifier must not be empty");
@@ -91,6 +94,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         this.description = description;
         this.address = address;
         this.type = type;
+        this.layer = layer;
 
         //these are effectively mutable
         this.setLabel(Label.color, Color.safe(color));
@@ -234,6 +238,11 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     @Override
     public void setLabel(String key, String value) {
         labels.put(key, value);
+    }
+
+    @Override
+    public String getLayer() {
+        return layer;
     }
 
     @Override

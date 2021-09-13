@@ -14,4 +14,7 @@ public interface ItemComponent extends Component {
 
     @Nullable
     String getAddress();
+
+    @Nullable
+    String getLayer();
 }
