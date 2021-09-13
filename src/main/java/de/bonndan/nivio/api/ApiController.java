@@ -138,7 +138,7 @@ public class ApiController {
             @RequestHeader(name = "format") String format,
             @RequestBody String body
     ) {
-        LandscapeDescription dto = indexingDispatcher.createFromLandscapeDescriptionBodyItems(identifier, format, body);
+        LandscapeDescription dto = indexingDispatcher.createFromLandscapeDescriptionBodyItems(identifier, body);
         Optional<URI> uriForDTO = getURIForDTO(dto.getFullyQualifiedIdentifier());
         return uriForDTO
                 .map(uri -> ResponseEntity.created(uri).build())

@@ -68,7 +68,7 @@ class LandscapeDescriptionFactoryTest {
      void fromBodyItem() {
 
         //when
-        LandscapeDescription landscapeDescription = factory.fromBodyItems("foo", "nivio", "body");
+        LandscapeDescription landscapeDescription = factory.fromBodyItems("foo", "body");
 
         assertNotNull(landscapeDescription);
         assertThat(landscapeDescription.getIdentifier()).isEqualTo("foo");

@@ -78,24 +78,24 @@ public class LabelToFieldResolver extends Resolver {
     }
 
     private void setUsingAccessor(ItemDescription item, String name, String value) {
-        PropertyAccessor myAccessor = PropertyAccessorFactory.forBeanPropertyAccess(item);
-        Class<?> propertyType = myAccessor.getPropertyType(name);
+        PropertyAccessor accessor = PropertyAccessorFactory.forBeanPropertyAccess(item);
+        Class<?> propertyType = accessor.getPropertyType(name);
 
         try {
             if (propertyType != null) {
                 String[] o = getParts(value);
                 if (propertyType.isAssignableFrom(List.class)) {
-                    myAccessor.setPropertyValue(name, Arrays.asList(o));
+                    accessor.setPropertyValue(name, Arrays.asList(o));
                     return;
                 }
 
                 if (propertyType.isAssignableFrom(Set.class)) {
-                    myAccessor.setPropertyValue(name, Set.of(o));
+                    accessor.setPropertyValue(name, Set.of(o));
                     return;
                 }
 
                 if (propertyType.isAssignableFrom(Map.class)) {
-                    @SuppressWarnings("unchecked") Map<String, Object> propertyValue = (Map<String, Object>) myAccessor.getPropertyValue(name);
+                    @SuppressWarnings("unchecked") Map<String, Object> propertyValue = (Map<String, Object>) accessor.getPropertyValue(name);
                     if (propertyValue != null) {
                         for (int i = 0; i < o.length; i++) {
                             String key = String.valueOf(i + 1);
@@ -106,7 +106,7 @@ public class LabelToFieldResolver extends Resolver {
                 }
             }
 
-            myAccessor.setPropertyValue(name, value.trim());
+            accessor.setPropertyValue(name, value.trim());
 
         } catch (NotWritablePropertyException e) {
             processLog.debug(String.format("Failed to write field '%s' via label", name));

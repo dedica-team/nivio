@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.Mappers;
 import de.bonndan.nivio.input.ReadingException;
-import de.bonndan.nivio.input.SeedConfiguration;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookupFactory;
 import org.springframework.lang.NonNull;
@@ -13,7 +12,6 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Objects;
 
 /**
  * A factory to create Landscape DTO instances.
@@ -67,7 +65,7 @@ public class LandscapeDescriptionFactory {
     }
 
     @NonNull
-    public LandscapeDescription fromBodyItems(String identifier, String format, String body) {
+    public LandscapeDescription fromBodyItems(String identifier, String body) {
         LandscapeDescription dto = new LandscapeDescription(identifier);
         dto.setIsPartial(true);
         dto.setSource(new Source(body));

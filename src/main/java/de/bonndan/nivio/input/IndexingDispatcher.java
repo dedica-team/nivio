@@ -69,8 +69,8 @@ public class IndexingDispatcher {
         return env;
     }
 
-    public LandscapeDescription createFromLandscapeDescriptionBodyItems(String identifier, String format, String body) {
-        LandscapeDescription dto = landscapeDescriptionFactory.fromBodyItems(identifier, format, body);
+    public LandscapeDescription createFromLandscapeDescriptionBodyItems(String identifier, String body) {
+        LandscapeDescription dto = landscapeDescriptionFactory.fromBodyItems(identifier, body);
         publisher.publishEvent(new IndexEvent(Collections.singletonList(dto), null, "index landscape"));
         return dto;
     }
