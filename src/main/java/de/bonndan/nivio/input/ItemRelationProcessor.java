@@ -44,13 +44,20 @@ public class ItemRelationProcessor extends Processor {
                             return update;
                         })
                         .orElseGet(() -> {
-                            Relation created = RelationFactory.create(origin, relationDescription, landscape);
-                            processLog.info(String.format(origin + ": Adding relation between %s and %s", created.getSource(), created.getTarget()));
-                            changelog.addEntry(created, ProcessingChangelog.ChangeType.CREATED, null);
-                            return created;
+                            try {
+                                Relation created = RelationFactory.create(origin, relationDescription, landscape);
+                                processLog.info(String.format(origin + ": Adding relation between %s and %s", created.getSource(), created.getTarget()));
+                                changelog.addEntry(created, ProcessingChangelog.ChangeType.CREATED, null);
+                                return created;
+                            } catch (IllegalArgumentException e) {
+                                processLog.warn(String.format("%s: Failed to create relation: %s", origin, e.getMessage()));
+                                return null;
+                            }
                         });
-                assignToBothEnds(origin, current);
-                processed.add(current);
+                if (current != null) {
+                    assignToBothEnds(origin, current);
+                    processed.add(current);
+                }
             }
         });
 
@@ -121,6 +128,10 @@ public class ItemRelationProcessor extends Processor {
     ) {
         Item source = landscape.findOneBy(relationDescription.getSource(), origin.getGroup());
         Item target = landscape.findOneBy(relationDescription.getTarget(), origin.getGroup());
+
+        if (source.equals(target)) {
+            return Optional.empty();
+        }
 
         Iterator<Relation> iterator = origin.getRelations().iterator();
         Relation virtual = RelationFactory.createForTesting(source, target);

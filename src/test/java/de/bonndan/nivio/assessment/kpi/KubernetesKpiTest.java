@@ -4,6 +4,7 @@ import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.ItemFactory;
 import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ class KubernetesKpiTest {
     @BeforeEach
     void setUp() {
         kubernetesKPI = new KubernetesKPI();
-        item = new Item("test", new Landscape("test", Map.of(), "test", null, null, null, null, null, null, Map.of()), "test", null, null, null, null, null, null, null, null);
+        item = ItemFactory.getTestItem("test", "test");
     }
 
     @Test

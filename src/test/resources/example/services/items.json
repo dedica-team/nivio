@@ -2,6 +2,7 @@
   "items": [
     {
       "id": "asd",
+      "landscape": "one",
       "contact": "John Doe",
       "a_named_link": "https://foo.bar.com",
       "end_of_life": {

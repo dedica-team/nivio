@@ -1,9 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LandscapeFactory;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,10 +21,8 @@ class SVGItemTest {
 
     @BeforeEach
     void setup() {
-        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
         // item has no group
-        foo = new Item("foo", landscape, Group.COMMON, null, null, null,
-                null, null, null, null, null);
+        foo = ItemFactory.getTestItem( Group.COMMON, "foo");
     }
 
     @Test
@@ -35,7 +30,7 @@ class SVGItemTest {
     void regression184() {
 
         SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo), List.of(), new Point2D.Double(1, 1));
-        assertThat(svgItem.render().render()).contains("l1/common/foo");
+        assertThat(svgItem.render().render()).contains("test/common/foo");
     }
 
     @Test

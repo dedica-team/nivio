@@ -46,6 +46,7 @@ public class LayoutService implements ApplicationListener<AssessmentChangedEvent
     @Override
     public void onApplicationEvent(@NonNull final AssessmentChangedEvent event) {
         Landscape landscape = event.getLandscape();
+        LOGGER.info("Calculating layout for landscape {}", landscape);
         appearanceProcessor.process(landscape);
         Assessment assessment = event.getAssessment();
         LayoutedComponent layout = layout(landscape);

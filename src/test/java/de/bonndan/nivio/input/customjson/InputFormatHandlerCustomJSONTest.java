@@ -7,6 +7,7 @@ import de.bonndan.nivio.input.SeedConfigurationFactory;
 import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.search.ItemIndex;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,11 +41,15 @@ class InputFormatHandlerCustomJSONTest {
         SourceReference json = getSourceRef(file);
 
         //when
-        handler.applyData(json, defaultLandscapeDTO);
+        List<LandscapeDescription> landscapeDescriptions = handler.applyData(json, defaultLandscapeDTO);
 
         //then
-        assertThat(defaultLandscapeDTO.getItemDescriptions().all()).isNotEmpty();
-        ItemDescription asd = defaultLandscapeDTO.getItemDescriptions().findOneBy("asd", null);
+        assertThat(defaultLandscapeDTO.getItemDescriptions().all()).isEmpty();
+        assertThat(landscapeDescriptions).hasSize(2);
+
+        LandscapeDescription other = landscapeDescriptions.get(1);
+        assertThat(other.getItemDescriptions().all()).isNotEmpty();
+        ItemDescription asd = other.getItemDescriptions().findOneBy("asd", null);
         assertThat(asd).isNotNull();
         assertThat(asd.getIdentifier()).isEqualTo("asd");
         assertThat(asd.getLabel("endoflife")).isEqualTo("2022-12-31T00:00:00+01:00");
@@ -61,9 +66,10 @@ class InputFormatHandlerCustomJSONTest {
         List<LandscapeDescription> landscapeDescriptions = handler.applyData(json, defaultLandscapeDTO);
 
         //then
-        Set<ItemDescription> items = defaultLandscapeDTO.getItemDescriptions().all();
+        ItemIndex<ItemDescription> itemDescriptions = landscapeDescriptions.get(1).getItemDescriptions();
+        Set<ItemDescription> items = itemDescriptions.all();
         assertThat(items).isNotEmpty();
-        ItemDescription asd = defaultLandscapeDTO.getItemDescriptions().findOneBy("asd", null);
+        ItemDescription asd = itemDescriptions.findOneBy("asd", null);
         assertThat(asd).isNotNull();
         assertThat(asd.getContact()).isEqualTo("John Doe");
     }
@@ -75,11 +81,12 @@ class InputFormatHandlerCustomJSONTest {
         SourceReference json = getSourceRef(file);
 
         //when
-        handler.applyData(json, defaultLandscapeDTO);
+        List<LandscapeDescription> landscapeDescriptions = handler.applyData(json, defaultLandscapeDTO);
 
         //then
-        assertThat(defaultLandscapeDTO.getItemDescriptions().all()).isNotEmpty();
-        ItemDescription asd = defaultLandscapeDTO.getItemDescriptions().findOneBy("asd", null);
+        ItemIndex<ItemDescription> itemDescriptions = landscapeDescriptions.get(1).getItemDescriptions();
+        Set<ItemDescription> items = itemDescriptions.all();
+        ItemDescription asd = itemDescriptions.findOneBy("asd", null);
         assertThat(asd).isNotNull();
         assertThat(asd.getLabel("nivio.relations.upstream")).isEqualTo("foo,bar");
     }
