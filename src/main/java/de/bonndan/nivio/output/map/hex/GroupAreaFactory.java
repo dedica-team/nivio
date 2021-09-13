@@ -138,17 +138,17 @@ public class GroupAreaFactory {
         Hex start = allVertexHexes.get(item);
         AtomicInteger minDist = new AtomicInteger(Integer.MAX_VALUE);
         AtomicReference<Item> min = new AtomicReference<>(null);
-        items.stream()
-                .filter(otherGroupItem -> !item.equals(otherGroupItem))
-                .filter(otherGroupItem -> !connected.contains(otherGroupItem))
-                .forEach(otherGroupItem -> {
-                    Hex dest = allVertexHexes.get(otherGroupItem);
-                    int distance = start.distance(dest);
-                    if (distance < minDist.get()) {
-                        minDist.set(distance);
-                        min.set(otherGroupItem);
-                    }
-                });
+        for (Item otherGroupItem : items) {
+            if (item.equals(otherGroupItem) || connected.contains(otherGroupItem)) {
+                continue;
+            }
+            Hex dest = allVertexHexes.get(otherGroupItem);
+            int distance = start.distance(dest);
+            if (distance < minDist.get()) {
+                minDist.set(distance);
+                min.set(otherGroupItem);
+            }
+        }
 
         return Optional.ofNullable(min.get());
     }

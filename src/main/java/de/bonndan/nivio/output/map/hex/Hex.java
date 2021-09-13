@@ -83,6 +83,7 @@ public class Hex {
      * https://www.redblobgames.com/grids/hexagons/implementation.html
      *
      * TLDR: q and r and like x and y and sufficient to describe a hex position. s is a third axis orthogonal to q and r.
+     *
      * @param q coordinate
      * @param r coordinate
      */
@@ -146,7 +147,8 @@ public class Hex {
     public List<Hex> neighbours() {
         List<Hex> n = new ArrayList<>();
         for (var i = 0; i < DIRECTIONS.size(); i += 1) {
-            n.add(neighbour(this, i));
+            Hex neighbour = DIRECTIONS.get((6 + i % 6) % 6);
+            n.add(new Hex(q + neighbour.q, r + neighbour.r));
         }
         return n;
     }
@@ -206,27 +208,15 @@ public class Hex {
         return new Point2D.Double(x + origin.x, y + origin.y);
     }
 
-    private static Hex add(Hex a, Hex b) {
-        return new Hex(a.q + b.q, a.r + b.r, a.s + b.s);
-    }
-
     private Hex subtract(Hex b) {
         return new Hex(this.q - b.q, this.r - b.r, this.s - b.s);
-    }
-
-    private Hex neighbour(Hex hex, int direction) {
-        return add(hex, this.direction(direction));
-    }
-
-    private Hex direction(int _direction) {
-        return DIRECTIONS.get((6 + _direction % 6) % 6);
     }
 
     /**
      * see https://www.redblobgames.com/grids/hexagons/implementation.html#hex-geometry
      *
      * @param corner number
-     * @param size hex size
+     * @param size   hex size
      */
     public static Point2D.Double getCornerCoordinates(float corner, int size) {
         Point2D.Double point = new Point2D.Double(size, size);
@@ -240,14 +230,14 @@ public class Hex {
      * @param size
      * @return
      */
-    public ArrayList<Point2D.Double> asPoints(int size) {
+    public List<Point2D.Double> asPoints(int size) {
 
         ArrayList<Point2D.Double> corners = new ArrayList<>();
         Point2D.Double center = toPixel();
         for (int i = 0; i < 6; i++) {
             Point2D.Double offset = getCornerCoordinates(i, size);
             corners.add(
-                    new Point2D.Double(Math.round((center.x + offset.x)*10)/10f, Math.round((center.y + offset.y)*10)/10f)
+                    new Point2D.Double(Math.round((center.x + offset.x) * 10) / 10f, Math.round((center.y + offset.y) * 10) / 10f)
             );
         }
         return corners;

@@ -1,22 +1,25 @@
 package de.bonndan.nivio.output.map.hex;
 
+import org.springframework.lang.NonNull;
+
 import java.util.Objects;
 
 /**
+ * A tile (step) of a hex path.
+ *
  * Based on https://github.com/helfsoft/astar (no license given).
  */
-class Tile {
+class PathTile {
 
     final Hex hex;
-    Tile parent;
+    PathTile parent;
 
     float moveCosts = 0f;
     float sumCosts;
     float heuristicCosts;
 
-    public Tile(Hex hex) {
+    public PathTile(@NonNull final Hex hex) {
         this.hex = Objects.requireNonNull(hex);
-
         sumCosts = 0f;
         heuristicCosts = 0f;
     }
@@ -26,7 +29,7 @@ class Tile {
      *
      * @param dst The destination.
      */
-    public void calcHeuristic(Tile dst) {
+    public void calcHeuristic(PathTile dst) {
         heuristicCosts = hex.distance(dst.hex);
     }
 
@@ -46,7 +49,7 @@ class Tile {
      * @param from The tile from which we move to this tile
      * @return The move cost from "from" to "this"
      */
-    public float calcMoveCostsFrom(Tile from) {
+    public float calcMoveCostsFrom(PathTile from) {
         float cost = 1f;
 
         if (this.hex.item != null) {
@@ -63,19 +66,19 @@ class Tile {
     @Override
     public boolean equals(Object obj) {
 
-        if (!(obj instanceof Tile)) {
+        if (!(obj instanceof PathTile)) {
             return false;
         }
-        Tile other = (Tile) obj;
+        PathTile other = (PathTile) obj;
 
         return other.hex.equals(this.hex);
     }
 
-    public Tile getParent() {
+    public PathTile getParent() {
         return parent;
     }
 
-    public void setParent(Tile parent) {
+    public void setParent(PathTile parent) {
         this.parent = parent;
     }
 

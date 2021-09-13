@@ -4,16 +4,16 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class TileTest {
+class PathTileTest {
 
     @Test
     void noExtraCost() {
         Hex fromHex = new Hex(3,2);
-        Tile from = new Tile(fromHex);
+        PathTile from = new PathTile(fromHex);
         from.moveCosts = 1.0f;
 
         Hex toHex = new Hex(3,3);
-        Tile to = new Tile(toHex);
+        PathTile to = new PathTile(toHex);
 
         //when
         float costs = to.calcMoveCostsFrom(from);
@@ -23,12 +23,12 @@ class TileTest {
     @Test
     void groupCostMore() {
         Hex fromHex = new Hex(3,2);
-        Tile from = new Tile(fromHex);
+        PathTile from = new PathTile(fromHex);
         from.moveCosts = 1.0f;
 
         Hex toHex = new Hex(3,3);
         toHex.group = "foo/bar";
-        Tile to = new Tile(toHex);
+        PathTile to = new PathTile(toHex);
 
         //when
         float costs = to.calcMoveCostsFrom(from);
@@ -38,13 +38,13 @@ class TileTest {
     @Test
     void itemsBlock() {
         Hex fromHex = new Hex(3,2);
-        Tile from = new Tile(fromHex);
+        PathTile from = new PathTile(fromHex);
         from.moveCosts = 1.0f;
 
         Hex toHex = new Hex(3,3);
         toHex.item = "foo/bar/baz";
         toHex.group = "foo/bar";
-        Tile to = new Tile(toHex);
+        PathTile to = new PathTile(toHex);
 
         //when
         float costs = to.calcMoveCostsFrom(from);
