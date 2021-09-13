@@ -74,6 +74,11 @@ class PathTile {
         return other.hex.equals(this.hex);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(hex);
+    }
+
     public PathTile getParent() {
         return parent;
     }
