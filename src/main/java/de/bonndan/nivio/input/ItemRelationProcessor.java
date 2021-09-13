@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.search.ItemIndex;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,8 +72,8 @@ public class ItemRelationProcessor extends Processor {
                     .filter(relation -> origin.equals(relation.getSource()))
                     .forEach(relation -> {
                         processLog.info(String.format("%s: Removing relation between %s and %s", origin, relation.getSource(), relation.getTarget()));
-                        removeRelationFromItem(landscape, relation, relation.getSource());
-                        removeRelationFromItem(landscape, relation, relation.getTarget());
+                        removeRelationFromItem(landscape.getItems(), relation, relation.getSource());
+                        removeRelationFromItem(landscape.getItems(), relation, relation.getTarget());
                         changelog.addEntry(relation, ProcessingChangelog.ChangeType.DELETED, null);
                     });
         });
@@ -83,24 +84,23 @@ public class ItemRelationProcessor extends Processor {
     /**
      * Gracefully finds the relation end item in the landscape and tries to remove the relation.
      *
-     * @param landscape the current landscape
-     * @param relation the relation to remove
+     * @param itemIndex   all landscape items (containing a sibling of the relation source or target)
+     * @param relation    the relation to remove
      * @param relationEnd the relation source or target
      */
-    private void removeRelationFromItem(Landscape landscape, Relation relation, Item relationEnd) {
+    private void removeRelationFromItem(ItemIndex<Item> itemIndex, Relation relation, Item relationEnd) {
         var fqi = relationEnd.getFullyQualifiedIdentifier();
-        landscape.getItems().find(fqi.getItem(), fqi.getGroup())
-                .ifPresentOrElse(item -> {
-                    if (!item.removeRelation(relation)) {
-                        processLog.warn(String.format("Could not remove relation %s from item %s", relation, relationEnd));
-                    }
-                },
-                () -> {
-                    String msg = String.format("Could not find relation end %s from relation %s", relationEnd, relation);
-                    processLog.warn(msg);
-                    LOGGER.error(msg, new IllegalStateException());
-                }
-        );
+        try {
+            Item sibling = itemIndex.pick(fqi.getItem(), fqi.getGroup());
+            boolean isRelationRemoved = sibling.removeRelation(relation);
+            if (!isRelationRemoved) {
+                processLog.warn(String.format("Could not remove relation %s from item %s", relation, relationEnd));
+            }
+        } catch (NoSuchElementException e) {
+            String msg = String.format("Could not find relation end %s from relation %s: %s", relationEnd, relation, e.getMessage());
+            processLog.error(msg);
+            LOGGER.error(msg, e);
+        }
     }
 
     private boolean isValid(RelationDescription relationDescription, Landscape landscape) {
