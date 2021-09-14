@@ -51,6 +51,7 @@ class InputFormatHandlerCustomJSONTest {
         ItemDescription asd = defaultLandscapeDTO.getItemDescriptions().findOneBy("asd", null);
         assertThat(asd).isNotNull();
         assertThat(asd.getIdentifier()).isEqualTo("asd");
+        assertThat(asd.getName()).isEqualTo("John Doe");
         assertThat(asd.getLabel("endoflife")).isEqualTo("2022-12-31T00:00:00+01:00");
         assertThat(asd.getLabel("nivio.link.homepage")).isEqualTo("https://foo.bar.com");
     }

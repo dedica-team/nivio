@@ -61,13 +61,13 @@ public class FunctionFactory {
         }
 
         return Arrays.stream(steps)
-                .map(s1 -> s1.trim().toLowerCase(Locale.ROOT))
+                .map(String::trim)
                 .map(step -> {
                     if (step.equalsIgnoreCase(FETCH)) {
                         return (Function<String, String>) s -> fileFetcher.get(s, baseUrl);
                     }
 
-                    if (step.startsWith(FIND)) {
+                    if (step.toLowerCase(Locale.ROOT).startsWith(FIND)) {
                         return getFindFunction(step);
                     }
 
