@@ -43,16 +43,16 @@ public class InputFormatHandlerRancher1API implements InputFormatHandler {
         String accessKey = (String) reference.getProperty(API_ACCESS_KEY);
         String secretKey = (String) reference.getProperty(API_SECRET_KEY);
         if (!StringUtils.hasLength(accessKey)) {
-            throw new ProcessingException(reference.getUrl() + ": Rancher API access key is empty.");
+            throw new ProcessingException(reference, "Rancher API access key is empty.");
         }
         if (accessKey.contains("${")) {
-            throw new ProcessingException(reference.getUrl() + ": Rancher API access key is unresolved: " + accessKey);
+            throw new ProcessingException(reference, "Rancher API access key is unresolved: " + accessKey);
         }
         if (!StringUtils.hasLength(secretKey)) {
-            throw new ProcessingException(reference.getUrl() + ": Rancher API secret key is empty.");
+            throw new ProcessingException(reference, "Rancher API secret key is empty.");
         }
         if (secretKey.contains("${")) {
-            throw new ProcessingException(reference.getUrl() + ": Rancher API secret key is unresolved: " + secretKey);
+            throw new ProcessingException(reference, "Rancher API secret key is unresolved: " + secretKey);
         }
 
         config = new Rancher.Config(reference.getUrl(), accessKey, secretKey);

@@ -1,6 +1,5 @@
 package de.bonndan.nivio.input.customjson;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.jayway.jsonpath.Configuration;
@@ -13,9 +12,9 @@ import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.ProcessingException;
+import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import de.bonndan.nivio.util.URLFactory;
 import org.slf4j.Logger;
@@ -33,8 +32,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.input.LabelToFieldResolver.COLLECTION_DELIMITER;
-
 @Service
 public class InputFormatHandlerCustomJSON implements InputFormatHandler {
 
@@ -44,15 +41,15 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
 
     public static final String ITEMS_PATH_KEY = "items";
     public static final String ITEM_PATH_KEY = "item";
-    public static final String FETCH = "fetch";
-    public static final String PIPE = "|";
 
     private final FileFetcher fileFetcher;
     private final ObjectMapper objectMapper;
+    private final FunctionFactory functionFactory;
 
-    public InputFormatHandlerCustomJSON(FileFetcher fileFetcher, ObjectMapper objectMapper) {
+    public InputFormatHandlerCustomJSON(FileFetcher fileFetcher, ObjectMapper objectMapper, FunctionFactory functionFactory) {
         this.fileFetcher = fileFetcher;
         this.objectMapper = objectMapper;
+        this.functionFactory = functionFactory;
 
         Configuration.setDefaults(new Configuration.Defaults() {
 
@@ -110,7 +107,7 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
                         itemMap.put(s, text);
                     }
                 } catch (Exception e) {
-                    throw new ProcessingException(String.format("Failed to handle mapping for field '%s': %s", s, e.getMessage()), e);
+                    throw new ProcessingException(reference, String.format("Failed to handle mapping for field '%s': %s", s, e.getMessage()), e);
                 }
             });
 
@@ -156,7 +153,7 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
 
     private String getPath(SourceReference reference, String key) {
         LinkedHashMap<String, Object> mapping = getMapping(reference);
-        return Optional.ofNullable(mapping.get(key)).map(o -> (String) o).orElse(null);
+        return (String) Optional.ofNullable(mapping.get(key)).orElse("");
     }
 
     private Map<String, List<Function<String, String>>> getPaths(SourceReference reference, String key, URL baseUrl) {
@@ -164,7 +161,15 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
         Map<String, String> stringStringMap = (Map<String, String>) mapping.get(key);
         Map<String, List<Function<String, String>>> paths = new LinkedHashMap<>();
         if (stringStringMap != null) {
-            stringStringMap.forEach((key1, value) -> paths.put(key1, asFunctions(value, baseUrl)));
+            try {
+                for (Map.Entry<String, String> entry : stringStringMap.entrySet()) {
+                    String key1 = entry.getKey();
+                    String value = entry.getValue();
+                    paths.put(key1, functionFactory.asFunctions(value, baseUrl));
+                }
+            } catch (Exception e) {
+                throw new ProcessingException(reference, "Could not parse json handling for key " + key);
+            }
         }
         return paths;
     }
@@ -177,32 +182,5 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
         return mapping;
     }
 
-    /**
-     * Returns a list of functions that pipe the input and throw exceptions
-     *
-     * @param value   mapping entry
-     * @param baseUrl optional base url
-     */
-    private List<Function<String, String>> asFunctions(final String value, final URL baseUrl) {
-        if (value == null || value.isEmpty())
-            return new ArrayList<>();
 
-        return Arrays.stream(value.split("\\" + PIPE)).map(path -> {
-            if (path.trim().equalsIgnoreCase(FETCH)) {
-                return (Function<String, String>) s -> fileFetcher.get(s, baseUrl);
-            }
-
-            return (Function<String, String>) s -> {
-                if (s == null) return null;
-                JsonNode parsed = JsonPath.parse(s).read(path.trim());
-                if (parsed instanceof ArrayNode) {
-                    List<String> values = new ArrayList<>();
-                    parsed.elements().forEachRemaining(stringJsonNodeEntry -> values.add(stringJsonNodeEntry.textValue()));
-                    return String.join(COLLECTION_DELIMITER, values);
-                }
-                return parsed.textValue();
-            };
-
-        }).collect(Collectors.toList());
-    }
 }

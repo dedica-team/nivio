@@ -28,7 +28,11 @@ class InputFormatHandlerCustomJSONTest {
     public void setup() {
         IntegrationTestSupport integrationTestSupport = new IntegrationTestSupport();
         factory = integrationTestSupport.getSeedConfigurationFactory();
-        handler = new InputFormatHandlerCustomJSON(integrationTestSupport.getFileFetcher(), new ObjectMapper());
+        handler = new InputFormatHandlerCustomJSON(
+                integrationTestSupport.getFileFetcher(),
+                new ObjectMapper(),
+                new FunctionFactory(integrationTestSupport.getFileFetcher())
+        );
         file = new File(RootPath.get() + "/src/test/resources/example/example_json.yml");
         defaultLandscapeDTO = new LandscapeDescription("test");
     }

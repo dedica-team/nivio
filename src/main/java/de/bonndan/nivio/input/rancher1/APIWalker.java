@@ -40,25 +40,26 @@ class APIWalker {
     public List<ItemDescription> getDescriptions() {
 
         String projectName = (String) reference.getProperty("projectName");
-        Project project = getProject(projectName)
-                .orElseThrow(() -> new ProcessingException(String.format("Error while reading rancher API: project %s not found", projectName)));
+        Project project = getProject(reference, projectName)
+                .orElseThrow(() -> new ProcessingException(reference, String.format("Error while reading rancher API: project %s not found", projectName)));
         String accountId = project.getId();
 
-        Map<String, Stack> stacks = getStacks(accountId);
-        List<Service> services = getServices(accountId);
-        LOGGER.info("Found {} services in project {}", services.size(), project.getName());
+        try {
+            Map<String, Stack> stacks = getStacks(accountId);
+            List<Service> services = getServices(accountId);
+            LOGGER.info("Found {} services in project {}", services.size(), project.getName());
+            return asDescriptions(services, stacks);
 
-        return asDescriptions(services, stacks);
+        } catch (IOException e) {
+            throw new ProcessingException(reference, String.format("Failed to load data: %s", e.getMessage()), e);
+        }
     }
 
-    private List<Service> getServices(final String accountId) {
+    private List<Service> getServices(final String accountId) throws IOException {
         ProjectServices service = rancher.type(ProjectServices.class);
         TypeCollection<Service> body;
-        try {
-            body = service.getServices(accountId).execute().body();
-        } catch (IOException e) {
-            throw new ProcessingException(String.format("Source ref: %s: Could not load services from Rancher API", reference.getUrl()), e);
-        }
+        body = service.getServices(accountId).execute().body();
+
 
         if (body == null) {
             LOGGER.warn("No services found in project {}", accountId);
@@ -80,16 +81,13 @@ class APIWalker {
         return service.getInstanceIds() != null && !service.getInstanceIds().isEmpty();
     }
 
-    private Map<String, Stack> getStacks(String accountId) {
+    private Map<String, Stack> getStacks(String accountId) throws IOException {
         ProjectStacks stackService = rancher.type(ProjectStacks.class);
         Map<String, Stack> stacks = new HashMap<>();
 
         TypeCollection<Stack> body;
-        try {
-            body = stackService.getStacks(accountId).execute().body();
-        } catch (IOException e) {
-            throw new ProcessingException("Could not access Rancher API", e);
-        }
+
+        body = stackService.getStacks(accountId).execute().body();
 
         if (body == null) {
             LOGGER.warn("Could not load stacks from project {}", accountId);
@@ -101,18 +99,18 @@ class APIWalker {
         return stacks;
     }
 
-    private Optional<Project> getProject(String projectName) {
+    private Optional<Project> getProject(SourceReference reference, String projectName) {
         ProjectService projectService = rancher.type(ProjectService.class);
         List<Project> projects;
         try {
             Response<TypeCollection<Project>> response = projectService.list().execute();
             TypeCollection<Project> body = response.body();
             if (!response.isSuccessful() || body == null) {
-                throw new ProcessingException("No projects found: code " + response.code());
+                throw new ProcessingException(reference, "No projects found: code " + response.code());
             }
             projects = body.getData();
         } catch (IOException | NullPointerException e) {
-            throw new ProcessingException("Could not load projects" + projectService.toString(), e);
+            throw new ProcessingException(reference, "Could not load projects" + projectService.toString(), e);
         }
         return projects.stream()
                 .filter(project -> StringUtils.isEmpty(projectName) || project.getName().equals(projectName))

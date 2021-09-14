@@ -32,6 +32,10 @@ public class ProcessingErrorEvent extends ProcessingEvent {
         return exception.getLandscapeDescription();
     }
 
+    public String getSourceReference() {
+        return exception.getSourceReference() == null ? null : exception.getSourceReference().getUrl().toString();
+    }
+
     private static class PLS extends JsonSerializer<LandscapeDescription> {
         @Override
         public void serialize(LandscapeDescription value, JsonGenerator gen, SerializerProvider serializers) throws IOException {

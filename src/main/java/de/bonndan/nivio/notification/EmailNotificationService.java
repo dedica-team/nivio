@@ -13,14 +13,14 @@ import org.springframework.util.StringUtils;
 
 
 @Service
-public class NotificationService implements ApplicationListener<ProcessingErrorEvent> {
+public class EmailNotificationService implements ApplicationListener<ProcessingErrorEvent> {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(NotificationService.class);
+    private static final Logger logger = LoggerFactory.getLogger(EmailNotificationService.class);
 
     private final JavaMailSender emailSender;
 
-    public NotificationService(JavaMailSender sender) {
+    public EmailNotificationService(JavaMailSender sender) {
         this.emailSender = sender;
     }
 
@@ -39,7 +39,7 @@ public class NotificationService implements ApplicationListener<ProcessingErrorE
         try {
             emailSender.send(message);
         } catch (Exception ex) {
-            logger.warn("Could not send email '" + subject + "' in landscape " + exception.getLandscapeDescription());
+            logger.warn("Could not send email '{}' in landscape {}", subject, exception.getLandscapeDescription());
         }
 
         logger.info("Sent mail to user ");

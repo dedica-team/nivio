@@ -28,10 +28,6 @@ public class LandscapeDescription implements ComponentDescription {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeDescription.class);
 
-    public static final LandscapeDescription NONE = new LandscapeDescription(
-            "unknown", "", ""
-    );
-
     @NonNull
     @Schema(required = true,
             description = "Immutable unique identifier. Maybe use an URN.",

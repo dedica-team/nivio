@@ -74,7 +74,7 @@ public class SourceReference extends AbstractLink {
         Optional<String> original = URLFactory.getOriginalRelativePath(this.getUrl());
         original.ifPresent(originalRelativePath -> {
             if (config.getBaseUrl() == null) {
-                throw new ProcessingException(String.format("Config has no base url, cannot resolve relative path %s", originalRelativePath));
+                throw new ProcessingException(this, String.format("Config has no base url, cannot resolve relative path %s", originalRelativePath));
             }
 
             try {
