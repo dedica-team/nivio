@@ -73,7 +73,7 @@ class PathFinder {
         PathTile currentStep = start;
         open.add(0, currentStep);
 
-        float G;
+        int G;
 
         int depth = 0;
 

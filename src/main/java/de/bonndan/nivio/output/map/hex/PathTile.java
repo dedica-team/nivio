@@ -11,17 +11,32 @@ import java.util.Objects;
  */
 class PathTile {
 
+    /**
+     * Costs for moving through an item
+     */
+    public static final int ITEM_PENALTY = 1000;
+
+    /**
+     * costs for moving on group arean
+     */
+    public static final int GROUP_PENALTY = 3;
+
+    /**
+     * Regular movement costs.
+     */
+    public static final int BASE_COSTS = 1;
+
     final Hex hex;
     PathTile parent;
 
-    float moveCosts = 0f;
-    float sumCosts;
-    float heuristicCosts;
+    int moveCosts = 0;
+    int sumCosts;
+    int heuristicCosts;
 
     public PathTile(@NonNull final Hex hex) {
         this.hex = Objects.requireNonNull(hex);
-        sumCosts = 0f;
-        heuristicCosts = 0f;
+        sumCosts = 0;
+        heuristicCosts = 0;
     }
 
     /**
@@ -49,18 +64,18 @@ class PathTile {
      * @param from The tile from which we move to this tile
      * @return The move cost from "from" to "this"
      */
-    public float calcMoveCostsFrom(PathTile from) {
-        float cost = 1f;
+    public int calcMoveCostsFrom(PathTile from) {
 
         if (this.hex.item != null) {
-            cost *= 10f;
-        } else {
-            if (this.hex.group != null) {
-                cost *= 3f;
-            }
+            return ITEM_PENALTY + from.moveCosts;
         }
 
-        return cost + from.moveCosts;
+        if (this.hex.group != null) {
+            return GROUP_PENALTY + from.moveCosts;
+        }
+
+
+        return BASE_COSTS + from.moveCosts;
     }
 
     @Override
