@@ -85,7 +85,6 @@ class InputFormatHandlerCustomJSONTest {
 
         //then
         ItemIndex<ItemDescription> itemDescriptions = landscapeDescriptions.get(1).getItemDescriptions();
-        Set<ItemDescription> items = itemDescriptions.all();
         ItemDescription asd = itemDescriptions.findOneBy("asd", null);
         assertThat(asd).isNotNull();
         assertThat(asd.getLabel("nivio.relations.upstream")).isEqualTo("foo,bar");
