@@ -18,6 +18,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -117,7 +118,10 @@ public class OpenAPILinkHandler implements ExternalLinkHandler {
         iface.setDescription(op.getDescription());
         iface.setPath(path);
         if (op.getParameters() != null) {
-            iface.setParameters(op.getParameters().stream().map(Parameter::getName).collect(Collectors.joining(", ")));
+            iface.setParameters(op.getParameters().stream()
+                    .filter(Objects::nonNull)
+                    .map(Parameter::getName)
+                    .collect(Collectors.joining(", ")));
         }
         if (op.getRequestBody() != null && op.getRequestBody().get$ref() != null) {
             iface.setPayload(op.getRequestBody().get$ref());
