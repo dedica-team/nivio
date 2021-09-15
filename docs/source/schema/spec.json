@@ -181,6 +181,11 @@
             },
             "description" : "Key-value pair labels for an item."
           },
+          "layer" : {
+            "type" : "string",
+            "description" : "The technical layer",
+            "example" : "infrastructure"
+          },
           "lifecycle" : {
             "type" : "string",
             "description" : "The lifecycle state of an item.",

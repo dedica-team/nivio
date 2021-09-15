@@ -63,6 +63,11 @@ List of configuration sources. Handled in the given order, latter extend/overwri
      - Key-value pair labels for an item.
      - optional, defaults to null
      - null
+   * - layer
+     - String
+     - The technical layer
+     - optional, defaults to null
+     - infrastructure
    * - lifecycle
      - String
      - The lifecycle state of an item.
