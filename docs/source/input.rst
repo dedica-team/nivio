@@ -90,9 +90,16 @@ components using JSONPath, a query language to traverse JSON objects and select 
          item:
            identifier: "$.id"
            endOfLife: "$.end_of_life.date"
+           name: '$.moreThanAName|find "([\\w\\s]*),"'
            nivio.link.homepage: "$.a_named_link"
            nivio.relations.inbound: "$.@dependencies.@upstream|fetch|$.items[*].id"
            nivio.relations.providers: "$.infra|fetch|$.items[*].id"
+
+The folling mapping steps are supported:
+
+* **JsonPath**. Simply add the path expression. Note that the root for items is the root of the assigned JSON subnode. For more info on JsonPath, see https://support.smartbear.com/alertsite/docs/monitors/api/endpoint/jsonpath.html.
+* **fetch** an URL, starting with the keyword _fetch_
+* **find** a subtext using regular expressions. starting with the keyword _find_. Make sure to put lines containing regexes in **single quotes** and surround the pattern with **double quotes** (a CSV parser is used in combination with a YAML parser, so this is the combination that works).
 
 
 Reading from GraphViz dot files

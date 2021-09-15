@@ -2,9 +2,10 @@ package de.bonndan.nivio.input;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import org.springframework.lang.Nullable;
 
 /**
- * Generic exception tied to a landscape.
+ * Generic exception tied to a {@link LandscapeDescription} or {@link SourceReference}.
  *
  *
  *
@@ -12,37 +13,39 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 public class ProcessingException extends RuntimeException {
 
     private final LandscapeDescription landscapeDescription;
+    private final SourceReference sourceReference;
 
-    public ProcessingException(LandscapeDescription landscapeDescription, String message) {
+    public ProcessingException(final LandscapeDescription landscapeDescription, final String message) {
         super(message);
         this.landscapeDescription = landscapeDescription;
-    }
-
-    public ProcessingException(String message) {
-        super(message);
-        this.landscapeDescription = LandscapeDescription.NONE;
+        this.sourceReference = null;
     }
 
     public ProcessingException(String message, Throwable throwable) {
         super(message, throwable);
-        this.landscapeDescription = LandscapeDescription.NONE;
+        this.landscapeDescription = null;
+        this.sourceReference = null;
     }
 
-    public ProcessingException(LandscapeDescription landscape, String message, Throwable throwable) {
+    public ProcessingException(final LandscapeDescription landscape, final String message, Throwable throwable) {
         super(message, throwable);
         this.landscapeDescription = landscape;
+        this.sourceReference = null;
     }
 
-    public static ProcessingException of(LandscapeDescription landscape, Throwable throwable) {
-        if (throwable instanceof ProcessingException)
-            return (ProcessingException) throwable;
-
-        if (throwable instanceof RuntimeException && throwable.getCause() instanceof ProcessingException)
-            return (ProcessingException) throwable.getCause();
-
-        return new ProcessingException(landscape, throwable.getMessage(), throwable);
+    public ProcessingException(final SourceReference sourceReference, final String message) {
+        super(message);
+        this.sourceReference = sourceReference;
+        this.landscapeDescription = null;
     }
 
+    public ProcessingException(final SourceReference reference, final String message, Exception e) {
+        super(message,e);
+        this.sourceReference = reference;
+        this.landscapeDescription = null;
+    }
+
+    @Nullable
     public LandscapeDescription getLandscapeDescription() {
         return landscapeDescription;
     }
@@ -50,5 +53,10 @@ public class ProcessingException extends RuntimeException {
     @JsonValue
     public String getMessage() {
         return super.getMessage();
+    }
+
+    @Nullable
+    public SourceReference getSourceReference() {
+        return sourceReference;
     }
 }

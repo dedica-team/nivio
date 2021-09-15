@@ -49,7 +49,7 @@ public class InputFormatHandlerFactory {
                     reference.getFormat(),
                     StringUtils.collectionToDelimitedString(knownFormats, ", ")
             );
-            throw new ProcessingException(msg);
+            throw new ProcessingException(reference, msg);
         }
 
         //last one wins

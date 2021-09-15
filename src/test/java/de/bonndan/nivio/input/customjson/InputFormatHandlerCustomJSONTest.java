@@ -29,7 +29,11 @@ class InputFormatHandlerCustomJSONTest {
     public void setup() {
         IntegrationTestSupport integrationTestSupport = new IntegrationTestSupport();
         factory = integrationTestSupport.getSeedConfigurationFactory();
-        handler = new InputFormatHandlerCustomJSON(integrationTestSupport.getFileFetcher(), new ObjectMapper());
+        handler = new InputFormatHandlerCustomJSON(
+                integrationTestSupport.getFileFetcher(),
+                new ObjectMapper(),
+                new FunctionFactory(integrationTestSupport.getFileFetcher())
+        );
         file = new File(RootPath.get() + "/src/test/resources/example/example_json.yml");
         defaultLandscapeDTO = new LandscapeDescription("test");
     }
@@ -52,6 +56,7 @@ class InputFormatHandlerCustomJSONTest {
         ItemDescription asd = other.getItemDescriptions().findOneBy("asd", null);
         assertThat(asd).isNotNull();
         assertThat(asd.getIdentifier()).isEqualTo("asd");
+        assertThat(asd.getName()).isEqualTo("John Doe");
         assertThat(asd.getLabel("endoflife")).isEqualTo("2022-12-31T00:00:00+01:00");
         assertThat(asd.getLabel("nivio.link.homepage")).isEqualTo("https://foo.bar.com");
     }

@@ -45,10 +45,10 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
 
         Map<String, Object> mapping = (Map<String, Object>) reference.getProperty("mapping");
         if (mapping == null) {
-            throw new ProcessingException("'mapping' must be present in configuration.");
+            throw new ProcessingException(reference, "'mapping' must be present in configuration.");
         }
         if (!mapping.containsKey(IDENTIFIER_KEY)) {
-            throw new ProcessingException(String.format("'%s' must be present in configured mapping.", IDENTIFIER_KEY));
+            throw new ProcessingException(reference, String.format("'%s' must be present in configured mapping.", IDENTIFIER_KEY));
         }
 
         reader.iterator().forEachRemaining(strings -> {
