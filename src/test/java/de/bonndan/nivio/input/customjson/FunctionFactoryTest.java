@@ -62,6 +62,7 @@ class FunctionFactoryTest {
 
         assertThat(functions).hasSize(1);
         Function<String, String> find = functions.get(0);
+
         String s = find.apply("{\"id\": 1}");
         assertThat(s).isEqualTo("1");
     }

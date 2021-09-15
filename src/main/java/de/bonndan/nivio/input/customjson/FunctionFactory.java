@@ -2,7 +2,14 @@ package de.bonndan.nivio.input.customjson;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NumericNode;
+import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import de.bonndan.nivio.input.FileFetcher;
@@ -12,10 +19,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,6 +45,28 @@ public class FunctionFactory {
         this.fileFetcher = fileFetcher;
         //escape char is backslash
         parser = new CSVParserBuilder().withSeparator('|').withQuoteChar(QUOTATION_CHAR).build();
+
+        //configures json path
+        Configuration.setDefaults(new Configuration.Defaults() {
+
+            private final JsonProvider jsonProvider = new JacksonJsonNodeJsonProvider();
+            private final MappingProvider mappingProvider = new JacksonMappingProvider();
+
+            @Override
+            public JsonProvider jsonProvider() {
+                return jsonProvider;
+            }
+
+            @Override
+            public MappingProvider mappingProvider() {
+                return mappingProvider;
+            }
+
+            @Override
+            public Set<Option> options() {
+                return EnumSet.noneOf(Option.class);
+            }
+        });
     }
 
     /**
@@ -89,6 +115,9 @@ public class FunctionFactory {
                     return String.join(COLLECTION_DELIMITER, values);
                 }
 
+                if (parsed instanceof NumericNode) {
+                    return ((NumericNode)parsed).numberValue().toString();
+                }
                 return ((JsonNode) parsed).textValue();
             }
 
