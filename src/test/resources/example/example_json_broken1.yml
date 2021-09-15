@@ -6,4 +6,4 @@ sources:
     mapping:
       items: "$.items"
       item:
-        identifier: "/foo%$"
+        identifier: "/foo%$."
