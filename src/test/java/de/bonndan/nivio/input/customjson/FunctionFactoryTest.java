@@ -66,4 +66,15 @@ class FunctionFactoryTest {
         String s = find.apply("{\"id\": 1}");
         assertThat(s).isEqualTo("1");
     }
+
+    @Test
+    void worksWithPathNotFound() {
+        List<Function<String, String>> functions = functionFactory.asFunctions("$.id", null);
+
+        assertThat(functions).hasSize(1);
+        Function<String, String> find = functions.get(0);
+
+        String s = find.apply("{\"foo\": 1}");
+        assertThat(s).isEqualTo("");
+    }
 }

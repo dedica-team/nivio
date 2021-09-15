@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.NumericNode;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
@@ -13,6 +14,8 @@ import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import de.bonndan.nivio.input.FileFetcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -33,6 +36,8 @@ import static de.bonndan.nivio.input.LabelToFieldResolver.COLLECTION_DELIMITER;
  */
 @Component
 public class FunctionFactory {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FunctionFactory.class);
 
     public static final String FETCH = "fetch";
     public static final String FIND = "find";
@@ -90,7 +95,7 @@ public class FunctionFactory {
                 .map(String::trim)
                 .map(step -> {
                     if (step.equalsIgnoreCase(FETCH)) {
-                        return (Function<String, String>) s -> fileFetcher.get(s, baseUrl);
+                        return getFileFetcherFunction(baseUrl);
                     }
 
                     if (step.toLowerCase(Locale.ROOT).startsWith(FIND)) {
@@ -102,12 +107,24 @@ public class FunctionFactory {
                 .collect(Collectors.toList());
     }
 
+    private Function<String, String> getFileFetcherFunction(URL baseUrl) {
+        return s -> {
+            LOGGER.info("fetching {} with base url {}", s, baseUrl);
+            return fileFetcher.get(s, baseUrl);
+        };
+    }
+
     private Function<String, String> getJsonPathFunction(String step) {
         JsonPath.compile(step.trim());
         return s -> {
-            if (s == null) return null;
+            if (s == null) return "";
+            Object parsed;
+            try {
+                 parsed = JsonPath.parse(s).read(step.trim());
+            } catch (PathNotFoundException e) {
+                return "";
+            }
 
-            Object parsed = JsonPath.parse(s).read(step.trim());
             if (parsed instanceof JsonNode) {
                 if (parsed instanceof ArrayNode) {
                     List<String> values = new ArrayList<>();
@@ -120,7 +137,6 @@ public class FunctionFactory {
                 }
                 return ((JsonNode) parsed).textValue();
             }
-
             //turns out that can be Integer etc., too.
             return String.valueOf(parsed);
         };
@@ -136,6 +152,7 @@ public class FunctionFactory {
         // we do not trim a possible trailing
         Pattern pattern = Pattern.compile(regex);
         return s -> {
+            if (!StringUtils.hasLength(s)) return "";
             Matcher matcher = pattern.matcher(s);
             if (matcher.find()) {
                 return matcher.group(1);
