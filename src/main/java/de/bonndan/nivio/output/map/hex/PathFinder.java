@@ -166,8 +166,10 @@ class PathFinder {
             if (path.contains(tileBetween)) { //already contains the parent
                 throw new IllegalStateException("Path already contains the parent.");
             }
+
+            //we accept that items can be crossed, although it is very unpleasant
             if (!dst.equals(tileBetween) && !start.equals(tileBetween) && tileBetween.hex.item != null) {
-                throw new IllegalStateException(String.format("Path from %s to %s runs through item %s!", start, dst, tileBetween));
+                LOGGER.error("Path from {} to {} runs through item {}!", start, dst, tileBetween);
             }
 
             path.add(tileBetween);
