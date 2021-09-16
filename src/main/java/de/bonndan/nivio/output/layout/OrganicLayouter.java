@@ -47,16 +47,24 @@ public class OrganicLayouter implements Layouter {
         Point2D.Double margin = getMargins(layoutedLandscape);
         layoutedLandscape.getChildren().forEach(groupBounds -> {
 
-            LOGGER.debug("group {} offset {} {}", groupBounds.getComponent().getIdentifier(), groupBounds.getX(), groupBounds.getY());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("group {} offset {} {}", groupBounds.getComponent().getIdentifier(), groupBounds.getX(), groupBounds.getY());
+            }
             groupBounds.setX(groupBounds.getX() + margin.x);
             groupBounds.setY(groupBounds.getY() + margin.y);
-            LOGGER.debug("corrected group {} offset {} {}", groupBounds.getComponent().getIdentifier(), groupBounds.getX(), groupBounds.getY());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("corrected group {} offset {} {}", groupBounds.getComponent().getIdentifier(), groupBounds.getX(), groupBounds.getY());
+            }
 
             groupBounds.getChildren().forEach(itemBounds -> {
-                LOGGER.debug("original item pos {} {}", itemBounds.getX(), itemBounds.getY());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("original item pos {} {}", itemBounds.getX(), itemBounds.getY());
+                }
                 itemBounds.setX(itemBounds.getX() + groupBounds.getX());
                 itemBounds.setY(itemBounds.getY() + groupBounds.getY());
-                LOGGER.debug("item pos with group offset: {} {}", itemBounds.getX(), itemBounds.getY());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("item pos with group offset: {} {}", itemBounds.getX(), itemBounds.getY());
+                }
             });
         });
     }
@@ -76,16 +84,16 @@ public class OrganicLayouter implements Layouter {
         int marginY = 2 * Hex.HEX_SIZE;
 
         if (min.x < 0) {
-            LOGGER.debug("fixing minX by {}", min.x * -1);
+            if (LOGGER.isDebugEnabled()) LOGGER.debug("fixing minX by {}", min.x * -1);
             marginX += min.x * -1;
         }
 
         if (min.y < 0) {
-            LOGGER.debug("fixing minY by {}", min.y * -1);
+            if (LOGGER.isDebugEnabled()) LOGGER.debug("fixing minY by {}", min.y * -1);
             marginY += min.y * -1;
         }
 
-        LOGGER.debug("Map shift x {} y {} ", marginX, marginY);
+        if (LOGGER.isDebugEnabled()) LOGGER.debug("Map shift x {} y {} ", marginX, marginY);
         return new Point2D.Double(marginX, marginY);
     }
 
