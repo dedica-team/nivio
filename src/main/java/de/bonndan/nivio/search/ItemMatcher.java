@@ -4,9 +4,11 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Layer;
 import de.bonndan.nivio.util.URLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
@@ -15,8 +17,6 @@ import java.util.Optional;
 
 /**
  * Expression to search for items in a landscape.
- *
- *
  */
 public class ItemMatcher {
 
@@ -25,8 +25,6 @@ public class ItemMatcher {
     private String landscape;
     private String group;
     private String item;
-
-    public static final String SEPARATOR = "/";
 
     public ItemMatcher() {
     }
@@ -65,11 +63,11 @@ public class ItemMatcher {
         }
 
         if (URLFactory.getURL(string).isPresent()) {
-            LOGGER.debug(String.format("ItemMatcher does not work with URLs: %s", string));
+            LOGGER.warn("ItemMatcher does not work with URLs: {}", string);
             return Optional.empty();
         }
 
-        String[] split = string.split(SEPARATOR);
+        String[] split = string.split(FullyQualifiedIdentifier.SEPARATOR);
         if (split.length == 1) {
             return Optional.of(ItemMatcher.build(null, null, split[0]));
         }
@@ -89,6 +87,7 @@ public class ItemMatcher {
     public static ItemMatcher forTarget(Item item) {
         return build("", item.getGroup(), item.getIdentifier());
     }
+
     public static ItemMatcher forTarget(FullyQualifiedIdentifier fqi) {
         return build(fqi.getLandscape(), fqi.getGroup(), fqi.getItem());
     }
@@ -100,17 +99,18 @@ public class ItemMatcher {
     @Override
     public String toString() {
 
-        if (landscape == null)
+        if (landscape == null) {
             return "Detached service " + super.toString();
+        }
 
         StringBuilder b = new StringBuilder().append(landscape);
-        if (!StringUtils.isEmpty(landscape))
-            b.append(SEPARATOR);
+        if (StringUtils.hasLength(landscape))
+            b.append(FullyQualifiedIdentifier.SEPARATOR);
 
-        if (!StringUtils.isEmpty(group))
-            b.append(group).append(SEPARATOR);
-        else if (!StringUtils.isEmpty(landscape)) {
-            b.append(SEPARATOR);
+        if (StringUtils.hasLength(group))
+            b.append(group).append(FullyQualifiedIdentifier.SEPARATOR);
+        else if (StringUtils.hasLength(landscape)) {
+            b.append(FullyQualifiedIdentifier.SEPARATOR);
         }
 
         b.append(item);
@@ -131,31 +131,31 @@ public class ItemMatcher {
     /**
      * Compares landscape items by landscape, group and identifier (ignoring case).
      *
-     * @param fullyQualifiedIdentifier other items FullyQualifiedIdentifier
+     * @param other other items FullyQualifiedIdentifier
      * @return true if group and identifier match (if group is null, it is not taken into account)
      */
-    public boolean isSimilarTo(FullyQualifiedIdentifier fullyQualifiedIdentifier) {
+    public boolean isSimilarTo(@NonNull final FullyQualifiedIdentifier other) {
 
         boolean equalsLandscape;
-        if (StringUtils.isEmpty(landscape) || StringUtils.isEmpty(fullyQualifiedIdentifier.getLandscape())) {
+        if (!StringUtils.hasLength(landscape) || !StringUtils.hasLength(other.getLandscape())) {
             equalsLandscape = true; //ignoring landscape because not set
         } else {
-            equalsLandscape = landscape.equalsIgnoreCase(fullyQualifiedIdentifier.getLandscape());
+            equalsLandscape = landscape.equalsIgnoreCase(other.getLandscape());
         }
 
         boolean equalsGroup;
-        if (StringUtils.isEmpty(group) || StringUtils.isEmpty(fullyQualifiedIdentifier.getGroup()))
+        if (!StringUtils.hasLength(group) || !StringUtils.hasLength(other.getGroup()))
             equalsGroup = true;
-        else if (group.equalsIgnoreCase(Group.COMMON) && StringUtils.isEmpty(fullyQualifiedIdentifier.getGroup()))
+        else if ((group.equalsIgnoreCase(Layer.domain.name()) || group.equalsIgnoreCase(Layer.infrastructure.name())) && !StringUtils.hasLength(other.getGroup()))
             equalsGroup = true;
         else
-            equalsGroup = this.group.equalsIgnoreCase(fullyQualifiedIdentifier.getGroup());
+            equalsGroup = this.group.equalsIgnoreCase(other.getGroup());
 
         boolean equalsItem;
-        if (StringUtils.isEmpty(this.item) || StringUtils.isEmpty(fullyQualifiedIdentifier.getItem()))
+        if (!StringUtils.hasLength(this.item) || !StringUtils.hasLength(other.getItem()))
             equalsItem = true;
         else
-            equalsItem = this.item.equalsIgnoreCase(fullyQualifiedIdentifier.getItem());
+            equalsItem = this.item.equalsIgnoreCase(other.getItem());
 
         return equalsLandscape && equalsGroup && equalsItem;
     }

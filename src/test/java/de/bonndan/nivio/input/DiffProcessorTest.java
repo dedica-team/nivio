@@ -2,10 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeFactory;
+import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -51,7 +48,7 @@ class DiffProcessorTest {
         items1.add(new ItemDescription("c"));
 
         ArrayList<Item> existing = new ArrayList<>();
-        existing.add(getTestItem(Group.COMMON, "c", landscape));
+        existing.add(getTestItem(Layer.domain.name(), "c", landscape));
 
         List<ItemDescription> added = DiffProcessor.added(items1, existing);
         assertEquals(2, added.size());
@@ -83,9 +80,9 @@ class DiffProcessorTest {
         items1.add(new ItemDescription("c"));
 
         ArrayList<Item> items2 = new ArrayList<>();
-        items2.add(getTestItem(Group.COMMON, "a"));
-        items2.add(getTestItem(Group.COMMON, "b"));
-        items2.add(getTestItem(Group.COMMON, "c"));
+        items2.add(getTestItem(Layer.domain.name(), "a"));
+        items2.add(getTestItem(Layer.domain.name(), "b"));
+        items2.add(getTestItem(Layer.domain.name(), "c"));
 
         List<ItemDescription> added = DiffProcessor.added(items1, items2);
         assertEquals(0, added.size());

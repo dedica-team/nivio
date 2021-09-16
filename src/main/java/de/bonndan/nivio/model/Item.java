@@ -36,6 +36,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
 
     private final String description;
 
+    @NonNull
     private final String group;
 
     private final String type;
@@ -138,6 +139,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         return links;
     }
 
+    @NonNull
     public String getGroup() {
         return group;
     }

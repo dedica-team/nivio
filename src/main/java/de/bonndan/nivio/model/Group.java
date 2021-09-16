@@ -21,12 +21,6 @@ import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
  */
 public class Group implements Component, Labeled, Linked, Assessable {
 
-    /**
-     * Default group identifier (items are assigned to this group if no group is given
-     */
-    @NonNull
-    public static final String COMMON = "common";
-
     @NonNull
     private final Map<String, Link> links = new HashMap<>();
 

@@ -61,7 +61,7 @@ public class ItemFactory {
         builder.withLabels(description.getLabels());
 
         if (!StringUtils.hasLength(builder.getGroup())) {
-            builder.withGroup(Group.COMMON);
+            builder.withGroup(Layer.of(description.getLayer()).name());
         }
         return builder.build();
     }

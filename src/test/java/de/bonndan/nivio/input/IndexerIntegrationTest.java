@@ -301,7 +301,7 @@ class IndexerIntegrationTest {
     @Test
     void labelRelations() {
         Landscape landscape = index("/src/test/resources/example/example_label_relations.yml");
-        assertEquals(2, landscape.getGroups().size()); //common group is present by default
+        assertEquals(3, landscape.getGroups().size()); //common group is present by default
         assertEquals(2, landscape.getItems().all().size());
 
         Item foo = landscape.getItems().all().iterator().next();

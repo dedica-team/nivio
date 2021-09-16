@@ -45,7 +45,7 @@ public class GroupedBy {
      * @param item     service to add
      */
     private void add(String groupKey, Item item) {
-        String key = !hasLength(groupKey) ? Group.COMMON : groupKey;
+        String key = !hasLength(groupKey) ? item.getLayer() : groupKey;
         groups.computeIfAbsent(key, s -> new ArrayList<>()).add(item);
     }
 }

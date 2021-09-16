@@ -22,7 +22,7 @@ class SVGItemTest {
     @BeforeEach
     void setup() {
         // item has no group
-        foo = ItemFactory.getTestItem( Group.COMMON, "foo");
+        foo = ItemFactory.getTestItem( Layer.domain.name(), "foo");
     }
 
     @Test
@@ -30,7 +30,7 @@ class SVGItemTest {
     void regression184() {
 
         SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo), List.of(), new Point2D.Double(1, 1));
-        assertThat(svgItem.render().render()).contains("test/common/foo");
+        assertThat(svgItem.render().render()).contains("test/domain/foo");
     }
 
     @Test

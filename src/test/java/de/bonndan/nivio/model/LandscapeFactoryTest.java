@@ -30,7 +30,7 @@ class LandscapeFactoryTest {
     }
 
     @Test
-    public void create() {
+    void create() {
         Landscape landscape = LandscapeFactory.createFromInput(description);
         assertNotNull(landscape);
         assertEquals(description.getIdentifier(), landscape.getIdentifier());
@@ -38,21 +38,22 @@ class LandscapeFactoryTest {
     }
 
     @Test
-    public void createWithMinIdentifier() {
+    void createWithMinIdentifier() {
         Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
         assertNotNull(landscape);
     }
 
     @Test
-    public void createAddsCommonGroup() {
+    void createAddsDefaultGroups() {
         Landscape landscape = LandscapeFactory.createFromInput(description);
         assertNotNull(landscape);
-        assertEquals(1, landscape.getGroups().size());
-        assertNotNull(landscape.getGroup(Group.COMMON));
+        assertEquals(2, landscape.getGroups().size());
+        assertNotNull(landscape.getGroup(Layer.domain.name()));
+        assertNotNull(landscape.getGroup(Layer.infrastructure.name()));
     }
 
     @Test
-    public void createFromInput() {
+    void createFromInput() {
         Landscape landscape = LandscapeFactory.createFromInput(description);
 
         assertEquals(description.getContact(), landscape.getContact());
@@ -60,14 +61,14 @@ class LandscapeFactoryTest {
         assertEquals(description.getOwner(), landscape.getOwner());
         assertEquals(description.getDescription(), landscape.getDescription());
         assertEquals(description.getName(), landscape.getName());
-        assertEquals(1,  landscape.getLabels().size());
-        assertEquals("two",  landscape.getLabels().get("one"));
-        assertEquals(1,  landscape.getLinks().size());
-        assertEquals("https://dedica.team",  landscape.getLinks().get("home").getHref().toString());
+        assertEquals(1, landscape.getLabels().size());
+        assertEquals("two", landscape.getLabels().get("one"));
+        assertEquals(1, landscape.getLinks().size());
+        assertEquals("https://dedica.team", landscape.getLinks().get("home").getHref().toString());
     }
 
     @Test
-    public void recreateFromExisting() {
+    void recreateFromExisting() {
 
         Landscape existing = LandscapeBuilder.aLandscape()
                 .withIdentifier(description.getIdentifier())
@@ -87,10 +88,10 @@ class LandscapeFactoryTest {
         assertEquals(description.getOwner(), landscape.getOwner());
         assertEquals(description.getDescription(), landscape.getDescription());
         assertEquals(description.getName(), landscape.getName());
-        assertEquals(1,  landscape.getLabels().size());
-        assertEquals("two",  landscape.getLabels().get("one"));
-        assertEquals(1,  landscape.getLinks().size());
-        assertEquals("https://dedica.team",  landscape.getLinks().get("home").getHref().toString());
+        assertEquals(1, landscape.getLabels().size());
+        assertEquals("two", landscape.getLabels().get("one"));
+        assertEquals(1, landscape.getLinks().size());
+        assertEquals("https://dedica.team", landscape.getLinks().get("home").getHref().toString());
     }
 
     @Test

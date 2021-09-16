@@ -1,6 +1,5 @@
 package de.bonndan.nivio.model;
 
-import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import de.bonndan.nivio.assessment.Assessable;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +12,8 @@ import java.util.Set;
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class ItemTest {
 
@@ -29,7 +29,7 @@ class ItemTest {
 
         Item s3 = getTestItem("g2", "a", landscape);
 
-        Item s4 = getTestItem(Group.COMMON, "a", landscape);
+        Item s4 = getTestItem(Layer.domain.name(), "a", landscape);
 
         assertEquals(s1, s2);
         assertEquals(s2, s1);

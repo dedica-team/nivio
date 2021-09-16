@@ -31,8 +31,8 @@ class SVGRelationTest {
     @BeforeEach
     void setup() {
         landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
-        foo = getTestItem(Group.COMMON, "foo", landscape);
-        bar = getTestItem(Group.COMMON, "bar", landscape);
+        foo = getTestItem(Layer.domain.name(), "foo", landscape);
+        bar = getTestItem(Layer.domain.name(), "bar", landscape);
         hexpath = new HexPath(List.of(new Hex(1, 2), new Hex(1, 3)));
         statusValue = new StatusValue("foo", Status.GREEN);
     }
@@ -45,9 +45,9 @@ class SVGRelationTest {
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
         DomContent render = svgRelation.render();
         String render1 = render.render();
-        assertTrue(render1.contains("l1/common/foo"));
+        assertTrue(render1.contains("l1/domain/foo"));
         assertFalse(render1.contains("l1//foo"));
-        assertTrue(render1.contains("l1/common/bar"));
+        assertTrue(render1.contains("l1/domain/bar"));
         assertFalse(render1.contains("l1//bar"));
     }
 

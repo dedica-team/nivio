@@ -3,7 +3,6 @@ package de.bonndan.nivio.output.layout;
 import de.bonndan.nivio.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -28,8 +27,8 @@ public class AllGroupsLayout {
         List<Item> items = new ArrayList<>();
         groups.forEach((groupName, groupItem) -> {
 
-            //do not layout the default group if empty
-            if (Group.COMMON.equals(groupName) && groupItem.getItems().size() == 0) {
+            //do not layout the group if empty
+            if (groupItem.getItems().isEmpty()) {
                 return;
             }
 
@@ -67,13 +66,7 @@ public class AllGroupsLayout {
         GroupConnections groupConnections = new GroupConnections();
 
         items.forEach(item -> {
-            final String group;
-            if (StringUtils.isEmpty(item.getGroup())) {
-                LOGGER.warn("Item {} has no group, using " + Group.COMMON, item);
-                group = Group.COMMON;
-            } else {
-                group = item.getGroup();
-            }
+            final String group = item.getGroup();
             LayoutedComponent groupNode = findGroupBounds(group);
 
             item.getRelations().forEach(relationItem -> {
@@ -83,7 +76,7 @@ public class AllGroupsLayout {
                     return;
                 }
 
-                String targetGroup = targetItem.getGroup() == null ? Group.COMMON : targetItem.getGroup();
+                String targetGroup = targetItem.getGroup();
                 LayoutedComponent targetGroupNode = findGroupBounds(targetGroup);
 
                 if (groupConnections.canConnect(group, targetGroup)) {
@@ -96,14 +89,11 @@ public class AllGroupsLayout {
     }
 
     private LayoutedComponent findGroupBounds(String group) {
-
-        if (StringUtils.isEmpty(group))
-            group = Group.COMMON;
-
-        String finalGroup = group;
         return groupNodes.entrySet().stream()
-                .filter(entry -> finalGroup.equals(entry.getKey().getIdentifier()))
-                .findFirst().map(Map.Entry::getValue).orElseThrow(() -> new RuntimeException("Group " + finalGroup + " not found."));
+                .filter(entry -> group.equals(entry.getKey().getIdentifier()))
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElseThrow(() -> new RuntimeException(String.format("Group %s not found.", group)));
     }
 
     /**
