@@ -26,11 +26,6 @@ class FunctionFactoryTest {
     }
 
     @Test
-    void handlesIOError() {
-        assertThrows(IllegalArgumentException.class, () -> functionFactory.asFunctions("\"", null));
-    }
-
-    @Test
     void handlesPipesInRegexes() {
         List<Function<String, String>> functions = functionFactory.asFunctions("find \"([a-z|])\"|fetch", null);
         assertThat(functions).hasSize(2);

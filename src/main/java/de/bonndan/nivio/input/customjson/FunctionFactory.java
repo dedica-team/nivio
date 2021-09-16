@@ -78,13 +78,7 @@ public class FunctionFactory {
     public List<Function<String, String>> asFunctions(@Nullable final String pipedSteps, final URL baseUrl) {
         if (pipedSteps == null || pipedSteps.isEmpty()) return new ArrayList<>();
 
-        String[] steps;
-        try {
-            steps = parseLine(pipedSteps);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(String.format("Could not parse steps: %s", pipedSteps));
-        }
-
+        String[] steps = parseLine(pipedSteps);
         return Arrays.stream(steps)
                 .map(String::trim)
                 .map(step -> {
@@ -102,7 +96,7 @@ public class FunctionFactory {
     }
 
     private String[] parseLine(String pipedSteps) {
-        return pipedSteps.split("\\|(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+        return pipedSteps.split("\\|(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", 16);
     }
 
     private Function<String, String> getFileFetcherFunction(URL baseUrl) {
