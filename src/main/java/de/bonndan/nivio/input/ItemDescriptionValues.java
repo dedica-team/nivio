@@ -1,7 +1,6 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.RelationDescription;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
@@ -30,6 +29,8 @@ public class ItemDescriptionValues {
             existing.setGroup(increment.getGroup());
         if (increment.getAddress() != null)
             existing.setAddress(increment.getAddress());
+        if (increment.getLayer() != null)
+            existing.setLayer(increment.getLayer());
 
         increment.getRelations().forEach(existing::addOrReplaceRelation);
 
@@ -54,6 +55,7 @@ public class ItemDescriptionValues {
         assignSafeIfAbsent(source.getGroup(), target.getGroup(), target::setGroup);
         assignSafeIfAbsent(source.getIcon(), target.getIcon(), target::setIcon);
         assignSafeIfAbsent(source.getAddress(), target.getAddress(), target::setAddress);
+        assignSafeIfAbsent(source.getLayer(), target.getLayer(), target::setLayer);
 
         if (source.getProvidedBy() != null) {
             source.getProvidedBy().stream()

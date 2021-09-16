@@ -78,7 +78,7 @@ class InputFormatHandlerNivioTest {
         });
 
         ItemDescription web = landscapeDescription.getItemDescriptions().pick("wordpress-web", null);
-        assertEquals(Item.LAYER_INGRESS, web.getLabel("layer"));
+        assertEquals(Item.LAYER_INGRESS, web.getLayer());
         assertEquals("wordpress-web", web.getIdentifier());
         assertEquals("Webserver", web.getDescription());
         assertEquals("Apache", web.getLabel(Label.software));
