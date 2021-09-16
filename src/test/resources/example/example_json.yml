@@ -8,7 +8,7 @@ sources:
       item:
         identifier: "$.id"
         environment: "$.landscape"
-        name: '$.moreThanAName|find "([\\w\\s]*),"'
+        name: '$.moreThanAName|find "([\w\s]*),"'
         endOfLife: "$.end_of_life.date"
         nivio.link.homepage: "$.a_named_link"
         nivio.relations.upstream: "$.@dependencies.@upstream|fetch|$.items[*].id"

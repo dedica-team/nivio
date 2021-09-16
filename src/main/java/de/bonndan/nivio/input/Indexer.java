@@ -85,7 +85,7 @@ public class Indexer {
         new InstantItemResolver(logger).resolve(input);
 
         // try to find "magic" relations by examining item labels for keywords and URIs
-        new LabelRelationResolver(logger, new HintFactory()).resolve(input);
+        //new LabelRelationResolver(logger, new HintFactory()).resolve(input);
 
         // find items for relation endpoints (which can be queries, identifiers...)
         // KEEP here (must run late after other resolvers)
