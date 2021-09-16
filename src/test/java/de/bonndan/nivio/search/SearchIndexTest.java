@@ -107,6 +107,6 @@ class SearchIndexTest {
     void testFacets() {
         var facets = searchIndex.facets();
         assertThat(facets.getClass()).isEqualTo(ArrayList.class);
-        assertThat(facets.size()).isEqualTo(2);
+        assertThat(facets.size()).isEqualTo(3);
     }
 }

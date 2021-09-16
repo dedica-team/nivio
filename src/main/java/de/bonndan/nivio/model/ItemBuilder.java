@@ -109,7 +109,7 @@ public final class ItemBuilder {
 
     public Item build() {
         Item item = new Item(identifier, landscape, group, name, owner, contact,
-                description, color, icon, type, address, layer);
+                description, color, icon, type, address, Layer.of(layer));
         item.setLinks(links);
         item.getLabels().putAll(labels);
         item.setRelations(relations);

@@ -8,6 +8,7 @@ import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.Layer;
 import de.bonndan.nivio.model.Lifecycle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,7 +79,7 @@ class InputFormatHandlerNivioTest {
         });
 
         ItemDescription web = landscapeDescription.getItemDescriptions().pick("wordpress-web", null);
-        assertEquals(Item.LAYER_INGRESS, web.getLayer());
+        assertEquals("infra", web.getLayer());
         assertEquals("wordpress-web", web.getIdentifier());
         assertEquals("Webserver", web.getDescription());
         assertEquals("Apache", web.getLabel(Label.software));

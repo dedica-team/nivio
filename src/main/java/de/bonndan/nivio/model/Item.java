@@ -20,10 +20,6 @@ import static de.bonndan.nivio.model.ComponentDiff.*;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier") //needed when internal models are serialized for debugging
 public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent {
 
-    public static final String LAYER_INFRASTRUCTURE = "infrastructure";
-    public static final String LAYER_APPLICATION = "applications";
-    public static final String LAYER_INGRESS = "ingress";
-
     @NotNull
     @Pattern(regexp = IdentifierValidation.PATTERN)
     private final String identifier;
@@ -44,7 +40,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
 
     private final String type;
 
-    private final String layer;
+    private final Layer layer;
 
     /**
      * technical address
@@ -74,7 +70,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
                 final String icon,
                 final String type,
                 final URI address,
-                final String layer
+                final Layer layer
     ) {
         if (!StringUtils.hasLength(identifier)) {
             throw new IllegalArgumentException("Identifier must not be empty");
@@ -240,7 +236,10 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
 
     @Override
     public String getLayer() {
-        return layer;
+        if (layer == null) {
+            return Layer.domain.name();
+        }
+        return layer.name();
     }
 
     @Override
