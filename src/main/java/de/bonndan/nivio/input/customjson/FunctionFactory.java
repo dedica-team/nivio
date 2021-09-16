@@ -11,8 +11,6 @@ import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
 import de.bonndan.nivio.input.FileFetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +18,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Function;
@@ -44,12 +41,9 @@ public class FunctionFactory {
     public static final char QUOTATION_CHAR = '"';
 
     private final FileFetcher fileFetcher;
-    private final CSVParser parser;
 
     public FunctionFactory(FileFetcher fileFetcher) {
         this.fileFetcher = fileFetcher;
-        //escape char is backslash
-        parser = new CSVParserBuilder().withSeparator('|').withQuoteChar(QUOTATION_CHAR).build();
 
         //configures json path
         Configuration.setDefaults(new Configuration.Defaults() {
@@ -86,8 +80,8 @@ public class FunctionFactory {
 
         String[] steps;
         try {
-            steps = parser.parseLine(pipedSteps);
-        } catch (IOException e) {
+            steps = parseLine(pipedSteps);
+        } catch (Exception e) {
             throw new IllegalArgumentException(String.format("Could not parse steps: %s", pipedSteps));
         }
 
@@ -107,6 +101,10 @@ public class FunctionFactory {
                 .collect(Collectors.toList());
     }
 
+    private String[] parseLine(String pipedSteps) {
+        return pipedSteps.split("\\|(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+    }
+
     private Function<String, String> getFileFetcherFunction(URL baseUrl) {
         return s -> {
             LOGGER.info("fetching {} with base url {}", s, baseUrl);
@@ -120,7 +118,7 @@ public class FunctionFactory {
             if (s == null) return "";
             Object parsed;
             try {
-                 parsed = JsonPath.parse(s).read(step.trim());
+                parsed = JsonPath.parse(s).read(step.trim());
             } catch (PathNotFoundException e) {
                 return "";
             }
@@ -133,7 +131,7 @@ public class FunctionFactory {
                 }
 
                 if (parsed instanceof NumericNode) {
-                    return ((NumericNode)parsed).numberValue().toString();
+                    return ((NumericNode) parsed).numberValue().toString();
                 }
                 return ((JsonNode) parsed).textValue();
             }
@@ -143,12 +141,15 @@ public class FunctionFactory {
     }
 
     /**
+     * based on https://stackoverflow.com/questions/1757065/java-splitting-a-comma-separated-string-but-ignoring-commas-in-quotes
+     *
      * @throws PatternSyntaxException on wrong regexes
      */
     private Function<String, String> getFindFunction(final String path) {
 
         String regex = path.replaceFirst(FIND, "").trim();
         regex = StringUtils.trimLeadingCharacter(regex, QUOTATION_CHAR);
+        regex = StringUtils.trimTrailingCharacter(regex, QUOTATION_CHAR);
         // we do not trim a possible trailing
         Pattern pattern = Pattern.compile(regex);
         return s -> {

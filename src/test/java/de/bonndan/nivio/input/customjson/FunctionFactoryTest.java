@@ -37,6 +37,17 @@ class FunctionFactoryTest {
     }
 
     @Test
+    void complexRegex() {
+        String pipedSteps = "find \"https:\\/\\/[\\w.\\-_]*\\/([\\w.\\-_]*)\\/.*\"";
+        List<Function<String, String>> functions = functionFactory.asFunctions(pipedSteps, null);
+        assertThat(functions).hasSize(1);
+        Function<String, String> find = functions.get(0);
+        String path = find.apply("https://host.ignored.com/this.is-important/othercrap");
+        assertThat(path).isEqualTo("this.is-important");
+    }
+
+
+    @Test
     void failsEarlyOnJsonPath() {
         assertThrows(InvalidPathException.class, () -> functionFactory.asFunctions(".abc.", null));
     }
