@@ -17,9 +17,14 @@ class PathTile {
     public static final int ITEM_PENALTY = 1000;
 
     /**
-     * costs for moving on group arean
+     * costs for moving on group area
      */
     public static final int GROUP_PENALTY = 3;
+
+    /**
+     * costs for moving on tile has is part of a path area
+     */
+    private static final int PATH_PENALTY = 2;
 
     /**
      * Regular movement costs.
@@ -74,6 +79,9 @@ class PathTile {
             return GROUP_PENALTY + from.moveCosts;
         }
 
+        if (this.hex.getPathDirection() != null) {
+            return PATH_PENALTY + from.moveCosts;
+        }
 
         return BASE_COSTS + from.moveCosts;
     }

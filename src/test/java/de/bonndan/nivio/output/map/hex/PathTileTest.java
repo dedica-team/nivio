@@ -21,6 +21,21 @@ class PathTileTest {
     }
 
     @Test
+    void pathCosts() {
+        Hex fromHex = new Hex(3,2);
+        PathTile from = new PathTile(fromHex);
+        from.moveCosts = 1;
+
+        Hex toHex = new Hex(3,3);
+        toHex.setPathDirection(1);
+        PathTile to = new PathTile(toHex);
+
+        //when
+        int costs = to.calcMoveCostsFrom(from);
+        assertEquals(3, costs);
+    }
+
+    @Test
     void groupCostMore() {
         Hex fromHex = new Hex(3,2);
         PathTile from = new PathTile(fromHex);
