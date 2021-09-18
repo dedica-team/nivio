@@ -75,7 +75,8 @@ class PathTile {
             return ITEM_PENALTY + from.moveCosts;
         }
 
-        if (this.hex.group != null) {
+        boolean entersGroup = from.hex.group == null && this.hex.group != null;
+        if (entersGroup) {
             return GROUP_PENALTY + from.moveCosts;
         }
 

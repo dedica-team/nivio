@@ -51,6 +51,22 @@ class PathTileTest {
     }
 
     @Test
+    void groupCostSameIfComingFromGroup() {
+        Hex fromHex = new Hex(3,2);
+        PathTile from = new PathTile(fromHex);
+        from.moveCosts = 1;
+        from.hex.group = "foo/other";
+
+        Hex toHex = new Hex(3,3);
+        toHex.group = "foo/bar";
+        PathTile to = new PathTile(toHex);
+
+        //when
+        int costs = to.calcMoveCostsFrom(from);
+        assertEquals(2, costs);
+    }
+
+    @Test
     void itemsBlock() {
         Hex fromHex = new Hex(3,2);
         PathTile from = new PathTile(fromHex);
