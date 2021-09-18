@@ -58,22 +58,23 @@ class SVGDimensionFactoryTest {
 
         //when
         Hex three = new Hex(-10, -10);
-        SVGRelation svgRelation = new SVGRelation(new HexPath(List.of(three)), "aaccee", RelationFactory.createForTesting(ItemFactory.getTestItem("foo", "bar"), ItemFactory.getTestItem("foo", "baz")), null);
+        Hex four = new Hex(-11, -10);
+        SVGRelation svgRelation = new SVGRelation(new HexPath(List.of(three, four)), "aaccee", RelationFactory.createForTesting(ItemFactory.getTestItem("foo", "bar"), ItemFactory.getTestItem("foo", "baz")), null);
         SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(svgGroupArea), List.of(svgRelation));
 
         //then
         assertThat(dimension).isNotNull();
         SVGDimension.BoundingBox hex = dimension.hex;
         assertThat(hex).isNotNull();
-        assertThat(hex.horMin).isEqualTo(three.q);
-        assertThat(hex.vertMin).isEqualTo(three.r);
+        assertThat(hex.horMin).isEqualTo(four.q);
+        assertThat(hex.vertMin).isEqualTo(four.r);
         assertThat(hex.horMax).isEqualTo(two.q);
         assertThat(hex.vertMax).isEqualTo(two.r);
 
         SVGDimension.BoundingBox cartesian = dimension.cartesian;
         assertThat(cartesian).isNotNull();
-        assertThat(cartesian.horMin).isEqualTo((int) three.toPixel().x);
-        assertThat(cartesian.vertMin).isEqualTo((int) three.toPixel().y);
+        assertThat(cartesian.horMin).isEqualTo((int) four.toPixel().x);
+        assertThat(cartesian.vertMin).isEqualTo((int) four.toPixel().y);
         assertThat(cartesian.horMax).isEqualTo((int) two.toPixel().x);
         assertThat(cartesian.vertMax).isEqualTo((int) two.toPixel().y);
     }

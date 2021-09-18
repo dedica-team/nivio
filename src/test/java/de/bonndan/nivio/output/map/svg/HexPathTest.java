@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import java.awt.geom.Point2D;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static de.bonndan.nivio.output.map.hex.Hex.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,14 +46,16 @@ class HexPathTest {
 
     @Test
     void calcBends() {
-        hexpath.calcBends(this.hexes);
         List<Hex> bends = hexpath.getBends();
         assertThat(bends).isNotEmpty()
                 .hasSize(1)
                 .contains(new Hex(0,3));
+    }
 
-        List<Integer> directions = hexpath.getDirections();
-        assertThat(directions).isNotEmpty().hasSize(3);
-        assertThat(directions).isEqualTo(List.of(SOUTH, SOUTH, SOUTH_EAST));
+    @Test
+    void setsDirections() {
+        List<Integer> directions = hexpath.getHexes().stream().map(Hex::getPathDirection).collect(Collectors.toList());
+        assertThat(directions).isNotEmpty().hasSize(4)
+                .isEqualTo(List.of(SOUTH, SOUTH, SOUTH_EAST, SOUTH_EAST));
     }
 }

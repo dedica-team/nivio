@@ -7,10 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -112,7 +109,7 @@ public class FastOrganicLayout {
     /**
      * Maps from vertices to indices.
      */
-    protected Hashtable<LayoutedComponent, Integer> indices = new Hashtable<>();
+    protected HashMap<LayoutedComponent, Integer> indices = new HashMap<>();
     private boolean debug;
 
     /**
@@ -246,8 +243,8 @@ public class FastOrganicLayout {
 
         for (int i = 0; i < bounds.size(); i++) {
             LayoutedComponent vertex = bounds.get(i);
-            vertex.setX(centerLocations[i][0]);
-            vertex.setY(centerLocations[i][1]);
+            vertex.setX((long) centerLocations[i][0]);
+            vertex.setY((long) centerLocations[i][1]);
         }
     }
 

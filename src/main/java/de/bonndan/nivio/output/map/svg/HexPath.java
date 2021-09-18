@@ -1,11 +1,14 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.output.map.hex.Hex;
+import org.springframework.lang.NonNull;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.IntStream;
 
 /**
  * Produces a point path along the centers of the given hexes.
@@ -15,15 +18,18 @@ public class HexPath {
     private final List<Hex> hexes;
     private final List<String> points = new ArrayList<>();
     private List<Hex> bends;
-    private List<Integer> directions;
     private final Point2D.Double endPoint;
 
     /**
      * @param hexes the hex tile chain in correct order.
      */
-    public HexPath(final List<Hex> hexes) {
-        this.hexes = hexes;
-        calcBends(hexes);
+    public HexPath(@NonNull final List<Hex> hexes) {
+        this.hexes = Objects.requireNonNull(hexes);
+        if (hexes.size() < 2) {
+            throw new IllegalArgumentException("Paths cannot consist of only one tile");
+        }
+        calcBends();
+        calcDirections(hexes);
         this.endPoint = calcPoints();
     }
 
@@ -117,39 +123,51 @@ public class HexPath {
     /**
      * Returns the bends from a list of adjacent hexes (a chain).
      *
-     * @param hexes the hex chain
      */
-    void calcBends(final List<Hex> hexes) {
+    void calcBends() {
 
         bends = new ArrayList<>();
-        directions = new ArrayList<>();
-        var i = 0;
-        for (i = 1; i < hexes.size() - 1; i++) {
+        //bends
+        IntStream.range(1, hexes.size() - 1).forEach(i -> {
             var prev = hexes.get(i - 1);
             var cur = hexes.get(i);
             var next = hexes.get(i + 1);
-
-            //bends
             var qBend = (prev.q == cur.q && next.q != cur.q) || (prev.q != cur.q && next.q == cur.q);
             var rBend = (prev.r == cur.r && next.r != cur.r) || (prev.r != cur.r && next.r == cur.r);
             if (qBend || rBend) {
                 bends.add(cur);
             }
+        });
+    }
+
+    /**
+     * Returns the bends from a list of adjacent hexes (a chain).
+     *
+     * @param hexes the hex chain
+     */
+    void calcDirections(final List<Hex> hexes) {
+
+        List<Integer> directions = new ArrayList<>();
+        int end = hexes.size() - 1;
+        for (var i = 0; i < end; i++) {
+            var cur = hexes.get(i);
+            var next = hexes.get(i + 1);
 
             //directions
-            directions.add(prev.getDirectionTo(cur));
+            directions.add(cur.getDirectionTo(next));
 
-            if (i == hexes.size() - 2) {
-                directions.add(cur.getDirectionTo(next));
+            if (i == end-1) {
+                directions.add(cur.getDirectionTo(next)); //for the last tile to the target, which is always orthogonal
             }
+        }
+
+        for (int i = 0, hexesSize = hexes.size(); i < hexesSize; i++) {
+            Hex hex = hexes.get(i);
+            hex.setPathDirection(directions.get(i));
         }
     }
 
     public List<Hex> getBends() {
         return Collections.unmodifiableList(bends);
-    }
-
-    public List<Integer> getDirections() {
-        return Collections.unmodifiableList(directions);
     }
 }

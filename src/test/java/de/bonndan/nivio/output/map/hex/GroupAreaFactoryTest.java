@@ -16,33 +16,33 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class GroupAreaFactoryTest {
 
     private final Set<Hex> expectedTerritory = UnmodifiableSet.unmodifiableSet(Set.of(
-            new Hex(0, 3, -3),
-            new Hex(1, 3, -4),
-            new Hex(1, 2, -3),
-            new Hex(2, 2, -4),
-            new Hex(0, 2, -2),
-            new Hex(2, 1, -3),
-            new Hex(1, 1, -2)
+            new Hex(0, 3),
+            new Hex(1, 3),
+            new Hex(1, 2),
+            new Hex(2, 2),
+            new Hex(0, 2),
+            new Hex(2, 1),
+            new Hex(1, 1)
     ));
 
     /**
      * https://www.redblobgames.com/grids/hexagons/#coordinates
      */
     @Test
-    public void getBridges() {
+    void getBridges() {
         Set<Hex> inArea = new HashSet<>();
         //vertical with one hex gap
-        inArea.add(new Hex(3, 1, -4));
-        inArea.add(new Hex(3, 3, -6));
+        inArea.add(new Hex(3, 1));
+        inArea.add(new Hex(3, 3));
 
         //when
         Set<Hex> bridges = GroupAreaFactory.getBridges(inArea, 2);
         assertEquals(1, bridges.size());
-        assertEquals(new Hex(3, 2, -5), bridges.iterator().next());
+        assertEquals(new Hex(3, 2), bridges.iterator().next());
     }
 
     @Test
-    public void addHexesWithClosestPaths() {
+    void addHexesWithClosestPaths() {
         Hex one = new Hex(1, 2);
         Hex two = new Hex(3, 5);
 
@@ -57,20 +57,24 @@ class GroupAreaFactoryTest {
         hexesToItems.put(one, landscapeItem);
         hexesToItems.put(two, target);
 
+        HexMap hexMap = new HexMap(true);
+        hexMap.add(landscapeItem, one);
+        hexMap.add(target, two);
+
         //when
         Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
 
         //then
         assertThat(inArea).containsAll(expectedTerritory);
 
-        PathFinder pathFinder = new PathFinder(hexesToItems);
+        PathFinder pathFinder = new PathFinder(hexMap);
         HexPath shortestPath = pathFinder.getPath(one, two).orElseThrow();
         assertThat(inArea).containsAll(shortestPath.getHexes());
 
     }
 
     @Test
-    public void justAddsHexAndNeighbours() {
+    void justAddsHexAndNeighbours() {
         Hex one = new Hex(1, 2);
         Hex two = new Hex(3, 3);
 
@@ -92,7 +96,7 @@ class GroupAreaFactoryTest {
     }
 
     @Test
-    public void doesNotAddUnnecessaryTiles() {
+    void doesNotAddUnnecessaryTiles() {
 
         Hex one = new Hex(4, 4);
         Hex two = new Hex(6, 4);
@@ -109,13 +113,13 @@ class GroupAreaFactoryTest {
 
         //when
         Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
-        assertThat(inArea).doesNotContain(new Hex(5,2));
-        assertThat(inArea).doesNotContain(new Hex(6,2));
-        assertThat(inArea).doesNotContain(new Hex(7,2));
+        assertThat(inArea).doesNotContain(new Hex(5, 2));
+        assertThat(inArea).doesNotContain(new Hex(6, 2));
+        assertThat(inArea).doesNotContain(new Hex(7, 2));
     }
 
     @Test
-    public void pathToClosestItemIsPaddedByOneHex() {
+    void pathToClosestItemIsPaddedByOneHex() {
 
         Hex one = new Hex(4, 4);
         Hex two = new Hex(7, 4);
@@ -135,30 +139,8 @@ class GroupAreaFactoryTest {
         Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
 
         //then
-        assertThat(inArea).contains(new Hex(6,3));
-        assertThat(inArea).contains(new Hex(5,5));
+        assertThat(inArea).contains(new Hex(6, 3));
+        assertThat(inArea).contains(new Hex(5, 5));
     }
 
-    @Test
-    public void allAreaHexesHaveCorrectGroup() {
-        Hex one = new Hex(1, 1, -2);
-        Hex two = new Hex(3, 3, -6);
-
-        Item landscapeItem = getTestItem("group", "landscapeItem");
-        Item target = getTestItem("group", "target");
-
-        Group group = new Group("group", "landscapeIdentifier");
-        group.addOrReplaceItem(landscapeItem);
-
-        BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
-        hexesToItems.put(one, landscapeItem);
-        hexesToItems.put(two, target);
-
-        //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
-
-        //then
-        long count = inArea.stream().filter(hex -> hex.group != null).count();
-        assertThat(count).isEqualTo(inArea.size());
-    }
 }

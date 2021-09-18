@@ -19,9 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SVGGroupAreaTest {
 
     @Test
-    public void hasFQI() {
-        Hex e1 = new Hex(1, 1, -2);
-        Hex e2 = new Hex(3, 3, -6);
+    void hasFQI() {
+        Hex e1 = new Hex(1, 1);
+        Hex e2 = new Hex(3, 3);
 
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item landscapeItem2 = getTestItem("group", "bar");
@@ -41,9 +41,9 @@ class SVGGroupAreaTest {
     }
 
     @Test
-    public void supportsVisualFocus() {
-        Hex e1 = new Hex(1, 1, -2);
-        Hex e2 = new Hex(3, 3, -6);
+    void supportsVisualFocus() {
+        Hex e1 = new Hex(1, 1);
+        Hex e2 = new Hex(3, 3);
 
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item landscapeItem2 = getTestItem("group", "bar");

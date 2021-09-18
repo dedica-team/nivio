@@ -50,8 +50,8 @@ public class OrganicLayouter implements Layouter {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("group {} offset {} {}", groupBounds.getComponent().getIdentifier(), groupBounds.getX(), groupBounds.getY());
             }
-            groupBounds.setX(groupBounds.getX() + margin.x);
-            groupBounds.setY(groupBounds.getY() + margin.y);
+            groupBounds.setX((long) (groupBounds.getX() + margin.x));
+            groupBounds.setY((long) (groupBounds.getY() + margin.y));
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("corrected group {} offset {} {}", groupBounds.getComponent().getIdentifier(), groupBounds.getX(), groupBounds.getY());
             }
@@ -60,8 +60,8 @@ public class OrganicLayouter implements Layouter {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("original item pos {} {}", itemBounds.getX(), itemBounds.getY());
                 }
-                itemBounds.setX(itemBounds.getX() + groupBounds.getX());
-                itemBounds.setY(itemBounds.getY() + groupBounds.getY());
+                itemBounds.setX((long) (itemBounds.getX() + groupBounds.getX()));
+                itemBounds.setY((long) (itemBounds.getY() + groupBounds.getY()));
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("item pos with group offset: {} {}", itemBounds.getX(), itemBounds.getY());
                 }

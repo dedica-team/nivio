@@ -71,9 +71,10 @@ public class SVGDocument extends Component {
             LOGGER.debug("rendering group {} with items {}", group.getComponent().getIdentifier(), group.getChildren());
             group.getChildren().forEach(layoutedItem -> {
 
-                hexMap.add(layoutedItem);
-
+                Hex freeSpot = hexMap.findFreeSpot(layoutedItem.getX(), layoutedItem.getY());
                 Item item = (Item) layoutedItem.getComponent();
+                hexMap.add(item, freeSpot);
+
                 //collect patterns for icons
                 if (StringUtils.hasLength(layoutedItem.getFill())) {
                     SVGPattern svgPattern = new SVGPattern(layoutedItem.getFill());

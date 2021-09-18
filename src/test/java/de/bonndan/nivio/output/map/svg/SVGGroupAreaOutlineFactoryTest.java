@@ -22,8 +22,8 @@ class SVGGroupAreaOutlineFactoryTest {
     @Test
     @DisplayName("Ensure that items far apart have one outline")
     void twoSeparateHexes() {
-        Hex e1 = new Hex(0, 10, -10);
-        Hex e2 = new Hex(0, 20, -20);
+        Hex e1 = new Hex(0, 100);
+        Hex e2 = new Hex(0, 20);
 
         Item item1 = getTestItem("foo", "bar");
         Item item2 = getTestItem("foo", "baz");

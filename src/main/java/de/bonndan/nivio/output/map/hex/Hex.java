@@ -29,12 +29,12 @@ public class Hex {
      * clockwise neighbours, starting with "southeast"
      */
     public static final List<Hex> DIRECTIONS = List.of(
-            new Hex(1, 0, -1),
-            new Hex(0, 1, -1), //south
-            new Hex(-1, 1, 0),
-            new Hex(-1, 0, 1),
-            new Hex(0, -1, 1), //north
-            new Hex(1, -1, 0)
+            new Hex(1, 0),
+            new Hex(0, 1), //south
+            new Hex(-1, 1),
+            new Hex(-1, 0),
+            new Hex(0, -1), //north
+            new Hex(1, -1)
     );
 
     //double DEFAULT_ICON_SIZE
@@ -66,18 +66,7 @@ public class Hex {
 
     public String item;
     public String group;
-
-    /**
-     * Using this constructor is discouraged, since only q and r are needed.
-     */
-    public Hex(int q, int r, int s) {
-        if (q + r + s != 0) {
-            throw new IllegalArgumentException("q + r + s must be 0");
-        }
-        this.q = q;
-        this.r = r;
-        this.s = s;
-    }
+    private Integer pathDirection;
 
     /**
      * https://www.redblobgames.com/grids/hexagons/implementation.html
@@ -88,45 +77,12 @@ public class Hex {
      * @param r coordinate
      */
     public Hex(int q, int r) {
-        this(q, r, (r + q) * -1);
-    }
-
-    /**
-     * Creates a hexmap coord representation of the given coordinates.
-     *
-     * @param x map item x coord
-     * @param y map item y coord
-     * @return hex with q,r coordinates derived from x,y coords (rounded)
-     */
-    public static Hex of(long x, long y) {
-        return of(x, y, 1f);
-    }
-
-    public static Hex of(long x, long y, float scaling) {
-        var q = (2. / 3 * x) / (DEFAULT_ICON_SIZE * scaling);
-        var r = (-1. / 3 * x + Math.sqrt(3) / 3 * y) / (DEFAULT_ICON_SIZE * scaling);
-
-        double s = -q - r;
-        if (Math.round(q + r + s) != 0) {
+        if (q + r + (r + q) * -1 != 0) {
             throw new IllegalArgumentException("q + r + s must be 0");
         }
-
-        int qi = (int) Math.round(q);
-        int ri = (int) Math.round(r);
-        int si = (int) Math.round(s);
-
-        var q_diff = Math.abs(qi - q);
-        var r_diff = Math.abs(ri - r);
-        var s_diff = Math.abs(si - s);
-
-        if (q_diff > r_diff && q_diff > s_diff) {
-            qi = -ri - si;
-        } else if (r_diff > s_diff) {
-            ri = -qi - si;
-        } else {
-            si = -qi - ri;
-        }
-        return new Hex(qi, ri, si);
+        this.q = q;
+        this.r = r;
+        this.s = (r + q) * -1;
     }
 
     /**
@@ -191,6 +147,14 @@ public class Hex {
         throw new IllegalArgumentException("Not an adjacent hex given.");
     }
 
+    public void setPathDirection(int pathDirection) {
+        this.pathDirection = pathDirection;
+    }
+
+    public Integer getPathDirection() {
+        return pathDirection;
+    }
+
 
     /**
      * flat orientation (flat top)
@@ -209,7 +173,7 @@ public class Hex {
     }
 
     private Hex subtract(Hex b) {
-        return new Hex(this.q - b.q, this.r - b.r, this.s - b.s);
+        return new Hex(this.q - b.q, this.r - b.r);
     }
 
     /**
@@ -248,7 +212,6 @@ public class Hex {
         return "Hex{" +
                 "q=" + q +
                 ", r=" + r +
-                ", s=" + s +
                 ", id='" + item + '\'' +
                 '}';
     }

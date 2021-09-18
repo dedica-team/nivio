@@ -20,8 +20,8 @@ public class LayoutedComponent {
 
     private final Component component;
 
-    public double x = 0;
-    public double y = 0;
+    public long x = 0;
+    public long y = 0;
     public double width = 50;
     public double height = 50;
     private final List<Component> opposites;
@@ -40,11 +40,11 @@ public class LayoutedComponent {
         opposites = new ArrayList<>();
     }
 
-    public double getX() {
+    public long getX() {
         return x;
     }
 
-    public double getY() {
+    public long getY() {
         return y;
     }
 
@@ -64,11 +64,11 @@ public class LayoutedComponent {
         return height;
     }
 
-    public void setX(double x) {
+    public void setX(long x) {
         this.x = x;
     }
 
-    public void setY(double y) {
+    public void setY(long y) {
         this.y = y;
     }
 

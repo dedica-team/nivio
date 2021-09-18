@@ -11,7 +11,7 @@ class HexTest {
 
     @Test
     void topLeft() {
-        Hex center = new Hex(0,0, 0);
+        Hex center = new Hex(0,0);
         List<Hex> area = new ArrayList<>();
         area.add(center);
         area.addAll(center.neighbours());

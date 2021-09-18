@@ -2,12 +2,15 @@ package de.bonndan.nivio.output.map.hex;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.svg.HexPath;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import org.springframework.lang.NonNull;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
+
+import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 
 /**
  * Representation of a hex map.
@@ -23,26 +26,74 @@ public class HexMap {
     public HexMap(boolean debug) {
 
         // find and render relations
-        pathFinder = new PathFinder(hexesToItems);
+        pathFinder = new PathFinder(this);
         pathFinder.debug = debug;
+    }
+
+    static Hex forCoordinates(long x, long y) {
+        var q = (2. / 3 * x) / (DEFAULT_ICON_SIZE);
+        var r = (-1. / 3 * x + Math.sqrt(3) / 3 * y) / (DEFAULT_ICON_SIZE);
+
+        double s = -q - r;
+        if (Math.round(q + r + s) != 0) {
+            throw new IllegalArgumentException("q + r + s must be 0");
+        }
+
+        int qi = (int) Math.round(q);
+        int ri = (int) Math.round(r);
+        int si = (int) Math.round(s);
+
+        var q_diff = Math.abs(qi - q);
+        var r_diff = Math.abs(ri - r);
+        var s_diff = Math.abs(si - s);
+
+        if (q_diff > r_diff && q_diff > s_diff) {
+            qi = -ri - si;
+        } else if (r_diff > s_diff) {
+            ri = -qi - si;
+        }
+
+        return new Hex(qi, ri);
     }
 
     /**
      * Add a previously layouted item to the map.
      *
-     * @param layoutedItem landscape item plus coordinates
      * @return the created hex
      */
-    public Hex add(LayoutedComponent layoutedItem) {
-        Hex hex = null;
-        int i = 0;
-        while (hex == null || hexesToItems.containsKey(hex)) {
-            hex = Hex.of(Math.round(layoutedItem.getX()) - i, Math.round(layoutedItem.getY()) - i);
-            i++;
+    public Hex findFreeSpot(long x, long y) {
+        Hex hex = forCoordinates(x, y);
+        if (!hasItem(hex)) {
+            return hex;
         }
 
-        Item item = (Item) layoutedItem.getComponent();
-        hex.item = item.getFullyQualifiedIdentifier().toString();
+        //trying to find a free space on the map, i.e. a tile that has no item
+        for (Hex hex1 : hex.neighbours()) {
+            if (hasItem(hex1))
+                continue;
+
+            return hex1;
+        }
+
+        throw new IllegalStateException(String.format("Could not find free spot on map for coordinates %s %s", x, y));
+    }
+
+    private boolean hasItem(Hex hex) {
+        if (!hexesToItems.containsKey(hex)) {
+            return false;
+        }
+        return StringUtils.hasLength(hexesToItems.getKey(hex).item);
+    }
+
+    /**
+     * Add a previously layouted item to the map.
+     *
+     * @param item landscape item
+     * @param hex  free spot on map
+     * @return the created hex
+     */
+    public Hex add(@NonNull final Item item, @NonNull final Hex hex) {
+        hex.item = Objects.requireNonNull(item).getFullyQualifiedIdentifier().toString();
         hexesToItems.put(hex, item);
         return hex;
     }
@@ -65,7 +116,9 @@ public class HexMap {
      * @return a path if one could be found
      */
     public Optional<HexPath> getPath(Item start, Item target) {
-        return pathFinder.getPath(hexForItem(start), hexForItem(target));
+        Optional<HexPath> path = pathFinder.getPath(hexForItem(start), hexForItem(target));
+        path.ifPresent(hexPath -> hexPath.getHexes().forEach(hex -> hexesToItems.computeIfAbsent(hex, hex1 -> hex1)));
+        return path;
     }
 
     /**
@@ -74,9 +127,28 @@ public class HexMap {
      * @param group the group with items
      * @return a set of (adjacent) hexes
      */
-    public Set<Hex> getGroupArea(Group group) {
+    public Set<Hex> getGroupArea(@NonNull final Group group) {
         Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
         inArea.forEach(hex -> hexesToItems.putIfAbsent(hex, UUID.randomUUID()));
+        //set group identifier to all
+        inArea.forEach(hex -> hex.group = group.getFullyQualifiedIdentifier().toString());
         return inArea;
+    }
+
+    /**
+     * Returns the hex that is used in the map.
+     *
+     * @param hex any hex with coordinates
+     * @return hex on the map
+     */
+    @NonNull
+    public Hex getFromMap(@NonNull final Hex hex) {
+        if (hexesToItems.containsKey(Objects.requireNonNull(hex))) {
+            Object val = hexesToItems.get(hex);
+            return hexesToItems.inverseBidiMap().get(val);
+        }
+
+        hexesToItems.put(hex, UUID.randomUUID());
+        return hex;
     }
 }

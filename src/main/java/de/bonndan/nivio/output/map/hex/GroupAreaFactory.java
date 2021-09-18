@@ -3,7 +3,6 @@ package de.bonndan.nivio.output.map.hex;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.svg.HexPath;
-import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +16,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class GroupAreaFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupAreaFactory.class);
+
+    private GroupAreaFactory() {}
 
     /**
      * Builds an areas of hex tiles belonging to a group.
@@ -54,8 +55,6 @@ public class GroupAreaFactory {
             bridges = getBridges(inArea, 3); // 2 might be too aggressive and collide with other group areas
         }
 
-        //set group identifier to all
-        inArea.forEach(hex -> hex.group = group.getFullyQualifiedIdentifier().toString());
         return inArea;
     }
 
@@ -87,6 +86,11 @@ public class GroupAreaFactory {
     ) {
         List<Item> connected = new ArrayList<>();
         Item next = items.iterator().next();
+
+        // we dont care for occupied tiles here, since we just want the closest item within group, and non-group
+        // items cannot be anywhere nearby (other types of obstacles do not exist yet)
+        PathFinder pathFinder = PathFinder.withEmptyMap();
+
         while (next != null) {
 
             LOGGER.debug("adding {} to group area", next);
@@ -97,10 +101,6 @@ public class GroupAreaFactory {
                 LOGGER.debug("no closest item found for {}", next);
                 break;
             }
-
-            // we dont care for occupied tiles here, since we just want the closest item within group, and non-group
-            // items cannot be anywhere nearby (other types of obstacles do not exist yet)
-            PathFinder pathFinder = new PathFinder(new DualHashBidiMap<>());
 
             Hex destination = itemsToHexes.get(closest.get());
             Optional<HexPath> path = pathFinder.getPath(hex, destination);
@@ -169,17 +169,7 @@ public class GroupAreaFactory {
                     return;
 
                 int i = 0;
-                List<Integer> sidesWithNeighbours = new ArrayList<>();
-                for (Hex nn : neighbour.neighbours()) {
-                    if (sidesWithNeighbours.size() > minSides)
-                        break;
-
-                    //check on in-area tiles
-                    if (inArea.contains(nn)) {
-                        sidesWithNeighbours.add(i);
-                    }
-                    i++;
-                }
+                List<Integer> sidesWithNeighbours = getSidesWithNeighbours(inArea, minSides, neighbour, i);
 
                 if (sidesWithNeighbours.size() < 2)
                     return;
@@ -194,6 +184,21 @@ public class GroupAreaFactory {
             });
         });
         return bridges;
+    }
+
+    private static List<Integer> getSidesWithNeighbours(Set<Hex> inArea, int minSides, Hex neighbour, int i) {
+        List<Integer> sidesWithNeighbours = new ArrayList<>();
+        for (Hex nn : neighbour.neighbours()) {
+            if (sidesWithNeighbours.size() > minSides)
+                break;
+
+            //check on in-area tiles
+            if (inArea.contains(nn)) {
+                sidesWithNeighbours.add(i);
+            }
+            i++;
+        }
+        return sidesWithNeighbours;
     }
 
     /**

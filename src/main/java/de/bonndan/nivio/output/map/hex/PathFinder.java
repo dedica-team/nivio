@@ -1,9 +1,9 @@
 package de.bonndan.nivio.output.map.hex;
 
 import de.bonndan.nivio.output.map.svg.HexPath;
-import org.apache.commons.collections4.BidiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,15 +17,23 @@ class PathFinder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PathFinder.class);
     public static final int DEPTH_MAX = 4000;
-    private final BidiMap<Hex, Object> hexesToItems;
+    @NonNull
+    private final HexMap hexMap;
 
     public boolean debug = false;
 
     private final ArrayList<PathTile> closed;
     private final ArrayList<PathTile> open;
 
-    public PathFinder(BidiMap<Hex, Object> hexesToItems) {
-        this.hexesToItems = hexesToItems;
+    static PathFinder withEmptyMap() {
+        return new PathFinder(new HexMap(false));
+    }
+
+    /**
+     * @param hexMap the map containing all hexes
+     */
+    PathFinder(@NonNull final HexMap hexMap) {
+        this.hexMap = hexMap;
         this.closed = new ArrayList<>();
         this.open = new ArrayList<>();
     }
@@ -198,11 +206,7 @@ class PathFinder {
 
         List<PathTile> neighbours = new ArrayList<>();
         current.hex.neighbours().forEach(hex -> {
-            Object val = hexesToItems.get(hex);
-            if (val != null) {
-                hex = hexesToItems.inverseBidiMap().get(val);
-            }
-            neighbours.add(new PathTile(hex));
+            neighbours.add(new PathTile(hexMap.getFromMap(hex)));
         });
         return neighbours;
     }
