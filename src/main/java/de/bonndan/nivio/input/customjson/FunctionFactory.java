@@ -96,6 +96,9 @@ public class FunctionFactory {
     }
 
     private String[] parseLine(String pipedSteps) {
+        if (pipedSteps.length() > 1000) {
+            throw new IllegalArgumentException(String.format("The given steps '%s...' length exceeds 1000 chars.", pipedSteps.substring(0, 20)));
+        }
         return pipedSteps.split("\\|(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", 16);
     }
 
