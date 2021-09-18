@@ -33,7 +33,7 @@ public class BorderHexesGroupOutline {
 
         final List<Point2D.Double> ownSegments = new ArrayList<>();
         final List<Point2D.Double> points = start.hex.asPoints(Hex.HEX_SIZE);
-        final List<Hex> neighbours = start.hex.neighbours();
+        final List<Hex> neighbours = Hex.neighbours(start.hex);
 
         Hex neighbour;
         Point2D.Double currentPoint;

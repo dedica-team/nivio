@@ -2,14 +2,14 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
 import de.bonndan.nivio.output.map.hex.Hex;
-import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import de.bonndan.nivio.output.map.hex.HexMap;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.Set;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
@@ -30,11 +30,12 @@ class SVGGroupAreaTest {
         group.addOrReplaceItem(landscapeItem);
         group.addOrReplaceItem(landscapeItem2);
 
-        BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
-        hexesToItems.put(e1, landscapeItem);
-        hexesToItems.put(e2, landscapeItem2);
+        HexMap hexMap = new HexMap(true);
+        hexMap.add(landscapeItem, e1);
+        hexMap.add(landscapeItem2, e2);
 
-        Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
+
+        Set<Hex> area = GroupAreaFactory.getGroup(hexMap, group);
         SVGGroupArea svgGroupArea = SVGGroupArea.forGroup(group, area, new StatusValue("foo", Status.GREEN), false);
 
         assertThat(svgGroupArea.render().render()).contains(group.getFullyQualifiedIdentifier().jsonValue());
@@ -52,11 +53,11 @@ class SVGGroupAreaTest {
         group.addOrReplaceItem(landscapeItem);
         group.addOrReplaceItem(landscapeItem2);
 
-        BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
-        hexesToItems.put(e1, landscapeItem);
-        hexesToItems.put(e2, landscapeItem2);
+        HexMap hexMap = new HexMap(true);
+        hexMap.add(landscapeItem, e1);
+        hexMap.add(landscapeItem2, e2);
 
-        Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
+        Set<Hex> area = GroupAreaFactory.getGroup(hexMap, group);
         SVGGroupArea svgGroupArea = SVGGroupArea.forGroup(group, area, new StatusValue("foo", Status.GREEN), false);
 
         //then

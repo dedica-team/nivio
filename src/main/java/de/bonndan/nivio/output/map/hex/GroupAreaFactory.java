@@ -17,7 +17,8 @@ public class GroupAreaFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupAreaFactory.class);
 
-    private GroupAreaFactory() {}
+    private GroupAreaFactory() {
+    }
 
     /**
      * Builds an areas of hex tiles belonging to a group.
@@ -28,11 +29,11 @@ public class GroupAreaFactory {
      * <p>
      * There is clearly much room for improvement here. It's only that I haven't found a better approach so far.
      *
-     * @param itemsToHexes tiles occupied by items
-     * @param group        the group
+     * @param hexMap the current hex map
+     * @param group  the group
      * @return all hexes the group consists of (an area)
      */
-    public static Set<Hex> getGroup(Map<Object, Hex> itemsToHexes, Group group) {
+    public static Set<Hex> getGroup(HexMap hexMap, Group group) {
 
         Set<Item> items = group.getItems();
         Set<Hex> inArea = new HashSet<>();
@@ -43,16 +44,16 @@ public class GroupAreaFactory {
         }
 
         //simple occupations per item
-        addItemsAndNeighbours(itemsToHexes, items, inArea);
+        addItemsAndNeighbours(hexMap, items, inArea);
 
         //build the area by adding paths
-        addPathsBetweenClosestItems(itemsToHexes, items, inArea);
+        addPathsBetweenClosestItems(hexMap, items, inArea);
 
         // enlarge area by adding hexes with many sides adjacent to group area until no more can be added
-        Set<Hex> bridges = getBridges(inArea, 2);
+        Set<Hex> bridges = getBridges(hexMap, inArea, 2);
         while (!bridges.isEmpty()) {
             inArea.addAll(bridges);
-            bridges = getBridges(inArea, 3); // 2 might be too aggressive and collide with other group areas
+            bridges = getBridges(hexMap, inArea, 3); // 2 might be too aggressive and collide with other group areas
         }
 
         return inArea;
@@ -61,26 +62,26 @@ public class GroupAreaFactory {
     /**
      * Every item itself and its neighbours are added
      */
-    private static void addItemsAndNeighbours(Map<Object, Hex> itemsToHexes,
+    private static void addItemsAndNeighbours(HexMap hexMap,
                                               Set<Item> items,
                                               Set<Hex> inArea
     ) {
         items.forEach(next -> {
             LOGGER.debug("adding {} to group area", next);
-            Hex hex = itemsToHexes.get(next);
+            Hex hex = hexMap.hexForItem(next);
             inArea.add(hex);
-            inArea.addAll(hex.neighbours());
+            inArea.addAll(hexMap.getNeighbours(hex));
         });
     }
 
     /**
      * Generates paths between each item and its closest neighbour and added tiles of the paths to the group area.
      *
-     * @param itemsToHexes hex tiles occupied by items
-     * @param items        group items
-     * @param inArea       area hex tiles
+     * @param hexMap hex tiles occupied by items
+     * @param items  group items
+     * @param inArea area hex tiles
      */
-    private static void addPathsBetweenClosestItems(Map<Object, Hex> itemsToHexes,
+    private static void addPathsBetweenClosestItems(HexMap hexMap,
                                                     Set<Item> items,
                                                     Set<Hex> inArea
     ) {
@@ -94,24 +95,20 @@ public class GroupAreaFactory {
         while (next != null) {
 
             LOGGER.debug("adding {} to group area", next);
-            Hex hex = itemsToHexes.get(next);
+            Hex hex = hexMap.hexForItem(next);
 
-            Optional<Item> closest = getClosestItem(next, items, itemsToHexes, connected);
+            Optional<Item> closest = getClosestItem(next, items, hexMap, connected);
             if (closest.isEmpty()) {
                 LOGGER.debug("no closest item found for {}", next);
                 break;
             }
 
-            Hex destination = itemsToHexes.get(closest.get());
+            Hex destination = hexMap.hexForItem(closest.get());
             Optional<HexPath> path = pathFinder.getPath(hex, destination);
-            if (path.isPresent()) {
-                Set<Hex> padded = new HashSet<>(); //pad to avoid thin bridges, also workaround for svg outline issue
-                path.get().getHexes().forEach(pathTile -> {
-                    padded.add(pathTile);
-                    padded.addAll(pathTile.neighbours());
-                });
-                padded.stream().filter(hex1 -> !itemsToHexes.containsKey(hex1)).forEach(inArea::add);
-            }
+            path.ifPresent(hexPath -> hexPath.getHexes().forEach(hex1 -> {
+                inArea.add(hex1);
+                inArea.addAll(Hex.neighbours(hex1));
+            }));
 
             connected.add(next);
             // stop if the next one has been connected already
@@ -132,17 +129,17 @@ public class GroupAreaFactory {
      */
     private static Optional<Item> getClosestItem(Item item,
                                                  Set<Item> items,
-                                                 Map<Object, Hex> allVertexHexes,
+                                                 HexMap allVertexHexes,
                                                  List<Item> connected
     ) {
-        Hex start = allVertexHexes.get(item);
+        Hex start = allVertexHexes.hexForItem(item);
         AtomicInteger minDist = new AtomicInteger(Integer.MAX_VALUE);
         AtomicReference<Item> min = new AtomicReference<>(null);
         for (Item otherGroupItem : items) {
             if (item.equals(otherGroupItem) || connected.contains(otherGroupItem)) {
                 continue;
             }
-            Hex dest = allVertexHexes.get(otherGroupItem);
+            Hex dest = allVertexHexes.hexForItem(otherGroupItem);
             int distance = start.distance(dest);
             if (distance < minDist.get()) {
                 minDist.set(distance);
@@ -156,15 +153,16 @@ public class GroupAreaFactory {
     /**
      * Finds neighbours of in-area tiles which have in-area neighbours at adjacent sides (gaps).
      *
+     * @param hexMap   the current map
      * @param inArea   all hexes in area
      * @param minSides min number of sides having in-group neighbours to be added as "bridge"
      * @return all hexes which fill gaps
      */
-    static Set<Hex> getBridges(Set<Hex> inArea, int minSides) {
+    static Set<Hex> getBridges(HexMap hexMap, Set<Hex> inArea, int minSides) {
 
         Set<Hex> bridges = new HashSet<>();
         inArea.forEach(hex -> {
-            hex.neighbours().forEach(neighbour -> {
+            hexMap.getNeighbours(hex).forEach(neighbour -> {
                 if (inArea.contains(neighbour))
                     return;
 
@@ -188,7 +186,7 @@ public class GroupAreaFactory {
 
     private static List<Integer> getSidesWithNeighbours(Set<Hex> inArea, int minSides, Hex neighbour, int i) {
         List<Integer> sidesWithNeighbours = new ArrayList<>();
-        for (Hex nn : neighbour.neighbours()) {
+        for (Hex nn : Hex.neighbours(neighbour)) {
             if (sidesWithNeighbours.size() > minSides)
                 break;
 

@@ -52,7 +52,7 @@ class SVGGroupAreaOutlineFactory {
 
     private List<DomContent> getOutline(@NonNull final Hex start, @NonNull final Set<Hex> groupArea, String fillId) {
 
-        if (groupArea.containsAll(start.neighbours())) {
+        if (groupArea.containsAll(Hex.neighbours(start))) {
             throw new IllegalArgumentException(String.format("Starting point %s for outline is not on border.", start));
         }
 
@@ -130,7 +130,7 @@ class SVGGroupAreaOutlineFactory {
     private static Position getNext(@NonNull Position startPosition, Set<Hex> allInGroup) {
 
         Hex start = startPosition.hex;
-        final List<Hex> neighbours = start.neighbours();
+        final List<Hex> neighbours = Hex.neighbours(start);
         if (allInGroup.containsAll(neighbours)) {
             throw new IllegalArgumentException(String.format("Fully enclosed hex %s passed as starting point.", start));
         }

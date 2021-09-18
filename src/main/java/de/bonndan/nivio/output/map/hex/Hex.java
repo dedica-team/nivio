@@ -23,7 +23,7 @@ public class Hex {
     /**
      * starting at east, right before the first neighbour (which is southeast (r+1) in clockwise direction)
      */
-    public static final int startAngle = 0;
+    public static final int START_ANGLE = 0;
 
     /**
      * clockwise neighbours, starting with "southeast"
@@ -86,7 +86,7 @@ public class Hex {
     }
 
     /**
-     * Returns the distance to the target hex in number of tiles.
+     * Returns the distance to the target hex as number of tiles.
      *
      * https://www.redblobgames.com/grids/hexagons/#distances
      *
@@ -94,17 +94,23 @@ public class Hex {
      * @return number of tiles
      */
     public int distance(Hex target) {
-        Hex hex = this.subtract(target);
+        Hex hex = new Hex(this.q - target.q, this.r - target.r);
         double l = (Math.abs(hex.q) + Math.abs(hex.r) + Math.abs(hex.s)) / 2.0;
         return (int) Math.round(l);
     }
 
+    /**
+     * Returns hexes unrelated to a map
+     *
+     * @param hex center
+     * @return neighbours, not for use with map operations!
+     */
     @NonNull
-    public List<Hex> neighbours() {
+    public static List<Hex> neighbours(Hex hex) {
         List<Hex> n = new ArrayList<>();
         for (var i = 0; i < DIRECTIONS.size(); i += 1) {
-            Hex neighbour = DIRECTIONS.get((6 + i % 6) % 6);
-            n.add(new Hex(q + neighbour.q, r + neighbour.r));
+            Hex dir = DIRECTIONS.get((6 + i % 6) % 6);
+            n.add(new Hex(hex.q + dir.q, hex.r + dir.r));
         }
         return n;
     }
@@ -138,13 +144,13 @@ public class Hex {
     }
 
     public int getDirectionTo(@NonNull final Hex hex) {
-        List<Hex> neighbours = neighbours();
+        List<Hex> neighbours = Hex.neighbours(this);
         for (int i = 0, neighboursSize = neighbours.size(); i < neighboursSize; i++) {
             Hex hex1 = neighbours.get(i);
-            if (hex1.equals(hex)) return i;
+            if (hex1.q == hex.q && hex1.r == hex.r) return i;
         }
 
-        throw new IllegalArgumentException("Not an adjacent hex given.");
+        throw new IllegalArgumentException("Hex " + this + ": not an adjacent hex " + hex + "given to determine direction.");
     }
 
     public void setPathDirection(int pathDirection) {
@@ -172,10 +178,6 @@ public class Hex {
         return new Point2D.Double(x + origin.x, y + origin.y);
     }
 
-    private Hex subtract(Hex b) {
-        return new Hex(this.q - b.q, this.r - b.r);
-    }
-
     /**
      * see https://www.redblobgames.com/grids/hexagons/implementation.html#hex-geometry
      *
@@ -184,7 +186,7 @@ public class Hex {
      */
     public static Point2D.Double getCornerCoordinates(float corner, int size) {
         Point2D.Double point = new Point2D.Double(size, size);
-        double angle = 2.0 * Math.PI * (startAngle + corner) / 6;
+        double angle = 2.0 * Math.PI * (START_ANGLE + corner) / 6;
         return new Point2D.Double(point.x * Math.cos(angle), point.y * Math.sin(angle));
     }
 

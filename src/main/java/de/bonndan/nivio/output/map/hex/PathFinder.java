@@ -203,11 +203,8 @@ class PathFinder {
     }
 
     private List<PathTile> getNeighbourTiles(PathTile current) {
-
         List<PathTile> neighbours = new ArrayList<>();
-        current.hex.neighbours().forEach(hex -> {
-            neighbours.add(new PathTile(hexMap.getFromMap(hex)));
-        });
+        hexMap.getNeighbours(current.hex).forEach(hex -> neighbours.add(new PathTile(hex)));
         return neighbours;
     }
 

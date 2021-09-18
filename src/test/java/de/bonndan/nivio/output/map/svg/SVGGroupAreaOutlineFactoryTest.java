@@ -6,16 +6,17 @@ import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
 import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.output.map.hex.HexMap;
 import j2html.tags.DomContent;
-import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SVGGroupAreaOutlineFactoryTest {
 
@@ -32,12 +33,12 @@ class SVGGroupAreaOutlineFactoryTest {
         foo.addOrReplaceItem(item1);
         foo.addOrReplaceItem(item2);
 
-        BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
-        hexesToItems.put(e1, item1);
-        hexesToItems.put(e2, item2);
+        HexMap hexMap = new HexMap(true);
+        hexMap.add(item1, e1);
+        hexMap.add(item2, e2);
 
 
-        Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), foo);
+        Set<Hex> area = GroupAreaFactory.getGroup(hexMap, foo);
 
         SVGGroupArea group = SVGGroupArea.forGroup(foo, area, new StatusValue("foo", Status.GREEN), false);
         Set<Hex> groupArea = group.getGroupArea();

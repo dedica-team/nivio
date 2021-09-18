@@ -3,8 +3,6 @@ package de.bonndan.nivio.output.map.hex;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.svg.HexPath;
-import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
@@ -20,7 +18,7 @@ public class HexMap {
     /**
      * key is a {@link Hex}, value an {@link Item}
      */
-    private final BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
+    private final MapState mapState = new MapState();
     private final PathFinder pathFinder;
 
     public HexMap(boolean debug) {
@@ -63,13 +61,13 @@ public class HexMap {
      */
     public Hex findFreeSpot(long x, long y) {
         Hex hex = forCoordinates(x, y);
-        if (!hasItem(hex)) {
+        if (!mapState.hasItem(hex)) {
             return hex;
         }
 
         //trying to find a free space on the map, i.e. a tile that has no item
-        for (Hex hex1 : hex.neighbours()) {
-            if (hasItem(hex1))
+        for (Hex hex1 : getNeighbours(hex)) {
+            if (StringUtils.hasLength(hex.item))
                 continue;
 
             return hex1;
@@ -78,12 +76,6 @@ public class HexMap {
         throw new IllegalStateException(String.format("Could not find free spot on map for coordinates %s %s", x, y));
     }
 
-    private boolean hasItem(Hex hex) {
-        if (!hexesToItems.containsKey(hex)) {
-            return false;
-        }
-        return StringUtils.hasLength(hexesToItems.getKey(hex).item);
-    }
 
     /**
      * Add a previously layouted item to the map.
@@ -94,8 +86,7 @@ public class HexMap {
      */
     public Hex add(@NonNull final Item item, @NonNull final Hex hex) {
         hex.item = Objects.requireNonNull(item).getFullyQualifiedIdentifier().toString();
-        hexesToItems.put(hex, item);
-        return hex;
+        return mapState.add(hex, item);
     }
 
     /**
@@ -105,7 +96,7 @@ public class HexMap {
      * @return the corresponding {@link Hex}
      */
     public Hex hexForItem(Item item) {
-        return Objects.requireNonNull(hexesToItems.getKey(item), String.format("Item %s has no hex tile assigned.", item));
+        return mapState.getHexForItem(item).orElseThrow(() -> new NoSuchElementException(String.format("Item %s has no hex tile assigned.", item)));
     }
 
     /**
@@ -116,9 +107,7 @@ public class HexMap {
      * @return a path if one could be found
      */
     public Optional<HexPath> getPath(Item start, Item target) {
-        Optional<HexPath> path = pathFinder.getPath(hexForItem(start), hexForItem(target));
-        path.ifPresent(hexPath -> hexPath.getHexes().forEach(hex -> hexesToItems.computeIfAbsent(hex, hex1 -> hex1)));
-        return path;
+        return pathFinder.getPath(hexForItem(start), hexForItem(target));
     }
 
     /**
@@ -128,27 +117,17 @@ public class HexMap {
      * @return a set of (adjacent) hexes
      */
     public Set<Hex> getGroupArea(@NonNull final Group group) {
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
-        inArea.forEach(hex -> hexesToItems.putIfAbsent(hex, UUID.randomUUID()));
+        Set<Hex> inArea = GroupAreaFactory.getGroup(this, group);
         //set group identifier to all
         inArea.forEach(hex -> hex.group = group.getFullyQualifiedIdentifier().toString());
         return inArea;
     }
 
-    /**
-     * Returns the hex that is used in the map.
-     *
-     * @param hex any hex with coordinates
-     * @return hex on the map
-     */
-    @NonNull
-    public Hex getFromMap(@NonNull final Hex hex) {
-        if (hexesToItems.containsKey(Objects.requireNonNull(hex))) {
-            Object val = hexesToItems.get(hex);
-            return hexesToItems.inverseBidiMap().get(val);
+    public List<Hex> getNeighbours(@NonNull final Hex hex) {
+        List<Hex> neighbours = new ArrayList<>();
+        for (Hex neighbour : Hex.neighbours(Objects.requireNonNull(hex))) {
+            neighbours.add(mapState.getOrAdd(neighbour));
         }
-
-        hexesToItems.put(hex, UUID.randomUUID());
-        return hex;
+        return neighbours;
     }
 }
