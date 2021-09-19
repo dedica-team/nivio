@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 
 @Controller
 @RequestMapping(path = MapController.PATH)
@@ -39,12 +41,12 @@ public class MapController {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_TYPE, "image/svg+xml");
-            String xml = (String) renderingRepository.get(SVGRenderer.RENDERING_TYPE, landscape, debug).orElseThrow();
-            return new ResponseEntity<>(
-                    xml,
+            Optional<Object> xml = renderingRepository.get(SVGRenderer.RENDERING_TYPE, landscape, debug);
+            return xml.map(o -> new ResponseEntity<>(
+                    (String) o,
                     headers,
                     HttpStatus.OK
-            );
+            )).orElseGet(() -> ResponseEntity.notFound().build());
         } catch (Exception ex) {
             LOGGER.warn("Could not obtain svg: ", ex);
             throw new RuntimeException("Failed to obtains svg", ex);

@@ -36,7 +36,7 @@ public class SVGRenderer implements Renderer<String> {
     @Override
     public String render(@NonNull final LayoutedComponent landscape, @Nullable final Assessment assessment, boolean debug) {
         SVGDocument svgDocument = new SVGDocument(landscape, assessment, getStyles((Landscape) landscape.getComponent()));
-        svgDocument.setDebug(debug);
+        svgDocument.setDebug(true);
         return svgDocument.getXML();
     }
 

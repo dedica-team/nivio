@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Internal state of the map.
  */
-public class MapState {
+class MapState {
 
     private final Map<Object, Hex> itemToHex = new HashMap<>();
     private final Map<Hex, Hex> keyMap = new HashMap<>();
