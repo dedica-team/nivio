@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class AllGroupsLayoutTest {
 
     @Test
-    public void testWithARelation() {
+    void testWithARelation() {
 
         Group a = new Group("a", "test");
         Group b = new Group("b", "test");
@@ -53,8 +53,8 @@ class AllGroupsLayoutTest {
         assertEquals(3, layoutedLandscape.getChildren().size());
 
         //assert postition is always the same
-        assertEquals(327, Math.round(layoutedLandscape.getChildren().get(0).getX()));
-        assertEquals(-503, Math.round(layoutedLandscape.getChildren().get(0).getY()));
+        assertEquals(610, Math.round(layoutedLandscape.getChildren().get(0).getX()));
+        assertEquals(533, Math.round(layoutedLandscape.getChildren().get(0).getY()));
     }
 
     private SubLayout getSubLayout(Group group) {
