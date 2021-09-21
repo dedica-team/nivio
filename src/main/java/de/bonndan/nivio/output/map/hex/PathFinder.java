@@ -16,7 +16,8 @@ import java.util.Optional;
 class PathFinder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PathFinder.class);
-    public static final int DEPTH_MAX = 4000;
+    public static final int MAX_ITERATIONS = 5000;
+
     @NonNull
     private final HexMap hexMap;
 
@@ -47,21 +48,23 @@ class PathFinder {
      */
     private PathTile getBest() {
 
-        PathTile tmp = open.get(open.size() - 1);
-        for (int i = open.size() - 1; i >= 0; i--) {
+        PathTile lastTile = open.get(open.size() - 1);
+        for (int i = open.size() - 2; i >= 0; i--) {
 
             // pick the lowest sum of move and heuristic
-            boolean lowestCost = open.get(i).sumCosts < tmp.sumCosts;
-            boolean equalCostLowerHeuristic = open.get(i).sumCosts == tmp.sumCosts && open.get(i).heuristicCosts < tmp.heuristicCosts;
+            PathTile pathTile = open.get(i);
+            boolean lowestCost = pathTile.sumCosts < lastTile.sumCosts;
+            boolean equalCostLowerHeuristic = pathTile.sumCosts == lastTile.sumCosts && pathTile.heuristicCosts < lastTile.heuristicCosts;
             if (lowestCost || equalCostLowerHeuristic) {
-                tmp = open.get(i);
+                lastTile = pathTile;
             }
         }
 
-        open.remove(tmp);
+        open.remove(lastTile);
 
-        if (debug) LOGGER.debug("returning best tile {} with sumCosts {} and heuristic {}", tmp, tmp.sumCosts, tmp.heuristicCosts);
-        return tmp;
+        if (debug)
+            LOGGER.debug("returning best tile {} with sumCosts {} and heuristic {}", lastTile, lastTile.sumCosts, lastTile.heuristicCosts);
+        return lastTile;
     }
 
     /**
@@ -75,7 +78,7 @@ class PathFinder {
         closed.clear();
         open.clear();
         var start = new PathTile(startHex);
-        var dst = new PathTile(destHex);
+        var destination = new PathTile(destHex);
 
 
         PathTile currentStep = start;
@@ -83,15 +86,15 @@ class PathFinder {
 
         int G;
 
-        int depth = 0;
+        int iterations = 0;
 
         while (true) {
 
             /*
              * Limit the amount of loops for better performance
              */
-            if (depth >= DEPTH_MAX) {
-                LOGGER.error("Max depth exceeded searching path from {} to {}", startHex, destHex);
+            if (iterations >= MAX_ITERATIONS) {
+                LOGGER.error("Max iterations exceeded searching path from {} to {}", startHex, destHex);
                 return Optional.empty();
             }
 
@@ -100,8 +103,8 @@ class PathFinder {
              * destination tile search can be stopped (break). The same goes for
              * an empty list of potential tiles suited for path (openlist).
              */
-            if (currentStep.equals(dst)) {
-                dst.parent = currentStep.parent;
+            if (currentStep.equals(destination)) {
+                destination.parent = currentStep.parent;
                 break;
             } else if (open.isEmpty()) {
                 break;
@@ -118,14 +121,12 @@ class PathFinder {
             closed.add(currentStep);
 
             /*
-             * Check all neighbors of the currentstep.
+             * Check all neighbors of the current step.
              */
             var neighbours = getNeighbourTiles(currentStep);
-            for (int i = 0; i < neighbours.size(); i++) {
+            for (PathTile neighbour : neighbours) {
 
-                PathTile neighbour = neighbours.get(i);
-
-                if (neighbour.equals(dst)) {
+                if (neighbour.equals(destination)) {
                     neighbour.setParent(currentStep);
                     currentStep = neighbour;
                     if (debug) LOGGER.debug("reached  {}", currentStep.hex);
@@ -143,18 +144,14 @@ class PathFinder {
                 G = neighbour.calcMoveCostsFrom(currentStep);
 
                 if (!open.contains(neighbour)) {
+                    neighbour.parent = currentStep;
+                    neighbour.moveCosts = G;
+                    neighbour.calcHeuristicToDestinationAndSum(destination);
                     open.add(neighbour);
-                } else if (G >= neighbour.moveCosts) {
-                    continue;
                 }
-
-                neighbour.parent = currentStep;
-                neighbour.moveCosts = G;
-                neighbour.calcHeuristic(dst);
-                neighbour.sumHeuristicAndMoveCosts();
             }
 
-            depth += 1;
+            iterations += 1;
         }
 
         /*
@@ -162,22 +159,22 @@ class PathFinder {
          * parent tile.
          */
         ArrayList<PathTile> path = new ArrayList<>();
-        path.add(dst);
-        PathTile tileBetween = dst;
+        path.add(destination);
+        PathTile tileBetween = destination;
         while (!start.equals(tileBetween)) {
 
-            if (tileBetween.getParent() == null) {
+            tileBetween = tileBetween.getParent();
+            if (tileBetween == null) {
                 break;
             }
 
-            tileBetween = tileBetween.getParent();
             if (path.contains(tileBetween)) { //already contains the parent
                 throw new IllegalStateException("Path already contains the parent.");
             }
 
             //we accept that items can be crossed, although it is very unpleasant
-            if (!dst.equals(tileBetween) && !start.equals(tileBetween) && tileBetween.hex.item != null) {
-                LOGGER.error("Path from {} to {} runs through item {}!", start, dst, tileBetween);
+            if (!destination.equals(tileBetween) && !start.equals(tileBetween) && tileBetween.hex.item != null) {
+                LOGGER.error("Path from {} to {} runs through item {}!", start, destination, tileBetween);
             }
 
             path.add(tileBetween);

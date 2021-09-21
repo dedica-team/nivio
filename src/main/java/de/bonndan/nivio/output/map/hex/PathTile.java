@@ -45,18 +45,12 @@ class PathTile {
     }
 
     /**
-     * Calculate the heuristic costs from this tile to the destination.
+     * Calculate the heuristic costs from this tile to the destination, then sums up heuristic costs (H) and moveCosts (G)
      *
      * @param dst The destination.
      */
-    public void calcHeuristic(PathTile dst) {
+    public void calcHeuristicToDestinationAndSum(PathTile dst) {
         heuristicCosts = hex.distance(dst.hex);
-    }
-
-    /**
-     * Sum up heuristic costs (H) and moveCosts (G)
-     */
-    public void sumHeuristicAndMoveCosts() {
         sumCosts = moveCosts + heuristicCosts;
     }
 
