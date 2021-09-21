@@ -181,7 +181,7 @@ public class SVGDocument extends Component {
     }
 
     private SVGRelation getSvgRelation(LayoutedComponent layoutedItem, Item source, Relation rel) {
-        Optional<HexPath> bestPath = hexMap.getPath(source, rel.getTarget());
+        Optional<HexPath> bestPath = hexMap.getPath(source, rel.getTarget(), debug);
         if (bestPath.isPresent()) {
             SVGRelation svgRelation = new SVGRelation(bestPath.get(), layoutedItem.getColor(), rel, null);
             LOGGER.debug("Added path for item {} relation {} -> {}", source, rel.getSource(), rel.getTarget());

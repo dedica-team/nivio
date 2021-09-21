@@ -20,25 +20,24 @@ class PathFinder {
 
     @NonNull
     private final HexMap hexMap;
-
-    public boolean debug = false;
-
     private final ArrayList<PathTile> closed;
     private final ArrayList<PathTile> open;
+    private final boolean debug;
 
     static PathFinder withEmptyMap() {
-        return new PathFinder(new HexMap(false));
+        return new PathFinder(new HexMap(false), false);
     }
 
     /**
      * @param hexMap the map containing all hexes
+     * @param debug
      */
-    PathFinder(@NonNull final HexMap hexMap) {
+    PathFinder(@NonNull final HexMap hexMap, boolean debug) {
         this.hexMap = hexMap;
+        this.debug = debug;
         this.closed = new ArrayList<>();
         this.open = new ArrayList<>();
     }
-
 
     /**
      * Returns the best fitting tile in openlist to add to path based on F cost

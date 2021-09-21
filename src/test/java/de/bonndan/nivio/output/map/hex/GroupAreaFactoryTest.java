@@ -65,7 +65,7 @@ class GroupAreaFactoryTest {
         //then
         assertThat(inArea).containsAll(expectedTerritory);
 
-        PathFinder pathFinder = new PathFinder(hexMap);
+        PathFinder pathFinder = new PathFinder(hexMap, true);
         HexPath shortestPath = pathFinder.getPath(one, two).orElseThrow();
         assertThat(inArea).containsAll(shortestPath.getHexes());
 

@@ -41,7 +41,7 @@ class PathFinderTest {
     void getPath() {
 
         //given
-        PathFinder pathFinder = new PathFinder(hexMap);
+        PathFinder pathFinder = new PathFinder(hexMap, true);
 
         //when
         Optional<HexPath> path = pathFinder.getPath(one, two);
@@ -65,7 +65,7 @@ class PathFinderTest {
 
         hexMap.add(target2, obstacle);
 
-        PathFinder pathFinder = new PathFinder(hexMap);
+        PathFinder pathFinder = new PathFinder(hexMap, true);
 
         //when
         Optional<HexPath> path = pathFinder.getPath(one, two);

@@ -19,13 +19,11 @@ public class HexMap {
      * key is a {@link Hex}, value an {@link Item}
      */
     private final MapState mapState = new MapState();
-    private final PathFinder pathFinder;
 
     public HexMap(boolean debug) {
 
         // find and render relations
-        pathFinder = new PathFinder(this);
-        pathFinder.debug = debug;
+
     }
 
     static Hex forCoordinates(long x, long y) {
@@ -106,8 +104,8 @@ public class HexMap {
      * @param target the relation target item
      * @return a path if one could be found
      */
-    public Optional<HexPath> getPath(Item start, Item target) {
-        return pathFinder.getPath(hexForItem(start), hexForItem(target));
+    public Optional<HexPath> getPath(Item start, Item target, boolean debug) {
+        return new PathFinder(this, debug).getPath(hexForItem(start), hexForItem(target));
     }
 
     /**

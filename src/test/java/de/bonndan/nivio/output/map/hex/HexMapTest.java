@@ -32,7 +32,7 @@ class HexMapTest {
         hexMap.add(baz,hexMap.findFreeSpot(bazComponent.getX(), bazComponent.getY()));
 
         //when
-        Optional<HexPath> path = hexMap.getPath(bar, baz);
+        Optional<HexPath> path = hexMap.getPath(bar, baz, true);
 
         //then
         assertThat(path).isNotEmpty();
