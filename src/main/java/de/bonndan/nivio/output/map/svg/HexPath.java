@@ -154,10 +154,11 @@ public class HexPath {
             var next = hexes.get(i + 1);
 
             //directions
-            directions.add(cur.getDirectionTo(next));
+            int direction = cur.getDirectionTo(next);
+            directions.add(direction);
 
             if (i == end-1) {
-                directions.add(cur.getDirectionTo(next)); //for the last tile to the target, which is always orthogonal
+                directions.add(direction); //for the last tile to the target, which is always orthogonal
             }
         }
 

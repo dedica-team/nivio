@@ -4,6 +4,7 @@ import de.bonndan.nivio.output.map.svg.HexPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +19,26 @@ class PathFinder {
     private static final Logger LOGGER = LoggerFactory.getLogger(PathFinder.class);
     public static final int MAX_ITERATIONS = 5000;
 
+    /**
+     * Costs for moving through an item
+     */
+    public static final int ITEM_PENALTY = 1000;
+
+    /**
+     * costs for moving on group area
+     */
+    public static final int GROUP_PENALTY = 3;
+
+    /**
+     * costs for moving on tile has is part of a path area
+     */
+    private static final int PATH_PENALTY = 2;
+
+    /**
+     * Regular movement costs.
+     */
+    public static final int BASE_COSTS = 1;
+
     @NonNull
     private final HexMap hexMap;
     private final ArrayList<PathTile> closed;
@@ -30,7 +51,7 @@ class PathFinder {
 
     /**
      * @param hexMap the map containing all hexes
-     * @param debug
+     * @param debug  flag to print debug info
      */
     PathFinder(@NonNull final HexMap hexMap, boolean debug) {
         this.hexMap = hexMap;
@@ -73,17 +94,16 @@ class PathFinder {
      * @param destHex  The destination hex of the path
      * @return A list containing all tiles along the path between start and dest or nothing if no path was found
      */
-    public Optional<HexPath> getPath(Hex startHex, Hex destHex) {
+    public Optional<HexPath> getPath(@NonNull final Hex startHex, @NonNull final Hex destHex) {
         closed.clear();
         open.clear();
         var start = new PathTile(startHex);
         var destination = new PathTile(destHex);
 
-
         PathTile currentStep = start;
         open.add(0, currentStep);
 
-        int G;
+        int moveCosts;
 
         int iterations = 0;
 
@@ -100,7 +120,7 @@ class PathFinder {
             /*
              * If the tile which is currently checked (currentStep) is the
              * destination tile search can be stopped (break). The same goes for
-             * an empty list of potential tiles suited for path (openlist).
+             * an empty list of potential tiles suited for path (open list).
              */
             if (currentStep.equals(destination)) {
                 destination.parent = currentStep.parent;
@@ -110,7 +130,7 @@ class PathFinder {
             }
 
             /*
-             * Get tile with lowest F cost from openlist.
+             * Get tile with lowest F cost from open list.
              */
             currentStep = getBest();
 
@@ -137,14 +157,14 @@ class PathFinder {
                 }
 
                 /*
-                 * Get the moving costs from the currentstep to the
+                 * Get the moving costs from the current step to the
                  * neighbor.
                  */
-                G = neighbour.calcMoveCostsFrom(currentStep);
+                moveCosts = calcMoveCostsFrom(currentStep, neighbour);
 
                 if (!open.contains(neighbour)) {
                     neighbour.parent = currentStep;
-                    neighbour.moveCosts = G;
+                    neighbour.moveCosts = moveCosts;
                     neighbour.calcHeuristicToDestinationAndSum(destination);
                     open.add(neighbour);
                 }
@@ -153,10 +173,54 @@ class PathFinder {
             iterations += 1;
         }
 
+        ArrayList<PathTile> path = getPathTiles(start, destination);
+
         /*
-         * Build the path reversly iterating over the tiles by accessing their
-         * parent tile.
+         * If no path is found return null.
          */
+        if (path.isEmpty()) {
+            return Optional.empty();
+        }
+
+        List<Hex> hexes = new ArrayList<>();
+        for (PathTile tile : path) {
+            hexes.add(tile.hex);
+        }
+        return Optional.of(new HexPath(hexes));
+    }
+
+    /**
+     * Calculates the movecosts from one tile to this tile.
+     *
+     * If this tile is occupied by an item then increase the costs by factor 10 (like a wall).
+     * If this tile is not occupied by an item but from has a different group the costs are slighty raised (like a bump).
+     *
+     * @param from The tile from which we move to this tile
+     * @return The move cost from "from" to "this"
+     */
+    static int calcMoveCostsFrom(PathTile from, PathTile to) {
+
+        if (to.hex.item != null) {
+            return ITEM_PENALTY + from.moveCosts;
+        }
+
+        boolean entersGroup = from.hex.group == null && to.hex.group != null;
+        if (entersGroup) {
+            return GROUP_PENALTY + from.moveCosts;
+        }
+
+        if (to.hex.getPathDirection() != null) {
+            return PATH_PENALTY + from.moveCosts;
+        }
+
+        return BASE_COSTS + from.moveCosts;
+    }
+
+    /**
+     * Build the path reversibly iterating over the tiles by accessing their
+     * parent tile.
+     */
+    private ArrayList<PathTile> getPathTiles(PathTile start, PathTile destination) {
         ArrayList<PathTile> path = new ArrayList<>();
         path.add(destination);
         PathTile tileBetween = destination;
@@ -183,19 +247,7 @@ class PathFinder {
          * Reverse to get the path from start to dst.
          */
         Collections.reverse(path);
-
-        /*
-         * If no path is found return null.
-         */
-        if (path.isEmpty()) {
-            return Optional.empty();
-        }
-
-        List<Hex> hexes = new ArrayList<>();
-        for (PathTile tile : path) {
-            hexes.add(tile.hex);
-        }
-        return Optional.of(new HexPath(hexes));
+        return path;
     }
 
     private List<PathTile> getNeighbourTiles(PathTile current) {

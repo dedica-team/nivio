@@ -77,9 +77,6 @@ public class Hex {
      * @param r coordinate
      */
     public Hex(int q, int r) {
-        if (q + r + (r + q) * -1 != 0) {
-            throw new IllegalArgumentException("q + r + s must be 0");
-        }
         this.q = q;
         this.r = r;
         this.s = (r + q) * -1;
@@ -119,7 +116,6 @@ public class Hex {
      * Return the leftmost (q coord) of the highest (r coord) hexes.
      *
      * @param area all hexes in the area (unsorted)
-     * @return
      */
     public static Hex topLeft(Collection<Hex> area) {
         AtomicInteger q = new AtomicInteger(Integer.MAX_VALUE);
@@ -150,7 +146,7 @@ public class Hex {
             if (hex1.q == hex.q && hex1.r == hex.r) return i;
         }
 
-        throw new IllegalArgumentException("Hex " + this + ": not an adjacent hex " + hex + "given to determine direction.");
+        throw new IllegalArgumentException(String.format("Hex %s: not an adjacent hex %s given to determine direction.", this, hex));
     }
 
     public void setPathDirection(int pathDirection) {

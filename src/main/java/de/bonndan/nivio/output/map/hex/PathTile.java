@@ -11,26 +11,6 @@ import java.util.Objects;
  */
 class PathTile {
 
-    /**
-     * Costs for moving through an item
-     */
-    public static final int ITEM_PENALTY = 1000;
-
-    /**
-     * costs for moving on group area
-     */
-    public static final int GROUP_PENALTY = 3;
-
-    /**
-     * costs for moving on tile has is part of a path area
-     */
-    private static final int PATH_PENALTY = 2;
-
-    /**
-     * Regular movement costs.
-     */
-    public static final int BASE_COSTS = 1;
-
     final Hex hex;
     PathTile parent;
 
@@ -38,7 +18,7 @@ class PathTile {
     int sumCosts;
     int heuristicCosts;
 
-    public PathTile(@NonNull final Hex hex) {
+    PathTile(@NonNull final Hex hex) {
         this.hex = Objects.requireNonNull(hex);
         sumCosts = 0;
         heuristicCosts = 0;
@@ -52,33 +32,6 @@ class PathTile {
     public void calcHeuristicToDestinationAndSum(PathTile dst) {
         heuristicCosts = hex.distance(dst.hex);
         sumCosts = moveCosts + heuristicCosts;
-    }
-
-    /**
-     * Calculates the movecosts from one tile to this tile.
-     *
-     * If this tile is occupied by an item then increase the costs by factor 10 (like a wall).
-     * If this tile is not occupied by an item but from has a different group the costs are slighty raised (like a bump).
-     *
-     * @param from The tile from which we move to this tile
-     * @return The move cost from "from" to "this"
-     */
-    public int calcMoveCostsFrom(PathTile from) {
-
-        if (this.hex.item != null) {
-            return ITEM_PENALTY + from.moveCosts;
-        }
-
-        boolean entersGroup = from.hex.group == null && this.hex.group != null;
-        if (entersGroup) {
-            return GROUP_PENALTY + from.moveCosts;
-        }
-
-        if (this.hex.getPathDirection() != null) {
-            return PATH_PENALTY + from.moveCosts;
-        }
-
-        return BASE_COSTS + from.moveCosts;
     }
 
     @Override
