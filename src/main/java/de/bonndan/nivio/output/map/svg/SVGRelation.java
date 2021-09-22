@@ -92,10 +92,13 @@ class SVGRelation extends Component {
                     .attr("stroke-width", Math.round(BASIC_STROKE_WIDTH * factor));
         }
 
+        int dir = hexPath.getPortCount() % 2 > 0 ? 1 : -1;
+        int translation = (hexPath.getPortCount() - 1) * 6 * dir;
         ContainerTag path = SvgTagCreator.path()
                 .attr("d", points)
                 .attr("stroke", fillId)
-                .attr("stroke-width", innerStrokeWidth);
+                .attr("stroke-width", innerStrokeWidth)
+                .attr("transform", String.format("translate(0 %d)", translation));
 
         if (Lifecycle.isPlanned(relation.getSource()) || Lifecycle.isPlanned(relation.getTarget())) {
             path.attr("opacity", "0.5");

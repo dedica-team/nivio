@@ -6,6 +6,7 @@ import org.springframework.lang.NonNull;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A map tile is a location ({@link Hex}) on the map with a state.
@@ -16,6 +17,7 @@ public class MapTile {
     private String group;
     private final Set<Integer> pathDirections = new HashSet<>();
     private final Hex hex;
+    private final AtomicInteger portCount = new AtomicInteger(0);
 
     public MapTile(@NonNull final Hex hex) {
         this.hex = Objects.requireNonNull(hex);
@@ -70,5 +72,14 @@ public class MapTile {
                 ", pathDirection=" + pathDirections +
                 ", hex=" + hex +
                 '}';
+    }
+
+    /**
+     * Set that a path end on this tile.
+     *
+     * @return the old number of relations ending on the tile (starting at 0)
+     */
+    public int incrementPortCount() {
+        return portCount.getAndIncrement();
     }
 }

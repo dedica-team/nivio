@@ -39,10 +39,15 @@ class HexMapTest {
         //then
         assertThat(path).isNotEmpty();
 
-        path.get().getTiles().forEach(pathTile -> assertThat(pathTile.getMapTile().getPathDirections()).isNotNull());
+        List<PathTile> tiles = path.get().getTiles();
+        tiles.forEach(pathTile -> assertThat(pathTile.getMapTile().getPathDirections()).isNotNull());
 
         List<Integer> pathTileDirs = path.get().getDirections();
         assertThat(pathTileDirs).isEqualTo(List.of(NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH, NORTH, NORTH));
+
+
+        PathTile port = tiles.get(tiles.size() - 2);
+        assertThat(port.getMapTile().incrementPortCount()).isEqualTo(1);
 
     }
 

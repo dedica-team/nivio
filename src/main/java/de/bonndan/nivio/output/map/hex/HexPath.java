@@ -18,6 +18,7 @@ public class HexPath {
     private final List<String> points = new ArrayList<>();
     private final Point2D.Double endPoint;
     private final List<Integer> directions;
+    private int portCount;
 
     /**
      * @param pathTiles the hex tile chain in correct order.
@@ -134,5 +135,13 @@ public class HexPath {
 
     public List<Integer> getDirections() {
         return directions;
+    }
+
+    void setPortCount(int portCount) {
+        this.portCount = portCount;
+    }
+
+    public int getPortCount() {
+        return portCount;
     }
 }

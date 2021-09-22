@@ -98,7 +98,21 @@ public class HexMap {
      * @return a path if one could be found
      */
     public Optional<HexPath> getPath(Item start, Item target, boolean debug) {
-        return new PathFinder(this, debug).getPath(getTileForItem(start), getTileForItem(target));
+        Optional<HexPath> path = new PathFinder(this, debug).getPath(getTileForItem(start), getTileForItem(target));
+        path.ifPresent(hexPath -> {
+            List<PathTile> tiles = hexPath.getTiles();
+            for (int i = 0, tilesSize = tiles.size(); i < tilesSize; i++) {
+                PathTile tile = tiles.get(i);
+                if (tile.getDirectionFromParent() != null) {
+                    tile.getMapTile().addPathDirection(tile.getDirectionFromParent());
+                }
+                if (i == tilesSize -2) {
+                    int portCount = tile.getMapTile().incrementPortCount();
+                    hexPath.setPortCount(portCount);
+                }
+            }
+        });
+        return path;
     }
 
     /**

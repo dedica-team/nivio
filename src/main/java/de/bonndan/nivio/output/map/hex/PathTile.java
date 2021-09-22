@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.map.hex;
 
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.util.Objects;
 
@@ -64,6 +65,7 @@ public class PathTile {
         this.parent = parent;
     }
 
+    @Nullable
     public Integer getDirectionFromParent() {
         return directionFromParent;
     }
