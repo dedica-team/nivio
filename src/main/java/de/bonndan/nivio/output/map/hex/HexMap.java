@@ -32,13 +32,13 @@ public class HexMap {
         int ri = (int) Math.round(r);
         int si = (int) Math.round(s);
 
-        var q_diff = Math.abs(qi - q);
-        var r_diff = Math.abs(ri - r);
-        var s_diff = Math.abs(si - s);
+        var qDiff = Math.abs(qi - q);
+        var rDiff = Math.abs(ri - r);
+        var sDiff = Math.abs(si - s);
 
-        if (q_diff > r_diff && q_diff > s_diff) {
+        if (qDiff > rDiff && qDiff > sDiff) {
             qi = -ri - si;
-        } else if (r_diff > s_diff) {
+        } else if (rDiff > sDiff) {
             ri = -qi - si;
         }
 

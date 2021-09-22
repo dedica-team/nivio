@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Produces a point path along the centers of the given hexes.
@@ -29,8 +28,9 @@ public class HexPath {
             throw new IllegalArgumentException("Paths cannot consist of only one tile");
         }
         directions = pathTiles.stream().map(PathTile::getDirectionFromParent).filter(Objects::nonNull).collect(Collectors.toList());
-        if (!directions.isEmpty())
+        if (!directions.isEmpty()) {
             directions.add(directions.get(directions.size()-1)); //copy last
+        }
         this.endPoint = calcPoints();
     }
 
@@ -64,13 +64,6 @@ public class HexPath {
                 var newAfter = new Point2D.Double();
                 newAfter.x = next.x + (point.x - next.x) / 2;
                 newAfter.y = next.y + (point.y - next.y) / 2;
-
-                if (isLast) {
-                    newAfter.x = next.x + (point.x - next.x) / 10;
-                    newAfter.y = next.y + (point.y - next.y) / 10;
-                    points.addAll(List.of(String.valueOf(newAfter.x), ",", String.valueOf(newAfter.y)));
-                    return new Point2D.Double(point.x, point.y);
-                }
 
                 points.addAll(List.of(String.valueOf(newAfter.x), ",", String.valueOf(newAfter.y), " L"));
 

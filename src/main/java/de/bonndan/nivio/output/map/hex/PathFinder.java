@@ -15,6 +15,7 @@ import java.util.Optional;
 class PathFinder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PathFinder.class);
+
     public static final int MAX_ITERATIONS = 5000;
 
     /**
@@ -130,7 +131,6 @@ class PathFinder {
         open.add(0, currentStep);
 
         int moveCosts;
-
         int iterations = 0;
 
         while (true) {
@@ -213,7 +213,7 @@ class PathFinder {
     }
 
     /**
-     * Calculates the movecosts from one tile to this tile.
+     * Calculates the move costs from one tile to this tile.
      *
      * If this tile is occupied by an item then increase the costs by factor 10 (like a wall).
      * If this tile is not occupied by an item but from has a different group the costs are slighty raised (like a bump).
