@@ -396,10 +396,10 @@ public class FastOrganicLayout {
         var maxY = new AtomicLong(0);
 
         for (LayoutedComponent b : this.bounds) {
-            if (b.x < minX.get()) minX.set((long) b.x);
-            if (b.x > maxX.get()) maxX.set((long) b.x);
-            if (b.y < minY.get()) minY.set((long) b.y);
-            if (b.y > maxY.get()) maxY.set((long) b.y);
+            if (b.x < minX.get()) minX.set(b.x);
+            if (b.x > maxX.get()) maxX.set(b.x);
+            if (b.y < minY.get()) minY.set(b.y);
+            if (b.y > maxY.get()) maxY.set(b.y);
         }
 
         outer.setWidth(maxX.get() - minX.get());

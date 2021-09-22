@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.output.map.hex.MapTile;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.lang.NonNull;
@@ -33,7 +34,7 @@ class SVGGroupAreaOutlineFactory {
      * @return all svg elements forming the group outline
      */
     @NonNull
-    public List<DomContent> getOutline(@NonNull final Set<Hex> groupArea, @NonNull final String fillId) {
+    public List<DomContent> getOutline(@NonNull final Set<MapTile> groupArea, @NonNull final String fillId) {
 
         if (!groupArea.iterator().hasNext()) {
             return new ArrayList<>();
@@ -41,8 +42,9 @@ class SVGGroupAreaOutlineFactory {
 
         //find left top
         //start with left top
-        Hex start = Hex.topLeft(groupArea);
-        return getOutline(start, groupArea, fillId);
+        Set<Hex> hexes = groupArea.stream().map(MapTile::getHex).collect(Collectors.toUnmodifiableSet());
+        Hex start = Hex.topLeft(hexes);
+        return getOutline(start, hexes, fillId);
     }
 
     private List<DomContent> getOutline(@NonNull final Hex start, @NonNull final Set<Hex> groupArea, String fillId) {

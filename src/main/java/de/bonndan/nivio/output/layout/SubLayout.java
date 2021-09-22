@@ -42,13 +42,6 @@ public class SubLayout {
                     return;
 
                 Item other = relationItem.getTarget();
-                if (item.getGroup() == null) {
-                    throw new IllegalStateException(String.format("Item %s has no group", item));
-                }
-                if (other.getGroup() == null) {
-                    throw new IllegalStateException(String.format("Item %s has no group", other));
-                }
-
                 if (item.getGroup().equals(other.getGroup())) {
                     relationTargets.add(other);
                 }

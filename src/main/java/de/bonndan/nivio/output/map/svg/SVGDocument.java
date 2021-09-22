@@ -6,8 +6,8 @@ import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
-import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexMap;
+import de.bonndan.nivio.output.map.hex.MapTile;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import j2html.tags.UnescapedText;
@@ -57,7 +57,7 @@ public class SVGDocument extends Component {
         List<DomContent> defs = new ArrayList<>();
         List<DomContent> items = new ArrayList<>();
 
-        hexMap = new HexMap(this.debug);
+        hexMap = new HexMap();
 
         defs.add(SVGStatus.glowFilter());
         defs.add(SVGStatus.patternFor(Status.UNKNOWN));
@@ -71,7 +71,7 @@ public class SVGDocument extends Component {
             LOGGER.debug("rendering group {} with items {}", group.getComponent().getIdentifier(), group.getChildren());
             group.getChildren().forEach(layoutedItem -> {
 
-                Hex freeSpot = hexMap.findFreeSpot(layoutedItem.getX(), layoutedItem.getY());
+                MapTile freeSpot = hexMap.findFreeSpot(layoutedItem.getX(), layoutedItem.getY());
                 Item item = (Item) layoutedItem.getComponent();
                 hexMap.add(item, freeSpot);
 
@@ -83,7 +83,7 @@ public class SVGDocument extends Component {
 
                 //render icons
                 SVGItemLabel label = new SVGItemLabel(item);
-                Point2D.Double pos = hexMap.hexForItem(item).toPixel();
+                Point2D.Double pos = hexMap.getTileForItem(item).getHex().toPixel();
 
                 List<StatusValue> itemStatuses = assessment.getResults().get(item.getFullyQualifiedIdentifier().toString());
                 SVGItem svgItem = new SVGItem(label.render(), layoutedItem, itemStatuses, pos);
@@ -94,9 +94,8 @@ public class SVGDocument extends Component {
         List<SVGGroupArea> groupAreas = new ArrayList<>();
         List<DomContent> groups = layouted.getChildren().stream().map(groupLayout -> {
             Group group = (Group) groupLayout.getComponent();
-            Set<Hex> groupArea = hexMap.getGroupArea(group);
             List<StatusValue> groupStatuses = assessment.getResults().get(group.getFullyQualifiedIdentifier().toString());
-            SVGGroupArea area = SVGGroupArea.forGroup(group, groupArea, Assessable.getWorst(groupStatuses), debug);
+            SVGGroupArea area = SVGGroupArea.forGroup(group, hexMap.getGroupArea(group), Assessable.getWorst(groupStatuses), debug);
             groupAreas.add(area);
             return area.render();
         }).collect(Collectors.toList());
@@ -169,7 +168,9 @@ public class SVGDocument extends Component {
             layoutedGroup.getChildren().forEach(layoutedItem -> {
                 Item item = (Item) layoutedItem.getComponent();
                 LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
-                item.getRelations().stream()
+                //parallel streaming enables must faster rendering with the drawback that two paths more likely use the
+                // same track.
+                item.getRelations().parallelStream()
                         .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
                         .map(rel -> getSvgRelation(layoutedItem, item, rel))
                         .filter(Objects::nonNull)

@@ -15,13 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class PathFinderTest {
 
     private HexMap hexMap;
-    private Hex one;
-    private Hex two;
+    private MapTile one;
+    private MapTile two;
 
     @BeforeEach
     void setup() {
-        one = new Hex(1, 2);
-        two = new Hex(3, 5);
+        one = new MapTile(new Hex(1, 2));
+        two = new MapTile(new Hex(3, 5));
 
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item target = getTestItem("group", "target");
@@ -32,7 +32,7 @@ class PathFinderTest {
         group.addOrReplaceItem(target);
         group.addOrReplaceItem(target2);
 
-        hexMap = new HexMap(true);
+        hexMap = new HexMap();
         hexMap.add(landscapeItem, one);
         hexMap.add(target, two);
         hexMap.add(target, two);
@@ -49,9 +49,9 @@ class PathFinderTest {
 
         //then
         assertThat(path).isPresent();
-        assertThat(path.get().getHexes()).hasSize(6)
-                .contains(new Hex(2, 2))
-                .contains(new Hex(3, 4))
+        assertThat(path.get().getMapTiles()).hasSize(6)
+                .contains(new MapTile(new Hex(1, 4)))
+                .contains(new MapTile(new Hex(1, 5)))
         ;
     }
 
@@ -59,10 +59,10 @@ class PathFinderTest {
     void evadesObstacle() {
 
         //given
-        Hex obstacle = new Hex(2, 5);
+        MapTile obstacle = new MapTile(new Hex(2, 5));
 
         Item target2 = getTestItem("group", "target2");
-        obstacle.item = target2.getFullyQualifiedIdentifier().toString();
+        obstacle.setItem(target2.getFullyQualifiedIdentifier());
 
         Group group = new Group("group", "landscapeIdentifier");
         group.addOrReplaceItem(target2);
@@ -76,16 +76,16 @@ class PathFinderTest {
 
         //then
         assertThat(path).isPresent();
-        assertThat(path.get().getHexes()).hasSize(6).doesNotContain(obstacle);
+        assertThat(path.get().getMapTiles()).hasSize(6).doesNotContain(obstacle);
     }
 
     @Test
     void noExtraCost() {
-        Hex fromHex = new Hex(3,2);
+        MapTile fromHex = new MapTile(new Hex(3,2));
         PathTile from = new PathTile(fromHex);
         from.moveCosts = 1;
 
-        Hex toHex = new Hex(3,3);
+        MapTile toHex = new MapTile(new Hex(3,3));
         PathTile to = new PathTile(toHex);
 
         //when
@@ -95,11 +95,11 @@ class PathFinderTest {
 
     @Test
     void pathCosts() {
-        Hex fromHex = new Hex(3,2);
+        MapTile fromHex = new MapTile(new Hex(3,2));
         PathTile from = new PathTile(fromHex);
         from.moveCosts = 1;
 
-        Hex toHex = new Hex(3,3);
+        MapTile toHex =  new MapTile(new Hex(3,3));
         toHex.setPathDirection(1);
         PathTile to = new PathTile(toHex);
 
@@ -110,12 +110,12 @@ class PathFinderTest {
 
     @Test
     void groupCostMore() {
-        Hex fromHex = new Hex(3,2);
+        MapTile fromHex = new MapTile(new Hex(3,2));
         PathTile from = new PathTile(fromHex);
         from.moveCosts = 1;
 
-        Hex toHex = new Hex(3,3);
-        toHex.group = "foo/bar";
+        MapTile toHex = new MapTile(new Hex(3,3));
+        toHex.setGroup("bar");
         PathTile to = new PathTile(toHex);
 
         //when
@@ -125,29 +125,30 @@ class PathFinderTest {
 
     @Test
     void groupCostSameIfComingFromGroup() {
-        Hex fromHex = new Hex(3,2);
+        MapTile fromHex = new MapTile(new Hex(3,2));
         PathTile from = new PathTile(fromHex);
         from.moveCosts = 1;
-        from.hex.group = "foo/other";
+        from.mapTile.setGroup("foo/other");
 
-        Hex toHex = new Hex(3,3);
-        toHex.group = "foo/bar";
+        MapTile toHex = new MapTile(new Hex(3,3));
+        toHex.setGroup("foo/bar");
         PathTile to = new PathTile(toHex);
 
         //when
         int costs = PathFinder.calcMoveCostsFrom(from, to);
-        assertEquals(2, costs);
+        assertEquals(3, costs);
     }
 
     @Test
     void itemsBlock() {
-        Hex fromHex = new Hex(3,2);
+        MapTile fromHex = new MapTile(new Hex(3,2));
         PathTile from = new PathTile(fromHex);
         from.moveCosts = 1;
 
-        Hex toHex = new Hex(3,3);
-        toHex.item = "foo/bar/baz";
-        toHex.group = "foo/bar";
+        Item block = getTestItem("foo", "block");
+        MapTile toHex = new MapTile(new Hex(3,3));
+        toHex.setGroup(block.getGroup());
+        toHex.setItem(block.getFullyQualifiedIdentifier());
         PathTile to = new PathTile(toHex);
 
         //when

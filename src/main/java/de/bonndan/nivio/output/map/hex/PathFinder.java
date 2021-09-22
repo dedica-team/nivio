@@ -4,7 +4,6 @@ import de.bonndan.nivio.output.map.svg.HexPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,9 +24,14 @@ class PathFinder {
     public static final int ITEM_PENALTY = 1000;
 
     /**
+     * costs for entering a group area
+     */
+    public static final int GROUP_ENTER_PENALTY = 3;
+
+    /**
      * costs for moving on group area
      */
-    public static final int GROUP_PENALTY = 3;
+    public static final int GROUP_MOVE_PENALTY = 2;
 
     /**
      * costs for moving on tile has is part of a path area
@@ -46,7 +50,7 @@ class PathFinder {
     private final boolean debug;
 
     static PathFinder withEmptyMap() {
-        return new PathFinder(new HexMap(false), false);
+        return new PathFinder(new HexMap(), false);
     }
 
     /**
@@ -94,7 +98,7 @@ class PathFinder {
      * @param destHex  The destination hex of the path
      * @return A list containing all tiles along the path between start and dest or nothing if no path was found
      */
-    public Optional<HexPath> getPath(@NonNull final Hex startHex, @NonNull final Hex destHex) {
+    public Optional<HexPath> getPath(@NonNull final MapTile startHex, @NonNull final MapTile destHex) {
         closed.clear();
         open.clear();
         var start = new PathTile(startHex);
@@ -148,7 +152,7 @@ class PathFinder {
                 if (neighbour.equals(destination)) {
                     neighbour.setParent(currentStep);
                     currentStep = neighbour;
-                    if (debug) LOGGER.debug("reached  {}", currentStep.hex);
+                    if (debug) LOGGER.debug("reached  {}", currentStep.mapTile);
                     break;
                 }
 
@@ -182,9 +186,9 @@ class PathFinder {
             return Optional.empty();
         }
 
-        List<Hex> hexes = new ArrayList<>();
+        List<MapTile> hexes = new ArrayList<>();
         for (PathTile tile : path) {
-            hexes.add(tile.hex);
+            hexes.add(tile.mapTile);
         }
         return Optional.of(new HexPath(hexes));
     }
@@ -200,16 +204,20 @@ class PathFinder {
      */
     static int calcMoveCostsFrom(PathTile from, PathTile to) {
 
-        if (to.hex.item != null) {
+        if (to.mapTile.getItem() != null) {
             return ITEM_PENALTY + from.moveCosts;
         }
 
-        boolean entersGroup = from.hex.group == null && to.hex.group != null;
+        boolean entersGroup = from.mapTile.getGroup() == null && to.mapTile.getGroup() != null;
         if (entersGroup) {
-            return GROUP_PENALTY + from.moveCosts;
+            return GROUP_ENTER_PENALTY + from.moveCosts;
+        }
+        boolean inGroup = from.mapTile.getGroup() != null && to.mapTile.getGroup() != null;
+        if (inGroup) {
+            return GROUP_MOVE_PENALTY + from.moveCosts;
         }
 
-        if (to.hex.getPathDirection() != null) {
+        if (to.mapTile.getPathDirection() != null) {
             return PATH_PENALTY + from.moveCosts;
         }
 
@@ -236,7 +244,7 @@ class PathFinder {
             }
 
             //we accept that items can be crossed, although it is very unpleasant
-            if (!destination.equals(tileBetween) && !start.equals(tileBetween) && tileBetween.hex.item != null) {
+            if (!destination.equals(tileBetween) && !start.equals(tileBetween) && tileBetween.mapTile.getItem() != null) {
                 LOGGER.error("Path from {} to {} runs through item {}!", start, destination, tileBetween);
             }
 
@@ -252,7 +260,7 @@ class PathFinder {
 
     private List<PathTile> getNeighbourTiles(PathTile current) {
         List<PathTile> neighbours = new ArrayList<>();
-        hexMap.getNeighbours(current.hex).forEach(hex -> neighbours.add(new PathTile(hex)));
+        hexMap.getNeighbours(current.mapTile.getHex()).forEach(hex -> neighbours.add(new PathTile(hex)));
         return neighbours;
     }
 

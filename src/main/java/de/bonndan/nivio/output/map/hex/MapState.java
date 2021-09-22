@@ -4,14 +4,15 @@ import de.bonndan.nivio.model.Item;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Internal state of the map.
  */
 class MapState {
 
-    private final Map<Object, Hex> itemToHex = new HashMap<>();
-    private final Map<Hex, Hex> keyMap = new HashMap<>();
+    private final Map<Object, MapTile> itemToTile = new ConcurrentHashMap<>();
+    private final Map<Hex, MapTile> keyMap = new ConcurrentHashMap<>();
 
     boolean contains(Hex hex) {
         return keyMap.containsKey(hex);
@@ -21,35 +22,35 @@ class MapState {
         if (!contains(hex)) {
             return false;
         }
-        return StringUtils.hasLength(keyMap.get(hex).item);
+        return keyMap.get(hex).getItem() != null;
     }
 
-    Hex add(Hex hex, Object o) {
-        Hex existing = keyMap.get(hex);
+    MapTile add(MapTile mapTile, Object o) {
+        MapTile existing = keyMap.get(mapTile.getHex());
         if (existing != null) {
             //merge
-            if (hex.item != null) {
-                existing.item = hex.item;
+            if (mapTile.getItem() != null) {
+                existing.setItem(mapTile.getItem());
             }
 
-            if (hex.group != null) {
-                existing.group = hex.group;
+            if (mapTile.getGroup() != null) {
+                existing.setGroup(mapTile.getGroup());
             }
 
-            if (hex.getPathDirection() != null) {
-                existing.setPathDirection(hex.getPathDirection());
+            if (mapTile.getPathDirection() != null) {
+                existing.setPathDirection(mapTile.getPathDirection());
             }
-            itemToHex.put(o,hex); //may now contain more than one equal hex
+            itemToTile.put(o, mapTile); //may now contain more than one equal hex
             return existing;
         }
 
-        keyMap.put(hex, hex);
-        itemToHex.put(o, hex);
-        return hex;
+        keyMap.put(mapTile.getHex(), mapTile);
+        itemToTile.put(o, mapTile);
+        return mapTile;
     }
 
-    Optional<Hex> getHexForItem(Item item) {
-        return Optional.ofNullable(itemToHex.get(item));
+    Optional<MapTile> getHexForItem(Item item) {
+        return Optional.ofNullable(itemToTile.get(item));
     }
 
     /**
@@ -58,9 +59,9 @@ class MapState {
      * @param hex hex to look up
      * @return stored hex
      */
-     Hex getOrAdd(Hex hex) {
+    MapTile getOrAdd(Hex hex) {
         if (!keyMap.containsKey(hex)) {
-            return add(hex, UUID.randomUUID());
+            return add(new MapTile(hex), UUID.randomUUID());
         }
 
         return keyMap.get(hex);

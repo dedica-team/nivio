@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.output.map.hex.MapTile;
 import org.springframework.lang.NonNull;
 
 import java.awt.geom.Point2D;
@@ -15,21 +16,21 @@ import java.util.stream.IntStream;
  */
 public class HexPath {
 
-    private final List<Hex> hexes;
+    private final List<MapTile> mapTiles;
     private final List<String> points = new ArrayList<>();
     private List<Hex> bends;
     private final Point2D.Double endPoint;
 
     /**
-     * @param hexes the hex tile chain in correct order.
+     * @param mapTiles the hex tile chain in correct order.
      */
-    public HexPath(@NonNull final List<Hex> hexes) {
-        this.hexes = Objects.requireNonNull(hexes);
-        if (hexes.size() < 2) {
+    public HexPath(@NonNull final List<MapTile> mapTiles) {
+        this.mapTiles = Objects.requireNonNull(mapTiles);
+        if (mapTiles.size() < 2) {
             throw new IllegalArgumentException("Paths cannot consist of only one tile");
         }
         calcBends();
-        calcDirections(hexes);
+        calcDirections(mapTiles);
         this.endPoint = calcPoints();
     }
 
@@ -39,17 +40,17 @@ public class HexPath {
     private Point2D.Double calcPoints() {
         points.add("M");
 
-        for (var i = 0; i < hexes.size(); i++) {
-            var hex = hexes.get(i);
-            var prev = i > 0 ? hexes.get(i - 1).toPixel() : hex.toPixel(); //i==0 does not matter
+        for (var i = 0; i < mapTiles.size(); i++) {
+            var mapTile = mapTiles.get(i);
+            var prev = i > 0 ? mapTiles.get(i - 1).getHex().toPixel() : mapTile.getHex().toPixel(); //i==0 does not matter
 
             //the last segment needs to have half the length so we can draw an endpoint marker there
-            boolean isLast = i == hexes.size() - 1;
+            boolean isLast = i == mapTiles.size() - 1;
             var newBefore = new Point2D.Double();
-            var point = hex.toPixel();
-            if (this.isBend(hex)) {
+            var point = mapTile.getHex().toPixel();
+            if (this.isBend(mapTile)) {
                 //cubic curve
-                var next = hexes.get(i + 1).toPixel();
+                var next = mapTiles.get(i + 1).getHex().toPixel();
 
                 newBefore.x = prev.x + (point.x - prev.x) / 2;
                 newBefore.y = prev.y + (point.y - prev.y) / 2;
@@ -87,10 +88,11 @@ public class HexPath {
     }
 
     /**
-     * Returns all hex tiles which are part of the path.
+     * Returns all tiles which are part of the path.
+     *
      */
-    public List<Hex> getHexes() {
-        return Collections.unmodifiableList(hexes);
+    public List<MapTile> getMapTiles() {
+        return Collections.unmodifiableList(mapTiles);
     }
 
     /**
@@ -109,10 +111,10 @@ public class HexPath {
         return endPoint;
     }
 
-    private boolean isBend(Hex hex) {
+    private boolean isBend(MapTile mapTile) {
 
         for (Hex bend : this.bends) {
-            if (bend.q == hex.q && bend.r == hex.r) {
+            if (bend.q == mapTile.getHex().q && bend.r == mapTile.getHex().r) {
                 return true;
             }
         }
@@ -128,10 +130,10 @@ public class HexPath {
 
         bends = new ArrayList<>();
         //bends
-        IntStream.range(1, hexes.size() - 1).forEach(i -> {
-            var prev = hexes.get(i - 1);
-            var cur = hexes.get(i);
-            var next = hexes.get(i + 1);
+        IntStream.range(1, mapTiles.size() - 1).forEach(i -> {
+            var prev = mapTiles.get(i - 1).getHex();
+            var cur = mapTiles.get(i).getHex();
+            var next = mapTiles.get(i + 1).getHex();
             var qBend = (prev.q == cur.q && next.q != cur.q) || (prev.q != cur.q && next.q == cur.q);
             var rBend = (prev.r == cur.r && next.r != cur.r) || (prev.r != cur.r && next.r == cur.r);
             if (qBend || rBend) {
@@ -143,15 +145,15 @@ public class HexPath {
     /**
      * Returns the bends from a list of adjacent hexes (a chain).
      *
-     * @param hexes the hex chain
+     * @param mapTiles the hex chain
      */
-    void calcDirections(final List<Hex> hexes) {
+    void calcDirections(final List<MapTile> mapTiles) {
 
         List<Integer> directions = new ArrayList<>();
-        int end = hexes.size() - 1;
+        int end = mapTiles.size() - 1;
         for (var i = 0; i < end; i++) {
-            var cur = hexes.get(i);
-            var next = hexes.get(i + 1);
+            var cur = mapTiles.get(i).getHex();
+            var next = mapTiles.get(i + 1).getHex();
 
             //directions
             int direction = cur.getDirectionTo(next);
@@ -162,8 +164,8 @@ public class HexPath {
             }
         }
 
-        for (int i = 0, hexesSize = hexes.size(); i < hexesSize; i++) {
-            Hex hex = hexes.get(i);
+        for (int i = 0, hexesSize = mapTiles.size(); i < hexesSize; i++) {
+            MapTile hex = mapTiles.get(i);
             hex.setPathDirection(directions.get(i));
         }
     }

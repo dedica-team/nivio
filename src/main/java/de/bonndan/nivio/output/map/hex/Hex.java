@@ -64,10 +64,6 @@ public class Hex {
      */
     public final int s;
 
-    public String item;
-    public String group;
-    private Integer pathDirection;
-
     /**
      * https://www.redblobgames.com/grids/hexagons/implementation.html
      *
@@ -149,15 +145,6 @@ public class Hex {
         throw new IllegalArgumentException(String.format("Hex %s: not an adjacent hex %s given to determine direction.", this, hex));
     }
 
-    public void setPathDirection(int pathDirection) {
-        this.pathDirection = pathDirection;
-    }
-
-    public Integer getPathDirection() {
-        return pathDirection;
-    }
-
-
     /**
      * flat orientation (flat top)
      */
@@ -189,8 +176,6 @@ public class Hex {
     /**
      * Returns the outline (corners) of a flat top hex as points.
      *
-     * @param size
-     * @return
      */
     public List<Point2D.Double> asPoints(int size) {
 
@@ -210,7 +195,6 @@ public class Hex {
         return "Hex{" +
                 "q=" + q +
                 ", r=" + r +
-                ", id='" + item + '\'' +
                 '}';
     }
 

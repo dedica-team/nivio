@@ -13,6 +13,8 @@ import java.util.function.Consumer;
  */
 public class SVGDimensionFactory {
 
+    private SVGDimensionFactory() {}
+
     static SVGDimension getDimension(List<SVGGroupArea> groupAreas, List<SVGRelation> relations) {
 
         AtomicInteger minX = new AtomicInteger(Integer.MAX_VALUE);
@@ -60,11 +62,9 @@ public class SVGDimensionFactory {
             }
         };
         //fix viewport, because xy and hex coordinate system have different offsets
-        groupAreas.forEach(svgGroupArea -> {
-            svgGroupArea.getGroupArea().forEach(setBounds::accept);
-        });
+        groupAreas.forEach(svgGroupArea -> svgGroupArea.getGroupArea().forEach(t -> setBounds.accept(t.getHex())));
 
-        relations.forEach(svgRelation -> svgRelation.getHexPath().getHexes().forEach(setBounds::accept));
+        relations.forEach(svgRelation -> svgRelation.getHexPath().getMapTiles().forEach(t -> setBounds.accept(t.getHex())));
 
         SVGDimension.BoundingBox hex = new SVGDimension.BoundingBox(
                 minQ.get(),

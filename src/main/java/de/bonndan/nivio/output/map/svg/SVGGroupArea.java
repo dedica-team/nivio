@@ -4,6 +4,7 @@ import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.output.map.hex.MapTile;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ class SVGGroupArea extends Component {
     private final Group group;
 
     @NonNull
-    private final Set<Hex> groupArea;
+    private final Set<MapTile> groupArea;
 
     @Nullable
     private final List<DomContent> outlines;
@@ -44,14 +45,13 @@ class SVGGroupArea extends Component {
 
     /**
      * Builds an areas of hex tiles belonging to a group.
-     *
-     * @param group       the group
+     *  @param group       the group
      * @param inArea      all hex tiles forming an area
      * @param groupStatus assessment status summary of the group
      * @param debug       turn on debugging
      */
     public static SVGGroupArea forGroup(@NonNull final Group group,
-                                        @NonNull final Set<Hex> inArea,
+                                        @NonNull final Set<MapTile> inArea,
                                         @NonNull final StatusValue groupStatus,
                                         boolean debug
     ) {
@@ -66,7 +66,7 @@ class SVGGroupArea extends Component {
     }
 
     SVGGroupArea(@NonNull final Group group,
-                 @NonNull final Set<Hex> groupArea,
+                 @NonNull final Set<MapTile> groupArea,
                  @NonNull final List<DomContent> outlines,
                  @NonNull final StatusValue groupStatus
     ) {
@@ -76,10 +76,10 @@ class SVGGroupArea extends Component {
         this.groupStatus = groupStatus;
 
         AtomicReference<Hex> lowest = new AtomicReference<>(null);
-        groupArea.forEach(hex -> {
-            Point2D.Double coords = hex.toPixel();
+        groupArea.forEach(tile -> {
+            Point2D.Double coords = tile.getHex().toPixel();
             if (lowest.get() == null || coords.y > lowest.get().toPixel().y)
-                lowest.set(hex);
+                lowest.set(tile.getHex());
         });
         anchor = lowest.get() != null ? lowest.get().toPixel() : new Point2D.Double(0, 0);
 
@@ -135,7 +135,7 @@ class SVGGroupArea extends Component {
     }
 
     @NonNull
-    public Set<Hex> getGroupArea() {
+    public Set<MapTile> getGroupArea() {
         return Collections.unmodifiableSet(groupArea);
     }
 }

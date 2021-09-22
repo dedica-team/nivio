@@ -11,15 +11,15 @@ import java.util.Objects;
  */
 class PathTile {
 
-    final Hex hex;
+    final MapTile mapTile;
     PathTile parent;
 
     int moveCosts = 0;
     int sumCosts;
     int heuristicCosts;
 
-    PathTile(@NonNull final Hex hex) {
-        this.hex = Objects.requireNonNull(hex);
+    PathTile(@NonNull final MapTile mapTile) {
+        this.mapTile = Objects.requireNonNull(mapTile);
         sumCosts = 0;
         heuristicCosts = 0;
     }
@@ -30,7 +30,7 @@ class PathTile {
      * @param dst The destination.
      */
     public void calcHeuristicToDestinationAndSum(PathTile dst) {
-        heuristicCosts = hex.distance(dst.hex);
+        heuristicCosts = mapTile.getHex().distance(dst.mapTile.getHex());
         sumCosts = moveCosts + heuristicCosts;
     }
 
@@ -42,12 +42,12 @@ class PathTile {
         }
         PathTile other = (PathTile) obj;
 
-        return other.hex.equals(this.hex);
+        return other.mapTile.equals(this.mapTile);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hex);
+        return Objects.hash(mapTile);
     }
 
     public PathTile getParent() {
@@ -60,6 +60,6 @@ class PathTile {
 
     @Override
     public String toString() {
-        return "Tile{" + "hex=" + hex + '}';
+        return "Tile{" + "hex=" + mapTile + '}';
     }
 }

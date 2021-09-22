@@ -4,10 +4,10 @@ import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.output.map.hex.MapTile;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,11 +17,11 @@ import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SVGRelationTest {
 
-    private Landscape landscape;
     private Item foo;
     private Item bar;
     private HexPath hexpath;
@@ -30,16 +30,16 @@ class SVGRelationTest {
 
     @BeforeEach
     void setup() {
-        landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
+        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
         foo = getTestItem(Layer.domain.name(), "foo", landscape);
         bar = getTestItem(Layer.domain.name(), "bar", landscape);
-        hexpath = new HexPath(List.of(new Hex(1, 2), new Hex(1, 3)));
+        hexpath = new HexPath(List.of(new MapTile(new Hex(1, 2)), new MapTile(new Hex(1, 3))));
         statusValue = new StatusValue("foo", Status.GREEN);
     }
 
     @Test
     @DisplayName("items without groups use proper fqi")
-    public void relationContainsBothEnds() {
+    void relationContainsBothEnds() {
 
         Relation itemRelationItem = RelationFactory.createForTesting(foo, bar);
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
@@ -52,7 +52,7 @@ class SVGRelationTest {
     }
 
     @Test
-    public void providerRelationsContainsEndpoint() {
+    void providerRelationsContainsEndpoint() {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
 
@@ -65,9 +65,9 @@ class SVGRelationTest {
         assertTrue(render1.contains("circle"));
     }
 
-    @Disabled // dataflow has no endpoint marker anymore/yet
+    //@Disabled // dataflow has no endpoint marker anymore/yet
     @Test
-    public void dataflowRelationsContainsEndpoint() {
+    void dataflowRelationsContainsEndpoint() {
 
         //given
         Relation relation = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
@@ -82,7 +82,7 @@ class SVGRelationTest {
     }
 
     @Test
-    public void relationIsNotDashedWhenNotPlanned() {
+    void relationIsNotDashedWhenNotPlanned() {
 
         //only works with provider relations, because dataflow inner path is dashed
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
@@ -97,7 +97,7 @@ class SVGRelationTest {
     }
 
     @Test
-    public void dataflowRelationIsDashed() {
+    void dataflowRelationIsDashed() {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
 
@@ -111,7 +111,7 @@ class SVGRelationTest {
     }
 
     @Test
-    public void supportsVisualFocus() {
+    void supportsVisualFocus() {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
@@ -126,7 +126,7 @@ class SVGRelationTest {
     }
 
     @Test
-    public void weightDeterminesStrokeWidth() {
+    void weightDeterminesStrokeWidth() {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
         itemRelationItem.setLabel(Label.weight, "2.44");
@@ -143,7 +143,7 @@ class SVGRelationTest {
 
     @Test
     @DisplayName("The dataflow marker is not null")
-    public void marker() {
+    void marker() {
         ContainerTag containerTag = SVGRelation.dataflowMarker();
         assertThat(containerTag).isNotNull();
         assertThat(containerTag.getTagName()).isEqualTo("marker");

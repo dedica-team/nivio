@@ -7,6 +7,7 @@ import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexMap;
+import de.bonndan.nivio.output.map.hex.MapTile;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -20,8 +21,8 @@ class SVGGroupAreaTest {
 
     @Test
     void hasFQI() {
-        Hex e1 = new Hex(1, 1);
-        Hex e2 = new Hex(3, 3);
+        MapTile e1 = new MapTile(new Hex(1, 1));
+        MapTile e2 = new MapTile(new Hex(3, 3));
 
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item landscapeItem2 = getTestItem("group", "bar");
@@ -30,12 +31,12 @@ class SVGGroupAreaTest {
         group.addOrReplaceItem(landscapeItem);
         group.addOrReplaceItem(landscapeItem2);
 
-        HexMap hexMap = new HexMap(true);
+        HexMap hexMap = new HexMap();
         hexMap.add(landscapeItem, e1);
         hexMap.add(landscapeItem2, e2);
 
 
-        Set<Hex> area = GroupAreaFactory.getGroup(hexMap, group);
+        Set<MapTile> area = GroupAreaFactory.getGroup(hexMap, group);
         SVGGroupArea svgGroupArea = SVGGroupArea.forGroup(group, area, new StatusValue("foo", Status.GREEN), false);
 
         assertThat(svgGroupArea.render().render()).contains(group.getFullyQualifiedIdentifier().jsonValue());
@@ -43,8 +44,8 @@ class SVGGroupAreaTest {
 
     @Test
     void supportsVisualFocus() {
-        Hex e1 = new Hex(1, 1);
-        Hex e2 = new Hex(3, 3);
+        MapTile e1 = new MapTile(new Hex(1, 1));
+        MapTile e2 = new MapTile(new Hex(3, 3));
 
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item landscapeItem2 = getTestItem("group", "bar");
@@ -53,11 +54,11 @@ class SVGGroupAreaTest {
         group.addOrReplaceItem(landscapeItem);
         group.addOrReplaceItem(landscapeItem2);
 
-        HexMap hexMap = new HexMap(true);
+        HexMap hexMap = new HexMap();
         hexMap.add(landscapeItem, e1);
         hexMap.add(landscapeItem2, e2);
 
-        Set<Hex> area = GroupAreaFactory.getGroup(hexMap, group);
+        Set<MapTile> area = GroupAreaFactory.getGroup(hexMap, group);
         SVGGroupArea svgGroupArea = SVGGroupArea.forGroup(group, area, new StatusValue("foo", Status.GREEN), false);
 
         //then

@@ -13,10 +13,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MapStateTest {
 
     private MapState mapState;
+    private Item testItem;
 
     @BeforeEach
     void setUp() {
         mapState = new MapState();
+        testItem = ItemFactory.getTestItem("bar", "foo");
     }
 
     @Test
@@ -26,30 +28,30 @@ class MapStateTest {
 
     @Test
     void containsEqual() {
-        mapState.add(new Hex(0,0), "foo");
+        mapState.add(new MapTile(new Hex(0,0)), "foo");
         assertThat(mapState.contains(new Hex(0,0))).isTrue();
     }
 
     @Test
     void containsSame() {
-        Hex hex = new Hex(0, 0);
-        mapState.add(hex, "foo");
-        assertThat(mapState.contains(hex)).isTrue();
+        MapTile mapTile = new MapTile(new Hex(0, 0));
+        mapState.add(mapTile, "foo");
+        assertThat(mapState.contains(mapTile.getHex())).isTrue();
     }
 
     @Test
     void hasItem() {
-        Hex hex = new Hex(0, 0);
-        hex.item = "foo";
-        mapState.add(hex, "foo");
-        assertThat(mapState.hasItem(hex)).isTrue();
+        MapTile mapTile = new MapTile(new Hex(0, 0));
+        mapTile.setItem(testItem.getFullyQualifiedIdentifier());
+        mapState.add(mapTile, "foo");
+        assertThat(mapState.hasItem(mapTile.getHex())).isTrue();
     }
 
     @Test
     void hasNoItem() {
-        Hex hex = new Hex(0, 0);
-        mapState.add(hex, "foo");
-        assertThat(mapState.hasItem(hex)).isFalse();
+        MapTile mapTile = new MapTile(new Hex(0, 0));
+        mapState.add(mapTile, "foo");
+        assertThat(mapState.hasItem(mapTile.getHex())).isFalse();
     }
 
     @Test
@@ -60,60 +62,63 @@ class MapStateTest {
     @Test
     void add() {
 
-        Hex hex = new Hex(0, 0);
-        Hex added = mapState.add(hex, "foo");
+        MapTile mapTile = new MapTile(new Hex(0, 0));
+        MapTile added = mapState.add(mapTile, "foo");
 
-        assertThat(mapState.contains(added)).isTrue();
-        assertThat(mapState.contains(hex)).isTrue();
-        assertThat(added).isSameAs(hex);
+        assertThat(mapState.contains(added.getHex())).isTrue();
+        assertThat(mapState.contains(mapTile.getHex())).isTrue();
+        assertThat(added).isSameAs(mapTile);
     }
 
     @Test
     void addWithExisting() {
 
-        Hex hex = new Hex(0, 0);
-        mapState.add(hex, UUID.randomUUID().toString());
+        MapTile mapTile = new MapTile(new Hex(0, 0));
+        mapState.add(mapTile, UUID.randomUUID().toString());
 
-        Hex other = new Hex(0, 0);
-        other.item = "bar";
-        other.group = "foo";
-        Hex inMap = mapState.add(other, ItemFactory.getTestItem("foo", "bar"));
+        MapTile other = new MapTile(new Hex(0, 0));
+        other.setItem(testItem.getFullyQualifiedIdentifier());
+        other.setGroup(testItem.getFullyQualifiedIdentifier().getGroup());
 
-        assertThat(inMap).isSameAs(hex);
-        assertThat(inMap.group).isEqualTo("foo");
-        assertThat(inMap.item).isEqualTo("bar");
+        //when
+        MapTile inMap = mapState.add(other, testItem);
+
+        assertThat(inMap).isSameAs(mapTile);
+        assertThat(inMap.getGroup()).isEqualTo(testItem.getGroup());
+        assertThat(inMap.getItem()).isEqualTo(testItem.getFullyQualifiedIdentifier());
     }
 
     @Test
     void getHexForItem() {
-        Hex hex = new Hex(0, 0);
-        hex.item = "bar";
-        hex.group = "foo";
         Item testItem = ItemFactory.getTestItem("foo", "bar");
-        mapState.add(hex, testItem);
+        MapTile mapTile = new MapTile(new Hex(0, 0));
+        mapTile.setItem(testItem.getFullyQualifiedIdentifier());
+        mapTile.setGroup("foo");
+
+        mapState.add(mapTile, testItem);
 
         //when
-        Optional<Hex> hexForItem = mapState.getHexForItem(testItem);
+        Optional<MapTile> hexForItem = mapState.getHexForItem(testItem);
 
         //then
-        assertThat(hexForItem).isPresent().get().isEqualTo(hex);
+        assertThat(hexForItem).isPresent().get().isEqualTo(mapTile);
 
     }
 
     @Test
     void getOrAdd() {
         Hex hex = new Hex(0, 0);
-        Hex key = mapState.getOrAdd(hex);
-        assertThat(hex).isSameAs(key);
+        MapTile key = mapState.getOrAdd(hex);
+        assertThat(key.getHex()).isSameAs(hex);
     }
 
     @Test
     void getOrAddExisting() {
         Hex hex = new Hex(0, 0);
-        mapState.add(hex, "foo");
+        mapState.add(new MapTile(hex), "foo");
 
         //when
-        Hex key = mapState.getOrAdd(new Hex(0,0));
-        assertThat(hex).isSameAs(key);
+        MapTile key = mapState.getOrAdd(new Hex(0,0));
+        assertThat(hex).isSameAs(key.getHex());
     }
 }

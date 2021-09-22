@@ -15,14 +15,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GroupAreaFactoryTest {
 
-    private final Set<Hex> expectedTerritory = UnmodifiableSet.unmodifiableSet(Set.of(
-            new Hex(0, 3),
-            new Hex(1, 3),
-            new Hex(1, 2),
-            new Hex(2, 2),
-            new Hex(0, 2),
-            new Hex(2, 1),
-            new Hex(1, 1)
+    private final Set<MapTile> expectedTerritory = UnmodifiableSet.unmodifiableSet(Set.of(
+            new MapTile(new Hex(0, 3)),
+            new MapTile(new Hex(1, 3)),
+            new MapTile(new Hex(1, 2)),
+            new MapTile(new Hex(2, 2)),
+            new MapTile(new Hex(0, 2)),
+            new MapTile(new Hex(2, 1)),
+            new MapTile(new Hex(1, 1))
     ));
 
     /**
@@ -30,23 +30,23 @@ class GroupAreaFactoryTest {
      */
     @Test
     void getBridges() {
-        Set<Hex> inArea = new HashSet<>();
+        Set<MapTile> inArea = new HashSet<>();
         //vertical with one hex gap
-        inArea.add(new Hex(3, 1));
-        inArea.add(new Hex(3, 3));
+        inArea.add(new MapTile(new Hex(3, 1)));
+        inArea.add(new MapTile(new Hex(3, 3)));
 
-        HexMap hexMap = new HexMap(true);
+        HexMap hexMap = new HexMap();
 
         //when
-        Set<Hex> bridges = GroupAreaFactory.getBridges(hexMap, inArea, 2);
+        Set<MapTile> bridges = GroupAreaFactory.getBridges(hexMap, inArea, 2);
         assertEquals(1, bridges.size());
-        assertEquals(new Hex(3, 2), bridges.iterator().next());
+        assertEquals(new Hex(3, 2), bridges.iterator().next().getHex());
     }
 
     @Test
     void addHexesWithClosestPaths() {
-        Hex one = new Hex(1, 2);
-        Hex two = new Hex(3, 5);
+        MapTile one = new MapTile(new Hex(1, 2));
+        MapTile two = new MapTile(new Hex(3, 5));
 
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item target = getTestItem("group", "target");
@@ -55,26 +55,26 @@ class GroupAreaFactoryTest {
         group.addOrReplaceItem(landscapeItem);
         group.addOrReplaceItem(target);
 
-        HexMap hexMap = new HexMap(true);
+        HexMap hexMap = new HexMap();
         hexMap.add(landscapeItem, one);
         hexMap.add(target, two);
 
         //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexMap, group);
+        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group);
 
         //then
         assertThat(inArea).containsAll(expectedTerritory);
 
         PathFinder pathFinder = new PathFinder(hexMap, true);
         HexPath shortestPath = pathFinder.getPath(one, two).orElseThrow();
-        assertThat(inArea).containsAll(shortestPath.getHexes());
+        assertThat(inArea).containsAll(shortestPath.getMapTiles());
 
     }
 
     @Test
     void justAddsHexAndNeighbours() {
-        Hex one = new Hex(1, 2);
-        Hex two = new Hex(3, 3);
+        MapTile one = new MapTile(new Hex(1, 2));
+        MapTile two = new MapTile(new Hex(3, 3));
 
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item target = getTestItem("group", "target");
@@ -82,12 +82,12 @@ class GroupAreaFactoryTest {
         Group group = new Group("group", "landscapeIdentifier");
         group.addOrReplaceItem(landscapeItem);
 
-        HexMap hexMap = new HexMap(true);
+        HexMap hexMap = new HexMap();
         hexMap.add(landscapeItem, one);
         hexMap.add(target, two);
 
         //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexMap, group);
+        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group);
 
         //then
         assertThat(inArea).isEqualTo(expectedTerritory);
@@ -96,8 +96,8 @@ class GroupAreaFactoryTest {
     @Test
     void doesNotAddUnnecessaryTiles() {
 
-        Hex one = new Hex(4, 4);
-        Hex two = new Hex(6, 4);
+        MapTile one = new MapTile(new Hex(4, 4));
+        MapTile two = new MapTile(new Hex(6, 4));
 
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item target = getTestItem("group", "target");
@@ -105,22 +105,22 @@ class GroupAreaFactoryTest {
         Group group = new Group("group", "landscapeIdentifier");
         group.addOrReplaceItem(landscapeItem);
 
-        HexMap hexMap = new HexMap(true);
+        HexMap hexMap = new HexMap();
         hexMap.add(landscapeItem, one);
         hexMap.add(target, two);
 
         //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexMap, group);
-        assertThat(inArea).doesNotContain(new Hex(5, 2));
-        assertThat(inArea).doesNotContain(new Hex(6, 2));
-        assertThat(inArea).doesNotContain(new Hex(7, 2));
+        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group);
+        assertThat(inArea).doesNotContain(new MapTile(new Hex(5, 2)));
+        assertThat(inArea).doesNotContain(new MapTile(new Hex(6, 2)));
+        assertThat(inArea).doesNotContain(new MapTile(new Hex(7, 2)));
     }
 
     @Test
     void pathToClosestItemIsPaddedByOneHex() {
 
-        Hex one = new Hex(4, 4);
-        Hex two = new Hex(7, 4);
+        MapTile one = new MapTile(new Hex(4, 4));
+        MapTile two = new MapTile(new Hex(7, 4));
 
         Item landscapeItem = getTestItem("group", "landscapeItem");
         Item target = getTestItem("group", "target");
@@ -129,16 +129,16 @@ class GroupAreaFactoryTest {
         group.addOrReplaceItem(landscapeItem);
         group.addOrReplaceItem(target);
 
-        HexMap hexMap = new HexMap(true);
+        HexMap hexMap = new HexMap();
         hexMap.add(landscapeItem, one);
         hexMap.add(target, two);
 
         //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexMap, group);
+        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group);
 
         //then
-        assertThat(inArea).contains(new Hex(6, 3));
-        assertThat(inArea).contains(new Hex(5, 5));
+        assertThat(inArea).contains(new MapTile(new Hex(6, 3)));
+        assertThat(inArea).contains(new MapTile(new Hex(5, 5)));
     }
 
 }

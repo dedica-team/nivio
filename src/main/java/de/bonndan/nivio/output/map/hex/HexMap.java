@@ -20,12 +20,6 @@ public class HexMap {
      */
     private final MapState mapState = new MapState();
 
-    public HexMap(boolean debug) {
-
-        // find and render relations
-
-    }
-
     static Hex forCoordinates(long x, long y) {
         var q = (2. / 3 * x) / (DEFAULT_ICON_SIZE);
         var r = (-1. / 3 * x + Math.sqrt(3) / 3 * y) / (DEFAULT_ICON_SIZE);
@@ -57,15 +51,15 @@ public class HexMap {
      *
      * @return the created hex
      */
-    public Hex findFreeSpot(long x, long y) {
+    public MapTile findFreeSpot(long x, long y) {
         Hex hex = forCoordinates(x, y);
         if (!mapState.hasItem(hex)) {
-            return hex;
+            return mapState.getOrAdd(hex);
         }
 
         //trying to find a free space on the map, i.e. a tile that has no item
-        for (Hex hex1 : getNeighbours(hex)) {
-            if (StringUtils.hasLength(hex.item))
+        for (MapTile hex1 : getNeighbours(hex)) {
+            if (StringUtils.hasLength(hex1.getItem().toString()))
                 continue;
 
             return hex1;
@@ -78,13 +72,13 @@ public class HexMap {
     /**
      * Add a previously layouted item to the map.
      *
-     * @param item landscape item
-     * @param hex  free spot on map
+     * @param item    landscape item
+     * @param mapTile free spot on map
      * @return the created hex
      */
-    public Hex add(@NonNull final Item item, @NonNull final Hex hex) {
-        hex.item = Objects.requireNonNull(item).getFullyQualifiedIdentifier().toString();
-        return mapState.add(hex, item);
+    public MapTile add(@NonNull final Item item, @NonNull final MapTile mapTile) {
+        mapTile.setItem(Objects.requireNonNull(item).getFullyQualifiedIdentifier());
+        return mapState.add(mapTile, item);
     }
 
     /**
@@ -93,7 +87,7 @@ public class HexMap {
      * @param item the item (must have been added before)
      * @return the corresponding {@link Hex}
      */
-    public Hex hexForItem(Item item) {
+    public MapTile getTileForItem(Item item) {
         return mapState.getHexForItem(item).orElseThrow(() -> new NoSuchElementException(String.format("Item %s has no hex tile assigned.", item)));
     }
 
@@ -105,7 +99,7 @@ public class HexMap {
      * @return a path if one could be found
      */
     public Optional<HexPath> getPath(Item start, Item target, boolean debug) {
-        return new PathFinder(this, debug).getPath(hexForItem(start), hexForItem(target));
+        return new PathFinder(this, debug).getPath(getTileForItem(start), getTileForItem(target));
     }
 
     /**
@@ -114,15 +108,15 @@ public class HexMap {
      * @param group the group with items
      * @return a set of (adjacent) hexes
      */
-    public Set<Hex> getGroupArea(@NonNull final Group group) {
-        Set<Hex> inArea = GroupAreaFactory.getGroup(this, group);
+    public Set<MapTile> getGroupArea(@NonNull final Group group) {
+        Set<MapTile> inArea = GroupAreaFactory.getGroup(this, group);
         //set group identifier to all
-        inArea.forEach(hex -> hex.group = group.getFullyQualifiedIdentifier().toString());
+        inArea.forEach(hex -> hex.setGroup(group.getFullyQualifiedIdentifier().toString()));
         return inArea;
     }
 
-    public List<Hex> getNeighbours(@NonNull final Hex hex) {
-        List<Hex> neighbours = new ArrayList<>();
+    public List<MapTile> getNeighbours(@NonNull final Hex hex) {
+        List<MapTile> neighbours = new ArrayList<>();
         for (Hex neighbour : Hex.neighbours(Objects.requireNonNull(hex))) {
             neighbours.add(mapState.getOrAdd(neighbour));
         }
