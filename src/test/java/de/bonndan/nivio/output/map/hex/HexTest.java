@@ -31,5 +31,6 @@ class HexTest {
 
         //when
         assertThat(center.getDirectionTo(neighbours.get(0))).isEqualTo(Hex.SOUTH_EAST);
+        assertThat(center.getDirectionTo(neighbours.get(1))).isEqualTo(Hex.SOUTH);
     }
 }

@@ -3,20 +3,22 @@ package de.bonndan.nivio.output.map.hex;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
-import de.bonndan.nivio.output.map.svg.HexPath;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static de.bonndan.nivio.output.map.hex.Hex.NORTH;
+import static de.bonndan.nivio.output.map.hex.Hex.NORTH_WEST;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class HexMapTest {
 
 
     @Test
-     void getPath() {
+    void getPath() {
         Item bar = getTestItem("foo", "bar");
         LayoutedComponent barComponent = new LayoutedComponent(bar);
         barComponent.x = 0;
@@ -28,8 +30,8 @@ class HexMapTest {
         barComponent.y = 500;
 
         HexMap hexMap = new HexMap();
-        hexMap.add(bar,hexMap.findFreeSpot(barComponent.getX(), barComponent.getY()));
-        hexMap.add(baz,hexMap.findFreeSpot(bazComponent.getX(), bazComponent.getY()));
+        hexMap.add(bar, hexMap.findFreeSpot(barComponent.getX(), barComponent.getY()));
+        hexMap.add(baz, hexMap.findFreeSpot(bazComponent.getX(), bazComponent.getY()));
 
         //when
         Optional<HexPath> path = hexMap.getPath(bar, baz, true);
@@ -37,7 +39,11 @@ class HexMapTest {
         //then
         assertThat(path).isNotEmpty();
 
-        path.get().getMapTiles().forEach(hex -> assertThat(hex.getPathDirection()).isNotNull());
+        path.get().getTiles().forEach(pathTile -> assertThat(pathTile.getMapTile().getPathDirections()).isNotNull());
+
+        List<Integer> pathTileDirs = path.get().getDirections();
+        assertThat(pathTileDirs).isEqualTo(List.of(NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH, NORTH, NORTH));
+
     }
 
     @Test
@@ -50,7 +56,7 @@ class HexMapTest {
         HexMap hexMap = new HexMap();
 
         //when
-        MapTile added = hexMap.add(bar,hexMap.findFreeSpot(barComponent.getX(), barComponent.getY()));
+        MapTile added = hexMap.add(bar, hexMap.findFreeSpot(barComponent.getX(), barComponent.getY()));
 
         //then
         assertThat(added).isNotNull();

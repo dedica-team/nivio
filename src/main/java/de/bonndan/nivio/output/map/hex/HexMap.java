@@ -2,7 +2,6 @@ package de.bonndan.nivio.output.map.hex;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.output.map.svg.HexPath;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
@@ -115,6 +114,12 @@ public class HexMap {
         return inArea;
     }
 
+    /**
+     * Returns the adjacent maptiles of a map location.
+     *
+     * @param hex locatopm
+     * @return list or neighbours, starting with direction "southeast"
+     */
     public List<MapTile> getNeighbours(@NonNull final Hex hex) {
         List<MapTile> neighbours = new ArrayList<>();
         for (Hex neighbour : Hex.neighbours(Objects.requireNonNull(hex))) {

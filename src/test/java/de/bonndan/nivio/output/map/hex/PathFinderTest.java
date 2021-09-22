@@ -2,7 +2,6 @@ package de.bonndan.nivio.output.map.hex;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.output.map.svg.HexPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -49,9 +48,10 @@ class PathFinderTest {
 
         //then
         assertThat(path).isPresent();
-        assertThat(path.get().getMapTiles()).hasSize(6)
-                .contains(new MapTile(new Hex(1, 4)))
-                .contains(new MapTile(new Hex(1, 5)))
+        assertThat(path.get().getTiles()).hasSize(6)
+                .contains(new PathTile(one))
+                .contains(new PathTile(new MapTile(new Hex(2, 2))))
+                .contains(new PathTile(two))
         ;
     }
 
@@ -76,7 +76,7 @@ class PathFinderTest {
 
         //then
         assertThat(path).isPresent();
-        assertThat(path.get().getMapTiles()).hasSize(6).doesNotContain(obstacle);
+        assertThat(path.get().getTiles()).hasSize(6).doesNotContain(new PathTile(obstacle));
     }
 
     @Test
@@ -100,7 +100,7 @@ class PathFinderTest {
         from.moveCosts = 1;
 
         MapTile toHex =  new MapTile(new Hex(3,3));
-        toHex.setPathDirection(1);
+        toHex.addPathDirection(1);
         PathTile to = new PathTile(toHex);
 
         //when

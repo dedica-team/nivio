@@ -6,7 +6,9 @@ import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.ItemFactory;
 import de.bonndan.nivio.model.RelationFactory;
 import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.output.map.hex.HexPath;
 import de.bonndan.nivio.output.map.hex.MapTile;
+import de.bonndan.nivio.output.map.hex.PathTile;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -57,8 +59,8 @@ class SVGDimensionFactoryTest {
         SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of(), new StatusValue("foo", Status.GREEN));
 
         //when
-        MapTile three = new MapTile(new Hex(-10, -10));
-        MapTile four = new MapTile(new Hex(-11, -10));
+        PathTile three = new PathTile(new MapTile(new Hex(-10, -10)));
+        PathTile four = new PathTile(new MapTile(new Hex(-11, -10)));
         SVGRelation svgRelation = new SVGRelation(new HexPath(List.of(three, four)), "aaccee", RelationFactory.createForTesting(ItemFactory.getTestItem("foo", "bar"), ItemFactory.getTestItem("foo", "baz")), null);
         SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(svgGroupArea), List.of(svgRelation));
 
@@ -66,15 +68,15 @@ class SVGDimensionFactoryTest {
         assertThat(dimension).isNotNull();
         SVGDimension.BoundingBox hex = dimension.hex;
         assertThat(hex).isNotNull();
-        assertThat(hex.horMin).isEqualTo(four.getHex().q);
-        assertThat(hex.vertMin).isEqualTo(four.getHex().r);
+        assertThat(hex.horMin).isEqualTo(four.getMapTile().getHex().q);
+        assertThat(hex.vertMin).isEqualTo(four.getMapTile().getHex().r);
         assertThat(hex.horMax).isEqualTo(two.getHex().q);
         assertThat(hex.vertMax).isEqualTo(two.getHex().r);
 
         SVGDimension.BoundingBox cartesian = dimension.cartesian;
         assertThat(cartesian).isNotNull();
-        assertThat(cartesian.horMin).isEqualTo((int) four.getHex().toPixel().x);
-        assertThat(cartesian.vertMin).isEqualTo((int) four.getHex().toPixel().y);
+        assertThat(cartesian.horMin).isEqualTo((int) four.getMapTile().getHex().toPixel().x);
+        assertThat(cartesian.vertMin).isEqualTo((int) four.getMapTile().getHex().toPixel().y);
         assertThat(cartesian.horMax).isEqualTo((int) two.getHex().toPixel().x);
         assertThat(cartesian.vertMax).isEqualTo((int) two.getHex().toPixel().y);
     }

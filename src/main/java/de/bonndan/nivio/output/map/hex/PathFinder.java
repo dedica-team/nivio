@@ -1,6 +1,5 @@
 package de.bonndan.nivio.output.map.hex;
 
-import de.bonndan.nivio.output.map.svg.HexPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -65,12 +64,11 @@ class PathFinder {
     }
 
     /**
-     * Returns the best fitting tile in openlist to add to path based on F cost
-     * of tile.
+     * Returns the best fitting tile in open list to add to path based on F cost of tile.
      *
-     * @return The best tile for path in openlist
+     * @return The best tile for path in open list
      */
-    private PathTile getBest() {
+    private PathTile getBestNextTile(PathTile current) {
 
         PathTile lastTile = open.get(open.size() - 1);
         for (int i = open.size() - 2; i >= 0; i--) {
@@ -78,10 +76,16 @@ class PathFinder {
             // pick the lowest sum of move and heuristic
             PathTile pathTile = open.get(i);
             boolean lowestCost = pathTile.sumCosts < lastTile.sumCosts;
-            boolean equalCostLowerHeuristic = pathTile.sumCosts == lastTile.sumCosts && pathTile.heuristicCosts < lastTile.heuristicCosts;
-            if (lowestCost || equalCostLowerHeuristic) {
+
+            if (lowestCost) {
                 lastTile = pathTile;
+                continue;
             }
+
+            if (pathTile.sumCosts == lastTile.sumCosts) {
+                lastTile = oneOf(lastTile, pathTile, current);
+            }
+
         }
 
         open.remove(lastTile);
@@ -89,6 +93,24 @@ class PathFinder {
         if (debug)
             LOGGER.debug("returning best tile {} with sumCosts {} and heuristic {}", lastTile, lastTile.sumCosts, lastTile.heuristicCosts);
         return lastTile;
+    }
+
+    private PathTile oneOf(PathTile lastTile, PathTile next, PathTile current) {
+        if (next.heuristicCosts < lastTile.heuristicCosts)
+            return next;
+        else if (next.heuristicCosts > lastTile.heuristicCosts)
+            return lastTile;
+
+        //prefer same direction to have less bends
+        if (current.getDirectionFromParent() != null) {
+            if (current.getDirectionFromParent().equals(lastTile.getDirectionFromParent()))
+                return lastTile;
+
+            if (current.getDirectionFromParent().equals(next.getDirectionFromParent()))
+                return next;
+        }
+
+        return next;
     }
 
     /**
@@ -127,7 +149,8 @@ class PathFinder {
              * an empty list of potential tiles suited for path (open list).
              */
             if (currentStep.equals(destination)) {
-                destination.parent = currentStep.parent;
+                destination.setParent(currentStep.getParent());
+                destination.setDirectionFromParent(currentStep.getDirectionFromParent());
                 break;
             } else if (open.isEmpty()) {
                 break;
@@ -136,7 +159,7 @@ class PathFinder {
             /*
              * Get tile with lowest F cost from open list.
              */
-            currentStep = getBest();
+            currentStep = getBestNextTile(currentStep);
 
             /*
              * Add to closed list (tile already part of path).
@@ -167,7 +190,7 @@ class PathFinder {
                 moveCosts = calcMoveCostsFrom(currentStep, neighbour);
 
                 if (!open.contains(neighbour)) {
-                    neighbour.parent = currentStep;
+                    neighbour.setParent(currentStep);
                     neighbour.moveCosts = moveCosts;
                     neighbour.calcHeuristicToDestinationAndSum(destination);
                     open.add(neighbour);
@@ -186,11 +209,7 @@ class PathFinder {
             return Optional.empty();
         }
 
-        List<MapTile> hexes = new ArrayList<>();
-        for (PathTile tile : path) {
-            hexes.add(tile.mapTile);
-        }
-        return Optional.of(new HexPath(hexes));
+        return Optional.of(new HexPath(path));
     }
 
     /**
@@ -217,7 +236,7 @@ class PathFinder {
             return GROUP_MOVE_PENALTY + from.moveCosts;
         }
 
-        if (to.mapTile.getPathDirection() != null) {
+        if (!to.mapTile.getPathDirections().isEmpty()) {
             return PATH_PENALTY + from.moveCosts;
         }
 
@@ -260,7 +279,11 @@ class PathFinder {
 
     private List<PathTile> getNeighbourTiles(PathTile current) {
         List<PathTile> neighbours = new ArrayList<>();
-        hexMap.getNeighbours(current.mapTile.getHex()).forEach(hex -> neighbours.add(new PathTile(hex)));
+        List<MapTile> hexMapNeighbours = hexMap.getNeighbours(current.mapTile.getHex());
+        for (int direction = 0, hexMapNeighboursSize = hexMapNeighbours.size(); direction < hexMapNeighboursSize; direction++) {
+            MapTile hex = hexMapNeighbours.get(direction);
+            neighbours.add(new PathTile(hex, direction));
+        }
         return neighbours;
     }
 

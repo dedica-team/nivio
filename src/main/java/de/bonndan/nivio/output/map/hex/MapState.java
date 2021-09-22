@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.map.hex;
 
 import de.bonndan.nivio.model.Item;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,8 +36,8 @@ class MapState {
                 existing.setGroup(mapTile.getGroup());
             }
 
-            if (mapTile.getPathDirection() != null) {
-                existing.setPathDirection(mapTile.getPathDirection());
+            if (mapTile.getPathDirections() != null) {
+                existing.getPathDirections().addAll(mapTile.getPathDirections());
             }
             itemToTile.put(o, mapTile); //may now contain more than one equal hex
             return existing;

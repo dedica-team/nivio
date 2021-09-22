@@ -7,6 +7,7 @@ import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.hex.HexMap;
+import de.bonndan.nivio.output.map.hex.HexPath;
 import de.bonndan.nivio.output.map.hex.MapTile;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;

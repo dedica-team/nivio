@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.output.map.hex.PathTile;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -64,7 +65,11 @@ public class SVGDimensionFactory {
         //fix viewport, because xy and hex coordinate system have different offsets
         groupAreas.forEach(svgGroupArea -> svgGroupArea.getGroupArea().forEach(t -> setBounds.accept(t.getHex())));
 
-        relations.forEach(svgRelation -> svgRelation.getHexPath().getMapTiles().forEach(t -> setBounds.accept(t.getHex())));
+        relations.forEach(svgRelation -> {
+            for (PathTile pathTile : svgRelation.getHexPath().getTiles()) {
+                setBounds.accept(pathTile.getMapTile().getHex());
+            }
+        });
 
         SVGDimension.BoundingBox hex = new SVGDimension.BoundingBox(
                 minQ.get(),

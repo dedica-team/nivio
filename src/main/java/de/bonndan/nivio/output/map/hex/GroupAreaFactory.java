@@ -2,7 +2,6 @@ package de.bonndan.nivio.output.map.hex;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.output.map.svg.HexPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,9 +106,9 @@ public class GroupAreaFactory {
 
             MapTile destination = hexMap.getTileForItem(closest.get());
             Optional<HexPath> path = pathFinder.getPath(hex, destination);
-            path.ifPresent(hexPath -> hexPath.getMapTiles().forEach(mapTile -> {
-                inArea.add(mapTile);
-                inArea.addAll(hexMap.getNeighbours(mapTile.getHex()));
+            path.ifPresent(hexPath -> hexPath.getTiles().forEach(pathTile -> {
+                inArea.add(pathTile.getMapTile());
+                inArea.addAll(hexMap.getNeighbours(pathTile.getMapTile().getHex()));
             }));
 
             connected.add(next);

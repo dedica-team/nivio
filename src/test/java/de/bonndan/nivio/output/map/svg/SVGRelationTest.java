@@ -4,7 +4,9 @@ import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.output.map.hex.HexPath;
 import de.bonndan.nivio.output.map.hex.MapTile;
+import de.bonndan.nivio.output.map.hex.PathTile;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +35,10 @@ class SVGRelationTest {
         Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
         foo = getTestItem(Layer.domain.name(), "foo", landscape);
         bar = getTestItem(Layer.domain.name(), "bar", landscape);
-        hexpath = new HexPath(List.of(new MapTile(new Hex(1, 2)), new MapTile(new Hex(1, 3))));
+        hexpath = new HexPath(List.of(
+                new PathTile(new MapTile(new Hex(1, 2))),
+                new PathTile(new MapTile(new Hex(1, 3))))
+        );
         statusValue = new StatusValue("foo", Status.GREEN);
     }
 

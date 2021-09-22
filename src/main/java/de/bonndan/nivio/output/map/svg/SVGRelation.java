@@ -6,6 +6,7 @@ import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
+import de.bonndan.nivio.output.map.hex.HexPath;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.slf4j.Logger;

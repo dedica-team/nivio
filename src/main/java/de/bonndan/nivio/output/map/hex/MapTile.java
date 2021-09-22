@@ -3,16 +3,18 @@ package de.bonndan.nivio.output.map.hex;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.springframework.lang.NonNull;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
- * A map tile is a location ({@link Hex})on the map with a state.
+ * A map tile is a location ({@link Hex}) on the map with a state.
  */
 public class MapTile {
 
     private FullyQualifiedIdentifier item;
     private String group;
-    private Integer pathDirection;
+    private final Set<Integer> pathDirections = new HashSet<>();
     private final Hex hex;
 
     public MapTile(@NonNull final Hex hex) {
@@ -35,12 +37,12 @@ public class MapTile {
         this.group = group;
     }
 
-    public Integer getPathDirection() {
-        return pathDirection;
+    public Set<Integer> getPathDirections() {
+        return pathDirections;
     }
 
-    public void setPathDirection(Integer pathDirection) {
-        this.pathDirection = pathDirection;
+    public void addPathDirection(Integer pathDirection) {
+        this.pathDirections.add(Objects.requireNonNull(pathDirection));
     }
 
     public Hex getHex() {
@@ -65,7 +67,7 @@ public class MapTile {
         return "MapTile{" +
                 "item=" + item +
                 ", group='" + group + '\'' +
-                ", pathDirection=" + pathDirection +
+                ", pathDirection=" + pathDirections +
                 ", hex=" + hex +
                 '}';
     }

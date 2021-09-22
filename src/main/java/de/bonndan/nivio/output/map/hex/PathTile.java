@@ -9,17 +9,23 @@ import java.util.Objects;
  *
  * Based on https://github.com/helfsoft/astar (no license given).
  */
-class PathTile {
+public class PathTile {
 
     final MapTile mapTile;
-    PathTile parent;
+    private Integer directionFromParent;
+    private PathTile parent;
 
     int moveCosts = 0;
     int sumCosts;
     int heuristicCosts;
 
-    PathTile(@NonNull final MapTile mapTile) {
+    public PathTile(@NonNull final MapTile mapTile) {
+        this(mapTile, null);
+    }
+
+    PathTile(@NonNull final MapTile mapTile, Integer directionFromParent) {
         this.mapTile = Objects.requireNonNull(mapTile);
+        this.directionFromParent = directionFromParent;
         sumCosts = 0;
         heuristicCosts = 0;
     }
@@ -58,8 +64,21 @@ class PathTile {
         this.parent = parent;
     }
 
+    public Integer getDirectionFromParent() {
+        return directionFromParent;
+    }
+
+    @NonNull
+    public MapTile getMapTile() {
+        return mapTile;
+    }
+
     @Override
     public String toString() {
         return "Tile{" + "hex=" + mapTile + '}';
+    }
+
+    void setDirectionFromParent(Integer directionFromParent) {
+        this.directionFromParent = directionFromParent;
     }
 }

@@ -2,12 +2,12 @@ package de.bonndan.nivio.output.map.hex;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.output.map.svg.HexPath;
 import org.apache.commons.collections4.set.UnmodifiableSet;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,7 +67,7 @@ class GroupAreaFactoryTest {
 
         PathFinder pathFinder = new PathFinder(hexMap, true);
         HexPath shortestPath = pathFinder.getPath(one, two).orElseThrow();
-        assertThat(inArea).containsAll(shortestPath.getMapTiles());
+        assertThat(inArea).containsAll(shortestPath.getTiles().stream().map(PathTile::getMapTile).collect(Collectors.toList()));
 
     }
 
