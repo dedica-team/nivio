@@ -169,9 +169,7 @@ class SVGGroupAreaOutlineFactory {
 
             //return the first group item in rotation direction
             if (allInGroup.contains(neighbour)) {
-                //Since we rotate clockwise we know that the hex adjacent to both start and neighbour must be free (otherwise
-                //that one would have been returned). Hence the next search should start there.
-                return new Position(neighbour, i - 1);
+                return getNextPosition(start, i, neighbour);
             }
 
             //5 is end, but if we're still here we need to do one more round
@@ -186,6 +184,27 @@ class SVGGroupAreaOutlineFactory {
         }
 
         throw new IllegalStateException(String.format("getNext starting at %s could not find neighbour to follow %s", start, neighbours));
+    }
+
+    /**
+     * Determines the next position for the path to follow.
+     *
+     * Since we rotate clockwise we know that the hex adjacent to both start and neighbour must be free (otherwise
+     * that one would have been returned). Hence, the next search should start there.
+     *
+     * We also need to consider the coordinates of the next hex. If one is equal to the current, rotation offset needs
+     * to be decreased more.
+     *
+     * @param current         current hex
+     * @param currentRotation current rotation offset
+     * @param next            which is the next border tile
+     */
+    private static Position getNextPosition(Hex current, int currentRotation, Hex next) {
+        int setBack = next.r == current.r || next.q == current.q ? 2 : 1;
+        int rotationOffset = currentRotation - setBack;
+        if (rotationOffset < 0)
+            rotationOffset = 6 + rotationOffset;
+        return new Position(next, rotationOffset);
     }
 
     static class Position {

@@ -51,9 +51,11 @@ public class GroupAreaFactory {
 
         // enlarge area by adding hexes with many sides adjacent to group area until no more can be added
         Set<MapTile> bridges = getBridges(hexMap, inArea, 2);
-        while (!bridges.isEmpty()) {
+        int temp = 9; //seems a good tradeoff. small groups are still convex, but larger one are not too fractal
+        while (!bridges.isEmpty() && temp > 0) {
             inArea.addAll(bridges);
             bridges = getBridges(hexMap, inArea, 3); // 2 might be too aggressive and collide with other group areas
+            temp--;
         }
 
         return inArea;
