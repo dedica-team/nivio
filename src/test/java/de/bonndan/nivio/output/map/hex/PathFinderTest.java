@@ -105,7 +105,7 @@ class PathFinderTest {
 
         //when
         int costs = PathFinder.calcMoveCostsFrom(from, to);
-        assertEquals(3, costs);
+        assertEquals(2, costs); //no path costs
     }
 
     @Test

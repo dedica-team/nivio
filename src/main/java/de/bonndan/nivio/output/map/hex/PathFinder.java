@@ -34,11 +34,6 @@ class PathFinder {
     public static final int GROUP_MOVE_PENALTY = 2;
 
     /**
-     * costs for moving on tile has is part of a path area
-     */
-    private static final int PATH_PENALTY = 2;
-
-    /**
      * Regular movement costs.
      */
     public static final int BASE_COSTS = 1;
@@ -91,8 +86,7 @@ class PathFinder {
 
         open.remove(lastTile);
 
-        if (debug)
-            LOGGER.debug("returning best tile {} with sumCosts {} and heuristic {}", lastTile, lastTile.sumCosts, lastTile.heuristicCosts);
+        //LOGGER.debug("returning best tile {} with sumCosts {} and heuristic {}", lastTile, lastTile.sumCosts, lastTile.heuristicCosts);
         return lastTile;
     }
 
@@ -234,10 +228,6 @@ class PathFinder {
         boolean inGroup = from.mapTile.getGroup() != null && to.mapTile.getGroup() != null;
         if (inGroup) {
             return GROUP_MOVE_PENALTY + from.moveCosts;
-        }
-
-        if (!to.mapTile.getPathDirections().isEmpty()) {
-            return PATH_PENALTY + from.moveCosts;
         }
 
         return BASE_COSTS + from.moveCosts;
