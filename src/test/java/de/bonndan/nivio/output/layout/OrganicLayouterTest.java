@@ -8,6 +8,7 @@ import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.RenderingTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -57,30 +59,59 @@ class OrganicLayouterTest extends RenderingTest {
         debugRenderLandscape(path, landscape);
     }
 
+    // run this test manually, it creates a really large map
+    @Disabled
     @Test
     void debugRenderLargeGraph() throws IOException {
 
         LandscapeDescription input = new LandscapeDescription("largetest", "largetest", null);
 
         int g = 0;
-        while (g < 30) {
+        List<ItemDescription> descriptionList = new ArrayList<>();
+        while (g < 10) {
 
             int i = 0;
-            int max = g % 2 > 0 ? 5 : 8;
+            int max = g % 2 > 0 ? 10 : 40;
             GroupDescription gd = new GroupDescription();
             String groupIdentifier = "group" + g;
             gd.setIdentifier(groupIdentifier);
+            gd.setEnvironment(input.getIdentifier());
             input.getGroups().put(groupIdentifier, gd);
             while (i < max) {
                 ItemDescription itemDescription = new ItemDescription();
+                itemDescription.setEnvironment(input.getIdentifier());
                 itemDescription.setIdentifier(groupIdentifier + "_item_" + i);
                 itemDescription.setGroup(groupIdentifier);
                 input.getItemDescriptions().add(itemDescription);
+                descriptionList.add(itemDescription);
                 i++;
             }
             g++;
         }
 
+        Random r = new Random();
+        int low = 0;
+        int high = descriptionList.size() - 1;
+
+        // relations
+        for (int i = 0, descriptionListSize = descriptionList.size(); i < descriptionListSize; i++) {
+            ItemDescription itemDescription = descriptionList.get(i);
+            List<ItemDescription> targets = new ArrayList<>();
+            int j = 0;
+            while (j < 5) {
+                int rand = r.nextInt(high - low) + low;
+                if (rand == i)
+                    continue;
+                targets.add(descriptionList.get(j));
+                j++;
+            }
+            targets.forEach(target -> {
+                RelationDescription rel = new RelationDescription(itemDescription.getFullyQualifiedIdentifier().toString(), target.getFullyQualifiedIdentifier().toString());
+                itemDescription.addOrReplaceRelation(rel);
+            });
+        }
+
+        // index
         indexer.index(input);
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
