@@ -79,7 +79,7 @@ public class URLFactory {
                     LOGGER.warn("Could not construct relative url using {}", url);
                 }
             }
-            LOGGER.debug("Malformed URL: {}", url);
+            if (LOGGER.isDebugEnabled()) LOGGER.debug("Malformed URL: {}", url);
         }
         return Optional.empty();
     }

@@ -57,13 +57,8 @@ public class ItemMatcher {
      * @return fqi
      */
     public static Optional<ItemMatcher> forTarget(String string) {
-        if (StringUtils.isEmpty(string)) {
+        if (!StringUtils.hasLength(string)) {
             LOGGER.warn("identifier must not be empty");
-            return Optional.empty();
-        }
-
-        if (URLFactory.getURL(string).isPresent()) {
-            LOGGER.warn("ItemMatcher does not work with URLs: {}", string);
             return Optional.empty();
         }
 
@@ -80,7 +75,7 @@ public class ItemMatcher {
             return Optional.of(ItemMatcher.build(split[0], split[1], split[2]));
         }
 
-        LOGGER.debug(String.format("Given string '%s' contains too many parts to build an item matcher.", string));
+        LOGGER.warn("Given string '{}' contains too many parts to build an item matcher.", string);
         return Optional.empty();
     }
 
