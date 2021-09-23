@@ -3,7 +3,6 @@ package de.bonndan.nivio.output.map.hex;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import org.springframework.lang.NonNull;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -58,7 +57,7 @@ public class HexMap {
 
         //trying to find a free space on the map, i.e. a tile that has no item
         for (MapTile hex1 : getNeighbours(hex)) {
-            if (StringUtils.hasLength(hex1.getItem().toString()))
+            if (hex1.getItem() != null)
                 continue;
 
             return hex1;
