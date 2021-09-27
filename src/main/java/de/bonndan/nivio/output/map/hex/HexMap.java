@@ -55,13 +55,7 @@ public class HexMap {
             return mapState.getOrAdd(hex);
         }
 
-        //trying to find a free space on the map, i.e. a tile that has no item
-        for (MapTile hex1 : getNeighbours(hex)) {
-            if (hex1.getItem() != null)
-                continue;
 
-            return hex1;
-        }
 
         throw new IllegalStateException(String.format("Could not find free spot on map for coordinates %s %s", x, y));
     }

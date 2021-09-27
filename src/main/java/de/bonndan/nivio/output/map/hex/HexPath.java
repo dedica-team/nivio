@@ -137,11 +137,18 @@ public class HexPath {
         return directions;
     }
 
-    void setPortCount(int portCount) {
+    public void setPortCount(int portCount) {
         this.portCount = portCount;
     }
 
     public int getPortCount() {
         return portCount;
+    }
+
+    /**
+     * Returns the total count of connections on the penultimate tile
+     */
+    public int getTotalPortCount() {
+        return pathTiles.get(pathTiles.size()-2).getMapTile().getPortCount();
     }
 }

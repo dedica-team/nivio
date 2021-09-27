@@ -159,8 +159,12 @@ class SVGRelationTest {
     @DisplayName("Is translated based on port count")
     void hasTranslation() {
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
-        hexpath.getTiles().get(0).getMapTile().incrementPortCount();
-        hexpath.getTiles().get(0).getMapTile().incrementPortCount();
+        List<PathTile> tiles = hexpath.getTiles();
+        hexpath.setPortCount(20);
+        PathTile penultimate = tiles.get(tiles.size() - 2);
+        for (int i = 0; i < 30; i++) {
+            penultimate.getMapTile().incrementPortCount();
+        }
 
         //when
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
@@ -168,7 +172,7 @@ class SVGRelationTest {
 
         //then
         String render1 = render.render();
-        assertThat(render1).contains("translate(0 6)");
+        assertThat(render1).contains("translate(0 -13)");
 
     }
 }

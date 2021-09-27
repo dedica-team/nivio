@@ -23,7 +23,6 @@ class SubLayoutTest {
         Group foo = new Group("foo", "landscapeIdentifier");
 
         Item bar = getTestItem(foo.getIdentifier(), "bar");
-        ;
         foo.addOrReplaceItem(bar);
 
         Item baz = getTestItem(foo.getIdentifier(), "baz");

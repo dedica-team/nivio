@@ -4,6 +4,7 @@ import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.model.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.awt.geom.Point2D;
@@ -12,7 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Fast organic layout algorithm.
- * <p>
+ *
  * based on mxFastOrganicLayout from JGraphX by Gaudenz Alder Copyright (c) 2007
  */
 public class FastOrganicLayout {
@@ -23,37 +24,38 @@ public class FastOrganicLayout {
 
     /**
      * The force constant by which the attractive forces are divided and the
-     * replusive forces are multiple by the square of. The value equates to the
+     * repulsive forces are multiple by the square of. The value equates to the
      * average radius there is of free space around each node. Default is 50.
      */
-    protected double forceConstant = 50;
+    private final double forceConstant;
+
+    /**
+     * Minimal distance limit.  Prevents of dividing by zero.
+     */
+    private final double minDistanceLimit;
+
+    /**
+     * The maximum distance between vertices, beyond which their
+     * repulsion no longer has an effect
+     */
+    private final double maxDistanceLimit;
+
+    /**
+     * Start value of temperature. Default is 200.
+     */
+    private final double initialTemp;
 
     /**
      * Cache of <forceConstant>^2 for performance.
      */
     protected double forceConstantSquared = 0;
 
-    /**
-     * Minimal distance limit. Default is 2. Prevents of
-     * dividing by zero.
-     */
-    protected double minDistanceLimit = 2;
 
     /**
      * Cached version of <minDistanceLimit> squared.
      */
     protected double minDistanceLimitSquared = 0;
 
-    /**
-     * The maximum distance between vertices, beyond which their
-     * repulsion no longer has an effect
-     */
-    protected double maxDistanceLimit = 300;
-
-    /**
-     * Start value of temperature. Default is 200.
-     */
-    protected double initialTemp = 300;
 
     /**
      * Temperature to limit displacement at later stages of layout.
@@ -115,8 +117,30 @@ public class FastOrganicLayout {
     /**
      * Constructs a new fast organic layout.
      */
-    public FastOrganicLayout(List<LayoutedComponent> bounds) {
-        this.bounds = bounds;
+    public FastOrganicLayout(@NonNull final List<LayoutedComponent> bounds,
+                             double forceConstant,
+                             double minDistanceLimit,
+                             double maxDistanceLimit,
+                             double initialTemp,
+                             @Nullable final LandscapeConfig.LayoutConfig config
+    ) {
+        this.bounds = Objects.requireNonNull(bounds);
+
+        if (forceConstant < 0.001) {
+            forceConstant = 0.001;
+        }
+        Float forceFactor = Optional.ofNullable(config).map(LandscapeConfig.LayoutConfig::getForceConstantFactor).orElse(1f);
+        this.forceConstant = forceConstant * forceFactor;
+
+        Float minDisFactor = Optional.ofNullable(config).map(LandscapeConfig.LayoutConfig::getMinDistanceLimitFactor).orElse(1f);
+        this.minDistanceLimit = minDistanceLimit * minDisFactor;
+
+        Float maxDistFactor = Optional.ofNullable(config).map(LandscapeConfig.LayoutConfig::getMaxDistanceLimitFactor).orElse(1f);
+        this.maxDistanceLimit = maxDistanceLimit * maxDistFactor;
+
+        this.initialTemp = initialTemp;
+
+        this.maxIterations = Optional.ofNullable(config).map(LandscapeConfig.LayoutConfig::getMaxIterations).orElse((int) maxIterations);
     }
 
     public void setDebug(boolean debug) {
@@ -145,13 +169,7 @@ public class FastOrganicLayout {
         neighbours = new int[n][];
         radius = new double[n];
         radiusSquared = new double[n];
-
         minDistanceLimitSquared = minDistanceLimit * minDistanceLimit;
-
-        if (forceConstant < 0.001) {
-            forceConstant = 0.001;
-        }
-
         forceConstantSquared = forceConstant * forceConstant;
 
         // Create a map of vertices first. This is required for the array of
@@ -356,7 +374,7 @@ public class FastOrganicLayout {
                     double deltaLengthWithRadius = deltaLength - radius[i] - radius[j];
 
                     if (debug) {
-                        LOGGER.debug("Iteration {} temp {}: repulsion index {} {} deltaLengthWithRadius is {}", iteration, temperature, i,j, deltaLengthWithRadius);
+                        LOGGER.debug("Iteration {} temp {}: repulsion index {} {} deltaLengthWithRadius is {}", iteration, temperature, i, j, deltaLengthWithRadius);
                     }
 
                     if (deltaLengthWithRadius > maxDistanceLimit) {
@@ -409,38 +427,4 @@ public class FastOrganicLayout {
         return outer;
     }
 
-    public void setForceConstant(double forceConstant) {
-        this.forceConstant = forceConstant;
-    }
-
-    public void setMaxDistanceLimit(double maxDistanceLimit) {
-        this.maxDistanceLimit = maxDistanceLimit;
-    }
-
-    public void setInitialTemp(int initialTemp) {
-        this.initialTemp = initialTemp;
-    }
-
-    /**
-     * Applies factors from the layout config if present.
-     *
-     * @param config layout config
-     */
-    public void configure(@Nullable LandscapeConfig.LayoutConfig config) {
-        if (config == null) {
-            return;
-        }
-
-        Optional.ofNullable(config.getMaxIterations())
-                .ifPresent(this::setMaxIterations);
-
-        Optional.ofNullable(config.getMinDistanceLimitFactor())
-                .ifPresent(f -> minDistanceLimit = minDistanceLimit * f);
-
-        Optional.ofNullable(config.getMaxDistanceLimitFactor())
-                .ifPresent(f -> setMaxDistanceLimit(maxDistanceLimit * f));
-
-        Optional.ofNullable(config.getForceConstantFactor())
-                .ifPresent(f -> setForceConstant(forceConstant * f));
-    }
 }

@@ -27,6 +27,7 @@ public class SubLayout {
 
     //affects iterations, think of cooling down
     private static final int INITIAL_TEMP = 300;
+    private static final double MIN_DISTANCE_LIMIT = 2;
 
     private final FastOrganicLayout layout;
     private final Component parent;
@@ -63,11 +64,7 @@ public class SubLayout {
         });
 
 
-        layout = new FastOrganicLayout(list);
-        layout.setForceConstant(FORCE_CONSTANT);
-        layout.setMaxDistanceLimit(MAX_DISTANCE_LIMIT);
-        layout.setInitialTemp(INITIAL_TEMP);
-        layout.configure(itemLayoutConfig);
+        layout = new FastOrganicLayout(list, FORCE_CONSTANT, MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT, INITIAL_TEMP, itemLayoutConfig);
         layout.execute();
         LOGGER.debug("Subgraph {} layouted items: {}", name, layout.getBounds());
     }

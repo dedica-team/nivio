@@ -82,4 +82,8 @@ public class MapTile {
     public int incrementPortCount() {
         return portCount.getAndIncrement();
     }
+
+    public int getPortCount() {
+        return portCount.get();
+    }
 }

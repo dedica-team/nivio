@@ -15,6 +15,10 @@ public class AllGroupsLayout {
     public static final int FORCE_CONSTANT = 300;
     public static final int MAX_DISTANCE_LIMIT = 1000;
 
+    //results in more iterations and better layouts for larger graphs
+    public static final int INITIAL_TEMP = 300 * 3;
+    public static final int MIN_DISTANCE_LIMIT = 2;
+
     private final Map<Group, LayoutedComponent> groupNodes = new LinkedHashMap<>();
     private final FastOrganicLayout layout;
     private final Landscape landscape;
@@ -43,15 +47,13 @@ public class AllGroupsLayout {
 
         addVirtualEdgesBetweenGroups(items);
 
-        layout = new FastOrganicLayout(new ArrayList<>(groupNodes.values()));
-        //layout.setDebug(true);
-        layout.setForceConstant(FORCE_CONSTANT);
-        layout.setMaxDistanceLimit(MAX_DISTANCE_LIMIT);
-
-        //results in more iterations and better layouts for larger graphs
-        layout.setInitialTemp((int) (layout.initialTemp * 3));
-
-        layout.configure(landscape.getConfig().getGroupLayoutConfig());
+        layout = new FastOrganicLayout(
+                new ArrayList<>(groupNodes.values()),
+                FORCE_CONSTANT,
+                MIN_DISTANCE_LIMIT,
+                MAX_DISTANCE_LIMIT,
+                INITIAL_TEMP,
+                landscape.getConfig().getGroupLayoutConfig());
 
         layout.execute();
         LOGGER.debug("AllGroupsLayout bounds: {}", layout.getBounds());
