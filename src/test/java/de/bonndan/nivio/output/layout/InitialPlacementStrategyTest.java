@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.awt.geom.Point2D;
@@ -9,6 +10,33 @@ import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class InitialPlacementStrategyTest {
+
+    @Test
+    @DisplayName("symmetric placement for four equal elements")
+    void fourEquals() {
+        ArrayList<LayoutedComponent> layoutedComponents = new ArrayList<>();
+        layoutedComponents.add(getLayoutedComponent("a", 200, 200));
+        layoutedComponents.add(getLayoutedComponent("b", 200, 200));
+        layoutedComponents.add(getLayoutedComponent("c", 200, 200));
+        layoutedComponents.add(getLayoutedComponent("d", 200, 200));
+
+        InitialPlacementStrategy initialPlacementStrategy = new InitialPlacementStrategy(layoutedComponents);
+        Point2D.Double place1 = initialPlacementStrategy.place(0);
+        assertThat(place1.x).isEqualTo(200);
+        assertThat(place1.y).isEqualTo(0);
+
+        Point2D.Double place2 = initialPlacementStrategy.place(1);
+        assertThat(place2.x).isEqualTo(0);
+        assertThat(place2.y).isEqualTo(200);
+
+        Point2D.Double place3 = initialPlacementStrategy.place(2);
+        assertThat(place3.x).isEqualTo(-200);
+        assertThat(place3.y).isEqualTo(-0);
+
+        Point2D.Double place4 = initialPlacementStrategy.place(3);
+        assertThat(place4.x).isEqualTo(0);
+        assertThat(place4.y).isEqualTo(-200);
+    }
 
     @Test
     void placesInCircle() {
@@ -21,18 +49,19 @@ class InitialPlacementStrategyTest {
         InitialPlacementStrategy initialPlacementStrategy = new InitialPlacementStrategy(layoutedComponents);
         Point2D.Double place1 = initialPlacementStrategy.place(0);
         assertThat(place1.x).isEqualTo(100);
+        assertThat(place1.y).isEqualTo(0);
 
         Point2D.Double place2 = initialPlacementStrategy.place(1);
-        assertThat(place2.x).isEqualTo(-809);
-        assertThat(place2.y).isEqualTo(-588);
+        assertThat(place2.x).isEqualTo(924);
+        assertThat(place2.y).isEqualTo(383);
 
         Point2D.Double place3 = initialPlacementStrategy.place(2);
-        assertThat(place3.x).isEqualTo(400);
-        assertThat(place3.y).isEqualTo(0);
+        assertThat(place3.x).isEqualTo(-153);
+        assertThat(place3.y).isEqualTo(-370);
 
         Point2D.Double place4 = initialPlacementStrategy.place(3);
-        assertThat(place4.x).isEqualTo(100);
-        assertThat(place4.y).isEqualTo(0);
+        assertThat(place4.x).isEqualTo(92);
+        assertThat(place4.y).isEqualTo(-38);
     }
 
     LayoutedComponent getLayoutedComponent(String identifier, double width, double height) {
