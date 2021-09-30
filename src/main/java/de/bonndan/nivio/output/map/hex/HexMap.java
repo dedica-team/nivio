@@ -2,6 +2,9 @@ package de.bonndan.nivio.output.map.hex;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.output.layout.LayoutedComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
 import java.util.*;
@@ -13,12 +16,14 @@ import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
  */
 public class HexMap {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(HexMap.class);
+
     /**
      * key is a {@link Hex}, value an {@link Item}
      */
     private final MapState mapState = new MapState();
 
-    static Hex forCoordinates(long x, long y) {
+    public static Hex forCoordinates(long x, long y) {
         var q = (2. / 3 * x) / (DEFAULT_ICON_SIZE);
         var r = (-1. / 3 * x + Math.sqrt(3) / 3 * y) / (DEFAULT_ICON_SIZE);
 
@@ -49,15 +54,25 @@ public class HexMap {
      *
      * @return the created hex
      */
-    public MapTile findFreeSpot(long x, long y) {
-        Hex hex = forCoordinates(x, y);
+    public MapTile findFreeSpot(LayoutedComponent component) {
+        Hex hex = forCoordinates(component.getX(), component.getY());
+        MapTile tile = mapState.getOrAdd(hex);
         if (!mapState.hasItem(hex)) {
-            return mapState.getOrAdd(hex);
+            return tile;
         }
 
+        var msg = String.format("Could not find free spot on map for component %s at %s, already blocked by %s at %s",
+                component, hex.toPixel(),
+                tile.getItem(), tile.getHex().toPixel());
+        LOGGER.error(msg);
 
+        for (MapTile mapTile : getNeighbours(tile.getHex())) {
+            if (!mapState.hasItem(mapTile.getHex())) {
+                return mapTile;
+            }
+        }
 
-        throw new IllegalStateException(String.format("Could not find free spot on map for coordinates %s %s", x, y));
+        throw new IllegalStateException(msg);
     }
 
 
@@ -99,7 +114,7 @@ public class HexMap {
                 if (tile.getDirectionFromParent() != null) {
                     tile.getMapTile().addPathDirection(tile.getDirectionFromParent());
                 }
-                if (i == tilesSize -2) {
+                if (i == tilesSize - 2) {
                     int portCount = tile.getMapTile().incrementPortCount();
                     hexPath.setPortCount(portCount);
                 }

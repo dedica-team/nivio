@@ -3,14 +3,10 @@ package de.bonndan.nivio.output;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.IntegrationTestSupport;
 import de.bonndan.nivio.assessment.Assessment;
-import de.bonndan.nivio.config.ApplicationConfig;
 import de.bonndan.nivio.input.*;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.CachedResponse;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.icons.IconService;
@@ -33,8 +29,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -96,21 +90,23 @@ public abstract class RenderingTest {
 
     protected LayoutedComponent debugRenderLandscape(String path, Landscape landscape) throws IOException {
 
-        LayoutedComponent graph = layoutService.layout(landscape);
-        toSVG(landscape, new Assessment(landscape.applyKPIs(landscape.getKpis())), RootPath.get() + path);
+        OrganicLayouter organicLayouter = new OrganicLayouter(true);
+        LayoutedComponent graph = organicLayouter.layout(landscape);
+        toSVG(graph, new Assessment(landscape.applyKPIs(landscape.getKpis())), RootPath.get() + path);
         return graph;
     }
 
     protected String renderLandscape(String path, Landscape landscape) throws IOException {
-        return toSVG(landscape, new Assessment(landscape.applyKPIs(landscape.getKpis())), RootPath.get() + path);
+        LayoutedComponent graph = layoutService.layout(landscape);
+        return toSVG(graph, new Assessment(landscape.applyKPIs(landscape.getKpis())), RootPath.get() + path);
     }
 
-    private String toSVG(Landscape landscape, Assessment assessment, String filename) throws IOException {
+    private String toSVG(LayoutedComponent graph, Assessment assessment, String filename) throws IOException {
 
         File json = new File(filename + "_debug.json");
-        objectMapper.writeValue(json, layoutService.layout(landscape));
+        objectMapper.writeValue(json, graph);
 
-        String xml = (String) layoutService.render(landscape, assessment, true);
+        String xml = (String) layoutService.render(graph, assessment, true);
 
         File svgFile = new File(filename + "_debug.svg");
         FileWriter fileWriter = new FileWriter(svgFile);

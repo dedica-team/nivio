@@ -100,6 +100,8 @@ public class LayoutedComponent {
     public String toString() {
         return "LayoutedComponent{" +
                 "component=" + component +
+                ", width=" + width +
+                ", height=" + height +
                 '}';
     }
 

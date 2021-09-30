@@ -53,6 +53,16 @@ class OrganicLayouterTest extends RenderingTest {
     }
 
     @Test
+    void debugRenderDedica() throws IOException {
+        debugRender("/src/test/resources/example/dedica");
+    }
+
+    @Test
+    void debugRenderPetClinic() throws IOException {
+        debugRender("/src/test/resources/example/pet_clinic");
+    }
+
+    @Test
     void renderInout() throws IOException {
         String path = "/src/test/resources/example/inout";
         Landscape landscape = getLandscape(path + ".yml");
@@ -203,7 +213,7 @@ class OrganicLayouterTest extends RenderingTest {
         assertNotNull(itemComponent);
 
         //check items are shifted
-        assertEquals(946, itemComponent.getX()); //margin + group offset + own offset
-        assertEquals(614, itemComponent.getY()); //margin + group offset + own offset
+        assertEquals(91, itemComponent.getX()); //margin + group offset + own offset
+        assertEquals(-416, itemComponent.getY()); //margin + group offset + own offset
     }
 }

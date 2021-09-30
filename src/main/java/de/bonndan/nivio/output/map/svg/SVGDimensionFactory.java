@@ -3,20 +3,26 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.PathTile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
  * Factory to calculate the bounding boxes of a rendered landscape.
- *
- *
  */
 public class SVGDimensionFactory {
 
-    private SVGDimensionFactory() {}
+    private SVGDimensionFactory() {
+    }
 
-    static SVGDimension getDimension(List<SVGGroupArea> groupAreas, List<SVGRelation> relations) {
+    /**
+     * Returns the outer coordinates for the given list of hexes.
+     *
+     * @param hexes list of hexes
+     * @return bounding boxes
+     */
+    public static SVGDimension getDimension(List<Hex> hexes) {
 
         AtomicInteger minX = new AtomicInteger(Integer.MAX_VALUE);
         AtomicInteger minY = new AtomicInteger(Integer.MAX_VALUE);
@@ -62,14 +68,7 @@ public class SVGDimensionFactory {
                 maxR.set(hex.r);
             }
         };
-        //fix viewport, because xy and hex coordinate system have different offsets
-        groupAreas.forEach(svgGroupArea -> svgGroupArea.getGroupArea().forEach(t -> setBounds.accept(t.getHex())));
-
-        relations.forEach(svgRelation -> {
-            for (PathTile pathTile : svgRelation.getHexPath().getTiles()) {
-                setBounds.accept(pathTile.getMapTile().getHex());
-            }
-        });
+        hexes.forEach(setBounds);
 
         SVGDimension.BoundingBox hex = new SVGDimension.BoundingBox(
                 minQ.get(),
@@ -85,5 +84,20 @@ public class SVGDimensionFactory {
         );
 
         return new SVGDimension(hex, cartesian);
+    }
+
+    static SVGDimension getDimension(List<SVGGroupArea> groupAreas, List<SVGRelation> relations) {
+
+        List<Hex> hexes = new ArrayList<>();
+        //fix viewport, because xy and hex coordinate system have different offsets
+        groupAreas.forEach(svgGroupArea -> svgGroupArea.getGroupArea().forEach(t -> hexes.add(t.getHex())));
+
+        relations.forEach(svgRelation -> {
+            for (PathTile pathTile : svgRelation.getHexPath().getTiles()) {
+                hexes.add(pathTile.getMapTile().getHex());
+            }
+        });
+
+        return getDimension(hexes);
     }
 }

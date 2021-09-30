@@ -65,12 +65,12 @@ public class LayoutService implements ApplicationListener<AssessmentChangedEvent
     /**
      * Layouts and renders the given landscape.
      *
-     * @param landscape  landscape
+     * @param graph      landscape
      * @param assessment the related assessment
      * @param debug      flag to add debug info
      * @return renderer artefact
      */
-    public Object render(@NonNull final Landscape landscape, @NonNull final Assessment assessment, boolean debug) {
-        return renderer.render(layout(landscape), Objects.requireNonNull(assessment), debug);
+    public Object render(@NonNull final LayoutedComponent graph, @NonNull final Assessment assessment, boolean debug) {
+        return renderer.render(graph, Objects.requireNonNull(assessment), debug);
     }
 }

@@ -23,11 +23,11 @@ public class SubLayout {
     public static final int FORCE_CONSTANT = 150;
 
     //distance when repulsion has no more effect
-    public static final int MAX_DISTANCE_LIMIT = 300;
+    public static final int MAX_DISTANCE_LIMIT = 250;
 
     //affects iterations, think of cooling down
-    private static final int INITIAL_TEMP = 300;
-    private static final double MIN_DISTANCE_LIMIT = 2;
+    public static final int INITIAL_TEMP = 300;
+    public static final double MIN_DISTANCE_LIMIT = 50;
 
     private final FastOrganicLayout layout;
     private final Component parent;
@@ -54,8 +54,10 @@ public class SubLayout {
                 if (reversed.isPresent() && added.contains(reversed.get())) {
                     return;
                 }
-                added.add(relation1);
-                relationTargets.add(other);
+                if (!added.contains(relation1)) {
+                    added.add(relation1);
+                    relationTargets.add(other);
+                }
 
             });
             LayoutedComponent e = new LayoutedComponent(item, relationTargets);

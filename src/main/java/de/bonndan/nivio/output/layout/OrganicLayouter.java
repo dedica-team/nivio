@@ -1,6 +1,5 @@
 package de.bonndan.nivio.output.layout;
 
-import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.map.hex.Hex;
 import org.slf4j.Logger;
@@ -20,6 +19,15 @@ import java.util.concurrent.atomic.AtomicLong;
 public class OrganicLayouter implements Layouter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrganicLayouter.class);
+    private final boolean debug;
+
+    public OrganicLayouter() {
+        debug = false;
+    }
+
+    public OrganicLayouter(boolean debug) {
+        this.debug = debug;
+    }
 
     @Override
     public LayoutedComponent layout(@NonNull final Landscape landscape) {
@@ -30,11 +38,8 @@ public class OrganicLayouter implements Layouter {
             subGraphs.put(name, subLayout);
         });
 
-        Map<String, Group> groupMap = new LinkedHashMap<>();
-        landscape.getGroups().forEach(groupMap::put);
-
-        AllGroupsLayout allGroupsLayout = new AllGroupsLayout(landscape, groupMap, subGraphs);
-        LayoutedComponent layoutedComponent = allGroupsLayout.getRendered();
+        AllGroupsLayout allGroupsLayout = new AllGroupsLayout(debug);
+        LayoutedComponent layoutedComponent = allGroupsLayout.getRendered(landscape, new LinkedHashMap<>(landscape.getGroups()), subGraphs);
         shiftGroupsAndItems(layoutedComponent);
         return layoutedComponent;
     }
@@ -60,10 +65,10 @@ public class OrganicLayouter implements Layouter {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("original item pos {} {}", itemBounds.getX(), itemBounds.getY());
                 }
-                itemBounds.setX((long) (itemBounds.getX() + groupBounds.getX()));
-                itemBounds.setY((long) (itemBounds.getY() + groupBounds.getY()));
+                itemBounds.setX(itemBounds.getX() + groupBounds.getX());
+                itemBounds.setY(itemBounds.getY() + groupBounds.getY());
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("item pos with group offset: {} {}", itemBounds.getX(), itemBounds.getY());
+                    LOGGER.debug("item {} pos with group offset: {} {}", itemBounds, itemBounds.getX(), itemBounds.getY());
                 }
             });
         });

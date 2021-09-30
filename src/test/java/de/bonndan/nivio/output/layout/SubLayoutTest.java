@@ -12,9 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SubLayoutTest {
 
-    public static final int ONE_X = -36;
-    public static final int ONE_Y = -37;
-    public static final int TWO_X = 87;
+    public static final int ONE_X = 50;
+    public static final int ONE_Y = -114;
+    public static final int TWO_X = -50;
 
     @Test
     void testWithARelation() {
@@ -42,7 +42,7 @@ class SubLayoutTest {
         LayoutedComponent one = outerBounds.getChildren().get(0);
         assertNotNull(one);
         assertEquals(bar, one.getComponent());
-        assertEquals(ONE_X, Math.round(one.getX()));
+        assertEquals(-109, Math.round(one.getX()));
         assertEquals(ONE_Y, Math.round(one.getY()));
 
         LayoutedComponent two = outerBounds.getChildren().get(1);
@@ -86,6 +86,6 @@ class SubLayoutTest {
         assertNotNull(two);
         assertEquals(baz, two.getComponent());
         assertEquals(TWO_X, Math.round(two.getX()));
-        assertEquals(86, Math.round(two.getY()));
+        assertEquals(114, Math.round(two.getY()));
     }
 }

@@ -20,6 +20,7 @@ class HexMapTest {
     @Test
     void getPath() {
         Item bar = getTestItem("foo", "bar");
+
         LayoutedComponent barComponent = new LayoutedComponent(bar);
         barComponent.x = 0;
         barComponent.y = 0;
@@ -30,8 +31,8 @@ class HexMapTest {
         barComponent.y = 500;
 
         HexMap hexMap = new HexMap();
-        hexMap.add(bar, hexMap.findFreeSpot(barComponent.getX(), barComponent.getY()));
-        hexMap.add(baz, hexMap.findFreeSpot(bazComponent.getX(), bazComponent.getY()));
+        hexMap.add(bar, hexMap.findFreeSpot(barComponent));
+        hexMap.add(baz, hexMap.findFreeSpot(bazComponent));
 
         //when
         Optional<HexPath> path = hexMap.getPath(bar, baz, true);
@@ -61,7 +62,7 @@ class HexMapTest {
         HexMap hexMap = new HexMap();
 
         //when
-        MapTile added = hexMap.add(bar, hexMap.findFreeSpot(barComponent.getX(), barComponent.getY()));
+        MapTile added = hexMap.add(bar, hexMap.findFreeSpot(barComponent));
 
         //then
         assertThat(added).isNotNull();

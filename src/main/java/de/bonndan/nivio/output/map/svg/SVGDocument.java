@@ -69,10 +69,10 @@ public class SVGDocument extends Component {
         defs.add(SVGStatus.patternFor(Status.BROWN));
         //transform all item positions to hex map positions
         layouted.getChildren().forEach(group -> {
-            LOGGER.debug("rendering group {} with items {}", group.getComponent().getIdentifier(), group.getChildren());
+            if (debug) LOGGER.debug("rendering group {} with items {}", group.getComponent().getIdentifier(), group.getChildren());
             group.getChildren().forEach(layoutedItem -> {
 
-                MapTile freeSpot = hexMap.findFreeSpot(layoutedItem.getX(), layoutedItem.getY());
+                MapTile freeSpot = hexMap.findFreeSpot(layoutedItem);
                 Item item = (Item) layoutedItem.getComponent();
                 hexMap.add(item, freeSpot);
 

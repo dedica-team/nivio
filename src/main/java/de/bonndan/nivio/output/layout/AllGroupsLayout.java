@@ -1,10 +1,15 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.output.map.hex.HexMap;
+import de.bonndan.nivio.output.map.svg.SVGDimension;
+import de.bonndan.nivio.output.map.svg.SVGDimensionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Renders a graph of group containers only, not regarding items inside the containers.
@@ -13,23 +18,28 @@ public class AllGroupsLayout {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AllGroupsLayout.class);
     public static final int FORCE_CONSTANT = 300;
-    public static final int MAX_DISTANCE_LIMIT = 1000;
+    public static final int MAX_DISTANCE_LIMIT = 5000;
 
     //results in more iterations and better layouts for larger graphs
     public static final int INITIAL_TEMP = 300 * 3;
-    public static final int MIN_DISTANCE_LIMIT = 2;
+    public static final int MIN_DISTANCE_LIMIT = 300;
 
-    private final Map<Group, LayoutedComponent> groupNodes = new LinkedHashMap<>();
-    private final FastOrganicLayout layout;
-    private final Landscape landscape;
+    private final boolean debug;
 
-    public AllGroupsLayout(Landscape landscape, Map<String, Group> groups, Map<String, SubLayout> subgraphs) {
-        this.landscape = landscape;
+    public AllGroupsLayout(boolean debug) {
+        this.debug = debug;
+    }
+
+    /**
+     * Renders the landscape using {@link FastOrganicLayout}.
+     */
+    public LayoutedComponent getRendered(Landscape landscape, Map<String, Group> groups, Map<String, SubLayout> subgraphs) {
 
         LOGGER.debug("Subgraphs sequence: {}", subgraphs);
-
+        Map<Group, LayoutedComponent> groupNodes = new LinkedHashMap<>();
         List<Item> items = new ArrayList<>();
-        groups.forEach((groupName, groupItem) -> {
+        var sorted = new TreeMap<>(groups);
+        sorted.forEach((groupName, groupItem) -> {
 
             //do not layout the group if empty
             if (groupItem.getItems().isEmpty()) {
@@ -43,33 +53,37 @@ public class AllGroupsLayout {
             groupNodes.put(groupItem, groupGeometry);
             items.addAll(groupItem.getItems());
         });
-        LOGGER.debug("Group node sequence: {}", groupNodes);
+        if (debug) LOGGER.debug("Group node sequence: {}", groupNodes);
 
-        addVirtualEdgesBetweenGroups(items);
+        addVirtualEdgesBetweenGroups(items, groupNodes);
 
-        layout = new FastOrganicLayout(
+        var layout = new FastOrganicLayout(
                 new ArrayList<>(groupNodes.values()),
                 FORCE_CONSTANT,
                 MIN_DISTANCE_LIMIT,
                 MAX_DISTANCE_LIMIT,
                 INITIAL_TEMP,
                 landscape.getConfig().getGroupLayoutConfig());
+        layout.setDebug(debug);
 
         layout.execute();
-        LOGGER.debug("AllGroupsLayout bounds: {}", layout.getBounds());
+        layout.checkDistances();
+        if (debug) LOGGER.debug("AllGroupsLayout bounds: {}", layout.getBounds());
+
+        return layout.getOuterBounds(landscape);
     }
 
 
     /**
      * Virtual edges between group containers enable organic layout of groups.
      */
-    private void addVirtualEdgesBetweenGroups(List<Item> items) {
+    private void addVirtualEdgesBetweenGroups(List<Item> items, Map<Group, LayoutedComponent> groupNodes) {
 
         GroupConnections groupConnections = new GroupConnections();
 
         items.forEach(item -> {
             final String group = item.getGroup();
-            LayoutedComponent groupNode = findGroupBounds(group);
+            LayoutedComponent groupNode = findGroupBounds(group, groupNodes);
 
             item.getRelations().forEach(relationItem -> {
                 Item targetItem = relationItem.getTarget();
@@ -79,7 +93,7 @@ public class AllGroupsLayout {
                 }
 
                 String targetGroup = targetItem.getGroup();
-                LayoutedComponent targetGroupNode = findGroupBounds(targetGroup);
+                LayoutedComponent targetGroupNode = findGroupBounds(targetGroup, groupNodes);
 
                 if (groupConnections.canConnect(group, targetGroup)) {
                     groupNode.getOpposites().add(targetGroupNode.getComponent());
@@ -90,19 +104,12 @@ public class AllGroupsLayout {
         });
     }
 
-    private LayoutedComponent findGroupBounds(String group) {
+    private LayoutedComponent findGroupBounds(String group, Map<Group, LayoutedComponent> groupNodes) {
         return groupNodes.entrySet().stream()
                 .filter(entry -> group.equals(entry.getKey().getIdentifier()))
                 .findFirst()
                 .map(Map.Entry::getValue)
                 .orElseThrow(() -> new RuntimeException(String.format("Group %s not found.", group)));
-    }
-
-    /**
-     * Returns the layouted landscape.
-     */
-    public LayoutedComponent getRendered() {
-        return layout.getOuterBounds(landscape);
     }
 
 }

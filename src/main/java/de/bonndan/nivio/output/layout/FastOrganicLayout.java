@@ -50,12 +50,10 @@ public class FastOrganicLayout {
      */
     protected double forceConstantSquared = 0;
 
-
     /**
      * Cached version of <minDistanceLimit> squared.
      */
     protected double minDistanceLimitSquared = 0;
-
 
     /**
      * Temperature to limit displacement at later stages of layout.
@@ -63,14 +61,9 @@ public class FastOrganicLayout {
     protected double temperature = 0;
 
     /**
-     * Total number of iterations to run the layout though.
-     */
-    protected double maxIterations = 0;
-
-    /**
      * Current iteration count.
      */
-    protected double iteration = 0;
+    protected int iteration = 0;
 
     /**
      * An array of locally stored X co-ordinate displacements for the vertices.
@@ -103,16 +96,13 @@ public class FastOrganicLayout {
     protected int[][] neighbours;
 
     /**
-     * Boolean flag that specifies if the layout is allowed to run. If this is
-     * set to false, then the layout exits in the following iteration.
-     */
-    protected boolean allowedToRun = true;
-
-    /**
      * Maps from vertices to indices.
      */
     protected HashMap<LayoutedComponent, Integer> indices = new HashMap<>();
+
     private boolean debug;
+
+    private boolean minDistanceShortfall = false;
 
     /**
      * Constructs a new fast organic layout.
@@ -140,15 +130,10 @@ public class FastOrganicLayout {
 
         this.initialTemp = initialTemp;
 
-        this.maxIterations = Optional.ofNullable(config).map(LandscapeConfig.LayoutConfig::getMaxIterations).orElse((int) maxIterations);
     }
 
     public void setDebug(boolean debug) {
         this.debug = debug;
-    }
-
-    public void setMaxIterations(double value) {
-        maxIterations = value;
     }
 
     /**
@@ -156,7 +141,17 @@ public class FastOrganicLayout {
      * fashion to zero.
      */
     protected void reduceTemperature() {
-        temperature = initialTemp * (1.0 - iteration / maxIterations);
+        var factor = 0.8;
+
+        if (temperature < 5 && !minDistanceShortfall) {
+            temperature = 0;
+        }
+        if (minDistanceShortfall) {
+            minDistanceShortfall = false;
+            LOGGER.info("Compensating min distance shortfall, slower reducing temp {} in iteration {}.", temperature, iteration);
+            factor = 0.97;
+        }
+        temperature = temperature * factor;
     }
 
     public void execute() {
@@ -185,15 +180,15 @@ public class FastOrganicLayout {
 
             // Set the X,Y value of the internal version of the cell to
             // the center point of the vertex for better positioning
-            double width = layoutedComponent.getWidth();
-            double height = layoutedComponent.getHeight();
+            double halfWidth = layoutedComponent.getWidth() / 2.0;
+            double halfHeight = layoutedComponent.getHeight() / 2.0;
             double x = layoutedComponent.getX();
             double y = layoutedComponent.getY();
 
-            centerLocations[i][0] = x + width / 2.0;
-            centerLocations[i][1] = y + height / 2.0;
+            centerLocations[i][0] = x + halfWidth;
+            centerLocations[i][1] = y + halfHeight;
 
-            radius[i] = Math.max(width, height);
+            radius[i] = Math.max(halfWidth, halfHeight);
             radiusSquared[i] = radius[i] * radius[i];
         }
 
@@ -203,8 +198,8 @@ public class FastOrganicLayout {
         InitialPlacementStrategy initialPlacementStrategy = new InitialPlacementStrategy(this.bounds);
         for (int i = 0; i < n; i++) {
             Point2D.Double start = initialPlacementStrategy.place(i);
-            dispX[i] = start.x;
-            dispY[i] = start.y;
+            centerLocations[i][0] = start.x;
+            centerLocations[i][1] = start.y;
 
             // Get lists of neighbours to all vertices, translate the cells
             // obtained in indices into vertexArray and store as an array
@@ -231,23 +226,15 @@ public class FastOrganicLayout {
                 // so the attraction force of the edge is not calculated
                 else {
                     neighbours[i][j] = i;
-                    throw new RuntimeException("Could not find neighbour for " + component);
+                    throw new IllegalStateException(String.format("Could not find neighbour for %s", component));
                 }
             }
         }
 
         temperature = initialTemp;
 
-        // If max number of iterations has not been set, guess it
-        if (maxIterations == 0) {
-            maxIterations = 20.0 * Math.sqrt(n);
-        }
-
         // Main iteration loop
-        for (iteration = 0; iteration < maxIterations; iteration++) {
-            if (!allowedToRun) {
-                return;
-            }
+        while (temperature > 1) {
 
             // Calculate repulsive forces on all vertices
             calcRepulsion();
@@ -257,6 +244,7 @@ public class FastOrganicLayout {
 
             calcPositions();
             reduceTemperature();
+            iteration++;
         }
 
         for (int i = 0; i < bounds.size(); i++) {
@@ -287,8 +275,9 @@ public class FastOrganicLayout {
 
             // Scale down by the current temperature if less than the
             // displacement distance
-            double newXDisp = dispX[index] / deltaLength * Math.min(deltaLength, temperature);
-            double newYDisp = dispY[index] / deltaLength * Math.min(deltaLength, temperature);
+            var factor = Math.min(deltaLength, temperature);
+            double newXDisp = dispX[index] / deltaLength * factor;
+            double newYDisp = dispY[index] / deltaLength * factor;
 
             // reset displacements
             dispX[index] = 0;
@@ -316,29 +305,27 @@ public class FastOrganicLayout {
                 int j = neighbours[i][k];
 
                 // Do not proceed self-loops
-                if (i != j) {
-                    double xDelta = centerLocations[i][0] - centerLocations[j][0];
-                    double yDelta = centerLocations[i][1] - centerLocations[j][1];
-
-                    // The distance between the nodes
-                    double deltaLengthSquared = xDelta * xDelta + yDelta * yDelta - radiusSquared[i] - radiusSquared[j];
-
-                    if (deltaLengthSquared < minDistanceLimitSquared) {
-                        deltaLengthSquared = minDistanceLimitSquared;
-                    }
-
-                    double deltaLength = Math.sqrt(deltaLengthSquared);
-                    double force = (deltaLengthSquared) / forceConstant;
-
-                    double displacementX = (xDelta / deltaLength) * force;
-                    double displacementY = (yDelta / deltaLength) * force;
-
-                    this.dispX[i] -= displacementX;
-                    this.dispY[i] -= displacementY;
-
-                    this.dispX[j] += displacementX;
-                    this.dispY[j] += displacementY;
+                if (i == j) {
+                    continue;
                 }
+
+                double distance = getDistanceBetween(i, j);
+                double xDelta = getDistanceBetween(i, j, 0);
+                double yDelta = getDistanceBetween(i, j, 1);
+
+                //attraction is low at min distance limit
+                var factor = Math.abs(distance) - minDistanceLimit*1.1;
+
+                double force = factor * factor / forceConstant;
+
+                double displacementX = (xDelta / distance) * force;
+                double displacementY = (yDelta / distance) * force;
+
+                this.dispX[i] -= displacementX;
+                this.dispY[i] -= displacementY;
+
+                this.dispX[j] += displacementX;
+                this.dispY[j] += displacementY;
             }
         }
     }
@@ -351,54 +338,82 @@ public class FastOrganicLayout {
 
         for (int i = 0; i < vertexCount; i++) {
             for (int j = i; j < vertexCount; j++) {
-                // Exits if the layout is no longer allowed to run
-                if (!allowedToRun) {
-                    return;
+
+                if (j == i) {
+                    continue;
                 }
 
-                if (j != i) {
-                    double xDelta = centerLocations[i][0] - centerLocations[j][0];
-                    double yDelta = centerLocations[i][1] - centerLocations[j][1];
+                double xDelta = getDistanceBetween(i, j, 0);
+                double yDelta = getDistanceBetween(i, j, 1);
 
-                    if (xDelta == 0) {
-                        xDelta = 0.01;
-                    }
+                double distance = getDistanceBetween(i, j);
 
-                    if (yDelta == 0) {
-                        yDelta = 0.01;
-                    }
+                if (debug) {
+                    //LOGGER.debug("Iteration {} temp {}: repulsion index {} {} deltaLengthWithRadius is {}", iteration, temperature, i, j, distance);
+                }
 
-                    // Distance between nodes
-                    double deltaLength = Math.sqrt((xDelta * xDelta) + (yDelta * yDelta));
+                if (Math.abs(distance) > maxDistanceLimit) {
+                    // Ignore vertices too far apart
+                    continue;
+                }
 
-                    double deltaLengthWithRadius = deltaLength - radius[i] - radius[j];
-
+                if (Math.abs(distance) < minDistanceLimit) {
                     if (debug) {
-                        LOGGER.debug("Iteration {} temp {}: repulsion index {} {} deltaLengthWithRadius is {}", iteration, temperature, i, j, deltaLengthWithRadius);
+                        LOGGER.debug("Iteration {} temp {}: repulsion index {} {} distance shortfall {}/{}", iteration, temperature, i, j, distance, minDistanceLimit);
                     }
-
-                    if (deltaLengthWithRadius > maxDistanceLimit) {
-                        // Ignore vertices too far apart
-                        continue;
-                    }
-
-                    if (deltaLengthWithRadius < minDistanceLimit) {
-                        deltaLengthWithRadius = minDistanceLimit;
-                    }
-
-                    double force = forceConstantSquared / deltaLengthWithRadius;
-
-                    double displacementX = (xDelta / deltaLength) * force;
-                    double displacementY = (yDelta / deltaLength) * force;
-
-                    dispX[i] += displacementX;
-                    dispY[i] += displacementY;
-
-                    dispX[j] -= displacementX;
-                    dispY[j] -= displacementY;
+                    minDistanceShortfall = true;
                 }
+
+                double force = forceConstantSquared / distance;
+
+                double displacementX = (xDelta / distance) * force;
+                double displacementY = (yDelta / distance) * force;
+
+                dispX[i] += displacementX;
+                dispY[i] += displacementY;
+
+                dispX[j] -= displacementX;
+                dispY[j] -= displacementY;
             }
         }
+    }
+
+    /**
+     * Calculates the distance between in one direction.
+     *
+     * @param i   index
+     * @param j   index
+     * @param dim x or y
+     */
+    double getDistanceBetween(int i, int j, int dim) {
+        double delta = centerLocations[i][dim] - centerLocations[j][dim];
+
+        if (delta == 0) {
+            delta = 0.01;
+        }
+
+        return delta - radius[i] - radius[j];
+    }
+
+    /**
+     * Calculates the distance between the borders (regarding radius).
+     *
+     * @param i index
+     * @param j index
+     */
+    double getDistanceBetween(int i, int j) {
+        double xDelta = centerLocations[i][0] - centerLocations[j][0];
+        double yDelta = centerLocations[i][1] - centerLocations[j][1];
+
+        if (xDelta == 0) {
+            xDelta = 0.01;
+        }
+
+        if (yDelta == 0) {
+            yDelta = 0.01;
+        }
+
+        return Math.sqrt((xDelta * xDelta) + (yDelta * yDelta)) - radius[i] - radius[j];
     }
 
     public List<LayoutedComponent> getBounds() {
@@ -427,4 +442,19 @@ public class FastOrganicLayout {
         return outer;
     }
 
+    public void checkDistances() {
+        int vertexCount = bounds.size();
+
+        for (int i = 0; i < vertexCount; i++) {
+            for (int j = i; j < vertexCount; j++) {
+                if (j == i) {
+                    continue;
+                }
+                double deltaLengthWithRadius = getDistanceBetween(i, j);
+                if (Math.abs(deltaLengthWithRadius) < minDistanceLimit * 0.9) {
+                    throw new IllegalStateException(String.format("Min distance shortfall of %s/%s for i=%d j=%d", deltaLengthWithRadius, minDistanceLimit, i, j));
+                }
+            }
+        }
+    }
 }
