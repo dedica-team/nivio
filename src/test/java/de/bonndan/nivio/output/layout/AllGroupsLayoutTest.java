@@ -21,11 +21,12 @@ class AllGroupsLayoutTest {
 
         Landscape landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
 
-        landscape.getGroups().put("a", a);
-        landscape.getGroups().put("b", b);
-        landscape.getGroups().put("c", c);
+        landscape.addGroup(a);
+        landscape.addGroup(b);
+        landscape.addGroup(c);
 
-        Map<String, SubLayout> map = Map.of("a", getSubLayout(a),
+        Map<String, SubLayout> map = Map.of(
+                "a", getSubLayout(a),
                 "b", getSubLayout(b),
                 "c", getSubLayout(c)
         );
@@ -50,7 +51,7 @@ class AllGroupsLayoutTest {
         //assert position is always the same
         LayoutedComponent child0 = layoutedLandscape.getChildren().get(0);
         assertEquals("test/a", child0.getComponent().getFullyQualifiedIdentifier().toString());
-        assertEquals(-895, Math.round(child0.getX()));
+        assertEquals(-658, Math.round(child0.getX()));
         assertEquals(-643, Math.round(child0.getY()));
     }
 

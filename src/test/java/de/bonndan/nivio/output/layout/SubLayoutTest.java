@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class SubLayoutTest {
 
     public static final int ONE_X = 50;
-    public static final int ONE_Y = -114;
+    public static final int ONE_Y = -94;
     public static final int TWO_X = -50;
 
     @Test
@@ -42,14 +42,14 @@ class SubLayoutTest {
         LayoutedComponent one = outerBounds.getChildren().get(0);
         assertNotNull(one);
         assertEquals(bar, one.getComponent());
-        assertEquals(-109, Math.round(one.getX()));
+        assertEquals(-93, Math.round(one.getX()));
         assertEquals(ONE_Y, Math.round(one.getY()));
 
         LayoutedComponent two = outerBounds.getChildren().get(1);
         assertNotNull(two);
         assertEquals(baz, two.getComponent());
-        assertEquals(TWO_X, Math.round(two.getX()));
-        assertEquals(86, Math.round(two.getY()));
+        assertEquals(93, Math.round(two.getX()));
+        assertEquals(94, Math.round(two.getY()));
     }
 
     @Test
@@ -79,13 +79,13 @@ class SubLayoutTest {
         LayoutedComponent one = outerBounds.getChildren().get(0);
         assertNotNull(one);
         assertEquals(bar, one.getComponent());
-        assertEquals(ONE_X, Math.round(one.getX()));
-        assertEquals(ONE_Y, Math.round(one.getY()));
+        assertEquals(103, Math.round(one.getX()));
+        assertEquals(-53, Math.round(one.getY()));
 
         LayoutedComponent two = outerBounds.getChildren().get(1);
         assertNotNull(two);
         assertEquals(baz, two.getComponent());
-        assertEquals(TWO_X, Math.round(two.getX()));
-        assertEquals(114, Math.round(two.getY()));
+        assertEquals(-103, Math.round(two.getX()));
+        assertEquals(53, Math.round(two.getY()));
     }
 }

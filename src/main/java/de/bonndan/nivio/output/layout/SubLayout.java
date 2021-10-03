@@ -36,7 +36,16 @@ public class SubLayout {
         String name = group.getName();
         this.parent = group;
 
-        List<LayoutedComponent> list = new ArrayList<>();
+        List<LayoutedComponent> components = getComponents(group, items);
+
+
+        layout = new FastOrganicLayout(components, FORCE_CONSTANT, MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT, INITIAL_TEMP, itemLayoutConfig);
+        layout.execute();
+        LOGGER.debug("Subgraph {} layouted items: {}", name, layout.getNodes());
+    }
+
+    static List<LayoutedComponent> getComponents(Component group, Set<Item> items) {
+        List<LayoutedComponent> components = new ArrayList<>();
         List<Relation> added = new ArrayList<>();
         items.forEach(item -> {
             List<Component> relationTargets = new ArrayList<>();
@@ -62,13 +71,9 @@ public class SubLayout {
             });
             LayoutedComponent e = new LayoutedComponent(item, relationTargets);
             e.setDefaultColor(group.getColor());
-            list.add(e);
+            components.add(e);
         });
-
-
-        layout = new FastOrganicLayout(list, FORCE_CONSTANT, MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT, INITIAL_TEMP, itemLayoutConfig);
-        layout.execute();
-        LOGGER.debug("Subgraph {} layouted items: {}", name, layout.getBounds());
+        return components;
     }
 
     public LayoutedComponent getOuterBounds() {

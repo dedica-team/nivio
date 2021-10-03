@@ -1,15 +1,10 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.map.hex.Hex;
-import de.bonndan.nivio.output.map.hex.HexMap;
-import de.bonndan.nivio.output.map.svg.SVGDimension;
-import de.bonndan.nivio.output.map.svg.SVGDimensionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Renders a graph of group containers only, not regarding items inside the containers.
@@ -67,8 +62,8 @@ public class AllGroupsLayout {
         layout.setDebug(debug);
 
         layout.execute();
-        layout.checkDistances();
-        if (debug) LOGGER.debug("AllGroupsLayout bounds: {}", layout.getBounds());
+        layout.assertMinDistanceIsKept();
+        if (debug) LOGGER.debug("AllGroupsLayout bounds: {}", layout.getNodes());
 
         return layout.getOuterBounds(landscape);
     }
