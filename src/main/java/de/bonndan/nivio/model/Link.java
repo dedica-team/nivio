@@ -58,7 +58,7 @@ public class Link {
         try {
             this.href = new URL(href);
         } catch (MalformedURLException e) {
-            throw new RuntimeException(String.format("Failed to create link with href %s", href));
+            throw new IllegalArgumentException(String.format("Failed to create link with href %s", href));
         }
     }
 
@@ -129,7 +129,7 @@ public class Link {
     }
 
     public boolean hasHeaderToken() {
-        return !StringUtils.isEmpty(headerTokenName) && !StringUtils.isEmpty(headerTokenValue);
+        return StringUtils.hasLength(headerTokenName) && StringUtils.hasLength(headerTokenValue);
     }
 
     @JsonIgnore
@@ -180,7 +180,6 @@ public class Link {
         private String basicAuthPassword;
         private String headerTokenName;
         private String headerTokenValue;
-        private final Map<String, Object> props = new HashMap<>();
 
         private LinkBuilder() {
         }

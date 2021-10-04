@@ -1,18 +1,13 @@
 package de.bonndan.nivio.assessment;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.kpi.KPI;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.springframework.lang.NonNull;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
 
 /**
  * Interface for components that can be assessed and can have assigned {@link StatusValue}s.
