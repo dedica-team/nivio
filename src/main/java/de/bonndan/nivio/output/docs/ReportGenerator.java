@@ -60,7 +60,7 @@ public class ReportGenerator extends HtmlGenerator {
             );
             builder.append(
                     div().attr("class", "group")
-                            .with(groupItem.getItems().stream().map(item -> this.writeItem(item, assessment, all)))
+                            .with(groupItem.getItems().stream().map(fqi -> this.writeItem(landscape.getItems().pick(fqi), assessment, all)))
                             .render()
             );
         });

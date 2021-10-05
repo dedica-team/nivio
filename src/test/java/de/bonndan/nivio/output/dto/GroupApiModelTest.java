@@ -5,6 +5,7 @@ import de.bonndan.nivio.model.Group;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,7 +17,7 @@ class GroupApiModelTest {
     @BeforeEach
     void setUp() {
         var group = new Group("test", "test", "testOwner", "testDescription", "testContact", "testIcon", "testColor");
-        groupApiModel = new GroupApiModel(group);
+        groupApiModel = new GroupApiModel(group, new HashSet<>());
     }
 
     @Test

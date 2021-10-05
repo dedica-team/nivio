@@ -1,9 +1,11 @@
 package de.bonndan.nivio.assessment.kpi;
 
+import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
+import org.springframework.lang.NonNull;
 
 import java.util.*;
 
@@ -30,13 +32,13 @@ public class LifecycleKPI extends CustomKPI {
     }
 
     @Override
-    protected List<StatusValue> getStatusValues(String value, String message) {
+    protected List<StatusValue> getStatusValues(@NonNull final Assessable assessable, String value, String message) {
         var lifecycle = Lifecycle.from(value);
         if (Lifecycle.PRODUCTION.equals(lifecycle)) {
-            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.GREEN, message));
+            return Collections.singletonList(new StatusValue(assessable.getAssessmentIdentifier(), Label.lifecycle.name(), Status.GREEN, message));
         }
         if (Lifecycle.END_OF_LIFE.equals(lifecycle)) {
-            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.ORANGE, message));
+            return Collections.singletonList(new StatusValue(assessable.getAssessmentIdentifier(), Label.lifecycle.name(), Status.ORANGE, message));
         }
 
         return new ArrayList<>();

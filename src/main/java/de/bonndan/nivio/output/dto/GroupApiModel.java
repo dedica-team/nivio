@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.dto;
 
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
 import org.springframework.lang.NonNull;
 
 import java.util.Map;
@@ -12,10 +13,12 @@ import java.util.stream.Collectors;
 public class GroupApiModel extends ComponentApiModel {
 
     private final Group group;
+    private final Set<ItemApiModel> items;
 
-    public GroupApiModel(@NonNull final Group group) {
+    public GroupApiModel(@NonNull final Group group, final Set<Item> items) {
         this.group = Objects.requireNonNull(group);
         this.hateoasLinks.putAll(group.getLinks());
+        this.items = items.stream().map(item -> new ItemApiModel(item, group)).collect(Collectors.toSet());
     }
 
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
@@ -47,7 +50,7 @@ public class GroupApiModel extends ComponentApiModel {
     }
 
     public Set<ItemApiModel> getItems() {
-        return group.getItems().stream().map(item -> new ItemApiModel(item, group)).collect(Collectors.toSet());
+        return items;
     }
 
     @Override

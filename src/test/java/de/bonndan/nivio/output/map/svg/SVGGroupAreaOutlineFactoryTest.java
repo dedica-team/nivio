@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.Status;
-import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
@@ -12,10 +11,12 @@ import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SVGGroupAreaOutlineFactoryTest {
 
@@ -37,9 +38,9 @@ class SVGGroupAreaOutlineFactoryTest {
         hexesToItems.put(e2, item2);
 
 
-        Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), foo);
+        Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), foo, Set.of(item1, item2));
 
-        SVGGroupArea group = SVGGroupArea.forGroup(foo, area, new StatusValue("foo", Status.GREEN), false);
+        SVGGroupArea group = SVGGroupArea.forGroup(foo, area, Status.GREEN, false);
         Set<Hex> groupArea = group.getGroupArea();
 
         //when
