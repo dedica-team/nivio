@@ -11,12 +11,12 @@ import org.junit.jupiter.api.Test;
 
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ItemDescriptionValuesTest {
 
     @Test
-    public void incrementAddsIcon() {
+    void incrementAddsIcon() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -30,7 +30,7 @@ class ItemDescriptionValuesTest {
     }
 
     @Test
-    public void incrementAddsIconSafely() {
+    void incrementAddsIconSafely() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -44,7 +44,7 @@ class ItemDescriptionValuesTest {
     }
 
     @Test
-    public void incrementAddsAddress() {
+    void incrementAddsAddress() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -58,7 +58,7 @@ class ItemDescriptionValuesTest {
     }
 
     @Test
-    public void incrementAddsAddressSafely() {
+    void incrementAddsAddressSafely() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -75,7 +75,7 @@ class ItemDescriptionValuesTest {
     }
 
     @Test
-    public void incrementAddsDataflow() {
+    void incrementAddsDataflow() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -93,7 +93,7 @@ class ItemDescriptionValuesTest {
     }
 
     @Test
-    public void incrementUpdatesRelationDescription() {
+    void incrementUpdatesRelationDescription() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -116,7 +116,7 @@ class ItemDescriptionValuesTest {
     }
 
     @Test
-    public void incrementAddsNetworks() {
+    void incrementAddsNetworks() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -132,7 +132,7 @@ class ItemDescriptionValuesTest {
     }
 
     @Test
-    public void incrementAddsProvidedBy() {
+    void incrementAddsProvidedBy() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -149,12 +149,12 @@ class ItemDescriptionValuesTest {
 
         assertEquals(2,
                 sd1.getRelations().stream()
-                .filter(relation -> RelationType.PROVIDER.equals(relation.getType()))
-                .collect(Collectors.toUnmodifiableList()).size());
+                        .filter(relation -> RelationType.PROVIDER.equals(relation.getType()))
+                        .collect(Collectors.toUnmodifiableList()).size());
     }
 
     @Test
-    public void incrementAddsInterfaces() {
+    void incrementAddsInterfaces() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -176,7 +176,7 @@ class ItemDescriptionValuesTest {
     }
 
     @Test
-    public void incrementAddsLifecycle() {
+    void incrementAddsLifecycle() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -188,11 +188,11 @@ class ItemDescriptionValuesTest {
 
         ItemDescriptionValues.assignNotNull(sd1, increment);
 
-        assertEquals(Lifecycle.END_OF_LIFE.name(), sd1.getLabel(Label.lifecycle));
+        assertEquals(Lifecycle.END_OF_LIFE.name().replace("_", " "), sd1.getLabel(Label.lifecycle));
     }
 
     @Test
-    public void incrementAddsUnsetLabels() {
+    void incrementAddsUnsetLabels() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");

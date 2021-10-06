@@ -15,7 +15,7 @@ public enum Lifecycle {
     @JsonCreator
     @Nullable
     public static Lifecycle from(String lifecycle) {
-        if (StringUtils.isEmpty(lifecycle))
+        if (!StringUtils.hasLength(lifecycle))
             return null;
 
         lifecycle = lifecycle.toLowerCase().trim();
@@ -42,6 +42,7 @@ public enum Lifecycle {
     }
 
     public static boolean isEndOfLife(Labeled labeled) {
-        return END_OF_LIFE.name().equals(labeled.getLabel(Label.lifecycle));
+        return END_OF_LIFE.name().equals(labeled.getLabel(Label.lifecycle))
+                || END_OF_LIFE.name().replace("_", " ").equals(labeled.getLabel(Label.lifecycle));
     }
 }

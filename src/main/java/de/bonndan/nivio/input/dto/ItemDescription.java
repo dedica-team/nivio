@@ -182,10 +182,10 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     public void setLifecycle(String lifecycle) {
 
         //try to standardize using enum values
-        if (!StringUtils.isEmpty(lifecycle)) {
+        if (StringUtils.hasLength(lifecycle)) {
             Lifecycle from = Lifecycle.from(lifecycle);
             if (from != null) {
-                lifecycle = from.name();
+                lifecycle = from.name().replace("_", " ");
             }
         }
 
@@ -233,7 +233,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     @JsonIgnore
     public void setRelations(List<String> relations) {
         relations.stream()
-                .filter(s -> !StringUtils.isEmpty(s))
+                .filter(StringUtils::hasLength)
                 .map(s -> RelationFactory.createDataflowDescription(this, s))
                 .forEach(this::addOrReplaceRelation);
     }
@@ -284,7 +284,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
      */
     @Override
     public String toString() {
-        if (StringUtils.isEmpty(environment)) {
+        if (!StringUtils.hasLength(environment)) {
             return identifier;
         }
 
