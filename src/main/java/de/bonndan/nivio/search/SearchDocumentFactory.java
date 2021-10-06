@@ -130,9 +130,7 @@ public class SearchDocumentFactory {
 
         //kpis, fields are prefixed to prevent name collisions (kpis can have any names)
         statusValues.forEach(statusValue -> {
-            final String field = statusValue.getField().startsWith(StatusValue.SUMMARY_LABEL) ?
-                    StatusValue.SUMMARY_LABEL : statusValue.getField();
-            addTextField.accept(KPI_FACET_PREFIX + field, statusValue.getStatus().getName());
+            addTextField.accept(KPI_FACET_PREFIX + statusValue.getField(), statusValue.getStatus().getName());
         });
 
         //frameworks name (label keys)
@@ -179,9 +177,7 @@ public class SearchDocumentFactory {
 
         //kpis, facets are prefixed to prevent name collisions (kpis can have any names)
         statusValues.forEach(statusValue -> {
-            final String field = statusValue.getField().startsWith(StatusValue.SUMMARY_LABEL) ?
-                    StatusValue.SUMMARY_LABEL : statusValue.getField();
-            addFacetField.accept(KPI_FACET_PREFIX + field, statusValue.getStatus().getName());
+            addFacetField.accept(KPI_FACET_PREFIX + statusValue.getField(), statusValue.getStatus().getName());
         });
     }
 }

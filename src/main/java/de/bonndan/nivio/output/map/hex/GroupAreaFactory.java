@@ -18,6 +18,8 @@ public class GroupAreaFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupAreaFactory.class);
 
+    private GroupAreaFactory(){}
+
     /**
      * Builds an areas of hex tiles belonging to a group.
      * <p>
@@ -31,9 +33,8 @@ public class GroupAreaFactory {
      * @param group        the group
      * @return all hexes the group consists of (an area)
      */
-    public static Set<Hex> getGroup(Map<Object, Hex> itemsToHexes, Group group) {
+    public static Set<Hex> getGroup(Map<Object, Hex> itemsToHexes, Group group, Set<Item> items) {
 
-        Set<Item> items = group.getItems();
         Set<Hex> inArea = new HashSet<>();
 
         if (!items.iterator().hasNext()) {

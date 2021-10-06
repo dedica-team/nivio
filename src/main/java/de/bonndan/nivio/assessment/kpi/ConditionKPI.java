@@ -33,15 +33,16 @@ public class ConditionKPI implements KPI {
     @Override
     @NonNull
     public List<StatusValue> getStatusValues(Assessable component) {
-        if (!(component instanceof Labeled))
+        if (!(component instanceof Labeled)) {
             return new ArrayList<>();
+        }
 
         var status = Status.UNKNOWN;
         var message = "";
         for (Map.Entry<String, String> entry : ((Labeled) component).getLabels(Label._condition).entrySet()) {
             String key = entry.getKey();
             String flag = entry.getValue();
-            if (StringUtils.isEmpty(flag))
+            if (!StringUtils.hasLength(flag))
                 continue;
             if (flag.equalsIgnoreCase("false")) {
                 status = Status.RED;
@@ -57,7 +58,7 @@ public class ConditionKPI implements KPI {
         if (Status.UNKNOWN.equals(status)) {
             return new ArrayList<>();
         }
-        return Collections.singletonList(new StatusValue(IDENTIFIER, status, message));
+        return Collections.singletonList(new StatusValue(component.getAssessmentIdentifier(), IDENTIFIER, status, message));
     }
 
     @Override

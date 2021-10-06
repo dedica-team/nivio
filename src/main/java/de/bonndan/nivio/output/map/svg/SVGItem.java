@@ -96,14 +96,14 @@ class SVGItem extends Component {
         String stroke = "#" + (layoutedComponent.getColor() != null ? layoutedComponent.getColor() : Color.GRAY);
         ContainerTag statusCircle = null;
         if (itemStatuses != null) {
-            StatusValue worst = Assessable.getWorst(itemStatuses);
-            if (worst.getStatus() != Status.UNKNOWN) {
+            Status worst = Assessable.getWorst(itemStatuses).stream().findFirst().map(StatusValue::getStatus).orElse(Status.UNKNOWN);
+            if (worst != Status.UNKNOWN) {
                 statusCircle = SvgTagCreator.circle()
                         .attr("cx", 70)
                         .attr("cy", 70)
                         .attr("r", DEFAULT_ICON_SIZE / 2)
                         .attr("stroke", "grey")
-                        .attr("fill", worst.getStatus().getName())
+                        .attr("fill", worst.getName())
                 ;
             }
         }

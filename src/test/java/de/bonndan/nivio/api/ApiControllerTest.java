@@ -58,9 +58,12 @@ class ApiControllerTest {
         assertThat(apiController.group("", "")).isEqualTo(ResponseEntity.notFound().build());
         Mockito.when(landscapeRepository.findDistinctByIdentifier("test")).thenReturn(Optional.of(landscape));
         Mockito.when(landscape.getGroup("test")).thenReturn(Optional.of(new Group("test", "test")));
+        Mockito.when(landscape.getItems()).thenReturn(new ItemIndex<>(Item.class));
+
         assertThat(apiController.group("test", "test").getClass()).isEqualTo(ResponseEntity.class);
         assertThat(apiController.group("test", "test").getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(apiController.group("test", "test").getBody()).isEqualToComparingFieldByField(new GroupApiModel(landscape.getGroup("test").get()));
+        Group test = landscape.getGroup("test").get();
+        assertThat(apiController.group("test", "test").getBody()).isEqualToComparingFieldByField(new GroupApiModel(test, landscape.getItems().retrieve(test.getItems())));
     }
 
     @Test

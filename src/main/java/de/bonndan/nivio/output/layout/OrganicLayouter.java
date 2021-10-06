@@ -25,8 +25,8 @@ public class OrganicLayouter implements Layouter {
     public LayoutedComponent layout(@NonNull final Landscape landscape) {
 
         Map<String, SubLayout> subGraphs = new LinkedHashMap<>();
-        Objects.requireNonNull(landscape).getGroups().forEach((name, groupItem) -> {
-            SubLayout subLayout = new SubLayout(groupItem, groupItem.getItems(), landscape.getConfig().getItemLayoutConfig());
+        Objects.requireNonNull(landscape).getGroups().forEach((name, group) -> {
+            SubLayout subLayout = new SubLayout(group, landscape.getItems().retrieve(group.getItems()), landscape.getConfig().getItemLayoutConfig());
             subGraphs.put(name, subLayout);
         });
 

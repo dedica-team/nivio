@@ -29,7 +29,7 @@ class GroupAreaFactoryTest {
      * https://www.redblobgames.com/grids/hexagons/#coordinates
      */
     @Test
-    public void getBridges() {
+    void getBridges() {
         Set<Hex> inArea = new HashSet<>();
         //vertical with one hex gap
         inArea.add(new Hex(3, 1, -4));
@@ -42,7 +42,7 @@ class GroupAreaFactoryTest {
     }
 
     @Test
-    public void addHexesWithClosestPaths() {
+    void addHexesWithClosestPaths() {
         Hex one = new Hex(1, 2);
         Hex two = new Hex(3, 5);
 
@@ -58,7 +58,7 @@ class GroupAreaFactoryTest {
         hexesToItems.put(two, target);
 
         //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
+        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group, Set.of(landscapeItem, target));
 
         //then
         assertThat(inArea).containsAll(expectedTerritory);
@@ -70,7 +70,7 @@ class GroupAreaFactoryTest {
     }
 
     @Test
-    public void justAddsHexAndNeighbours() {
+    void justAddsHexAndNeighbours() {
         Hex one = new Hex(1, 2);
         Hex two = new Hex(3, 3);
 
@@ -85,14 +85,14 @@ class GroupAreaFactoryTest {
         hexesToItems.put(two, target);
 
         //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
+        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group, Set.of(landscapeItem));
 
         //then
         assertThat(inArea).isEqualTo(expectedTerritory);
     }
 
     @Test
-    public void doesNotAddUnnecessaryTiles() {
+    void doesNotAddUnnecessaryTiles() {
 
         Hex one = new Hex(4, 4);
         Hex two = new Hex(6, 4);
@@ -108,14 +108,14 @@ class GroupAreaFactoryTest {
         hexesToItems.put(two, target);
 
         //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
-        assertThat(inArea).doesNotContain(new Hex(5,2));
-        assertThat(inArea).doesNotContain(new Hex(6,2));
-        assertThat(inArea).doesNotContain(new Hex(7,2));
+        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group, Set.of(landscapeItem, target));
+        assertThat(inArea).doesNotContain(new Hex(5, 2));
+        assertThat(inArea).doesNotContain(new Hex(6, 2));
+        assertThat(inArea).doesNotContain(new Hex(7, 2));
     }
 
     @Test
-    public void pathToClosestItemIsPaddedByOneHex() {
+    void pathToClosestItemIsPaddedByOneHex() {
 
         Hex one = new Hex(4, 4);
         Hex two = new Hex(7, 4);
@@ -132,15 +132,15 @@ class GroupAreaFactoryTest {
         hexesToItems.put(two, target);
 
         //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
+        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group, Set.of(landscapeItem, target));
 
         //then
-        assertThat(inArea).contains(new Hex(6,3));
-        assertThat(inArea).contains(new Hex(5,5));
+        assertThat(inArea).contains(new Hex(6, 3));
+        assertThat(inArea).contains(new Hex(5, 5));
     }
 
     @Test
-    public void allAreaHexesHaveCorrectGroup() {
+    void allAreaHexesHaveCorrectGroup() {
         Hex one = new Hex(1, 1, -2);
         Hex two = new Hex(3, 3, -6);
 
@@ -155,7 +155,7 @@ class GroupAreaFactoryTest {
         hexesToItems.put(two, target);
 
         //when
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
+        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group, Set.of(landscapeItem, target));
 
         //then
         long count = inArea.stream().filter(hex -> hex.group != null).count();

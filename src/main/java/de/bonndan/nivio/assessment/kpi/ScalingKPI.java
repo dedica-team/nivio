@@ -69,6 +69,7 @@ public class ScalingKPI extends AbstractKPI {
 
         String scaleLabel = component.getLabel(Label.scale);
         int scaleValue = -1;
+        String assessmentIdentifier = component.getAssessmentIdentifier();
         if (scaleLabel != null) {
             try {
                 scaleValue = Integer.parseInt(scaleLabel);
@@ -82,7 +83,7 @@ public class ScalingKPI extends AbstractKPI {
                         status = Status.ORANGE;
                         message += " and data sink for " + usedAsDataTarget + " items";
                     }
-                    return List.of(new StatusValue(Label.scale.name(), status, message));
+                    return List.of(new StatusValue(assessmentIdentifier, Label.scale.name(), status, message));
                 }
             } catch (NumberFormatException ignored) {
                 LOGGER.warn("Scaling KPI cannot handle label scale value '{}' of component '{}'", scaleLabel, component);
@@ -90,18 +91,18 @@ public class ScalingKPI extends AbstractKPI {
         }
 
         if (scaleValue == 1 && (usedAsProvider > 1)) {
-            return List.of(new StatusValue(Label.scale.name(), Status.YELLOW, String.format("Unscaled, but %d items depend on it.", usedAsProvider)));
+            return List.of(new StatusValue(assessmentIdentifier, Label.scale.name(), Status.YELLOW, String.format("Unscaled, but %d items depend on it.", usedAsProvider)));
         }
 
         if (scaleValue > 0) {
-            return List.of(new StatusValue(Label.scale.name(), Status.GREEN));
+            return List.of(new StatusValue(assessmentIdentifier, Label.scale.name(), Status.GREEN, ""));
         }
 
         return Collections.emptyList();
     }
 
     @Override
-    protected List<StatusValue> getStatusValues(String value, String message) {
+    protected List<StatusValue> getStatusValues(@NonNull final Assessable assessable, String value, String message) {
         //unused
         return Collections.emptyList();
     }

@@ -1,6 +1,7 @@
 package de.bonndan.nivio.assessment.kpi;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
@@ -10,6 +11,7 @@ import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.util.*;
@@ -77,13 +79,13 @@ public class CustomKPI extends AbstractKPI {
     }
 
     @Override
-    protected List<StatusValue> getStatusValues(@Nullable String value, @Nullable String message) {
+    protected List<StatusValue> getStatusValues(@NonNull final Assessable assessable, @Nullable String value, @Nullable String message) {
 
         List<StatusValue> values = new ArrayList<>();
         for (Status status : Status.values()) {
             Optional<Status> statusByRange = getStatusByRange(value);
             if (statusByRange.isPresent()) {
-                values.add(new StatusValue(label, statusByRange.get(), message));
+                values.add(new StatusValue(assessable.getAssessmentIdentifier(), label, statusByRange.get(), message));
                 break;
             }
 
@@ -95,7 +97,7 @@ public class CustomKPI extends AbstractKPI {
                 anyMatch = matchSpecs.get(status).stream().anyMatch(stringBooleanFunction -> stringBooleanFunction.apply(value));
             }
             if (anyMatch) {
-                values.add(new StatusValue(label, status, message));
+                values.add(new StatusValue(assessable.getAssessmentIdentifier(), label, status, message));
                 break;
             }
         }
