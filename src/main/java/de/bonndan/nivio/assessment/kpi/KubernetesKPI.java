@@ -18,8 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class KubernetesKPI implements KPI {
     private static final Logger LOGGER = LoggerFactory.getLogger(KubernetesKPI.class);
     public static final String IDENTIFIER = "k8s";
-    private static boolean ready = true;
-    private static boolean old = false;
     private boolean enabled = true;
 
     @Override
@@ -27,10 +25,6 @@ public class KubernetesKPI implements KPI {
     public List<StatusValue> getStatusValues(Assessable assessable) {
         if (!(assessable instanceof Labeled)) {
             return new ArrayList<>();
-        }
-        if (old) {
-            setOld(false);
-            setReady(true);
         }
         var statusList = new ArrayList<StatusValue>();
         var counter = new AtomicInteger(0);
@@ -70,7 +64,6 @@ public class KubernetesKPI implements KPI {
         if (flag.toLowerCase(Locale.ROOT).equals("true")) {
             return de.bonndan.nivio.assessment.Status.GREEN.toString();
         } else {
-            setReady(false);
             return de.bonndan.nivio.assessment.Status.RED.toString();
         }
     }
@@ -87,10 +80,8 @@ public class KubernetesKPI implements KPI {
             return new SingletonMap("all pods are ready", de.bonndan.nivio.assessment.Status.GREEN.toString());
         }
         if (replicaCount == 0) {
-            setReady(false);
             return new SingletonMap(message, de.bonndan.nivio.assessment.Status.RED.toString());
         }
-        setReady(false);
         return new SingletonMap(message, de.bonndan.nivio.assessment.Status.YELLOW.toString());
     }
 
@@ -104,26 +95,14 @@ public class KubernetesKPI implements KPI {
         return enabled;
     }
 
-    public static boolean isReady() {
-        return ready;
-    }
-
-    public static void setReady(boolean ready) {
-        KubernetesKPI.ready = ready;
-    }
-
-    public static void setOld(boolean old) {
-        KubernetesKPI.old = old;
-    }
-
     @Override
     public Map<Status, RangeApiModel> getRanges() {
-        return null;
+        return Map.of();
     }
 
     @Override
     public Map<Status, List<String>> getMatches() {
-        return null;
+        return Map.of();
     }
 
     public void setEnabled(boolean enabled) {
