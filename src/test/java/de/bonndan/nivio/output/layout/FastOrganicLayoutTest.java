@@ -24,7 +24,7 @@ class FastOrganicLayoutTest {
     private LayoutedComponent a;
     private LayoutedComponent b;
     private LayoutedComponent c;
-    private FastOrganicLayout fastOrganicLayout;
+    private FastOrganicLayout layout;
 
     @BeforeEach
     void setup() {
@@ -52,15 +52,15 @@ class FastOrganicLayoutTest {
         c.setHeight(radius);
         layoutedComponents.add(c);
 
-        fastOrganicLayout = new FastOrganicLayout(layoutedComponents, SubLayout.FORCE_CONSTANT, SubLayout.MIN_DISTANCE_LIMIT, SubLayout.MAX_DISTANCE_LIMIT, SubLayout.INITIAL_TEMP, null);
-
+        layout = new FastOrganicLayout(layoutedComponents, SubLayout.MIN_DISTANCE_LIMIT, SubLayout.MAX_DISTANCE_LIMIT, SubLayout.INITIAL_TEMP, null);
+        layout.setDebug(true);
     }
 
     @Test
     void preventsCloseItems() {
 
         //when
-        fastOrganicLayout.execute();
+        layout.execute();
 
         //then
         assertAboveMinDistance(a, b);
@@ -68,207 +68,363 @@ class FastOrganicLayoutTest {
         assertAboveMinDistance(a, c);
     }
 
+    @Test
+    void calcRepulsionDisplacement() {
+
+        //when
+        layout.setup();
+
+        //create overlap
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+
+        layout.centerLocations[1][0] = 200;
+        layout.centerLocations[1][1] = 0;
+
+        layout.centerLocations[2][0] = 10000000;
+        layout.centerLocations[2][1] = 10000000;
+
+        layout.radius[0] = 50;
+        layout.radius[1] = 50;
+        layout.radius[2] = 50;
+
+        layout.calcPositions(); //recalc distances
+
+        //when
+        Point2D.Double repulsionDisplacement = layout.getRepulsionDisplacement(0, 1);
+
+        //then
+        assertThat(repulsionDisplacement.x).isEqualTo(-75, Offset.offset(1D));
+        assertThat(repulsionDisplacement.y).isEqualTo(0, Offset.offset(1D));
+    }
+
+    @Test
+    void calcRepulsionDisplacementTooFar() {
+
+        //when
+        layout.setup();
+
+        //create overlap
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+
+        layout.centerLocations[1][0] = 2000;
+        layout.centerLocations[1][1] = 0;
+
+        layout.centerLocations[2][0] = 10000000;
+        layout.centerLocations[2][1] = 10000000;
+
+        layout.radius[0] = 50;
+        layout.radius[1] = 50;
+        layout.radius[2] = 50;
+
+        layout.calcPositions(); //recalc distances
+
+        //when
+        Point2D.Double repulsionDisplacement = layout.getRepulsionDisplacement(0, 1);
+
+        //then
+        assertThat(repulsionDisplacement.x).isEqualTo(0);
+        assertThat(repulsionDisplacement.y).isEqualTo(0);
+    }
+
+    @Test
+    void calcRepulsionDisplacementOverlap() {
+
+        //when
+        layout.setup();
+
+        //create overlap
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+
+        layout.centerLocations[1][0] = 20;
+        layout.centerLocations[1][1] = 0;
+
+        layout.centerLocations[2][0] = 10000000;
+        layout.centerLocations[2][1] = 10000000;
+
+        layout.radius[0] = 50;
+        layout.radius[1] = 50;
+        layout.radius[2] = 50;
+
+        layout.calcPositions(); //recalc distances
+
+        //when
+        Point2D.Double repulsionDisplacement = layout.getRepulsionDisplacement(0, 1);
+
+        //then
+        assertThat(repulsionDisplacement.x).isLessThan(0).isEqualTo(-10, Offset.offset(1D));
+        assertThat(repulsionDisplacement.y).isEqualTo(0, Offset.offset(1D));
+    }
+
+    @Test
+    void calcRepulsion() {
+
+        //when
+        layout.setup();
+
+        //create overlap
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+
+        layout.centerLocations[1][0] = 100;
+        layout.centerLocations[1][1] = 200;
+
+        layout.centerLocations[2][0] = 10000000;
+        layout.centerLocations[2][1] = 10000000;
+
+        layout.radius[0] = 50;
+        layout.radius[1] = 50;
+        layout.radius[2] = 50;
+
+        layout.calcPositions(); //recalc distances
+
+        //when
+        layout.calcRepulsion();
+
+        //then
+        assertThat(layout.disp[0][0]).isLessThan(0).isEqualTo(-25, Offset.offset(1D));
+        assertThat(layout.disp[0][1]).isLessThan(0).isEqualTo(-51, Offset.offset(1D));
+        assertThat(layout.disp[1][0]).isGreaterThan(0).isEqualTo(25, Offset.offset(1D));
+        assertThat(layout.disp[1][1]).isEqualTo(51, Offset.offset(1D));
+    }
 
     @Test
     void calcRepulsionOnOverlap() {
 
         //when
-        fastOrganicLayout.setup();
+        layout.setup();
 
         //create overlap
-        fastOrganicLayout.centerLocations[0][0] = 0;
-        fastOrganicLayout.centerLocations[0][1] = 0;
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
 
-        fastOrganicLayout.centerLocations[1][0] = 10;
-        fastOrganicLayout.centerLocations[1][1] = 10;
+        layout.centerLocations[1][0] = 10;
+        layout.centerLocations[1][1] = 50;
 
-        fastOrganicLayout.centerLocations[2][0] = 10000000;
-        fastOrganicLayout.centerLocations[2][1] = 10000000;
+        layout.centerLocations[2][0] = 10000000;
+        layout.centerLocations[2][1] = 10000000;
 
-        fastOrganicLayout.radius[0] = 50;
-        fastOrganicLayout.radius[1] = 50;
-        fastOrganicLayout.radius[2] = 50;
+        layout.radius[0] = 50;
+        layout.radius[1] = 50;
+        layout.radius[2] = 50;
 
+        layout.calcPositions(); //recalc
 
         //when
-        fastOrganicLayout.calcRepulsion();
+        layout.calcRepulsion();
 
         //then
-        assertThat(fastOrganicLayout.disp[1][0]).isEqualTo(-275D, Offset.offset(1D));
+        assertThat(layout.disp[0][0]).isLessThan(0).isEqualTo(-10, Offset.offset(1D));
+        assertThat(layout.disp[0][1]).isLessThan(0).isEqualTo(-51, Offset.offset(1D));
+        assertThat(layout.disp[1][0]).isGreaterThan(0).isEqualTo(10, Offset.offset(1D));
+        assertThat(layout.disp[1][1]).isEqualTo(51, Offset.offset(1D));
     }
 
     @Test
     void reduceTempRegularly() {
         //given
-        fastOrganicLayout.temperature = 1000;
+        layout.temperature = 1000;
 
         //when
-        fastOrganicLayout.reduceTemperature();
+        layout.reduceTemperature();
 
         //then
-        assertThat(fastOrganicLayout.temperature).isEqualTo(800);
+        assertThat(layout.temperature).isEqualTo(800);
     }
 
     @Test
     void reduceTempShortfallIsSlower() {
         //given
-        fastOrganicLayout.temperature = 1000;
-        fastOrganicLayout.minDistanceShortfall = true;
+        layout.temperature = 1000;
+        layout.minDistanceShortfall = true;
 
         //when
-        fastOrganicLayout.reduceTemperature();
+        layout.reduceTemperature();
 
         //then
-        assertThat(fastOrganicLayout.temperature).isEqualTo(970);
+        assertThat(layout.temperature).isEqualTo(970);
+    }
+
+    @Test
+    void calcPositions() {
+        //given
+        layout.setup();
+
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+        layout.radius[0] = 50;
+
+        layout.centerLocations[1][0] = 100;
+        layout.centerLocations[1][1] = 50;
+        layout.radius[1] = 50;
+
+        layout.centerLocations[2][0] = -200;
+        layout.centerLocations[2][1] = 200;
+        layout.radius[2] = 50;
+
+        //when
+        layout.calcPositions();
+
+        //then
+        assertThat(layout.distances[0][1]).isEqualTo(11, Offset.offset(1D));
+        assertThat(layout.distances[1][0]).isEqualTo(11, Offset.offset(1D));
+
+        assertThat(layout.distances[0][2]).isEqualTo(182, Offset.offset(1D));
+        assertThat(layout.distances[2][0]).isEqualTo(182, Offset.offset(1D));
     }
 
     @Test
     void getDistance() {
         //given
-        fastOrganicLayout.setup();
+        layout.setup();
 
-        fastOrganicLayout.centerLocations[0][0] = 0;
-        fastOrganicLayout.centerLocations[0][1] = 0;
-        fastOrganicLayout.radius[0] = 50;
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+        layout.radius[0] = 50;
 
-        fastOrganicLayout.centerLocations[1][0] = 100;
-        fastOrganicLayout.centerLocations[1][1] = 50;
-        fastOrganicLayout.radius[1] = 50;
+        layout.centerLocations[1][0] = 100;
+        layout.centerLocations[1][1] = 50;
+        layout.radius[1] = 50;
 
-        fastOrganicLayout.centerLocations[2][0] = -200;
-        fastOrganicLayout.centerLocations[2][1] = 200;
-        fastOrganicLayout.radius[2] = 50;
+        layout.centerLocations[2][0] = -200;
+        layout.centerLocations[2][1] = 200;
+        layout.radius[2] = 50;
 
         //then
-        assertThat(fastOrganicLayout.getDimDistanceBetween(0, 1, 0)).isEqualTo(0);
-        assertThat(fastOrganicLayout.getDimDistanceBetween(1, 0, 0)).isEqualTo(0); //revert
+        assertThat(layout.getDimDistanceBetweenCenters(0, 1, 0)).isEqualTo(-100);
+        assertThat(layout.getDimDistanceBetweenCenters(1, 0, 0)).isEqualTo(100); //revert
 
-        assertThat(fastOrganicLayout.getDimDistanceBetween(0, 1, 1)).isEqualTo(50);
-        assertThat(fastOrganicLayout.getDimDistanceBetween(1, 0, 1)).isEqualTo(-50); //revert
+        assertThat(layout.getDimDistanceBetweenCenters(0, 1, 1)).isEqualTo(-50);
+        assertThat(layout.getDimDistanceBetweenCenters(1, 0, 1)).isEqualTo(50); //revert
 
-        assertThat(fastOrganicLayout.getDimDistanceBetween(0, 2, 0)).isEqualTo(100);
-        assertThat(fastOrganicLayout.getDimDistanceBetween(0, 2, 1)).isEqualTo(-100);
+        assertThat(layout.getDimDistanceBetweenCenters(0, 2, 0)).isEqualTo(200);
+        assertThat(layout.getDimDistanceBetweenCenters(0, 2, 1)).isEqualTo(-200);
     }
 
     @Test
     void getDistanceWithOverlaps() {
         //given
-        fastOrganicLayout.setup();
+        layout.setup();
 
-        fastOrganicLayout.centerLocations[0][0] = 0;
-        fastOrganicLayout.centerLocations[0][1] = 0;
-        fastOrganicLayout.radius[0] = 50;
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+        layout.radius[0] = 50;
 
-        fastOrganicLayout.centerLocations[1][0] = 1;
-        fastOrganicLayout.centerLocations[1][1] = -50;
-        fastOrganicLayout.radius[1] = 50;
+        layout.centerLocations[1][0] = 1;
+        layout.centerLocations[1][1] = -50;
+        layout.radius[1] = 50;
 
-        fastOrganicLayout.centerLocations[2][0] = -99;
-        fastOrganicLayout.centerLocations[2][1] = -500;
-        fastOrganicLayout.radius[2] = 50;
+        layout.centerLocations[2][0] = -99;
+        layout.centerLocations[2][1] = -500;
+        layout.radius[2] = 50;
 
         //then
-        assertThat(fastOrganicLayout.getDimDistanceBetween(0, 1, 0)).isEqualTo(99);
-        assertThat(fastOrganicLayout.getDimDistanceBetween(0, 1, 1)).isEqualTo(-50);
+        assertThat(layout.getDimDistanceBetweenCenters(0, 1, 0)).isEqualTo(-1);
+        assertThat(layout.getDimDistanceBetweenCenters(0, 1, 1)).isEqualTo(50);
 
-        assertThat(fastOrganicLayout.getDimDistanceBetween(0, 2, 0)).isEqualTo(-1);
-        assertThat(fastOrganicLayout.getDimDistanceBetween(0, 2, 1)).isEqualTo(400);
+        assertThat(layout.getDimDistanceBetweenCenters(0, 2, 0)).isEqualTo(99);
+        assertThat(layout.getDimDistanceBetweenCenters(0, 2, 1)).isEqualTo(500);
     }
 
     @Test
     void calcAttractionDisplacement() {
         //given
-        fastOrganicLayout.setup();
+        layout.setup();
 
-        fastOrganicLayout.centerLocations[0][0] = 0;
-        fastOrganicLayout.centerLocations[0][1] = 0;
-        fastOrganicLayout.radius[0] = 50;
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+        layout.radius[0] = 50;
 
-        fastOrganicLayout.centerLocations[1][0] = 1000;
-        fastOrganicLayout.centerLocations[1][1] = 50;
-        fastOrganicLayout.radius[1] = 50;
+        layout.centerLocations[1][0] = 1000;
+        layout.centerLocations[1][1] = 50;
+        layout.radius[1] = 50;
 
-        var xDist = fastOrganicLayout.getDimDistanceBetween(0, 1, 0);
-        var yDist = fastOrganicLayout.getDimDistanceBetween(0, 1, 1);
+        layout.calcPositions(); //recalc
 
         //when
-        Point2D.Double attractionDisplacement = fastOrganicLayout.getAttractionDisplacement(0, 1);
+        var displacement = layout.getAttractionDisplacement(0, 1);
 
         //then
-        boolean xOutsideRadius = attractionDisplacement.x < xDist - fastOrganicLayout.minDistanceLimit || attractionDisplacement.x > xDist + fastOrganicLayout.minDistanceLimit;
-        assertThat(xOutsideRadius).isTrue();
-        boolean yOutsideRadius = attractionDisplacement.y < yDist - fastOrganicLayout.minDistanceLimit || attractionDisplacement.y > yDist + fastOrganicLayout.minDistanceLimit;
-        assertThat(yOutsideRadius).isTrue();
+        //displacement is subtracted from i and added to j
+        assertThat(displacement.x).isGreaterThan(0); //shift in x direction
+        assertThat(displacement.y).isGreaterThan(0); //shift in x direction
+
+        //when
+        var reverse = layout.getAttractionDisplacement(1, 0);
+
+        //then
+        assertThat(reverse.x).isLessThan(0); //shift in x direction
+        assertThat(reverse.y).isLessThan(0); //shift in x direction
     }
 
     @Test
-    void calcRepulsionDisplacementWithOverlap() {
+    void calcAttractionOfTwo() {
         //given
-        fastOrganicLayout.setup();
+        Item testItemA = ItemFactory.getTestItem("test", "a");
+        Item testItemB = ItemFactory.getTestItem("test", "b");
 
-        fastOrganicLayout.centerLocations[0][0] = 0;
-        fastOrganicLayout.centerLocations[0][1] = 0;
-        fastOrganicLayout.radius[0] = 50;
+        layoutedComponents = new ArrayList<>();
+        a = new LayoutedComponent(testItemA, List.of(testItemB));
+        a.setX(100);
+        a.setY(100);
+        a.setHeight(radius);
+        layoutedComponents.add(a);
 
-        fastOrganicLayout.centerLocations[1][0] = -50;
-        fastOrganicLayout.centerLocations[1][1] = 50;
-        fastOrganicLayout.radius[1] = 50;
+        b = new LayoutedComponent(testItemB, List.of(testItemA));
+        b.setX(101);
+        b.setY(101);
+        b.setHeight(radius);
+        layoutedComponents.add(b);
+
+        layout = new FastOrganicLayout(layoutedComponents, SubLayout.MIN_DISTANCE_LIMIT, SubLayout.MAX_DISTANCE_LIMIT, SubLayout.INITIAL_TEMP, null);
+        layout.setup();
+
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+        layout.radius[0] = 50;
+
+        layout.centerLocations[1][0] = 1000;
+        layout.centerLocations[1][1] = 50;
+        layout.radius[1] = 50;
+
+        layout.calcPositions();
+
+        var distance1 = layout.distances[0][1];
 
         //when
-        Point2D.Double repulsionDisplacement = fastOrganicLayout.getRepulsionDisplacement(0, 1);
+        layout.calcStrongAttraction();
+        layout.calcPositions();
 
         //then
-        assertThat(repulsionDisplacement.x).isEqualTo(-1311, Offset.offset(1D));
-        assertThat(repulsionDisplacement.y).isEqualTo(1311, Offset.offset(1D));
+        var distance2 = layout.distances[0][1];
+        assertThat(distance2).isLessThan(distance1).isGreaterThan(layout.minDistanceLimit);
     }
 
     @Test
-    void hasXDistanceAfterSetup() {
+    void hasDistanceAfterSetup() {
 
         //given
-        fastOrganicLayout.setup();
+        layout.setup();
 
         //when
-        double xDist = fastOrganicLayout.getDimDistanceBetween(0, 1, 0);
+        double xDist = layout.getDimDistanceBetweenCenters(0, 1, 0);
+        double yDist = layout.getDimDistanceBetweenCenters(0, 1, 1);
 
         //then
-        assertThat(xDist).isEqualTo(250);
-    }
-
-    @Test
-    void hasYDistanceAfterSetup() {
-
-        //given
-        fastOrganicLayout.setup();
-
-        //when
-        double yDist = fastOrganicLayout.getDimDistanceBetween(0, 1, 1);
-
-        //then
-        assertThat(yDist).isEqualTo(67);
+        assertThat(Math.abs(xDist)).isGreaterThan(0);
+        assertThat(Math.abs(yDist)).isGreaterThan(0);
     }
 
     @Test
     void assertMinDistanceOK() {
         //given
-        fastOrganicLayout.setup();
+        layout.setup();
 
         //when
-        assertThatCode(() -> fastOrganicLayout.assertMinDistanceIsKept()).doesNotThrowAnyException();
+        assertThatCode(() -> layout.assertMinDistanceIsKept()).doesNotThrowAnyException();
     }
-
-    @Test
-    void assertMinDistance() {
-
-        //given
-        fastOrganicLayout.setup();
-        fastOrganicLayout.centerLocations[0][0] = 1;
-        fastOrganicLayout.centerLocations[1][0] = 1;
-
-        //when
-        assertThatThrownBy(() -> fastOrganicLayout.assertMinDistanceIsKept()).isInstanceOf(IllegalStateException.class);
-    }
-
 
     @Test
     @DisplayName("prevent that dense placement is prevented")
@@ -309,13 +465,27 @@ class FastOrganicLayoutTest {
         }
 
         List<LayoutedComponent> components = SubLayout.getComponents(group, new HashSet<>(items));
-        fastOrganicLayout = new FastOrganicLayout(components, SubLayout.FORCE_CONSTANT, SubLayout.MIN_DISTANCE_LIMIT, SubLayout.MAX_DISTANCE_LIMIT, SubLayout.INITIAL_TEMP, null);
+        layout = new FastOrganicLayout(components, SubLayout.MIN_DISTANCE_LIMIT, SubLayout.MAX_DISTANCE_LIMIT, SubLayout.INITIAL_TEMP, null);
 
         //when
-        fastOrganicLayout.execute();
+        layout.execute();
 
         //then
-        fastOrganicLayout.assertMinDistanceIsKept();
+        layout.assertMinDistanceIsKept();
+    }
+
+    @Test
+    void completeExecution() {
+        //given
+        layout.setup();
+
+        //when
+        layout.execute();
+
+        //then
+        assertThat(layout.getDistanceBetween(0,1)).isLessThan(500D);
+        assertThat(layout.getDistanceBetween(1,2)).isLessThan(500D);
+        assertThat(layout.getDistanceBetween(2,0)).isLessThan(500D);
     }
 
     void assertAboveMinDistance(LayoutedComponent a, LayoutedComponent b) {

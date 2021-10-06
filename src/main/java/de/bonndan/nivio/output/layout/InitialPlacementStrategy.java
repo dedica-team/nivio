@@ -16,25 +16,25 @@ public class InitialPlacementStrategy {
     private final List<Point2D.Double> places = new ArrayList<>();
 
     public InitialPlacementStrategy(@NonNull final List<LayoutedComponent> bounds) {
-        double[] diameter = new double[bounds.size()];
+        double[] radius = new double[bounds.size()];
         var sum = 0;
         for (int i = 0, boundsSize = bounds.size(); i < boundsSize; i++) {
             LayoutedComponent layoutedComponent = bounds.get(i);
             double width = layoutedComponent.getWidth();
             double height = layoutedComponent.getHeight();
-            diameter[i] = Math.max(width, height); //using diameter
-            sum += diameter[i];
+            radius[i] = Math.max(width, height)/2; //using diameter
+            sum += radius[i];
         }
         double approxRadiusSum = sum;
 
         double angle = 0;
         for (int i = 0, boundsSize = bounds.size(); i < boundsSize; i++) {
             Point2D.Double origin = new Point2D.Double(0, 0);
-            int x = (int) Math.round(origin.x + diameter[i] * Math.cos(angle));
-            int y = (int) Math.round(origin.y + diameter[i] * Math.sin(angle));
+            int x = (int) Math.round(origin.x + 100 * Math.cos(angle));
+            int y = (int) Math.round(origin.y + 100 * Math.sin(angle));
             places.add(new Point2D.Double(x, y));
 
-            var share = diameter[i] / approxRadiusSum;
+            var share = radius[i] / approxRadiusSum;
             angle += 2 * Math.PI * share;
         }
     }

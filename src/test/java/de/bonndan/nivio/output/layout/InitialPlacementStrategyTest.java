@@ -15,27 +15,27 @@ class InitialPlacementStrategyTest {
     @DisplayName("symmetric placement for four equal elements")
     void fourEquals() {
         ArrayList<LayoutedComponent> layoutedComponents = new ArrayList<>();
-        layoutedComponents.add(getLayoutedComponent("a", 200, 200));
-        layoutedComponents.add(getLayoutedComponent("b", 200, 200));
-        layoutedComponents.add(getLayoutedComponent("c", 200, 200));
-        layoutedComponents.add(getLayoutedComponent("d", 200, 200));
+        layoutedComponents.add(getLayoutedComponent("a", 100, 100));
+        layoutedComponents.add(getLayoutedComponent("b", 100, 100));
+        layoutedComponents.add(getLayoutedComponent("c", 100, 100));
+        layoutedComponents.add(getLayoutedComponent("d", 100, 100));
 
         InitialPlacementStrategy initialPlacementStrategy = new InitialPlacementStrategy(layoutedComponents);
         Point2D.Double place1 = initialPlacementStrategy.place(0);
-        assertThat(place1.x).isEqualTo(200);
+        assertThat(place1.x).isEqualTo(100);
         assertThat(place1.y).isEqualTo(0);
 
         Point2D.Double place2 = initialPlacementStrategy.place(1);
         assertThat(place2.x).isEqualTo(0);
-        assertThat(place2.y).isEqualTo(200);
+        assertThat(place2.y).isEqualTo(100);
 
         Point2D.Double place3 = initialPlacementStrategy.place(2);
-        assertThat(place3.x).isEqualTo(-200);
+        assertThat(place3.x).isEqualTo(-100);
         assertThat(place3.y).isEqualTo(-0);
 
         Point2D.Double place4 = initialPlacementStrategy.place(3);
         assertThat(place4.x).isEqualTo(0);
-        assertThat(place4.y).isEqualTo(-200);
+        assertThat(place4.y).isEqualTo(-100);
     }
 
     @Test
@@ -52,12 +52,12 @@ class InitialPlacementStrategyTest {
         assertThat(place1.y).isEqualTo(0);
 
         Point2D.Double place2 = initialPlacementStrategy.place(1);
-        assertThat(place2.x).isEqualTo(924);
-        assertThat(place2.y).isEqualTo(383);
+        assertThat(place2.x).isEqualTo(92);
+        assertThat(place2.y).isEqualTo(38);
 
         Point2D.Double place3 = initialPlacementStrategy.place(2);
-        assertThat(place3.x).isEqualTo(-153);
-        assertThat(place3.y).isEqualTo(-370);
+        assertThat(place3.x).isEqualTo(-38);
+        assertThat(place3.y).isEqualTo(-92);
 
         Point2D.Double place4 = initialPlacementStrategy.place(3);
         assertThat(place4.x).isEqualTo(92);

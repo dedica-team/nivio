@@ -13,7 +13,7 @@ public class AllGroupsLayout {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AllGroupsLayout.class);
     public static final int FORCE_CONSTANT = 300;
-    public static final int MAX_DISTANCE_LIMIT = 5000;
+    public static final int MAX_DISTANCE_LIMIT = 2000;
 
     //results in more iterations and better layouts for larger graphs
     public static final int INITIAL_TEMP = 300 * 3;
@@ -54,7 +54,6 @@ public class AllGroupsLayout {
 
         var layout = new FastOrganicLayout(
                 new ArrayList<>(groupNodes.values()),
-                FORCE_CONSTANT,
                 MIN_DISTANCE_LIMIT,
                 MAX_DISTANCE_LIMIT,
                 INITIAL_TEMP,

@@ -92,9 +92,6 @@ public class LandscapeConfig {
         @Schema(description = "The maximum number of iterations. More iterations theoretically lead to better results.")
         private Integer maxIterations;
 
-        @Schema(description = "A factor to influence the attracting and repulsive forces in a layout.")
-        private Float forceConstantFactor = 1f;
-
         @Schema(description = "A factor to influence maximum distance where forces are applied.")
         private Float maxDistanceLimitFactor = 1f;
 
@@ -107,14 +104,6 @@ public class LandscapeConfig {
 
         public void setMaxIterations(Integer maxIterations) {
             this.maxIterations = maxIterations;
-        }
-
-        public Float getForceConstantFactor() {
-            return forceConstantFactor;
-        }
-
-        public void setForceConstantFactor(Float forceConstantFactor) {
-            this.forceConstantFactor = forceConstantFactor;
         }
 
         public Float getMinDistanceLimitFactor() {

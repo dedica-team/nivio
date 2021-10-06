@@ -29,22 +29,26 @@ public class SubLayout {
     public static final int INITIAL_TEMP = 300;
     public static final double MIN_DISTANCE_LIMIT = 50;
 
-    private final FastOrganicLayout layout;
-    private final Component parent;
+    private FastOrganicLayout layout;
+    private Component parent;
+    private final boolean debug;
 
-    public SubLayout(Component group, Set<Item> items, LandscapeConfig.LayoutConfig itemLayoutConfig) {
+    public SubLayout(boolean debug) {
+        this.debug = debug;
+    }
+
+    public void render(Component group, Set<Item> items, LandscapeConfig.LayoutConfig itemLayoutConfig) {
         String name = group.getName();
         this.parent = group;
 
         List<LayoutedComponent> components = getComponents(group, items);
-
-
-        layout = new FastOrganicLayout(components, FORCE_CONSTANT, MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT, INITIAL_TEMP, itemLayoutConfig);
+        layout = new FastOrganicLayout(components, MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT, INITIAL_TEMP, itemLayoutConfig);
+        layout.setDebug(debug);
         layout.execute();
         LOGGER.debug("Subgraph {} layouted items: {}", name, layout.getNodes());
     }
 
-    static List<LayoutedComponent> getComponents(Component group, Set<Item> items) {
+    static List<LayoutedComponent> getComponents(final Component group, final Set<Item> items) {
         List<LayoutedComponent> components = new ArrayList<>();
         List<Relation> added = new ArrayList<>();
         items.forEach(item -> {

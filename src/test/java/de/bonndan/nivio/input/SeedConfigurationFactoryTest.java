@@ -212,7 +212,6 @@ class SeedConfigurationFactoryTest {
 
         assertNotNull(config);
         assertNotNull(config.getGroupLayoutConfig());
-        assertNotNull(config.getGroupLayoutConfig().getForceConstantFactor());
     }
 
     @Test

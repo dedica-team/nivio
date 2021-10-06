@@ -7,18 +7,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class LandscapeConfigTest {
 
     @Test
-    public void testGroupLayoutConfigIsNotNull() {
+    void testGroupLayoutConfigIsNotNull() {
         LandscapeConfig landscapeConfig = new LandscapeConfig();
         assertNotNull(landscapeConfig.getGroupLayoutConfig());
-        assertNotNull(landscapeConfig.getGroupLayoutConfig().getForceConstantFactor());
         assertNotNull(landscapeConfig.getGroupLayoutConfig().getMinDistanceLimitFactor());
     }
 
     @Test
-    public void testItemLayoutConfigIsNotNull() {
+    void testItemLayoutConfigIsNotNull() {
         LandscapeConfig landscapeConfig = new LandscapeConfig();
         assertNotNull(landscapeConfig.getItemLayoutConfig());
-        assertNotNull(landscapeConfig.getItemLayoutConfig().getForceConstantFactor());
         assertNotNull(landscapeConfig.getItemLayoutConfig().getMinDistanceLimitFactor());
     }
 }

@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.model.Component;
 import org.slf4j.Logger;
@@ -23,13 +24,6 @@ public class FastOrganicLayout {
     private final List<LayoutedComponent> nodes;
 
     /**
-     * The force constant by which the attractive forces are divided and the
-     * repulsive forces are multiple by the square of. The value equates to the
-     * average radius there is of free space around each node. Default is 50.
-     */
-    private final double forceConstant;
-
-    /**
      * Minimal distance limit.  Prevents of dividing by zero.
      */
     final double minDistanceLimit;
@@ -44,11 +38,6 @@ public class FastOrganicLayout {
      * Start value of temperature. Default is 200.
      */
     private final double initialTemp;
-
-    /**
-     * Cache of <forceConstant>^2 for performance.
-     */
-    double forceConstantSquared = 0;
 
     /**
      * Cached version of <minDistanceLimit> squared.
@@ -76,14 +65,14 @@ public class FastOrganicLayout {
     double[][] centerLocations;
 
     /**
+     * all distances (regarding radius).
+     */
+    double[][] distances;
+
+    /**
      * The approximate radius of each cell, nodes only.
      */
     double[] radius;
-
-    /**
-     * The approximate radius squared of each cell, nodes only.
-     */
-    double[] radiusSquared;
 
     /**
      * Local copy of cell neighbours.
@@ -103,19 +92,12 @@ public class FastOrganicLayout {
      * Constructs a new fast organic layout.
      */
     public FastOrganicLayout(@NonNull final List<LayoutedComponent> nodes,
-                             double forceConstant,
                              double minDistanceLimit,
                              double maxDistanceLimit,
                              double initialTemp,
                              @Nullable final LandscapeConfig.LayoutConfig config
     ) {
         this.nodes = Objects.requireNonNull(nodes);
-
-        if (forceConstant < 0.001) {
-            forceConstant = 0.001;
-        }
-        Float forceFactor = Optional.ofNullable(config).map(LandscapeConfig.LayoutConfig::getForceConstantFactor).orElse(1f);
-        this.forceConstant = forceConstant * forceFactor;
 
         Float minDisFactor = Optional.ofNullable(config).map(LandscapeConfig.LayoutConfig::getMinDistanceLimitFactor).orElse(1f);
         this.minDistanceLimit = minDistanceLimit * minDisFactor;
@@ -137,10 +119,6 @@ public class FastOrganicLayout {
     void reduceTemperature() {
         var factor = 0.8;
 
-        if (temperature < 5 && !minDistanceShortfall) {
-            temperature = 0;
-        }
-
         if (minDistanceShortfall) {
             minDistanceShortfall = false;
             LOGGER.info("Compensating min distance shortfall, slower reducing temp {} in iteration {}.", temperature, iteration);
@@ -157,7 +135,10 @@ public class FastOrganicLayout {
         while (temperature > 1) {
 
             // Calculate attractive forces through edges
-            calcAttraction();
+            calcStrongAttraction();
+
+            // Calculate weak attractive forces
+            calcWeakAttraction();
 
             // Calculate repulsive forces on all vertices
             calcRepulsion();
@@ -179,11 +160,10 @@ public class FastOrganicLayout {
 
         disp = new double[n][];
         centerLocations = new double[n][];
+        distances = new double[n][n];
         neighbours = new int[n][];
         radius = new double[n];
-        radiusSquared = new double[n];
         minDistanceLimitSquared = minDistanceLimit * minDistanceLimit;
-        forceConstantSquared = forceConstant * forceConstant;
 
         // Create a map of vertices first. This is required for the array of
         // arrays called neighbours which holds, for each vertex, a list of
@@ -194,7 +174,6 @@ public class FastOrganicLayout {
             LayoutedComponent layoutedComponent = this.nodes.get(i);
             indices.put(layoutedComponent, i);
             centerLocations[i] = new double[2];
-
 
             // Set the X,Y value of the internal version of the cell to
             // the center point of the vertex for better positioning
@@ -211,7 +190,6 @@ public class FastOrganicLayout {
             disp[i][1] = 0;
 
             radius[i] = Math.max(halfWidth, halfHeight);
-            radiusSquared[i] = radius[i] * radius[i];
         }
 
         // Moves cell location back to top-left from center locations used in
@@ -238,21 +216,14 @@ public class FastOrganicLayout {
 
                 // Check the connected cell in part of the vertex list to be
                 // acted on by this layout
-                if (index != null) {
-                    neighbours[i][j] = index;
-                }
-
-                // Else if index of the other cell doesn't correspond to
-                // any cell listed to be acted upon in this layout. Set
-                // the index to the value of this vertex (a dummy self-loop)
-                // so the attraction force of the edge is not calculated
-                else {
-                    neighbours[i][j] = i;
+                if (index == null) {
                     throw new IllegalStateException(String.format("Could not find neighbour for %s", component));
                 }
+                neighbours[i][j] = index;
             }
         }
 
+        calcPositions();
         temperature = initialTemp;
     }
 
@@ -261,25 +232,22 @@ public class FastOrganicLayout {
     }
 
     /**
-     * Takes the displacements calculated for each cell and applies them to the
-     * local cache of cell positions. Limits the displacement to the current
-     * temperature.
+     * Takes the displacements calculated for each cell and applies them to the local cache of cell positions.
      */
     void calcPositions() {
-        for (int index = 0; index < nodes.size(); index++) {
-            // Get the distance of displacement for this node for this
-            // iteration
-            double deltaLength = Math.sqrt(disp[index][0] * disp[index][0] + disp[index][1] * disp[index][1]);
 
-            if (deltaLength < 0.001) {
-                deltaLength = 0.001;
-            }
+        AtomicDouble maxMove = new AtomicDouble(0);
 
-            // Scale down by the current temperature if less than the
-            // displacement distance
-            var factor = Math.min(deltaLength, temperature);
-            double newXDisp = disp[index][0] / deltaLength * factor;
-            double newYDisp = disp[index][1] / deltaLength * factor;
+        final int vertexCount = nodes.size();
+        var tempFactor = temperature / initialTemp;
+        for (int index = 0; index < vertexCount; index++) {
+
+            double newXDisp = disp[index][0] * tempFactor;
+            if (Math.abs(newXDisp) > maxMove.get())
+                maxMove.set(Math.abs(newXDisp));
+            double newYDisp = disp[index][1] * tempFactor;
+            if (Math.abs(newYDisp) > maxMove.get())
+                maxMove.set(Math.abs(newYDisp));
 
             // reset displacements
             disp[index][0] = 0;
@@ -288,68 +256,127 @@ public class FastOrganicLayout {
             // Update the cached cell locations
             centerLocations[index][0] += newXDisp;
             centerLocations[index][1] += newYDisp;
-            if (debug) {
-                LOGGER.debug("Iteration {} temp {}: Shifting index {} center by dx {} and dy {}", iteration, temperature, index, newXDisp, newYDisp);
+
+            if (debug)
+                LOGGER.debug("Moving {} by {} {} to {} {}", index, (int) newXDisp, (int) newYDisp, (int) centerLocations[index][0], (int) centerLocations[index][1]);
+        }
+
+        for (int i = 0; i < vertexCount; i++) {
+            for (int j = 0; j < vertexCount; j++) {
+                if (j == i) {
+                    continue;
+                }
+                distances[i][j] = getDistanceBetween(i, j);
+                if (Math.abs(distances[i][j]) < minDistanceLimit) {
+                    if (debug) {
+                        LOGGER.debug("Iteration {} temp {}: repulsion index {} {} distance shortfall {}/{}", iteration, (int) temperature, i, j, (int) distances[i][j], minDistanceLimit);
+                    }
+                    minDistanceShortfall = true;
+                }
             }
         }
+
+        if (iteration > 0 && maxMove.get() < 1) {
+            LOGGER.debug("Iteration {}: No more significant movement, reducing temp to zero", iteration);
+            temperature = 0;
+        }
+        if (debug)
+            LOGGER.debug("Iteration {} temp {}: max move {}", iteration, (int) temperature, maxMove.get());
+
     }
 
     /**
      * Calculates the attractive forces between all laid out nodes linked by
      * edges
      */
-    void calcAttraction() {
+    void calcStrongAttraction() {
 
         for (int i = 0; i < nodes.size(); i++) {
             for (int k = 0; k < neighbours[i].length; k++) {
                 // Get the index of the other cell in the vertex array
-                int j = neighbours[i][k];
+                int index = neighbours[i][k];
 
-                if (i == j) {
+                if (i == index) {
                     continue;
                 }
 
-                Point2D.Double displacement = getAttractionDisplacement(i, j);
+                Point2D.Double displacement = getAttractionDisplacement(i, index);
 
-                disp[i][0] -= displacement.x;
-                disp[i][1] -= displacement.y;
+                disp[i][0] += displacement.x;
+                disp[i][1] += displacement.y;
 
-                disp[j][0] += displacement.x;
-                disp[j][1] += displacement.y;
+                disp[index][0] -= displacement.x;
+                disp[index][1] -= displacement.y;
             }
         }
     }
 
+    /**
+     * Cohesive forces
+     */
+    void calcWeakAttraction() {
+        int vertexCount = nodes.size();
+
+        for (int i = 0; i < vertexCount; i++) {
+            for (int j = i; j < vertexCount; j++) {
+
+                if (j == i) {
+                    continue;
+                }
+
+                if (distances[i][j] < maxDistanceLimit)
+                    continue;
+
+                Point2D.Double displacement = getAttractionDisplacement(i, j);
+
+                disp[i][0] += displacement.x * 0.1;
+                disp[i][1] += displacement.y * 0.1;
+
+                disp[j][0] -= displacement.x * 0.1;
+                disp[j][1] -= displacement.y * 0.1;
+            }
+        }
+    }
+
+    /**
+     * Calculates the distance (x and y) for displacements for each i/j.
+     *
+     * If i.x < j.x the dx is positive, so that i shifts towards j.
+     *
+     * Returns a fourth in each direction, since th displacement is applied to both nodes and the reverse attraction is calculated, too.
+     */
     Point2D.Double getAttractionDisplacement(int i, int j) {
-        double xDelta = getDimDistanceBetween(i, j, 0);
-        double yDelta = getDimDistanceBetween(i, j, 1);
 
-        // The distance between the nodes
-        double deltaLengthSquared = xDelta * xDelta + yDelta * yDelta - radiusSquared[i] - radiusSquared[j];
+        double distance = distances[i][j];
 
-        if (deltaLengthSquared < minDistanceLimitSquared) {
-            deltaLengthSquared = minDistanceLimitSquared;
+        if (distance <= minDistanceLimit) {
+            LOGGER.debug("Attraction {} {} distance {} is below min distance", i, j, (int) distance);
+            return new Point2D.Double(0, 0);
         }
 
-        double deltaLength = Math.sqrt(deltaLengthSquared);
-        double force = (deltaLengthSquared) / forceConstant;
+        final double force = (distance - minDistanceLimit) / distance;
 
-        double displacementX = (xDelta / deltaLength) * force;
-        double displacementY = (yDelta / deltaLength) * force;
-
-
-        //prevent collision
-        var fxDelta = getDisplacedDistanceBetween(i, j, displacementX, 0);
-        var fyDelta = getDisplacedDistanceBetween(i, j, displacementY, 1);
-
-        if (Math.abs(fxDelta) < minDistanceLimit) {
-            displacementX = displacementX - minDistanceLimit;
+        double xDelta = getDimDistanceBetweenCenters(i, j, 0);
+        double xDeltaBetween = Math.abs(xDelta) - radius[i] - radius[j];
+        double displacementX = 0;
+        if (xDeltaBetween > 0) {
+            displacementX = (xDeltaBetween / distance) * force * xDeltaBetween / 4;
         }
 
-        if (Math.abs(fyDelta) < minDistanceLimit) {
-            displacementY = displacementY - minDistanceLimit;
+        double yDelta = getDimDistanceBetweenCenters(i, j, 1);
+        double yDeltaBetween = Math.abs(yDelta) - radius[i] - radius[j];
+        double displacementY = 0;
+        if (xDeltaBetween > 0) {
+            displacementY = (yDeltaBetween / distance) * force * yDeltaBetween / 4;
         }
 
+
+        if (xDelta > 0)
+            displacementX *= -1;
+        if (yDelta > 0)
+            displacementY *= -1;
+
+        LOGGER.debug("Attraction {} {} distance {} resulting in force is {}: dx {} dy {}", i, j, (int) distance, (int) force, (int) displacementX, (int) displacementY);
         return new Point2D.Double(displacementX, displacementY);
     }
 
@@ -377,21 +404,30 @@ public class FastOrganicLayout {
         }
     }
 
+    /**
+     * Repulsion is stronger on short distances and limited by maxDistanceLimit
+     *
+     * Returns a fourth the value because if is applied to both nodes and reverse
+     */
     Point2D.Double getRepulsionDisplacement(int i, int j) {
-        double distance = getDistanceBetween(i, j);
+        double distance = distances[i][j];
         if (Math.abs(distance) > maxDistanceLimit) {
             // Ignore vertices too far apart
             return new Point2D.Double(0, 0);
         }
 
-        double xDelta = getDimDistanceBetween(i, j, 0);
-        double yDelta = getDimDistanceBetween(i, j, 1);
+        var factor = (maxDistanceLimit - Math.abs(distance)) / maxDistanceLimit;
+        if (distance < 0)
+            factor *= -1;
 
-        double force = forceConstantSquared / distance;
+        double force = maxDistanceLimit * factor;
 
-        double displacementX = (xDelta / distance) * force;
-        double displacementY = (yDelta / distance) * force;
+        double xDelta = getDimDistanceBetweenCenters(i, j, 0);
+        double yDelta = getDimDistanceBetweenCenters(i, j, 1);
+        double displacementX = (xDelta / distance) * force / 4;
+        double displacementY = (yDelta / distance) * force / 4;
 
+        LOGGER.debug("Iteration {}: Repulsion {} {} distance {} resulting in force is {}: dx {} dy {}", iteration, i, j, (int) distance, (int) force, (int) displacementX, (int) displacementY);
         return new Point2D.Double(displacementX, displacementY);
     }
 
@@ -403,48 +439,8 @@ public class FastOrganicLayout {
      * @param j index
      */
     double getDistanceBetween(int i, int j) {
-        return getDistanceBetween(
-                centerLocations[i][0],
-                centerLocations[j][0],
-                centerLocations[i][1],
-                centerLocations[j][1],
-                radius[i],
-                radius[j]);
-    }
-
-    /**
-     * Calculates the distance between two nodes regarding the current displacement.
-     *
-     * @param i            index
-     * @param j            index
-     * @param displacement offset for the dimension, added to i, subtracted from j
-     * @param dim          dimension
-     */
-    double getDisplacedDistanceBetween(int i, int j, double displacement, int dim) {
-        double delta = centerLocations[i][dim] + displacement - centerLocations[j][dim] - displacement;
-
-        if (delta == 0) {
-            delta = 0.01;
-        }
-
-        double withRadius = Math.abs(delta) - radius[i] - radius[j];
-        return delta < 0 ? withRadius * -1: withRadius;
-    }
-
-    /**
-     * Calculates the distance between in one direction.
-     *
-     * @param i   index
-     * @param j   index
-     * @param dim x or y
-     */
-    double getDimDistanceBetween(int i, int j, int dim) {
-        return getDisplacedDistanceBetween(i, j, 0, dim);
-    }
-
-    double getDistanceBetween(double x1, double x2, double y1, double y2, double radius1, double radius2) {
-        double xDelta = x1 - x2;
-        double yDelta = y1 - y2;
+        double xDelta = centerLocations[i][0] - centerLocations[j][0];
+        double yDelta = centerLocations[i][1] - centerLocations[j][1];
 
         if (xDelta == 0) {
             xDelta = 0.01;
@@ -454,7 +450,25 @@ public class FastOrganicLayout {
             yDelta = 0.01;
         }
 
-        return Math.sqrt((xDelta * xDelta) + (yDelta * yDelta)) - radius1 - radius2;
+        return Math.sqrt((xDelta * xDelta) + (yDelta * yDelta)) - radius[i] - radius[j];
+    }
+
+    /**
+     * Calculates the distance between in one direction.
+     *
+     * @param i   index
+     * @param j   index
+     * @param dim x or y
+     * @return the distance in one direction, negative means j is greater
+     */
+    double getDimDistanceBetweenCenters(int i, int j, int dim) {
+        double delta = centerLocations[i][dim] - centerLocations[j][dim];
+
+        if (delta == 0) {
+            delta = 0.001;
+        }
+
+        return delta;
     }
 
     public List<LayoutedComponent> getNodes() {
