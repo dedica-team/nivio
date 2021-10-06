@@ -42,7 +42,12 @@ public enum Lifecycle {
     }
 
     public static boolean isEndOfLife(Labeled labeled) {
-        return END_OF_LIFE.name().equals(labeled.getLabel(Label.lifecycle))
-                || END_OF_LIFE.name().replace("_", " ").equals(labeled.getLabel(Label.lifecycle));
+        return END_OF_LIFE.name().equals(labeled.getLabel(Label.lifecycle));
+    }
+
+
+    @Override
+    public String toString() {
+        return super.toString().replace("_", " ");
     }
 }

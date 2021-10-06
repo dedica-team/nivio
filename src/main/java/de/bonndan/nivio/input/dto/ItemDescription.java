@@ -185,7 +185,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         if (StringUtils.hasLength(lifecycle)) {
             Lifecycle from = Lifecycle.from(lifecycle);
             if (from != null) {
-                lifecycle = from.name().replace("_", " ");
+                lifecycle = from.toString();
             }
         }
 
