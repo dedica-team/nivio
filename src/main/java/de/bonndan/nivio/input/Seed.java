@@ -68,7 +68,7 @@ public class Seed {
         if (!StringUtils.hasLength(demo)) {
             return demoFiles;
         }
-        String value = ConfigurableEnvVars.DEMO.value().get();
+        String value = ConfigurableEnvVars.DEMO.value().orElse("");
 
         Path currentRelativePath = Paths.get("");
         String absPath = currentRelativePath.toAbsolutePath().toString();
