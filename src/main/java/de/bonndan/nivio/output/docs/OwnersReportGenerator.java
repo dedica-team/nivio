@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,18 +32,18 @@ public class OwnersReportGenerator extends HtmlGenerator {
     public String toDocument(@NonNull final Landscape landscape, @NonNull final Assessment assessment, @Nullable final SearchConfig searchConfig) {
 
         String title = "Report";
-        if (searchConfig != null && !StringUtils.isEmpty(searchConfig.getTitle())) {
+        if (searchConfig != null && StringUtils.hasLength(searchConfig.getTitle())) {
             title = searchConfig.getTitle();
         }
 
-        final Optional<String> searchTerm = searchConfig != null && !StringUtils.isEmpty(searchConfig.getSearchTerm()) ? Optional.ofNullable(searchConfig.getSearchTerm()) : Optional.empty();
+        final Optional<String> searchTerm = searchConfig != null && StringUtils.hasLength(searchConfig.getSearchTerm()) ? Optional.ofNullable(searchConfig.getSearchTerm()) : Optional.empty();
         List<Item> items = new ArrayList<>(searchTerm.map(landscape::search).orElse(landscape.getItems().all()));
         return html(
                 getHead(landscape),
                 body(
                         h1(title),
                         h6("Landscape: " + landscape.getName()),
-                        h6("Date: " + ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)),
+                        h6("Date: " + ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT))),
                         iff(searchTerm.isPresent(), h6("Search term: " + (searchTerm.orElse(null)))),
                         br(),
                         rawHtml(writeOwnerGroups(GroupedBy.by(Component::getOwner, items), assessment))
