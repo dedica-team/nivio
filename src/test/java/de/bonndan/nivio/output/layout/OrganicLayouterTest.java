@@ -29,10 +29,6 @@ class OrganicLayouterTest extends RenderingTest {
     }
 
     private LayoutedComponent debugRender(String path) throws IOException {
-        return debugRender(path, true);
-    }
-
-    private LayoutedComponent debugRender(String path, boolean debugMode) throws IOException {
         Landscape landscape = getLandscape(path + ".yml");
         return debugRenderLandscape(path, landscape);
     }
@@ -194,7 +190,7 @@ class OrganicLayouterTest extends RenderingTest {
 
     @Test
     void renderCSV() throws IOException {
-        debugRender("/src/test/resources/example/example_csv", false);
+        debugRender("/src/test/resources/example/example_csv");
     }
 
     @Test
