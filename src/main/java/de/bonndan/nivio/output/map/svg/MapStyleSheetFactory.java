@@ -29,13 +29,13 @@ public class MapStyleSheetFactory {
     public String getMapStylesheet(LandscapeConfig landscapeConfig, @NonNull ProcessLog processLog) {
 
         String mapStylesheet = landscapeConfig.getBranding().getMapStylesheet();
-        if (StringUtils.isEmpty(mapStylesheet)) {
+        if (!StringUtils.hasLength(mapStylesheet)) {
             return "";
         }
 
         try {
             processLog.debug("Loading customer stylesheet: " + mapStylesheet);
-            return URLFactory.getURL(mapStylesheet).map(url -> fileFetcher.get(url)).orElse("");
+            return URLFactory.getURL(mapStylesheet).map(fileFetcher::get).orElse("");
         } catch (ReadingException e) {
             processLog.warn("Failed to load customer stylesheet " + mapStylesheet + ": " + e.getMessage());
             return "";

@@ -39,7 +39,7 @@ class SVGRelationTest {
                 new PathTile(new MapTile(new Hex(1, 2))),
                 new PathTile(new MapTile(new Hex(1, 3))))
         );
-        statusValue = new StatusValue("foo", Status.GREEN);
+        statusValue = new StatusValue("foo", "bar", Status.GREEN, "");
     }
 
     @Test
@@ -152,7 +152,6 @@ class SVGRelationTest {
         ContainerTag containerTag = SVGRelation.dataflowMarker();
         assertThat(containerTag).isNotNull();
         assertThat(containerTag.getTagName()).isEqualTo("marker");
-
     }
 
     @Test

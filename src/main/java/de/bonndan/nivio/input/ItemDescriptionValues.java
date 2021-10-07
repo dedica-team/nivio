@@ -59,7 +59,7 @@ public class ItemDescriptionValues {
 
         if (source.getProvidedBy() != null) {
             source.getProvidedBy().stream()
-                    .filter(s -> !StringUtils.isEmpty(s) && !target.getProvidedBy().contains(s))
+                    .filter(s -> StringUtils.hasLength(s) && !target.getProvidedBy().contains(s))
                     .forEach(s -> target.getProvidedBy().add(s));
         }
 

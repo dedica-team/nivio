@@ -127,10 +127,11 @@ public class HexMap {
      * Returns all hexes which form a group area.
      *
      * @param group the group with items
+     * @param items
      * @return a set of (adjacent) hexes
      */
-    public Set<MapTile> getGroupArea(@NonNull final Group group) {
-        Set<MapTile> inArea = GroupAreaFactory.getGroup(this, group);
+    public Set<MapTile> getGroupArea(@NonNull final Group group, Set<Item> items) {
+        Set<MapTile> inArea = GroupAreaFactory.getGroup(this, group, items);
         //set group identifier to all
         inArea.forEach(hex -> hex.setGroup(group.getFullyQualifiedIdentifier().toString()));
         return inArea;

@@ -95,8 +95,10 @@ public class SVGDocument extends Component {
         List<SVGGroupArea> groupAreas = new ArrayList<>();
         List<DomContent> groups = layouted.getChildren().stream().map(groupLayout -> {
             Group group = (Group) groupLayout.getComponent();
+            Set<MapTile> groupArea = hexMap.getGroupArea(group, landscape.getItems().retrieve(group.getItems()));
             List<StatusValue> groupStatuses = assessment.getResults().get(group.getFullyQualifiedIdentifier().toString());
-            SVGGroupArea area = SVGGroupArea.forGroup(group, hexMap.getGroupArea(group), Assessable.getWorst(groupStatuses), debug);
+            Status groupStatus = Assessable.getWorst(groupStatuses).stream().map(StatusValue::getStatus).findFirst().orElse(Status.UNKNOWN);
+            SVGGroupArea area = SVGGroupArea.forGroup(group, groupArea, groupStatus, debug);
             groupAreas.add(area);
             return area.render();
         }).collect(Collectors.toList());

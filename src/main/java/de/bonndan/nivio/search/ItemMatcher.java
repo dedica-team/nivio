@@ -17,6 +17,8 @@ import java.util.Optional;
 
 /**
  * Expression to search for items in a landscape.
+ *
+ *
  */
 public class ItemMatcher {
 
@@ -37,9 +39,9 @@ public class ItemMatcher {
 
         ItemMatcher fqi = new ItemMatcher();
         fqi.landscape = StringUtils.trimAllWhitespace(landscapeIdentifier == null ? "" : landscapeIdentifier.toLowerCase());
-        if (!StringUtils.isEmpty(groupIdentifier))
+        if (StringUtils.hasLength(groupIdentifier))
             fqi.group = StringUtils.trimAllWhitespace(groupIdentifier.toLowerCase());
-        if (!StringUtils.isEmpty(itemIdentifier))
+        if (StringUtils.hasLength(itemIdentifier))
             fqi.item = StringUtils.trimAllWhitespace(itemIdentifier.toLowerCase());
 
         return fqi;

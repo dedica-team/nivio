@@ -2,10 +2,7 @@ package de.bonndan.nivio.search;
 
 import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeFactory;
+import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,12 +13,16 @@ import java.util.*;
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ItemIndexTest {
 
     private ArrayList<Item> items;
     private Landscape landscape;
+    private Item s1;
+    private Item s2;
+    private Item s3;
 
     @BeforeEach
     public void setup() throws URISyntaxException {
@@ -30,20 +31,20 @@ class ItemIndexTest {
 
         items = new ArrayList<>();
 
-        Item s1 = getTestItemBuilder("g1", "s1").withName("foo").withLandscape(landscape).build();
+        s1 = getTestItemBuilder("g1", "s1").withName("foo").withLandscape(landscape).build();
         items.add(s1);
 
-        Item s2 = getTestItemBuilder("g1", "s2").withName("bar").withLandscape(landscape).build();
+        s2 = getTestItemBuilder("g1", "s2").withName("bar").withLandscape(landscape).build();
         items.add(s2);
 
-        Item s3 = getTestItemBuilder("g2", "hasaddress").withAddress(new URI("https://foo.bar/")).withLandscape(landscape).build();
+        s3 = getTestItemBuilder("g2", "hasaddress").withAddress(new URI("https://foo.bar/")).withLandscape(landscape).build();
         items.add(s3);
 
         landscape.setItems(new HashSet<>(items));
     }
 
     @Test
-    public void pickFails() {
+    void pickFails() {
 
         assertThrows(RuntimeException.class, () -> landscape.getItems().pick("s1", "xxx"));
         assertThrows(RuntimeException.class, () -> landscape.getItems().pick("s3", "g1"));
@@ -51,7 +52,7 @@ class ItemIndexTest {
 
 
     @Test
-    public void pick() {
+    void pick() {
         assertNotNull(landscape.getItems().pick("s1", "g1"));
         assertNotNull(landscape.getItems().pick("s2", "g1"));
 
@@ -61,13 +62,13 @@ class ItemIndexTest {
     }
 
     @Test
-    public void pickGracefulWithoutGroup() {
+    void pickGracefulWithoutGroup() {
 
         assertNotNull(landscape.getItems().pick("s2", null));
     }
 
     @Test
-    public void pickGracefulFails() {
+    void pickGracefulFails() {
 
         Item s2 = getTestItem("g2", "s2", landscape);
         items.add(s2);
@@ -77,7 +78,7 @@ class ItemIndexTest {
     }
 
     @Test
-    public void queryUrl() {
+    void queryUrl() {
         //given
         landscape.getSearchIndex().indexForSearch(landscape, new Assessment(Map.of()));
 
@@ -91,7 +92,7 @@ class ItemIndexTest {
     }
 
     @Test
-    public void retrieve() {
+    void retrieve() {
         //given
         landscape.getSearchIndex().indexForSearch(landscape, new Assessment(Map.of()));
 
@@ -104,5 +105,42 @@ class ItemIndexTest {
         assertThat(search).hasSize(2);
         assertThat(search).contains(items.get(0));
         assertThat(search).contains(items.get(1));
+    }
+
+    @Test
+    void retrieveThrowsNoSuchElement() {
+        //given
+        landscape.getSearchIndex().indexForSearch(landscape, new Assessment(Map.of()));
+
+        //when
+        Set<FullyQualifiedIdentifier> q = Set.of(ItemFactory.getTestItem("foo", "bar").getFullyQualifiedIdentifier());
+
+        //then
+        assertThrows(NoSuchElementException.class, () -> landscape.getItems().retrieve(q));
+    }
+
+    @Test
+    void retrieveKeepsOrder() {
+        //given
+        landscape.getSearchIndex().indexForSearch(landscape, new Assessment(Map.of()));
+
+        //when
+        Set<FullyQualifiedIdentifier> q = Set.of(s1.getFullyQualifiedIdentifier(), s2.getFullyQualifiedIdentifier());
+        Collection<Item> search = landscape.getItems().retrieve(q);
+
+        //then
+        assertThat(search).isNotEmpty()
+                .hasSize(2)
+                .containsExactlyInAnyOrder(s1, s2);
+
+
+        //when
+        q = Set.of(s2.getFullyQualifiedIdentifier(), s1.getFullyQualifiedIdentifier());
+        search = landscape.getItems().retrieve(q);
+
+        //then
+        assertThat(search).isNotEmpty()
+                .hasSize(2)
+                .containsExactlyInAnyOrder(s2, s1);
     }
 }

@@ -33,8 +33,9 @@ public class ConditionKPI implements KPI {
     @Override
     @NonNull
     public List<StatusValue> getStatusValues(Assessable component) {
-        if (!(component instanceof Labeled))
+        if (!(component instanceof Labeled)) {
             return new ArrayList<>();
+        }
 
         var status = Status.UNKNOWN;
         var message = "";
@@ -57,7 +58,7 @@ public class ConditionKPI implements KPI {
         if (Status.UNKNOWN.equals(status)) {
             return new ArrayList<>();
         }
-        return Collections.singletonList(new StatusValue(IDENTIFIER, status, message));
+        return Collections.singletonList(new StatusValue(component.getAssessmentIdentifier(), IDENTIFIER, status, message));
     }
 
     @Override

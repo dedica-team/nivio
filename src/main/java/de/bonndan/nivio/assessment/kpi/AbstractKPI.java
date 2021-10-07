@@ -53,17 +53,18 @@ public abstract class AbstractKPI implements KPI {
         }
         String value = valueFunction.apply(component);
         String message = msgFunction.apply(component);
-        return getStatusValues(value, message);
+        return getStatusValues(component, value, message);
     }
 
     /**
      * Returns the status values
      *
+     * @param assessable to assess
      * @param value   the value to assess. Can be null if no value is present or the KPI is not applicable.
      * @param message the optional message
      * @return a status value if assessed
      */
-    protected abstract List<StatusValue> getStatusValues(@Nullable String value, @Nullable String message);
+    protected abstract List<StatusValue> getStatusValues(@NonNull final Assessable assessable, @Nullable final String value, @Nullable final String message);
 
     @Override
     public String getDescription() {

@@ -88,7 +88,7 @@ public class ApiController {
 
         Optional<Group> group = landscape.getGroup(groupIdentifier);
         if (group.isPresent()) {
-            GroupApiModel groupItem = new GroupApiModel(group.get());
+            GroupApiModel groupItem = new GroupApiModel(group.get(), landscape.getItems().retrieve(group.get().getItems()));
             linkFactory.setGroupLinksRecursive(groupItem);
             return new ResponseEntity<>(groupItem, HttpStatus.OK);
         } else {

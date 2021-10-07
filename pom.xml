@@ -27,7 +27,7 @@
         <yarnVersion>v1.22.4</yarnVersion>
         <frontend-maven-plugin.version>1.12.0</frontend-maven-plugin.version>
         <lucene.version>8.8.2</lucene.version>
-        <jackson.version>2.12.4</jackson.version>
+        <jackson.version>2.12.5</jackson.version>
         <sonar.projectKey>dedica-team_nivio</sonar.projectKey>
         <sonar.organization>dedica-team</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -187,7 +187,7 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-client</artifactId>
-            <version>5.6.0</version>
+            <version>5.7.3</version>
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
@@ -267,13 +267,13 @@
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.132</version>
+            <version>1.133</version>
         </dependency>
 
         <dependency>
             <groupId>org.gitlab4j</groupId>
             <artifactId>gitlab4j-api</artifactId>
-            <version>4.17.0</version>
+            <version>4.18.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.codehaus.sonar/sonar-ws-client -->
@@ -286,7 +286,7 @@
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>openapi-generator</artifactId>
-            <version>5.2.0</version>
+            <version>5.2.1</version>
         </dependency>
 
         <!-- dot parsing -->
@@ -426,8 +426,32 @@
             </plugin>
 
             <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>5.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <dateFormat>yyyyMMdd-HHmmss</dateFormat>
+                    <generateGitPropertiesFile>false</generateGitPropertiesFile>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.0.1</version>
+                <configuration>
+                    <delimiters>
+                        <delimiter>^</delimiter>
+                    </delimiters>
+                    <useDefaultDelimiters>false</useDefaultDelimiters>
+                </configuration>
                 <executions>
                     <execution><!-- must run first, but after sphinx-maven-plugin -->
                         <id>position-sphinx-build</id>

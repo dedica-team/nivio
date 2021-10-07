@@ -109,8 +109,7 @@ class IndexerIntegrationTest {
         assertEquals("http://acme.io/create", i.getUrl().toString());
     }
 
-    @Test
-        //second pass
+    @Test //second pass
     void testReIndexing() {
         Landscape landscape = index();
 
@@ -281,7 +280,7 @@ class IndexerIntegrationTest {
         Landscape landscape1 = index("/src/test/resources/example/example_groups.yml");
         Group a = landscape1.getGroups().get("groupA");
         ItemIndex<Item> index = new ItemIndex<>(Item.class);
-        index.setItems(new HashSet<>(a.getItems()));
+        index.setItems(new HashSet<>(landscape1.getItems().retrieve(a.getItems())));
 
         assertNotNull(index.pick("blog-server", null));
         assertNotNull(index.pick("crappy_dockername-234234", null));

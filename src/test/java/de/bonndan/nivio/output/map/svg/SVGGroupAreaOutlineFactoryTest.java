@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.Status;
-import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
@@ -39,9 +38,9 @@ class SVGGroupAreaOutlineFactoryTest {
         hexMap.add(item2, new MapTile(e2));
 
 
-        Set<MapTile> area = GroupAreaFactory.getGroup(hexMap, foo);
+        Set<MapTile> area = GroupAreaFactory.getGroup(hexMap, foo, Set.of(item1, item2));
 
-        SVGGroupArea group = SVGGroupArea.forGroup(foo, area, new StatusValue("foo", Status.GREEN), false);
+        SVGGroupArea group = SVGGroupArea.forGroup(foo, area,  Status.GREEN, false);
         Set<MapTile> groupArea = group.getGroupArea();
 
         //when

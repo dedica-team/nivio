@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
@@ -89,6 +90,34 @@ class ItemRelationProcessorTest {
         ItemDescription description = new ItemDescription("foo");
         description.setGroup("a");
         description.addOrReplaceRelation(new RelationDescription("foo", "bar"));
+        input.mergeItems(List.of(description));
+
+        //when
+        ProcessingChangelog process = processor.process(input, landscape);
+
+        //then
+        assertThat(process.changes).hasSize(1); //no update, one delete
+        assertThat(process.changes).containsKey("test/a/foo;test/a/baz");
+        assertThat(process.changes.get("test/a/foo;test/a/baz").getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.DELETED.name());
+
+        Item foo = landscape.getItems().pick("foo", "a");
+        assertThat(foo.getRelations()).hasSize(1);
+
+        Item bar = landscape.getItems().pick("bar", "a");
+        assertThat(bar.getRelations()).hasSize(1);
+
+        Item baz = landscape.getItems().pick("baz", "a");
+        assertThat(baz.getRelations()).hasSize(0);
+    }
+
+    @DisplayName("removes relation even if ends cannot be found")
+    @Test
+    void regression647() {
+
+        ItemDescription description = new ItemDescription("foo");
+        description.setGroup("a");
+        description.addOrReplaceRelation(new RelationDescription("foo", "bar"));
+        description.addOrReplaceRelation(new RelationDescription("foo", "somethingToDelete"));
         input.mergeItems(List.of(description));
 
         //when

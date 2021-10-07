@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.assessment.Assessable;
+import de.bonndan.nivio.assessment.AssessableGroup;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.ProcessLog;
@@ -242,18 +243,23 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     @Override
+    @NonNull
     public Set<StatusValue> getAdditionalStatusValues() {
-        return StatusValue.fromMapping(indexedByPrefix(Label.status));
+        return StatusValue.fromMapping(getAssessmentIdentifier(), indexedByPrefix(Label.status));
     }
 
     @Override
+    @NonNull
     public String getAssessmentIdentifier() {
         return getFullyQualifiedIdentifier().toString();
     }
 
     @Override
+    @NonNull
     public List<? extends Assessable> getChildren() {
-        return getGroups().values().stream().map(groupItem -> (Assessable) groupItem).collect(Collectors.toList());
+        return getGroups().values().stream()
+                .map(group -> new AssessableGroup(group, getItems().retrieve(group.getItems())))
+                .collect(Collectors.toList());
     }
 
     @Schema(name = "_links")
@@ -281,7 +287,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
      *
      * @return kpis, configured and initialized
      */
-    public Map<String, KPI>  getKpis() {
+    public Map<String, KPI> getKpis() {
         return kpis;
     }
 

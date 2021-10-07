@@ -86,7 +86,7 @@ class HexMapTest {
         hexMap.add(target, two);
 
         //when
-        Set<MapTile> groupArea = hexMap.getGroupArea(group);
+        Set<MapTile> groupArea = hexMap.getGroupArea(group, Set.of(landscapeItem, target));
 
         //then
         long count = groupArea.stream().filter(hex -> hex.getGroup() != null).count();

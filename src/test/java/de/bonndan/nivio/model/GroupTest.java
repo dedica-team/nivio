@@ -2,6 +2,7 @@ package de.bonndan.nivio.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
@@ -16,9 +17,9 @@ class GroupTest {
     }
 
     @Test
-    void getItemsIsImmutable() {
+    void getItemsIsSorted() {
         Group g = new Group("foo", "test");
-        assertThrows(Exception.class, () -> g.getItems().add(getTestItem("a", "b")));
+        assertThat(g.getItems()).isInstanceOf(LinkedHashSet.class);
     }
 
     @Test
@@ -37,18 +38,17 @@ class GroupTest {
     }
 
     @Test
-    void replacesItem() {
+    void replacesItemFQI() {
         Group g = new Group("foo", "test");
         Item one = getTestItem("foo", "one");
         g.addOrReplaceItem(one);
-        assertThat(g.getItems()).containsExactly(one);
+        assertThat(g.getItems()).containsExactly(one.getFullyQualifiedIdentifier());
 
         Item copy = getTestItem("foo", "one");
         copy.setLabel(Label.version, "1");
 
         g.addOrReplaceItem(copy);
-        assertThat(g.getItems()).containsExactly(copy);
-        assertThat(g.getItems().iterator().next().getLabel(Label.version)).isEqualTo("1");
+        assertThat(g.getItems()).containsExactly(copy.getFullyQualifiedIdentifier());
     }
 
     @Test

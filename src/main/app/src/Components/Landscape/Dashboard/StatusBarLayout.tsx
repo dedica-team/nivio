@@ -48,7 +48,6 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
         assessmentSummary.status === 'UNDEFINED'
       )
         return null;
-      if (!assessmentSummary.maxField) return null;
 
       return (
         <TableRow key={'status_' + item.fullyQualifiedIdentifier}>
@@ -64,7 +63,7 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
             {item.name || item.identifier}
           </TableCell>
           <TableCell>
-            <StatusChip name={assessmentSummary.maxField} status={assessmentSummary.status} />
+            <StatusChip name={assessmentSummary.field} status={assessmentSummary.status} />
             {assessmentSummary.message}
           </TableCell>
         </TableRow>
@@ -109,7 +108,7 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
             {group.name}
           </TableCell>
           <TableCell>
-            <StatusChip name={groupAssessment.maxField} status={groupAssessment.status} />
+            <StatusChip name={`${groupAssessment.identifier}: ${groupAssessment.field}`} status={groupAssessment.status} />
             {groupAssessment.message}
           </TableCell>
         </TableRow>

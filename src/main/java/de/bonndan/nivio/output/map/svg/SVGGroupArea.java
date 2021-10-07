@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.Status;
-import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.MapTile;
@@ -38,7 +37,7 @@ class SVGGroupArea extends Component {
     private final List<DomContent> outlines;
 
     @NonNull
-    private final StatusValue groupStatus;
+    private final Status groupStatus;
 
     @NonNull
     private final Point2D.Double anchor;
@@ -52,7 +51,7 @@ class SVGGroupArea extends Component {
      */
     public static SVGGroupArea forGroup(@NonNull final Group group,
                                         @NonNull final Set<MapTile> inArea,
-                                        @NonNull final StatusValue groupStatus,
+                                        @NonNull final Status groupStatus,
                                         boolean debug
     ) {
         var fill = Objects.requireNonNull(group).getColor();
@@ -68,7 +67,7 @@ class SVGGroupArea extends Component {
     SVGGroupArea(@NonNull final Group group,
                  @NonNull final Set<MapTile> groupArea,
                  @NonNull final List<DomContent> outlines,
-                 @NonNull final StatusValue groupStatus
+                 @NonNull final Status groupStatus
     ) {
         this.group = Objects.requireNonNull(group);
         this.groupArea = Objects.requireNonNull(groupArea);
@@ -89,7 +88,7 @@ class SVGGroupArea extends Component {
     public DomContent render() {
         List<DomContent> territoryHexes = outlines != null ? new ArrayList<>(outlines) : new ArrayList<>();
         String fqi = group.getFullyQualifiedIdentifier().jsonValue();
-        if (StringUtils.isEmpty(fqi)) {
+        if (!StringUtils.hasLength(fqi)) {
             // we can still render an svg, but area will not be clickable
             LOGGER.warn("Empty group fqi in SVG group area, group {}", group);
         }

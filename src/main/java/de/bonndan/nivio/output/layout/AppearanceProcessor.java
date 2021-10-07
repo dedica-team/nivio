@@ -26,7 +26,7 @@ public class AppearanceProcessor {
     }
 
     public void process(@NonNull final Landscape landscape) {
-        Objects.requireNonNull(landscape).getGroupItems().forEach(group -> group.getItems().forEach(this::setItemAppearance));
+        Objects.requireNonNull(landscape).getGroupItems().forEach(group -> landscape.getItems().retrieve(group.getItems()).forEach(this::setItemAppearance));
     }
 
     private void setItemAppearance(Item item) {

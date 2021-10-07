@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class OrganicLayouter implements Layouter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrganicLayouter.class);
+
     private final boolean debug;
 
     public OrganicLayouter() {
@@ -33,9 +34,9 @@ public class OrganicLayouter implements Layouter {
     public LayoutedComponent layout(@NonNull final Landscape landscape) {
 
         Map<String, SubLayout> subGraphs = new LinkedHashMap<>();
-        Objects.requireNonNull(landscape).getGroups().forEach((name, groupItem) -> {
+        Objects.requireNonNull(landscape).getGroups().forEach((name, group) -> {
             SubLayout subLayout = new SubLayout(debug);
-            subLayout.render(groupItem, groupItem.getItems(), landscape.getConfig().getItemLayoutConfig());
+            subLayout.render(group, landscape.getItems().retrieve(group.getItems()), landscape.getConfig().getItemLayoutConfig());
             subGraphs.put(name, subLayout);
         });
 

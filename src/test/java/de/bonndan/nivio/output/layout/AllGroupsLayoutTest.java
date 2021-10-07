@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.layout;
 import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,28 +17,41 @@ class AllGroupsLayoutTest {
     void testWithARelation() {
 
         Group a = new Group("a", "test");
-        Group b = new Group("b", "test");
-        Group c = new Group("c", "test");
+        Item bara = getTestItem("a", "bara");
+        Item fooa = getTestItem("a", "fooa");
+        a.addOrReplaceItem(bara);
+        a.addOrReplaceItem(fooa);
 
-        Landscape landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
+        Group b = new Group("b", "test");
+        Item barb = getTestItem("b", "barb");
+        Item foob = getTestItem("b", "foob");
+        b.addOrReplaceItem(barb);
+        b.addOrReplaceItem(foob);
+
+        Group c = new Group("c", "test");
+        Item barc = getTestItem("c", "barc");
+        Item fooc = getTestItem("c", "fooc");
+        c.addOrReplaceItem(barc);
+        c.addOrReplaceItem(fooc);
+
+        Landscape landscape = LandscapeFactory.createForTesting("test", "testLandscape").withItems(Set.of(fooa, bara, foob, barb, fooc, barc)).build();
 
         landscape.addGroup(a);
         landscape.addGroup(b);
         landscape.addGroup(c);
 
         Map<String, SubLayout> map = Map.of(
-                "a", getSubLayout(a),
-                "b", getSubLayout(b),
-                "c", getSubLayout(c)
+                "a", getSubLayout(a, Set.of(bara, fooa)),
+                "b", getSubLayout(b, Set.of(barb, foob)),
+                "c", getSubLayout(c, Set.of(barc, fooc))
         );
 
         //add some inter-group relations
-        Item item1 = a.getItems().iterator().next();
-        Item item2 = b.getItems().iterator().next();
-        Item item3 = c.getItems().iterator().next();
-        item1.addOrReplace(RelationFactory.createForTesting(item1, item2));
-        item2.addOrReplace(RelationFactory.createForTesting(item2, item3));
+        bara.addOrReplace(RelationFactory.createForTesting(bara, barb));
+        barb.addOrReplace(RelationFactory.createForTesting(barb, barc));
 
+        Map<String, Group> groupMap = new LinkedHashMap<>();
+        landscape.getGroups().forEach(groupMap::put);
 
         //when
         AllGroupsLayout allGroupsLayout = new AllGroupsLayout(true);
@@ -51,21 +65,13 @@ class AllGroupsLayoutTest {
         //assert position is always the same
         LayoutedComponent child0 = layoutedLandscape.getChildren().get(0);
         assertEquals("test/a", child0.getComponent().getFullyQualifiedIdentifier().toString());
-        assertEquals(976, Math.round(child0.getX()));
-        assertEquals(930, Math.round(child0.getY()));
+        assertEquals(1111, Math.round(child0.getX()));
+        assertEquals(-136, Math.round(child0.getY()));
     }
 
-    private SubLayout getSubLayout(Group group) {
-
-        Item bar = getTestItem(group.getIdentifier(), "bar" + group.getIdentifier());
-        group.addOrReplaceItem(bar);
-
-        Item baz = getTestItem(group.getIdentifier(), "baz" + group.getIdentifier());
-        group.addOrReplaceItem(baz);
-        baz.addOrReplace(RelationFactory.createForTesting(baz, bar));
-
+    private SubLayout getSubLayout(Group group, Set<Item> items) {
         SubLayout subLayout = new SubLayout(true);
-        subLayout.render(group, Set.of(bar, baz), new LandscapeConfig.LayoutConfig());
+        subLayout.render(group, items, new LandscapeConfig.LayoutConfig());
         return subLayout;
     }
 }

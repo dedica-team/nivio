@@ -46,7 +46,7 @@ public class AllGroupsLayout {
                 return;
             LayoutedComponent groupGeometry = subLayout.getOuterBounds();
             groupNodes.put(groupItem, groupGeometry);
-            items.addAll(groupItem.getItems());
+            items.addAll(landscape.getItems().retrieve(groupItem.getItems()));
         });
         if (debug) LOGGER.debug("Group node sequence: {}", groupNodes);
 

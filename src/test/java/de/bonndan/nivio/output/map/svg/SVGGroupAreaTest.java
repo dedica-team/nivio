@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.Status;
-import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
@@ -36,8 +35,8 @@ class SVGGroupAreaTest {
         hexMap.add(landscapeItem2, e2);
 
 
-        Set<MapTile> area = GroupAreaFactory.getGroup(hexMap, group);
-        SVGGroupArea svgGroupArea = SVGGroupArea.forGroup(group, area, new StatusValue("foo", Status.GREEN), false);
+        Set<MapTile> area = GroupAreaFactory.getGroup(hexMap, group, Set.of(landscapeItem, landscapeItem2));
+        SVGGroupArea svgGroupArea = SVGGroupArea.forGroup(group, area,  Status.GREEN, false);
 
         assertThat(svgGroupArea.render().render()).contains(group.getFullyQualifiedIdentifier().jsonValue());
     }
@@ -58,13 +57,12 @@ class SVGGroupAreaTest {
         hexMap.add(landscapeItem, e1);
         hexMap.add(landscapeItem2, e2);
 
-        Set<MapTile> area = GroupAreaFactory.getGroup(hexMap, group);
-        SVGGroupArea svgGroupArea = SVGGroupArea.forGroup(group, area, new StatusValue("foo", Status.GREEN), false);
+        Set<MapTile> area = GroupAreaFactory.getGroup(hexMap, group, Set.of(landscapeItem, landscapeItem2));
+        SVGGroupArea svgGroupArea = SVGGroupArea.forGroup(group, area, Status.GREEN, false);
 
         //then
         String render1 = svgGroupArea.render().render();
-        assertThat(render1).contains(DATA_IDENTIFIER);
-        assertThat(render1).contains(VISUAL_FOCUS_UNSELECTED);
+        assertThat(render1).contains(DATA_IDENTIFIER).contains(VISUAL_FOCUS_UNSELECTED);
     }
 
 

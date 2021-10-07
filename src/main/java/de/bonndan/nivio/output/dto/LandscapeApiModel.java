@@ -50,7 +50,9 @@ public class LandscapeApiModel extends ComponentApiModel {
     }
 
     public Set<GroupApiModel> getGroups() {
-        return landscape.getGroupItems().stream().map(GroupApiModel::new).collect(Collectors.toSet());
+        return landscape.getGroupItems().stream()
+                .map(group -> new GroupApiModel(group, landscape.getItems().retrieve(group.getItems())))
+                .collect(Collectors.toSet());
     }
 
     public String getDescription() {

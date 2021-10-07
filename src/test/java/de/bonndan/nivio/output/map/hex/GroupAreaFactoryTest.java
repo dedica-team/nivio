@@ -60,7 +60,7 @@ class GroupAreaFactoryTest {
         hexMap.add(target, two);
 
         //when
-        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group);
+        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group, Set.of(landscapeItem, target));
 
         //then
         assertThat(inArea).containsAll(expectedTerritory);
@@ -87,7 +87,7 @@ class GroupAreaFactoryTest {
         hexMap.add(target, two);
 
         //when
-        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group);
+        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group, Set.of(landscapeItem));
 
         //then
         assertThat(inArea).isEqualTo(expectedTerritory);
@@ -110,7 +110,7 @@ class GroupAreaFactoryTest {
         hexMap.add(target, two);
 
         //when
-        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group);
+        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group, Set.of(landscapeItem, target));
         assertThat(inArea).doesNotContain(new MapTile(new Hex(5, 2)));
         assertThat(inArea).doesNotContain(new MapTile(new Hex(6, 2)));
         assertThat(inArea).doesNotContain(new MapTile(new Hex(7, 2)));
@@ -134,7 +134,7 @@ class GroupAreaFactoryTest {
         hexMap.add(target, two);
 
         //when
-        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group);
+        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group, Set.of(landscapeItem, target));
 
         //then
         assertThat(inArea).contains(new MapTile(new Hex(6, 3)));
