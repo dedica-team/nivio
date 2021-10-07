@@ -86,7 +86,6 @@ class PathFinder {
 
         open.remove(lastTile);
 
-        //LOGGER.debug("returning best tile {} with sumCosts {} and heuristic {}", lastTile, lastTile.sumCosts, lastTile.heuristicCosts);
         return lastTile;
     }
 
@@ -97,11 +96,12 @@ class PathFinder {
             return lastTile;
 
         //prefer same direction to have less bends
-        if (current.getDirectionFromParent() != null) {
-            if (current.getDirectionFromParent().equals(lastTile.getDirectionFromParent()))
+        Integer directionFromParent = current.getDirectionFromParent();
+        if (directionFromParent != null) {
+            if (directionFromParent.equals(lastTile.getDirectionFromParent()))
                 return lastTile;
 
-            if (current.getDirectionFromParent().equals(next.getDirectionFromParent()))
+            if (directionFromParent.equals(next.getDirectionFromParent()))
                 return next;
         }
 

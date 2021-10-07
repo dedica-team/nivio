@@ -109,7 +109,8 @@ public class HexPath {
     }
 
     private boolean isBend(PathTile current, PathTile prevTile) {
-        return current.getDirectionFromParent() != null && !current.getDirectionFromParent().equals(prevTile.getDirectionFromParent());
+        Integer directionFromParent = current.getDirectionFromParent();
+        return directionFromParent != null && !directionFromParent.equals(prevTile.getDirectionFromParent());
     }
 
     /**
