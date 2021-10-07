@@ -1,6 +1,5 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.config.ConfigurableEnvVars;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,13 +67,12 @@ public class Seed {
         if (!StringUtils.hasLength(demo)) {
             return demoFiles;
         }
-        String value = ConfigurableEnvVars.DEMO.value().orElse("");
 
         Path currentRelativePath = Paths.get("");
         String absPath = currentRelativePath.toAbsolutePath().toString();
         try {
-            demoFiles.add(new File(absPath + "/src/test/resources/example/example_k8s.yml").toURI().toURL());
-            if (value.equalsIgnoreCase("all")) {
+            demoFiles.add(new File(absPath + "/src/test/resources/example/pet_clinic.yml").toURI().toURL());
+            if (demo.equalsIgnoreCase("all")) {
                 demoFiles.add(new File(absPath + "/src/test/resources/example/inout.yml").toURI().toURL());
                 demoFiles.add(new File(absPath + "/src/test/resources/example/internals.yml").toURI().toURL());
                 demoFiles.add(new File(absPath + "/src/test/resources/example/dedica_dot.yml").toURI().toURL());
