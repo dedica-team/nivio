@@ -441,11 +441,6 @@
       "LayoutConfig" : {
         "type" : "object",
         "properties" : {
-          "forceConstantFactor" : {
-            "type" : "number",
-            "description" : "A factor to influence the attracting and repulsive forces in a layout.",
-            "format" : "float"
-          },
           "maxDistanceLimitFactor" : {
             "type" : "number",
             "description" : "A factor to influence maximum distance where forces are applied.",
