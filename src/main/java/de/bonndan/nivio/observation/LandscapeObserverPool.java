@@ -21,11 +21,9 @@ public class LandscapeObserverPool {
 
     private final ThreadPoolTaskScheduler taskScheduler;
     private final Map<InputFormatObserver, ScheduledFuture<?>> scheduledTasks = new IdentityHashMap<>();
-    private final long delay;
 
-    public LandscapeObserverPool(@NonNull final ThreadPoolTaskScheduler taskScheduler, long delay) {
+    public LandscapeObserverPool(@NonNull final ThreadPoolTaskScheduler taskScheduler) {
         this.taskScheduler = Objects.requireNonNull(taskScheduler);
-        this.delay = delay;
     }
 
     /**
@@ -45,7 +43,7 @@ public class LandscapeObserverPool {
 
         observers.forEach(inputFormatObserver -> {
             try {
-                ScheduledFuture<?> scheduledFuture = taskScheduler.scheduleWithFixedDelay(inputFormatObserver, delay);
+                ScheduledFuture<?> scheduledFuture = taskScheduler.scheduleWithFixedDelay(inputFormatObserver, ObserverJsonParser.getDelayFromJson(inputFormatObserver.getClass()) * 1000L);
                 scheduledTasks.put(inputFormatObserver, scheduledFuture);
             } catch (TaskRejectedException e) {
                 LOGGER.error("Failed to schedule observer: " + e.getMessage(), e);

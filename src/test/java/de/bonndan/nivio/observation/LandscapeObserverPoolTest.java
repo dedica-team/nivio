@@ -21,11 +21,11 @@ class LandscapeObserverPoolTest {
         scheduledFuture = mock(ScheduledFuture.class);
         when(scheduler.scheduleWithFixedDelay(any(Runnable.class), anyLong())).thenReturn(scheduledFuture);
 
-        landscapeObserverPool = new LandscapeObserverPool(scheduler, 1);
+        landscapeObserverPool = new LandscapeObserverPool(scheduler);
     }
 
     @Test
-    public void schedulesRunnables() {
+    void schedulesRunnables() {
         InputFormatObserver observer1 = mock(InputFormatObserver.class);
         InputFormatObserver observer2 = mock(InputFormatObserver.class);
         InputFormatObserver observer3 = mock(InputFormatObserver.class);
@@ -34,11 +34,11 @@ class LandscapeObserverPoolTest {
         landscapeObserverPool.updateObservers(List.of(observer1, observer2, observer3));
 
         //then
-        verify(scheduler, times(3)).scheduleWithFixedDelay(any(Runnable.class), eq(1L));
+        verify(scheduler, times(3)).scheduleWithFixedDelay(any(Runnable.class), eq(30000L));
     }
 
     @Test
-    public void stopsScheduledTasks() {
+    void stopsScheduledTasks() {
         InputFormatObserver observer1 = mock(InputFormatObserver.class);
         InputFormatObserver observer2 = mock(InputFormatObserver.class);
         landscapeObserverPool.updateObservers(List.of(observer1, observer2));

@@ -1,10 +1,7 @@
-package de.bonndan.nivio.input.kubernetes;
+package de.bonndan.nivio.observation;
 
 
 import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.observation.InputChangedEvent;
-import de.bonndan.nivio.observation.InputFormatObserver;
-import de.bonndan.nivio.observation.ObservedChange;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import org.slf4j.Logger;
@@ -37,16 +34,10 @@ public class KubernetesObserver implements InputFormatObserver {
 
     @Override
     public void run() {
-        var change = false;
-        while (!change) {
-            sleep(1000);
-            if ((eventUidList.stream().mapToLong(Long::longValue).sum() - getK8sComponents().stream().mapToLong(Long::longValue).sum()) != 0) {
-                change = true;
-                LOGGER.info("K8s change detected");
-                eventPublisher.publishEvent(new InputChangedEvent(new ObservedChange(landscape, "k8s cluster changed")));
-            }
+        if ((eventUidList.stream().mapToLong(Long::longValue).sum() - getK8sComponents().stream().mapToLong(Long::longValue).sum()) != 0) {
+            LOGGER.info("K8s change detected");
+            eventPublisher.publishEvent(new InputChangedEvent(new ObservedChange(landscape, "k8s cluster changed")));
         }
-
     }
 
     @NonNull
@@ -61,17 +52,8 @@ public class KubernetesObserver implements InputFormatObserver {
             componentList.addAll(kubernetesClient.apps().statefulSets().list().getItems().stream().map(statefulSet -> (long) statefulSet.hashCode()).collect(Collectors.toList()));
             return componentList;
         } catch (KubernetesClientException n) {
-            LOGGER.error(n.getMessage());
             LOGGER.error("Kubernetes might not be available");
         }
         return new ArrayList<>();
-    }
-
-    private void sleep(int time) {
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
     }
 }

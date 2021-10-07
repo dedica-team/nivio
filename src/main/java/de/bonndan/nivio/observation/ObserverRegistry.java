@@ -23,6 +23,7 @@ public class ObserverRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObserverRegistry.class);
 
+
     private final Map<String, LandscapeObserverPool> observerMap = new ConcurrentHashMap<>();
 
     private final LandscapeObserverFactory landscapeObserverPoolFactory;
@@ -50,7 +51,7 @@ public class ObserverRegistry {
 
         LandscapeObserverPool pool = observerMap.computeIfAbsent(landscape.getIdentifier(), s -> {
             LOGGER.info("Registered landscape {} for observation.", landscapeDescription);
-            return new LandscapeObserverPool(taskScheduler, 30 * 1000);
+            return new LandscapeObserverPool(taskScheduler);
         });
         pool.updateObservers(landscapeObserverPoolFactory.getObserversFor(landscape, landscapeDescription));
     }

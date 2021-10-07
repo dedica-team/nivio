@@ -8,5 +8,4 @@ package de.bonndan.nivio.observation;
  * URL observer is implemented, but others like k8s observer to be done
  */
 public interface InputFormatObserver extends Runnable {
-
 }

@@ -3,6 +3,7 @@ package de.bonndan.nivio.input.kubernetes;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.observation.InputChangedEvent;
+import de.bonndan.nivio.observation.KubernetesObserver;
 import io.fabric8.kubernetes.api.model.OwnerReferenceBuilder;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
