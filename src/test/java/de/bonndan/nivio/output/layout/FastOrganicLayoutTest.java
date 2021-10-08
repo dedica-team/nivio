@@ -403,6 +403,70 @@ class FastOrganicLayoutTest {
     }
 
     @Test
+    void calcWeakAttraction() {
+        //given
+        Item testItemA = ItemFactory.getTestItem("test", "a");
+        Item testItemB = ItemFactory.getTestItem("test", "b");
+
+        layoutedComponents = new ArrayList<>();
+        a = new LayoutedComponent(testItemA, List.of(testItemB));
+        layoutedComponents.add(a);
+
+        b = new LayoutedComponent(testItemB, List.of(testItemA));
+        layoutedComponents.add(b);
+
+        layout = new FastOrganicLayout(layoutedComponents, SubLayout.MIN_DISTANCE_LIMIT, SubLayout.MAX_DISTANCE_LIMIT, SubLayout.INITIAL_TEMP, null);
+        layout.setup();
+
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+        layout.radius[0] = 50;
+
+        layout.centerLocations[1][0] = SubLayout.MAX_DISTANCE_LIMIT * 3;
+        layout.centerLocations[1][1] = SubLayout.MAX_DISTANCE_LIMIT * 3;
+        layout.radius[1] = 50;
+
+        layout.calcPositions(); //recalc after setting center locations
+
+        var distance1 = layout.distances[0][1];
+
+        //when
+        layout.calcWeakAttraction();
+        layout.calcPositions();
+
+        //then
+        var distance2 = layout.distances[0][1];
+        assertThat(distance2).isLessThan(distance1).isGreaterThan(layout.maxDistanceLimit);
+    }
+
+    @Test
+    void weakAttractionNotEffective() {
+        //given
+        Item testItemA = ItemFactory.getTestItem("test", "a");
+        Item testItemB = ItemFactory.getTestItem("test", "b");
+
+        layoutedComponents = new ArrayList<>();
+        a = new LayoutedComponent(testItemA, List.of(testItemB));
+        layoutedComponents.add(a);
+
+        b = new LayoutedComponent(testItemB, List.of(testItemA));
+        layoutedComponents.add(b);
+
+        layout = new FastOrganicLayout(layoutedComponents, SubLayout.MIN_DISTANCE_LIMIT, SubLayout.MAX_DISTANCE_LIMIT, SubLayout.INITIAL_TEMP, null);
+        layout.setup();
+
+        var distance1 = layout.distances[0][1];
+
+        //when
+        layout.calcWeakAttraction();
+        layout.calcPositions();
+
+        //then
+        var distance2 = layout.distances[0][1];
+        assertThat(distance2).isEqualTo(distance1);
+    }
+
+    @Test
     void hasDistanceAfterSetup() {
 
         //given

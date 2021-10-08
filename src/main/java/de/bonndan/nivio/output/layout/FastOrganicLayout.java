@@ -32,7 +32,7 @@ public class FastOrganicLayout {
      * The maximum distance between vertices, beyond which their
      * repulsion no longer has an effect
      */
-    private final double maxDistanceLimit;
+    final double maxDistanceLimit;
 
     /**
      * Start value of temperature. Default is 200.
@@ -115,6 +115,8 @@ public class FastOrganicLayout {
     /**
      * Reduces the temperature of the layout from an initial setting in a linear
      * fashion to zero.
+     *
+     * This is important for layouts that do not find a stable equilibrium.
      */
     void reduceTemperature() {
         var factor = 0.8;
