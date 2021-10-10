@@ -9,6 +9,7 @@ import java.util.concurrent.ScheduledFuture;
 
 import static org.mockito.Mockito.*;
 
+
 class LandscapeObserverPoolTest {
 
     private ThreadPoolTaskScheduler scheduler;
@@ -19,9 +20,10 @@ class LandscapeObserverPoolTest {
     void setup() {
         scheduler = mock(ThreadPoolTaskScheduler.class);
         scheduledFuture = mock(ScheduledFuture.class);
+        var observerConfigProperties = mock(ObserverConfigProperties.class);
         when(scheduler.scheduleWithFixedDelay(any(Runnable.class), anyLong())).thenReturn(scheduledFuture);
 
-        landscapeObserverPool = new LandscapeObserverPool(scheduler);
+        landscapeObserverPool = new LandscapeObserverPool(scheduler, observerConfigProperties);
     }
 
     @Test

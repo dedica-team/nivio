@@ -55,7 +55,12 @@ nivio:
   demo: ${DEMO:}
 
 
-gitlab:  # add new environment variables
+observerconfig:
+  scanDelay:
+    KubernetesObserver: 1
+
+
+gitlab: # add new environment variables
   hostUrl: ${GITLAB_HOST_URL:}
   personalAccessToken: ${GITLAB_PERSONAL_ACCESS_TOKEN:}
   username: ${GITLAB_USERNAME:}
@@ -63,10 +68,10 @@ gitlab:  # add new environment variables
 
 
 github: # add new environment variables
-   login: ${GITHUB_LOGIN:}
-   password: ${GITHUB_PASSWORD:}
-   oauth: ${GITHUB_OAUTH:}
-   jwt: ${GITHUB_JWT:}
+  login: ${GITHUB_LOGIN:}
+    password: ${GITHUB_PASSWORD:}
+    oauth: ${GITHUB_OAUTH:}
+    jwt: ${GITHUB_JWT:}
 
 sonar: # add new environment variables
   serverUrl: ${SONAR_SERVER_URL:}

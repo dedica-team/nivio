@@ -29,14 +29,17 @@ public class ObserverRegistry {
     private final LandscapeObserverFactory landscapeObserverPoolFactory;
     private final ThreadPoolTaskScheduler taskScheduler;
     private final IndexingDispatcher indexingDispatcher;
+    private final ObserverConfigProperties observerConfigProperties;
 
     public ObserverRegistry(LandscapeObserverFactory landscapeObserverPoolFactory,
                             ThreadPoolTaskScheduler taskScheduler,
-                            IndexingDispatcher indexingDispatcher
+                            IndexingDispatcher indexingDispatcher,
+                            ObserverConfigProperties observerConfigProperties
     ) {
         this.landscapeObserverPoolFactory = landscapeObserverPoolFactory;
         this.taskScheduler = taskScheduler;
         this.indexingDispatcher = indexingDispatcher;
+        this.observerConfigProperties = observerConfigProperties;
     }
 
     /**
@@ -51,7 +54,7 @@ public class ObserverRegistry {
 
         LandscapeObserverPool pool = observerMap.computeIfAbsent(landscape.getIdentifier(), s -> {
             LOGGER.info("Registered landscape {} for observation.", landscapeDescription);
-            return new LandscapeObserverPool(taskScheduler);
+            return new LandscapeObserverPool(taskScheduler, observerConfigProperties);
         });
         pool.updateObservers(landscapeObserverPoolFactory.getObserversFor(landscape, landscapeDescription));
     }

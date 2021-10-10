@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,7 @@ public class KubernetesObserver implements InputFormatObserver {
 
     @Override
     public void run() {
-        if ((eventUidList.stream().mapToLong(Long::longValue).sum() - getK8sComponents().stream().mapToLong(Long::longValue).sum()) != 0) {
+        if (!new HashSet<>(eventUidList).equals(new HashSet<>(getK8sComponents()))) {
             LOGGER.info("K8s change detected");
             eventPublisher.publishEvent(new InputChangedEvent(new ObservedChange(landscape, "k8s cluster changed")));
         }
