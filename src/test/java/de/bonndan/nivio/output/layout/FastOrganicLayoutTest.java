@@ -38,11 +38,15 @@ class FastOrganicLayoutTest {
         a = new LayoutedComponent(testItemA, List.of(testItemB));
         a.setX(0);
         a.setY(0);
+        a.setWidth(100);
+        a.setHeight(100);
         layoutedComponents.add(a);
 
         b = new LayoutedComponent(testItemB, List.of(testItemA));
         b.setX(0);
         b.setY(200);
+        b.setWidth(100);
+        b.setHeight(100);
         layoutedComponents.add(b);
 
         layout = new FastOrganicLayout(layoutedComponents, SubLayout.MIN_DISTANCE_LIMIT, SubLayout.MAX_DISTANCE_LIMIT, SubLayout.INITIAL_TEMP, null);
@@ -58,8 +62,19 @@ class FastOrganicLayoutTest {
         layout.execute();
 
         //then
-        assertAboveMinDistance(a, b, 50);
-        assertAboveMinDistance(b, c, 50);
+        var xDelta1 = a.x - b.x;
+        var yDelta1 = a.y - b.y;
+        var dist1 = Math.sqrt((xDelta1 * xDelta1) + (yDelta1 * yDelta1)) - 50 - 50; //two times the radius
+
+        assertThat(Math.abs(dist1))
+                .isGreaterThan((long) SubLayout.MIN_DISTANCE_LIMIT);
+
+        var xDelta = b.x - c.x;
+        var yDelta = b.y - c.y;
+        var dist = Math.sqrt((xDelta * xDelta) + (yDelta * yDelta)) - 50 - 50; //two times the radius
+
+        assertThat(Math.abs(dist))
+                .isGreaterThan((long) SubLayout.MIN_DISTANCE_LIMIT);
     }
 
     @Test
@@ -80,7 +95,7 @@ class FastOrganicLayoutTest {
         Point2D.Double repulsionDisplacement = layout.getRepulsionDisplacement(0, 1);
 
         //then
-        assertThat(repulsionDisplacement.x).isEqualTo(-31, Offset.offset(1D));
+        assertThat(repulsionDisplacement.x).isEqualTo(0, Offset.offset(1D));
         assertThat(repulsionDisplacement.y).isEqualTo(-125, Offset.offset(1D));
     }
 
@@ -142,8 +157,8 @@ class FastOrganicLayoutTest {
         layout.centerLocations[0][0] = 0;
         layout.centerLocations[0][1] = 0;
 
-        layout.centerLocations[1][0] = 20;
-        layout.centerLocations[1][1] = 0;
+        layout.centerLocations[1][0] = 1;
+        layout.centerLocations[1][1] = 1;
 
         layout.calcPositions(); //recalc distances
 
@@ -151,13 +166,12 @@ class FastOrganicLayoutTest {
         Point2D.Double repulsionDisplacement = layout.getRepulsionDisplacement(0, 1);
 
         //then
-        int halfMaxDistance = -125;
-        assertThat(repulsionDisplacement.x).isLessThan(0).isEqualTo(halfMaxDistance, Offset.offset(1D));
-        assertThat(repulsionDisplacement.y).isEqualTo(halfMaxDistance, Offset.offset(1D));
+        assertThat(repulsionDisplacement.x).isLessThan(layout.maxDistanceLimit).isEqualTo(-176, Offset.offset(1D));
+        assertThat(repulsionDisplacement.y).isEqualTo(-176, Offset.offset(1D));
     }
 
     @Test
-    @DisplayName("Repulsion is applied to both nodes")
+    @DisplayName("Repulsion is applied to both nodes along vector")
     void calcRepulsion() {
 
         //when
@@ -178,13 +192,15 @@ class FastOrganicLayoutTest {
         //then
         double dispX01 = layout.disp[0][0];
         double dispY01 = layout.disp[0][1];
-        assertThat(dispX01).isLessThan(0).isEqualTo(-93, Offset.offset(1D));
+        assertThat(dispX01).isLessThan(0).isEqualTo(-90, Offset.offset(1D));
+
+        assertThat(dispX01/dispY01).isEqualTo(200/100, Offset.offset(1D));
 
         //greater distance means less (absolute) displacement
-        assertThat(dispY01).isLessThan(0).isGreaterThan(dispX01).isEqualTo(-31, Offset.offset(1D));
+        assertThat(dispY01).isLessThan(0).isGreaterThan(dispX01).isEqualTo(-45, Offset.offset(1D));
 
-        assertThat(layout.disp[1][0]).isGreaterThan(0).isEqualTo(93, Offset.offset(1D));
-        assertThat(layout.disp[1][1]).isEqualTo(31, Offset.offset(1D));
+        assertThat(layout.disp[1][0]).isGreaterThan(0).isEqualTo(90, Offset.offset(1D));
+        assertThat(layout.disp[1][1]).isEqualTo(45, Offset.offset(1D));
     }
 
     @Test
@@ -208,16 +224,17 @@ class FastOrganicLayoutTest {
         //then
         double overlapRepulsion = layout.disp[0][0];
         double distanceRepulsion = layout.disp[0][1];
-        assertThat(overlapRepulsion).isEqualTo(-125, Offset.offset(1D));
+        assertThat(overlapRepulsion).isEqualTo(-124, Offset.offset(1D));
         assertThat(distanceRepulsion)
                 .isLessThan(0)
                 .isGreaterThan(overlapRepulsion)
-                .isEqualTo(-31, Offset.offset(1D));
+                .isEqualTo(-6, Offset.offset(1D));
     }
 
     @Test
     void reduceTempRegularly() {
         //given
+        layout.setup();
         layout.temperature = 1000;
 
         //when
@@ -225,19 +242,6 @@ class FastOrganicLayoutTest {
 
         //then
         assertThat(layout.temperature).isEqualTo(800);
-    }
-
-    @Test
-    void reduceTempShortfallIsSlower() {
-        //given
-        layout.temperature = 1000;
-        layout.minDistanceShortfall = true;
-
-        //when
-        layout.reduceTemperature();
-
-        //then
-        assertThat(layout.temperature).isEqualTo(970);
     }
 
     @Test
@@ -256,9 +260,31 @@ class FastOrganicLayoutTest {
         layout.calcPositions();
 
         //then
-        assertThat(layout.distances[0][1]).isEqualTo(61, Offset.offset(1D));
-        assertThat(layout.distances[1][0]).isEqualTo(61, Offset.offset(1D));
+        assertThat(layout.distances[0][1]).isEqualTo(11, Offset.offset(1D));
+        assertThat(layout.distances[1][0]).isEqualTo(11, Offset.offset(1D));
+    }
 
+    @Test
+    void calcPositionsWithDisplacement() {
+        //given
+        layout.setup();
+
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+
+        layout.centerLocations[1][0] = 100;
+        layout.centerLocations[1][1] = 50;
+
+        layout.disp[0][0] = 100;
+        layout.disp[0][1] = 100;
+
+
+        //when
+        layout.calcPositions();
+
+        //then
+        assertThat(layout.distances[0][1]).isEqualTo(-49, Offset.offset(1D));
+        assertThat(layout.distances[1][0]).isEqualTo(-49, Offset.offset(1D));
     }
 
     @Test
@@ -299,17 +325,16 @@ class FastOrganicLayoutTest {
     }
 
     @Test
+    @DisplayName("Attraction moves nodes closer along vector")
     void calcAttractionDisplacement() {
         //given
         layout.setup();
 
         layout.centerLocations[0][0] = 0;
         layout.centerLocations[0][1] = 0;
-        layout.radius[0] = 50;
 
-        layout.centerLocations[1][0] = 1000;
-        layout.centerLocations[1][1] = 50;
-        layout.radius[1] = 50;
+        layout.centerLocations[1][0] = 400;
+        layout.centerLocations[1][1] = 200;
 
         layout.calcPositions(); //recalc
 
@@ -319,7 +344,9 @@ class FastOrganicLayoutTest {
         //then
         //displacement is subtracted from i and added to j
         assertThat(displacement.x).isGreaterThan(0); //shift in x direction
-        assertThat(displacement.y).isGreaterThan(0); //shift in x direction
+        assertThat(displacement.y).isGreaterThan(0).isLessThan(displacement.x); //shift in y direction
+
+        assertThat(displacement.x/displacement.y).isEqualTo(400/200);
 
         //when
         var reverse = layout.getAttractionDisplacement(1, 0);
@@ -327,30 +354,6 @@ class FastOrganicLayoutTest {
         //then
         assertThat(reverse.x).isLessThan(0); //shift in x direction
         assertThat(reverse.y).isLessThan(0); //shift in x direction
-    }
-
-    @Test
-    void calcAttractionOfTwo() {
-        //given
-        layout.setup();
-
-        layout.centerLocations[0][0] = 0;
-        layout.centerLocations[0][1] = 0;
-
-        layout.centerLocations[1][0] = 1000;
-        layout.centerLocations[1][1] = 50;
-
-        layout.calcPositions();
-
-        var distance1 = layout.distances[0][1];
-
-        //when
-        layout.calcStrongAttraction();
-        layout.calcPositions();
-
-        //then
-        var distance2 = layout.distances[0][1];
-        assertThat(distance2).isLessThan(distance1).isGreaterThan(layout.minDistanceLimit);
     }
 
     @Test
@@ -505,15 +508,6 @@ class FastOrganicLayoutTest {
         //then
         assertThat(layout.getAbsDistanceBetween(0, 1)).isLessThan(600D);
         assertThat(layout.getAbsDistanceBetween(1, 2)).isLessThan(500D);
-    }
-
-    void assertAboveMinDistance(LayoutedComponent a, LayoutedComponent b, int radius) {
-        var xDelta = a.x - b.x;
-        var yDelta = a.y - b.y;
-        var dist = Math.sqrt((xDelta * xDelta) + (yDelta * yDelta)) - radius - radius; //two times the radius
-
-        assertThat(Math.abs(dist))
-                .isGreaterThan((long) SubLayout.MIN_DISTANCE_LIMIT);
     }
 
     void setupThree() {

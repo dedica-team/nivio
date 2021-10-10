@@ -78,6 +78,8 @@ public class FastOrganicLayout {
      */
     int[][] neighbours;
 
+    private final AtomicDouble maxMove = new AtomicDouble(0);
+
     /**
      * Maps from vertices to indices.
      */
@@ -85,7 +87,6 @@ public class FastOrganicLayout {
 
     private boolean debug;
 
-    boolean minDistanceShortfall = false;
 
     /**
      * Constructs a new fast organic layout.
@@ -119,13 +120,22 @@ public class FastOrganicLayout {
      * This is important for layouts that do not find a stable equilibrium.
      */
     void reduceTemperature() {
-        var factor = 0.9;
 
-        if (minDistanceShortfall) {
-            minDistanceShortfall = false;
-            layoutLogger.debug("Compensating min distance shortfall, slower reducing temp {} in iteration {}.", temperature, iteration);
-            factor = 0.97;
+        if (iteration > 0 && maxMove.get() < 1) {
+            layoutLogger.debug("Iteration {}: No more significant movement, reducing temp to zero", iteration);
+            temperature = 0;
         }
+
+        layoutLogger.debug("Iteration {} temp {}: max move {}", iteration, (int) temperature, maxMove.get());
+
+        if (maxMove.get() > maxDistanceLimitSquared) {
+            temperature = 0;
+            throw new LayoutException("Exploding");
+        }
+
+        layoutLogger.recordLocations(centerLocations);
+        var factor = 0.0;
+
         temperature = temperature * factor;
     }
 
@@ -136,16 +146,20 @@ public class FastOrganicLayout {
         // Main iteration loop
         while (temperature > 1) {
 
+            maxMove.set(0D);
+
             // Calculate attractive forces through edges
             calcStrongAttraction();
 
             // Calculate weak attractive forces
             calcWeakAttraction();
 
+            calcPositions();
+
             // Calculate repulsive forces on all vertices
             calcRepulsion();
-
             calcPositions();
+
             reduceTemperature();
             iteration++;
         }
@@ -224,6 +238,7 @@ public class FastOrganicLayout {
         }
 
         calcPositions();
+        layoutLogger.recordLocations(centerLocations);
         temperature = initialTemp;
     }
 
@@ -238,10 +253,8 @@ public class FastOrganicLayout {
      */
     void calcPositions() {
 
-        AtomicDouble maxMove = new AtomicDouble(0);
-
         final int vertexCount = nodes.size();
-        final double limit = maxDistanceLimit * 10;
+        final double limit = maxDistanceLimit * 2;
         var tempFactor = temperature / initialTemp;
         for (int index = 0; index < vertexCount; index++) {
 
@@ -280,24 +293,11 @@ public class FastOrganicLayout {
                 distances[i][j] = getAbsDistanceBetween(i, j);
                 if (distances[i][j] < minDistanceLimit) {
                     layoutLogger.debug("Iteration {} temp {}: repulsion index {} {} distance shortfall {}/{}", iteration, (int) temperature, i, j, (int) distances[i][j], minDistanceLimit);
-                    minDistanceShortfall = true;
                 }
             }
         }
 
-        if (iteration > 0 && maxMove.get() < 1) {
-            layoutLogger.debug("Iteration {}: No more significant movement, reducing temp to zero", iteration);
-            temperature = 0;
-        }
 
-        layoutLogger.debug("Iteration {} temp {}: max move {}", iteration, (int) temperature, maxMove.get());
-
-        if (maxMove.get() > maxDistanceLimitSquared) {
-            temperature = 0;
-            throw new LayoutException("Exploding");
-        }
-
-        layoutLogger.recordLocations(centerLocations);
     }
 
     /**
@@ -341,11 +341,11 @@ public class FastOrganicLayout {
 
                 Point2D.Double displacement = getAttractionDisplacement(i, j);
 
-                disp[i][0] += displacement.x * 0.1;
-                disp[i][1] += displacement.y * 0.1;
+                disp[i][0] += displacement.x * 0.2;
+                disp[i][1] += displacement.y * 0.2;
 
-                disp[j][0] -= displacement.x * 0.1;
-                disp[j][1] -= displacement.y * 0.1;
+                disp[j][0] -= displacement.x * 0.2;
+                disp[j][1] -= displacement.y * 0.2;
             }
         }
     }
@@ -366,28 +366,21 @@ public class FastOrganicLayout {
             return new Point2D.Double(0, 0);
         }
 
-        final double force = (distance - minDistanceLimit) / distance;
 
         double xDelta = getDimDistanceBetweenCenters(i, j, 0);
-        double xDeltaBetween = Math.abs(xDelta) - radius[i] - radius[j];
-        double displacementX = 0;
-        if (xDeltaBetween > 0) {
-            displacementX = (xDeltaBetween / distance) * force * xDeltaBetween / 4;
-        }
-
         double yDelta = getDimDistanceBetweenCenters(i, j, 1);
-        double yDeltaBetween = Math.abs(yDelta) - radius[i] - radius[j];
-        double displacementY = 0;
-        if (xDeltaBetween > 0) {
-            displacementY = (yDeltaBetween / distance) * force * yDeltaBetween / 4;
-        }
+
+        var totalDisplacement = Math.min(maxDistanceLimit, distance / minDistanceLimit * minDistanceLimit);
+        double v = Math.sqrt(xDelta * xDelta + yDelta * yDelta);
+        double displacementX = Math.abs(xDelta) / v * totalDisplacement;
+        double displacementY = Math.abs(yDelta) / v * totalDisplacement;
 
         if (xDelta > 0)
             displacementX *= -1;
         if (yDelta > 0)
             displacementY *= -1;
 
-        layoutLogger.debug("Attraction {} {} distance {} resulting in force {} : dx {} dy {}", i, j, (int) distance, force, (int) displacementX, (int) displacementY);
+        layoutLogger.debug("Attraction {} {} distance {} resulting  : dx {} dy {}", i, j, (int) distance, (int) displacementX, (int) displacementY);
         return new Point2D.Double(displacementX, displacementY);
     }
 
@@ -430,16 +423,16 @@ public class FastOrganicLayout {
         var dir = -1;
         if (distance < 0) {
             layoutLogger.debug("Iteration {}: Repulsion {} {} overlap detected {}", iteration, i, j, (int) distance);
+            distance = 0.0001;
         }
 
-        var radiuses = radius[i] + radius[j];
         double xDelta = getDimDistanceBetweenCenters(i, j, 0);
         double yDelta = getDimDistanceBetweenCenters(i, j, 1);
 
-        double xFactor = 1 - Math.max(0, Math.abs(xDelta) - radiuses) / (maxDistanceLimit - minDistanceLimit);
-        double yFactor = 1 - Math.max(0,  Math.abs(yDelta) - radiuses) / (maxDistanceLimit - minDistanceLimit);
-        double displacementX = Math.min(maxDistanceLimit, xFactor * maxDistanceLimit) * dir / 2;
-        double displacementY = Math.min(maxDistanceLimit, yFactor * maxDistanceLimit) * dir / 2;
+        var totalDisplacement = Math.min(maxDistanceLimit, minDistanceLimit / distance * maxDistanceLimit);
+        double v = Math.sqrt(xDelta * xDelta + yDelta * yDelta);
+        double displacementX = Math.abs(yDelta) / v * totalDisplacement * dir;
+        double displacementY = Math.abs(xDelta) / v * totalDisplacement * dir;
 
         layoutLogger.debug("Iteration {}: Repulsion {} {} distance {} resulting in : dx {} dy {}", iteration, i, j, (int) distance, (int) displacementX, (int) displacementY);
         return new Point2D.Double(displacementX, displacementY);

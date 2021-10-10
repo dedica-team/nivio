@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
+
 /**
  * Only for debugging purposes.
  */
@@ -77,10 +79,20 @@ class LayoutLogger {
         });
         List<ContainerTag> paths = pathCoords.values().stream()
                 .map(strings -> SvgTagCreator.path()
-                        .attr("d", "M " + String.join(" L ", strings) )
+                        .attr("d", "M " + String.join(" L ", strings))
                         .attr("stroke", "black")
                         .attr("stroke-width", 5)
                         .attr("fill", "none")
+                )
+                .collect(Collectors.toList());
+
+        var endPoints = locations.get(locations.size() - 1).centerLocations;
+        List<ContainerTag> points = Arrays.stream(endPoints)
+                .map(doubles -> SvgTagCreator.circle()
+                        .attr("cx", doubles[0])
+                        .attr("cy", doubles[1])
+                        .attr("r", 10)
+                        .attr("fill", "red")
                 )
                 .collect(Collectors.toList());
 
@@ -93,7 +105,8 @@ class LayoutLogger {
                 .attr("width", width)
                 .attr("height", height)
                 .attr("viewBox", minX.get() + " " + minY.get() + " " + width + " " + height)
-                .with(paths);
+                .with(paths)
+                .with(points);
 
         String content = svg.render();
         BufferedWriter writer = new BufferedWriter(new FileWriter(out));
