@@ -1,16 +1,15 @@
 package de.bonndan.nivio.output.layout;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.model.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.bonndan.nivio.model.LandscapeConfig;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+
 
 /**
  * Fast organic layout algorithm.
@@ -19,7 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class FastOrganicLayout {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FastOrganicLayout.class);
+    private final LayoutLogger layoutLogger;
 
     private final List<LayoutedComponent> nodes;
 
@@ -40,9 +39,9 @@ public class FastOrganicLayout {
     private final double initialTemp;
 
     /**
-     * Cached version of <minDistanceLimit> squared.
+     * Cached version of <maxDistanceLimit> squared.
      */
-    double minDistanceLimitSquared = 0;
+    double maxDistanceLimitSquared = 0;
 
     /**
      * Temperature to limit displacement at later stages of layout.
@@ -106,6 +105,7 @@ public class FastOrganicLayout {
         this.maxDistanceLimit = maxDistanceLimit * maxDistFactor;
 
         this.initialTemp = initialTemp;
+        this.layoutLogger = new LayoutLogger();
     }
 
     public void setDebug(boolean debug) {
@@ -119,11 +119,11 @@ public class FastOrganicLayout {
      * This is important for layouts that do not find a stable equilibrium.
      */
     void reduceTemperature() {
-        var factor = 0.8;
+        var factor = 0.9;
 
         if (minDistanceShortfall) {
             minDistanceShortfall = false;
-            LOGGER.info("Compensating min distance shortfall, slower reducing temp {} in iteration {}.", temperature, iteration);
+            layoutLogger.debug("Compensating min distance shortfall, slower reducing temp {} in iteration {}.", temperature, iteration);
             factor = 0.97;
         }
         temperature = temperature * factor;
@@ -165,7 +165,7 @@ public class FastOrganicLayout {
         distances = new double[n][n];
         neighbours = new int[n][];
         radius = new double[n];
-        minDistanceLimitSquared = minDistanceLimit * minDistanceLimit;
+        maxDistanceLimitSquared = maxDistanceLimit * maxDistanceLimit;
 
         // Create a map of vertices first. This is required for the array of
         // arrays called neighbours which holds, for each vertex, a list of
@@ -210,9 +210,7 @@ public class FastOrganicLayout {
             List<Component> opposites = this.nodes.get(i).getOpposites();
 
             neighbours[i] = new int[opposites.size()];
-            if (debug) {
-                LOGGER.debug("Bounds {} has {} neighbours", component, opposites.size());
-            }
+            layoutLogger.debug("Bounds {} has {} neighbours", component, opposites.size());
             for (int j = 0; j < opposites.size(); j++) {
                 Integer index = indices.get(getBoundsForComponents(opposites.get(j)));
 
@@ -235,19 +233,31 @@ public class FastOrganicLayout {
 
     /**
      * Takes the displacements calculated for each cell and applies them to the local cache of cell positions.
+     *
+     * Movement is limited to double max dist limit in each direction for an iteration.
      */
     void calcPositions() {
 
         AtomicDouble maxMove = new AtomicDouble(0);
 
         final int vertexCount = nodes.size();
+        final double limit = maxDistanceLimit * 10;
         var tempFactor = temperature / initialTemp;
         for (int index = 0; index < vertexCount; index++) {
 
             double newXDisp = disp[index][0] * tempFactor;
+            if (newXDisp > limit)
+                newXDisp = limit;
+            if (newXDisp < -limit)
+                newXDisp = -limit;
             if (Math.abs(newXDisp) > maxMove.get())
                 maxMove.set(Math.abs(newXDisp));
+
             double newYDisp = disp[index][1] * tempFactor;
+            if (newYDisp > limit)
+                newYDisp = limit;
+            if (newYDisp < -limit)
+                newYDisp = -limit;
             if (Math.abs(newYDisp) > maxMove.get())
                 maxMove.set(Math.abs(newYDisp));
 
@@ -259,8 +269,7 @@ public class FastOrganicLayout {
             centerLocations[index][0] += newXDisp;
             centerLocations[index][1] += newYDisp;
 
-            if (debug)
-                LOGGER.debug("Moving {} by {} {} to {} {}", index, (int) newXDisp, (int) newYDisp, (int) centerLocations[index][0], (int) centerLocations[index][1]);
+            layoutLogger.debug("Moving {} by {} {} to {} {}", index, (int) newXDisp, (int) newYDisp, (int) centerLocations[index][0], (int) centerLocations[index][1]);
         }
 
         for (int i = 0; i < vertexCount; i++) {
@@ -268,23 +277,27 @@ public class FastOrganicLayout {
                 if (j == i) {
                     continue;
                 }
-                distances[i][j] = getDistanceBetween(i, j);
-                if (Math.abs(distances[i][j]) < minDistanceLimit) {
-                    if (debug) {
-                        LOGGER.debug("Iteration {} temp {}: repulsion index {} {} distance shortfall {}/{}", iteration, (int) temperature, i, j, (int) distances[i][j], minDistanceLimit);
-                    }
+                distances[i][j] = getAbsDistanceBetween(i, j);
+                if (distances[i][j] < minDistanceLimit) {
+                    layoutLogger.debug("Iteration {} temp {}: repulsion index {} {} distance shortfall {}/{}", iteration, (int) temperature, i, j, (int) distances[i][j], minDistanceLimit);
                     minDistanceShortfall = true;
                 }
             }
         }
 
         if (iteration > 0 && maxMove.get() < 1) {
-            LOGGER.debug("Iteration {}: No more significant movement, reducing temp to zero", iteration);
+            layoutLogger.debug("Iteration {}: No more significant movement, reducing temp to zero", iteration);
             temperature = 0;
         }
-        if (debug)
-            LOGGER.debug("Iteration {} temp {}: max move {}", iteration, (int) temperature, maxMove.get());
 
+        layoutLogger.debug("Iteration {} temp {}: max move {}", iteration, (int) temperature, maxMove.get());
+
+        if (maxMove.get() > maxDistanceLimitSquared) {
+            temperature = 0;
+            throw new LayoutException("Exploding");
+        }
+
+        layoutLogger.recordLocations(centerLocations);
     }
 
     /**
@@ -322,12 +335,9 @@ public class FastOrganicLayout {
         for (int i = 0; i < vertexCount; i++) {
             for (int j = i; j < vertexCount; j++) {
 
-                if (j == i) {
+                if (j == i || distances[i][j] < maxDistanceLimit) {
                     continue;
                 }
-
-                if (distances[i][j] < maxDistanceLimit)
-                    continue;
 
                 Point2D.Double displacement = getAttractionDisplacement(i, j);
 
@@ -352,7 +362,7 @@ public class FastOrganicLayout {
         double distance = distances[i][j];
 
         if (distance <= minDistanceLimit) {
-            LOGGER.debug("Attraction {} {} distance {} is below min distance", i, j, (int) distance);
+            layoutLogger.debug("Iteration {}: Attraction {} {} distance {} is below min distance", iteration, i, j, distance);
             return new Point2D.Double(0, 0);
         }
 
@@ -372,13 +382,12 @@ public class FastOrganicLayout {
             displacementY = (yDeltaBetween / distance) * force * yDeltaBetween / 4;
         }
 
-
         if (xDelta > 0)
             displacementX *= -1;
         if (yDelta > 0)
             displacementY *= -1;
 
-        LOGGER.debug("Attraction {} {} distance {} resulting in force is {}: dx {} dy {}", i, j, (int) distance, (int) force, (int) displacementX, (int) displacementY);
+        layoutLogger.debug("Attraction {} {} distance {} resulting in force {} : dx {} dy {}", i, j, (int) distance, force, (int) displacementX, (int) displacementY);
         return new Point2D.Double(displacementX, displacementY);
     }
 
@@ -413,23 +422,26 @@ public class FastOrganicLayout {
      */
     Point2D.Double getRepulsionDisplacement(int i, int j) {
         double distance = distances[i][j];
-        if (Math.abs(distance) > maxDistanceLimit) {
+        if (distance > maxDistanceLimit) {
             // Ignore vertices too far apart
             return new Point2D.Double(0, 0);
         }
 
-        var factor = (maxDistanceLimit - Math.abs(distance)) / maxDistanceLimit;
-        if (distance < 0)
-            factor *= -1;
+        var dir = -1;
+        if (distance < 0) {
+            layoutLogger.debug("Iteration {}: Repulsion {} {} overlap detected {}", iteration, i, j, (int) distance);
+        }
 
-        double force = maxDistanceLimit * factor;
-
+        var radiuses = radius[i] + radius[j];
         double xDelta = getDimDistanceBetweenCenters(i, j, 0);
         double yDelta = getDimDistanceBetweenCenters(i, j, 1);
-        double displacementX = (xDelta / distance) * force / 4;
-        double displacementY = (yDelta / distance) * force / 4;
 
-        LOGGER.debug("Iteration {}: Repulsion {} {} distance {} resulting in force is {}: dx {} dy {}", iteration, i, j, (int) distance, (int) force, (int) displacementX, (int) displacementY);
+        double xFactor = 1 - Math.max(0, Math.abs(xDelta) - radiuses) / (maxDistanceLimit - minDistanceLimit);
+        double yFactor = 1 - Math.max(0,  Math.abs(yDelta) - radiuses) / (maxDistanceLimit - minDistanceLimit);
+        double displacementX = Math.min(maxDistanceLimit, xFactor * maxDistanceLimit) * dir / 2;
+        double displacementY = Math.min(maxDistanceLimit, yFactor * maxDistanceLimit) * dir / 2;
+
+        layoutLogger.debug("Iteration {}: Repulsion {} {} distance {} resulting in : dx {} dy {}", iteration, i, j, (int) distance, (int) displacementX, (int) displacementY);
         return new Point2D.Double(displacementX, displacementY);
     }
 
@@ -439,8 +451,9 @@ public class FastOrganicLayout {
      *
      * @param i index
      * @param j index
+     * @return positive if some distance between is radius, negative if overlap
      */
-    double getDistanceBetween(int i, int j) {
+    double getAbsDistanceBetween(int i, int j) {
         double xDelta = centerLocations[i][0] - centerLocations[j][0];
         double yDelta = centerLocations[i][1] - centerLocations[j][1];
 
@@ -512,11 +525,15 @@ public class FastOrganicLayout {
                 if (j == i) {
                     continue;
                 }
-                double deltaLengthWithRadius = getDistanceBetween(i, j);
+                double deltaLengthWithRadius = getAbsDistanceBetween(i, j);
                 if (Math.abs(deltaLengthWithRadius) < minDistanceLimit * 0.9) {
                     throw new IllegalStateException(String.format("Min distance shortfall of %s/%s for i=%d j=%d", deltaLengthWithRadius, minDistanceLimit, i, j));
                 }
             }
         }
+    }
+
+    public LayoutLogger getLayoutLogger() {
+        return layoutLogger;
     }
 }
