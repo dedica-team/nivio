@@ -20,7 +20,7 @@ public class LifecycleKPI extends CustomKPI {
         super();
         label = Label.lifecycle.name();
         msgFunction = component -> Optional.ofNullable(Lifecycle.from(valueFunction.apply(component)))
-                .map(lifecycle -> "Phase: " + lifecycle.name().replace("_", " "))
+                .map(lifecycle -> "phase: " + lifecycle.name().replace("_", " "))
                 .orElse("unknown");
 
         matchers = Map.of(

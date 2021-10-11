@@ -91,7 +91,7 @@ public class ScalingKPI extends AbstractKPI {
         }
 
         if (scaleValue == 1 && (usedAsProvider > 1)) {
-            return List.of(new StatusValue(assessmentIdentifier, Label.scale.name(), Status.YELLOW, String.format("Unscaled, but %d items depend on it.", usedAsProvider)));
+            return List.of(new StatusValue(assessmentIdentifier, Label.scale.name(), Status.YELLOW, String.format("unscaled, but %d items depend on it", usedAsProvider)));
         }
 
         if (scaleValue > 0) {
