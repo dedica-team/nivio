@@ -16,13 +16,11 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -66,7 +64,7 @@ public class SourceReferencesResolverTest {
 
         ItemDescription mapped = landscapeDescription.getItemDescriptions().pick("blog-server", null);
         assertNotNull(mapped);
-        assertEquals("blog1", mapped.getLabel(Label.shortname));
+        assertEquals("blog1", mapped.getLabel(Label.short_name));
         assertEquals("name2", mapped.getName());
     }
 

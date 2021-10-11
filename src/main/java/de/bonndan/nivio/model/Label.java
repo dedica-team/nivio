@@ -42,7 +42,7 @@ public enum Label {
 
     security("Description of the item's security status."),
 
-    shortname("Abbreviated name."),
+    short_name("Abbreviated name."),
 
     software("Software/OS name."),
 

@@ -115,14 +115,14 @@ public abstract class HtmlGenerator {
 
 
                         //statuses
-                        iff(!statusValues.isEmpty(), h4("Status information")),
+                        iff(!statusValues.isEmpty(), h4("Status")),
                         dl().with(
                                 statusValues.stream().map(statusItem ->
                                         join(
                                                 dt(FormatUtils.nice(
-                                                        statusItem.getField().endsWith("." + item.getIdentifier())
-                                                                ? statusItem.getField().replace("." + item.getIdentifier(), "")
-                                                                : statusItem.getField()
+                                                                statusItem.getField().endsWith("." + item.getIdentifier())
+                                                                        ? statusItem.getField().replace("." + item.getIdentifier(), "")
+                                                                        : statusItem.getField()
                                                         ) + " "
                                                 ).with(
                                                         span(" " + statusItem.getStatus() + " ")
@@ -197,10 +197,6 @@ public abstract class HtmlGenerator {
                 .filter(filter::apply)
                 .map(mapEntry -> {
                     String key = StringUtils.capitalize(mapEntry.getKey());
-                    if (key.equals(StringUtils.capitalize(Label.shortname.name()))) {
-                        key = Label.shortname.meaning;
-                    }
-
                     return li(String.format("%s: %s", key, nice(mapEntry.getValue().replace(Labeled.PREFIX_VALUE_DELIMITER, " "))));
                 })
                 .collect(Collectors.toList());

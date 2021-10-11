@@ -1,55 +1,55 @@
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import React, {ReactElement, useContext, useEffect, useState} from 'react';
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  AppBar,
-  Card,
-  CardHeader,
-  Link,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Tabs,
-  Theme,
-  Typography,
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    AppBar,
+    Card,
+    CardHeader,
+    Link,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    Tab,
+    Table,
+    TableBody,
+    TableCell,
+    TableRow,
+    Tabs,
+    Theme,
+    Typography,
 } from '@material-ui/core';
-import { get } from '../../../../utils/API/APIClient';
+import {get} from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
-import { IAssessmentProps, IItem } from '../../../../interfaces';
-import { getItem, getLabels, getLabelsWithPrefix } from '../../Utils/utils';
+import {IAssessmentProps, IItem} from '../../../../interfaces';
+import {getItem, getLabels, getLabelsWithPrefix} from '../../Utils/utils';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
-import { Close, Details, ExpandMore, Info, MoreVertSharp, Power } from '@material-ui/icons';
+import {Close, Details, ExpandMore, Info, MoreVertSharp, Power} from '@material-ui/icons';
 import Chip from '@material-ui/core/Chip';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
+import {createStyles, makeStyles} from '@material-ui/core/styles';
+import {LocateFunctionContext} from '../../../../Context/LocateFunctionContext';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import ItemAvatar from './ItemAvatar';
-import { LandscapeContext } from '../../../../Context/LandscapeContext';
-import { a11yProps, TabPanel } from '../../Utils/TabUtils';
+import {LandscapeContext} from '../../../../Context/LandscapeContext';
+import {a11yProps, TabPanel} from '../../Utils/TabUtils';
 
 const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    labels: {
-      backgroundColor: theme.palette.primary.main,
-    },
-    tag: {
-      backgroundColor: theme.palette.primary.dark,
-      padding: 0,
-      fontSize: '0.7rem',
-      height: 16,
-    },
-    interfaces: {
-      backgroundColor: theme.palette.primary.main,
-    },
-  })
+    createStyles({
+        labels: {
+            backgroundColor: theme.palette.primary.main,
+        },
+        tag: {
+            backgroundColor: theme.palette.primary.dark,
+            padding: 0,
+            fontSize: '0.7rem',
+            height: 16,
+        },
+        interfaces: {
+            backgroundColor: theme.palette.primary.main,
+        },
+    })
 );
 
 interface Props {
@@ -379,13 +379,13 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
               </Table>
 
               {assessmentStatus.length > 0 ? (
-                <>
-                  <br />
-                  <Typography variant={'h6'}>Assessment</Typography>
-                  <Table>
-                    <TableBody>{assessmentStatus}</TableBody>
-                  </Table>
-                </>
+                  <>
+                      <br/>
+                      <Typography variant={'h6'}>Status</Typography>
+                      <Table>
+                          <TableBody>{assessmentStatus}</TableBody>
+                      </Table>
+                  </>
               ) : null}
             </TabPanel>
 

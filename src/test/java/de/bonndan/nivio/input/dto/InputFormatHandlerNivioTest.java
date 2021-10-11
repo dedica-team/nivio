@@ -18,9 +18,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class InputFormatHandlerNivioTest {
@@ -45,7 +43,7 @@ class InputFormatHandlerNivioTest {
         assertEquals("Demo Blog", service.getName());
         assertEquals("to be replaced", service.getLabel(Label.note));
         assertEquals("blog-server", service.getIdentifier());
-        assertEquals("blog", service.getLabel(Label.shortname));
+        assertEquals("blog", service.getLabel(Label.short_name));
         assertEquals("1.0", service.getLabel(Label.version));
         assertEquals("public", service.getLabel(Label.visibility));
         assertEquals("Wordpress", service.getLabel(Label.software));

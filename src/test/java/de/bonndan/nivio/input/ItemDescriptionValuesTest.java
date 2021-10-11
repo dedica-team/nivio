@@ -188,7 +188,7 @@ class ItemDescriptionValuesTest {
 
         ItemDescriptionValues.assignNotNull(sd1, increment);
 
-        assertEquals(Lifecycle.END_OF_LIFE.name().replace("_", " "), sd1.getLabel(Label.lifecycle));
+        assertEquals(Lifecycle.END_OF_LIFE.name(), sd1.getLabel(Label.lifecycle));
     }
 
     @Test

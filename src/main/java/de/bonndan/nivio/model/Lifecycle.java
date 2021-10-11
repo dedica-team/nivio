@@ -45,9 +45,4 @@ public enum Lifecycle {
         return END_OF_LIFE.name().equals(labeled.getLabel(Label.lifecycle));
     }
 
-
-    @Override
-    public String toString() {
-        return super.toString().replace("_", " ");
-    }
 }
