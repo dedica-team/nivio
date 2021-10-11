@@ -24,7 +24,7 @@ public class LandscapeObserverPool {
     private final Map<InputFormatObserver, ScheduledFuture<?>> scheduledTasks = new IdentityHashMap<>();
     private final ObserverConfigProperties observerConfigProperties;
 
-    public LandscapeObserverPool(@NonNull final ThreadPoolTaskScheduler taskScheduler, ObserverConfigProperties observerConfigProperties) {
+    public LandscapeObserverPool(@NonNull final ThreadPoolTaskScheduler taskScheduler, @NonNull ObserverConfigProperties observerConfigProperties) {
         this.taskScheduler = Objects.requireNonNull(taskScheduler);
         this.observerConfigProperties = observerConfigProperties;
     }

@@ -14,6 +14,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * The KubernetesObserver Class is intended to detect changes in the Kubernetes cluster.
+ * To achieve this the class compares two HashSets containing Kubernetes Items with each other.
+ * The run method is executed once every second
+ */
 
 public class KubernetesObserver implements InputFormatObserver {
 

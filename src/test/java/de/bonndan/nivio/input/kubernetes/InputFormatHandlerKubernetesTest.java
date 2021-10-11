@@ -112,6 +112,15 @@ class InputFormatHandlerKubernetesTest {
 
     @Test
     void getObserver() {
-        assertThat(Objects.requireNonNull(inputFormatHandlerKubernetes.getObserver(Mockito.mock(ApplicationEventPublisher.class), Mockito.mock(Landscape.class), Mockito.mock(SourceReference.class))).getClass()).isEqualTo(KubernetesObserver.class);
+        //given
+        var applicationEventPublisher = Mockito.mock(ApplicationEventPublisher.class);
+        var landscape = Mockito.mock(Landscape.class);
+        var sourceReference = Mockito.mock(SourceReference.class);
+
+        //when
+        var observerClass = Objects.requireNonNull(inputFormatHandlerKubernetes.getObserver(applicationEventPublisher, landscape, sourceReference)).getClass();
+
+        //then
+        assertThat(observerClass).isEqualTo(KubernetesObserver.class);
     }
 }
