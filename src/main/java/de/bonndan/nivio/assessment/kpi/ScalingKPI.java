@@ -43,7 +43,7 @@ public class ScalingKPI extends AbstractKPI {
 
     @Override
     public String getDescription() {
-        return "Turns yellow if the 'scale' label is zero. Turns orange or red if it is also is a data sink or provider.";
+        return "Turns yellow if the 'scale' label is zero, orange if it is a data sink, and red if it is a provider.";
     }
 
     @NonNull

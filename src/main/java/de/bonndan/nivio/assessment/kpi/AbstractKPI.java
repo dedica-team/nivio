@@ -49,7 +49,7 @@ public abstract class AbstractKPI implements KPI {
     public List<StatusValue> getStatusValues(Assessable component) {
 
         if (valueFunction == null) {
-            throw new IllegalStateException("Value function not initialized ");
+            throw new IllegalStateException("Value function not initialized.");
         }
         String value = valueFunction.apply(component);
         String message = msgFunction.apply(component);
