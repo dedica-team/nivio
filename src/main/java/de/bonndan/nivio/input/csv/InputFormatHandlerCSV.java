@@ -13,9 +13,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.Relation;
-import de.bonndan.nivio.observation.InputFormatObserver;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.StringReader;
@@ -98,12 +96,6 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
         });
 
         landscapeDescription.mergeItems(itemDescriptions);
-    }
-
-    @Override
-    @Nullable
-    public InputFormatObserver getObserver(@NonNull InputFormatObserver inner, @NonNull SourceReference sourceReference) {
-        return inner;
     }
 
     private CSVReader getReader(SourceReference reference, String content) {

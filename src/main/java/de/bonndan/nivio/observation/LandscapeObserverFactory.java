@@ -65,30 +65,32 @@ public class LandscapeObserverFactory {
             if (baseUrl.isEmpty()) {
                 LOGGER.info("Cannot create observer for landscape '{}' source '{}' ", description.getIdentifier(), url.get());
             } else {
-                observers.add(getObserver(landscape, url.get()));
+                observers.add(getDefaultObserver(landscape, url.get()));
             }
         }
 
         for (SourceReference sourceReference : description.getSourceReferences()) {
             InputFormatHandler inputFormatHandler = inputFormatHandlerFactory.getInputFormatHandler(sourceReference);
-            InputFormatObserver observer;
+            URL combined;
             try {
-                observer = getObserver(landscape, new URL(URLHelper.combine(baseUrl.orElse(null), sourceReference.getUrl())));
+                combined = new URL(URLHelper.combine(baseUrl.orElse(null), sourceReference.getUrl()));
             } catch (MalformedURLException e) {
                 LOGGER.warn("Failed to create observer for base url {} and source reference {}", baseUrl.orElse(null), sourceReference.getUrl());
                 continue;
             }
+            InputFormatObserver observer = inputFormatHandler.getObserver(eventPublisher, landscape, sourceReference);
 
-            observer = inputFormatHandler.getObserver(observer, sourceReference);
-            if (observer != null) {
-                observers.add(observer);
+            if (observer == null) {
+                observer = getDefaultObserver(landscape, combined);
             }
+
+            observers.add(observer);
         }
 
         return observers;
     }
 
-    private InputFormatObserver getObserver(Landscape landscape, URL url) {
+    private InputFormatObserver getDefaultObserver(Landscape landscape, URL url) {
         if (URLHelper.isLocal(url)) {
             try {
                 return new LocalFileObserver(landscape, eventPublisher, new File(url.toURI()));
