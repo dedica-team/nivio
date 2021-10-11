@@ -7,10 +7,20 @@ import org.springframework.util.StringUtils;
 
 public enum Lifecycle {
 
-    PLANNED,
-    INTEGRATION,
-    PRODUCTION,
-    END_OF_LIFE;
+    PLANNED("planned"),
+    INTEGRATION("integration"),
+    PRODUCTION("production"),
+    END_OF_LIFE("end of life");
+
+    public String lifecycleString;
+    Lifecycle(String name) {
+        this.lifecycleString = name;
+    }
+
+    @Override
+    public String toString(){
+        return lifecycleString;
+    }
 
     @JsonCreator
     @Nullable
