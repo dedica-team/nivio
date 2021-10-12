@@ -1,6 +1,7 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
@@ -13,13 +14,21 @@ public enum Lifecycle {
     END_OF_LIFE("end of life");
 
     public String lifecycleString;
-    Lifecycle(String name) {
-        this.lifecycleString = name;
+
+    Lifecycle(@NonNull String lifecycleString) {
+        this.lifecycleString = requireNonNullAndNonEmpty(lifecycleString);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return lifecycleString;
+    }
+
+    public static String requireNonNullAndNonEmpty(String string) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(string)) {
+            throw new IllegalArgumentException("The string argument of the lifecycle constructor is null or empty.");
+        }
+        return string;
     }
 
     @JsonCreator

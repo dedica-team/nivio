@@ -19,13 +19,14 @@ public class LifecycleKPI extends CustomKPI {
     public LifecycleKPI() {
         super();
         label = Label.lifecycle.name();
+
         msgFunction = component -> Optional.ofNullable(Lifecycle.from(valueFunction.apply(component)))
-                .map(lifecycle -> "phase: " + lifecycle.name().replace("_", " "))
+                .map(lifecycle -> "phase: " + lifecycle)
                 .orElse("unknown");
 
         matchers = Map.of(
-                Status.GREEN, List.of(Lifecycle.PRODUCTION.name()),
-                Status.ORANGE, List.of(Lifecycle.END_OF_LIFE.name().replace("_", " "))
+                Status.GREEN, List.of(Lifecycle.PRODUCTION.toString()),
+                Status.ORANGE, List.of(Lifecycle.END_OF_LIFE.toString())
         );
 
         setDescription("Evaluates the lifecycle label for known values (e.g. PLANNED, PRODUCTION, etc.).");
