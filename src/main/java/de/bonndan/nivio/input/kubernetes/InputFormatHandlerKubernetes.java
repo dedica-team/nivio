@@ -8,7 +8,9 @@ import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.kubernetes.itemadapters.PersistentVolumeItemAdapter;
 import de.bonndan.nivio.input.kubernetes.itemadapters.PodItemAdapter;
 import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.observation.InputFormatObserver;
+import de.bonndan.nivio.observation.KubernetesObserver;
 import io.fabric8.kubernetes.api.model.OwnerReference;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
@@ -17,6 +19,7 @@ import io.fabric8.kubernetes.client.KubernetesClientException;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 
 import java.net.URL;
@@ -54,7 +57,6 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
      */
     @Override
     public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
-
         this.client = getClient(reference.getUrl());
 
         try {
@@ -132,7 +134,7 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
         itemList.forEach(ownedItem -> {
             var ownerList = itemList.stream().filter(
                     ownerItem -> CollectionUtils.intersection(Objects.requireNonNullElse(ownedItem.getItemAdapter().getLabels(), new HashMap<String, String>()).values(),
-                            Objects.requireNonNullElse(ownerItem.getItemAdapter().getLabels(), new HashMap<String, String>()).values())
+                                    Objects.requireNonNullElse(ownerItem.getItemAdapter().getLabels(), new HashMap<String, String>()).values())
                             .size() >= K8sJsonParser.getMinMatchingLevel() && ownerItem.getLevelDecorator().getLevel() != -1 && ownedItem.getLevelDecorator().getLevel() != -1 &&
                             (ownerItem.getLevelDecorator().getLevel() - ownedItem.getLevelDecorator().getLevel()) == 1).collect(Collectors.toList());
             ownerList.forEach(ownedItem::addOwner);
@@ -170,8 +172,8 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
     }
 
     @Override
-    public InputFormatObserver getObserver(@NonNull final InputFormatObserver inner, @NonNull final SourceReference sourceReference) {
-        return null;
+    public InputFormatObserver getObserver(@NonNull final ApplicationEventPublisher eventPublisher, @NonNull final Landscape landscape, @NonNull final SourceReference sourceReference) {
+        return new KubernetesObserver(landscape, eventPublisher, this.client);
     }
 
     private KubernetesClient getClient(String context) {

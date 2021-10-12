@@ -17,15 +17,16 @@ import java.util.concurrent.ScheduledFuture;
  */
 public class LandscapeObserverPool {
 
+
     private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeObserverPool.class);
 
     private final ThreadPoolTaskScheduler taskScheduler;
     private final Map<InputFormatObserver, ScheduledFuture<?>> scheduledTasks = new IdentityHashMap<>();
-    private final long delay;
+    private final ObserverConfigProperties observerConfigProperties;
 
-    public LandscapeObserverPool(@NonNull final ThreadPoolTaskScheduler taskScheduler, long delay) {
+    public LandscapeObserverPool(@NonNull final ThreadPoolTaskScheduler taskScheduler, @NonNull ObserverConfigProperties observerConfigProperties) {
         this.taskScheduler = Objects.requireNonNull(taskScheduler);
-        this.delay = delay;
+        this.observerConfigProperties = observerConfigProperties;
     }
 
     /**
@@ -45,7 +46,8 @@ public class LandscapeObserverPool {
 
         observers.forEach(inputFormatObserver -> {
             try {
-                ScheduledFuture<?> scheduledFuture = taskScheduler.scheduleWithFixedDelay(inputFormatObserver, delay);
+                ScheduledFuture<?> scheduledFuture = taskScheduler.scheduleWithFixedDelay(inputFormatObserver,
+                        observerConfigProperties.getScanDelay().getOrDefault(inputFormatObserver.getClass().getSimpleName(), 30) * 1000L);
                 scheduledTasks.put(inputFormatObserver, scheduledFuture);
             } catch (TaskRejectedException e) {
                 LOGGER.error("Failed to schedule observer: " + e.getMessage(), e);

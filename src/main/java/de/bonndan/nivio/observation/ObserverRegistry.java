@@ -23,19 +23,23 @@ public class ObserverRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObserverRegistry.class);
 
+
     private final Map<String, LandscapeObserverPool> observerMap = new ConcurrentHashMap<>();
 
     private final LandscapeObserverFactory landscapeObserverPoolFactory;
     private final ThreadPoolTaskScheduler taskScheduler;
     private final IndexingDispatcher indexingDispatcher;
+    private final ObserverConfigProperties observerConfigProperties;
 
     public ObserverRegistry(LandscapeObserverFactory landscapeObserverPoolFactory,
                             ThreadPoolTaskScheduler taskScheduler,
-                            IndexingDispatcher indexingDispatcher
+                            IndexingDispatcher indexingDispatcher,
+                            ObserverConfigProperties observerConfigProperties
     ) {
         this.landscapeObserverPoolFactory = landscapeObserverPoolFactory;
         this.taskScheduler = taskScheduler;
         this.indexingDispatcher = indexingDispatcher;
+        this.observerConfigProperties = observerConfigProperties;
     }
 
     /**
@@ -48,16 +52,9 @@ public class ObserverRegistry {
         LandscapeDescription landscapeDescription = event.getInput();
         Landscape landscape = Objects.requireNonNull(event.getLandscape());
 
-        if (landscapeDescription == null) {
-            String msg = String.format("No landscape description (input) available. Landscape %s could not be registered for observation", landscape.getIdentifier());
-            landscape.getLog().warn(msg);
-            LOGGER.warn(msg);
-            return;
-        }
-
         LandscapeObserverPool pool = observerMap.computeIfAbsent(landscape.getIdentifier(), s -> {
             LOGGER.info("Registered landscape {} for observation.", landscapeDescription);
-            return new LandscapeObserverPool(taskScheduler, 30 * 1000);
+            return new LandscapeObserverPool(taskScheduler, observerConfigProperties);
         });
         pool.updateObservers(landscapeObserverPoolFactory.getObserversFor(landscape, landscapeDescription));
     }
