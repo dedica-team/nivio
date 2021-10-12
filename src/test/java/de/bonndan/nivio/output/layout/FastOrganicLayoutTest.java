@@ -241,7 +241,7 @@ class FastOrganicLayoutTest {
         layout.reduceTemperature();
 
         //then
-        assertThat(layout.temperature).isEqualTo(800);
+        assertThat(layout.temperature).isEqualTo(900);
     }
 
     @Test
@@ -272,8 +272,8 @@ class FastOrganicLayoutTest {
         layout.centerLocations[0][0] = 0;
         layout.centerLocations[0][1] = 0;
 
-        layout.centerLocations[1][0] = 100;
-        layout.centerLocations[1][1] = 50;
+        layout.centerLocations[1][0] = 1000;
+        layout.centerLocations[1][1] = 500;
 
         layout.disp[0][0] = 100;
         layout.disp[0][1] = 100;
@@ -283,8 +283,62 @@ class FastOrganicLayoutTest {
         layout.calcPositions();
 
         //then
-        assertThat(layout.distances[0][1]).isEqualTo(-49, Offset.offset(1D));
-        assertThat(layout.distances[1][0]).isEqualTo(-49, Offset.offset(1D));
+        assertThat(layout.distances[0][1]).isEqualTo(884, Offset.offset(1D));
+        assertThat(layout.distances[1][0]).isEqualTo(884, Offset.offset(1D));
+    }
+
+    @Test
+    @DisplayName("positioning avoids collisions")
+    void calcPositionsAvoidsCollision() {
+        //given
+        layout.setup();
+
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+
+        layout.centerLocations[1][0] = 100;
+        layout.centerLocations[1][1] = 50;
+
+        layout.disp[0][0] = 100;
+        layout.disp[0][1] = 100;
+
+        layout.radius[0] = 25;
+        layout.radius[1] = 25;
+
+
+        //when
+        layout.calcPositions();
+
+        //then
+        assertThat(layout.distances[0][1]).isGreaterThan(layout.minDistanceLimit);
+        assertThat(layout.distances[1][0]).isGreaterThan(layout.minDistanceLimit);
+    }
+
+    @Test
+    @DisplayName("difficult positioning avoids collisions")
+    void calcPositionsAvoidsCollisionWithHigherRadius() {
+        //given
+        layout.setup();
+
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+
+        layout.centerLocations[1][0] = 100;
+        layout.centerLocations[1][1] = 50;
+
+        layout.disp[0][0] = 100;
+        layout.disp[0][1] = 100;
+
+        layout.radius[0] = 50;
+        layout.radius[1] = 50;
+
+
+        //when
+        layout.calcPositions();
+
+        //then
+        assertThat(layout.distances[0][1]).isGreaterThan(layout.minDistanceLimit);
+        assertThat(layout.distances[1][0]).isGreaterThan(layout.minDistanceLimit);
     }
 
     @Test
@@ -355,6 +409,51 @@ class FastOrganicLayoutTest {
         assertThat(reverse.x).isLessThan(0); //shift in x direction
         assertThat(reverse.y).isLessThan(0); //shift in x direction
     }
+
+    @Test
+    @DisplayName("Movement reduced on collision")
+    void testCollision() {
+        //given
+        layout.setup();
+
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+
+        layout.centerLocations[1][0] = 1000;
+        layout.centerLocations[1][1] = 1000;
+
+        layout.calcPositions(); //recalc
+
+        //when
+        var collisionReductionFactor = layout.getCollisionReductionFactor(0, 990, 990);
+
+        //then
+        assertThat(collisionReductionFactor).isLessThan(1).isEqualTo(0.9, Offset.offset(0.5D));
+
+    }
+
+    @Test
+    @DisplayName("Movement reduced on collision")
+    void testNoCollision() {
+        //given
+        layout.setup();
+
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+
+        layout.centerLocations[1][0] = 1000;
+        layout.centerLocations[1][1] = 1000;
+
+        layout.calcPositions(); //recalc
+
+        //when
+        var collisionReductionFactor = layout.getCollisionReductionFactor(0, 200, 200);
+
+        //then
+        assertThat(collisionReductionFactor).isEqualTo(1);
+
+    }
+
 
     @Test
     void calcWeakAttraction() {
@@ -501,6 +600,7 @@ class FastOrganicLayoutTest {
     void completeExecutionWithThree() {
         //given
         setupThree();
+        layout.setup();
 
         //when
         layout.execute();
