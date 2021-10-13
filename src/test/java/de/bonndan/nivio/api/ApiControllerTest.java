@@ -6,6 +6,7 @@ import de.bonndan.nivio.output.dto.GroupApiModel;
 import de.bonndan.nivio.output.dto.ItemApiModel;
 import de.bonndan.nivio.output.dto.LandscapeApiModel;
 import de.bonndan.nivio.search.ItemIndex;
+import de.bonndan.nivio.util.FrontendMapping;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -24,13 +25,15 @@ class ApiControllerTest {
     IndexingDispatcher indexingDispatcher;
     LandscapeRepository landscapeRepository;
     ApiController apiController;
+    FrontendMapping frontendMapping;
 
     @BeforeEach
     void setUp() {
         linkFactory = Mockito.mock(LinkFactory.class);
         indexingDispatcher = Mockito.mock(IndexingDispatcher.class);
         landscapeRepository = Mockito.mock(LandscapeRepository.class);
-        apiController = new ApiController(landscapeRepository, linkFactory, indexingDispatcher);
+        frontendMapping = Mockito.mock(FrontendMapping.class);
+        apiController = new ApiController(landscapeRepository, linkFactory, indexingDispatcher, frontendMapping);
     }
 
     @Test
@@ -82,7 +85,7 @@ class ApiControllerTest {
         Mockito.when(landscape.getGroup("test")).thenReturn(Optional.of(new Group("test", "test")));
         assertThat(apiController.item("test", "test", "test").getClass()).isEqualTo(ResponseEntity.class);
         assertThat(apiController.item("test", "test", "test").getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(apiController.item("test", "test", "test").getBody()).isEqualToComparingFieldByField(new ItemApiModel(item, landscape.getGroup("test").get()));
+        assertThat(apiController.item("test", "test", "test").getBody()).isEqualToComparingFieldByField(new ItemApiModel(item, landscape.getGroup("test").get(), Map.of()));
     }
 
 

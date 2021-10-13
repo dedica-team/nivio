@@ -64,7 +64,7 @@ public class SourceReferencesResolverTest {
 
         ItemDescription mapped = landscapeDescription.getItemDescriptions().pick("blog-server", null);
         assertNotNull(mapped);
-        assertEquals("blog1", mapped.getLabel(Label.short_name));
+        assertEquals("blog1", mapped.getLabel(Label.shortname));
         assertEquals("name2", mapped.getName());
     }
 

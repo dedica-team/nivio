@@ -60,6 +60,12 @@ observerconfig:
     KubernetesObserver: 1
 
 
+mapping:
+  labelstomap:
+    shortname: short name
+    END_OF_LIFE: end of life
+
+
 gitlab: # add new environment variables
   hostUrl: ${GITLAB_HOST_URL:}
   personalAccessToken: ${GITLAB_PERSONAL_ACCESS_TOKEN:}

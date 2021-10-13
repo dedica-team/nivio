@@ -43,7 +43,7 @@ class ItemApiModelTest {
                 .withColor("#aabbcc")
                 .build();
 
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
 
         //then
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
@@ -59,7 +59,7 @@ class ItemApiModelTest {
                 .withColor("#aabbcc")
                 .build();
 
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
 
         //then
         assertThat(itemApiModel.getColor()).isEqualTo(s1.getColor());
@@ -70,7 +70,7 @@ class ItemApiModelTest {
 
         Item s1 = itemTemplate.build();
         s1.setLabel(Label._icondata, "foo");
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
 
         //then
         assertThat(itemApiModel.getIcon()).isEqualTo(s1.getLabel(Label._icondata));
@@ -79,7 +79,7 @@ class ItemApiModelTest {
     @Test
     void getIdentifier() {
         Item s1 = itemTemplate.build();
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
         assertThat(itemApiModel.getIdentifier()).isEqualTo("a");
     }
@@ -87,7 +87,7 @@ class ItemApiModelTest {
     @Test
     void getFullyQualifiedIdentifier() {
         Item s1 = itemTemplate.build();
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
         assertThat(itemApiModel.getFullyQualifiedIdentifier()).isEqualTo(FullyQualifiedIdentifier.build("l1", "g1", "a"));
     }
@@ -95,7 +95,7 @@ class ItemApiModelTest {
     @Test
     void getName() {
         Item s1 = itemTemplate.build();
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
         assertThat(itemApiModel.getName()).isEqualTo("");
     }
@@ -103,7 +103,7 @@ class ItemApiModelTest {
     @Test
     void getOwner() {
         Item s1 = itemTemplate.build();
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
         assertThat(itemApiModel.getOwner()).isEqualTo("testOwner");
     }
@@ -111,7 +111,7 @@ class ItemApiModelTest {
     @Test
     void getContact() {
         Item s1 = itemTemplate.build();
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
         assertThat(itemApiModel.getContact()).isEqualTo("testContact");
     }
@@ -119,7 +119,7 @@ class ItemApiModelTest {
     @Test
     void getGroup() {
         Item s1 = itemTemplate.build();
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
         assertThat(itemApiModel.getGroup()).isEqualTo("g1");
     }
@@ -127,7 +127,7 @@ class ItemApiModelTest {
     @Test
     void getDescription() {
         Item s1 = itemTemplate.build();
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
         assertThat(itemApiModel.getDescription()).isEqualTo("testDescription");
     }
@@ -135,7 +135,7 @@ class ItemApiModelTest {
     @Test
     void getJSONRelations() {
         Item s1 = itemTemplate.build();
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
         assertThat(itemApiModel.getJSONRelations()).isEqualTo(Map.of());
     }
@@ -143,7 +143,7 @@ class ItemApiModelTest {
     @Test
     void getType() {
         Item s1 = itemTemplate.build();
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
         assertThat(itemApiModel.getType()).isEqualTo("two");
     }
@@ -151,7 +151,7 @@ class ItemApiModelTest {
     @Test
     void getAddress() {
         Item s1 = itemTemplate.build();
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
         assertThat(itemApiModel.getAddress()).isEqualTo("https://dedica.team/");
     }
@@ -159,7 +159,7 @@ class ItemApiModelTest {
     @Test
     void getInterfaces() {
         Item s1 = itemTemplate.build();
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
         assertThat(itemApiModel.getInterfaces()).isEqualTo(Set.of());
     }
@@ -167,7 +167,7 @@ class ItemApiModelTest {
     @Test
     void getTags() {
         Item s1 = itemTemplate.build();
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
         assertThat(itemApiModel.getTags()).isEqualTo(new String[0]);
     }
@@ -175,8 +175,24 @@ class ItemApiModelTest {
     @Test
     void testToString() {
         Item s1 = itemTemplate.build();
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
         assertThat(itemApiModel.toString()).hasToString("l1/g1/a");
+    }
+
+    @Test
+    void testKeyMapping() {
+        Item s1 = itemTemplate.build();
+        s1.setLabel("shortname", "test");
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of("shortname", "short name"));
+        assertThat(itemApiModel.getLabels()).containsKey("short name");
+    }
+
+    @Test
+    void testValueMapping() {
+        Item s1 = itemTemplate.build();
+        s1.setLabel("lifecycle", "END_OF_LIFE");
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of("END_OF_LIFE", "end of life"));
+        assertThat(itemApiModel.getLabels()).containsValue("end of life");
     }
 }

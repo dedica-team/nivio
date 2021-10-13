@@ -18,7 +18,7 @@ public class GroupApiModel extends ComponentApiModel {
     public GroupApiModel(@NonNull final Group group, final Set<Item> items) {
         this.group = Objects.requireNonNull(group);
         this.hateoasLinks.putAll(group.getLinks());
-        this.items = items.stream().map(item -> new ItemApiModel(item, group)).collect(Collectors.toSet());
+        this.items = items.stream().map(item -> new ItemApiModel(item, group, Map.of())).collect(Collectors.toSet());
     }
 
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {

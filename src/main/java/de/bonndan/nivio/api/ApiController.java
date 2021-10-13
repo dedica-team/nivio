@@ -7,6 +7,7 @@ import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.dto.GroupApiModel;
 import de.bonndan.nivio.output.dto.ItemApiModel;
 import de.bonndan.nivio.output.dto.LandscapeApiModel;
+import de.bonndan.nivio.util.FrontendMapping;
 import org.apache.lucene.facet.FacetResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,17 +33,20 @@ public class ApiController {
 
     public static final String PATH = "/api";
 
+
     private final LandscapeRepository landscapeRepository;
     private final LinkFactory linkFactory;
     private final IndexingDispatcher indexingDispatcher;
+    private final Map<String, String> frontendMap;
 
     public ApiController(LandscapeRepository landscapeRepository,
                          LinkFactory linkFactory,
-                         IndexingDispatcher indexingDispatcher
-    ) {
+                         IndexingDispatcher indexingDispatcher,
+                         FrontendMapping frontendMapping) {
         this.landscapeRepository = landscapeRepository;
         this.linkFactory = linkFactory;
         this.indexingDispatcher = indexingDispatcher;
+        this.frontendMap = frontendMapping.getLabelsToMap();
     }
 
     /**
@@ -115,7 +119,7 @@ public class ApiController {
             return ResponseEntity.notFound().build();
         }
         Group group = landscape.getGroup(groupIdentifier).orElseThrow();
-        ItemApiModel apiModel = new ItemApiModel(item.get(), group);
+        ItemApiModel apiModel = new ItemApiModel(item.get(), group, frontendMap);
         linkFactory.setItemSelfLink(apiModel);
         return new ResponseEntity<>(apiModel, HttpStatus.OK);
     }
@@ -169,7 +173,7 @@ public class ApiController {
         Map<String, Group> groups = landscape.getGroups();
         try {
             Set<ItemApiModel> results = landscape.search(query).stream()
-                    .map(item -> new ItemApiModel(item, groups.get(item.getGroup())))
+                    .map(item -> new ItemApiModel(item, groups.get(item.getGroup()), Map.of()))
                     .collect(Collectors.toSet());
             return new ResponseEntity<>(results, HttpStatus.OK);
         } catch (RuntimeException error) {

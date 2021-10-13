@@ -19,11 +19,16 @@ public class ItemApiModel extends ComponentApiModel {
     private final Item item;
     private final String color;
 
-    public ItemApiModel(@NotNull final Item item, @NotNull final Group group) {
+    @JsonIgnore
+    private Map<String, String> labelsToMap;
+
+    public ItemApiModel(@NotNull final Item item, @NotNull final Group group, @NotNull final Map<String, String> labelsToMap) {
         this.item = Objects.requireNonNull(item);
 
         //ensures that the api model inherits the group colors as fallback
         this.color = !StringUtils.hasLength(item.getColor()) ? group.getColor() : item.getColor();
+
+        this.labelsToMap = labelsToMap;
     }
 
     public String getIdentifier() {
@@ -64,7 +69,17 @@ public class ItemApiModel extends ComponentApiModel {
 
     @Override
     public Map<String, String> getLabels() {
-        return getPublicLabels(item.getLabels());
+        var frontendMap = new HashMap<String, String>();
+        for (Map.Entry<String, String> entry : getPublicLabels(item.getLabels()).entrySet()) {
+            if (labelsToMap.containsKey(entry.getKey())) {
+                frontendMap.put(labelsToMap.get(entry.getKey()), entry.getValue());
+            } else if (labelsToMap.containsKey(entry.getValue())) {
+                frontendMap.put(entry.getKey(), labelsToMap.get(entry.getValue()));
+            } else {
+                frontendMap.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return frontendMap;
     }
 
     @JsonProperty("relations")

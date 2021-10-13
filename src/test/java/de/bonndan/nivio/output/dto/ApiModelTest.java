@@ -30,7 +30,7 @@ class ApiModelTest {
         s1.getLabels().put("foo.one", "one");
         s1.getLabels().put("foo.two", "two");
 
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
 
         //when
         Map<String, String> labels = itemApiModel.getLabels();
@@ -45,7 +45,7 @@ class ApiModelTest {
         Item s1 = itemTemplate.build();
         s1.getLabels().put(InputFormatHandlerKubernetes.LABEL_PREFIX + ".foo", "one");
 
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group, Map.of());
 
 
         //when

@@ -72,7 +72,7 @@ class SVGItem extends Component {
         /*
          * use the shortname as text instead, if it is shorter than 3 chars (utf8: one "symbol"), font size is increased
          */
-        String shortName = item.getLabel(Label.short_name);
+        String shortName = item.getLabel(Label.shortname);
         if (!hasFill && !StringUtils.hasLength(item.getType()) && StringUtils.hasLength(shortName)) {
             String className = shortName.length() < 3 ? "itemShortnameIcon" : "itemShortname";
             content = new SVGLabelText(shortName, "0", "3", className).render()
