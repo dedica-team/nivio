@@ -265,7 +265,7 @@
           },
           "enabled" : {
             "type" : "boolean",
-            "description" : "A flag indicating that the KPI is active. Can be used to disable default kpis."
+            "description" : "A flag indicating that the KPI is active. Can be used to disable default KPIs."
           },
           "label" : {
             "type" : "string",
