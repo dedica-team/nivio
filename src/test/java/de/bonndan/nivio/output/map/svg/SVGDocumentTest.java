@@ -34,7 +34,6 @@ class SVGDocumentTest extends RenderingTest {
         assertTrue(svg.contains(">Docker Compose files</text>"));
     }
 
-
     @Test
     void renderCustomFill() throws IOException {
 
@@ -72,7 +71,6 @@ class SVGDocumentTest extends RenderingTest {
                 .contains("fill=\"url(#Wm05dg==)\""); //pattern for "foo" response
 
     }
-
 
 
 }
