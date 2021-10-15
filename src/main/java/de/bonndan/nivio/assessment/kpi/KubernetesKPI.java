@@ -87,7 +87,7 @@ public class KubernetesKPI implements KPI {
 
     @Override
     public String getDescription() {
-        return "Evaluates Kubernetes conditions";
+        return "Evaluates Kubernetes conditions.";
     }
 
     @Override

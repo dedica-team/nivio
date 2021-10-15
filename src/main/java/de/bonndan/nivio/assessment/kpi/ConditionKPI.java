@@ -24,8 +24,8 @@ public class ConditionKPI implements KPI {
     private static final Map<Status, List<String>> matches = new LinkedHashMap<>();
 
     static {
-        matches.put(Status.RED, List.of("One condition is not met."));
-        matches.put(Status.GREEN, List.of("All conditions are met."));
+        matches.put(Status.RED, List.of("one condition is not met"));
+        matches.put(Status.GREEN, List.of("all conditions are met"));
     }
 
     private boolean enabled = true;
