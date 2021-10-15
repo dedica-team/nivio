@@ -6,6 +6,9 @@
     .title {
         display: none;
     }
+    .logo {
+        display: none;
+    }
 }
 
 .landscapeMapContainer .map .details {
