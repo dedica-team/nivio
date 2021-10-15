@@ -148,7 +148,8 @@ public class SVGDocument extends Component {
                     .attr("x", dimension.cartesian.horMin - dimension.cartesian.padding)
                     .attr("y", dimension.cartesian.vertMin - dimension.cartesian.padding + 80)
                     .attr("width", LABEL_WIDTH)
-                    .attr("height", LABEL_WIDTH);
+                    .attr("height", LABEL_WIDTH)
+                    .attr("class", "logo");
         }
         return logo;
     }

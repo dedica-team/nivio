@@ -28,11 +28,13 @@ class SVGDocumentTest extends RenderingTest {
         String path = "/src/test/resources/example/inout";
         Landscape landscape = getLandscape(path + ".yml");
         String svg = renderLandscape(path, landscape);
+        System.out.println(svg);
         assertTrue(svg.contains("svg version=\"1.1\""));
         assertTrue(svg.contains("class=\"title\">Input and Output</text>"));
         assertThat(svg).contains("<g data-identifier=\"inout/output/svg\" class=\"item");
         assertTrue(svg.contains(">Docker Compose files</text>"));
     }
+
 
     @Test
     void renderCustomFill() throws IOException {
@@ -71,4 +73,7 @@ class SVGDocumentTest extends RenderingTest {
                 .contains("fill=\"url(#Wm05dg==)\""); //pattern for "foo" response
 
     }
+
+
+
 }
