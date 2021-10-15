@@ -129,12 +129,11 @@ public class FastOrganicLayout {
         layoutLogger.debug("Iteration {} temp {}: max move {}", iteration, (int) temperature, maxMove.get());
 
         if (maxMove.get() > maxDistanceLimitSquared) {
-            temperature = 0;
             throw new LayoutException("Exploding");
         }
 
         layoutLogger.recordLocations(centerLocations);
-        var factor = 0.9;
+        var factor = 0.95;
 
         temperature = temperature * factor;
     }
@@ -153,7 +152,6 @@ public class FastOrganicLayout {
 
             // Calculate weak attractive forces
             calcWeakAttraction();
-
             calcPositions();
 
             // Calculate repulsive forces on all vertices
@@ -254,43 +252,43 @@ public class FastOrganicLayout {
     void calcPositions() {
 
         final int vertexCount = nodes.size();
-        final double limit = maxDistanceLimit * 4;
-        var tempFactor = temperature / initialTemp;
+        var tempFactor = 1; //temperature / initialTemp;
         for (int index = 0; index < vertexCount; index++) {
 
             double newXDisp = disp[index][0] * tempFactor;
-            if (newXDisp > limit)
-                newXDisp = limit;
-            if (newXDisp < -limit)
-                newXDisp = -limit;
-            if (Math.abs(newXDisp) > maxMove.get())
-                maxMove.set(Math.abs(newXDisp));
-
             double newYDisp = disp[index][1] * tempFactor;
-            if (newYDisp > limit)
-                newYDisp = limit;
-            if (newYDisp < -limit)
-                newYDisp = -limit;
-            if (Math.abs(newYDisp) > maxMove.get())
-                maxMove.set(Math.abs(newYDisp));
+
+            layoutLogger.debug("node {} at {} {} to move by {} {}", index,
+                    centerLocations[index][0], centerLocations[index][1],
+                    newXDisp, newYDisp);
 
             //calculate collisions
-            var factor = getCollisionReductionFactor(index, newXDisp, newYDisp);
+            var factor = getFreeMovementFactor(index, newXDisp, newYDisp);
 
             newXDisp *= factor;
             newYDisp *= factor;
+
+            if (Math.abs(newXDisp) > maxMove.get())
+                maxMove.set(Math.abs(newXDisp));
+
+            if (Math.abs(newYDisp) > maxMove.get())
+                maxMove.set(Math.abs(newYDisp));
 
             // reset displacements
             disp[index][0] = 0;
             disp[index][1] = 0;
 
+            if (debug) {
+                layoutLogger.debug("Moving node {} from {} {} by {} {} to {} {}", index,
+                        centerLocations[index][0], centerLocations[index][1],
+                        (int) newXDisp, (int) newYDisp,
+                        centerLocations[index][0] + newXDisp, centerLocations[index][1] + newYDisp
+                );
+            }
             // Update the cached cell locations
             centerLocations[index][0] += newXDisp;
             centerLocations[index][1] += newYDisp;
 
-            if (debug) {
-                layoutLogger.debug("Moving {} by {} {} to {} {}", index, (int) newXDisp, (int) newYDisp, (int) centerLocations[index][0], (int) centerLocations[index][1]);
-            }
 
             //calculate new distances immediately
             for (int j = 0; j < vertexCount; j++) {
@@ -299,52 +297,83 @@ public class FastOrganicLayout {
                 }
                 distances[index][j] = getAbsDistanceBetween(index, j);
                 if (distances[index][j] < minDistanceLimit) {
-                    layoutLogger.debug("Iteration {} temp {}: repulsion index {} {} distance shortfall {}/{}", iteration, (int) temperature, index, j, (int) distances[index][j], minDistanceLimit);
-                    if (Math.abs(newXDisp) > 0 && Math.abs(newYDisp) > 0 && factor > 0)
-                        throw new IllegalStateException("shortfall");
+                    if (Math.abs(newXDisp) > 0 && Math.abs(newYDisp) > 0 && factor > 0) {
+                        throw new IllegalStateException("shortfall: new distance is " + distances[index][j] + " after moving " + newXDisp + "," + newYDisp);
+                    }
                 }
             }
         }
     }
 
-    double getCollisionReductionFactor(int index, double newXDisp, double newYDisp) {
+    /**
+     * Movement tries full length first (i.e. jumping over nodes), reducing if collides at the endpoint
+     *
+     * @param index    the index of the moved node
+     * @param newXDisp x displacement
+     * @param newYDisp y displacement
+     * @return max factor how far the move can really move without colliding
+     */
+    double getFreeMovementFactor(int index, double newXDisp, double newYDisp) {
 
         if (newXDisp == 0.0 && newYDisp == 0.0) {
-            return 1;
+            return 0;
         }
 
         var vertexCount = nodes.size();
 
-        float factor = 1.0f;
-        while (factor >= -0.5) {
+        float factor = 1;
+        double limit = 0.1;
+        while (factor > limit) {
             boolean collides = false;
             for (int j = 0; j < vertexCount; j++) {
+
+                //same or out of range, cannot collide
                 if (j == index) {
                     continue;
                 }
 
-                var futureDistance = getFutureDistance(index, j, newXDisp * factor, newYDisp * factor);
+                var futureDistance = getFutureDistance(
+                        centerLocations[index],
+                        centerLocations[j],
+                        newXDisp * factor,
+                        newYDisp * factor,
+                        radius[index],
+                        radius[j]
+                );
+
+                //on collision, we reduce the movement by a percentage
                 if (futureDistance < minDistanceLimit) {
-                    factor -= 0.1;
                     collides = true;
                     break;
                 }
             }
-
-            if (!collides)
-                break;
+            if (collides) {
+                factor *= 0.85;
+            } else {
+                return factor;
+            }
         }
 
-
+        if (factor <= limit)
+            return 0;
         return factor;
     }
 
-    double getFutureDistance(int index, int j, double newXDisp, double newYDisp) {
-        var future0 = centerLocations[index][0] + newXDisp;
-        var future1 = centerLocations[index][1] + newYDisp;
-        var xDelta = future0 - centerLocations[j][0];
-        var yDelta = future1 - centerLocations[j][1];
-        return Math.sqrt((xDelta * xDelta) + (yDelta * yDelta)) - radius[index] - radius[j];
+    /**
+     * @param origin       point
+     * @param target       point
+     * @param newXDisp     x displacement
+     * @param newYDisp     y displacement
+     * @param radiusOrigin r1
+     * @param radiusTarget r2
+     * @return absolute distance
+     */
+    double getFutureDistance(double[] origin, double[] target, double newXDisp, double newYDisp, double radiusOrigin, double radiusTarget) {
+        var future0 = origin[0] + newXDisp;
+        var future1 = origin[1] + newYDisp;
+        var xDelta = future0 - target[0];
+        var yDelta = future1 - target[1];
+        return Math.sqrt((xDelta * xDelta) + (yDelta * yDelta)) - radiusOrigin - radiusTarget;
     }
 
     /**
@@ -388,11 +417,11 @@ public class FastOrganicLayout {
 
                 Point2D.Double displacement = getAttractionDisplacement(i, j);
 
-                disp[i][0] += displacement.x * 0.2;
-                disp[i][1] += displacement.y * 0.2;
+                disp[i][0] += displacement.x * 0.1;
+                disp[i][1] += displacement.y * 0.1;
 
-                disp[j][0] -= displacement.x * 0.2;
-                disp[j][1] -= displacement.y * 0.2;
+                disp[j][0] -= displacement.x * 0.1;
+                disp[j][1] -= displacement.y * 0.1;
             }
         }
     }
@@ -494,18 +523,7 @@ public class FastOrganicLayout {
      * @return positive if some distance between is radius, negative if overlap
      */
     double getAbsDistanceBetween(int i, int j) {
-        double xDelta = centerLocations[i][0] - centerLocations[j][0];
-        double yDelta = centerLocations[i][1] - centerLocations[j][1];
-
-        if (xDelta == 0) {
-            xDelta = 0.01;
-        }
-
-        if (yDelta == 0) {
-            yDelta = 0.01;
-        }
-
-        return Math.sqrt((xDelta * xDelta) + (yDelta * yDelta)) - radius[i] - radius[j];
+        return getFutureDistance(centerLocations[i], centerLocations[j], 0, 0, radius[i], radius[j]);
     }
 
     /**

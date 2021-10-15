@@ -23,7 +23,8 @@ class LayoutLogger {
     private final List<Wrap> locations = new ArrayList<>();
 
     public void debug(String msg, Object... args) {
-        messages.add(MessageFormatter.arrayFormat(msg, args).getMessage());
+        String message = MessageFormatter.arrayFormat(msg, args).getMessage();
+        messages.add(message);
     }
 
     public List<String> getMessages() {

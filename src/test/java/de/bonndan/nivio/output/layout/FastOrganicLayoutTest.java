@@ -100,6 +100,28 @@ class FastOrganicLayoutTest {
     }
 
     @Test
+    void calcRepulsionAlongVector() {
+
+        //when
+        layout.setup();
+
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+
+        layout.centerLocations[1][0] = 100;
+        layout.centerLocations[1][1] = 5;
+
+        layout.calcPositions(); //recalc distances
+
+        //when
+        Point2D.Double repulsionDisplacement = layout.getRepulsionDisplacement(0, 1);
+
+        //then
+        assertThat(repulsionDisplacement.x/repulsionDisplacement.y).isEqualTo(5D/100D, Offset.offset(0.1D));
+    }
+
+
+    @Test
     @DisplayName("Repulsion is greater on closer distances")
     void calcRepulsionDisplacementComp() {
 
@@ -245,7 +267,7 @@ class FastOrganicLayoutTest {
     }
 
     @Test
-    void calcPositions() {
+    void calcPositionsChangesLocation() {
         //given
         layout.setup();
 
@@ -297,13 +319,16 @@ class FastOrganicLayoutTest {
         layout.centerLocations[0][1] = 0;
 
         layout.centerLocations[1][0] = 100;
-        layout.centerLocations[1][1] = 50;
+        layout.centerLocations[1][1] = 100;
 
-        layout.disp[0][0] = 100;
-        layout.disp[0][1] = 100;
 
         layout.radius[0] = 25;
         layout.radius[1] = 25;
+
+        layout.calcPositions(); //recalc
+
+        layout.disp[0][0] = 100;
+        layout.disp[0][1] = 100;
 
 
         //when
@@ -316,7 +341,7 @@ class FastOrganicLayoutTest {
 
     @Test
     @DisplayName("difficult positioning avoids collisions")
-    void calcPositionsAvoidsCollisionWithHigherRadius() {
+    void doesNotMoveIfCollides() {
         //given
         layout.setup();
 
@@ -326,19 +351,50 @@ class FastOrganicLayoutTest {
         layout.centerLocations[1][0] = 100;
         layout.centerLocations[1][1] = 50;
 
-        layout.disp[0][0] = 100;
-        layout.disp[0][1] = 100;
-
         layout.radius[0] = 50;
         layout.radius[1] = 50;
 
+        layout.calcPositions();
+
+        layout.disp[0][0] = 100;
+        layout.disp[0][1] = 100;
 
         //when
         layout.calcPositions();
 
         //then
-        assertThat(layout.distances[0][1]).isGreaterThan(layout.minDistanceLimit);
-        assertThat(layout.distances[1][0]).isGreaterThan(layout.minDistanceLimit);
+        assertThat(layout.centerLocations[0][0]).isEqualTo(0);
+        assertThat(layout.centerLocations[0][1]).isEqualTo(0);
+        assertThat(layout.centerLocations[1][0]).isEqualTo(100);
+        assertThat(layout.centerLocations[1][1]).isEqualTo(50);
+    }
+
+    @Test
+    @DisplayName("can move away from overlap")
+    void canMoveAway() {
+        //given
+        layout.setup();
+
+        layout.centerLocations[0][0] = 0;
+        layout.centerLocations[0][1] = 0;
+
+        layout.centerLocations[1][0] = -20;
+        layout.centerLocations[1][1] = -20;
+
+        layout.radius[0] = 50;
+        layout.radius[1] = 50;
+
+        layout.calcPositions();
+
+        layout.disp[0][0] = 200;
+        layout.disp[0][1] = 200;
+
+        //when
+        layout.calcPositions();
+
+        //then
+        assertThat(layout.centerLocations[0][0]).isEqualTo(200);
+        assertThat(layout.centerLocations[0][1]).isEqualTo(200);
     }
 
     @Test
@@ -411,25 +467,24 @@ class FastOrganicLayoutTest {
     }
 
     @Test
-    @DisplayName("Movement reduced on collision")
+    @DisplayName("Movement reduced on collision (regression)")
     void testCollision() {
         //given
         layout.setup();
 
-        layout.centerLocations[0][0] = 0;
-        layout.centerLocations[0][1] = 0;
+        layout.centerLocations[0][0] = 150;
+        layout.centerLocations[0][1] = -260;
 
-        layout.centerLocations[1][0] = 1000;
-        layout.centerLocations[1][1] = 1000;
+        layout.centerLocations[1][0] = 228.3;
+        layout.centerLocations[1][1] = -37.3;
 
         layout.calcPositions(); //recalc
 
         //when
-        var collisionReductionFactor = layout.getCollisionReductionFactor(0, 990, 990);
+        var collisionReductionFactor = layout.getFreeMovementFactor(0, 78, 297);
 
         //then
-        assertThat(collisionReductionFactor).isLessThan(1).isEqualTo(0.9, Offset.offset(0.5D));
-
+        assertThat(collisionReductionFactor).isLessThan(1).isEqualTo(0.9, Offset.offset(0.05D));
     }
 
     @Test
@@ -447,7 +502,7 @@ class FastOrganicLayoutTest {
         layout.calcPositions(); //recalc
 
         //when
-        var collisionReductionFactor = layout.getCollisionReductionFactor(0, 200, 200);
+        var collisionReductionFactor = layout.getFreeMovementFactor(0, 200, 200);
 
         //then
         assertThat(collisionReductionFactor).isEqualTo(1);
@@ -583,6 +638,7 @@ class FastOrganicLayoutTest {
 
         List<LayoutedComponent> components = SubLayout.getComponents(group, new HashSet<>(items));
         layout = new FastOrganicLayout(components, SubLayout.MIN_DISTANCE_LIMIT, SubLayout.MAX_DISTANCE_LIMIT, SubLayout.INITIAL_TEMP, null);
+        layout.setDebug(true);
 
         //when
         try {

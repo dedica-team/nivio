@@ -31,10 +31,11 @@ public class InitialPlacementStrategy {
         double approxRadiusSum = sum;
 
         double angle = 0;
+        int r = 300;
         for (int i = 0; i < size; i++) {
             Point2D.Double origin = new Point2D.Double(0, 0);
-            int x = (int) Math.round(origin.x + 100 * Math.cos(angle));
-            int y = (int) Math.round(origin.y + 100 * Math.sin(angle));
+            int x = (int) Math.round(origin.x + r * Math.cos(angle));
+            int y = (int) Math.round(origin.y + r * Math.sin(angle));
             places.add(new Point2D.Double(x, y));
 
             var share = radius[i] / approxRadiusSum;
