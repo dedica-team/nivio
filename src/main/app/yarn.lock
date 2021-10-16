@@ -2285,10 +2285,10 @@
     "@types/prop-types" "*"
     csstype "^3.0.2"
 
-"@types/react@^16.14.12":
-  version "16.14.14"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.14.14.tgz#853de95a32a6a0e719192e222eacad024add2b8e"
-  integrity sha512-uwIWDYW8LznHzEMJl7ag9St1RsK0gw/xaFZ5+uI1ZM1HndwUgmPH3/wQkSb87GkOVg7shUxnpNW8DcN0AzvG5Q==
+"@types/react@^16.14.15":
+  version "16.14.17"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.14.17.tgz#c57fcfb05efa6423f5b65fcd4a75f63f05b162bf"
+  integrity sha512-pMLc/7+7SEdQa9A+hN9ujI8blkjFqYAZVqh3iNXqdZ0cQ8TIR502HMkNJniaOGv9SAgc47jxVKoiBJ7c0AakvQ==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
