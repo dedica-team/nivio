@@ -22,20 +22,20 @@ class InitialPlacementStrategyTest {
 
         InitialPlacementStrategy initialPlacementStrategy = new InitialPlacementStrategy(layoutedComponents);
         Point2D.Double place1 = initialPlacementStrategy.place(0);
-        assertThat(place1.x).isEqualTo(100);
+        assertThat(place1.x).isEqualTo(300);
         assertThat(place1.y).isEqualTo(0);
 
         Point2D.Double place2 = initialPlacementStrategy.place(1);
         assertThat(place2.x).isEqualTo(0);
-        assertThat(place2.y).isEqualTo(100);
+        assertThat(place2.y).isEqualTo(300);
 
         Point2D.Double place3 = initialPlacementStrategy.place(2);
-        assertThat(place3.x).isEqualTo(-100);
+        assertThat(place3.x).isEqualTo(-300);
         assertThat(place3.y).isEqualTo(-0);
 
         Point2D.Double place4 = initialPlacementStrategy.place(3);
         assertThat(place4.x).isEqualTo(0);
-        assertThat(place4.y).isEqualTo(-100);
+        assertThat(place4.y).isEqualTo(-300);
     }
 
     @Test
@@ -48,20 +48,20 @@ class InitialPlacementStrategyTest {
 
         InitialPlacementStrategy initialPlacementStrategy = new InitialPlacementStrategy(layoutedComponents);
         Point2D.Double place1 = initialPlacementStrategy.place(0);
-        assertThat(place1.x).isEqualTo(100);
+        assertThat(place1.x).isEqualTo(300);
         assertThat(place1.y).isEqualTo(0);
 
         Point2D.Double place2 = initialPlacementStrategy.place(1);
-        assertThat(place2.x).isEqualTo(92);
-        assertThat(place2.y).isEqualTo(38);
+        assertThat(place2.x).isEqualTo(277);
+        assertThat(place2.y).isEqualTo(115);
 
         Point2D.Double place3 = initialPlacementStrategy.place(2);
-        assertThat(place3.x).isEqualTo(-38);
-        assertThat(place3.y).isEqualTo(-92);
+        assertThat(place3.x).isEqualTo(-115);
+        assertThat(place3.y).isEqualTo(-277);
 
         Point2D.Double place4 = initialPlacementStrategy.place(3);
-        assertThat(place4.x).isEqualTo(92);
-        assertThat(place4.y).isEqualTo(-38);
+        assertThat(place4.x).isEqualTo(277);
+        assertThat(place4.y).isEqualTo(-115);
     }
 
     LayoutedComponent getLayoutedComponent(String identifier, double width, double height) {
