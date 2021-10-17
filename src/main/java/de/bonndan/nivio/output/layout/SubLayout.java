@@ -40,9 +40,13 @@ public class SubLayout {
         String name = group.getName();
         this.parent = group;
 
-        List<LayoutedComponent> list = getLayoutedComponents(group, items);
+        List<LayoutedComponent> components = getLayoutedComponents(group, items);
 
-        layout = new FastOrganicLayout(list, FORCE_CONSTANT, MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT, INITIAL_TEMP, itemLayoutConfig);
+        layout = new FastOrganicLayout(
+                components,
+                ForceFactory.getForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT, FORCE_CONSTANT, INITIAL_TEMP),
+                 INITIAL_TEMP
+        );
         layout.setDebug(debug);
         layout.execute();
         LOGGER.debug("Subgraph {} layouted items: {}", name, layout.getBounds());

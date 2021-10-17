@@ -24,6 +24,7 @@ class FastOrganicLayoutTest {
     private LayoutedComponent b;
     private LayoutedComponent c;
     private FastOrganicLayout layout;
+    private Forces forces;
 
     @BeforeEach
     void setup() {
@@ -46,7 +47,8 @@ class FastOrganicLayoutTest {
         b.setHeight(100);
         layoutedComponents.add(b);
 
-        layout = new FastOrganicLayout(layoutedComponents, SubLayout.FORCE_CONSTANT, SubLayout.MIN_DISTANCE_LIMIT, SubLayout.MAX_DISTANCE_LIMIT, SubLayout.INITIAL_TEMP, null);
+        forces = ForceFactory.getForces(SubLayout.MIN_DISTANCE_LIMIT, SubLayout.MAX_DISTANCE_LIMIT, SubLayout.FORCE_CONSTANT, SubLayout.INITIAL_TEMP);
+        layout = new FastOrganicLayout(layoutedComponents, forces, SubLayout.INITIAL_TEMP);
         layout.setDebug(true);
     }
 
@@ -74,96 +76,6 @@ class FastOrganicLayoutTest {
                 .isGreaterThan((long) SubLayout.MIN_DISTANCE_LIMIT);
     }
 
-    @Test
-    void calcRepulsionDisplacement() {
-
-        //when
-        layout.setup();
-
-        layout.centerLocations[0][0] = 0;
-        layout.centerLocations[0][1] = 0;
-
-        layout.centerLocations[1][0] = 200;
-        layout.centerLocations[1][1] = 0;
-
-        layout.calcPositions(); //recalc distances
-
-        //when
-        Point2D.Double repulsionDisplacement = layout.getRepulsionDisplacement(0, 1);
-
-        //then
-        assertThat(repulsionDisplacement.x).isEqualTo(0, Offset.offset(1D));
-        assertThat(repulsionDisplacement.y).isEqualTo(-125, Offset.offset(1D));
-    }
-
-    @Test
-    void calcRepulsionAlongVector() {
-
-        //when
-        layout.setup();
-
-        layout.centerLocations[0][0] = 0;
-        layout.centerLocations[0][1] = 0;
-
-        layout.centerLocations[1][0] = 100;
-        layout.centerLocations[1][1] = 5;
-
-        layout.calcPositions(); //recalc distances
-
-        //when
-        Point2D.Double repulsionDisplacement = layout.getRepulsionDisplacement(0, 1);
-
-        //then
-        assertThat(repulsionDisplacement.x/repulsionDisplacement.y).isEqualTo(5D/100D, Offset.offset(0.1D));
-    }
-
-
-    @Test
-    @DisplayName("Repulsion is greater on closer distances")
-    void calcRepulsionDisplacementComp() {
-
-        //when
-        layout.setup();
-
-        //create overlap
-        layout.centerLocations[0][0] = 0;
-        layout.centerLocations[0][1] = 0;
-
-        layout.centerLocations[1][0] = 200;
-        layout.centerLocations[1][1] = 100;
-
-        layout.calcPositions(); //recalc distances
-
-        //when
-        Point2D.Double repulsionDisplacement = layout.getRepulsionDisplacement(0, 1);
-
-        //then
-        assertThat(Math.abs(repulsionDisplacement.y)).isGreaterThan(Math.abs(repulsionDisplacement.x));
-    }
-
-
-    @Test
-    void calcRepulsionDisplacementTooFar() {
-
-        //when
-        layout.setup();
-
-        //create overlap
-        layout.centerLocations[0][0] = 0;
-        layout.centerLocations[0][1] = 0;
-
-        layout.centerLocations[1][0] = 2000;
-        layout.centerLocations[1][1] = 0;
-
-        layout.calcPositions(); //recalc distances
-
-        //when
-        Point2D.Double repulsionDisplacement = layout.getRepulsionDisplacement(0, 1);
-
-        //then
-        assertThat(repulsionDisplacement.x).isEqualTo(0);
-        assertThat(repulsionDisplacement.y).isEqualTo(0);
-    }
 
     @Test
     @DisplayName("Repulsion is applied to both nodes along vector")
@@ -189,7 +101,7 @@ class FastOrganicLayoutTest {
         double dispY01 = layout.dispY[0];
         assertThat(dispX01).isLessThan(0);
 
-        assertThat(dispX01/dispY01).isEqualTo(200/100, Offset.offset(1D));
+        assertThat(dispX01 / dispY01).isEqualTo(200 / 100, Offset.offset(1D));
 
         //greater distance means less (absolute) displacement
         assertThat(dispY01).isLessThan(0).isGreaterThan(dispX01);
@@ -197,7 +109,7 @@ class FastOrganicLayoutTest {
         double dispX10 = layout.dispX[1];
         double dispY11 = layout.dispY[1];
         assertThat(dispX10).isGreaterThan(0);
-        assertThat(dispX10/dispY11).isEqualTo(200/100, Offset.offset(1D));
+        assertThat(dispX10 / dispY11).isEqualTo(200 / 100, Offset.offset(1D));
     }
 
     @Test
@@ -473,7 +385,7 @@ class FastOrganicLayoutTest {
 
         var components = SubLayout.getLayoutedComponents(group, new HashSet<>(items));
 
-        layout = new FastOrganicLayout(components, SubLayout.FORCE_CONSTANT, SubLayout.MIN_DISTANCE_LIMIT, SubLayout.MAX_DISTANCE_LIMIT, SubLayout.INITIAL_TEMP, null);
+        layout = new FastOrganicLayout(components, forces, SubLayout.INITIAL_TEMP);
         layout.setDebug(true);
 
         //when
@@ -535,7 +447,7 @@ class FastOrganicLayoutTest {
         c.setHeight(500);
         layoutedComponents.add(c);
 
-        layout = new FastOrganicLayout(layoutedComponents, SubLayout.FORCE_CONSTANT, SubLayout.MIN_DISTANCE_LIMIT, SubLayout.MAX_DISTANCE_LIMIT, SubLayout.INITIAL_TEMP, null);
+        layout = new FastOrganicLayout(layoutedComponents, forces, SubLayout.INITIAL_TEMP);
         layout.setDebug(true);
     }
 }
