@@ -70,7 +70,7 @@ class IndexerIntegrationTest {
         assertEquals("mail@acme.org", landscape.getContact());
         assertTrue(landscape.getDescription().contains("demonstrate"));
         Assertions.assertNotNull(landscape.getItems());
-        assertEquals(17, landscape.getItems().all().size());
+        assertEquals(18, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
         assertEquals(3, RelationType.PROVIDER.filter(blog.getRelations()).stream()
@@ -116,7 +116,7 @@ class IndexerIntegrationTest {
         Assertions.assertNotNull(landscape);
         assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getItems());
-        assertEquals(17, landscape.getItems().all().size());
+        assertEquals(18, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
         assertEquals(3, RelationType.PROVIDER.filter(blog.getRelations()).stream()

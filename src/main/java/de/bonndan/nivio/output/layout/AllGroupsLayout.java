@@ -54,7 +54,7 @@ public class AllGroupsLayout {
 
         var layout = new FastOrganicLayout(
                 new ArrayList<>(groupNodes.values()),
-                ForceFactory.getNewForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT),
+                ForceFactory.getForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT, FORCE_CONSTANT, INITIAL_TEMP),
                 INITIAL_TEMP
         );
         layout.setDebug(debug);

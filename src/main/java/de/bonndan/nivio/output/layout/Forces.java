@@ -21,6 +21,8 @@ interface Forces {
     /**
      * Calculate repulsion between two nodes.
      *
+     * The result is added to c1 and subtracted from c2.
+     *
      * @param c1 location 1
      * @param c2 location 2
      * @param r1 radius 1

@@ -1,8 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
 import java.awt.geom.Point2D;
@@ -18,8 +16,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * based on mxFastOrganicLayout from JGraphX by Gaudenz Alder Copyright (c) 2007
  */
 public class FastOrganicLayout {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(FastOrganicLayout.class);
 
     private final List<LayoutedComponent> nodes;
     private final LayoutLogger layoutLogger;
@@ -170,19 +166,14 @@ public class FastOrganicLayout {
         InitialPlacementStrategy initialPlacementStrategy = new InitialPlacementStrategy(this.nodes);
         for (int i = 0; i < n; i++) {
             Point2D.Double start = initialPlacementStrategy.place(i);
-            dispX[i] = start.x;
-            dispY[i] = start.y;
+            centerLocations[i][0] = start.x;
+            centerLocations[i][1] = start.y;
 
             // Get lists of neighbours to all vertices, translate the cells
             // obtained in indices into vertexArray and store as an array
             // against the original cell index
-            Component component = this.nodes.get(i).getComponent();
             List<Component> opposites = this.nodes.get(i).getOpposites();
-
             neighbours[i] = new int[opposites.size()];
-            if (debug) {
-                LOGGER.debug("Bounds {} has {} neighbours", component, opposites.size());
-            }
             for (int j = 0; j < opposites.size(); j++) {
                 Integer index = indices.get(getBoundsForComponents(opposites.get(j)));
 
@@ -197,9 +188,15 @@ public class FastOrganicLayout {
         temperature = initialTemp;
     }
 
+    /**
+     * Setup the layout and run the main loop until movement is cooled down (temperature is low).
+     *
+     *
+     */
     public void execute() {
 
         setup();
+        layoutLogger.recordLocations(centerLocations);
 
         // Main iteration loop
         for (iteration = 0; iteration < maxIterations; iteration++) {
@@ -250,7 +247,7 @@ public class FastOrganicLayout {
             centerLocations[index][0] += newXDisp;
             centerLocations[index][1] += newYDisp;
             if (debug) {
-                LOGGER.debug("Iteration {} temp {}: Shifting index {} center by dx {} and dy {}", iteration, temperature, index, newXDisp, newYDisp);
+                layoutLogger.debug("Iteration {} temp {}: Shifting index {} center by dx {} and dy {}", iteration, temperature, index, newXDisp, newYDisp);
             }
 
             //calculate new distances immediately
@@ -261,6 +258,7 @@ public class FastOrganicLayout {
                 distances[index][j] = Geometry.getDistance(centerLocations[index], centerLocations[j], 0, 0, radius[index], radius[j]);
             }
         }
+        layoutLogger.recordLocations(centerLocations);
     }
 
     /**
@@ -334,8 +332,8 @@ public class FastOrganicLayout {
             if (b.y > maxY.get()) maxY.set(b.y);
         }
 
-        outer.setWidth(maxX.get() - minX.get());
-        outer.setHeight(maxY.get() - minY.get());
+        outer.setWidth((double) maxX.get() - minX.get());
+        outer.setHeight((double) maxY.get() - minY.get());
         outer.setChildren(nodes);
 
         return outer;

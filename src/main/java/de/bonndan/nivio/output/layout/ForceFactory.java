@@ -8,7 +8,7 @@ class ForceFactory {
         return new OriginalForces(minDistanceLimit,  maxDistanceLimit, forceConstant, initialTemp);
     }
 
-    static Forces getNewForces(int minDistanceLimit, int maxDistanceLimit) {
-        return new NewForces(minDistanceLimit,  maxDistanceLimit);
+    static Forces getNewForces(int minDistanceLimit, int maxDistanceLimit, int initialTemperature) {
+        return new NewForces(minDistanceLimit,  maxDistanceLimit, initialTemperature);
     }
 }
