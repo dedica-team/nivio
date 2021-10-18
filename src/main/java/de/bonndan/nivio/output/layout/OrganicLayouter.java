@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.map.hex.Hex;
 import org.slf4j.Logger;
@@ -7,10 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
 import java.awt.geom.Point2D;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -35,8 +33,10 @@ public class OrganicLayouter implements Layouter {
 
         Map<String, SubLayout> subGraphs = new LinkedHashMap<>();
         Objects.requireNonNull(landscape).getGroups().forEach((name, group) -> {
+            Set<Item> items = landscape.getItems().retrieve(group.getItems());
+            if (items.isEmpty()) return;
             SubLayout subLayout = new SubLayout(debug);
-            subLayout.render(group, landscape.getItems().retrieve(group.getItems()), landscape.getConfig().getItemLayoutConfig());
+            subLayout.render(group, items, landscape.getConfig().getItemLayoutConfig());
             subGraphs.put(name, subLayout);
         });
 
