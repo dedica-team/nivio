@@ -18,6 +18,10 @@ public class InitialPlacementStrategy {
     public InitialPlacementStrategy(@NonNull final List<LayoutedComponent> bounds) {
         int size = bounds.size();
         if (size == 0) return;
+        if (size == 1) {
+            places.add(new Point2D.Double(0, 0));
+            return;
+        }
 
         double[] radius = new double[size];
         var sum = 0;

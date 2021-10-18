@@ -64,6 +64,17 @@ class InitialPlacementStrategyTest {
         assertThat(place4.y).isEqualTo(-115);
     }
 
+    @Test
+    void placesOneAtOrigin() {
+        ArrayList<LayoutedComponent> layoutedComponents = new ArrayList<>();
+        layoutedComponents.add(getLayoutedComponent("a", 100, 100));
+
+        InitialPlacementStrategy initialPlacementStrategy = new InitialPlacementStrategy(layoutedComponents);
+        Point2D.Double place1 = initialPlacementStrategy.place(0);
+        assertThat(place1.x).isEqualTo(0);
+        assertThat(place1.y).isEqualTo(0);
+    }
+
     LayoutedComponent getLayoutedComponent(String identifier, double width, double height) {
         LayoutedComponent layoutedComponent = new LayoutedComponent(getTestItem("test", identifier));
         layoutedComponent.setWidth(width);
