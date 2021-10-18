@@ -284,57 +284,6 @@ class FastOrganicLayoutTest {
         assertThat(layout.centerLocations[0][1]).isEqualTo(200);
     }
 
-    /*
-    @Test
-    void getDistanceWithOverlapsAndDirection() {
-        //given
-        layout.setup();
-
-        layout.centerLocations[0][0] = 0;
-        layout.centerLocations[0][1] = 0;
-
-        layout.centerLocations[1][0] = 1;
-        layout.centerLocations[1][1] = -50;
-
-        //then
-        assertThat(layout.getDimDistanceBetweenCenters(0, 1, 0)).isEqualTo(-1);
-        assertThat(layout.getDimDistanceBetweenCenters(0, 1, 1)).isEqualTo(50);
-    }
-
-    @Test
-    @DisplayName("Attraction moves nodes closer along vector")
-    void calcAttractionDisplacement() {
-        //given
-        layout.setup();
-
-        layout.centerLocations[0][0] = 0;
-        layout.centerLocations[0][1] = 0;
-
-        layout.centerLocations[1][0] = 400;
-        layout.centerLocations[1][1] = 200;
-
-        layout.calcPositions(); //recalc
-
-        //when
-        var displacement = layout.getAttractionDisplacement(0, 1);
-
-        //then
-        //displacement is subtracted from i and added to j
-        assertThat(displacement.x).isGreaterThan(0).isEqualTo(2000); //shift in x direction
-        assertThat(displacement.y).isGreaterThan(0).isLessThan(displacement.x); //shift in y direction
-
-        assertThat(displacement.x/displacement.y).isEqualTo(400/200);
-
-        //when
-        var reverse = layout.getAttractionDisplacement(1, 0);
-
-        //then
-        assertThat(reverse.x).isLessThan(0); //shift in x direction
-        assertThat(reverse.y).isLessThan(0); //shift in x direction
-    }
-
-     */
-
 
     @Test
     void assertMinDistanceOK() {

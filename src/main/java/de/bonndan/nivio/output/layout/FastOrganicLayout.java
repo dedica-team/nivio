@@ -105,9 +105,9 @@ public class FastOrganicLayout {
                              int initialTemp
     ) {
         this.nodes = Objects.requireNonNull(nodes);
+        this.forces = Objects.requireNonNull(forces);
         this.initialTemp = initialTemp;
         this.layoutLogger = new LayoutLogger();
-        this.forces = forces;
 
         // If max number of iterations has not been set, guess it
         if (maxIterations == 0) {

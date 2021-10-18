@@ -20,7 +20,7 @@ public class Geometry {
         return Math.sqrt((xDelta * xDelta) + (yDelta * yDelta)) - radiusOrigin - radiusTarget;
     }
 
-    static double getDisplacementLength(double xDelta, double yDelta) {
+    static double getDistance(double xDelta, double yDelta) {
         return Math.sqrt((xDelta * xDelta) + (yDelta * yDelta));
     }
 }

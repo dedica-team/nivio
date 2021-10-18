@@ -60,7 +60,7 @@ class OriginalForces implements Forces {
         }
 
         // Distance between nodes
-        double deltaLength = Geometry.getDisplacementLength(xDelta, yDelta);
+        double deltaLength = Geometry.getDistance(xDelta, yDelta);
 
         double deltaLengthWithRadius = deltaLength - r1 - r2;
 
@@ -82,7 +82,7 @@ class OriginalForces implements Forces {
     }
 
     public Point2D.Double applyDisplacement(double[][] centerLocations, double[]radius, int index, double dispX, double dispY, double temperature) {
-        double deltaLength = Geometry.getDisplacementLength(dispX, dispY);
+        double deltaLength = Geometry.getDistance(dispX, dispY);
 
         if (deltaLength < 0.001) {
             deltaLength = 0.001;
