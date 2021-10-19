@@ -13,7 +13,7 @@ public class MappingApiModel {
 
 
     public MappingApiModel(FrontendMapping frontendMapping) {
-        mapping = frontendMapping.getLabelsToMap();
+        mapping = frontendMapping.getKeys();
     }
 
     public Map<String, String> getMapping() {

@@ -13,7 +13,7 @@ public class DescriptionApiModel {
     private final Map<String, String> description;
 
     public DescriptionApiModel(FrontendMapping frontendMapping) {
-        this.description = frontendMapping.getLabelsToDescription();
+        this.description = frontendMapping.getDescription();
     }
 
     public Map<String, String> getDescription() {

@@ -23,31 +23,31 @@ class FrontendMappingTest {
 
     @Test
     @Order(1)
-    void getLabelsToMap() {
+    void getKeys() {
         var testMap = Map.of("shortname", "short name", "END_OF_LIFE", "end of life");
-        assertThat(frontendMapping.getLabelsToMap()).isEqualTo(testMap);
+        assertThat(frontendMapping.getKeys()).isEqualTo(testMap);
     }
 
     @Test
     @Order(2)
-    void setLabelsToMap() {
+    void setKeys() {
         var testMap = Map.of("testKey", "testValue");
-        frontendMapping.setLabelsToMap(testMap);
-        assertThat(frontendMapping.getLabelsToMap()).isEqualTo(testMap);
+        frontendMapping.setKeys(testMap);
+        assertThat(frontendMapping.getKeys()).isEqualTo(testMap);
     }
 
     @Test
     @Order(3)
-    void getLabelsToDescription() {
+    void getDescription() {
         var testMap = Map.of("END_OF_LIFE", "An end-of-life product is a product at the end of the product lifecycle which prevents users from receiving updates, indicating that the product is at the end of its useful life.");
-        assertThat(frontendMapping.getLabelsToDescription()).isEqualTo(testMap);
+        assertThat(frontendMapping.getDescription()).isEqualTo(testMap);
     }
 
     @Test
     @Order(4)
-    void setLabelsToDescription() {
+    void setDescription() {
         var testMap = Map.of("testKey", "testValue");
-        frontendMapping.setLabelsToDescription(testMap);
-        assertThat(frontendMapping.getLabelsToDescription()).isEqualTo(testMap);
+        frontendMapping.setDescription(testMap);
+        assertThat(frontendMapping.getDescription()).isEqualTo(testMap);
     }
 }

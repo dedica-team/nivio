@@ -7,27 +7,27 @@ import org.springframework.validation.annotation.Validated;
 import java.util.Map;
 
 @Configuration
-@ConfigurationProperties(prefix = "mapping")
+@ConfigurationProperties(prefix = "frontendmapping")
 @Validated
 public class FrontendMapping {
-    private Map<String, String> labelsToMap;
+    private Map<String, String> keys;
 
-    private Map<String, String> labelsToDescription;
+    private Map<String, String> descriptions;
 
-    public Map<String, String> getLabelsToMap() {
-        return labelsToMap;
+    public Map<String, String> getKeys() {
+        return keys;
     }
 
-    public Map<String, String> getLabelsToDescription() {
-        return labelsToDescription;
+    public Map<String, String> getDescription() {
+        return descriptions;
     }
 
-    public void setLabelsToMap(Map<String, String> labelsToMap) {
-        this.labelsToMap = labelsToMap;
+    public void setKeys(Map<String, String> keys) {
+        this.keys = keys;
     }
 
-    public void setLabelsToDescription(Map<String, String> labelsToDescription) {
-        this.labelsToDescription = labelsToDescription;
+    public void setDescription(Map<String, String> descriptions) {
+        this.descriptions = descriptions;
     }
 
 }

@@ -12,7 +12,7 @@ class MappingApiModelTest {
     @Test
     void getMapping() {
         FrontendMapping frontendMapping = Mockito.mock(FrontendMapping.class);
-        Mockito.when(frontendMapping.getLabelsToMap()).thenReturn(Map.of("testKey", "testValue"));
+        Mockito.when(frontendMapping.getKeys()).thenReturn(Map.of("testKey", "testValue"));
         var mappingApiModel = new MappingApiModel(frontendMapping);
         assertThat(mappingApiModel.getMapping()).isEqualTo(Map.of("testKey", "testValue"));
     }
