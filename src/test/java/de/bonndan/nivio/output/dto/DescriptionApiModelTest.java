@@ -13,8 +13,8 @@ class DescriptionApiModelTest {
     @Test
     void getDescription() {
         FrontendMapping frontendMapping = Mockito.mock(FrontendMapping.class);
-        Mockito.when(frontendMapping.getDescription()).thenReturn(Map.of("testKey", "testValue"));
+        Mockito.when(frontendMapping.getDescriptions()).thenReturn(Map.of("testKey", "testValue"));
         var descriptionApiModel = new DescriptionApiModel(frontendMapping);
-        assertThat(descriptionApiModel.getDescription()).isEqualTo(Map.of("testKey", "testValue"));
+        assertThat(descriptionApiModel.getDescriptions()).isEqualTo(Map.of("testKey", "testValue"));
     }
 }

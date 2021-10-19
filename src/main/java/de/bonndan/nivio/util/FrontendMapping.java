@@ -18,7 +18,7 @@ public class FrontendMapping {
         return keys;
     }
 
-    public Map<String, String> getDescription() {
+    public Map<String, String> getDescriptions() {
         return descriptions;
     }
 
@@ -26,7 +26,7 @@ public class FrontendMapping {
         this.keys = keys;
     }
 
-    public void setDescription(Map<String, String> descriptions) {
+    public void setDescriptions(Map<String, String> descriptions) {
         this.descriptions = descriptions;
     }
 

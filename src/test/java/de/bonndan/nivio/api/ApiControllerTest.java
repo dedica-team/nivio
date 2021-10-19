@@ -114,7 +114,7 @@ class ApiControllerTest {
 
     @Test
     void description() {
-        Mockito.when(frontendMapping.getDescription()).thenReturn(Map.of("testKey", "testValue"));
+        Mockito.when(frontendMapping.getDescriptions()).thenReturn(Map.of("testKey", "testValue"));
         assertThat(apiController.description().getBody().getClass()).isEqualTo(DescriptionApiModel.class);
     }
 }

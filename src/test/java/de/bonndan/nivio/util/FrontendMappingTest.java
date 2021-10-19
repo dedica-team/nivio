@@ -40,14 +40,14 @@ class FrontendMappingTest {
     @Order(3)
     void getDescription() {
         var testMap = Map.of("END_OF_LIFE", "An end-of-life product is a product at the end of the product lifecycle which prevents users from receiving updates, indicating that the product is at the end of its useful life.");
-        assertThat(frontendMapping.getDescription()).isEqualTo(testMap);
+        assertThat(frontendMapping.getDescriptions()).isEqualTo(testMap);
     }
 
     @Test
     @Order(4)
     void setDescription() {
         var testMap = Map.of("testKey", "testValue");
-        frontendMapping.setDescription(testMap);
-        assertThat(frontendMapping.getDescription()).isEqualTo(testMap);
+        frontendMapping.setDescriptions(testMap);
+        assertThat(frontendMapping.getDescriptions()).isEqualTo(testMap);
     }
 }
