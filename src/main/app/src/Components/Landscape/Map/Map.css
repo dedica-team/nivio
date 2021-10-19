@@ -17,8 +17,12 @@
     background-color: white;
 }
 
-.landscapeMapContainer .map .item {
+.landscapeMapContainer .map .item:hover {
     cursor: pointer;
+}
+
+.map g.item.unselected:hover circle {
+    stroke: #C0C0C0;
 }
 
 .landscapeMapContainer .map g .group {
