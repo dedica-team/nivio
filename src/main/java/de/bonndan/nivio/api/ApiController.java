@@ -4,9 +4,8 @@ import de.bonndan.nivio.input.IndexingDispatcher;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.dto.GroupApiModel;
-import de.bonndan.nivio.output.dto.ItemApiModel;
-import de.bonndan.nivio.output.dto.LandscapeApiModel;
+import de.bonndan.nivio.output.dto.*;
+import de.bonndan.nivio.util.FrontendMapping;
 import org.apache.lucene.facet.FacetResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,14 +34,17 @@ public class ApiController {
     private final LandscapeRepository landscapeRepository;
     private final LinkFactory linkFactory;
     private final IndexingDispatcher indexingDispatcher;
+    private final FrontendMapping frontendMapping;
 
     public ApiController(LandscapeRepository landscapeRepository,
                          LinkFactory linkFactory,
-                         IndexingDispatcher indexingDispatcher
+                         IndexingDispatcher indexingDispatcher,
+                         FrontendMapping frontendMapping
     ) {
         this.landscapeRepository = landscapeRepository;
         this.linkFactory = linkFactory;
         this.indexingDispatcher = indexingDispatcher;
+        this.frontendMapping = frontendMapping;
     }
 
     /**
@@ -79,7 +81,7 @@ public class ApiController {
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/{landscapeIdentifier}/{groupIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GroupApiModel> group(@PathVariable String landscapeIdentifier,
-                                          @PathVariable String groupIdentifier
+                                               @PathVariable String groupIdentifier
     ) {
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
         if (landscape == null) {
@@ -102,8 +104,8 @@ public class ApiController {
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/{landscapeIdentifier}/{groupIdentifier}/{itemIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ItemApiModel> item(@PathVariable String landscapeIdentifier,
-                                     @PathVariable String groupIdentifier,
-                                     @PathVariable String itemIdentifier
+                                             @PathVariable String groupIdentifier,
+                                             @PathVariable String itemIdentifier
     ) {
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
         if (landscape == null) {
@@ -192,6 +194,19 @@ public class ApiController {
     }
 
 
+    @CrossOrigin(methods = RequestMethod.GET)
+    @GetMapping(path = "/mapping", produces = "application/json")
+    public ResponseEntity<MappingApiModel> mapping() {
+        return new ResponseEntity<>(new MappingApiModel(frontendMapping), HttpStatus.OK);
+    }
+
+
+    @CrossOrigin(methods = RequestMethod.GET)
+    @GetMapping(path = "/description", produces = "application/json")
+    public ResponseEntity<DescriptionApiModel> description() {
+        return new ResponseEntity<>(new DescriptionApiModel(frontendMapping), HttpStatus.OK);
+    }
+
     /**
      * Trigger reindexing of a landscape source.
      */
@@ -208,6 +223,7 @@ public class ApiController {
                 .map(uri -> ResponseEntity.created(uri).build())
                 .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
     }
+
 
     private Optional<URI> getURIForDTO(LandscapeDescription env) {
         Optional<Link> link = linkFactory.generateComponentLink(env.getFullyQualifiedIdentifier());

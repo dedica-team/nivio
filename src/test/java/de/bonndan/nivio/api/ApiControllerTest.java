@@ -2,10 +2,9 @@ package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.input.IndexingDispatcher;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.dto.GroupApiModel;
-import de.bonndan.nivio.output.dto.ItemApiModel;
-import de.bonndan.nivio.output.dto.LandscapeApiModel;
+import de.bonndan.nivio.output.dto.*;
 import de.bonndan.nivio.search.ItemIndex;
+import de.bonndan.nivio.util.FrontendMapping;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,6 +22,7 @@ class ApiControllerTest {
     LinkFactory linkFactory;
     IndexingDispatcher indexingDispatcher;
     LandscapeRepository landscapeRepository;
+    FrontendMapping frontendMapping;
     ApiController apiController;
 
     @BeforeEach
@@ -30,7 +30,8 @@ class ApiControllerTest {
         linkFactory = Mockito.mock(LinkFactory.class);
         indexingDispatcher = Mockito.mock(IndexingDispatcher.class);
         landscapeRepository = Mockito.mock(LandscapeRepository.class);
-        apiController = new ApiController(landscapeRepository, linkFactory, indexingDispatcher);
+        frontendMapping = Mockito.mock(FrontendMapping.class);
+        apiController = new ApiController(landscapeRepository, linkFactory, indexingDispatcher, frontendMapping);
     }
 
     @Test
@@ -103,5 +104,17 @@ class ApiControllerTest {
         assertThat(apiController.search("test", "test").getStatusCode()).isEqualTo(HttpStatus.OK);
         var hashSet = new HashSet<ItemApiModel>();
         assertThat(apiController.search("test", "test").getBody().size()).isEqualTo(2);
+    }
+
+    @Test
+    void mapping() {
+        Mockito.when(frontendMapping.getLabelsToMap()).thenReturn(Map.of("testKey", "testValue"));
+        assertThat(apiController.mapping().getBody().getClass()).isEqualTo(MappingApiModel.class);
+    }
+
+    @Test
+    void description() {
+        Mockito.when(frontendMapping.getLabelsToDescription()).thenReturn(Map.of("testKey", "testValue"));
+        assertThat(apiController.description().getBody().getClass()).isEqualTo(DescriptionApiModel.class);
     }
 }
