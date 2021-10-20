@@ -2,7 +2,9 @@ package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.input.IndexingDispatcher;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.dto.*;
+import de.bonndan.nivio.output.dto.GroupApiModel;
+import de.bonndan.nivio.output.dto.ItemApiModel;
+import de.bonndan.nivio.output.dto.LandscapeApiModel;
 import de.bonndan.nivio.search.ItemIndex;
 import de.bonndan.nivio.util.FrontendMapping;
 import org.junit.jupiter.api.BeforeEach;
@@ -109,12 +111,12 @@ class ApiControllerTest {
     @Test
     void mapping() {
         Mockito.when(frontendMapping.getKeys()).thenReturn(Map.of("testKey", "testValue"));
-        assertThat(apiController.mapping().getBody().getClass()).isEqualTo(MappingApiModel.class);
+        assertThat(apiController.mapping().getBody()).isEqualTo(Map.of("testKey", "testValue"));
     }
 
     @Test
     void description() {
         Mockito.when(frontendMapping.getDescriptions()).thenReturn(Map.of("testKey", "testValue"));
-        assertThat(apiController.description().getBody().getClass()).isEqualTo(DescriptionApiModel.class);
+        assertThat(apiController.description().getBody()).isEqualTo(Map.of("testKey", "testValue"));
     }
 }

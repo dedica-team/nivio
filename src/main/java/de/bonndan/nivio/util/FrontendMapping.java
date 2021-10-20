@@ -2,12 +2,14 @@ package de.bonndan.nivio.util;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Map;
 
 @Configuration
 @ConfigurationProperties(prefix = "frontendmapping")
+@PropertySource(value = "classpath:frontendMapping.yml", factory = YamlPropertySourceFactory.class)
 @Validated
 public class FrontendMapping {
     private Map<String, String> keys;

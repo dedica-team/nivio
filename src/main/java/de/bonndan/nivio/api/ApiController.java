@@ -4,7 +4,9 @@ import de.bonndan.nivio.input.IndexingDispatcher;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.dto.*;
+import de.bonndan.nivio.output.dto.GroupApiModel;
+import de.bonndan.nivio.output.dto.ItemApiModel;
+import de.bonndan.nivio.output.dto.LandscapeApiModel;
 import de.bonndan.nivio.util.FrontendMapping;
 import org.apache.lucene.facet.FacetResult;
 import org.slf4j.Logger;
@@ -196,15 +198,15 @@ public class ApiController {
 
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/mapping", produces = "application/json")
-    public ResponseEntity<MappingApiModel> mapping() {
-        return new ResponseEntity<>(new MappingApiModel(frontendMapping), HttpStatus.OK);
+    public ResponseEntity<Map<String, String>> mapping() {
+        return new ResponseEntity<>(frontendMapping.getKeys(), HttpStatus.OK);
     }
 
 
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/description", produces = "application/json")
-    public ResponseEntity<DescriptionApiModel> description() {
-        return new ResponseEntity<>(new DescriptionApiModel(frontendMapping), HttpStatus.OK);
+    public ResponseEntity<Map<String, String>> description() {
+        return new ResponseEntity<>(frontendMapping.getDescriptions(), HttpStatus.OK);
     }
 
     /**
