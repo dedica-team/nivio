@@ -7,9 +7,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * A value object to hold dimensions and position data of rendered {@link Component}s.
@@ -25,7 +27,7 @@ public class LayoutedComponent {
     public double width = 50;
     public double height = 50;
     private final List<Component> opposites;
-    private List<LayoutedComponent> children;
+    private List<LayoutedComponent> children = new ArrayList<>();
 
     @Nullable
     private String defaultColor;
@@ -49,6 +51,9 @@ public class LayoutedComponent {
     }
 
     public void setWidth(double width) {
+        if (width == 0D) {
+            throw new IllegalArgumentException("Width cannot be set to zero");
+        }
         this.width = width;
     }
 
@@ -57,6 +62,9 @@ public class LayoutedComponent {
     }
 
     public void setHeight(double height) {
+        if (height == 0D) {
+            throw new IllegalArgumentException("Height cannot be set to zero");
+        }
         this.height = height;
     }
 
@@ -121,6 +129,37 @@ public class LayoutedComponent {
     }
 
     public void setDefaultColor(String color) {
-        this.defaultColor =color;
+        this.defaultColor = color;
+    }
+
+    /**
+     * Calculates the radius based on the farthest child from the center.
+     *
+     * @return radius
+     */
+    public double getRadius() {
+        final var center = getCenter();
+
+
+        Optional<Double> farthest = children.stream().reduce((component1, component2) -> {
+            Point2D.Double center1 = component1.getCenter();
+            Point2D.Double center2 = component2.getCenter();
+            var dist1 = Geometry.getDistance(center1.x - center.x, center1.y - center.y);
+            var dist2 = Geometry.getDistance(center2.x - center.x, center2.y - center.y);
+            if (dist1 > dist2)
+                return component1;
+            return component2;
+        }).map(component1 -> {
+            Point2D.Double center1 = component1.getCenter();
+            return Geometry.getDistance(center1.x - center.x, center1.y - center.y);
+        });
+        return farthest.orElse(Math.max(width / 2, height / 2));
+    }
+
+    /**
+     * Returns the center coordinate regarding x,y,width and height.
+     */
+    public Point2D.Double getCenter() {
+        return new Point2D.Double(x + width / 2.0, y + height / 2.0);
     }
 }
