@@ -38,7 +38,7 @@ class CollisionRegardingForcesTest {
         Point2D.Double repulsion = forces.getRepulsion(centerLocations[0], centerLocations[1], radius[0], radius[1]);
 
         //then
-        assertThat(repulsion.x).isEqualTo(-224, Offset.offset(1D));
+        assertThat(repulsion.x).isEqualTo(-149, Offset.offset(1D));
         assertThat(repulsion.y).isEqualTo(0, Offset.offset(1D));
 
         //when
@@ -64,8 +64,9 @@ class CollisionRegardingForcesTest {
         Point2D.Double repulsion = forces.getRepulsion(centerLocations[0], centerLocations[1], radius[0], radius[1]);
 
         //then
-        assertThat(repulsion.x).isEqualTo(318, Offset.offset(1D));
-        assertThat(repulsion.y).isEqualTo(318, Offset.offset(1D));
+        int pos = 147;
+        assertThat(repulsion.x).isEqualTo(pos, Offset.offset(1D));
+        assertThat(repulsion.y).isEqualTo(pos, Offset.offset(1D));
     }
 
 

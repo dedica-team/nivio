@@ -3,13 +3,11 @@ package de.bonndan.nivio.output.layout;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.map.hex.Hex;
-import de.bonndan.nivio.util.RootPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
 import java.awt.geom.Point2D;
-import java.io.File;
 import java.util.*;
 
 /**
@@ -37,7 +35,7 @@ public class OrganicLayouter implements Layouter {
             Set<Item> items = landscape.getItems().retrieve(group.getItems());
             if (items.isEmpty()) return;
             SubLayout subLayout = new SubLayout(debug);
-            subLayout.render(group, items, landscape.getConfig().getItemLayoutConfig());
+            subLayout.render(group, items);
             subGraphs.put(name, subLayout);
         });
 

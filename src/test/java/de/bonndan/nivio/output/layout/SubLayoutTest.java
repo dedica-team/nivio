@@ -12,10 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SubLayoutTest {
 
-    public static final int ONE_X = 50;
-    public static final int ONE_Y = -94;
-    public static final int TWO_X = -50;
-
     @Test
     void testWithARelation() {
 
@@ -35,7 +31,7 @@ class SubLayoutTest {
 
         //when
         SubLayout subLayout = new SubLayout(true);
-        subLayout.render(foo, objects, new LandscapeConfig.LayoutConfig());
+        subLayout.render(foo, objects);
 
         //then
         LayoutedComponent outerBounds = subLayout.getOuterBounds();
@@ -44,14 +40,15 @@ class SubLayoutTest {
         LayoutedComponent one = outerBounds.getChildren().get(0);
         assertNotNull(one);
         assertEquals(bar, one.getComponent());
-        assertEquals(-7, Math.round(one.getX()));
-        assertEquals(-7, Math.round(one.getY()));
+        var pos = 10;
+        assertEquals(pos, Math.round(one.getX()));
+        assertEquals(pos, Math.round(one.getY()));
 
         LayoutedComponent two = outerBounds.getChildren().get(1);
         assertNotNull(two);
         assertEquals(baz, two.getComponent());
-        assertEquals(7, Math.round(two.getX()));
-        assertEquals(7, Math.round(two.getY()));
+        assertEquals(-pos, Math.round(two.getX()));
+        assertEquals(-pos, Math.round(two.getY()));
     }
 
     @Test
@@ -74,7 +71,7 @@ class SubLayoutTest {
 
         //when
         SubLayout subLayout = new SubLayout(true);
-        subLayout.render(foo, objects, new LandscapeConfig.LayoutConfig());
+        subLayout.render(foo, objects);
 
         //then
         LayoutedComponent outerBounds = subLayout.getOuterBounds();
@@ -83,13 +80,13 @@ class SubLayoutTest {
         LayoutedComponent one = outerBounds.getChildren().get(0);
         assertNotNull(one);
         assertEquals(bar, one.getComponent());
-        assertEquals(-5, Math.round(one.getX()));
-        assertEquals(-5, Math.round(one.getY()));
+        assertEquals(-7, Math.round(one.getX()));
+        assertEquals(-7, Math.round(one.getY()));
 
         LayoutedComponent two = outerBounds.getChildren().get(1);
         assertNotNull(two);
         assertEquals(baz, two.getComponent());
-        assertEquals(5, Math.round(two.getX()));
-        assertEquals(5, Math.round(two.getY()));
+        assertEquals(7, Math.round(two.getX()));
+        assertEquals(7, Math.round(two.getY()));
     }
 }

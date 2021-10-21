@@ -2,6 +2,9 @@ package de.bonndan.nivio.output.layout;
 
 import java.awt.geom.Point2D;
 
+/**
+ * Almost the same as {@link OriginalForces}, but without a force constant and with collision prevention.
+ */
 class CollisionRegardingForces implements Forces {
 
     private final int minDistanceLimit;
@@ -62,14 +65,11 @@ class CollisionRegardingForces implements Forces {
             return new Point2D.Double(0, 0);
         }
 
-        if (deltaLengthWithRadius < minDistanceLimit) {
-            deltaLengthWithRadius = minDistanceLimit;
-        }
+        //everything below max distance counts
+        var countingDistance = Math.min(0, deltaLengthWithRadius - maxDistanceLimit);
 
-        var force = (minDistanceLimit ) * (minDistanceLimit ) / deltaLengthWithRadius;
-
-        double displacementX = xDelta / deltaLength * force;
-        double displacementY = yDelta / deltaLength * force;
+        double displacementX = xDelta / deltaLength * countingDistance * -1;
+        double displacementY = yDelta / deltaLength * countingDistance * -1;
 
         return new Point2D.Double(displacementX, displacementY);
     }

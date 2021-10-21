@@ -65,13 +65,13 @@ class AllGroupsLayoutTest {
         //assert position is always the same
         LayoutedComponent child0 = layoutedLandscape.getChildren().get(0);
         assertEquals("test/a", child0.getComponent().getFullyQualifiedIdentifier().toString());
-        assertEquals(711, Math.round(child0.getX()));
-        assertEquals(1948, Math.round(child0.getY()));
+        assertEquals(944, Math.round(child0.getX()));
+        assertEquals(1637, Math.round(child0.getY()));
     }
 
     private SubLayout getSubLayout(Group group, Set<Item> items) {
         SubLayout subLayout = new SubLayout(true);
-        subLayout.render(group, items, new LandscapeConfig.LayoutConfig());
+        subLayout.render(group, items);
         return subLayout;
     }
 }

@@ -37,7 +37,7 @@ class OriginalForcesTest {
         Point2D.Double repulsionDisplacement = originalForces.getRepulsion(centerLocations[0], centerLocations[1], radius[0], radius[1]);
 
         //then
-        assertThat(repulsionDisplacement.x).isEqualTo(-224, Offset.offset(1D));
+        assertThat(repulsionDisplacement.x).isEqualTo(-399, Offset.offset(1D));
         assertThat(repulsionDisplacement.y).isEqualTo(0, Offset.offset(1D));
     }
 

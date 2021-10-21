@@ -211,7 +211,7 @@ class SeedConfigurationFactoryTest {
         LandscapeConfig config = configuration.getConfig();
 
         assertNotNull(config);
-        assertNotNull(config.getGroupLayoutConfig());
+        assertNotNull(config.getBranding());
     }
 
     @Test

@@ -209,7 +209,7 @@ class OrganicLayouterTest extends RenderingTest {
         assertNotNull(itemComponent);
 
         //check items are shifted
-        assertEquals(5228, itemComponent.getX()); //margin + group offset + own offset
-        assertEquals(4482, itemComponent.getY()); //margin + group offset + own offset
+        assertEquals(5973, itemComponent.getX()); //margin + group offset + own offset
+        assertEquals(5141, itemComponent.getY()); //margin + group offset + own offset
     }
 }

@@ -325,12 +325,6 @@
               "example" : ".*infra.*"
             }
           },
-          "groupLayoutConfig" : {
-            "$ref" : "#/components/schemas/LayoutConfig"
-          },
-          "itemLayoutConfig" : {
-            "$ref" : "#/components/schemas/LayoutConfig"
-          },
           "kpis" : {
             "type" : "object",
             "additionalProperties" : {
@@ -437,27 +431,6 @@
             "description" : "Item descriptions to be used as templates. All values except identifier and name will be applied to the assigned items."
           }
         }
-      },
-      "LayoutConfig" : {
-        "type" : "object",
-        "properties" : {
-          "maxDistanceLimitFactor" : {
-            "type" : "number",
-            "description" : "A factor to influence maximum distance where forces are applied.",
-            "format" : "float"
-          },
-          "maxIterations" : {
-            "type" : "integer",
-            "description" : "The maximum number of iterations. More iterations theoretically lead to better results.",
-            "format" : "int32"
-          },
-          "minDistanceLimitFactor" : {
-            "type" : "number",
-            "description" : "A factor to influence minimum distance where forces are applied.",
-            "format" : "float"
-          }
-        },
-        "description" : "Layout configuration. See https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxFastOrganicLayout.html"
       },
       "Link" : {
         "required" : [ "href" ],
