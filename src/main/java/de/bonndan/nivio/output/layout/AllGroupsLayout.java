@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.util.RootPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +16,11 @@ import java.util.*;
 public class AllGroupsLayout {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AllGroupsLayout.class);
-    public static final int FORCE_CONSTANT = 300;
+
     public static final int MAX_DISTANCE_LIMIT = 1000;
 
     //results in more iterations and better layouts for larger graphs
     public static final int INITIAL_TEMP = 300 * 3;
-    public static final int MIN_DISTANCE_LIMIT = 2;
 
     private final boolean debug;
 
@@ -55,11 +55,10 @@ public class AllGroupsLayout {
 
         addVirtualEdgesBetweenGroups(items, groupNodes);
 
-        int minDistanceLimit = 50;
+        int minDistanceLimit = Hex.HEX_SIZE / 2;
         var layout = new FastOrganicLayout(
                 new ArrayList<>(groupNodes.values()),
-                ForceFactory.getNewForces(minDistanceLimit, MAX_DISTANCE_LIMIT),
-                //ForceFactory.getForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT, FORCE_CONSTANT, INITIAL_TEMP),
+                new CollisionRegardingForces(minDistanceLimit, MAX_DISTANCE_LIMIT),
                 INITIAL_TEMP
         );
         layout.setDebug(debug);

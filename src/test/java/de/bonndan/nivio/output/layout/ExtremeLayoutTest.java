@@ -20,12 +20,12 @@ class ExtremeLayoutTest {
 
     private static final int MIN_DISTANCE_LIMIT = 50;
     private static final int MAX_DISTANCE_LIMIT = 250;
-    private NewForces newForces;
+    private CollisionRegardingForces collisionRegardingForces;
     private OriginalForces originalForces;
 
     @BeforeEach
     void setup() {
-        newForces = new NewForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT);
+        collisionRegardingForces = new CollisionRegardingForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT);
         originalForces = new OriginalForces(2, MAX_DISTANCE_LIMIT, SubLayout.FORCE_CONSTANT);
     }
 
@@ -36,7 +36,7 @@ class ExtremeLayoutTest {
 
     @Test
     void newSimple() throws IOException {
-        testSimple(newForces, "new");
+        testSimple(collisionRegardingForces, "new");
     }
 
     @Test
@@ -46,7 +46,7 @@ class ExtremeLayoutTest {
 
     @Test
     void newExtreme() throws IOException {
-        testSingleLargeGroupWithRelations(newForces, "new");
+        testSingleLargeGroupWithRelations(collisionRegardingForces, "new");
     }
 
     void testSimple(Forces forces, String filePrefix) throws IOException {

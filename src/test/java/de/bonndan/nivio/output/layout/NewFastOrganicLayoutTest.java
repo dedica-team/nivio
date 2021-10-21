@@ -3,7 +3,6 @@ package de.bonndan.nivio.output.layout;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.ItemFactory;
 import de.bonndan.nivio.util.RootPath;
-import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,7 +48,7 @@ class NewFastOrganicLayoutTest {
         c.setHeight(500);
         layoutedComponents.add(c);
 
-        layout = new FastOrganicLayout(layoutedComponents, new NewForces(50, 150), SubLayout.INITIAL_TEMP);
+        layout = new FastOrganicLayout(layoutedComponents, new CollisionRegardingForces(50, 150), SubLayout.INITIAL_TEMP);
         layout.setDebug(true);
     }
 

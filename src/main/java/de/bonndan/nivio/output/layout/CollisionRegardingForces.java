@@ -2,7 +2,7 @@ package de.bonndan.nivio.output.layout;
 
 import java.awt.geom.Point2D;
 
-class NewForces implements Forces {
+class CollisionRegardingForces implements Forces {
 
     private final int minDistanceLimit;
     private final int minDistanceLimitSquared;
@@ -13,7 +13,7 @@ class NewForces implements Forces {
      * @param minDistanceLimit minimum distance to be kept in units/pixels
      * @param maxDistanceLimit distance in units/pixels of max movement and repulsion limit
      */
-    NewForces(int minDistanceLimit, int maxDistanceLimit) {
+    CollisionRegardingForces(int minDistanceLimit, int maxDistanceLimit) {
         this.minDistanceLimit = minDistanceLimit;
         this.minDistanceLimitSquared = minDistanceLimit * minDistanceLimit;
         this.maxDistanceLimit = maxDistanceLimit;
@@ -66,7 +66,7 @@ class NewForces implements Forces {
             deltaLengthWithRadius = minDistanceLimit;
         }
 
-        var force = (minDistanceLimit + r1 + r2) * (minDistanceLimit + r1 + r2) / deltaLengthWithRadius;
+        var force = (minDistanceLimit ) * (minDistanceLimit ) / deltaLengthWithRadius;
 
         double displacementX = xDelta / deltaLength * force;
         double displacementY = yDelta / deltaLength * force;

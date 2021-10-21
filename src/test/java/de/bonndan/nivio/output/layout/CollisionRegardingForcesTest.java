@@ -9,17 +9,17 @@ import java.awt.geom.Point2D;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class NewForcesTest {
+class CollisionRegardingForcesTest {
 
     private static final int MIN_DISTANCE_LIMIT = 50;
     private static final int MAX_DISTANCE_LIMIT = 250;
-    private NewForces forces;
+    private CollisionRegardingForces forces;
     private double[][] centerLocations = new double[2][2];
     private double[] radius = new double[2];
 
     @BeforeEach
     void setup() {
-        forces = new NewForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT);
+        forces = new CollisionRegardingForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT);
         radius[0] = 50;
         radius[1] = 50;
     }
