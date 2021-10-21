@@ -119,11 +119,6 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
         return null;
     }
 
-    @Override
-    public InputFormatObserver getObserver(@NonNull final InputFormatObserver inner, @NonNull final SourceReference sourceReference) {
-        return null;
-    }
-
     private String getPath(SourceReference reference, String key) {
         LinkedHashMap<String, Object> mapping = getMapping(reference);
         return (String) Optional.ofNullable(mapping.get(key)).orElse("");

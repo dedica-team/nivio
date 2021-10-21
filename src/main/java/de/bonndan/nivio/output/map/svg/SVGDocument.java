@@ -42,6 +42,11 @@ public class SVGDocument extends Component {
     private boolean debug = false;
     private HexMap hexMap;
 
+    private static final String CLASS = "class";
+    private static final String WIDTH = "width";
+    private static final String HEIGHT = "height";
+
+
     public SVGDocument(@NonNull final LayoutedComponent layouted, @Nullable final Assessment assessment, @Nullable final String cssStyles) {
         this.layouted = Objects.requireNonNull(layouted);
         this.landscape = (Landscape) layouted.getComponent();
@@ -125,10 +130,10 @@ public class SVGDocument extends Component {
                 .attr("version", "1.1")
                 .attr("xmlns", "http://www.w3.org/2000/svg")
                 .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
-                .attr("width", dimension.cartesian.horMax)
-                .attr("height", dimension.cartesian.vertMax)
+                .attr(WIDTH, dimension.cartesian.horMax)
+                .attr(HEIGHT, dimension.cartesian.vertMax)
                 .attr("viewBox", dimension.cartesian.asViewBox())
-                .attr("class", "map")
+                .attr(CLASS, "map")
 
                 .with(background)
                 .with(logo, title)
@@ -149,8 +154,9 @@ public class SVGDocument extends Component {
                     .attr("xlink:href", logoUrl)
                     .attr("x", dimension.cartesian.horMin - dimension.cartesian.padding)
                     .attr("y", dimension.cartesian.vertMin - dimension.cartesian.padding + 80)
-                    .attr("width", LABEL_WIDTH)
-                    .attr("height", LABEL_WIDTH);
+                    .attr(WIDTH, LABEL_WIDTH)
+                    .attr(HEIGHT, LABEL_WIDTH)
+                    .attr(CLASS, "logo");
         }
         return logo;
     }
@@ -159,7 +165,7 @@ public class SVGDocument extends Component {
         return SvgTagCreator.text(landscape.getName())
                 .attr("x", dimension.cartesian.horMin - dimension.cartesian.padding)
                 .attr("y", dimension.cartesian.vertMin - dimension.cartesian.padding + 60)
-                .attr("class", "title");
+                .attr(CLASS, "title");
     }
 
     /**
@@ -199,4 +205,3 @@ public class SVGDocument extends Component {
         return render().render();
     }
 }
-

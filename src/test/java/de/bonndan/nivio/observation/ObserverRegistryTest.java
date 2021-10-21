@@ -30,9 +30,10 @@ class ObserverRegistryTest {
 
     @BeforeEach
     public void setup() {
+        ThreadPoolTaskScheduler taskScheduler = mock(ThreadPoolTaskScheduler.class);
         observerPoolFactory = mock(ObserverFactory.class);
         configurationFactory = new SeedConfigurationFactory(new FileFetcher(new HttpService()));
-        observerRegistry = new ObserverRegistry(observerPoolFactory, mock(ThreadPoolTaskScheduler.class));
+        observerRegistry = new ObserverRegistry(observerPoolFactory, taskScheduler, new ObserverConfigProperties());
     }
 
     @Test

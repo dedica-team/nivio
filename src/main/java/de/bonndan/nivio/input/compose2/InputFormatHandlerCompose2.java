@@ -9,7 +9,6 @@ import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.observation.InputFormatObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -66,10 +65,4 @@ public class InputFormatHandlerCompose2 implements InputFormatHandler {
         landscapeDescription.setItems(itemDescriptions);
         return Collections.emptyList();
     }
-
-    @Override
-    public InputFormatObserver getObserver(@NonNull InputFormatObserver inner, @NonNull SourceReference sourceReference) {
-        return inner;
-    }
-
 }

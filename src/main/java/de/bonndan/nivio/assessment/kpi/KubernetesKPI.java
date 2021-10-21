@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class KubernetesKPI implements KPI {
     private static final Logger LOGGER = LoggerFactory.getLogger(KubernetesKPI.class);
     public static final String IDENTIFIER = "k8s";
-
     private boolean enabled = true;
 
     @Override
@@ -27,7 +26,6 @@ public class KubernetesKPI implements KPI {
         if (!(assessable instanceof Labeled)) {
             return new ArrayList<>();
         }
-
         var statusList = new ArrayList<StatusValue>();
         var counter = new AtomicInteger(0);
         ((Labeled) assessable).getLabels(InputFormatHandlerKubernetes.LABEL_PREFIX).forEach((key, value) -> {
@@ -89,7 +87,7 @@ public class KubernetesKPI implements KPI {
 
     @Override
     public String getDescription() {
-        return "Evaluates Kubernetes conditions";
+        return "Evaluates Kubernetes conditions.";
     }
 
     @Override
@@ -99,12 +97,12 @@ public class KubernetesKPI implements KPI {
 
     @Override
     public Map<Status, RangeApiModel> getRanges() {
-        return null;
+        return Map.of();
     }
 
     @Override
     public Map<Status, List<String>> getMatches() {
-        return null;
+        return Map.of();
     }
 
     public void setEnabled(boolean enabled) {

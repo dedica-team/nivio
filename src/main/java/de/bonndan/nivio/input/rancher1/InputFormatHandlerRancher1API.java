@@ -31,13 +31,6 @@ public class InputFormatHandlerRancher1API implements InputFormatHandler {
         return Collections.singletonList(landscapeDescription);
     }
 
-    @Override
-    public InputFormatObserver getObserver(@NonNull InputFormatObserver inner, @NonNull SourceReference reference) {
-        Rancher.Config config = getConfig(reference);
-        //TODO add observer
-        return null;
-    }
-
     private Rancher.Config getConfig(SourceReference reference) {
         Rancher.Config config;
         String accessKey = (String) reference.getProperty(API_ACCESS_KEY);

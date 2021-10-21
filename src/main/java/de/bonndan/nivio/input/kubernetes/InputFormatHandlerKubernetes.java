@@ -9,6 +9,7 @@ import de.bonndan.nivio.input.kubernetes.itemadapters.PersistentVolumeItemAdapte
 import de.bonndan.nivio.input.kubernetes.itemadapters.PodItemAdapter;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.observation.InputFormatObserver;
+import de.bonndan.nivio.observation.KubernetesObserver;
 import io.fabric8.kubernetes.api.model.OwnerReference;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
@@ -17,6 +18,7 @@ import io.fabric8.kubernetes.client.KubernetesClientException;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 
 import java.util.*;
@@ -170,8 +172,8 @@ public class InputFormatHandlerKubernetes implements InputFormatHandler {
     }
 
     @Override
-    public InputFormatObserver getObserver(@NonNull final InputFormatObserver inner, @NonNull final SourceReference sourceReference) {
-        return null;
+    public InputFormatObserver getObserver(@NonNull final InputFormatObserver inner, @NonNull final ApplicationEventPublisher eventPublisher, @NonNull final SourceReference sourceReference) {
+        return new KubernetesObserver(sourceReference, eventPublisher, this.client);
     }
 
     private KubernetesClient getClient(String context) {

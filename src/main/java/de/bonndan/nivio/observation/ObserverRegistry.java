@@ -24,12 +24,15 @@ public class ObserverRegistry {
 
     private final ObserverFactory observerPoolFactory;
     private final ThreadPoolTaskScheduler taskScheduler;
+    private final ObserverConfigProperties observerConfigProperties;
 
     public ObserverRegistry(ObserverFactory observerPoolFactory,
-                            ThreadPoolTaskScheduler taskScheduler
+                            ThreadPoolTaskScheduler taskScheduler,
+                            ObserverConfigProperties observerConfigProperties
     ) {
         this.observerPoolFactory = observerPoolFactory;
         this.taskScheduler = taskScheduler;
+        this.observerConfigProperties = observerConfigProperties;
     }
 
     /**
@@ -42,7 +45,7 @@ public class ObserverRegistry {
         event.getSource().getSource().getURL().ifPresent(url -> {
             ObserverPool pool = observerMap.computeIfAbsent(url.toString(), url1 -> {
                 LOGGER.info("Registered seed config {} for observation.", url1);
-                return new ObserverPool(taskScheduler, 30 * 1000L);
+                return new ObserverPool(taskScheduler, observerConfigProperties);
             });
             pool.updateObservers(observerPoolFactory.getObserversFor(event.getSource()));
         });
@@ -51,4 +54,5 @@ public class ObserverRegistry {
     Set<String> getObserved() {
         return observerMap.keySet();
     }
+
 }

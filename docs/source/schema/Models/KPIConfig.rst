@@ -20,7 +20,7 @@ The configuration of landscape specific key performance indicators that derive s
      - null
    * - enabled
      - Boolean
-     - A flag indicating that the KPI is active. Can be used to disable default kpis.
+     - A flag indicating that the KPI is active. Can be used to disable default KPIs.
      - optional, defaults to null
      - null
    * - label

@@ -1,14 +1,28 @@
-
 .landscapeMapContainer .map .title {
     fill: rgba(255, 255, 255, 0.75);
 }
+
+@media screen {
+    .title {
+        display: none;
+    }
+    .logo {
+        display: none;
+    }
+}
+
 .landscapeMapContainer .map .details {
     border: 1px solid #3f51b5;
     border-radius: 10px;
     background-color: white;
 }
-.landscapeMapContainer .map .item {
+
+.landscapeMapContainer .map .item:hover {
     cursor: pointer;
+}
+
+.map g.item.unselected:hover circle {
+    stroke: #C0C0C0;
 }
 
 .landscapeMapContainer .map g .group {
@@ -20,21 +34,26 @@
     fill: rgba(255, 255, 255, 0.75);
     cursor: pointer;
 }
+
 .landscapeMapContainer .map g .label rect {
     fill-opacity: 1;
     stroke-width: 0.1em;
 }
+
 .landscapeMapContainer .map g .item_shortName {
     fill: #000;
 }
+
 .landscapeMapContainer .map path {
     stroke-opacity: 0.8;
     stroke-linecap: round;
     stroke-linejoin: round;
 }
+
 .landscapeMapContainer .ReactSVGPanZoom svg g rect {
     fill: transparent;
 }
+
 @-o-keyframes highlightLabel {
     0% {
         stroke-width: 5px;
@@ -47,6 +66,7 @@
         stroke-width: 5px;
     }
 }
+
 @-webkit-keyframes highlightLabel {
     0% {
         stroke-width: 5px;
@@ -59,6 +79,7 @@
         stroke-width: 5px;
     }
 }
+
 @keyframes highlightLabel {
     0% {
         stroke-width: 5px;
@@ -71,13 +92,14 @@
         stroke-width: 5px;
     }
 }
+
 @-o-keyframes highlightRelation {
     0% {
         stroke-width: 5px;
         stroke: #000;
     }
     50% {
-        stroke-width: 40px;
+        stroke-width: 13;
         stroke: white;
     }
     to {
@@ -85,13 +107,14 @@
         stroke-width: 5px;
     }
 }
+
 @-webkit-keyframes highlightRelation {
     0% {
         stroke-width: 5px;
         stroke: #000;
     }
     50% {
-        stroke-width: 40px;
+        stroke-width: 13;
         stroke: white;
     }
     to {
@@ -99,13 +122,14 @@
         stroke-width: 5px;
     }
 }
+
 @keyframes highlightRelation {
     0% {
         stroke-width: 5px;
         stroke: #000;
     }
     50% {
-        stroke-width: 40px;
+        stroke-width: 13;
         stroke: white;
     }
     to {
@@ -113,6 +137,7 @@
         stroke-width: 5px;
     }
 }
+
 .landscapeMapContainer .highlightLabel {
     /* box-shadow: 0 0 0 2px #FF4081;
      */
@@ -123,22 +148,36 @@
     -o-animation-iteration-count: 2;
     animation-iteration-count: 2;
 }
+
 .landscapeMapContainer .highlightRelation {
     /* box-shadow: 0 0 0 2px #FF4081;
      */
     -webkit-animation: highlightRelation 1s linear;
     -o-animation: highlightRelation 1s linear;
     animation: highlightRelation 1s linear;
-    -webkit-animation-iteration-count: 2;
-    -o-animation-iteration-count: 2;
-    animation-iteration-count: 2;
+    -webkit-animation-iteration-count: 1.5;
+    -o-animation-iteration-count: 1.5;
+    animation-iteration-count: 1.5;
 }
+
 .landscapeMapContainer .with-transition {
     z-index: 2;
 }
+
 .landscapeMapContainer .with-transition svg > g {
     transition: transform 1s ease-out;
 }
+
 .landscapeMapContainer .showHighlight {
     z-index: 2;
+}
+
+.landscapeMapContainer .map g.groupArea.unselected:hover polygon {
+    fill-opacity: 0.2
+}
+
+.map g.relation.unselected path:hover {
+    stroke: #C0C0C0;
+    stroke-width: 13;
+    stroke-opacity: 1;
 }

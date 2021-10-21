@@ -103,5 +103,4 @@ public class IndexingDispatcher {
         List<LandscapeDescription> landscapes = sourceReferencesResolver.resolve(Objects.requireNonNull(config));
         publisher.publishEvent(new IndexEvent(landscapes, config, String.format("index landscape from %s", config.getIdentifier())));
     }
-
 }

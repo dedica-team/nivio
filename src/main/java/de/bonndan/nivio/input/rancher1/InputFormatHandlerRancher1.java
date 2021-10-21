@@ -3,7 +3,6 @@ package de.bonndan.nivio.input.rancher1;
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.SourceReference;
-import de.bonndan.nivio.observation.InputFormatObserver;
 import de.bonndan.nivio.util.URLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,7 @@ public class InputFormatHandlerRancher1 implements InputFormatHandler {
 
     @Override
     public List<String> getFormats() {
-        return List.of("rancher1-prometheus");
+        return Collections.singletonList("rancher1-prometheus");
     }
 
     @Override
@@ -38,11 +37,5 @@ public class InputFormatHandlerRancher1 implements InputFormatHandler {
             logger.error("Could not work on prometheus url {}", combine);
         }
         return Collections.singletonList(landscapeDescription);
-    }
-
-    @Override
-    public InputFormatObserver getObserver(@NonNull InputFormatObserver inner, @NonNull SourceReference sourceReference) {
-        //TODO add observer
-        return null;
     }
 }

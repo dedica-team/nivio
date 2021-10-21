@@ -43,7 +43,7 @@ public class ScalingKPI extends AbstractKPI {
 
     @Override
     public String getDescription() {
-        return "Turns yellow if the 'scale' label is zero. Turns orange or red if it is also is a data sink or provider.";
+        return "Turns yellow if the 'scale' label is zero, orange if it is a data sink, and red if it is a provider.";
     }
 
     @NonNull
@@ -91,7 +91,7 @@ public class ScalingKPI extends AbstractKPI {
         }
 
         if (scaleValue == 1 && (usedAsProvider > 1)) {
-            return List.of(new StatusValue(assessmentIdentifier, Label.scale.name(), Status.YELLOW, String.format("Unscaled, but %d items depend on it.", usedAsProvider)));
+            return List.of(new StatusValue(assessmentIdentifier, Label.scale.name(), Status.YELLOW, String.format("unscaled, but %d items depend on it", usedAsProvider)));
         }
 
         if (scaleValue > 0) {

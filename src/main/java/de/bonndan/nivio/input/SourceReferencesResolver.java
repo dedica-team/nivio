@@ -118,6 +118,7 @@ public class SourceReferencesResolver {
         landscapeDescription.setContact(seedConfiguration.getContact());
         landscapeDescription.setGroups(seedConfiguration.getGroups());
         landscapeDescription.setItems(seedConfiguration.getItems());
+        landscapeDescription.setLabels(seedConfiguration.getLabels());
         if (seedConfiguration.getTemplates() != null) {
             landscapeDescription.setTemplates(seedConfiguration.getTemplates());
         }

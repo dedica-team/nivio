@@ -37,7 +37,7 @@ class ObserverFactoryTest {
 
     @Test
     @DisplayName("creates a list of observers with correct base url")
-     void getObservers() throws MalformedURLException {
+    void getObservers() throws MalformedURLException {
         String source = getRootPath() + "/src/test/resources/example/example_env.yml";
         File file = new File(source);
         SeedConfiguration description = seedConfigurationFactory.fromFile(file);
@@ -47,7 +47,7 @@ class ObserverFactoryTest {
 
         InputFormatHandler handler = mock(InputFormatHandler.class);
         InputFormatObserver mockObserver = mock(InputFormatObserver.class);
-        when(handler.getObserver(any(InputFormatObserver.class), any(SourceReference.class))).thenReturn(mockObserver);
+        when(handler.getObserver(any(InputFormatObserver.class), any(ApplicationEventPublisher.class), any(SourceReference.class))).thenReturn(mockObserver);
         when(formatFactory.getInputFormatHandler(any(SourceReference.class))).thenReturn(handler);
 
         when(fileFetcher.get(any(URL.class))).thenReturn("");
@@ -63,12 +63,12 @@ class ObserverFactoryTest {
 
 
         verify(formatFactory).getInputFormatHandler(eq(ref1));
-        verify(handler).getObserver(any(InputFormatObserver.class), eq(ref1));
+        verify(handler).getObserver(any(InputFormatObserver.class), any(ApplicationEventPublisher.class), eq(ref1));
     }
 
     @Test
     @DisplayName("Landscape pushed through API wont have a source url, but still source references")
-     void withoutSourceUrl() throws MalformedURLException {
+    void withoutSourceUrl() throws MalformedURLException {
         SeedConfiguration configuration = seedConfigurationFactory.fromFile(new File(getRootPath() + "/src/test/resources/example/example_env.yml"));
         configuration.setSource(null);
 
@@ -77,7 +77,7 @@ class ObserverFactoryTest {
         configuration.getSourceReferences().add(ref1);
 
         InputFormatHandler handler = mock(InputFormatHandler.class);
-        when(handler.getObserver(any(InputFormatObserver.class), any(SourceReference.class))).thenReturn(mock(InputFormatObserver.class));
+        when(handler.getObserver(any(InputFormatObserver.class), any(ApplicationEventPublisher.class), any(SourceReference.class))).thenReturn(mock(InputFormatObserver.class));
         when(formatFactory.getInputFormatHandler(any(SourceReference.class))).thenReturn(handler);
 
         //when
@@ -89,8 +89,8 @@ class ObserverFactoryTest {
         assertFalse(observers.isEmpty());
         assertEquals(1, observers.size());
 
-        verify(formatFactory).getInputFormatHandler(eq(ref1));
-        verify(handler).getObserver(any(InputFormatObserver.class), eq(ref1));
+        verify(formatFactory).getInputFormatHandler(ref1);
+        verify(handler).getObserver(any(InputFormatObserver.class), any(ApplicationEventPublisher.class), eq(ref1));
     }
 
     private String getRootPath() {

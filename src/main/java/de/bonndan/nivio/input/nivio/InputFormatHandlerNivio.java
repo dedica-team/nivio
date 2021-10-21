@@ -3,11 +3,9 @@ package de.bonndan.nivio.input.nivio;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.observation.InputFormatObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -61,11 +59,5 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
         }
 
         return Collections.emptyList();
-    }
-
-    @Override
-    @Nullable
-    public InputFormatObserver getObserver(@NonNull InputFormatObserver inner, @NonNull SourceReference sourceReference) {
-        return inner;
     }
 }

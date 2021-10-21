@@ -19,13 +19,14 @@ class ObserverPoolTest {
     void setup() {
         scheduler = mock(ThreadPoolTaskScheduler.class);
         scheduledFuture = mock(ScheduledFuture.class);
+        var observerConfigProperties = mock(ObserverConfigProperties.class);
         when(scheduler.scheduleWithFixedDelay(any(Runnable.class), anyLong())).thenReturn(scheduledFuture);
 
-        observerPool = new ObserverPool(scheduler, 1);
+        observerPool = new ObserverPool(scheduler, observerConfigProperties);
     }
 
     @Test
-    public void schedulesRunnables() {
+    void schedulesRunnables() {
         InputFormatObserver observer1 = mock(InputFormatObserver.class);
         InputFormatObserver observer2 = mock(InputFormatObserver.class);
         InputFormatObserver observer3 = mock(InputFormatObserver.class);
@@ -34,11 +35,11 @@ class ObserverPoolTest {
         observerPool.updateObservers(List.of(observer1, observer2, observer3));
 
         //then
-        verify(scheduler, times(3)).scheduleWithFixedDelay(any(Runnable.class), eq(1L));
+        verify(scheduler, times(3)).scheduleWithFixedDelay(any(Runnable.class), eq(30000L));
     }
 
     @Test
-    public void stopsScheduledTasks() {
+    void stopsScheduledTasks() {
         InputFormatObserver observer1 = mock(InputFormatObserver.class);
         InputFormatObserver observer2 = mock(InputFormatObserver.class);
         observerPool.updateObservers(List.of(observer1, observer2));

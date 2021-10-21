@@ -4,6 +4,7 @@ import de.bonndan.nivio.input.SeedConfiguration;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.observation.InputFormatObserver;
+import de.bonndan.nivio.observation.KubernetesObserver;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSetBuilder;
@@ -13,11 +14,13 @@ import io.fabric8.kubernetes.client.server.mock.EnableKubernetesMockClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -116,6 +119,15 @@ class InputFormatHandlerKubernetesTest {
 
     @Test
     void getObserver() {
-        assertNull(inputFormatHandlerKubernetes.getObserver(Mockito.mock(InputFormatObserver.class), Mockito.mock(SourceReference.class)));
+        //given
+        var observer = Mockito.mock(InputFormatObserver.class);
+        var applicationEventPublisher = Mockito.mock(ApplicationEventPublisher.class);
+        var sourceReference = Mockito.mock(SourceReference.class);
+
+        //when
+        var observerClass = Objects.requireNonNull(inputFormatHandlerKubernetes.getObserver(observer, applicationEventPublisher, sourceReference)).getClass();
+
+        //then
+        assertThat(observerClass).isEqualTo(KubernetesObserver.class);
     }
 }
