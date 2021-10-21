@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * A value object to hold dimensions and position data of rendered {@link Component}s.
@@ -26,19 +27,58 @@ public class LayoutedComponent {
     public long y = 0;
     public double width = 50;
     public double height = 50;
+    public static double padding = 50;
     private final List<Component> opposites;
     private List<LayoutedComponent> children = new ArrayList<>();
 
     @Nullable
     private String defaultColor;
 
+    public static LayoutedComponent from(@NonNull final Component parent, @NonNull final List<LayoutedComponent> children) {
+
+        if (Objects.requireNonNull(children).isEmpty()) {
+            throw new IllegalArgumentException("Children must not be empty.");
+        }
+
+        LayoutedComponent layoutedComponent = new LayoutedComponent(parent, children, new ArrayList<>());
+
+
+        if (children.size() == 1) {
+            layoutedComponent.setWidth(children.get(0).getWidth());
+            layoutedComponent.setHeight(children.get(0).getHeight());
+        } else {
+            var minX = new AtomicLong(0);
+            var maxX = new AtomicLong(0);
+            var minY = new AtomicLong(0);
+            var maxY = new AtomicLong(0);
+
+            for (LayoutedComponent b : children) {
+                if (b.x < minX.get()) minX.set(b.x);
+                if (b.x > maxX.get()) maxX.set(b.x);
+                if (b.y < minY.get()) minY.set(b.y);
+                if (b.y > maxY.get()) maxY.set(b.y);
+            }
+
+            layoutedComponent.setWidth((double) maxX.get() - minX.get() + padding);
+            layoutedComponent.setHeight((double) maxY.get() - minY.get() + padding);
+        }
+
+        return layoutedComponent;
+    }
+
+    public LayoutedComponent(@NonNull final Component component, @NonNull final List<LayoutedComponent> children, List<Component> opposites) {
+        this.component = Objects.requireNonNull(component);
+        this.children = Objects.requireNonNull(children);
+        this.opposites = opposites;
+    }
+
     public LayoutedComponent(@NonNull final Component component, List<Component> opposites) {
         this.component = Objects.requireNonNull(component);
         this.opposites = opposites;
     }
 
-    public LayoutedComponent(Component component) {
-        this.component = component;
+    public LayoutedComponent(@NonNull final Component component) {
+        this.component = Objects.requireNonNull(component);
         opposites = new ArrayList<>();
     }
 
@@ -88,10 +128,6 @@ public class LayoutedComponent {
         return component;
     }
 
-    public void setChildren(List<LayoutedComponent> children) {
-        this.children = children;
-    }
-
     public List<LayoutedComponent> getChildren() {
         return children;
     }
@@ -135,6 +171,8 @@ public class LayoutedComponent {
     /**
      * Calculates the radius based on the farthest child from the center.
      *
+     * Includes the child's radius, not just it's center.
+     *
      * @return radius
      */
     public double getRadius() {
@@ -144,14 +182,14 @@ public class LayoutedComponent {
         Optional<Double> farthest = children.stream().reduce((component1, component2) -> {
             Point2D.Double center1 = component1.getCenter();
             Point2D.Double center2 = component2.getCenter();
-            var dist1 = Geometry.getDistance(center1.x - center.x, center1.y - center.y);
-            var dist2 = Geometry.getDistance(center2.x - center.x, center2.y - center.y);
+            var dist1 = Geometry.getDistance(center1.x - center.x, center1.y - center.y) + component1.getRadius();
+            var dist2 = Geometry.getDistance(center2.x - center.x, center2.y - center.y) + component2.getRadius();
             if (dist1 > dist2)
                 return component1;
             return component2;
         }).map(component1 -> {
             Point2D.Double center1 = component1.getCenter();
-            return Geometry.getDistance(center1.x - center.x, center1.y - center.y);
+            return Geometry.getDistance(center1.x - center.x, center1.y - center.y) + component1.getRadius();
         });
         return farthest.orElse(Math.max(width / 2, height / 2));
     }
@@ -161,5 +199,17 @@ public class LayoutedComponent {
      */
     public Point2D.Double getCenter() {
         return new Point2D.Double(x + width / 2.0, y + height / 2.0);
+    }
+
+    /**
+     * @return top-left and bottom-right as points
+     */
+    public List<Point2D.Double> getMinMaxBoundaries() {
+        Point2D.Double center = getCenter();
+        double radius = getRadius();
+        return List.of(
+                new Point2D.Double(center.x - radius, center.y - radius),
+                new Point2D.Double(center.x + radius, center.y + radius)
+        );
     }
 }

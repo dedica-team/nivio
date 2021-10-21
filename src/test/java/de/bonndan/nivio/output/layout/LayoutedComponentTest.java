@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -44,19 +45,59 @@ class LayoutedComponentTest {
     }
 
     @Test
-    void getRadius() {
+    void getRadiusFromFarthest() {
 
         //given
-        var child = new LayoutedComponent(ItemFactory.getTestItem("bar", "baz"));
-        child.setX(1050);
-        child.setY(1050);
-        component.setChildren(List.of(child));
+        var child1 = new LayoutedComponent(ItemFactory.getTestItem("bar", "baz"));
+        child1.setX(1050);
+        child1.setY(1050);
+
+        var child2 = new LayoutedComponent(ItemFactory.getTestItem("bar", "bak"));
+        child2.setX(800);
+        child2.setY(800);
+
+        component = new LayoutedComponent(ItemFactory.getTestItem("foo", "bar"), List.of(child1,child2), new ArrayList<>());
+        component.setWidth(100D);
+        component.setHeight(100D);
+        component.setX(1000);
+        component.setY(1000);
 
         //when
         double radius = component.getRadius();
 
         //then
-        assertThat(radius).isEqualTo(35, Offset.offset(1D));
+        var center = component.getCenter();
+        var dist = Geometry.getDistance(center.x - child2.getCenter().x, center.y - child2.getCenter().y) + child2.getRadius();
+        assertThat(radius).isEqualTo(dist, Offset.offset(1D));
+    }
+
+    @Test
+    void getRadiusFromGreaterChildRadius() {
+
+        //given
+        var child1 = new LayoutedComponent(ItemFactory.getTestItem("bar", "baz"));
+        child1.setX(1200);
+        child1.setY(1200);
+
+        var child2 = new LayoutedComponent(ItemFactory.getTestItem("bar", "bak"));
+        child2.setX(900);
+        child2.setY(900);
+        child2.setWidth(500);
+        child2.setHeight(500);
+
+        component = new LayoutedComponent(ItemFactory.getTestItem("foo", "bar"), List.of(child1,child2), new ArrayList<>());
+        component.setWidth(100D);
+        component.setHeight(100D);
+        component.setX(1000);
+        component.setY(1000);
+
+        //when
+        double radius = component.getRadius();
+
+        //then
+        var center = component.getCenter();
+        var dist = Geometry.getDistance(center.x - child2.getCenter().x, center.y - child2.getCenter().y) + child2.getRadius();
+        assertThat(radius).isEqualTo(dist, Offset.offset(1D));
     }
 
     @Test

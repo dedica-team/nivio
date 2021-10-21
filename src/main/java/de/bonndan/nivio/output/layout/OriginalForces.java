@@ -4,8 +4,6 @@ import java.awt.geom.Point2D;
 
 /**
  * The original forces used in {@link FastOrganicLayout}.
- *
- *
  */
 class OriginalForces implements Forces {
 
@@ -20,7 +18,7 @@ class OriginalForces implements Forces {
      */
     private final int forceConstant;
 
-    OriginalForces(int minDistanceLimit, int maxDistanceLimit, int forceConstant, int initialTemp) {
+    OriginalForces(int minDistanceLimit, int maxDistanceLimit, int forceConstant) {
         this.minDistanceLimit = minDistanceLimit;
         this.minDistanceLimitSquared = minDistanceLimit * minDistanceLimit;
         this.maxDistanceLimit = maxDistanceLimit;
@@ -32,7 +30,7 @@ class OriginalForces implements Forces {
         double yDelta = c1[1] - c2[1];
 
         // The distance between the nodes
-        double deltaLengthSquared = xDelta * xDelta + yDelta * yDelta - (r1*r1) - (r2*r2);
+        double deltaLengthSquared = xDelta * xDelta + yDelta * yDelta - (r1 * r1) - (r2 * r2);
 
         if (deltaLengthSquared < minDistanceLimitSquared) {
             deltaLengthSquared = minDistanceLimitSquared;
@@ -66,22 +64,22 @@ class OriginalForces implements Forces {
 
         if (deltaLengthWithRadius > maxDistanceLimit) {
             // Ignore vertices too far apart
-            return new Point2D.Double(0,0);
+            return new Point2D.Double(0, 0);
         }
 
         if (deltaLengthWithRadius < minDistanceLimit) {
             deltaLengthWithRadius = minDistanceLimit;
         }
 
-        double force = forceConstant*forceConstant / deltaLengthWithRadius;
+        double force = forceConstant * forceConstant / deltaLengthWithRadius;
 
-        double displacementX = (xDelta / deltaLength) * force;
-        double displacementY = (yDelta / deltaLength) * force;
+        double displacementX = xDelta / deltaLength * force;
+        double displacementY = yDelta / deltaLength * force;
 
         return new Point2D.Double(displacementX, displacementY);
     }
 
-    public Point2D.Double applyDisplacement(double[][] centerLocations, double[]radius, int index, double dispX, double dispY, double temperature) {
+    public Point2D.Double applyDisplacement(double[][] centerLocations, double[] radius, int index, double dispX, double dispY, double temperature) {
         double deltaLength = Geometry.getDistance(dispX, dispY);
 
         if (deltaLength < 0.001) {

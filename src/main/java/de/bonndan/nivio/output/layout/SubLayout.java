@@ -12,7 +12,6 @@ import java.util.Set;
 
 /**
  * Layout for one group (for the items INSIDE the group).
- *
  */
 public class SubLayout {
 
@@ -44,12 +43,12 @@ public class SubLayout {
 
         layout = new FastOrganicLayout(
                 components,
-                ForceFactory.getForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT, FORCE_CONSTANT, INITIAL_TEMP),
-                 INITIAL_TEMP
+                ForceFactory.getForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT, FORCE_CONSTANT),
+                INITIAL_TEMP
         );
         layout.setDebug(debug);
         layout.execute();
-        LOGGER.debug("Subgraph {} layouted items: {}", name, layout.getBounds());
+        LOGGER.debug("Subgraph {} layouted items: {}", name, layout.getNodes());
     }
 
     static List<LayoutedComponent> getLayoutedComponents(Component group, Set<Item> items) {
@@ -74,6 +73,6 @@ public class SubLayout {
     }
 
     public LayoutedComponent getOuterBounds() {
-        return layout.getOuterBounds(parent);
+        return LayoutedComponent.from(parent, layout.nodes);
     }
 }

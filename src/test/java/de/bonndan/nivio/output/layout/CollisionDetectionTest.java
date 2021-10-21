@@ -6,7 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class CollisionDetectionTest {
 
@@ -87,5 +86,29 @@ class CollisionDetectionTest {
 
         //then
         assertThat(collisionReductionFactor).isLessThan(1).isEqualTo(0.85, Offset.offset(0.1D));
+    }
+
+    @Test
+    @DisplayName("Movement way from collision allowed")
+    void testMoveAwayFromCollision() {
+        //given
+        double[][] centerLocations = new double[2][];
+        centerLocations[0] = new double[2];
+        centerLocations[0][0] = 0;
+        centerLocations[0][1] = 0;
+
+        centerLocations[1] = new double[2];
+        centerLocations[1][0] = 100;
+        centerLocations[1][1] = 100;
+
+        double[] radius = new double[2];
+        radius[0] = 150;
+        radius[1] = 150;
+
+        //when
+        var collisionReductionFactor = collisionDetection.getFreeMovementFactor(centerLocations, radius, 0, 200, 200);
+
+        //then
+        assertThat(collisionReductionFactor).isEqualTo(1);
     }
 }

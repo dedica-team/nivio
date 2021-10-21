@@ -4,11 +4,9 @@ import de.bonndan.nivio.model.Component;
 import org.springframework.lang.NonNull;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Fast organic layout algorithm.
@@ -17,21 +15,9 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class FastOrganicLayout {
 
-    private final List<LayoutedComponent> nodes;
+    final List<LayoutedComponent> nodes;
     private final LayoutLogger layoutLogger;
     private final Forces forces;
-
-    /**
-     * Minimal distance limit. Default is 2. Prevents of
-     * dividing by zero.
-     */
-    protected int minDistanceLimit;
-
-    /**
-     * The maximum distance between vertices, beyond which their
-     * repulsion no longer has an effect
-     */
-    protected double maxDistanceLimit;
 
     /**
      * Start value of temperature. Default is 200.
@@ -146,18 +132,14 @@ public class FastOrganicLayout {
 
             // Set the X,Y value of the internal version of the cell to
             // the center point of the vertex for better positioning
-            double width = layoutedComponent.getWidth();
-            double height = layoutedComponent.getHeight();
-            double x = layoutedComponent.getX();
-            double y = layoutedComponent.getY();
-
-            centerLocations[i][0] = x + width / 2.0;
-            centerLocations[i][1] = y + height / 2.0;
+            var center = layoutedComponent.getCenter();
+            centerLocations[i][0] = center.x;
+            centerLocations[i][1] = center.y;
 
             dispX[i] = 0;
             dispY[i] = 0;
 
-            radius[i] = Math.max(width, height);
+            radius[i] = layoutedComponent.getRadius();
         }
 
         // Moves cell location back to top-left from center locations used in
@@ -190,8 +172,6 @@ public class FastOrganicLayout {
 
     /**
      * Setup the layout and run the main loop until movement is cooled down (temperature is low).
-     *
-     *
      */
     public void execute() {
 
@@ -206,11 +186,12 @@ public class FastOrganicLayout {
 
             // Calculate repulsive forces on all vertices
             calcRepulsion();
+            calcPositions();
 
             // Calculate attractive forces through edges
             calcAttraction();
-
             calcPositions();
+
             reduceTemperature();
         }
 
@@ -239,13 +220,13 @@ public class FastOrganicLayout {
             var newXDisp = displacement.x;
             var newYDisp = displacement.y;
 
-            // reset displacements
-            dispX[index] = 0;
-            dispY[index] = 0;
-
             // Update the cached cell locations
             centerLocations[index][0] += newXDisp;
             centerLocations[index][1] += newYDisp;
+
+            // reset displacements
+            dispX[index] = 0;
+            dispY[index] = 0;
             if (debug) {
                 layoutLogger.debug("Iteration {} temp {}: Shifting index {} center by dx {} and dy {}", iteration, temperature, index, newXDisp, newYDisp);
             }
@@ -313,38 +294,18 @@ public class FastOrganicLayout {
         }
     }
 
-    public List<LayoutedComponent> getBounds() {
+    public List<LayoutedComponent> getNodes() {
         return nodes;
     }
 
-    public LayoutedComponent getOuterBounds(Component parent) {
 
-        LayoutedComponent outer = new LayoutedComponent(parent, new ArrayList<>());
-        var minX = new AtomicLong(0);
-        var maxX = new AtomicLong(0);
-        var minY = new AtomicLong(0);
-        var maxY = new AtomicLong(0);
-
-        for (LayoutedComponent b : this.nodes) {
-            if (b.x < minX.get()) minX.set(b.x);
-            if (b.x > maxX.get()) maxX.set(b.x);
-            if (b.y < minY.get()) minY.set(b.y);
-            if (b.y > maxY.get()) maxY.set(b.y);
-        }
-
-        outer.setWidth((double) maxX.get() - minX.get());
-        outer.setHeight((double) maxY.get() - minY.get());
-        outer.setChildren(nodes);
-
-        return outer;
-    }
 
     /**
      * Ensures that the given min distance is kept between all nodes.
      *
      * @throws IllegalStateException on shortfall
      */
-    public void assertMinDistanceIsKept() {
+    public void assertMinDistanceIsKept(double minDistanceLimit) {
         int vertexCount = nodes.size();
 
         for (int i = 0; i < vertexCount; i++) {
@@ -354,7 +315,7 @@ public class FastOrganicLayout {
                 }
                 double deltaLengthWithRadius = Geometry.getDistance(centerLocations[i], centerLocations[j], 0, 0, radius[i], radius[j]);
                 if (Math.abs(deltaLengthWithRadius) < minDistanceLimit * 0.9) {
-                    throw new IllegalStateException(String.format("Min distance shortfall of %s/%s for i=%d j=%d", deltaLengthWithRadius, minDistanceLimit, i, j));
+                    throw new LayoutException(String.format("Min distance shortfall of %s/%s for i=%d j=%d", deltaLengthWithRadius, minDistanceLimit, i, j));
                 }
             }
         }

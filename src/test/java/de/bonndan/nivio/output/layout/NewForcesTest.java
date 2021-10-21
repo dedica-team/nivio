@@ -1,22 +1,11 @@
 package de.bonndan.nivio.output.layout;
 
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.ItemFactory;
-import de.bonndan.nivio.model.RelationFactory;
-import de.bonndan.nivio.util.RootPath;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.awt.geom.Point2D;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,14 +13,13 @@ class NewForcesTest {
 
     private static final int MIN_DISTANCE_LIMIT = 50;
     private static final int MAX_DISTANCE_LIMIT = 250;
-    private static final int INITIAL_TEMP = 300;
     private NewForces forces;
     private double[][] centerLocations = new double[2][2];
     private double[] radius = new double[2];
 
     @BeforeEach
     void setup() {
-        forces = new NewForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT, INITIAL_TEMP);
+        forces = new NewForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT);
         radius[0] = 50;
         radius[1] = 50;
     }
@@ -44,23 +32,21 @@ class NewForcesTest {
         centerLocations[0][1] = 0;
 
         centerLocations[1][0] = 200;
-        centerLocations[1][1] = 0;
+        centerLocations[1][1] = 0.01;
 
         //when
-
         Point2D.Double repulsion = forces.getRepulsion(centerLocations[0], centerLocations[1], radius[0], radius[1]);
 
         //then
-        assertThat(repulsion.x).isEqualTo(0, Offset.offset(1D));
-        assertThat(repulsion.y).isEqualTo(-125, Offset.offset(1D));
+        assertThat(repulsion.x).isEqualTo(-224, Offset.offset(1D));
+        assertThat(repulsion.y).isEqualTo(0, Offset.offset(1D));
 
         //when
-
         Point2D.Double reverse = forces.getRepulsion(centerLocations[1], centerLocations[0], radius[1], radius[0]);
 
         //then
-        assertThat(reverse.x).isEqualTo(0, Offset.offset(1D));
-        assertThat(reverse.y).isEqualTo(125, Offset.offset(1D));
+        assertThat(reverse.x).isEqualTo(-repulsion.x, Offset.offset(1D));
+        assertThat(reverse.y).isEqualTo(0, Offset.offset(1D));
     }
 
     @Test
@@ -78,8 +64,8 @@ class NewForcesTest {
         Point2D.Double repulsion = forces.getRepulsion(centerLocations[0], centerLocations[1], radius[0], radius[1]);
 
         //then
-        assertThat(repulsion.x).isEqualTo(176, Offset.offset(1D));
-        assertThat(repulsion.y).isEqualTo(176, Offset.offset(1D));
+        assertThat(repulsion.x).isEqualTo(318, Offset.offset(1D));
+        assertThat(repulsion.y).isEqualTo(318, Offset.offset(1D));
     }
 
 
@@ -98,7 +84,7 @@ class NewForcesTest {
         Point2D.Double repulsionDisplacement = forces.getRepulsion(centerLocations[0], centerLocations[1], radius[0], radius[1]);
 
         //then
-        assertThat(repulsionDisplacement.x / repulsionDisplacement.y).isEqualTo(5D / 100D, Offset.offset(0.1D));
+        assertThat(repulsionDisplacement.x / repulsionDisplacement.y).isEqualTo(100D / 5D, Offset.offset(0.1D));
     }
 
 
@@ -170,8 +156,8 @@ class NewForcesTest {
 
         //then
         //displacement is subtracted from i and added to j
-        assertThat(displacement.x).isGreaterThan(0).isEqualTo(111, Offset.offset(1D)); //shift in x direction
-        assertThat(displacement.y).isGreaterThan(0).isLessThan(displacement.x); //shift in y direction
+        assertThat(displacement.x).isLessThan(0).isEqualTo(-1177, Offset.offset(1D)); //shift in x direction
+        assertThat(displacement.y).isLessThan(0).isGreaterThan(displacement.x); //shift in y direction
 
         assertThat(displacement.x / displacement.y).isEqualTo(400 / 200f);
 
@@ -179,8 +165,8 @@ class NewForcesTest {
         var reverse = forces.getAttraction(centerLocations[1], centerLocations[0], radius[1], radius[0]);
 
         //then
-        assertThat(reverse.x).isLessThan(0).isEqualTo(displacement.x * -1); //shift in x direction
-        assertThat(reverse.y).isLessThan(0).isEqualTo(displacement.y * -1); //shift in x direction
+        assertThat(reverse.x).isGreaterThan(0).isEqualTo(displacement.x * -1); //shift in x direction
+        assertThat(reverse.y).isGreaterThan(0).isEqualTo(displacement.y * -1); //shift in x direction
     }
 
     @Test
@@ -195,7 +181,7 @@ class NewForcesTest {
 
 
         //when
-        var displacement = forces.applyDisplacement(centerLocations, radius, 0, 100, 100, 300);
+        var displacement = forces.applyDisplacement(centerLocations, radius, 0, 100, 100, 1);
 
         //then
         assertThat(displacement.x).isEqualTo(0);
@@ -239,61 +225,8 @@ class NewForcesTest {
         //then
         assertThat(displacement.x).isLessThan(350);
         assertThat(displacement.y).isLessThan(200);
-        assertThat(displacement.x / displacement.y).isEqualTo(350 / 200f);
+        assertThat(displacement.x / displacement.y).isEqualTo(350 / 200f, Offset.offset(0.1D));
 
     }
 
-    @Test
-    @DisplayName("prevent dense placement in extreme layouts")
-    void singleLargeGroupWithRelations() throws IOException {
-
-        List<Item> items = new ArrayList<>();
-        int i = 0;
-        Group group = new Group("group0", "test");
-        while (i < 40) {
-            Item testItem = ItemFactory.getTestItem("test", "c" + i);
-            items.add(testItem);
-            i++;
-        }
-
-        Random r = new Random();
-        int low = 0;
-        int high = items.size() - 1;
-
-        // relations
-        var descriptionListSize = items.size();
-        for (i = 0; i < descriptionListSize; i++) {
-            Item item = items.get(i);
-            List<Item> targets = new ArrayList<>();
-            int j = 0;
-            while (j < 5) {
-                int rand = r.nextInt(high - low) + low;
-                if (rand == i)
-                    continue;
-                Item other = items.get(j);
-                if (!other.equals(item))
-                    targets.add(other);
-                j++;
-            }
-            targets.forEach(target -> {
-                item.addOrReplace(RelationFactory.createForTesting(item, target));
-            });
-        }
-
-        var components = SubLayout.getLayoutedComponents(group, new HashSet<>(items));
-
-        var layout = new FastOrganicLayout(components, forces, SubLayout.INITIAL_TEMP);
-        layout.setDebug(true);
-
-        //when
-        try {
-            layout.execute();
-        } finally {
-            layout.getLayoutLogger().traceLocations(new File(RootPath.get() + "/src/test/dump/singleLargeGroupWithRelations.svg"));
-            layout.getLayoutLogger().dump(new File(RootPath.get() + "/src/test/dump/singleLargeGroupWithRelations.txt"));
-        }
-
-        //then
-        layout.assertMinDistanceIsKept();
-    }
 }

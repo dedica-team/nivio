@@ -90,7 +90,7 @@ public abstract class RenderingTest {
 
     protected LayoutedComponent debugRenderLandscape(String path, Landscape landscape) throws IOException {
 
-        OrganicLayouter organicLayouter = new OrganicLayouter(false);
+        OrganicLayouter organicLayouter = new OrganicLayouter(true);
         LayoutedComponent graph = organicLayouter.layout(landscape);
         toSVG(graph, new Assessment(landscape.applyKPIs(landscape.getKpis())), RootPath.get() + path);
         return graph;

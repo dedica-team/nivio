@@ -44,14 +44,14 @@ class SubLayoutTest {
         LayoutedComponent one = outerBounds.getChildren().get(0);
         assertNotNull(one);
         assertEquals(bar, one.getComponent());
-        assertEquals(103, Math.round(one.getX()));
-        assertEquals(103, Math.round(one.getY()));
+        assertEquals(-7, Math.round(one.getX()));
+        assertEquals(-7, Math.round(one.getY()));
 
         LayoutedComponent two = outerBounds.getChildren().get(1);
         assertNotNull(two);
         assertEquals(baz, two.getComponent());
-        assertEquals(-103, Math.round(two.getX()));
-        assertEquals(0, Math.round(two.getY()));
+        assertEquals(7, Math.round(two.getX()));
+        assertEquals(7, Math.round(two.getY()));
     }
 
     @Test
@@ -83,13 +83,13 @@ class SubLayoutTest {
         LayoutedComponent one = outerBounds.getChildren().get(0);
         assertNotNull(one);
         assertEquals(bar, one.getComponent());
-        assertEquals(71, Math.round(one.getX()));
-        assertEquals(71, Math.round(one.getY()));
+        assertEquals(-5, Math.round(one.getX()));
+        assertEquals(-5, Math.round(one.getY()));
 
         LayoutedComponent two = outerBounds.getChildren().get(1);
         assertNotNull(two);
         assertEquals(baz, two.getComponent());
-        assertEquals(-21, Math.round(two.getX()));
-        assertEquals(-21, Math.round(two.getY()));
+        assertEquals(5, Math.round(two.getX()));
+        assertEquals(5, Math.round(two.getY()));
     }
 }

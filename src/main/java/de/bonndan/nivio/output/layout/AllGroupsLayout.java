@@ -1,9 +1,12 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.util.RootPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -52,18 +55,29 @@ public class AllGroupsLayout {
 
         addVirtualEdgesBetweenGroups(items, groupNodes);
 
+        int minDistanceLimit = 50;
         var layout = new FastOrganicLayout(
                 new ArrayList<>(groupNodes.values()),
-                ForceFactory.getForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT, FORCE_CONSTANT, INITIAL_TEMP),
+                ForceFactory.getNewForces(minDistanceLimit, MAX_DISTANCE_LIMIT),
+                //ForceFactory.getForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT, FORCE_CONSTANT, INITIAL_TEMP),
                 INITIAL_TEMP
         );
         layout.setDebug(debug);
 
         layout.execute();
-        layout.assertMinDistanceIsKept();
-        if (debug) LOGGER.debug("AllGroupsLayout bounds: {}", layout.getBounds());
+        if (debug) {
+            try {
+                String name = landscape.getName();
+                layout.getLayoutLogger().traceLocations(new File(RootPath.get() + "/src/test/dump/" + name + ".svg"));
+                layout.getLayoutLogger().dump(new File(RootPath.get() + "/src/test/dump/" + name + ".txt"));
+            } catch (IOException e) {
+                LOGGER.warn("Failed to write debug information", e);
+            }
+        }
+        layout.assertMinDistanceIsKept(minDistanceLimit);
+        if (debug) LOGGER.debug("AllGroupsLayout bounds: {}", layout.getNodes());
 
-        return layout.getOuterBounds(landscape);
+        return LayoutedComponent.from(landscape, layout.getNodes());
     }
 
 

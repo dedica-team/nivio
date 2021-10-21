@@ -3,13 +3,14 @@ package de.bonndan.nivio.output.layout;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.util.RootPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
 import java.awt.geom.Point2D;
+import java.io.File;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Applies {@link FastOrganicLayout} to landscape components and writes the rendered data to component labels.
@@ -80,7 +81,8 @@ public class OrganicLayouter implements Layouter {
      * @return the left/top extra margin to shift all items into positive coordinates
      */
     private Point2D.Double getMargins(LayoutedComponent layoutedLandscape) {
-        List<Point2D.Double> minMaxBoundaries = getMinMaxBoundaries(layoutedLandscape);
+
+        List<Point2D.Double> minMaxBoundaries = layoutedLandscape.getMinMaxBoundaries();
         var min = minMaxBoundaries.get(0);
         var max = minMaxBoundaries.get(1);
 
@@ -104,34 +106,5 @@ public class OrganicLayouter implements Layouter {
         return new Point2D.Double(marginX, marginY);
     }
 
-    /**
-     * @param layoutedComponent parent
-     * @return top-left and bottom-right as points
-     */
-    static List<Point2D.Double> getMinMaxBoundaries(LayoutedComponent layoutedComponent) {
-        AtomicLong minX = new AtomicLong(Integer.MAX_VALUE);
-        AtomicLong maxX = new AtomicLong(Integer.MIN_VALUE);
-        AtomicLong minY = new AtomicLong(Integer.MAX_VALUE);
-        AtomicLong maxY = new AtomicLong(Integer.MIN_VALUE);
 
-        layoutedComponent.getChildren().forEach(c -> {
-            double x = c.getX();
-            double y = c.getY();
-
-            if (x < minX.get())
-                minX.set((long) x);
-            if (x > maxX.get())
-                maxX.set((long) x);
-
-            if (y < minY.get())
-                minY.set((long) y);
-            if (y > maxY.get())
-                maxY.set((long) y);
-        });
-
-        return List.of(
-                new Point2D.Double(minX.get(), minY.get()),
-                new Point2D.Double(maxX.get(), maxY.get())
-        );
-    }
 }

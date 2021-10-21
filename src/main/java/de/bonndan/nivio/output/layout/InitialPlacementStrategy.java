@@ -27,9 +27,7 @@ public class InitialPlacementStrategy {
         var sum = 0;
         for (int i = 0; i < size; i++) {
             LayoutedComponent layoutedComponent = bounds.get(i);
-            double width = layoutedComponent.getWidth();
-            double height = layoutedComponent.getHeight();
-            radius[i] = Math.max(width, height)/2; //using diameter
+            radius[i] = layoutedComponent.getRadius();
             sum += radius[i];
         }
         double approxRadiusSum = sum;

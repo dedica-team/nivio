@@ -35,6 +35,7 @@ public class CollisionDetection {
                     continue;
                 }
 
+                var currentDistance = Geometry.getDistance(centerLocations[index], centerLocations[j], 0, 0, radius[index], radius[j]);
                 var futureDistance = Geometry.getDistance(
                         centerLocations[index],
                         centerLocations[j],
@@ -45,7 +46,7 @@ public class CollisionDetection {
                 );
 
                 //on collision, we reduce the movement by a percentage
-                if (futureDistance < minDistanceLimit) {
+                if (futureDistance < minDistanceLimit && currentDistance>futureDistance) {
                     collides = true;
                     break;
                 }
