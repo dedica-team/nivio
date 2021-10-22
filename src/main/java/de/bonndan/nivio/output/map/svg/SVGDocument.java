@@ -195,4 +195,3 @@ public class SVGDocument extends Component {
         return render().render();
     }
 }
-
