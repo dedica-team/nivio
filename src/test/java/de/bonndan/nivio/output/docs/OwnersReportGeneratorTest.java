@@ -26,6 +26,7 @@ class OwnersReportGeneratorTest {
 
     @Test
     void toDocument() {
+        // given
         var ownersReportGenerator = new OwnersReportGenerator(Mockito.mock(LocalServer.class), Mockito.mock(IconService.class));
         var conditionKpi = new ConditionKPI();
         var map = new HashMap<String, KPI>();
@@ -40,7 +41,10 @@ class OwnersReportGeneratorTest {
         var assessment = AssessmentFactory.createAssessment(landscape, map);
         var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}));
 
+        // when
         String document = ownersReportGenerator.toDocument(landscape, assessment, searchConfig);
+
+        // then
         assertThat(document).contains("Date: " + ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)))
         .contains(searchConfig.getTitle())
         .contains("Address: https://www.nivio.com/")
