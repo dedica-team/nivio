@@ -109,7 +109,7 @@ public abstract class HtmlGenerator {
                                 , iff(hasLength(item.getGroup()), li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">" + GROUP_CIRCLE + "</span> " + FormatUtils.nice(item.getGroup()))))
                                 , iff(hasLength(item.getContact()), li("Contact: " + FormatUtils.nice(item.getContact())))
                                 , iff(hasLength(item.getOwner()), li("Owner: " + FormatUtils.nice(item.getOwner())))
-                                , iff(item.getTags().length > 0, li("Tags: " + Arrays.stream(item.getTags()).collect(Collectors.joining(", "))))
+                                , iff(item.getTags().length > 0, li("Tags: " + String.join(", ", item.getTags())))
                                 , iff(hasLength(item.getType()), li("Type: " + item.getType()))
                                 , iff(hasLength(item.getAddress()), li("Address: " + item.getAddress()))
                                 , iff(links.size() > 1, li("Links: ").with(links))

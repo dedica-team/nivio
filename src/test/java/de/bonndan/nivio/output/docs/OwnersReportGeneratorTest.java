@@ -35,13 +35,15 @@ class OwnersReportGeneratorTest {
         var landscape = LandscapeFactory.createForTesting("test", "test").build();
         Item foo = new Item("nivio", landscape, "nivio", null, null, null,
                 null, null, null, null, uri);
+        foo.setTags(tags);
         landscape.setItems(Set.of(foo));
         var assessment = AssessmentFactory.createAssessment(landscape, map);
         var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}));
 
-        assertThat(ownersReportGenerator.toDocument(landscape, assessment, searchConfig)).contains("Date: " + ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)));
-        assertThat(ownersReportGenerator.toDocument(landscape, assessment, searchConfig)).contains(searchConfig.getTitle());
-        assertTrue(ownersReportGenerator.toDocument(landscape, assessment, searchConfig).contains("Address: https://www.nivio.com/"));
-//        assertTrue(ownersReportGenerator.toDocument(landscape, assessment, searchConfig).contains("Tags: auth, ui"));
+        String document = ownersReportGenerator.toDocument(landscape, assessment, searchConfig);
+        assertThat(document).contains("Date: " + ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)))
+        .contains(searchConfig.getTitle())
+        .contains("Address: https://www.nivio.com/")
+        .contains("Tags: auth, ui");
     }
 }
