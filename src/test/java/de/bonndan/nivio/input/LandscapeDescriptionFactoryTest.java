@@ -36,6 +36,7 @@ class LandscapeDescriptionFactoryTest {
     final private String FILE_PATH_ENV = FILE_PATH + "example_env.yml";
     final private String FILE_PATH_TEMPLATES = FILE_PATH + "example_templates.yml";
 
+
     private LandscapeDescriptionFactory factory;
 
     @BeforeEach
@@ -316,4 +317,18 @@ class LandscapeDescriptionFactoryTest {
         assertThat(sourceReference.getFormat()).isEqualTo("nivio");
         assertThat(sourceReference.getContent()).isEqualTo("body");
     }
+
+    @Test
+    void addLogoLandscape() throws IOException {
+        // given
+        File file = new File(FILE_PATH + "inout.yml");
+        String yaml = new String(Files.readAllBytes(file.toPath()));
+
+        // when
+        LandscapeDescription landscapeDescription = factory.fromString(yaml, file.toString());
+
+        // then
+        assertThat(landscapeDescription.getIcon()).isEqualTo("https://dedica.team/images/logo_orange_weiss.png");
+    }
+
 }

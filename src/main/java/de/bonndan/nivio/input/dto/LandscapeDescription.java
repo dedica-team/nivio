@@ -1,9 +1,6 @@
 package de.bonndan.nivio.input.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.input.ComponentDescriptionValues;
 import de.bonndan.nivio.model.LandscapeConfig;
@@ -146,7 +143,7 @@ public class LandscapeDescription implements ComponentDescription {
     }
 
     public String getIcon() {
-        return null;
+        return getLabel(Label.icon);
     }
 
     public String getColor() {
@@ -291,11 +288,13 @@ public class LandscapeDescription implements ComponentDescription {
     }
 
     @Override
+    @JsonAnyGetter
     public String getLabel(String key) {
         return getLabels().get(key);
     }
 
     @Override
+    @JsonAnySetter
     public void setLabel(String key, String value) {
         getLabels().put(key, value);
     }
