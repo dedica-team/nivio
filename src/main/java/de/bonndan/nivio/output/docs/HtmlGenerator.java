@@ -118,14 +118,14 @@ public abstract class HtmlGenerator {
 
 
                         //statuses
-                        iff(!statusValues.isEmpty(), h4("Status information")),
+                        iff(!statusValues.isEmpty(), h4("Status")),
                         dl().with(
                                 statusValues.stream().map(statusItem ->
                                         join(
                                                 dt(FormatUtils.nice(
-                                                        statusItem.getField().endsWith("." + item.getIdentifier())
-                                                                ? statusItem.getField().replace("." + item.getIdentifier(), "")
-                                                                : statusItem.getField()
+                                                                statusItem.getField().endsWith("." + item.getIdentifier())
+                                                                        ? statusItem.getField().replace("." + item.getIdentifier(), "")
+                                                                        : statusItem.getField()
                                                         ) + " "
                                                 ).with(
                                                         span(" " + statusItem.getStatus() + " ")

@@ -113,7 +113,7 @@ class ScalingKPITest {
         assertEquals(1, statusValues.size());
         StatusValue value = statusValues.get(0);
         assertEquals(Status.YELLOW, value.getStatus());
-        assertEquals("Unscaled, but 2 items depend on it.", value.getMessage());
+        assertEquals("unscaled, but 2 items depend on it", value.getMessage());
     }
 
     @Test

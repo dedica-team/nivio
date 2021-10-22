@@ -83,7 +83,7 @@ public class LandscapeFactory {
 
         //overwrite some data which is not handled by resolvers
         builder.withContact(input.getContact());
-        if (!StringUtils.isEmpty(input.getName())) {
+        if (StringUtils.hasLength(input.getName())) {
             builder.withName(input.getName());
         }
         builder.withConfig(input.getConfig());

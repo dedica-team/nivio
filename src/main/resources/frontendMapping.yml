@@ -1,0 +1,6 @@
+frontendmapping:
+  keys:
+    shortname: short name
+    END_OF_LIFE: end of life
+  descriptions:
+    END_OF_LIFE: An end-of-life product is a product at the end of the product lifecycle which prevents users from receiving updates, indicating that the product is at the end of its useful life.
