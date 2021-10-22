@@ -173,6 +173,16 @@ class ItemApiModelTest {
     }
 
     @Test
+    void hasLinks() {
+        Item s1 = itemTemplate.withLinks(Map.of("foo", new Link("http://acme.mcom"))).build();
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        assertThat(itemApiModel.getLinks()).hasSize(1);
+        assertThat(itemApiModel.getLinks().get("foo"))
+                .isNotNull()
+                .satisfies(link -> assertThat(link.getHref().toString()).isEqualTo("http://acme.mcom"));
+    }
+
+    @Test
     void testToString() {
         Item s1 = itemTemplate.build();
         ItemApiModel itemApiModel = new ItemApiModel(s1, group);
