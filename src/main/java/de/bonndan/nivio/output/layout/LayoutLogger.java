@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
-
 /**
  * Only for debugging purposes.
  */
@@ -36,11 +34,11 @@ class LayoutLogger {
     }
 
     public void dump(File out) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(out));
-        for (String s : messages) {
-            writer.write(s + "\n");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(out))) {
+            for (String s : messages) {
+                writer.write(s + "\n");
+            }
         }
-        writer.close();
     }
 
     private static class Wrap {
@@ -110,8 +108,8 @@ class LayoutLogger {
                 .with(points);
 
         String content = svg.render();
-        BufferedWriter writer = new BufferedWriter(new FileWriter(out));
-        writer.write(content);
-        writer.close();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(out))) {
+            writer.write(content);
+        }
     }
 }

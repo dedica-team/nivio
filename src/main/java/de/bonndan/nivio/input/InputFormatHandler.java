@@ -32,7 +32,8 @@ public interface InputFormatHandler {
     /**
      * Returns an observer for the source reference.
      *
-     * @param inner           an observer for files or urls
+     * @param inner           a default observer for files or urls
+     * @param eventPublisher  publisher to use when {@link de.bonndan.nivio.observation.InputChangedEvent} are fired
      * @param sourceReference the {@link SourceReference} to observe
      * @return observer that can handle the format or null if no observer is available
      */
