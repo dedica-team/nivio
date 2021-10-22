@@ -7,14 +7,9 @@ import de.bonndan.nivio.input.http.HttpService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -22,18 +17,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+
 class ExternalIconsTest {
 
     public static final String FAKED_LOGO_PATH = "/logocontest/82.png";
     private WireMockServer wireMockServer;
     private ExternalIcons externalIcons;
 
-    @Autowired
-    ExternalIconsProvider externalIconsProvider;
-    @Autowired
-    ExternalIcons externalIconsTest;
 
     @BeforeEach
     public void setup() {
@@ -97,10 +87,4 @@ class ExternalIconsTest {
         wireMockServer.verify(1, RequestPatternBuilder.newRequestPattern().withUrl(FAKED_LOGO_PATH));
     }
 
-    @Test
-    void init() {
-        for (Map.Entry<String, String> entry : externalIconsProvider.getUrls().entrySet()) {
-            assertThat(externalIconsTest.getUrl(entry.getKey())).isPresent();
-        }
-    }
 }
