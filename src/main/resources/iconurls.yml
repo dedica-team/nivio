@@ -1,0 +1,8 @@
+iconurls:
+  urls:
+    apache/httpd: http://www.apache.org/logos/res/httpd/httpd.png
+    redhat/keycloak: https://raw.githubusercontent.com/keycloak/keycloak-misc/master/logo/keycloak_icon_256px.png
+    k8s: https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
+    kubernetes: https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
+    redis: https://redis.io/images/redis-white.png
+    prometheus: https://raw.githubusercontent.com/prometheus/docs/master/static/prometheus_logo.png
