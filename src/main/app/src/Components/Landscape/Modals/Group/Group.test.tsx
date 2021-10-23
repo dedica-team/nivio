@@ -4,10 +4,7 @@ import Group from './Group';
 
 it('should render landscape group component', () => {
   const group = { identifier: 'foo', name: 'foo', fullyQualifiedIdentifier: 'bar/foo', items: [] };
-  const assessments = {
-    results: {},
-    date: '',
-  };
-  const { getByText } = render(<Group group={group} assessments={assessments} />);
+
+  const { getByText } = render(<Group group={group} />);
   expect(getByText('foo')).toBeInTheDocument();
 });
