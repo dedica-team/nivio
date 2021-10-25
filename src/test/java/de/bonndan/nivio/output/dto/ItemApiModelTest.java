@@ -179,7 +179,7 @@ class ItemApiModelTest {
         assertThat(itemApiModel.getLinks()).hasSize(1);
         assertThat(itemApiModel.getLinks().get("foo"))
                 .isNotNull()
-                .satisfies(link -> assertThat(link.getHref().toString()).isEqualTo("http://acme.mcom"));
+                .satisfies(link -> assertThat(link.getHref().toString()).hasToString("http://acme.mcom"));
     }
 
     @Test
