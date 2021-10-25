@@ -1,9 +1,6 @@
 package de.bonndan.nivio.output.icons;
 
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,12 +16,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ExternalIconsProviderTest {
 
+    private Map<String, String> configMap;
     @Autowired
     ExternalIconsProvider externalIconsProvider;
 
+    @BeforeEach
+    void setUp() {
+        configMap = externalIconsProvider.getUrls();
+    }
+
+    @AfterEach
+    void tearDown() {
+        externalIconsProvider.setUrls(configMap);
+    }
+
     @Test
-    @Order(1)
     void getUrls() {
+        configMap = externalIconsProvider.getUrls();
         var testMap = Map.of("apachehttpd", "http://www.apache.org/logos/res/httpd/httpd.png",
                 "k8s", "https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png",
                 "kubernetes", "https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png",
@@ -36,7 +44,6 @@ class ExternalIconsProviderTest {
 
 
     @Test
-    @Order(2)
     void setUrls() {
         var testMap = Map.of("testKey", "testValue");
         externalIconsProvider.setUrls(testMap);
