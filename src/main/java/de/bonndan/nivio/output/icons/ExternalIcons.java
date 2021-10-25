@@ -5,11 +5,9 @@ import de.bonndan.nivio.input.http.HttpService;
 import org.apache.http.NameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.PostConstruct;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -31,17 +29,12 @@ public class ExternalIcons {
     private final Map<String, CachedResponse> imageCache = new ConcurrentHashMap<>();
     private final HttpService httpService;
 
-    @Autowired
-    private ExternalIconsProvider icons;
 
-    public ExternalIcons(HttpService httpService) {
+    public ExternalIcons(HttpService httpService, ExternalIconsProvider icons) {
         this.httpService = httpService;
-    }
-
-    @PostConstruct
-    public void init() {
         vendorIconUrls.putAll(icons.getUrls());
     }
+
 
     /**
      * Returns the original url of a vendor product icon.
