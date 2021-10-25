@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,7 +23,8 @@ class ExternIconYamlTest {
     void init() {
         var externalIconsUrl = externalIconsProvider.getUrls().entrySet();
         for (Map.Entry<String, String> entry : externalIconsUrl) {
-            assertThat(externalIconsTest.getUrl(entry.getKey())).isPresent();
+            Optional<String> url = externalIconsTest.getUrl(entry.getKey());
+            assertThat(url).withFailMessage("URL for " + entry.getKey() + " is empty.").isPresent();
         }
     }
 }
