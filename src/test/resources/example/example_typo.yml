@@ -2,5 +2,5 @@ identifier: nivio:broken
 name: Landscape example
 contact: mail@acme.org
 
-itemss:
+items:
   - identifier: foo

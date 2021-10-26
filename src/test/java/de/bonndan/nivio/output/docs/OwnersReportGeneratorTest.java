@@ -4,6 +4,7 @@ import de.bonndan.nivio.assessment.AssessmentFactory;
 import de.bonndan.nivio.assessment.kpi.ConditionKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.ItemBuilder;
 import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
@@ -26,6 +27,7 @@ class OwnersReportGeneratorTest {
 
     @Test
     void toDocument() {
+
         var ownersReportGenerator = new OwnersReportGenerator(Mockito.mock(LocalServer.class), Mockito.mock(IconService.class));
         var conditionKpi = new ConditionKPI();
         var map = new HashMap<String, KPI>();
@@ -33,8 +35,9 @@ class OwnersReportGeneratorTest {
         URI uri = URI.create("https://www.nivio.com/");
         String[] tags = Arrays.array("auth", "ui");
         var landscape = LandscapeFactory.createForTesting("test", "test").build();
-        Item foo = new Item("nivio", landscape, "nivio", null, null, null,
-                null, null, null, null, uri);
+//        Item foo = new Item("nivio", landscape, "nivio", null, null, null,
+//                null, null, null, null, uri);
+        Item foo = ItemBuilder.anItem().withAddress(uri).build();
         foo.setTags(tags);
         landscape.setItems(Set.of(foo));
         var assessment = AssessmentFactory.createAssessment(landscape, map);
