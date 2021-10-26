@@ -39,8 +39,5 @@ public class AppearanceProcessor {
                     .flatMap(iconService::getExternalUrl)
                     .ifPresent(s -> item.setLabel(Label._filldata, s));
         }
-
-        // landscape hat auch labels/icon
-        // group auch
     }
 }
