@@ -14,7 +14,6 @@ import org.springframework.util.StringUtils;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,21 +31,30 @@ public class OwnersReportGenerator extends HtmlGenerator {
     public String toDocument(@NonNull final Landscape landscape, @NonNull final Assessment assessment, @Nullable final SearchConfig searchConfig) {
 
         String title = "Report";
-        if (searchConfig != null && StringUtils.hasLength(searchConfig.getTitle())) {
+        if (searchConfig != null && !StringUtils.isEmpty(searchConfig.getTitle())) {
             title = searchConfig.getTitle();
         }
 
-        final Optional<String> searchTerm = searchConfig != null && StringUtils.hasLength(searchConfig.getSearchTerm()) ? Optional.ofNullable(searchConfig.getSearchTerm()) : Optional.empty();
+        final Optional<String> searchTerm = searchConfig != null && !StringUtils.isEmpty(searchConfig.getSearchTerm()) ? Optional.ofNullable(searchConfig.getSearchTerm()) : Optional.empty();
         List<Item> items = new ArrayList<>(searchTerm.map(landscape::search).orElse(landscape.getItems().all()));
+        String groupBy ="";
+        if(searchTerm.isPresent() && searchTerm.get().equals("owner")  ){
+            groupBy = writeOwnerGroups(GroupedBy.by(item -> item.getOwner(), items), assessment);
+        }
+        else if(searchTerm.isPresent() && searchTerm.get().equals("group")){
+            groupBy = writeGroupGroups(GroupedBy.by(item-> item.getGroup(),items),assessment);
+        }
+
+
         return html(
                 getHead(landscape),
                 body(
                         h1(title),
                         h6("Landscape: " + landscape.getName()),
-                        h6("Date: " + ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT))),
+                        h6("Date: " + ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)),
                         iff(searchTerm.isPresent(), h6("Search term: " + (searchTerm.orElse(null)))),
                         br(),
-                        rawHtml(writeOwnerGroups(GroupedBy.by(Component::getOwner, items), assessment))
+                        rawHtml(groupBy)
                 )
         ).renderFormatted();
     }
@@ -61,6 +69,18 @@ public class OwnersReportGenerator extends HtmlGenerator {
             builder.append(div().withClass("row").with(collect).render());
         });
 
+        return builder.toString();
+    }
+    private String writeGroupGroups(GroupedBy groupGroups, Assessment assessment){
+        final StringBuilder builder = new StringBuilder();
+        groupGroups.getAll().forEach((group, items) -> {
+            builder.append(
+                    h2("Group: " + group).render()
+            );
+            List<ContainerTag> collect = items.stream().map(item -> div(writeItem(item, assessment, items)).withClass("col-sm")).collect(Collectors.toList());
+            builder.append(div().withClass("row").with(collect).render());
+
+        });
         return builder.toString();
     }
 
