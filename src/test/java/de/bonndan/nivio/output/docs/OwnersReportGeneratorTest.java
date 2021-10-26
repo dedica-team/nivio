@@ -35,9 +35,8 @@ class OwnersReportGeneratorTest {
         URI uri = URI.create("https://www.nivio.com/");
         String[] tags = Arrays.array("auth", "ui");
         var landscape = LandscapeFactory.createForTesting("test", "test").build();
-//        Item foo = new Item("nivio", landscape, "nivio", null, null, null,
-//                null, null, null, null, uri);
-        Item foo = ItemBuilder.anItem().withAddress(uri).build();
+        Item foo = new Item("nivio", landscape, "nivio", null, null, null,
+                null, null, null, null, uri);
         foo.setTags(tags);
         landscape.setItems(Set.of(foo));
         var assessment = AssessmentFactory.createAssessment(landscape, map);

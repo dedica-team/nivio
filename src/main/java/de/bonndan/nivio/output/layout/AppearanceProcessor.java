@@ -27,6 +27,7 @@ public class AppearanceProcessor {
 
     public void process(@NonNull final Landscape landscape) {
         Objects.requireNonNull(landscape).getGroupItems().forEach(group -> landscape.getItems().retrieve(group.getItems()).forEach(this::setItemAppearance));
+        setLandscapeAppearance(Objects.requireNonNull(landscape));
     }
 
     private void setItemAppearance(Item item) {
@@ -39,5 +40,10 @@ public class AppearanceProcessor {
                     .flatMap(iconService::getExternalUrl)
                     .ifPresent(s -> item.setLabel(Label._filldata, s));
         }
+    }
+
+    private void setLandscapeAppearance(Landscape landscape){
+
+        landscape.setLabel(Label._icondata, landscape.getIcon());
     }
 }
