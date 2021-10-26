@@ -1,6 +1,9 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ItemRelationProcessor;
@@ -64,9 +67,9 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     @JsonManagedReference
     private Set<ServiceInterface> interfaces = new HashSet<>();
 
-    public Item(@NotNull final String identifier,
-                @NotNull final Landscape landscape,
-                @NotNull final String group,
+    public Item(final String identifier,
+                final Landscape landscape,
+                final String group,
                 final String name,
                 final String owner,
                 final String contact,
@@ -90,8 +93,8 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         this.owner = owner;
         this.contact = contact;
         this.description = description;
-        this.address = address;
         this.type = type;
+        this.address = address;
 
         //these are effectively mutable
         this.setLabel(Label.color, Color.safe(color));
