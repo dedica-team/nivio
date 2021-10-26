@@ -4,6 +4,7 @@ import de.bonndan.nivio.assessment.AssessmentFactory;
 import de.bonndan.nivio.assessment.kpi.ConditionKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.ItemBuilder;
 import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
@@ -34,8 +35,7 @@ class OwnersReportGeneratorTest {
         URI uri = URI.create("https://www.nivio.com/");
         String[] tags = Arrays.array("auth", "ui");
         var landscape = LandscapeFactory.createForTesting("test", "test").build();
-        Item foo = new Item("nivio", landscape, "nivio", null, null, null,
-                null, null, null, null, uri);
+        Item foo = ItemBuilder.anItem().withLandscape(landscape).withIdentifier("nivio").withGroup("nivio").withAddress(uri).build();
         foo.setTags(tags);
         landscape.setItems(Set.of(foo));
         var assessment = AssessmentFactory.createAssessment(landscape, map);
@@ -46,8 +46,8 @@ class OwnersReportGeneratorTest {
 
         // then
         assertThat(document).contains("Date: " + ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)))
-        .contains(searchConfig.getTitle())
-        .contains("Address: https://www.nivio.com/")
-        .contains("Tags: auth, ui");
+                .contains(searchConfig.getTitle())
+                .contains("Address: https://www.nivio.com/")
+                .contains("Tags: auth, ui");
     }
 }
