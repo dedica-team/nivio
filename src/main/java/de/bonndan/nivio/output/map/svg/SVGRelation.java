@@ -6,7 +6,6 @@ import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
-import de.bonndan.nivio.output.map.hex.Hex;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.slf4j.Logger;
@@ -17,7 +16,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
-import static de.bonndan.nivio.output.map.hex.Hex.SOUTH_EAST;
+import static de.bonndan.nivio.output.map.hex.Hex.SOUTH;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
 import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
@@ -107,7 +106,8 @@ class SVGRelation extends Component {
             path.attr("stroke-dasharray", 15);
         }
 
-        SvgRelationEndMarker marker = new SvgRelationEndMarker(hexPath.getEndPoint(), relation.getType(), fillId, hexPath.getDirections().get(hexPath.getDirections().size()-1));
+        var lastDirection =hexPath.getDirections().isEmpty() ? SOUTH : hexPath.getDirections().get(hexPath.getDirections().size()-1);
+        SvgRelationEndMarker marker = new SvgRelationEndMarker(hexPath.getEndPoint(), relation.getType(), fillId, lastDirection);
         ContainerTag endMarker = marker.render();
 
         return addAttributes(g(shadow, path, endMarker, label(relation.getLabel(Label.label), bezierPath, fillId)), relation);
