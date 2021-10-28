@@ -11,10 +11,6 @@
 }
 
 .map g.label {
-  cursor: pointer;
-}
-
-.map g.label {
   stroke-width: 0.1em;
   fill: white;
   text-shadow: 2px 2px 2px black;
@@ -40,29 +36,4 @@
   fill: none;
   stroke-linecap: butt;
   stroke-linejoin: round;
-}
-
-.map g.relation {
-  cursor: pointer;
-}
-
-.map g.groupArea {
-  cursor: pointer;
-}
-
-/* hexagon */
-.map g.groupArea.unselected polygon {
-  fill-opacity: 0.05
-}
-
-.map g.item.unselected circle {
-  stroke: grey;
-}
-
-.map g.relation.unselected path {
-  stroke: grey;
-}
-
-.map g.relation.unselected circle {
-  fill: grey;
 }
