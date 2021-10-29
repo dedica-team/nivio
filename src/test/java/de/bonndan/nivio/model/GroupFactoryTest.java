@@ -19,7 +19,7 @@ class GroupFactoryTest {
         assertEquals("Joe", merged.getOwner());
         assertEquals("a", merged.getDescription());
         assertEquals("mail", merged.getContact());
-        assertEquals("123123", merged.getColor());
+        assertEquals("#123123", merged.getColor());
     }
 
     @Test
