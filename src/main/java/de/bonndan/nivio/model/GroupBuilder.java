@@ -10,7 +10,6 @@ public final class GroupBuilder {
     private String owner;
     private String description;
     private String contact;
-    private String icon;
     private String color;
     private Map<String, String> labels = new HashMap<>();
 
@@ -48,11 +47,6 @@ public final class GroupBuilder {
 
     public GroupBuilder withContact(String contact) {
         this.contact = contact;
-        return this;
-    }
-
-    public GroupBuilder withIcon(String icon) {
-        this.icon = icon;
         return this;
     }
 
