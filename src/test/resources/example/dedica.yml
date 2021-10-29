@@ -60,3 +60,17 @@ items:
     fill: http://dedica.team/images/marvinschoening.jpeg
     providedBy:
       - dedica
+
+  identifier: daniel2
+    name: Daniel Brünker
+    group: dedica
+    fill: http://dedica.team/images/danielbruenker.jpeg
+    providedBy:
+      - dedica
+
+  identifier: jenni
+    name: Jennifer Arps
+    group: dedica
+    fill: http://dedica.team/images/jenniferarps.jpeg
+    providedBy:
+      - dedica
