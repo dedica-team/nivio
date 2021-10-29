@@ -5,14 +5,14 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GroupFactoryTest {
+class GroupFactoryTest {
 
 
     @Test
-    public void testMerge() {
-        Group one = new Group("a", "test", "Joe", "a", null, "#123123");
+    void testMerge() {
+        Group one = new Group("a", "test", "Joe", "a", "mail", "#123123");
 
-        Group two = new Group("a", "test", "Matt", "mail", null, null);
+        Group two = new Group("a", "test", "Matt", "a", "mail", null);
 
         Group merged = GroupFactory.merge(one, two);
 
@@ -23,7 +23,7 @@ public class GroupFactoryTest {
     }
 
     @Test
-    public void usesExistingValues() {
+    void usesExistingValues() {
         Group in = new Group("a", "foo", "Matt", "mail", "one", "00ffee");
 
         Group merge = GroupFactory.merge(in, null);
@@ -38,7 +38,7 @@ public class GroupFactoryTest {
     }
 
     @Test
-    public void mergeSetsDefaultColor() {
+    void mergeSetsDefaultColor() {
         Group one = new Group("a", "test", "Matt", "mail", null, null);
         Group two = new Group("a", "test", "Matt", "mail", null, null);
 
