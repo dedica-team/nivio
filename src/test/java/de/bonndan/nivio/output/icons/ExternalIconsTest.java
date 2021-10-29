@@ -7,6 +7,7 @@ import de.bonndan.nivio.input.http.HttpService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -16,7 +17,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ExternalIconsTest {
 
@@ -26,11 +26,12 @@ class ExternalIconsTest {
 
     @BeforeEach
     public void setup() {
+        var externalIconsProvider = Mockito.mock(ExternalIconsProvider.class);
         wireMockServer = new WireMockServer(options().dynamicPort());
         wireMockServer.start();
         WireMock.configureFor("localhost", wireMockServer.port());
 
-        externalIcons = new ExternalIcons(new HttpService());
+        externalIcons = new ExternalIcons(new HttpService(), externalIconsProvider);
         externalIcons.add("redis", "http://localhost:" + wireMockServer.port() + FAKED_LOGO_PATH);
     }
 
@@ -40,13 +41,13 @@ class ExternalIconsTest {
     }
 
     @Test
-    public void returnsEmpty() {
+    void returnsEmpty() {
         Optional<String> s = externalIcons.getUrl("foo");
         assertThat(s).isEmpty();
     }
 
     @Test
-    public void usesVendorIcon() {
+    void usesVendorIcon() {
 
         wireMockServer.stubFor(get(FAKED_LOGO_PATH).willReturn(ok("somedata")));
         Optional<String> s = externalIcons.getUrl("redis");
@@ -56,7 +57,7 @@ class ExternalIconsTest {
     }
 
     @Test
-    public void usesIconWithImageCacheIcon() {
+    void usesIconWithImageCacheIcon() {
 
         wireMockServer.stubFor(get(FAKED_LOGO_PATH).willReturn(ok("somedata")));
 
@@ -71,7 +72,7 @@ class ExternalIconsTest {
     }
 
     @Test
-    public void loadUrl() throws MalformedURLException {
+    void loadUrl() throws MalformedURLException {
 
         wireMockServer.stubFor(get(FAKED_LOGO_PATH).willReturn(ok("somedata")));
 
@@ -85,4 +86,6 @@ class ExternalIconsTest {
 
         wireMockServer.verify(1, RequestPatternBuilder.newRequestPattern().withUrl(FAKED_LOGO_PATH));
     }
+
+
 }

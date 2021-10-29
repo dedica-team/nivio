@@ -3,28 +3,31 @@ package de.bonndan.nivio.output;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.config.ApplicationConfig;
-import de.bonndan.nivio.config.SeedProperties;
-import de.bonndan.nivio.input.*;
+import de.bonndan.nivio.input.FileFetcher;
+import de.bonndan.nivio.input.Indexer;
+import de.bonndan.nivio.input.InputFormatHandlerFactory;
+import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.input.http.CachedResponse;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
+import de.bonndan.nivio.output.icons.ExternalIcons;
+import de.bonndan.nivio.output.icons.ExternalIconsProvider;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
-import de.bonndan.nivio.output.icons.ExternalIcons;
 import de.bonndan.nivio.output.layout.AppearanceProcessor;
 import de.bonndan.nivio.output.layout.LayoutService;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.layout.OrganicLayouter;
 import de.bonndan.nivio.output.map.RenderingRepository;
 import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
-import de.bonndan.nivio.output.map.svg.SVGDocument;
 import de.bonndan.nivio.output.map.svg.SVGRenderer;
 import de.bonndan.nivio.util.RootPath;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
@@ -57,6 +60,8 @@ public abstract class RenderingTest {
         formatFactory = new InputFormatHandlerFactory(List.of(new InputFormatHandlerNivio(new FileFetcher(new HttpService()))));
         httpService = mock(HttpService.class);
         objectMapper = new ApplicationConfig(null).jackson2ObjectMapperBuilder().build();
+        var externalIconsProvider = Mockito.mock(ExternalIconsProvider.class);
+
 
         CachedResponse response = mock(CachedResponse.class);
         when(response.getBytes()).thenReturn("foo".getBytes());
@@ -66,11 +71,11 @@ public abstract class RenderingTest {
         factory = new LandscapeDescriptionFactory(fileFetcher);
 
         LinkHandlerFactory linkHandlerFactory = mock(LinkHandlerFactory.class);
-        IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService));
+        IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService, externalIconsProvider));
 
         MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
         when(mapStyleSheetFactory.getMapStylesheet(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn("");
-        appearanceProcessor = new AppearanceProcessor(new IconService(new LocalIcons(""), new ExternalIcons(httpService)));
+        appearanceProcessor = new AppearanceProcessor(new IconService(new LocalIcons(""), new ExternalIcons(httpService, externalIconsProvider)));
         layoutService = new LayoutService(
                 new AppearanceProcessor(iconService),
                 new OrganicLayouter(),

@@ -21,12 +21,13 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OwnersReportGeneratorTest {
 
     @Test
     void toDocument() {
-
+        // given
         var ownersReportGenerator = new OwnersReportGenerator(Mockito.mock(LocalServer.class), Mockito.mock(IconService.class));
         var conditionKpi = new ConditionKPI();
         var map = new HashMap<String, KPI>();
@@ -34,17 +35,19 @@ class OwnersReportGeneratorTest {
         URI uri = URI.create("https://www.nivio.com/");
         String[] tags = Arrays.array("auth", "ui");
         var landscape = LandscapeFactory.createForTesting("test", "test").build();
-        Item foo = new Item("nivio", landscape, "nivio", null, null, null,
-                null, null, null, null, uri);
+        Item foo = ItemBuilder.anItem().withLandscape(landscape).withIdentifier("nivio").withGroup("nivio").withAddress(uri).build();
         foo.setTags(tags);
         landscape.setItems(Set.of(foo));
         var assessment = AssessmentFactory.createAssessment(landscape, map);
         var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}));
 
+        // when
         String document = ownersReportGenerator.toDocument(landscape, assessment, searchConfig);
+
+        // then
         assertThat(document).contains("Date: " + ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)))
-        .contains(searchConfig.getTitle())
-        .contains("Address: https://www.nivio.com/")
-        .contains("Tags: auth, ui");
+                .contains(searchConfig.getTitle())
+                .contains("Address: https://www.nivio.com/")
+                .contains("Tags: auth, ui");
     }
 }

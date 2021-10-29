@@ -14,10 +14,12 @@ import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.RenderingTest;
 import de.bonndan.nivio.output.icons.ExternalIcons;
+import de.bonndan.nivio.output.icons.ExternalIconsProvider;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.IOException;
@@ -164,9 +166,9 @@ class OrganicLayouterTest extends RenderingTest {
 
     @Test
     void renderCSV() throws IOException {
-
+        var externalIconsProvider = Mockito.mock(ExternalIconsProvider.class);
         HttpService httpService = new HttpService();
-        IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService));
+        IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService, externalIconsProvider));
         formatFactory = new InputFormatHandlerFactory(List.of(new InputFormatHandlerCSV(new FileFetcher(httpService))));
         LinkHandlerFactory linkHandlerFactory = mock(LinkHandlerFactory.class);
         indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class));

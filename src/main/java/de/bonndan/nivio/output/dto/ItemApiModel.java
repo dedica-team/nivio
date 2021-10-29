@@ -24,6 +24,7 @@ public class ItemApiModel extends ComponentApiModel {
 
         //ensures that the api model inherits the group colors as fallback
         this.color = !StringUtils.hasLength(item.getColor()) ? group.getColor() : item.getColor();
+        hateoasLinks.putAll(item.getLinks());
     }
 
     public String getIdentifier() {

@@ -21,8 +21,46 @@
     cursor: pointer;
 }
 
+
+.map g.relation {
+    cursor: pointer;
+}
+
+.map g.groupArea {
+    cursor: pointer;
+}
+
+.map g.label {
+    cursor: pointer;
+}
+
 .map g.item.unselected:hover circle {
     stroke: #C0C0C0;
+}
+
+.map g.item.unselected:hover polygon {
+    stroke: #C0C0C0;
+}
+
+/* hexagon */
+.map g.groupArea.unselected polygon {
+    fill-opacity: 0.05
+}
+
+.map g.item.unselected circle {
+    stroke: grey;
+}
+
+.map g.relation.unselected path {
+    stroke: grey;
+}
+
+.map g.relation.unselected circle {
+    fill: grey;
+}
+
+.map g.relation.unselected polygon {
+    fill: grey;
 }
 
 .landscapeMapContainer .map g .group {
