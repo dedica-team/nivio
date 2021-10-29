@@ -28,8 +28,6 @@ public class AppearanceProcessor {
         Objects.requireNonNull(landscape).getGroupItems().forEach(group -> landscape.getItems().retrieve(group.getItems()).forEach(this::setItemAppearance));
         setLandscapeAppearance(Objects.requireNonNull(landscape));
         Objects.requireNonNull(landscape).getGroups().forEach((s, group) -> setGroupAppearance(group));
-
-
     }
 
     private void setItemAppearance(Item item) {
@@ -46,12 +44,6 @@ public class AppearanceProcessor {
     }
 
     private void setLandscapeAppearance(Landscape landscape) {
-
-//        String dataUrl = DataUrlHelper.DATA_IMAGE_PNG_XML_BASE_64;
-////        dataUrl += DataUrlHelper.asBase64(originalUrl);
-//        dataUrl += Base64.getUrlEncoder().encodeToString(landscape.getLabel(Label.icon).getBytes());
-//
-//        landscape.setLabel(Label._icondata, dataUrl);
 
         String icon = landscape.getLabel(Label.icon);
         if (StringUtils.hasLength(icon)) {

@@ -76,8 +76,8 @@ class GroupTest {
 
     @Test
     void hasNoChanges() {
-        Group g1 = new Group("foo", "bar", "John", null, null, null, null);
-        Group g2 = new Group("foo", "bar", "John", null, null, null, null);
+        Group g1 = new Group("foo", "bar", "John", null, null, null);
+        Group g2 = new Group("foo", "bar", "John", null, null, null);
 
         //when
         List<String> changes = g1.getChanges(g2);
@@ -86,8 +86,8 @@ class GroupTest {
 
     @Test
     void hasChanges() {
-        Group g1 = new Group("foo", "bar", "John", null, null, null, null);
-        Group g2 = new Group("foo", "bar", "Doe", null, null, null, null);
+        Group g1 = new Group("foo", "bar", "John", null, null, null);
+        Group g2 = new Group("foo", "bar", "Doe", null, null, null);
 
         //when
         List<String> changes = g1.getChanges(g2);

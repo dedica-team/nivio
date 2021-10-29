@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.dto;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
 import org.springframework.lang.NonNull;
 
 import java.util.Map;
@@ -59,7 +60,7 @@ public class GroupApiModel extends ComponentApiModel {
     }
 
     public String getIcon() {
-        return group.getIcon();
+        return group.getLabel(Label._icondata);
     }
 
     public String getLandscapeIdentifier() {

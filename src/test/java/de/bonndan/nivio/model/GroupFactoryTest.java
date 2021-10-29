@@ -10,9 +10,9 @@ public class GroupFactoryTest {
 
     @Test
     public void testMerge() {
-        Group one = new Group("a", "test", "Joe", "a", null, null, "#123123");
+        Group one = new Group("a", "test", "Joe", "a", null, "#123123");
 
-        Group two = new Group("a", "test", "Matt", null, "mail", null, null);
+        Group two = new Group("a", "test", "Matt", "mail", null, null);
 
         Group merged = GroupFactory.merge(one, two);
 
@@ -24,7 +24,7 @@ public class GroupFactoryTest {
 
     @Test
     public void usesExistingValues() {
-        Group in = new Group("a", "foo", "Matt", "abc", "mail", "one", "00ffee");
+        Group in = new Group("a", "foo", "Matt", "mail", "one", "00ffee");
 
         Group merge = GroupFactory.merge(in, null);
         assertThat(merge).isNotNull();
@@ -39,8 +39,8 @@ public class GroupFactoryTest {
 
     @Test
     public void mergeSetsDefaultColor() {
-        Group one = new Group("a", "test", "Matt", null, "mail", null, null);
-        Group two = new Group("a", "test", "Matt", null, "mail", null, null);
+        Group one = new Group("a", "test", "Matt", "mail", null, null);
+        Group two = new Group("a", "test", "Matt", "mail", null, null);
 
         Group merge = GroupFactory.merge(one, two);
         assertThat(merge).isNotNull();

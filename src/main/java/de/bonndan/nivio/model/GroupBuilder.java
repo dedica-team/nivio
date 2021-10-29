@@ -67,7 +67,7 @@ public final class GroupBuilder {
     }
 
     public Group build() {
-        Group group = new Group(identifier, landscapeIdentifier, owner, description, contact, icon, color);
+        Group group = new Group(identifier, landscapeIdentifier, owner, description, contact, color);
         group.setLinks(links);
         group.getLabels().putAll(labels);
         return group;
