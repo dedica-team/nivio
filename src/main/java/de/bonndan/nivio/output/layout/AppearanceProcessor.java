@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
+import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Landscape;
@@ -13,8 +14,6 @@ import java.util.Objects;
 
 /**
  * Resolves color and icons for {@link de.bonndan.nivio.model.Component}
- *
- *
  */
 @Service
 public class AppearanceProcessor {
@@ -28,6 +27,9 @@ public class AppearanceProcessor {
     public void process(@NonNull final Landscape landscape) {
         Objects.requireNonNull(landscape).getGroupItems().forEach(group -> landscape.getItems().retrieve(group.getItems()).forEach(this::setItemAppearance));
         setLandscapeAppearance(Objects.requireNonNull(landscape));
+        Objects.requireNonNull(landscape).getGroups().forEach((s, group) -> setGroupAppearance(group));
+
+
     }
 
     private void setItemAppearance(Item item) {
@@ -40,10 +42,51 @@ public class AppearanceProcessor {
                     .flatMap(iconService::getExternalUrl)
                     .ifPresent(s -> item.setLabel(Label._filldata, s));
         }
+
     }
 
-    private void setLandscapeAppearance(Landscape landscape){
+    private void setLandscapeAppearance(Landscape landscape) {
 
-        landscape.setLabel(Label._icondata, landscape.getIcon());
+//        String dataUrl = DataUrlHelper.DATA_IMAGE_PNG_XML_BASE_64;
+////        dataUrl += DataUrlHelper.asBase64(originalUrl);
+//        dataUrl += Base64.getUrlEncoder().encodeToString(landscape.getLabel(Label.icon).getBytes());
+//
+//        landscape.setLabel(Label._icondata, dataUrl);
+
+        String icon = landscape.getLabel(Label.icon);
+        if (StringUtils.hasLength(icon)) {
+            URLHelper.getURL(icon)
+                    .flatMap(iconService::getExternalUrl)
+                    .ifPresent(s -> landscape.setLabel(Label._icondata, s));
+        }
+
+
+        String fill = landscape.getLabel(Label.fill);
+        if (StringUtils.hasLength(fill)) {
+            URLHelper.getURL(fill)
+                    .flatMap(iconService::getExternalUrl)
+                    .ifPresent(s -> landscape.setLabel(Label._filldata, s));
+        }
+
+
     }
+
+    private void setGroupAppearance(Group group) {
+
+        String icon = group.getLabel(Label.icon);
+        if (StringUtils.hasLength(icon)) {
+            URLHelper.getURL(icon)
+                    .flatMap(iconService::getExternalUrl)
+                    .ifPresent(s -> group.setLabel(Label._icondata, s));
+        }
+
+
+        String fill = group.getLabel(Label.fill);
+        if (StringUtils.hasLength(fill)) {
+            URLHelper.getURL(fill)
+                    .flatMap(iconService::getExternalUrl)
+                    .ifPresent(s -> group.setLabel(Label._filldata, s));
+        }
+    }
+
 }

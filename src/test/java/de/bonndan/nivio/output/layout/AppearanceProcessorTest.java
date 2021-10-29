@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
@@ -62,5 +63,22 @@ class AppearanceProcessorTest {
 
         //check icon is set
         assertThat(pick.getLabel(Label._icondata)).isEqualTo(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
+    }
+
+    @Test
+    void setLandscapeItems() {
+
+        // given
+
+//        landscape.setLabel("icon", "https://dedica.team/images/logo.png");
+        landscape.setLabel("icon", "muh");
+
+        //when
+        resolver.process(landscape);
+
+        //then
+        System.out.println(landscape);
+        //check icon is set
+        assertThat(landscape.getLabel(Label._icondata)).isEqualTo(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
     }
 }
