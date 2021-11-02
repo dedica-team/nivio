@@ -284,7 +284,6 @@ public class LandscapeDescription implements ComponentDescription {
         return labels;
     }
 
-    @JsonAnySetter
     public void setLabels(Map<String, String> labels) {
         this.labels = labels;
     }
@@ -295,6 +294,7 @@ public class LandscapeDescription implements ComponentDescription {
     }
 
     @Override
+    @JsonAnySetter
     public void setLabel(String key, String value) {
         getLabels().put(key, value);
     }

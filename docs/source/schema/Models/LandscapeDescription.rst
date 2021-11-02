@@ -55,7 +55,7 @@ LandscapeDescription
      - null
    * - labels
      - Map
-     - Additional labels for the landscape.
+     - 
      - optional, defaults to null
      - null
    * - links

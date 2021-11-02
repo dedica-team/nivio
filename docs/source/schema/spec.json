@@ -390,10 +390,9 @@
           "labels" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string",
-              "description" : "Additional labels for the landscape."
+              "type" : "string"
             },
-            "description" : "Additional labels for the landscape."
+            "writeOnly" : true
           },
           "links" : {
             "type" : "object",
