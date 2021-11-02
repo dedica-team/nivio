@@ -56,7 +56,7 @@ public class GroupFactory {
         }
 
 
-        if (StringUtils.hasLength(builder.getColor())) {
+        if (!StringUtils.hasLength(builder.getColor())) {
             builder.withColor(Color.getGroupColor(builder.getIdentifier()));
         }
 
