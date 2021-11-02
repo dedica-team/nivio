@@ -1,6 +1,7 @@
-import React, { ReactElement } from 'react';
-import { IGroup, IItem, ILandscape, IRelation } from "../../../interfaces";
-import { Button, Link, List, ListItem, ListItemText } from '@material-ui/core';
+import React, {ReactElement} from 'react';
+import {IGroup, IItem, ILandscape, IRelation} from "../../../interfaces";
+import {Button, Link, List, ListItem, ListItemText} from '@material-ui/core';
+import {get} from "../../../utils/API/APIClient";
 
 /**
  * Find an item by its fully qualified identifier.
@@ -9,18 +10,18 @@ import { Button, Link, List, ListItem, ListItemText } from '@material-ui/core';
  * @param fullyQualifiedIdentifier string to identify the item
  */
 export const getItem = (landscape: ILandscape, fullyQualifiedIdentifier: string): IItem | null => {
-  let item: IItem | null = null;
-  for (const value of landscape.groups) {
-    for (let i = 0; i < value.items.length; i++) {
-      let value1 = value.items[i];
-      if (value1.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
-        item = value1;
-        break;
-      }
+    let item: IItem | null = null;
+    for (const value of landscape.groups) {
+        for (let i = 0; i < value.items.length; i++) {
+            let value1 = value.items[i];
+            if (value1.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
+                item = value1;
+                break;
+            }
+        }
     }
-  }
 
-  return item;
+    return item;
 };
 
 /**
@@ -30,19 +31,19 @@ export const getItem = (landscape: ILandscape, fullyQualifiedIdentifier: string)
  * @param fullyQualifiedIdentifier string to identify the group
  */
 export const getGroup = (
-  landscape: ILandscape,
-  fullyQualifiedIdentifier: string
+    landscape: ILandscape,
+    fullyQualifiedIdentifier: string
 ): IGroup | null => {
-  let group: IGroup | null = null;
-  for (let i = 0; i < landscape.groups.length; i++) {
-    let value = landscape.groups[i];
-    if (value.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
-      group = value;
-      break;
+    let group: IGroup | null = null;
+    for (let i = 0; i < landscape.groups.length; i++) {
+        let value = landscape.groups[i];
+        if (value.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
+            group = value;
+            break;
+        }
     }
-  }
 
-  return group;
+    return group;
 };
 
 /**
@@ -51,61 +52,109 @@ export const getGroup = (
  * @param element item/group/landscape
  */
 export const getLinks = (element: IGroup | IItem): ReactElement[] => {
-  let links: ReactElement[] = [];
-  if (element?._links) {
-    Object.keys(element._links).forEach((key) => {
-      if (element && element._links && !key.startsWith('self')) {
-        links.push(
-          <Button
-            component={Link}
-            key={key}
-            target='_blank'
-            rel='noopener noreferrer'
-            href={element._links[key].href}
-          >
-            {key}
-          </Button>
-        );
-      }
-    });
-  }
-  return links;
-};
-
-export const getLabels = (element: IGroup | IItem | IRelation ) => {
-  let labels: ReactElement[] = [];
-  if (!element?.labels) {
-    return null;
-  }
-  Object.keys(element.labels).forEach((key) => {
-    if (element && element.labels && element.labels[key]) {
-      if (
-        key.startsWith('icon') ||
-        key.startsWith('fill') ||
-        key.startsWith('tag') ||
-        key.startsWith('framework') ||
-        key.startsWith('network') ||
-        key === 'color'
-      )
-        return;
-      if (element.labels[key] === '*') return;
-
-      labels.push(
-        <ListItem key={key}>
-          <ListItemText
-            primary={key}
-            secondary={element.labels[key].substr(0, 150)}
-            title={element.labels[key]}
-          />
-        </ListItem>
-      );
+    let links: ReactElement[] = [];
+    if (element?._links) {
+        Object.keys(element._links).forEach((key) => {
+            if (element && element._links && !key.startsWith('self')) {
+                links.push(
+                    <Button
+                        component={Link}
+                        key={key}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        href={element._links[key].href}
+                    >
+                        {key}
+                    </Button>
+                );
+            }
+        });
     }
-  });
-  if (labels.length === 0) {
-    return null;
-  }
-  return <List dense={true}>{labels}</List>;
+    return links;
 };
+
+export const getLabels = (element: IGroup | IItem | IRelation) => {
+    let labels: ReactElement[] = [];
+    if (!element?.labels) {
+        return null;
+    }
+    Object.keys(element.labels).forEach((key) => {
+        if (element && element.labels && element.labels[key]) {
+            if (
+                key.startsWith('icon') ||
+                key.startsWith('fill') ||
+                key.startsWith('tag') ||
+                key.startsWith('framework') ||
+                key.startsWith('network') ||
+                key === 'color'
+            )
+                return;
+            if (element.labels[key] === '*') return;
+
+            labels.push(
+                <ListItem key={key}>
+                    <ListItemText
+                        primary={key}
+                        secondary={element.labels[key].substr(0, 150)}
+                        title={element.labels[key]}
+                    />
+                </ListItem>
+            );
+        }
+    });
+    if (labels.length === 0) {
+        return null;
+    }
+    return <List dense={true}>{labels}</List>;
+};
+
+export const getMappedLabels = async (element: IGroup | IItem | IRelation) => {
+    const map: Map<string, string> = new Map(Object.entries(await get(`/api/mapping`)));
+
+    let labels: ReactElement[] = [];
+    if (!element?.labels) {
+        return null;
+    }
+    Object.keys(element.labels).forEach((key) => {
+        if (element && element.labels && element.labels[key]) {
+            if (
+                key.startsWith('icon') ||
+                key.startsWith('fill') ||
+                key.startsWith('tag') ||
+                key.startsWith('framework') ||
+                key.startsWith('network') ||
+                key === 'color'
+            )
+                return;
+            if (element.labels[key] === '*') return;
+            if (map.has(key)) {
+                labels.push(
+                    <ListItem key={key}>
+                        <ListItemText
+                            primary={map.get(key)}
+                            secondary={element.labels[key].substr(0, 150)}
+                            title={element.labels[key]}
+                        />
+                    </ListItem>
+                );
+            } else {
+                labels.push(
+                    <ListItem key={key}>
+                        <ListItemText
+                            primary={key}
+                            secondary={element.labels[key].substr(0, 150)}
+                            title={element.labels[key]}
+                        />
+                    </ListItem>
+                );
+            }
+        }
+    });
+    if (labels.length === 0) {
+        return null;
+    }
+    return <List dense={true}>{labels}</List>;
+}
 
 /**
  * Returns only the labels having the given prefix.
@@ -113,32 +162,32 @@ export const getLabels = (element: IGroup | IItem | IRelation ) => {
  * @param element the component having labels
  */
 export const getLabelsWithPrefix = (prefix: string, element: IGroup | IItem) => {
-  if (!element || !element?.labels) {
-    return null;
-  }
-  let labels: ReactElement[] = [];
-  const strings = Object.keys(element.labels);
-  strings
-    .filter((key) => key.startsWith(prefix))
-    .forEach((key) => {
-      const value = element.labels?.[key] || null;
-      if (!value) return;
-      const primary = key.replace(prefix + '.', '');
-      labels.push(
-        <ListItem key={key}>
-          <ListItemText primary={primary} secondary={value.substr(0, 150)} title={value} />
-        </ListItem>
-      );
-    });
-  if (labels.length === 0) {
-    return null;
-  }
-  return <List dense={true}>{labels}</List>;
+    if (!element || !element?.labels) {
+        return null;
+    }
+    let labels: ReactElement[] = [];
+    const strings = Object.keys(element.labels);
+    strings
+        .filter((key) => key.startsWith(prefix))
+        .forEach((key) => {
+            const value = element.labels?.[key] || null;
+            if (!value) return;
+            const primary = key.replace(prefix + '.', '');
+            labels.push(
+                <ListItem key={key}>
+                    <ListItemText primary={primary} secondary={value.substr(0, 150)} title={value}/>
+                </ListItem>
+            );
+        });
+    if (labels.length === 0) {
+        return null;
+    }
+    return <List dense={true}>{labels}</List>;
 };
 
 export const getItemIcon = (item: IItem) => {
-  if (item.labels) {
-    return item.labels['fill'] ? item.labels['fill'] : item.icon;
-  }
-  return item.icon;
+    if (item.labels) {
+        return item.labels['fill'] ? item.labels['fill'] : item.icon;
+    }
+    return item.icon;
 };
