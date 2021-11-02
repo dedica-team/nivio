@@ -10,16 +10,16 @@ class GroupFactoryTest {
 
     @Test
     void testMerge() {
-        Group one = new Group("a", "test", "Joe", "a", "mail", "#123123");
+        Group one = new Group("a", "test", "Joe", null, "mail", "#123123");
 
-        Group two = new Group("a", "test", "Matt", "a", "mail", null);
+        Group two = new Group("a", "test", "Matt", "a", null, null);
 
         Group merged = GroupFactory.merge(one, two);
 
         assertEquals("Joe", merged.getOwner());
         assertEquals("a", merged.getDescription());
         assertEquals("mail", merged.getContact());
-        assertEquals("#123123", merged.getColor());
+        assertEquals("123123", merged.getColor());
     }
 
     @Test

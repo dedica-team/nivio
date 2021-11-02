@@ -33,7 +33,7 @@ public class GroupFactory {
             added.getLabels().forEach((s, val) -> builder.getLabels().putIfAbsent(s, val));
         }
 
-        if (StringUtils.hasLength(builder.getColor())) {
+        if (StringUtils.isEmpty(builder.getColor())) {
             builder.withColor(Color.getGroupColor(builder.getIdentifier()));
         }
 
