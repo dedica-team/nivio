@@ -1,7 +1,7 @@
 import React, {ReactElement} from 'react';
 import {IGroup, IItem, ILandscape, IRelation} from "../../../interfaces";
 import {Button, Link, List, ListItem, ListItemText} from '@material-ui/core';
-import {get} from "../../../utils/API/APIClient";
+import MappedString from "./MappedString";
 
 /**
  * Find an item by its fully qualified identifier.
@@ -108,8 +108,7 @@ export const getLabels = (element: IGroup | IItem | IRelation) => {
     return <List dense={true}>{labels}</List>;
 };
 
-export const getMappedLabels = async (element: IGroup | IItem | IRelation) => {
-    const map: Map<string, string> = new Map(Object.entries(await get(`/api/mapping`)));
+export const getMappedLabels = (element: IGroup | IItem | IRelation) => {
 
     let labels: ReactElement[] = [];
     if (!element?.labels) {
@@ -127,33 +126,26 @@ export const getMappedLabels = async (element: IGroup | IItem | IRelation) => {
             )
                 return;
             if (element.labels[key] === '*') return;
-            if (map.has(key)) {
-                labels.push(
-                    <ListItem key={key}>
-                        <ListItemText
-                            primary={map.get(key)}
-                            secondary={element.labels[key].substr(0, 150)}
-                            title={element.labels[key]}
-                        />
-                    </ListItem>
-                );
-            } else {
-                labels.push(
-                    <ListItem key={key}>
-                        <ListItemText
-                            primary={key}
-                            secondary={element.labels[key].substr(0, 150)}
-                            title={element.labels[key]}
-                        />
-                    </ListItem>
-                );
-            }
+
+
+            labels.push(
+                <ListItem key={key}>
+                    <ListItemText
+                        primary={<MappedString mapKey={key}/>}
+                        secondary={<MappedString mapKey={element.labels[key]}/>}
+                        title={element.labels[key]}
+                    />
+                </ListItem>
+            );
+
         }
     });
     if (labels.length === 0) {
         return null;
     }
-    return <List dense={true}>{labels}</List>;
+    return <List dense={true}>
+        {labels}
+    </List>;
 }
 
 /**
