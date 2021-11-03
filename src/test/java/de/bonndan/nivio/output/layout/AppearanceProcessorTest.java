@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
@@ -53,17 +54,29 @@ class AppearanceProcessorTest {
     }
 
     @Test
-    void setsItemIcons() {
-
-        // given
-        Item pick = landscape.getItems().pick("s1", "g1");
-        when(iconService.getIconUrl(pick)).thenReturn(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
+    void setItemIcons_LabelIcon() throws MalformedURLException {
+        Item s1 = landscape.getItems().pick("s1", "g1");
+        s1.setLabel(Label.icon, "https://dedica.team/images/logo_orange_weiss.png");
+        when(iconService.getExternalUrl(new URL(s1.getLabel(Label.icon)))).thenReturn(java.util.Optional.of(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo"));
 
         // when
         resolver.process(landscape);
 
         // then
-        assertThat(pick.getLabel(Label._icondata)).isEqualTo(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
+        assertThat(s1.getLabel(Label._icondata)).isEqualTo(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
+    }
+
+    @Test
+    void setItemIcons_LabelFill() throws MalformedURLException {
+        Item s1 = landscape.getItems().pick("s1", "g1");
+        s1.setLabel(Label.fill, "http://dedica.team/images/portrait.jpeg");
+        when(iconService.getExternalUrl(new URL(s1.getLabel(Label.fill)))).thenReturn(java.util.Optional.of(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo"));
+
+        // when
+        resolver.process(landscape);
+
+        // then
+        assertThat(s1.getLabel(Label._filldata)).isEqualTo(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
     }
 
     @Test
