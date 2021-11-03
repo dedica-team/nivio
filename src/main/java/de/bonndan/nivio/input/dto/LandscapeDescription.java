@@ -279,7 +279,6 @@ public class LandscapeDescription implements ComponentDescription {
     }
 
     @NonNull
-    @JsonAnyGetter
     public Map<String, String> getLabels() {
         return labels;
     }

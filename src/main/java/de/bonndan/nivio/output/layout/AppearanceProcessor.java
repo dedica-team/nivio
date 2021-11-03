@@ -29,7 +29,6 @@ public class AppearanceProcessor {
         landscape.getGroups().forEach((s, group) -> setIconFillAppearance(group));
     }
 
-
     private void setIconFillAppearance(Labeled labeled) {
 
         String icon = labeled.getLabel(Label.icon);
