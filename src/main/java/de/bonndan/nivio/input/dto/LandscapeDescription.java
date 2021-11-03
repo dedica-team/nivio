@@ -299,5 +299,4 @@ public class LandscapeDescription implements ComponentDescription {
         getLabels().put(key, value);
     }
 
-
 }
