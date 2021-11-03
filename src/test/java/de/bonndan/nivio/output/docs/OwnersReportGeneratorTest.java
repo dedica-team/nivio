@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OwnersReportGeneratorTest {
 
@@ -48,6 +47,7 @@ class OwnersReportGeneratorTest {
         assertThat(document).contains("Date: " + ZonedDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)))
                 .contains(searchConfig.getTitle())
                 .contains("Address: https://www.nivio.com/")
-                .contains("Tags: auth, ui");
+                .contains("Tags: auth, ui")
+                .doesNotContain("Null");
     }
 }

@@ -192,6 +192,9 @@ public abstract class HtmlGenerator {
             if (s.getKey().startsWith(Label.INTERNAL_LABEL_PREFIX)) {
                 return false;
             }
+            if (s.getValue().equals("null")) {
+                return false;
+            }
             //filter out statuses, they are part of the assessment
             return !s.getKey().startsWith(Label.status.name());
         };
