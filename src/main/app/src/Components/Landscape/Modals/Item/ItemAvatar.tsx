@@ -2,7 +2,7 @@ import { IItem } from '../../../../interfaces';
 import React from 'react';
 import { getItemIcon } from '../../Utils/utils';
 import Avatar from '@material-ui/core/Avatar';
-import StatusBadge from "../../Utils/StatusBadge";
+import StatusBadge from '../../Utils/StatusBadge';
 
 interface Props {
   item: IItem;
@@ -34,6 +34,5 @@ const ItemAvatar: React.FC<Props> = ({ item, statusColor }) => {
     </StatusBadge>
   );
 };
-
 
 export default ItemAvatar;

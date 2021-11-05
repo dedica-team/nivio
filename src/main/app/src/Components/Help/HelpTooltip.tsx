@@ -11,7 +11,7 @@ const HtmlTooltip = withStyles((theme: Theme) => ({
   tooltip: {
     backgroundColor: theme.palette.primary.main,
     fontSize: theme.typography.pxToRem(14),
-    boxShadow: '2px 2px 5px black'
+    boxShadow: '2px 2px 5px black',
   },
 }))(Tooltip);
 
@@ -23,7 +23,9 @@ const HtmlTooltip = withStyles((theme: Theme) => ({
  * @constructor
  */
 const HelpTooltip: React.FC<HelpProps> = ({ content, style }) => {
-  return <HtmlTooltip title={content} children={<HelpOutline />} style={style} aria-label={'help'}/>;
+  return (
+    <HtmlTooltip title={content} children={<HelpOutline />} style={style} aria-label={'help'} />
+  );
 };
 
 export default HelpTooltip;

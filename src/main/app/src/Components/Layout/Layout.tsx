@@ -1,9 +1,9 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement } from 'react';
 
-import Navigation from "../Navigation/Navigation";
-import { Drawer, Theme } from "@material-ui/core";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
-import Search from "../Landscape/Search/Search";
+import Navigation from '../Navigation/Navigation';
+import { Drawer, Theme } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Search from '../Landscape/Search/Search';
 
 interface Props {
   children: string | ReactElement | ReactElement[];
@@ -20,39 +20,39 @@ const sidebarWidth = 280;
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      display: "flex"
+      display: 'flex',
     },
     sideBar: {
-      position: "absolute",
+      position: 'absolute',
       right: 0,
       top: 5,
       width: sidebarWidth,
-      overflow: "auto",
-      maxHeight: "calc(100vh - 50px)",
-      zIndex: 5000
+      overflow: 'auto',
+      maxHeight: 'calc(100vh - 50px)',
+      zIndex: 5000,
     },
 
     outer: {
-      display: "flex",
-      flexDirection: "row"
+      display: 'flex',
+      flexDirection: 'row',
     },
     content: {
-      position: 'relative'
+      position: 'relative',
     },
     flexItem: {
       flexShrink: 1,
-      flexGrow: 1
+      flexGrow: 1,
     },
     main: {
       flexShrink: 1,
       flexGrow: 2,
-      width: "1000px"
+      width: '1000px',
     },
     searchSupport: {
       backgroundColor: theme.palette.primary.dark,
       width: searchSupportWidth,
-      padding: 5
-    }
+      padding: 5,
+    },
   })
 );
 
@@ -61,13 +61,13 @@ const useStyles = makeStyles((theme: Theme) =>
  * @param param0
  */
 const Layout: React.FC<Props> = ({
-                                   children,
-                                   sidebarContent,
-                                   setSidebarContent,
-                                   pageTitle,
-                                   logo,
-                                   version
-                                 }) => {
+  children,
+  sidebarContent,
+  setSidebarContent,
+  pageTitle,
+  logo,
+  version,
+}) => {
   const classes = useStyles();
   const [searchSupport, setSearchSupport] = React.useState<boolean>(false);
 
@@ -89,11 +89,11 @@ const Layout: React.FC<Props> = ({
       </main>
       <Drawer
         classes={{
-          paper: classes.searchSupport
+          paper: classes.searchSupport,
         }}
         style={{ width: searchSupport ? searchSupportWidth : 0 }}
-        anchor={"right"}
-        variant={"persistent"}
+        anchor={'right'}
+        variant={'persistent'}
         open={searchSupport}
         onClose={() => {
           setSearchSupport(false);

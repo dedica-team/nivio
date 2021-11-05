@@ -108,7 +108,10 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
             {group.name}
           </TableCell>
           <TableCell>
-            <StatusChip name={`${groupAssessment.identifier}: ${groupAssessment.field}`} status={groupAssessment.status} />
+            <StatusChip
+              name={`${groupAssessment.identifier}: ${groupAssessment.field}`}
+              status={groupAssessment.status}
+            />
             {groupAssessment.message}
           </TableCell>
         </TableRow>

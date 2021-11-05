@@ -1,10 +1,9 @@
 import React from 'react';
-import { render, RenderResult } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import Man from './Man';
 import { MemoryRouter } from 'react-router-dom';
 
 import * as APIClient from './../../utils/API/APIClient';
-import { act } from 'react-dom/test-utils';
 import { unmountComponentAtNode } from 'react-dom';
 
 let container: HTMLElement;

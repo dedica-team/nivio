@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
 import {
-  Typography,
-  Theme,
-  createStyles,
   Box,
+  createStyles,
   Menu,
   MenuItem,
-  withStyles,
   MenuProps,
+  Theme,
+  Typography,
+  withStyles,
 } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
@@ -127,7 +127,7 @@ const Navigation: React.FC<Props> = ({
           Help
         </MenuItem>
         <MenuItem disabled={true}>
-          <Typography style={{fontSize: 10}}>nivio {version}</Typography>
+          <Typography style={{ fontSize: 10 }}>nivio {version}</Typography>
         </MenuItem>
       </StyledMenu>
       <Box className={classes.pageTitle}>

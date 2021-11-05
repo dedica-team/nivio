@@ -39,5 +39,4 @@ const GroupAvatar: React.FC<Props> = ({ group, statusColor }) => {
   );
 };
 
-
 export default GroupAvatar;

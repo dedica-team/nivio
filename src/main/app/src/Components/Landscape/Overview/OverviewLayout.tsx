@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
     overview: {
       marginLeft: 10,
       width: 'calc(100% - 300px)',
-      paddingTop: 0
+      paddingTop: 0,
     },
     card: {
       marginBottom: 5,
@@ -54,7 +54,6 @@ const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
   let content: ReactElement[] = [<Box>Loading landscapes...</Box>];
 
   if (Array.isArray(landscapes) && landscapes.length) {
-
     content = landscapes.map((landscape) => {
       let itemCount = 0;
       landscape.groups?.forEach((group) => (itemCount += group.items.length));
@@ -123,7 +122,6 @@ const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
         </Card>
       );
     });
-
   }
 
   return (

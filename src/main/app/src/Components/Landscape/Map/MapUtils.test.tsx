@@ -1,5 +1,5 @@
 import React from 'react';
-import { getApproximateCenterCoordinates } from "./MapUtils";
+import { getApproximateCenterCoordinates } from './MapUtils';
 
 it('should not change values because viewbox not negative', () => {
   // @ts-ignore
