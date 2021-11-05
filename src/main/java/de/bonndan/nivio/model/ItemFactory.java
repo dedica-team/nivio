@@ -14,20 +14,23 @@ import java.util.stream.Collectors;
 
 public class ItemFactory {
 
+    private ItemFactory() {
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(ItemFactory.class);
 
     public static Item getTestItem(String group, String identifier) {
-        Landscape landscape = LandscapeBuilder.aLandscape().withIdentifier("test").withName("test").build();
+        var landscape = LandscapeBuilder.aLandscape().withIdentifier("test").withName("test").build();
         return getTestItem(group, identifier, landscape);
     }
 
     public static Item getTestItem(String group, String identifier, Landscape landscape) {
         return new Item(identifier, landscape, group, null,null,null,
-                null, null, null, null);
+                null, null, null, null, null);
     }
 
     public static ItemBuilder getTestItemBuilder(String group, String identifier) {
-        Landscape landscape = LandscapeBuilder.aLandscape().withIdentifier("test").withName("test").build();
+        var landscape = LandscapeBuilder.aLandscape().withIdentifier("test").withName("test").build();
         return ItemBuilder.anItem().withGroup(group).withIdentifier(identifier).withLandscape(landscape);
     }
 
@@ -42,6 +45,7 @@ public class ItemFactory {
                 .withOwner(description.getOwner())
                 .withGroup(description.getGroup())
                 .withIcon(description.getIcon())
+                .withType(description.getType())
                 .withLandscape(landscape);
 
         if (description.getAddress() != null) {
@@ -55,7 +59,7 @@ public class ItemFactory {
         builder.withLinks(description.getLinks());
         builder.withLabels(description.getLabels());
 
-        if (StringUtils.isEmpty(builder.getGroup())) {
+        if (!StringUtils.hasLength(builder.getGroup())) {
             builder.withGroup(Group.COMMON);
         }
         return builder.build();
@@ -70,7 +74,7 @@ public class ItemFactory {
     public static Item assignAll(@NonNull final Item item, @Nullable final ItemDescription description) {
         Objects.requireNonNull(item, "Item is null");
         if (description == null) {
-            logger.warn(String.format("ItemDescription for item %s is null in assignAllValues", item.getIdentifier()));
+            logger.warn("ItemDescription for item {} is null in assignAllValues", item.getIdentifier());
             return item;
         }
 
@@ -82,6 +86,7 @@ public class ItemFactory {
                 .withOwner(item.getOwner())
                 .withGroup(item.getGroup())
                 .withIcon(item.getIcon())
+                .withType(item.getType())
                 .withLandscape(item.getLandscape())
                 .withRelations(item.getRelations())
                 .withInterfaces(item.getInterfaces())
@@ -100,6 +105,7 @@ public class ItemFactory {
         builder.withOwner(description.getOwner());
         builder.withColor(description.getColor());
         builder.withIcon(description.getIcon());
+        builder.withType(description.getType());
         builder.withContact(description.getContact());
         builder.withLabels(description.getLabels());
 

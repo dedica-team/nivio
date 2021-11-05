@@ -15,29 +15,41 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class AllGroupsLayoutTest {
 
     @Test
-    public void testWithARelation() {
+    void testWithARelation() {
 
         Group a = new Group("a", "test");
+        Item bara = getTestItem("a", "bara");
+        Item fooa = getTestItem("a", "fooa");
+        a.addOrReplaceItem(bara);
+        a.addOrReplaceItem(fooa);
+
         Group b = new Group("b", "test");
+        Item barb = getTestItem("b", "barb");
+        Item foob = getTestItem("b", "foob");
+        b.addOrReplaceItem(barb);
+        b.addOrReplaceItem(foob);
+
         Group c = new Group("c", "test");
+        Item barc = getTestItem("c", "barc");
+        Item fooc = getTestItem("c", "fooc");
+        c.addOrReplaceItem(barc);
+        c.addOrReplaceItem(fooc);
 
-        Landscape landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
+        Landscape landscape = LandscapeFactory.createForTesting("test", "testLandscape").withItems(Set.of(fooa, bara, foob, barb, fooc, barc)).build();
 
-        landscape.getGroups().put("a", a);
-        landscape.getGroups().put("b", b);
-        landscape.getGroups().put("c", c);
+        landscape.addGroup(a);
+        landscape.addGroup(b);
+        landscape.addGroup(c);
 
-        Map<String, SubLayout> map = Map.of("a", getSubLayout(a),
-                "b", getSubLayout(b),
-                "c", getSubLayout(c)
+        Map<String, SubLayout> map = Map.of(
+                "a", getSubLayout(a, Set.of(bara, fooa)),
+                "b", getSubLayout(b, Set.of(barb, foob)),
+                "c", getSubLayout(c, Set.of(barc, fooc))
         );
 
         //add some inter-group relations
-        Item item1 = a.getItems().iterator().next();
-        Item item2 = b.getItems().iterator().next();
-        Item item3 = c.getItems().iterator().next();
-        item1.addOrReplace(new Relation(item1, item2));
-        item2.addOrReplace(new Relation(item2, item3));
+        bara.addOrReplace(RelationFactory.createForTesting(bara, barb));
+        barb.addOrReplace(RelationFactory.createForTesting(barb, barc));
 
         Map<String, Group> groupMap = new LinkedHashMap<>();
         landscape.getGroups().forEach(groupMap::put);
@@ -52,20 +64,12 @@ class AllGroupsLayoutTest {
         assertEquals(landscape, layoutedLandscape.getComponent());
         assertEquals(3, layoutedLandscape.getChildren().size());
 
-        //assert postition is always the same
-        assertEquals(327, Math.round(layoutedLandscape.getChildren().get(0).getX()));
-        assertEquals(-503, Math.round(layoutedLandscape.getChildren().get(0).getY()));
+        //assert position is always the same
+        assertEquals(-541, Math.round(layoutedLandscape.getChildren().get(0).getX()));
+        assertEquals(175, Math.round(layoutedLandscape.getChildren().get(0).getY()));
     }
 
-    private SubLayout getSubLayout(Group group) {
-
-        Item bar = getTestItem(group.getIdentifier(), "bar" + group.getIdentifier());
-        group.addItem(bar);
-
-        Item baz = getTestItem(group.getIdentifier(), "baz" + group.getIdentifier());
-        group.addItem(baz);
-        baz.addOrReplace(new Relation(baz, bar));
-
-        return new SubLayout(group, Set.of(bar, baz), new LandscapeConfig.LayoutConfig());
+    private SubLayout getSubLayout(Group group, Set<Item> items) {
+        return new SubLayout(group, items, new LandscapeConfig.LayoutConfig());
     }
 }

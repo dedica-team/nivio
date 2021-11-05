@@ -14,7 +14,8 @@ public class HexPath {
 
     private final List<Hex> hexes;
     private final List<String> points = new ArrayList<>();
-    private final List<Hex> bends;
+    private List<Hex> bends;
+    private List<Integer> directions;
     private final Point2D.Double endPoint;
 
     /**
@@ -22,12 +23,12 @@ public class HexPath {
      */
     public HexPath(final List<Hex> hexes) {
         this.hexes = hexes;
-        this.bends = calcBends(hexes);
+        calcBends(hexes);
         this.endPoint = calcPoints();
     }
 
     /**
-     * @return a list of strings forming a path of cubic curves
+     * @return the endpoint of a list of strings forming a path of cubic curves
      */
     private Point2D.Double calcPoints() {
         points.add("M");
@@ -59,19 +60,21 @@ public class HexPath {
                     newAfter.y = next.y + (point.y - next.y) / 10;
                     points.addAll(List.of(String.valueOf(newAfter.x), ",", String.valueOf(newAfter.y)));
                     return new Point2D.Double(point.x, point.y);
-                } else {
-                    points.addAll(List.of(String.valueOf(newAfter.x), ",", String.valueOf(newAfter.y), " L"));
                 }
+
+                points.addAll(List.of(String.valueOf(newAfter.x), ",", String.valueOf(newAfter.y), " L"));
+
             } else {
                 if (isLast) {
                     var newAfter = new Point2D.Double();
-                    newAfter.x = point.x - (point.x - prev.x) / 2;
-                    newAfter.y = point.y - (point.y - prev.y) / 2;
+                    //2.1 to prevent that the same point is hit as above (results in broken dataflow markers)
+                    newAfter.x = point.x - (point.x - prev.x) / 2.1;
+                    newAfter.y = point.y - (point.y - prev.y) / 2.1;
                     points.addAll(List.of(" ", String.valueOf(newAfter.x), ",", String.valueOf(newAfter.y)));
                     return new Point2D.Double(newAfter.x, newAfter.y);
-                } else {
-                    points.addAll(List.of(" ", String.valueOf(point.x), ",", String.valueOf(point.y), " L"));
                 }
+
+                points.addAll(List.of(" ", String.valueOf(point.x), ",", String.valueOf(point.y), " L"));
             }
         }
         return null;
@@ -115,23 +118,38 @@ public class HexPath {
      * Returns the bends from a list of adjacent hexes (a chain).
      *
      * @param hexes the hex chain
-     * @return all hexes which are bends / curves
      */
-    public static List<Hex> calcBends(final List<Hex> hexes) {
+    void calcBends(final List<Hex> hexes) {
 
-        final List<Hex> bends = new ArrayList<>();
+        bends = new ArrayList<>();
+        directions = new ArrayList<>();
         var i = 0;
         for (i = 1; i < hexes.size() - 1; i++) {
             var prev = hexes.get(i - 1);
             var cur = hexes.get(i);
             var next = hexes.get(i + 1);
+
+            //bends
             var qBend = (prev.q == cur.q && next.q != cur.q) || (prev.q != cur.q && next.q == cur.q);
             var rBend = (prev.r == cur.r && next.r != cur.r) || (prev.r != cur.r && next.r == cur.r);
             if (qBend || rBend) {
                 bends.add(cur);
             }
-        }
 
-        return bends;
+            //directions
+            directions.add(prev.getDirectionTo(cur));
+
+            if (i == hexes.size() - 2) {
+                directions.add(cur.getDirectionTo(next));
+            }
+        }
+    }
+
+    public List<Hex> getBends() {
+        return Collections.unmodifiableList(bends);
+    }
+
+    public List<Integer> getDirections() {
+        return Collections.unmodifiableList(directions);
     }
 }

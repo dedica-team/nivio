@@ -6,14 +6,12 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.RelationType;
-import de.bonndan.nivio.observation.InputFormatObserver;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
 import guru.nidi.graphviz.parse.ParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -43,7 +41,7 @@ public class InputFormatHandlerDot implements InputFormatHandler {
     }
 
     @Override
-    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
+    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
         List<ItemDescription> itemDescriptions = new ArrayList<>();
         String content = fileFetcher.get(reference, baseUrl);
         List<ItemDescription> items = new ArrayList<>();
@@ -81,7 +79,7 @@ public class InputFormatHandlerDot implements InputFormatHandler {
                                 break;
                         }
                     });
-                    itemDescription.addRelation(rel);
+                    itemDescription.addOrReplaceRelation(rel);
                 });
 
                 items.add(itemDescription);
@@ -97,11 +95,4 @@ public class InputFormatHandlerDot implements InputFormatHandler {
         }
         landscapeDescription.mergeItems(itemDescriptions);
     }
-
-    @Override
-    @Nullable
-    public InputFormatObserver getObserver(@NonNull final InputFormatObserver inner, @NonNull final SourceReference sourceReference) {
-        return inner;
-    }
-
 }

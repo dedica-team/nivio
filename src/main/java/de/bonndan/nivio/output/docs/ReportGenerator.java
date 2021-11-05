@@ -18,7 +18,7 @@ import java.util.Set;
 import static de.bonndan.nivio.output.FormatUtils.nice;
 import static de.bonndan.nivio.output.map.MapController.MAP_SVG_ENDPOINT;
 import static j2html.TagCreator.*;
-import static org.springframework.util.StringUtils.isEmpty;
+import static org.springframework.util.StringUtils.hasLength;
 
 /**
  * Generates a report containing all landscape groups and items.
@@ -40,7 +40,7 @@ public class ReportGenerator extends HtmlGenerator {
                 getHead(landscape),
                 body(
                         h1(landscape.getName()),
-                        iff(!isEmpty(landscape.getContact()), p("Contact: " + nice(landscape.getContact()))),
+                        iff(hasLength(landscape.getContact()), p("Contact: " + nice(landscape.getContact()))),
                         div(embed().attr("src", MapController.PATH + "/" + landscape.getIdentifier() + "/" + MAP_SVG_ENDPOINT).attr("class", "img-fluid img-thumbnail mx-auto d-block")),
                         br(), br(),
                         rawHtml(writeGroups(landscape, assessment))
@@ -60,7 +60,7 @@ public class ReportGenerator extends HtmlGenerator {
             );
             builder.append(
                     div().attr("class", "group")
-                            .with(groupItem.getItems().stream().map(item -> this.writeItem(item, assessment, all)))
+                            .with(groupItem.getItems().stream().map(fqi -> this.writeItem(landscape.getItems().pick(fqi), assessment, all)))
                             .render()
             );
         });

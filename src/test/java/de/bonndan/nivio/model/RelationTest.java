@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.output.dto.RelationApiModel;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -16,10 +17,10 @@ class RelationTest {
         Item two = getTestItem("foo", "baz");
         Relation relation = new Relation(one, two, null, null, RelationType.PROVIDER);
 
-        Relation.ApiModel apiModel = new Relation.ApiModel(relation, one);
+        RelationApiModel apiModel = new RelationApiModel(relation, one);
 
         assertThat(apiModel).isNotNull();
-        assertThat(apiModel.direction).isEqualTo(Relation.ApiModel.OUTBOUND);
+        assertThat(apiModel.direction).isEqualTo(RelationApiModel.OUTBOUND);
         assertThat(apiModel.name).isEqualTo("baz");
         assertThat(apiModel.type).isEqualTo(relation.getType());
         assertThat(apiModel.source).isEqualTo(relation.getSource());
@@ -32,12 +33,12 @@ class RelationTest {
     void inbound() {
         Item one = getTestItem("foo", "bar");
         Item two = getTestItem("foo", "baz");
-        Relation relation = new Relation(one, two);
+        Relation relation = RelationFactory.createForTesting(one, two);
 
-        Relation.ApiModel apiModel = new Relation.ApiModel(relation, two);
+        RelationApiModel apiModel = new RelationApiModel(relation, two);
 
         assertThat(apiModel).isNotNull();
-        assertThat(apiModel.direction).isEqualTo(Relation.ApiModel.INBOUND);
+        assertThat(apiModel.direction).isEqualTo(RelationApiModel.INBOUND);
         assertThat(apiModel.name).isEqualTo("bar");
     }
 
@@ -45,12 +46,12 @@ class RelationTest {
     void inboundName() {
         Item one = getTestItemBuilder("foo", "bar").withName("huhu").build();
         Item two = getTestItem("foo", "baz");
-        Relation relation = new Relation(one, two);
+        Relation relation = RelationFactory.createForTesting(one, two);
 
-        Relation.ApiModel apiModel = new Relation.ApiModel(relation, two);
+        RelationApiModel apiModel = new RelationApiModel(relation, two);
 
         assertThat(apiModel).isNotNull();
-        assertThat(apiModel.direction).isEqualTo(Relation.ApiModel.INBOUND);
+        assertThat(apiModel.direction).isEqualTo(RelationApiModel.INBOUND);
         assertThat(apiModel.name).isEqualTo("huhu");
     }
 

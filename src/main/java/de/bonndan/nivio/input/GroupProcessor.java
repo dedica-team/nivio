@@ -80,7 +80,7 @@ public class GroupProcessor extends Processor {
         landscape.getItems().all().forEach(item -> {
             Optional<Group> group = landscape.getGroup(item.getGroup());
             if (group.isPresent()) {
-                group.get().addItem(item);
+                group.get().addOrReplaceItem(item);
                 return;
             }
             if (isBlacklisted(item.getGroup(), specs)) {

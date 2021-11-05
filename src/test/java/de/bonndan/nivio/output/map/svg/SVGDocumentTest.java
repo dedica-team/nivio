@@ -1,15 +1,25 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.http.CachedResponse;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.RenderingTest;
+import de.bonndan.nivio.output.layout.LayoutedComponent;
+import j2html.tags.DomContent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.stubbing.OngoingStubbing;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -18,26 +28,27 @@ import static org.mockito.Mockito.when;
 
 class SVGDocumentTest extends RenderingTest {
 
-    @BeforeEach
+        @BeforeEach
     public void setup() throws URISyntaxException {
         super.setup();
-    }
+        }
 
     @Test
-    public void renderInout() throws IOException {
+    void renderInout() throws IOException {
         String path = "/src/test/resources/example/inout";
         Landscape landscape = getLandscape(path + ".yml");
         String svg = renderLandscape(path, landscape);
         assertTrue(svg.contains("svg version=\"1.1\""));
         assertTrue(svg.contains("class=\"title\">Input and Output</text>"));
+        assertTrue(svg.contains("class=\"logo\""));
         assertThat(svg).contains("<g data-identifier=\"inout/output/svg\" class=\"item");
         assertTrue(svg.contains(">Docker Compose files</text>"));
     }
 
     @Test
-    public void renderCustomFill() throws IOException {
-        String path = "/src/test/resources/example/dedica";
+    void renderCustomFill() throws IOException {
 
+        String path = "/src/test/resources/example/dedica";
         Landscape landscape = getLandscape(path + ".yml");
 
         //when
@@ -52,7 +63,7 @@ class SVGDocumentTest extends RenderingTest {
     }
 
     @Test
-    public void embedsExternalImages() throws IOException, URISyntaxException {
+    void embedsExternalImages() throws IOException, URISyntaxException {
         String path = "/src/test/resources/example/dedica";
         CachedResponse response = mock(CachedResponse.class);
         when(response.getBytes()).thenReturn("foo".getBytes());
@@ -64,10 +75,12 @@ class SVGDocumentTest extends RenderingTest {
         String svg = renderLandscape(path, landscape);
 
         //then
-        assertThat(svg).doesNotContain("https://dedica.team/images/logo_orange_weiss.png"); //external image, to be replaced
-        assertThat(svg).doesNotContain("https://dedica.team/images/logo.png"); //map logo
-        assertThat(svg).doesNotContain("danielpozzi.jpg"); //external image, to be replaced
-        assertThat(svg).contains("fill=\"url(#Wm05dg==)\""); //pattern for "foo" response
+        assertThat(svg)
+                .doesNotContain("https://dedica.team/images/logo_orange_weiss.png") //external image, to be replaced
+                .doesNotContain("https://dedica.team/images/logo.png") //map logo
+                .doesNotContain("danielpozzi.jpg") //external image, to be replaced
+                .contains("fill=\"url(#Wm05dg==)\""); //pattern for "foo" response
 
     }
+
 }

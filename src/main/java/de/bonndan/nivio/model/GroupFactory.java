@@ -19,13 +19,12 @@ public class GroupFactory {
      * @param added group that carries additional values
      * @return a new group, or the first one if the second one is null
      */
-    public static Group merge(final Group group, Group added) {
+    public static Group merge(final Group group, final Group added) {
 
         GroupBuilder builder = getBuilder(group);
 
         if (added != null) {
             assignSafeIfAbsent(added.getColor(), group.getColor(), builder::withColor);
-            assignSafeIfAbsent(added.getIcon(), group.getIcon(), builder::withIcon);
             assignSafeIfAbsent(added.getContact(), group.getContact(), builder::withContact);
             assignSafeIfAbsent(added.getDescription(), group.getDescription(), builder::withDescription);
             assignSafeIfAbsent(added.getOwner(), group.getOwner(), builder::withOwner);
@@ -57,7 +56,7 @@ public class GroupFactory {
         }
 
 
-        if (StringUtils.isEmpty(builder.getColor())) {
+        if (!StringUtils.hasLength(builder.getColor())) {
             builder.withColor(Color.getGroupColor(builder.getIdentifier()));
         }
 
@@ -72,7 +71,6 @@ public class GroupFactory {
                 .withOwner(group.getOwner())
                 .withContact(group.getContact())
                 .withColor(group.getColor())
-                .withIcon(group.getIcon())
                 .withLandscapeIdentifier(group.getLandscapeIdentifier())
                 .withLinks(group.getLinks())
                 .withLabels(group.getLabels());

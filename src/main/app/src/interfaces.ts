@@ -18,6 +18,7 @@ export interface ILandscape {
   links?: ILinks;
   lastUpdate?: string;
   groups: IGroup[];
+  kpis?: IKpis;
 }
 
 export interface IProcessLog {
@@ -38,7 +39,6 @@ export interface IConfig {
   groupBlacklist?: Array<string>;
   labelBlacklist?: Array<string>;
   branding?: IBranding;
-  kpis?: IKpis;
 }
 
 export interface IKpis {
@@ -54,11 +54,17 @@ export interface IKpi {
 }
 
 export interface IRanges {
-  [key: string]: string;
+  [key: string]: IRange;
+}
+
+export interface IRange {
+  minimum: string;
+  maximum: string;
+  description?: string;
 }
 
 export interface IMatches {
-  [key: string]: string;
+  [key: string]: string[];
 }
 
 export interface IBranding {
@@ -83,7 +89,6 @@ export interface IGroup {
   fullyQualifiedIdentifier: string;
   labels?: ILabels;
   _links?: ILinks;
-  links?: ILinks;
   items: IItem[];
 }
 
@@ -103,7 +108,6 @@ export interface IItem {
   tags: Array<string>;
   color?: string;
   icon: string;
-  links?: Object;
   _links?: ILinks;
 }
 
@@ -133,6 +137,7 @@ export interface IRelation {
   name: string;
   id: string;
   direction: string;
+  labels: ILabels;
 }
 
 export interface ILabels {
@@ -169,10 +174,10 @@ export interface IAssessmentResults {
 }
 
 export interface IAssessmentProps {
+  identifier: string;
   field: string;
   status: string;
   message: string;
-  maxField?: string;
   summary: boolean;
 }
 

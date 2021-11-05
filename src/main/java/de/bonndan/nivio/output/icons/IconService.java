@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.icons;
 
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.util.URLHelper;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -21,10 +20,12 @@ public class IconService {
 
     private final LocalIcons localIcons;
     private final ExternalIcons externalIcons;
+    private final IconMapping iconMapping;
 
     public IconService(LocalIcons localIcons, ExternalIcons externalIcons) {
         this.localIcons = localIcons;
         this.externalIcons = externalIcons;
+        this.iconMapping = new IconMapping();
     }
 
     /**
@@ -40,7 +41,7 @@ public class IconService {
 
         //icon label based
         String icon = item.getIcon();
-        if (!StringUtils.isEmpty(icon)) {
+        if (StringUtils.hasLength(icon)) {
 
             if (icon.startsWith(DataUrlHelper.DATA_IMAGE)) {
                 return icon;
@@ -66,12 +67,12 @@ public class IconService {
 
         //type based
         String type = item.getType();
-        if (StringUtils.isEmpty(type)) {
+        if (!StringUtils.hasLength(type)) {
             return localIcons.getDefaultIcon();
         }
 
         //fallback to item.type
-        String iconName = IconMapping.of(type.toLowerCase()).map(IconMapping::getIcon).orElseGet(type::toLowerCase);
+        String iconName = iconMapping.getIcon(type.toLowerCase()).orElseGet(type::toLowerCase);
         return localIcons.getIconUrl(iconName).orElse(localIcons.getDefaultIcon());
     }
 

@@ -1,14 +1,15 @@
-import React, { useContext, useState } from 'react';
-import { Card, CardHeader, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
+import React, {useContext, useState} from 'react';
+import {Card, CardHeader, Table, TableBody, TableCell, TableRow} from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
-import { IItem, IRelation } from '../../../../interfaces';
+import {IItem, IRelation} from '../../../../interfaces';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
+import {LocateFunctionContext} from '../../../../Context/LocateFunctionContext';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import ItemAvatar from '../../Modals/Item/ItemAvatar';
-import { Close, HelpRounded } from '@material-ui/icons';
-import { LandscapeContext } from '../../../../Context/LandscapeContext';
+import {Close, HelpRounded} from '@material-ui/icons';
+import {LandscapeContext} from '../../../../Context/LandscapeContext';
+import {getLabels} from '../../Utils/utils';
 
 interface Props {
   source: IItem;
@@ -32,6 +33,8 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
   const sourceTitle = source.name || source.identifier;
   const targetTitle = target.name || target.identifier;
   const title = sourceTitle + ' to ' + targetTitle;
+  const labels = relation ? getLabels(relation) : null;
+
   const sourceStatus = landscapeContext.getAssessmentSummary(source.fullyQualifiedIdentifier);
   const targetStatus = landscapeContext.getAssessmentSummary(target.fullyQualifiedIdentifier);
 
@@ -80,6 +83,13 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
             </TableRow>
           </TableBody>
         </Table>
+        <br />
+        {labels ? (
+          <>
+            <Typography variant={'h6'}>Labels</Typography>
+            {labels}
+          </>
+        ) : null}
         <br />
         <Typography variant={'h6'}>Source</Typography>
         <div>

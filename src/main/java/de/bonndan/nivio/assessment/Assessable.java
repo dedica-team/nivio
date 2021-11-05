@@ -1,20 +1,18 @@
 package de.bonndan.nivio.assessment;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.kpi.KPI;
-import de.bonndan.nivio.model.Component;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.springframework.lang.NonNull;
 
 import java.util.*;
-
-import static de.bonndan.nivio.assessment.StatusValue.SUMMARY_LABEL;
+import java.util.stream.Collectors;
 
 /**
  * Interface for components that can be assessed and can have assigned {@link StatusValue}s.
  */
-public interface Assessable extends Component {
+public interface Assessable {
 
     /**
      * Returns pre-set status values not computed by {@link KPI}s.
@@ -24,15 +22,24 @@ public interface Assessable extends Component {
      * @return a distinct (by field) set
      */
     @JsonIgnore
+    @NonNull
     Set<StatusValue> getAdditionalStatusValues();
+
+    /**
+     * Returns the string to be used as key/identifier for a component assessment.
+     *
+     * @return map key / identifier
+     */
+    @JsonIgnore
+    @NonNull
+    String getAssessmentIdentifier();
 
     /**
      * Returns the components to be assessed before this (e.g. group items).
      */
     @JsonIgnore
-    default List<? extends Assessable> getChildren() {
-        return new ArrayList<>();
-    }
+    @NonNull
+    List<? extends Assessable> getChildren();
 
     /**
      * Recursively applies the {@link KPI}s to children and self.
@@ -40,8 +47,8 @@ public interface Assessable extends Component {
      * @param kpis kpis used for assessment
      * @return a map with statusValues indexed by {@link FullyQualifiedIdentifier}
      */
-    default Map<FullyQualifiedIdentifier, List<StatusValue>> applyKPIs(final Map<String, KPI> kpis) {
-        final Map<FullyQualifiedIdentifier, List<StatusValue>> map = new HashMap<>();
+    default Map<String, List<StatusValue>> applyKPIs(final Map<String, KPI> kpis) {
+        final Map<String, List<StatusValue>> map = new HashMap<>();
 
         List<StatusValue> childrenValues = new ArrayList<>();
         //apply to children
@@ -51,7 +58,7 @@ public interface Assessable extends Component {
         });
 
         //apply each kpi to his
-        FullyQualifiedIdentifier fqi = this.getFullyQualifiedIdentifier();
+        String fqi = this.getAssessmentIdentifier();
         map.putIfAbsent(fqi, new ArrayList<>());
 
         //add preset status values
@@ -71,9 +78,10 @@ public interface Assessable extends Component {
         });
 
         replaceAll(childrenValues, map.get(fqi));
-        replace(map.get(fqi), StatusValue.summary(SUMMARY_LABEL + "." + getIdentifier(), getWorst(childrenValues)));
+        List<StatusValue> worst = getWorst(childrenValues);
+        replace(map.get(fqi), StatusValue.summary(getAssessmentIdentifier(), worst));
 
-        //sort in descending order, worst first
+        //sort in descending order, the worst first
         map.get(fqi).sort(Collections.reverseOrder(new StatusValue.Comparator()));
         return map;
     }
@@ -83,15 +91,22 @@ public interface Assessable extends Component {
     }
 
     private void replace(List<StatusValue> present, StatusValue added) {
-        present.remove(added);
+        List<StatusValue> removables = present.stream()
+                .filter(statusValue -> statusValue.equals(added))
+                .collect(Collectors.toUnmodifiableList());
+        present.removeAll(removables);
         present.add(added);
     }
 
     @NonNull
-    static StatusValue getWorst(List<StatusValue> values) {
-        return values.stream()
-                .filter(Objects::nonNull)
-                .max(new StatusValue.Comparator())
-                .orElse(new StatusValue(SUMMARY_LABEL, Status.UNKNOWN));
+    static List<StatusValue> getWorst(List<StatusValue> values) {
+        if (values == null || values.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        values.sort(new StatusValue.Comparator());
+        Status worstStatus = values.get(values.size()-1).getStatus();
+
+        return values.stream().filter(statusValue -> statusValue.getStatus().equals(worstStatus)).collect(Collectors.toUnmodifiableList());
     }
 }

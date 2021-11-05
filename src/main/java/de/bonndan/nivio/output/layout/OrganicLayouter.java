@@ -17,19 +17,16 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Applies {@link FastOrganicLayout} to landscape components and writes the rendered data to component labels.
  */
-public class OrganicLayouter implements Layouter<LayoutedComponent> {
+public class OrganicLayouter implements Layouter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrganicLayouter.class);
-
-    public OrganicLayouter() {
-    }
 
     @Override
     public LayoutedComponent layout(@NonNull final Landscape landscape) {
 
         Map<String, SubLayout> subGraphs = new LinkedHashMap<>();
-        Objects.requireNonNull(landscape).getGroups().forEach((name, groupItem) -> {
-            SubLayout subLayout = new SubLayout(groupItem, groupItem.getItems(), landscape.getConfig().getItemLayoutConfig());
+        Objects.requireNonNull(landscape).getGroups().forEach((name, group) -> {
+            SubLayout subLayout = new SubLayout(group, landscape.getItems().retrieve(group.getItems()), landscape.getConfig().getItemLayoutConfig());
             subGraphs.put(name, subLayout);
         });
 

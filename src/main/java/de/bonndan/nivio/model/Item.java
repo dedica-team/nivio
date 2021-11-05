@@ -1,11 +1,13 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ItemRelationProcessor;
 import de.bonndan.nivio.output.Color;
-import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
 import static de.bonndan.nivio.model.ComponentDiff.*;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier")
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//needed when internal models are serialized for debugging
 public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent {
 
     public static final String LAYER_INFRASTRUCTURE = "infrastructure";
@@ -33,8 +35,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     private final String identifier;
 
     @NotNull
-    @JsonIgnore
-    @Schema(hidden = true)
+    @JsonIgnore //needed when internal models are serialized for debugging
     private final Landscape landscape;
 
     private final String name;
@@ -46,6 +47,8 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     private final String description;
 
     private final String group;
+
+    private final String type;
 
     /**
      * technical address
@@ -64,32 +67,33 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     @JsonManagedReference
     private Set<ServiceInterface> interfaces = new HashSet<>();
 
-    public Item(@NotNull final String identifier,
-                @NotNull final Landscape landscape,
-                @NotNull final String group,
+    public Item(final String identifier,
+                final Landscape landscape,
+                final String group,
                 final String name,
                 final String owner,
                 final String contact,
                 final String description,
                 final String color,
                 final String icon,
+                final String type,
                 final URI address
     ) {
-        if (StringUtils.isEmpty(identifier)) {
-            throw new RuntimeException("Identifier must not be empty");
+        if (!StringUtils.hasLength(identifier)) {
+            throw new IllegalArgumentException("Identifier must not be empty");
         }
         this.identifier = identifier.toLowerCase();
 
         this.landscape = Objects.requireNonNull(landscape, "Landscape must not be null");
-        if (StringUtils.isEmpty(group)) {
-            throw new RuntimeException("Group identifier must not be empty");
+        if (!StringUtils.hasLength(group)) {
+            throw new IllegalArgumentException("Group identifier must not be empty");
         }
         this.group = group;
-
         this.name = name;
         this.owner = owner;
         this.contact = contact;
         this.description = description;
+        this.type = type;
         this.address = address;
 
         //these are effectively mutable
@@ -136,7 +140,6 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         return contact;
     }
 
-    @Schema(name = "_links")
     public Map<String, Link> getLinks() {
         return links;
     }
@@ -150,20 +153,10 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         return description;
     }
 
-    @JsonIgnore
+    @NonNull
     @Override
     public Map<String, String> getLabels() {
         return labels;
-    }
-
-    /**
-     * Returns the labels without the internal ones (having prefixes).
-     *
-     * @return filtered labels
-     */
-    @JsonProperty("labels")
-    public Map<String, String> getJSONLabels() {
-        return Labeled.withoutKeys(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG, Label.type.name(), Label.icon.name());
     }
 
     /**
@@ -171,14 +164,14 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
      *
      * @return immutable set
      */
-    @JsonIgnore
+    @JsonIgnore //needed for internal debugging
     public Set<Relation> getRelations() {
         return Set.copyOf(relations);
     }
 
     /**
      * Adds a relation or replaces the similar one.
-     *
+     * <p>
      * This is necessary because {@link Set} does not replace AND we need to check relation end equality on object level
      * because referenced source or target items will be replaced by new copies.
      *
@@ -186,7 +179,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
      */
     public void addOrReplace(@NonNull final Relation relation) {
         if (relation.getSource() != this && relation.getTarget() != this) {
-            throw new IllegalArgumentException("Relation contains no reference to item.");
+            throw new IllegalArgumentException(String.format("Relation contains no reference to item.%s %s", relation.getIdentifier(), this));
         }
 
         getSimilar(relation).map(relations::remove);
@@ -211,25 +204,13 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
                 .findFirst();
     }
 
-    @JsonProperty("relations")
-    public Map<String, Relation.ApiModel> getJSONRelations() {
-        Map<String, Relation.ApiModel> map = new HashMap<>();
-
-        relations.forEach(relation -> {
-            Relation.ApiModel apiModel = new Relation.ApiModel(relation, this);
-            map.put(apiModel.id, apiModel);
-        });
-
-        return map;
-    }
-
     void setRelations(Set<Relation> outgoing) {
         this.relations.clear();
         this.relations.addAll(outgoing);
     }
 
     public String getType() {
-        return getLabel(Label.type);
+        return type;
     }
 
     public String getAddress() {
@@ -245,7 +226,6 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     }
 
     @Override
-    @JsonAnyGetter
     public String getLabel(String key) {
         return labels.get(key);
     }
@@ -256,7 +236,6 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     }
 
     @Override
-    @JsonAnySetter
     public void setLabel(String key, String value) {
         labels.put(key, value);
     }
@@ -296,10 +275,22 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     }
 
     @Override
+    @NonNull
     public Set<StatusValue> getAdditionalStatusValues() {
-        return StatusValue.fromMapping(indexedByPrefix(Label.status));
+        return StatusValue.fromMapping(getAssessmentIdentifier(), indexedByPrefix(Label.status));
     }
 
+    @Override
+    @NonNull
+    public String getAssessmentIdentifier() {
+        return getFullyQualifiedIdentifier().toString();
+    }
+
+    @Override
+    @NonNull
+    public List<? extends Assessable> getChildren() {
+        return getRelations().stream().filter(relation -> relation.getSource().equals(this)).collect(Collectors.toList());
+    }
 
     /**
      * Compare on field level against a newer version.
@@ -318,6 +309,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         changes.addAll(compareStrings(this.description, newer.description, "Description"));
         changes.addAll(compareStrings(this.name, newer.name, "Name"));
         changes.addAll(compareStrings(this.owner, newer.owner, "Owner"));
+        changes.addAll(compareStrings(this.type, newer.type, "Type"));
         changes.addAll(compareOptionals(Optional.ofNullable(this.address), Optional.ofNullable(newer.address), "Address"));
         changes.addAll(compareCollections(this.links.keySet(), newer.links.keySet(), "Links"));
         changes.addAll(newer.diff(this));

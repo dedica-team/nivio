@@ -1,10 +1,10 @@
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import React, {ReactElement, useContext, useEffect, useState} from 'react';
 import IconButton from '@material-ui/core/IconButton';
-import { Badge } from '@material-ui/core';
-import { Notifications } from '@material-ui/icons';
+import {Badge} from '@material-ui/core';
+import {Notifications} from '@material-ui/icons';
 import Changes from './Changes';
 import componentStyles from '../../Resources/styling/ComponentStyles';
-import { LandscapeContext } from '../../Context/LandscapeContext';
+import {LandscapeContext} from '../../Context/LandscapeContext';
 
 interface Props {
   setSidebarContent: Function;
@@ -16,12 +16,10 @@ interface Props {
  *
  */
 const Notification: React.FC<Props> = ({ setSidebarContent }) => {
-
   const classes = componentStyles();
   const [newChanges, setNewChanges] = useState<Boolean>(false);
   const [renderedChanges, setRenderedChanges] = useState<ReactElement | null>(null);
   const landscapeContext = useContext(LandscapeContext);
-  
 
   /**
    * render changes,
@@ -33,7 +31,13 @@ const Notification: React.FC<Props> = ({ setSidebarContent }) => {
   }, [landscapeContext.notification]);
 
   return (
-    <Badge color='secondary' variant='dot' overlap='circle' invisible={!newChanges} title={'Recent changes'}>
+    <Badge
+      color='secondary'
+      variant='dot'
+      overlap='circular'
+      invisible={!newChanges}
+      title={'Recent changes'}
+    >
       <IconButton
         size={'small'}
         className={classes.navigationButton}

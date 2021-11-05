@@ -23,7 +23,7 @@ import {
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../../interfaces';
-import { getItem, getLabels, getLabelsWithPrefix } from '../../Utils/utils';
+import { getItem, getLabelsWithPrefix, getMappedLabels } from '../../Utils/utils';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import { Close, Details, ExpandMore, Info, MoreVertSharp, Power } from '@material-ui/icons';
@@ -141,12 +141,9 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
   };
 
   useEffect(() => {
-    const reset = (item: IItem) => {
-      setItem(item);
-    };
     if (!item && fullyQualifiedItemIdentifier) {
       get(`/api/${fullyQualifiedItemIdentifier}`).then((loaded) => {
-        reset(loaded);
+        setItem(loaded);
       });
     }
   }, [item, fullyQualifiedItemIdentifier]);
@@ -231,7 +228,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
     setValue(newValue);
   };
 
-  const labels = item ? getLabels(item) : null;
+  const labels = item ? getMappedLabels(item) : null;
   const extend = (
     <>
       {small ? (
@@ -381,7 +378,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
               {assessmentStatus.length > 0 ? (
                 <>
                   <br />
-                  <Typography variant={'h6'}>Assessment</Typography>
+                  <Typography variant={'h6'}>Status</Typography>
                   <Table>
                     <TableBody>{assessmentStatus}</TableBody>
                   </Table>

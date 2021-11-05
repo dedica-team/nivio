@@ -40,7 +40,7 @@ public class NivioConfigProperties {
     private String brandingMessage;
     //iconFolder: /a/local/path
 
-
+    
     public String getBaseUrl() {
         return baseUrl;
     }
@@ -105,6 +105,8 @@ public class NivioConfigProperties {
         this.brandingMessage = brandingMessage;
     }
 
+
+
     public ApiModel getApiModel() {
         java.net.URL brandingLogoUrl = null;
         try {
@@ -124,6 +126,7 @@ public class NivioConfigProperties {
         public final java.net.URL brandingLogoUrl;
         public final String brandingMessage;
 
+
         public ApiModel(String baseUrl,
                         String version,
                         String brandingForeground,
@@ -131,6 +134,7 @@ public class NivioConfigProperties {
                         String brandingSecondary,
                         java.net.URL brandingLogoUrl,
                         String brandingMessage
+
         ) {
             this.baseUrl = baseUrl;
             this.version = version;
@@ -139,6 +143,7 @@ public class NivioConfigProperties {
             this.brandingSecondary = brandingSecondary;
             this.brandingLogoUrl = brandingLogoUrl;
             this.brandingMessage = brandingMessage;
+
         }
     }
 }

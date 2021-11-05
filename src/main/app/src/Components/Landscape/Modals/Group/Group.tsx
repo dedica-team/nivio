@@ -115,7 +115,7 @@ const Group: React.FC<Props> = ({ group }) => {
             <div>
               <br />
               <Typography variant={'h6'}>Status</Typography>
-              <StatusChip name={assessment.maxField} status={assessment?.status} />
+              <StatusChip name={assessment.field} status={assessment?.status} />
               {assessment.message}
             </div>
             <br />

@@ -2,8 +2,6 @@ package de.bonndan.nivio.model;
 
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
-import de.bonndan.nivio.input.AppearanceProcessor;
-import de.bonndan.nivio.input.ProcessingException;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -16,6 +14,9 @@ import java.util.stream.Collectors;
  */
 public interface Labeled {
 
+    /**
+     * Used to concatenate values when same-prefix labels are grouped.
+     */
     String PREFIX_VALUE_DELIMITER = ";";
 
     /**
@@ -62,6 +63,7 @@ public interface Labeled {
     /**
      * Returns all label with values.
      */
+    @NonNull
     Map<String, String> getLabels();
 
     void setLabel(String key, String value);
@@ -74,49 +76,6 @@ public interface Labeled {
      */
     default void setLabel(Label key, String value) {
         setLabel(key.name().toLowerCase(), value);
-    }
-
-    /**
-     * Any-setter default implementation for deserialization.
-     *
-     * @param key   label key
-     * @param value label value (string|string[]|number|list|map)
-     */
-    default void setLabel(@NonNull final String key, final Object value) {
-        if (StringUtils.isEmpty(key)) {
-            throw new IllegalArgumentException("Label key is empty.");
-        }
-
-        if (value instanceof String) {
-            getLabels().put(key.toLowerCase(), (String) value);
-            return;
-        }
-
-        if (value instanceof Number) {
-            getLabels().put(key.toLowerCase(), String.valueOf(value));
-            return;
-        }
-
-        if (value instanceof String[]) {
-            Arrays.stream(((String[]) value)).forEach(s -> setPrefixed(key, s));
-            return;
-        }
-
-        if (value instanceof List) {
-            try {
-                //noinspection unchecked,rawtypes
-                ((List) value).forEach(s -> setPrefixed(key, (String) s));
-                return;
-            } catch (ClassCastException e) {
-                throw new ProcessingException(String.format("Cannot set '%s' to list '%s'. Is this a list-like structure", key, value), e);
-            }
-        }
-
-        if (value instanceof Map) {
-            throw new IllegalArgumentException(String.format("Cannot use the value of '%s' as map ('%s'). Please check the spelling of", key, value));
-        }
-
-        getLabels().put(key, String.valueOf(value));
     }
 
     static Map<String, String> withPrefix(String prefix, Map<String, String> all) {
@@ -204,15 +163,27 @@ public interface Labeled {
     }
 
     /**
-     * Copies all non-null labels from source to target.
+     * Add all non-null labels from source to target where target labels are not set.
      *
      * @param source label source
      * @param target target
      */
-    static void merge(Labeled source, Labeled target) {
+    static void add(@NonNull final Labeled source, @NonNull final Labeled target) {
         source.getLabels().entrySet().stream()
                 .filter(entry -> entry.getValue() != null)
                 .filter(entry -> target.getLabel(entry.getKey()) == null)
+                .forEach(entry -> target.setLabel(entry.getKey(), entry.getValue()));
+    }
+
+    /**
+     * Copies all non-null value labels from source to target.
+     *
+     * @param source label source
+     * @param target target
+     */
+    static void merge(@NonNull final Labeled source, @NonNull final Labeled target) {
+        source.getLabels().entrySet().stream()
+                .filter(entry -> entry.getValue() != null)
                 .forEach(entry -> target.setLabel(entry.getKey(), entry.getValue()));
     }
 
@@ -226,13 +197,15 @@ public interface Labeled {
         List<String> diff = new ArrayList<>();
         MapDifference<String, String> difference = Maps.difference(Objects.requireNonNull(before).getLabels(), getLabels());
         difference.entriesOnlyOnLeft().keySet().stream()
-                .filter(s -> !AppearanceProcessor.affectedLabels.contains(s))
+                .filter(s -> !s.startsWith(Label.INTERNAL_LABEL_PREFIX))
                 .forEach(s -> diff.add(String.format("Label '%s' has been removed", s)));
         difference.entriesOnlyOnRight().keySet().stream()
-                .filter(s -> !AppearanceProcessor.affectedLabels.contains(s))
+                .filter(s -> !s.startsWith(Label.INTERNAL_LABEL_PREFIX))
                 .forEach(s -> diff.add(String.format("Label '%s' has been added", s)));
         difference.entriesDiffering().forEach((key, value) -> {
-            if (AppearanceProcessor.affectedLabels.contains(key)) return;
+            if (key.startsWith(Label.INTERNAL_LABEL_PREFIX)) {
+                return;
+            }
             String msg = String.format("Label '%s' has changed from '%s' to '%s'", key, value.leftValue(), value.rightValue());
             diff.add(msg);
         });
@@ -269,7 +242,7 @@ public interface Labeled {
      * @param suffixAndValue value (label suffix is the same as the value)
      */
     default void setPrefixed(String prefix, String suffixAndValue) {
-        if (StringUtils.isEmpty(prefix)) {
+        if (!StringUtils.hasLength(prefix)) {
             throw new IllegalArgumentException("Prefix is empty.");
         }
         if (!prefix.endsWith(Label.DELIMITER)) {

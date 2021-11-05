@@ -1,9 +1,10 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.config.ConfigurableEnvVars;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -11,10 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -24,21 +22,25 @@ public class Seed {
 
     private static final Logger logger = LoggerFactory.getLogger(Seed.class);
 
-    private final List<URL> seed;
+    private final List<URL> seedUrls;
+    private final String demo;
+
 
     /**
-     * @param seed comma separated urls
-     * @throw RuntimeException to fail early on wrong config
+     * @throws RuntimeException to fail early on wrong config
      */
-    public Seed(Optional<String> seed) {
-        if (seed.isEmpty()) {
-            this.seed = new ArrayList<>();
+    public Seed(@NonNull final String seed, @Nullable final String demo) {
+
+        this.demo = demo == null ? "" : demo;
+        if (Objects.requireNonNull(seed).isEmpty()) {
+            this.seedUrls = new ArrayList<>();
             return;
         }
-        String[] strings = StringUtils.commaDelimitedListToStringArray(seed.get());
-        this.seed = Arrays.stream(strings)
-                .map(s -> asURL(s))
+        String[] strings = StringUtils.commaDelimitedListToStringArray(seed);
+        this.seedUrls = Arrays.stream(strings)
+                .map(this::asURL)
                 .collect(Collectors.toList());
+
     }
 
     private URL asURL(String s) {
@@ -62,16 +64,15 @@ public class Seed {
      */
     public List<URL> getDemoFiles() {
         List<URL> demoFiles = new ArrayList<>();
-        if (ConfigurableEnvVars.DEMO.value().isEmpty()) {
+        if (!StringUtils.hasLength(demo)) {
             return demoFiles;
         }
-        String value = ConfigurableEnvVars.DEMO.value().get();
 
         Path currentRelativePath = Paths.get("");
         String absPath = currentRelativePath.toAbsolutePath().toString();
         try {
             demoFiles.add(new File(absPath + "/src/test/resources/example/pet_clinic.yml").toURI().toURL());
-            if (value.equalsIgnoreCase("all")) {
+            if (demo.equalsIgnoreCase("all")) {
                 demoFiles.add(new File(absPath + "/src/test/resources/example/inout.yml").toURI().toURL());
                 demoFiles.add(new File(absPath + "/src/test/resources/example/internals.yml").toURI().toURL());
                 demoFiles.add(new File(absPath + "/src/test/resources/example/dedica_dot.yml").toURI().toURL());
@@ -89,7 +90,7 @@ public class Seed {
      * @return list of configs
      */
     public List<URL> getLocations() {
-        logger.info("Using seeds: {}", seed);
-        return seed;
+        logger.info("Using seeds: {}", seedUrls);
+        return seedUrls;
     }
 }

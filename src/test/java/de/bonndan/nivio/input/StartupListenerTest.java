@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.config.SeedProperties;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.LandscapeSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,21 +23,23 @@ class StartupListenerTest {
     private LandscapeDescriptionFactory factory;
     private ApplicationEventPublisher publisher;
     private StartupListener startupListener;
-    private Seed seed = new Seed(Optional.empty()); // will use Seed.NIVIO_ENV_DIRECTORY
+    private SeedProperties seedProperties = new SeedProperties("src/test/resources/example/inout.yml","1");
+    private Seed seed = new Seed(seedProperties.getSeed(), seedProperties.getDemo()); // will use Seed.NIVIO_ENV_DIRECTORY
+
 
     @BeforeEach
     public void setup() {
         factory = mock(LandscapeDescriptionFactory.class);
         publisher = mock(ApplicationEventPublisher.class);
-        startupListener = new StartupListener(factory, publisher, seed);
+        seedProperties = mock(SeedProperties.class);
+        startupListener = new StartupListener(factory, publisher, seed, seedProperties);
     }
 
     @Test
-    public void fires() throws MalformedURLException {
-
+    void fires() throws MalformedURLException {
         //given
-        seed = new Seed(Optional.of("https://dedica.team"));
-        startupListener = new StartupListener(factory, publisher, seed);
+        seed = new Seed("https://dedica.team", seedProperties.getDemo());
+        startupListener = new StartupListener(factory, publisher, seed,seedProperties);
 
         LandscapeDescription landscapeDescription = new LandscapeDescription("foo", "bar", null);
         landscapeDescription.setSource(new LandscapeSource(new URL("https://dedica.team")));

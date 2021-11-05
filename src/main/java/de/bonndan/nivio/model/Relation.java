@@ -1,15 +1,12 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import de.bonndan.nivio.assessment.Assessable;
+import de.bonndan.nivio.assessment.StatusValue;
 import org.springframework.lang.NonNull;
-import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static de.bonndan.nivio.model.ComponentDiff.compareOptionals;
 import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
@@ -17,18 +14,16 @@ import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
 /**
  * Indication of an incoming or outgoing relation like data flow or dependency (provider).
  *
- * <p>
  * Outgoing flows having a target which matches a service identifier will cause a relation to be created.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class Relation implements Serializable {
+public class Relation implements Labeled, Assessable, Serializable {
 
     public static final String DELIMITER = ";";
 
-    @JsonIdentityReference(alwaysAsId = true)
+    @JsonIdentityReference(alwaysAsId = true) //needed for debugging internal models
     private final Item source;
 
-    @JsonIdentityReference(alwaysAsId = true)
+    @JsonIdentityReference(alwaysAsId = true) //needed for debugging internal models
     private final Item target;
 
     private final String description;
@@ -37,11 +32,7 @@ public class Relation implements Serializable {
 
     private final RelationType type;
 
-    public Relation(@NonNull final Item source,
-                    @NonNull final Item target
-    ) {
-        this(source, target, null, null, null);
-    }
+    private final Map<String, String> labels = new HashMap<>();
 
     public Relation(@NonNull final Item source,
                     @NonNull final Item target,
@@ -49,16 +40,12 @@ public class Relation implements Serializable {
                     final String format,
                     final RelationType type
     ) {
-        if (source == null || target == null) {
-            throw new IllegalArgumentException("Null arguments passed.");
-        }
-
         if (source.equals(target)) {
-            throw new IllegalArgumentException("Relation source and target are equal.");
+            throw new IllegalArgumentException(String.format("Relation source and target are equal.%s %s", source, target));
         }
 
-        this.source = source;
-        this.target = target;
+        this.source = Objects.requireNonNull(source, "Source is null");
+        this.target = Objects.requireNonNull(target, "Target is null");
         this.description = description;
         this.format = format;
         this.type = type;
@@ -107,46 +94,38 @@ public class Relation implements Serializable {
         return "Relation{" + getIdentifier() + '}';
     }
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    static class ApiModel {
+    @Override
+    public String getLabel(String key) {
+        return getLabels().get(key);
+    }
 
-        public static final String INBOUND = "inbound";
-        public static final String OUTBOUND = "outbound";
+    @NonNull
+    @Override
+    public Map<String, String> getLabels() {
+        return labels;
+    }
 
-        @JsonIdentityReference(alwaysAsId = true)
-        public final Item source;
+    @Override
+    public void setLabel(String key, String value) {
+        labels.put(key, value);
+    }
 
-        @JsonIdentityReference(alwaysAsId = true)
-        public final Item target;
+    @Override
+    @NonNull
+    public Set<StatusValue> getAdditionalStatusValues() {
+        return StatusValue.fromMapping(getAssessmentIdentifier(), indexedByPrefix(Label.status));
+    }
 
-        public final String description;
+    @Override
+    @NonNull
+    public String getAssessmentIdentifier() {
+        return getIdentifier();
+    }
 
-        public final String format;
-
-        public final RelationType type;
-
-        public final String name;
-
-        public final String id;
-
-        public final String direction;
-
-        ApiModel(@NonNull final Relation relation, @NonNull final Item owner) {
-            source = relation.source;
-            target = relation.target;
-            description = relation.description;
-            format = relation.format;
-            type = relation.type;
-            id = relation.getIdentifier();
-
-            if (relation.source.equals(owner)) {
-                name = StringUtils.isEmpty(target.getName()) ? target.getIdentifier() : target.getName();
-                direction = OUTBOUND;
-            } else {
-                name = StringUtils.isEmpty(source.getName()) ? source.getIdentifier() : source.getName();
-                direction = INBOUND;
-            }
-        }
+    @Override
+    @NonNull
+    public List<? extends Assessable> getChildren() {
+        return new ArrayList<>();
     }
 
     /**
@@ -157,8 +136,8 @@ public class Relation implements Serializable {
      * @throws IllegalArgumentException if the arg is not comparable
      */
     public List<String> getChanges(Relation newer) {
-        if (!newer.equals(this)) {
-            throw new IllegalArgumentException("Cannot compare relation " + newer.toString() + " against " + this.toString());
+        if (!this.equals(newer)) {
+            throw new IllegalArgumentException(String.format("Cannot compare relation %s against %s", newer, this));
         }
 
         List<String> changes = new ArrayList<>();

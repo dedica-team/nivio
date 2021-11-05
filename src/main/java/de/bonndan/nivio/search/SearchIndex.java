@@ -50,9 +50,15 @@ public class SearchIndex {
     public static final String WILDCARD = "*";
     public static final String WHITESPACE = " ";
     public static final String FACET_DELIMITER = ":";
+    private static final String[] MULTI_FIELD_QUERY_FIELDS = {
+            LUCENE_FIELD_IDENTIFIER,
+            LUCENE_FIELD_NAME,
+            LUCENE_FIELD_DESCRIPTION,
+            LUCENE_FIELD_GENERIC,
+    };
 
-    private final Directory searchIndex;
-    private final Directory taxoIndex;
+    private final Directory searchIndexDir;
+    private final Directory taxoIndexDir;
 
     /**
      * Creates a new empty index.
@@ -63,8 +69,8 @@ public class SearchIndex {
         try {
             var tmpdir = System.getProperty("java.io.tmpdir");
             var fsSafeIdentifier = StringUtils.trimTrailingCharacter(identifier.replaceAll("[^0-9a-fA-F]", "_"), File.separatorChar);
-            searchIndex = new MMapDirectory(Path.of(tmpdir, "nivio-document-index", fsSafeIdentifier));
-            taxoIndex = new MMapDirectory(Path.of(tmpdir, "nivio-facet-index", fsSafeIdentifier));
+            searchIndexDir = new MMapDirectory(Path.of(tmpdir, "nivio-document-index", fsSafeIdentifier));
+            taxoIndexDir = new MMapDirectory(Path.of(tmpdir, "nivio-facet-index", fsSafeIdentifier));
         } catch (IOException e) {
             LOGGER.error(String.format("Failed to create search index: %s", e.getMessage()));
             throw new SearchIndexCreationException("Failed to create search index.", e);
@@ -85,18 +91,18 @@ public class SearchIndex {
     /**
      * Creates a search index based in a snapshot of current items state (later modifications won't be shown).
      */
-    private void indexItems(Set<Item> items, Map<FullyQualifiedIdentifier, List<StatusValue>> results) {
+    private void indexItems(Set<Item> items, Map<String, List<StatusValue>> assessments) {
         try {
             FacetsConfig config = SearchDocumentFactory.getConfig();
-            TaxonomyWriter taxoWriter = new DirectoryTaxonomyWriter(taxoIndex, IndexWriterConfig.OpenMode.CREATE);
-            IndexWriter writer = new IndexWriter(searchIndex, new IndexWriterConfig(new StandardAnalyzer()));
+            TaxonomyWriter taxoWriter = new DirectoryTaxonomyWriter(taxoIndexDir, IndexWriterConfig.OpenMode.CREATE);
+            IndexWriter writer = new IndexWriter(searchIndexDir, new IndexWriterConfig(new StandardAnalyzer()));
             writer.deleteAll();
             for (Item item : items) {
-                writer.addDocument(config.build(taxoWriter, from(item, results.get(item.getFullyQualifiedIdentifier()))));
+                writer.addDocument(config.build(taxoWriter, from(item, assessments.get(item.getFullyQualifiedIdentifier().toString()))));
             }
             IOUtils.close(writer, taxoWriter);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to update search index", e);
+            throw new SearchEngineException("Failed to update search index", e);
         }
 
     }
@@ -115,7 +121,7 @@ public class SearchIndex {
                     .map(doc -> FullyQualifiedIdentifier.from(doc.get(LUCENE_FIELD_FQI)))
                     .collect(Collectors.toSet());
         } catch (IOException | ParseException e) {
-            throw new RuntimeException(String.format("Failed to execute search for '%s'", queryString));
+            throw new SearchEngineException(String.format("Failed to execute search for '%s'", queryString));
         }
     }
 
@@ -125,7 +131,7 @@ public class SearchIndex {
     private String rewriteQuery(final String query) {
         return Arrays.stream(query.split(WHITESPACE))
                 .map(s -> {
-                    if (StringUtils.isEmpty(s) || "or".equalsIgnoreCase(s) || "and".equalsIgnoreCase(s)) {
+                    if (!StringUtils.hasLength(s) || "or".equalsIgnoreCase(s) || "and".equalsIgnoreCase(s)) {
                         return s;
                     }
                     if (s.endsWith(FACET_DELIMITER)) {
@@ -146,10 +152,10 @@ public class SearchIndex {
      */
     public List<FacetResult> facets() {
         try {
-            DirectoryReader ireader = DirectoryReader.open(searchIndex);
+            DirectoryReader ireader = DirectoryReader.open(searchIndexDir);
             IndexSearcher searcher = new IndexSearcher(ireader);
 
-            DirectoryTaxonomyReader taxoReader = new DirectoryTaxonomyReader(taxoIndex);
+            DirectoryTaxonomyReader taxoReader = new DirectoryTaxonomyReader(taxoIndexDir);
             FacetsCollector fc = new FacetsCollector();
             FacetsConfig config = getConfig();
             FacetsCollector.search(searcher, new MatchAllDocsQuery(), 10, fc);
@@ -161,15 +167,15 @@ public class SearchIndex {
             LOGGER.warn("Unable to get the facets for the given query error: ", e);
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
     private List<Document> documentSearch(String queryString) throws IOException, ParseException {
 
-        DirectoryReader ireader = DirectoryReader.open(searchIndex);
+        DirectoryReader ireader = DirectoryReader.open(searchIndexDir);
         IndexSearcher isearcher = new IndexSearcher(ireader);
         // Parse a simple query that searches for "text":
-        QueryParser parser = new MultiFieldQueryParser(new String[]{LUCENE_FIELD_IDENTIFIER, LUCENE_FIELD_NAME, LUCENE_FIELD_DESCRIPTION}, new StandardAnalyzer());
+        QueryParser parser = new MultiFieldQueryParser(MULTI_FIELD_QUERY_FIELDS, new StandardAnalyzer());
         parser.setAllowLeadingWildcard(true);
         parser.setSplitOnWhitespace(true);
         parser.setDefaultOperator(QueryParser.Operator.AND);

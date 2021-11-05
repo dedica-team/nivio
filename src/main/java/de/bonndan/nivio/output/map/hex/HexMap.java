@@ -72,10 +72,11 @@ public class HexMap {
      * Returns all hexes which form a group area.
      *
      * @param group the group with items
+     * @param items
      * @return a set of (adjacent) hexes
      */
-    public Set<Hex> getGroupArea(Group group) {
-        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group);
+    public Set<Hex> getGroupArea(Group group, Set<Item> items) {
+        Set<Hex> inArea = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), group, items);
         inArea.forEach(hex -> hexesToItems.putIfAbsent(hex, UUID.randomUUID()));
         return inArea;
     }

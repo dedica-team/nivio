@@ -42,6 +42,7 @@ const assessments: IAssessment = {
   results: {
     'test/groupA/foo': [
       {
+        identifier: 'test/groupA/foo',
         field: 'foo',
         status: 'yellow',
         message: 'bar',
@@ -50,19 +51,19 @@ const assessments: IAssessment = {
     ],
     'test/groupA': [
       {
+        identifier: 'test/groupA',
         field: 'foo',
         status: 'yellow',
         message: 'bar',
-        maxField: 'foo',
         summary: true,
       },
     ],
     'test': [
       {
+        identifier: 'test',
         field: 'overall',
         status: 'yellow',
         message: 'The landscape is somehow broken.',
-        maxField: 'foo',
         summary: true,
       },
     ],

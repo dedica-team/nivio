@@ -6,18 +6,22 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * One specific property/kpi/key ... carrying a status.
- * <p>
+ *
  * Status (see {@link Status}) is an ordered set of status represented as colors
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StatusValue {
 
-    public static final String SUMMARY_LABEL = "summary";
     public static final String LABEL_SUFFIX_STATUS = "status";
     public static final String LABEL_SUFFIX_MESSAGE = "message";
+    public static final String SUMMARY_FIELD_VALUE = "summary";
+
+    @NonNull
+    private final String identifier;
 
     @NonNull
     private final String field;
@@ -28,10 +32,8 @@ public class StatusValue {
     @Nullable
     private final String message;
 
-    private final boolean summary;
+    private boolean summary;
 
-    @Nullable
-    private final String maxField;
 
     /**
      * Turns a map of strings indexed by (KPI-)field into StatusValue objects.
@@ -46,11 +48,12 @@ public class StatusValue {
      * @return derived StatusValues
      */
     @NonNull
-    public static Set<StatusValue> fromMapping(Map<String, Map<String, String>> valuesByKey) {
+    public static Set<StatusValue> fromMapping(@NonNull final String identifier, @NonNull final Map<String, Map<String, String>> valuesByKey) {
 
         Set<StatusValue> statusValues = new HashSet<>();
         valuesByKey.forEach((key, stringStringMap) -> {
             StatusValue value = new StatusValue(
+                    identifier,
                     key,
                     Status.from(stringStringMap.get(LABEL_SUFFIX_STATUS)),
                     stringStringMap.get(LABEL_SUFFIX_MESSAGE)
@@ -63,60 +66,54 @@ public class StatusValue {
     /**
      * Creates a summary status value.
      *
-     * @param fieldName composed field name
-     * @param maxValue  max/highest status value
+     * @param identifier assessment identifier (e.g. item fqi)
+     * @param maxValues  max/highest status values
      * @return summary
      */
     @NonNull
-    public static StatusValue summary(@NonNull String fieldName, @NonNull StatusValue maxValue) {
-        if (StringUtils.isEmpty(fieldName)) {
-            throw new IllegalArgumentException("Status value has no field name.");
-        }
-        if (StringUtils.isEmpty(maxValue)) {
-            throw new IllegalArgumentException("Status value has no max status value.");
-        }
-        return new StatusValue(fieldName, maxValue.getStatus(), maxValue.getMessage(), maxValue.getField());
+    public static StatusValue summary(@NonNull final String identifier, @NonNull final List<StatusValue> maxValues) {
+        Status status = maxValues.stream().findFirst().map(StatusValue::getStatus).orElse(Status.UNKNOWN);
+
+        //skipping the child summaries
+        String message = maxValues.stream()
+                .filter(statusValue -> !statusValue.summary)
+                .map(statusValue -> String.format("%s %s: %s", statusValue.getIdentifier(), statusValue.getField(), statusValue.getMessage()))
+                .collect(Collectors.joining("; "));
+        StatusValue statusValue = new StatusValue(identifier, SUMMARY_FIELD_VALUE, status, message);
+        statusValue.summary = true;
+        return statusValue;
     }
 
     /**
      * New StatusValue with message.
      *
-     * @param field   field / label name
-     * @param status  current status
-     * @param message additional message
+     * @param identifier assessment identifier (e.g. item fqi)
+     * @param field      field / label name
+     * @param status     current status
+     * @param message    additional message
      */
-    public StatusValue(@NonNull String field, @Nullable Status status, @Nullable String message) {
-        if (StringUtils.isEmpty(field)) {
+    public StatusValue(@NonNull final String identifier,
+                       @NonNull final String field,
+                       @Nullable final Status status,
+                       @Nullable final String message
+    ) {
+        if (!StringUtils.hasLength(identifier)) {
+            throw new IllegalArgumentException("Assessment identifier is empty");
+        }
+        if (!StringUtils.hasLength(field)) {
             throw new IllegalArgumentException("Status value has no field");
         }
-        this.field = field;
 
-        if (status == null) {
-            status = Status.UNKNOWN;
-        }
-        this.status = status;
+        this.identifier = identifier;
+        this.field = field;
+        this.status = status == null ? Status.UNKNOWN : status;
         this.message = message;
         this.summary = false;
-        this.maxField = null;
     }
 
-    private StatusValue(String field, Status status, String message, String maxField) {
-        if (StringUtils.isEmpty(field)) {
-            throw new IllegalArgumentException("Status value has no field");
-        }
-        this.field = field;
-
-        if (status == null) {
-            status = Status.UNKNOWN;
-        }
-        this.status = status;
-        this.message = message;
-        this.summary = true;
-        this.maxField = status != Status.UNKNOWN ? maxField : null;
-    }
-
-    public StatusValue(@NonNull String field, @Nullable Status status) {
-        this(field, status, null);
+    @NonNull
+    public String getIdentifier() {
+        return identifier;
     }
 
     @NonNull
@@ -141,20 +138,15 @@ public class StatusValue {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof StatusValue) {
-            return field.equals(((StatusValue) obj).field);
+            StatusValue other = (StatusValue) obj;
+            return identifier.equalsIgnoreCase(other.identifier) && field.equalsIgnoreCase(other.field);
         }
         return false;
     }
 
-    public String getMaxField() {
-        return maxField;
-    }
-
     public static class Comparator implements java.util.Comparator<StatusValue> {
         public int compare(StatusValue s1, StatusValue s2) {
-            if (Objects.requireNonNull(s1.status).isHigherThan(Objects.requireNonNull(s2.status))) return 1;
-            if (s1.status.equals(s2.status)) return 0;
-            return -1;
+            return Objects.requireNonNull(s1.status).compareTo(Objects.requireNonNull(s2.status));
         }
     }
 
@@ -166,11 +158,11 @@ public class StatusValue {
     @Override
     public String toString() {
         return "StatusValue{" +
-                "field='" + field + '\'' +
+                "identifier='" + identifier + '\'' +
+                ", field='" + field + '\'' +
                 ", status=" + status +
                 ", message='" + message + '\'' +
                 ", summary=" + summary +
-                ", maxField='" + maxField + '\'' +
                 '}';
     }
 }

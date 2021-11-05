@@ -13,7 +13,7 @@ import java.util.Objects;
 
 /**
  * A value object to hold dimensions and position data of rendered {@link Component}s.
- *
+ * <p>
  * Also holds children to allow recursive operations.
  */
 public class LayoutedComponent {
@@ -30,9 +30,8 @@ public class LayoutedComponent {
     @Nullable
     private String defaultColor;
 
-    public LayoutedComponent(@NonNull Component component, List<Component> opposites) {
-        Objects.requireNonNull(component);
-        this.component = component;
+    public LayoutedComponent(@NonNull final Component component, List<Component> opposites) {
+        this.component = Objects.requireNonNull(component);
         this.opposites = opposites;
     }
 
@@ -91,7 +90,7 @@ public class LayoutedComponent {
 
     public String getFill() {
         if (component instanceof Item) {
-            return ((Item) component).getLabel(Label.fill);
+            return ((Item) component).getLabel(Label._filldata);
         }
 
         return null;
@@ -105,17 +104,21 @@ public class LayoutedComponent {
     }
 
     public String getIcon() {
-        return component.getIcon();
+        if (component instanceof Item) {
+            return ((Item) component).getLabel(Label._icondata);
+        }
+
+        return null;
     }
 
     public String getColor() {
-        if (!StringUtils.isEmpty(component.getColor())) {
+        if (StringUtils.hasLength(component.getColor())) {
             return component.getColor();
         }
         return defaultColor;
     }
 
     public void setDefaultColor(String color) {
-        this.defaultColor =color;
+        this.defaultColor = color;
     }
 }

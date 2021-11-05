@@ -10,9 +10,9 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.observation.InputFormatObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -24,7 +24,7 @@ import java.util.List;
 @Service
 public class InputFormatHandlerCompose2 implements InputFormatHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(InputFormatHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(InputFormatHandlerCompose2.class);
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
     static {
@@ -49,7 +49,7 @@ public class InputFormatHandlerCompose2 implements InputFormatHandler {
     }
 
     @Override
-    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
+    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
 
         List<ItemDescription> itemDescriptions = new ArrayList<>();
         String yml = fileFetcher.get(reference, baseUrl);
@@ -60,7 +60,7 @@ public class InputFormatHandlerCompose2 implements InputFormatHandler {
             logger.error("Failed to read yml", e);
         }
         if (source == null) {
-            logger.warn("Got null out of yml string " + yml);
+            logger.warn("Got null out of yml string {}", yml);
             return;
         }
 
@@ -71,10 +71,4 @@ public class InputFormatHandlerCompose2 implements InputFormatHandler {
 
         landscapeDescription.mergeItems(itemDescriptions);
     }
-
-    @Override
-    public InputFormatObserver getObserver(InputFormatObserver inner, SourceReference sourceReference) {
-        return inner;
-    }
-
 }

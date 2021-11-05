@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
 import {
-  Typography,
-  Theme,
-  createStyles,
   Box,
+  createStyles,
   Menu,
   MenuItem,
-  withStyles,
   MenuProps,
+  Theme,
+  Typography,
+  withStyles,
 } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
@@ -51,6 +51,7 @@ interface Props {
   searchSupport: boolean;
   pageTitle?: string;
   logo?: string;
+  version?: string;
 }
 
 /**
@@ -62,6 +63,7 @@ const Navigation: React.FC<Props> = ({
   searchSupport,
   pageTitle,
   logo,
+  version,
 }) => {
   const classes = useStyles();
   const componentClasses = componentStyles();
@@ -123,6 +125,9 @@ const Navigation: React.FC<Props> = ({
         </MenuItem>
         <MenuItem component={Link} to={`/man/install.html`} onClick={handleClose}>
           Help
+        </MenuItem>
+        <MenuItem disabled={true}>
+          <Typography style={{ fontSize: 10 }}>nivio {version}</Typography>
         </MenuItem>
       </StyledMenu>
       <Box className={classes.pageTitle}>

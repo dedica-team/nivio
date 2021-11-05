@@ -2,7 +2,9 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.observation.InputFormatObserver;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -28,16 +30,22 @@ public interface InputFormatHandler {
      * @param baseUrl              parent config url
      * @param landscapeDescription the input dto to modify
      */
-    void applyData(SourceReference reference, @Nullable URL baseUrl, LandscapeDescription landscapeDescription);
+    void applyData(@NonNull final SourceReference reference, @Nullable URL baseUrl, LandscapeDescription landscapeDescription);
 
     /**
      * Returns an observer for the source reference.
      *
-     * @param inner an observer for files or urls
+     * @param eventPublisher  the event publisher to notify
+     * @param landscape       the current landscape
      * @param sourceReference the {@link SourceReference} to observe
      * @return observer that can handle the format or null if no observer is available
      */
     @Nullable
-    InputFormatObserver getObserver(@NonNull final InputFormatObserver inner, @NonNull final SourceReference sourceReference);
+    default InputFormatObserver getObserver(@NonNull final ApplicationEventPublisher eventPublisher,
+                                            @NonNull final Landscape landscape,
+                                            @NonNull final SourceReference sourceReference
+    ) {
+        return null;
+    }
 
 }

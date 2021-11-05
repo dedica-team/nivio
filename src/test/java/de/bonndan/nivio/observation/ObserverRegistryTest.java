@@ -30,6 +30,7 @@ class ObserverRegistryTest {
     private Landscape landscape;
     private ThreadPoolTaskScheduler taskScheduler;
     private IndexingDispatcher indexingDispatcher;
+    private ObserverConfigProperties observerConfigProperties;
 
     @BeforeEach
     public void setup() {
@@ -37,7 +38,8 @@ class ObserverRegistryTest {
         taskScheduler = mock(ThreadPoolTaskScheduler.class);
         observerPoolFactory = mock(LandscapeObserverFactory.class);
         indexingDispatcher = mock(IndexingDispatcher.class);
-        observerRegistry = new ObserverRegistry(observerPoolFactory, taskScheduler, indexingDispatcher);
+        observerConfigProperties = mock(ObserverConfigProperties.class);
+        observerRegistry = new ObserverRegistry(observerPoolFactory, taskScheduler, indexingDispatcher, observerConfigProperties);
     }
 
     @Test

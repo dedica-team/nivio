@@ -3,20 +3,17 @@ package de.bonndan.nivio.input.nivio;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.InputFormatHandler;
+import de.bonndan.nivio.input.Mappers;
 import de.bonndan.nivio.input.ReadingException;
-import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.observation.InputFormatObserver;
-import de.bonndan.nivio.input.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,9 +38,8 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
     }
 
     @Override
-    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription description) {
+    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription description) {
 
-        List<ItemDescription> descriptions = new ArrayList<>();
         String yml = fileFetcher.get(reference, baseUrl);
         Source source;
         try {
@@ -54,7 +50,7 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
         }
 
         if (source == null) {
-            logger.warn("Got null out of yml string " + yml);
+            logger.warn("Got null out of yml string {}", yml);
             return;
         }
 
@@ -65,11 +61,5 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
             source.templates.forEach((s, template) -> description.getTemplates().put(s, template));
         }
 
-    }
-
-    @Override
-    @Nullable
-    public InputFormatObserver getObserver(InputFormatObserver inner, SourceReference sourceReference) {
-        return inner;
     }
 }

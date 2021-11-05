@@ -194,7 +194,6 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   };
 
   const loadMap = useCallback(() => {
-    console.debug('loading map');
     const route = withBasePath(`/render/${identifier}/map.svg`);
     get(route).then((svg) => {
       const parser = new DOMParser();
@@ -247,13 +246,9 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
    * Reload map on notification messages.
    */
   useEffect(() => {
-    if (
-      landscapeContext.notification?.type === 'ProcessingFinishedEvent' &&
-      landscapeContext.notification?.landscape === landscapeContext.identifier
-    ) {
-      loadMap();
-    }
-  }, [landscapeContext.notification, landscapeContext.identifier, loadMap]);
+    console.debug('reloading map', landscapeContext.assessment);
+    loadMap();
+  }, [landscapeContext.assessment, landscapeContext.identifier, loadMap]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;

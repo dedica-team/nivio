@@ -24,9 +24,16 @@ public class SearchDocumentFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SearchDocumentFactory.class);
 
+    private SearchDocumentFactory() {}
+
     public static final String LUCENE_FIELD_IDENTIFIER = "identifier";
     public static final String LUCENE_FIELD_NAME = "name";
     public static final String LUCENE_FIELD_DESCRIPTION = "description";
+
+    /**
+     * This is used to collect strings which should be directly searchable
+     */
+    public static final String LUCENE_FIELD_GENERIC = "generic";
     public static final String LUCENE_FIELD_CONTACT = "contact";
     public static final String LUCENE_FIELD_FQI = "fqi";
     public static final String LUCENE_FIELD_COMPONENT_TYPE = "component";
@@ -64,7 +71,6 @@ public class SearchDocumentFactory {
         }
 
         Document document = new Document();
-
         BiConsumer<String, String> addTextField = (field, value) -> Optional.ofNullable(value)
                 .ifPresentOrElse(
                         val -> document.add(new TextField(field, val, Field.Store.YES)),
@@ -81,24 +87,32 @@ public class SearchDocumentFactory {
         addTextField.accept(LUCENE_FIELD_ITEM_TYPE, item.getType());
         addTextField.accept(LUCENE_FIELD_OWNER, item.getOwner());
 
+        List<String> genericStrings = new ArrayList<>();
         //add all labels by their key
         item.getLabels().forEach((labelKey, val) -> {
-            if (StringUtils.isEmpty(val))
+            if (!StringUtils.hasLength(val))
                 return;
             addTextField.accept(labelKey, val);
+
+            //add non-prefixed label values to generic field
+            if (!labelKey.contains(Label.DELIMITER)) {
+                genericStrings.add(val);
+            }
         });
 
         //add links, title as key (duplicates are ok)
         item.getLinks().forEach((s, link) -> {
             if (link == null)
                 return;
-            String val = StringUtils.isEmpty(link.getName()) ? "" : link.getName() + " ";
+            String val = !StringUtils.hasLength(link.getName()) ? "" : link.getName() + " ";
             val += link.getHref();
             addTextField.accept(s, val);
         });
 
         //tags (searchable)
-        Arrays.stream(item.getTags()).forEach(tag -> addTextField.accept(LUCENE_FIELD_TAG, tag.toLowerCase(Locale.ROOT)));
+        Arrays.stream(item.getTags())
+                .map(tag -> tag.toLowerCase(Locale.ROOT))
+                .forEach(tag -> addTextField.accept(LUCENE_FIELD_TAG, tag));
 
         //networks
         item.getLabels(Label.network).forEach((key, value) -> addTextField.accept(LUCENE_FIELD_NETWORK, value.toLowerCase(Locale.ROOT)));
@@ -110,16 +124,17 @@ public class SearchDocumentFactory {
             String unprefixed = Label.framework.unprefixed(key);
             frameworks.add(unprefixed);
             addTextField.accept(unprefixed, val);
+            genericStrings.add(unprefixed);
         });
         frameworks.forEach(s -> addTextField.accept(LUCENE_FIELD_FRAMEWORK, s));
 
-
         //kpis, fields are prefixed to prevent name collisions (kpis can have any names)
         statusValues.forEach(statusValue -> {
-            final String field = statusValue.getField().startsWith(StatusValue.SUMMARY_LABEL) ?
-                    StatusValue.SUMMARY_LABEL : statusValue.getField();
-            addTextField.accept(KPI_FACET_PREFIX + field, statusValue.getStatus().getName());
+            addTextField.accept(KPI_FACET_PREFIX + statusValue.getField(), statusValue.getStatus().getName());
         });
+
+        //frameworks name (label keys)
+        addTextField.accept(LUCENE_FIELD_GENERIC, StringUtils.collectionToDelimitedString(genericStrings, " "));
 
         addFacets(document, item, statusValues);
         return document;
@@ -162,9 +177,7 @@ public class SearchDocumentFactory {
 
         //kpis, facets are prefixed to prevent name collisions (kpis can have any names)
         statusValues.forEach(statusValue -> {
-            final String field = statusValue.getField().startsWith(StatusValue.SUMMARY_LABEL) ?
-                    StatusValue.SUMMARY_LABEL : statusValue.getField();
-            addFacetField.accept(KPI_FACET_PREFIX + field, statusValue.getStatus().getName());
+            addFacetField.accept(KPI_FACET_PREFIX + statusValue.getField(), statusValue.getStatus().getName());
         });
     }
 }

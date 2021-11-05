@@ -134,8 +134,9 @@ public class LandscapeConfig {
         }
     }
 
+
     /**
-     * The active KPIs.
+     * The configured KPIs.
      *
      * @return all active {@link AbstractKPI}s with their unique identifier
      */
@@ -152,24 +153,12 @@ public class LandscapeConfig {
                 example = "https://acme.com/css/acme.css")
         private String mapStylesheet;
 
-        @Schema(description = "A resolvable URL pointing to an image. This image is included (embedded as data-url) in the generated SVG map.",
-                example = "https://acme.com/images/logo.png")
-        private String mapLogo;
-
         public String getMapStylesheet() {
             return mapStylesheet;
         }
 
         public void setMapStylesheet(String mapStylesheet) {
             this.mapStylesheet = mapStylesheet;
-        }
-
-        public String getMapLogo() {
-            return mapLogo;
-        }
-
-        public void setMapLogo(String mapLogo) {
-            this.mapLogo = mapLogo;
         }
     }
 }

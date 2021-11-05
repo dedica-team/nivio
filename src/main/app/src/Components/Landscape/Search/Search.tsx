@@ -132,9 +132,9 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
     if (identifier == null) {
       return;
     }
-    const result: IFacet[] | null = await get(
-      '/api/landscape/' + identifier + '/facets/'
-    ).catch((reason) => console.warn(reason));
+    const result: IFacet[] | null = await get('/api/landscape/' + identifier + '/facets/').catch(
+      (reason) => console.warn(reason)
+    );
 
     if (!result) return;
     setFacets(result);
@@ -164,10 +164,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
     <div>
       <div style={{ float: 'right', padding: 2 }}>
         <IconButton size={'small'}>
-          <HelpTooltip
-            style={{ float: 'right', padding: 2 }}
-            content={<SearchHelp />}
-          />
+          <HelpTooltip style={{ float: 'right', padding: 2 }} content={<SearchHelp />} />
         </IconButton>
         <IconButton size={'small'} onClick={() => showSearch(false)} title={'Close search'}>
           <Close />

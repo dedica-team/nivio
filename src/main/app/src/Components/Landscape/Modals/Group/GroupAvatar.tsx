@@ -17,7 +17,7 @@ const GroupAvatar: React.FC<Props> = ({ group, statusColor }) => {
 
   return (
     <StatusBadge
-      overlap={'circle'}
+      overlap={'circular'}
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'right',
@@ -38,6 +38,5 @@ const GroupAvatar: React.FC<Props> = ({ group, statusColor }) => {
     </StatusBadge>
   );
 };
-
 
 export default GroupAvatar;

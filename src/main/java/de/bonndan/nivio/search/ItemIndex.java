@@ -9,11 +9,10 @@ import com.googlecode.cqengine.query.parser.common.InvalidQueryException;
 import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.ItemComponent;
 import de.bonndan.nivio.util.URLHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -35,7 +34,6 @@ import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
  */
 public class ItemIndex<T extends ItemComponent> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ItemIndex.class);
     public static final String CQE_FIELD_FQI = "fqi";
 
     /**
@@ -183,12 +181,12 @@ public class ItemIndex<T extends ItemComponent> {
      */
     @NonNull
     public T pick(final String identifier, String group) {
-        if (StringUtils.isEmpty(identifier)) {
+        if (!StringUtils.hasLength(identifier)) {
             throw new IllegalArgumentException("Identifier to pick is empty");
         }
 
         return find(identifier, group).orElseThrow(() ->
-                new RuntimeException(String.format("Element '%s' not found  in collection %s.", identifier , all()))
+                new NoSuchElementException(String.format("Element '%s' not found  in collection %s.", identifier , all()))
         );
     }
 
@@ -199,14 +197,14 @@ public class ItemIndex<T extends ItemComponent> {
      * @return the item or null
      */
     public Optional<T> find(String identifier, String group) {
-        if (StringUtils.isEmpty(identifier)) {
+        if (!StringUtils.hasLength(identifier)) {
             throw new IllegalArgumentException("Identifier to find is empty");
         }
 
         List<T> found = findAll(identifier, group);
 
         if (found.size() > 1) {
-            throw new RuntimeException("Ambiguous result for " + group + "/" + identifier + ": " + found + " in collection ");
+            throw new SearchException(String.format("Ambiguous result for %s/%s: %s in collection ", group, identifier, found));
         }
 
         return Optional.ofNullable((found.size() == 1) ? found.get(0) : null);
@@ -222,7 +220,7 @@ public class ItemIndex<T extends ItemComponent> {
         List<T> found = findAll(itemMatcher);
 
         if (found.size() > 1) {
-            throw new RuntimeException("Ambiguous result for " + itemMatcher + ": " + found + " in collection.");
+            throw new SearchException(String.format("Ambiguous result for %s: %s in collection.", itemMatcher, found));
         }
 
         return Optional.ofNullable((found.size() == 1) ? found.get(0) : null);
@@ -233,7 +231,7 @@ public class ItemIndex<T extends ItemComponent> {
             ResultSet<T> results = parser.retrieve(index, condition);
             return results.stream().collect(Collectors.toList());
         } catch (InvalidQueryException e) {
-            throw new RuntimeException(String.format("Failed to run query '%s'", condition), e);
+            throw new SearchException(String.format("Failed to run query '%s'", condition), e);
         }
     }
 
@@ -308,10 +306,20 @@ public class ItemIndex<T extends ItemComponent> {
      * Retrieves all Items corresponding the set of FQIs.
      *
      * @param fullyQualifiedIdentifiers a set of fqis
-     * @return a set of components (e.g. items)
+     * @return a set of components (e.g. items) in the same order as the given FQIs
      */
     public Set<T> retrieve(@NonNull Set<FullyQualifiedIdentifier> fullyQualifiedIdentifiers) {
         Query<T> nativeQuery = in(CQE_ATTR_FQI, fullyQualifiedIdentifiers);
-        return index.retrieve(nativeQuery).stream().collect(Collectors.toUnmodifiableSet());
+        Map<FullyQualifiedIdentifier, T> collect = index.retrieve(nativeQuery).stream().collect(Collectors.toMap(Component::getFullyQualifiedIdentifier, o -> o));
+        LinkedHashSet<T> result = new LinkedHashSet<>();
+        fullyQualifiedIdentifiers.forEach(fqi -> result.add(
+                Optional.ofNullable(collect.get(fqi))
+                        .orElseThrow(() -> new NoSuchElementException(String.format("Could not retrieve item with fqi %s: Mismatching state of item index?", fqi)))
+        ));
+        return result;
+    }
+
+    public T pick(FullyQualifiedIdentifier fqi) {
+        return pick(fqi.getItem(), fqi.getGroup());
     }
 }

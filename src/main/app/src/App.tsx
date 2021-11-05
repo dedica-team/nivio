@@ -7,9 +7,10 @@ import Man from './Components/Manual/Man';
 import Layout from './Components/Layout/Layout';
 import { Routes } from './interfaces';
 import { Box, CssBaseline, Theme } from '@material-ui/core';
-import { createMuiTheme, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
 import { get } from './utils/API/APIClient';
 import defaultThemeVariables from './Resources/styling/theme';
+import { FrontendMappingProvider } from './Context/FrontendMappingContext';
 
 interface Config {
   baseUrl: string;
@@ -30,6 +31,7 @@ const App: React.FC = () => {
   const [pageTitle, setPageTitle] = useState<string>('');
   const [logo, setLogo] = useState<string>('');
   const [message, setMessage] = useState<string>('');
+  const [version, setVersion] = useState<string>();
   const [theme, setTheme] = useState<Theme>();
 
   useEffect(() => {
@@ -41,7 +43,7 @@ const App: React.FC = () => {
           color = '#' + color;
         }
       } else {
-        console.log('falling back to default color', defaultColor);
+        console.debug('falling back to default color', defaultColor);
       }
       return color;
     };
@@ -53,6 +55,7 @@ const App: React.FC = () => {
       const front = getColorSafely(index.config.brandingForeground, '#22F2C2');
       const secondary = getColorSafely(index.config.brandingSecondary, '#eeeeee');
       setMessage(index.config.brandingMessage);
+      setVersion(index.config.version);
 
       const tv: ThemeOptions = defaultThemeVariables;
       if (!tv.palette) return;
@@ -77,7 +80,7 @@ const App: React.FC = () => {
       if (index.config.brandingLogoUrl && index.config.brandingLogoUrl.length) {
         setLogo(index.config.brandingLogoUrl);
       }
-      setTheme(createMuiTheme(tv));
+      setTheme(createTheme(tv));
     });
   }, [setTheme, setLogo]);
 
@@ -86,50 +89,57 @@ const App: React.FC = () => {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router hashType='slash'>
-        <Switch>
-          <Layout
-            sidebarContent={sidebarContent}
-            setSidebarContent={setSidebarContent}
-            logo={logo}
-            pageTitle={pageTitle}
-          >
-            <Route
-              exact
-              path='/'
-              render={(props) => (
-                <LandscapeOverview
-                  setSidebarContent={setSidebarContent}
-                  setPageTitle={setPageTitle}
-                  welcomeMessage={message}
-                  {...props}
-                />
-              )}
-            />
-            <Route
-              exact
-              path={Routes.MAP_ROUTE}
-              render={(props) => (
-                <LandscapeMap
-                  setSidebarContent={setSidebarContent}
-                  setPageTitle={setPageTitle}
-                  {...props}
-                />
-              )}
-            />
-            <Route
-              exact
-              path='/man/:usage'
-              render={(props) => (
-                <Man setSidebarContent={setSidebarContent} setPageTitle={setPageTitle} {...props} />
-              )}
-            />
-          </Layout>
-        </Switch>
-      </Router>
-    </ThemeProvider>
+    <FrontendMappingProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router hashType='slash'>
+          <Switch>
+            <Layout
+              sidebarContent={sidebarContent}
+              setSidebarContent={setSidebarContent}
+              logo={logo}
+              pageTitle={pageTitle}
+              version={version}
+            >
+              <Route
+                exact
+                path='/'
+                render={(props) => (
+                  <LandscapeOverview
+                    setSidebarContent={setSidebarContent}
+                    setPageTitle={setPageTitle}
+                    welcomeMessage={message}
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                exact
+                path={Routes.MAP_ROUTE}
+                render={(props) => (
+                  <LandscapeMap
+                    setSidebarContent={setSidebarContent}
+                    setPageTitle={setPageTitle}
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                exact
+                path='/man/:usage'
+                render={(props) => (
+                  <Man
+                    setSidebarContent={setSidebarContent}
+                    setPageTitle={setPageTitle}
+                    {...props}
+                  />
+                )}
+              />
+            </Layout>
+          </Switch>
+        </Router>
+      </ThemeProvider>
+    </FrontendMappingProvider>
   );
 };
 

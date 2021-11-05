@@ -5,15 +5,15 @@ import de.bonndan.nivio.config.NivioConfigProperties;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.docs.DocsController;
+import de.bonndan.nivio.output.dto.GroupApiModel;
+import de.bonndan.nivio.output.dto.ItemApiModel;
+import de.bonndan.nivio.output.dto.LandscapeApiModel;
 import de.bonndan.nivio.output.map.MapController;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.StreamSupport;
 
 import static de.bonndan.nivio.model.Link.LinkBuilder.linkTo;
@@ -35,9 +35,10 @@ public class LinkFactory {
         this.configProperties = configProperties;
     }
 
-    public Map<String, Link> getLandscapeLinks(Landscape landscape) {
+    public Map<String, Link> getLandscapeLinks(LandscapeApiModel landscape) {
         Map<String, Link> links = new HashMap<>();
-        links.put(REL_SELF, generateComponentLink(landscape.getFullyQualifiedIdentifier()));
+        generateComponentLink(landscape.getFullyQualifiedIdentifier())
+                .ifPresent(link -> links.put(REL_SELF, link));
 
         localServer.getUrl(ApiController.PATH, "reindex", landscape.getIdentifier()).ifPresent(url -> {
             links.put("reindex", linkTo(url)
@@ -81,7 +82,6 @@ public class LinkFactory {
             );
         });
 
-
         localServer.getUrl(AssessmentController.PATH, landscape.getFullyQualifiedIdentifier().toString()).ifPresent(url -> {
             links.put("assessment", linkTo(url)
                     .withMedia(MediaType.APPLICATION_JSON_VALUE)
@@ -89,7 +89,6 @@ public class LinkFactory {
                     .build()
             );
         });
-
 
         return links;
     }
@@ -100,14 +99,14 @@ public class LinkFactory {
      * @param fullyQualifiedIdentifier the component's fqi
      * @return link based on the {@link FullyQualifiedIdentifier}
      */
-    @Nullable
-    public Link generateComponentLink(@NonNull FullyQualifiedIdentifier fullyQualifiedIdentifier) {
+    @NonNull
+    public Optional<Link> generateComponentLink(@NonNull FullyQualifiedIdentifier fullyQualifiedIdentifier) {
         return localServer.getUrl(ApiController.PATH, Objects.requireNonNull(fullyQualifiedIdentifier).jsonValue())
                 .map(url -> linkTo(url)
                         .withMedia(MediaType.APPLICATION_JSON_VALUE)
                         .withTitle("JSON representation")
                         .build()
-                ).orElse(null);
+                );
     }
 
     /**
@@ -139,26 +138,20 @@ public class LinkFactory {
      *
      * @param landscape landscape
      */
-    void setLandscapeLinksRecursive(Landscape landscape) {
+    void setLandscapeLinksRecursive(LandscapeApiModel landscape) {
         Map<String, Link> landscapeLinks = getLandscapeLinks(landscape);
-        landscape.setLinks(landscapeLinks);
-        setGroupSelfLinksRecursive(landscape.getGroups());
+        landscape.setHateoasLinks(landscapeLinks);
+        landscape.getGroups().forEach(this::setGroupLinksRecursive);
     }
 
-    void setGroupSelfLinksRecursive(Map<String, Group> groups) {
-        groups.forEach((s, groupItem) -> setGroupLinksRecursive(groupItem));
-    }
-
-    void setGroupLinksRecursive(Group groupItem) {
-        if (!groupItem.getLinks().containsKey(REL_SELF)) {
-            groupItem.getLinks().put(REL_SELF, generateComponentLink(groupItem.getFullyQualifiedIdentifier()));
-        }
+    void setGroupLinksRecursive(GroupApiModel groupItem) {
+        generateComponentLink(groupItem.getFullyQualifiedIdentifier())
+                .ifPresent(link -> groupItem.setHateoasLinks(Map.of(REL_SELF, link)));
         groupItem.getItems().forEach(this::setItemSelfLink);
     }
 
-    void setItemSelfLink(Item item) {
-        if (!item.getLinks().containsKey(REL_SELF)) {
-            item.getLinks().put(REL_SELF, generateComponentLink(item.getFullyQualifiedIdentifier()));
-        }
+    void setItemSelfLink(ItemApiModel item) {
+        generateComponentLink(item.getFullyQualifiedIdentifier())
+                .ifPresent(link -> item.setHateoasLinks(Map.of(REL_SELF, link)));
     }
 }

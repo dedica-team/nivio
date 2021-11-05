@@ -2,7 +2,6 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.util.URLHelper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -55,7 +54,6 @@ public class IndexingDispatcher {
         LandscapeDescription dto = existing.getSource().getURL()
                 .map(landscapeDescriptionFactory::from)
                 .orElseGet(() -> landscapeDescriptionFactory.fromString(existing.getSource().getStaticSource(), existing.getIdentifier() + " source"));
-
         IndexEvent event = new IndexEvent(dto, "index landscape");
         publisher.publishEvent(event);
         return dto;

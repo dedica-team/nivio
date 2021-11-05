@@ -1,9 +1,5 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import de.bonndan.nivio.assessment.Assessable;
-import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.output.Color;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
@@ -20,7 +16,7 @@ import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
  *
  * Each item can only be member of one group.
  */
-public class Group implements Labeled, Linked, Assessable {
+public class Group implements Component, Labeled, Linked {
 
     /**
      * Default group identifier (items are assigned to this group if no group is given
@@ -38,7 +34,7 @@ public class Group implements Labeled, Linked, Assessable {
      * Items belonging to this group. Order is important for layouting (until items are ordered there).
      */
     @NonNull
-    private final Set<Item> items = new LinkedHashSet<>();
+    private final Set<FullyQualifiedIdentifier> items = new LinkedHashSet<>();
 
     @NonNull
     private final String identifier;
@@ -46,7 +42,6 @@ public class Group implements Labeled, Linked, Assessable {
     private final String owner;
     private final String description;
     private final String contact;
-    private final String icon;
     private final String color;
 
     /**
@@ -55,7 +50,6 @@ public class Group implements Labeled, Linked, Assessable {
      * @param owner               owner
      * @param description         description
      * @param contact             contact
-     * @param icon                icon
      * @param color               color, usually member items inherit it
      */
     public Group(@NonNull final String identifier,
@@ -63,27 +57,25 @@ public class Group implements Labeled, Linked, Assessable {
                  @Nullable final String owner,
                  @Nullable final String description,
                  @Nullable final String contact,
-                 @Nullable final String icon,
                  @Nullable final String color
     ) {
-        if (StringUtils.isEmpty(identifier)) {
+        if (!StringUtils.hasLength(identifier)) {
             throw new IllegalArgumentException("Group identifier must not be empty");
         }
         this.identifier = identifier;
 
-        if (StringUtils.isEmpty(landscapeIdentifier)) {
+        if (!StringUtils.hasLength(landscapeIdentifier)) {
             throw new IllegalArgumentException("Landscape identifier must not be empty");
         }
         this.landscapeIdentifier = landscapeIdentifier;
         this.owner = owner;
         this.description = description;
         this.contact = contact;
-        this.icon = icon;
         this.color = Color.safe(color);
     }
 
     public Group(@NonNull final String identifier, @NonNull final String landscapeIdentifier) {
-        this(identifier, landscapeIdentifier, null, null, null, null, Color.getGroupColor(identifier));
+        this(identifier, landscapeIdentifier, null, null, null, Color.getGroupColor(identifier));
     }
 
     @Override
@@ -127,47 +119,25 @@ public class Group implements Labeled, Linked, Assessable {
         return color;
     }
 
-    @JsonIgnore
-    @Override
-    public String getAddress() {
-        return null;
-    }
-
     @Schema(name = "_links")
     public Map<String, Link> getLinks() {
         return links;
     }
 
     /**
-     * Returns an immutable copy of the items.
+     * Returns a copy of the items.
      *
      * @return immutable copy
      */
-    public Set<Item> getItems() {
-        return Collections.unmodifiableSet(items);
+    public Set<FullyQualifiedIdentifier> getItems() {
+        return new LinkedHashSet<>(items);
     }
 
-    @JsonIgnore
     @Override
     @NonNull
     public Map<String, String> getLabels() {
         return labels;
     }
-
-    /**
-     * Returns the labels without the internal ones (having prefixes).
-     *
-     * @return filtered labels
-     */
-    @JsonProperty("labels")
-    public Map<String, String> getJSONLabels() {
-
-        return Labeled.groupedByPrefixes(
-                Labeled.withoutKeys(labels, Label.condition.name(), Label.status.name(), Tagged.LABEL_PREFIX_TAG),
-                ","
-        );
-    }
-
 
     @Override
     @Nullable
@@ -181,21 +151,8 @@ public class Group implements Labeled, Linked, Assessable {
     }
 
     @Override
-    @NonNull
-    public Set<StatusValue> getAdditionalStatusValues() {
-        return StatusValue.fromMapping(indexedByPrefix(Label.status));
-    }
-
-    @JsonIgnore
-    @Override
-    @NonNull
-    public List<? extends Assessable> getChildren() {
-        return new ArrayList<>(getItems());
-    }
-
-    @Override
     public String getIcon() {
-        return icon;
+        return getLabel(Label._icondata);
     }
 
     @Override
@@ -211,12 +168,15 @@ public class Group implements Labeled, Linked, Assessable {
      * @param item the item to add.
      * @throws IllegalArgumentException if the item group field mismatches
      */
-    public void addItem(Item item) {
-        if (!item.getGroup().equals(identifier)) {
+    public void addOrReplaceItem(Item item) {
+        if (!identifier.equals(item.getGroup())) {
             throw new IllegalArgumentException(String.format("Item group '%s' cannot be added to group '%s'", item.getGroup(), identifier));
         }
 
-        items.add(item);
+        //ensures that an existing item is removed from set
+        FullyQualifiedIdentifier fqi = item.getFullyQualifiedIdentifier();
+        items.stream().filter(item1 -> item1.equals(fqi)).findFirst().ifPresent(items::remove);
+        items.add(fqi);
     }
 
     /**
@@ -229,7 +189,7 @@ public class Group implements Labeled, Linked, Assessable {
         if (item == null) {
             return false;
         }
-        return items.remove(item);
+        return items.remove(item.getFullyQualifiedIdentifier());
     }
 
     public String getLandscapeIdentifier() {

@@ -1,10 +1,8 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import de.bonndan.nivio.assessment.Assessable;
+import de.bonndan.nivio.assessment.AssessableGroup;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.ProcessLog;
@@ -19,7 +17,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.Pattern;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -115,7 +113,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     private String validateIdentifier(String identifier) {
-        if (StringUtils.isEmpty(identifier) || !identifier.matches(IDENTIFIER_VALIDATION)) {
+        if (!StringUtils.hasLength(identifier) || !identifier.matches(IDENTIFIER_VALIDATION)) {
             throw new IllegalArgumentException("Invalid landscape identifier given: '" + identifier + "', it must match " + IDENTIFIER_VALIDATION);
         }
         return StringUtils.trimAllWhitespace(identifier);
@@ -159,12 +157,6 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     @JsonGetter("groups")
     public Collection<Group> getGroupItems() {
         return new ArrayList<>(groups.values());
-    }
-
-    @JsonIgnore
-    @Override
-    public String getAddress() {
-        return null;
     }
 
     @Override
@@ -223,6 +215,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return owner;
     }
 
+    @NonNull
     @JsonIgnore
     @Override
     public Map<String, String> getLabels() {
@@ -254,13 +247,23 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     @Override
+    @NonNull
     public Set<StatusValue> getAdditionalStatusValues() {
-        return StatusValue.fromMapping(indexedByPrefix(Label.status));
+        return StatusValue.fromMapping(getAssessmentIdentifier(), indexedByPrefix(Label.status));
     }
 
     @Override
+    @NonNull
+    public String getAssessmentIdentifier() {
+        return getFullyQualifiedIdentifier().toString();
+    }
+
+    @Override
+    @NonNull
     public List<? extends Assessable> getChildren() {
-        return getGroups().values().stream().map(groupItem -> (Assessable) groupItem).collect(Collectors.toList());
+        return getGroups().values().stream()
+                .map(group -> new AssessableGroup(group, getItems().retrieve(group.getItems())))
+                .collect(Collectors.toList());
     }
 
     @Schema(name = "_links")
@@ -269,7 +272,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     @JsonGetter("lastUpdate")
-    public LocalDateTime getLastUpdate() {
+    public ZonedDateTime getLastUpdate() {
         return this.processLog == null ? null : this.processLog.getLastUpdate();
     }
 
@@ -280,7 +283,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
     @Override
     public String getIcon() {
-        return getLabel("icon");
+        return getLabel(Label.icon);
     }
 
     /**
@@ -288,7 +291,6 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
      *
      * @return kpis, configured and initialized
      */
-    @JsonIgnore
     public Map<String, KPI> getKpis() {
         return kpis;
     }
@@ -305,7 +307,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
      * @return all matched items
      */
     public Set<Item> search(String queryString) {
-        if (StringUtils.isEmpty(queryString)) {
+        if (!StringUtils.hasLength(queryString)) {
             return Collections.emptySet();
         }
         return items.retrieve(searchIndex.search(queryString));

@@ -16,10 +16,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,12 +24,14 @@ import static de.bonndan.nivio.model.Relation.DELIMITER;
 import static de.bonndan.nivio.output.FormatUtils.ifPresent;
 import static de.bonndan.nivio.output.FormatUtils.nice;
 import static j2html.TagCreator.*;
-import static org.springframework.util.StringUtils.isEmpty;
-
+import static org.springframework.util.StringUtils.hasLength;
 
 public abstract class HtmlGenerator {
 
     protected static final String GROUP_CIRCLE = "&#10687;";
+
+    private static final String CONTENT = "content";
+    private static final String CLASS = "class";
 
     @NonNull
     protected final LocalServer localServer;
@@ -62,10 +61,10 @@ public abstract class HtmlGenerator {
                 title(landscape.getName()),
                 link().condAttr(css != null, "rel", "stylesheet").attr("href", css),
                 meta().attr("charset", "utf-8"),
-                meta().attr("name", "viewport").attr("content", "width=device-width, initial-scale=1, shrink-to-fit=no"),
-                meta().attr("name", "description").attr("content", landscape.getName()),
-                meta().attr("name", "author").attr("content", landscape.getContact()),
-                meta().attr("generator", "author").attr("content", "nivio"),
+                meta().attr("name", "viewport").attr(CONTENT, "width=device-width, initial-scale=1, shrink-to-fit=no"),
+                meta().attr("name", "description").attr(CONTENT, landscape.getName()),
+                meta().attr("name", "author").attr(CONTENT, landscape.getContact()),
+                meta().attr("generator", "author").attr(CONTENT, "nivio"),
                 style("html {margin: 1rem} .group{margin-top: 1rem;} .card{margin-bottom: 1rem;}").attr("type", "text/css")
         );
     }
@@ -86,50 +85,54 @@ public abstract class HtmlGenerator {
                 .map(mapEntry -> String.format("%s: %s", StringUtils.capitalize(Label.framework.unprefixed(mapEntry.getKey())), mapEntry.getValue()))
                 .collect(Collectors.toList());
 
-        List<StatusValue> statusValues = assessment.getResults().get(item.getFullyQualifiedIdentifier());
+        List<StatusValue> statusValues = assessment.getResults().get(item.getAssessmentIdentifier());
+        if (statusValues == null) {
+            statusValues = new ArrayList<>();
+        }
 
         return div(
                 div(
-                        iff(!isEmpty(item.getLabel(Label.note)), div(item.getLabel(Label.note)).attr("class", "alert alert-warning float float-right")),
+                        iff(hasLength(item.getLabel(Label.note)), div(item.getLabel(Label.note)).attr(CLASS, "alert alert-warning float float-right")),
                         a().attr("id", item.getFullyQualifiedIdentifier().toString()),
                         h3(
-                                img().attr("src", iconService.getIconUrl(item)).attr("width", "30px").attr("class", "img-fluid"),
+                                img().attr("src", item.getLabel(Label._icondata)).attr("width", "30px").attr(CLASS, "img-fluid"),
                                 rawHtml(" "),
-                                rawHtml(isEmpty(item.getName()) ? item.getIdentifier() : item.getName())
+                                rawHtml(!hasLength(item.getName()) ? item.getIdentifier() : item.getName())
                         ),
                         p(FormatUtils.nice(item.getDescription())),
 
 
                         ul().with(
-                                iff(!isEmpty(item.getName()), li("Name: " + FormatUtils.nice(item.getName())))
-                                , iff(!isEmpty(item.getFullyQualifiedIdentifier().toString()), li("Full identifier: " + item.getFullyQualifiedIdentifier()))
-                                , iff(!isEmpty(item.getIdentifier()), li("Identifier: " + item.getIdentifier()))
-                                , iff(!isEmpty(item.getGroup()), li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">" + GROUP_CIRCLE + "</span> " + FormatUtils.nice(item.getGroup()))))
-                                , iff(!isEmpty(item.getContact()), li("Contact: " + FormatUtils.nice(item.getContact())))
-                                , iff(!isEmpty(item.getOwner()), li("Owner: " + FormatUtils.nice(item.getOwner())))
-                                , iff(!isEmpty(item.getType()), li("Type: " + item.getType()))
+                                iff(hasLength(item.getName()), li("Name: " + FormatUtils.nice(item.getName())))
+                                , iff(hasLength(item.getFullyQualifiedIdentifier().toString()), li("Full identifier: " + item.getFullyQualifiedIdentifier()))
+                                , iff(hasLength(item.getIdentifier()), li("Identifier: " + item.getIdentifier()))
+                                , iff(hasLength(item.getGroup()), li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">" + GROUP_CIRCLE + "</span> " + FormatUtils.nice(item.getGroup()))))
+                                , iff(hasLength(item.getContact()), li("Contact: " + FormatUtils.nice(item.getContact())))
+                                , iff(hasLength(item.getOwner()), li("Owner: " + FormatUtils.nice(item.getOwner())))
+                                , iff(item.getTags().length > 0, li("Tags: " + String.join(", ", item.getTags())))
+                                , iff(hasLength(item.getType()), li("Type: " + item.getType()))
+                                , iff(hasLength(item.getAddress()), li("Address: " + item.getAddress()))
                                 , iff(links.size() > 1, li("Links: ").with(links))
-                                , iff(frameworks.size() > 0, li("Frameworks: " + String.join(String.format("%s ", DELIMITER), frameworks)))
+                                , iff(!frameworks.isEmpty(), li("Frameworks: " + String.join(String.format("%s ", DELIMITER), frameworks)))
                         ).with(labelList),
 
 
                         //statuses
-                        iff(!statusValues.isEmpty(), h4("Status information")),
+                        iff(!statusValues.isEmpty(), h4("Status")),
                         dl().with(
                                 statusValues.stream().map(statusItem ->
                                         join(
                                                 dt(FormatUtils.nice(
-                                                        statusItem.getField().endsWith("." + item.getIdentifier())
-                                                                ? statusItem.getField().replace("." + item.getIdentifier(), "")
-                                                                : statusItem.getField()
+                                                                statusItem.getField().endsWith("." + item.getIdentifier())
+                                                                        ? statusItem.getField().replace("." + item.getIdentifier(), "")
+                                                                        : statusItem.getField()
                                                         ) + " "
                                                 ).with(
                                                         span(" " + statusItem.getStatus() + " ")
-                                                                .attr("class", "badge")
+                                                                .attr(CLASS, "badge")
                                                                 .attr("style", "background-color: " + statusItem.getStatus() + " !important")
                                                 ),
-                                                iff(
-                                                        !isEmpty(statusItem.getMessage()) && !"summary".equals(statusItem.getMessage()),
+                                                iff(hasLength(statusItem.getMessage()) && !"summary".equals(statusItem.getMessage()),
                                                         dd(span(" " + FormatUtils.nice(statusItem.getMessage())))
                                                 )
                                         )
@@ -167,35 +170,29 @@ public abstract class HtmlGenerator {
                         iff(hasInterfaces, ul().with(
                                 item.getInterfaces().stream().map(interfaceItem -> li(
                                         span(interfaceItem.getDescription()),
-                                        iff(!StringUtils.isEmpty(interfaceItem.getFormat()), span(", format: " + interfaceItem.getFormat())),
-                                        iff(interfaceItem.getUrl() != null && !StringUtils.isEmpty(interfaceItem.getUrl().toString()),
+                                        iff(StringUtils.hasLength(interfaceItem.getFormat()), span(", format: " + interfaceItem.getFormat())),
+                                        iff(interfaceItem.getUrl() != null && StringUtils.hasLength(interfaceItem.getUrl().toString()),
                                                 span(", ").with(a(interfaceItem.getUrl().toString()).attr("href", interfaceItem.getUrl().toString()))
                                         )
                                 ))
                         ))
-                ).attr("class", "card-body")
+                ).attr(CLASS, "card-body")
 
-        ).attr("class", "card");
+        ).attr(CLASS, "card");
     }
 
     protected List<ContainerTag> getLabelList(Item item) {
         Function<Map.Entry<String, String>, Boolean> filter = s -> {
-            if (isEmpty(s.getValue())) {
-                return false;
-            }
-            if (Label.type.name().equals(s.getKey())) {
+            if (!hasLength(s.getValue())) {
                 return false;
             }
             if (Label.framework.name().equals(s.getKey())) {
                 return false;
             }
-            if (Label.icon.name().equals(s.getKey())) {
+            if (s.getKey().startsWith(Label.INTERNAL_LABEL_PREFIX)) {
                 return false;
             }
-            if (Label.color.name().equals(s.getKey())) {
-                return false;
-            }
-            if (Label.fill.name().equals(s.getKey())) {
+            if (s.getValue().equals("null")) {
                 return false;
             }
             //filter out statuses, they are part of the assessment

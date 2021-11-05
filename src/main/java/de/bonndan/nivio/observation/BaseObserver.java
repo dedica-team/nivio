@@ -14,7 +14,7 @@ public abstract class BaseObserver implements InputFormatObserver {
     protected final Landscape landscape;
     protected final ApplicationEventPublisher eventPublisher;
 
-    public BaseObserver(@NonNull final Landscape landscape, @NonNull final ApplicationEventPublisher eventPublisher) {
+    protected BaseObserver(@NonNull final Landscape landscape, @NonNull final ApplicationEventPublisher eventPublisher) {
         this.landscape = Objects.requireNonNull(landscape);
         this.eventPublisher = Objects.requireNonNull(eventPublisher);
     }

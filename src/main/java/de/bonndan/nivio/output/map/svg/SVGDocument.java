@@ -1,10 +1,7 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.*;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.Relation;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexMap;
@@ -41,11 +38,16 @@ public class SVGDocument extends Component {
     private boolean debug = false;
     private HexMap hexMap;
 
+    private static final String CLASS = "class";
+    private static final String WIDTH = "width";
+    private static final String HEIGHT = "height";
+
+
     public SVGDocument(@NonNull final LayoutedComponent layouted, @Nullable final Assessment assessment, @Nullable final String cssStyles) {
         this.layouted = Objects.requireNonNull(layouted);
         this.landscape = (Landscape) layouted.getComponent();
         this.assessment = assessment == null ? AssessmentFactory.createAssessment(Map.of()) : assessment;
-        this.cssStyles = StringUtils.isEmpty(cssStyles) ? "" : cssStyles;
+        this.cssStyles = !StringUtils.hasLength(cssStyles) ? "" : cssStyles;
     }
 
     public void setDebug(boolean debug) {
@@ -75,27 +77,28 @@ public class SVGDocument extends Component {
 
                 Item item = (Item) layoutedItem.getComponent();
                 //collect patterns for icons
-                if (!StringUtils.isEmpty(layoutedItem.getFill())) {
-                    SVGPattern SVGPattern = new SVGPattern(layoutedItem.getFill());
-                    defs.add(SVGPattern.render());
+                if (StringUtils.hasLength(layoutedItem.getFill())) {
+                    SVGPattern svgPattern = new SVGPattern(layoutedItem.getFill());
+                    defs.add(svgPattern.render());
                 }
 
                 //render icons
                 SVGItemLabel label = new SVGItemLabel(item);
                 Point2D.Double pos = hexMap.hexForItem(item).toPixel();
 
-                List<StatusValue> itemStatuses = assessment.getResults().get(item.getFullyQualifiedIdentifier());
-                SVGItem SVGItem = new SVGItem(label.render(), layoutedItem, itemStatuses, pos);
-                items.add(SVGItem.render());
+                List<StatusValue> itemStatuses = assessment.getResults().get(item.getFullyQualifiedIdentifier().toString());
+                SVGItem svgItem = new SVGItem(label.render(), layoutedItem, itemStatuses, pos);
+                items.add(svgItem.render());
             });
         });
 
         List<SVGGroupArea> groupAreas = new ArrayList<>();
         List<DomContent> groups = layouted.getChildren().stream().map(groupLayout -> {
             Group group = (Group) groupLayout.getComponent();
-            Set<Hex> groupArea = hexMap.getGroupArea(group);
-            List<StatusValue> groupStatuses = assessment.getResults().get(group.getFullyQualifiedIdentifier());
-            SVGGroupArea area = SVGGroupArea.forGroup(group, groupArea, Assessable.getWorst(groupStatuses), debug);
+            Set<Hex> groupArea = hexMap.getGroupArea(group, landscape.getItems().retrieve(group.getItems()));
+            List<StatusValue> groupStatuses = assessment.getResults().get(group.getFullyQualifiedIdentifier().toString());
+            Status groupStatus = Assessable.getWorst(groupStatuses).stream().map(StatusValue::getStatus).findFirst().orElse(Status.UNKNOWN);
+            SVGGroupArea area = SVGGroupArea.forGroup(group, groupArea, groupStatus, debug);
             groupAreas.add(area);
             return area.render();
         }).collect(Collectors.toList());
@@ -107,7 +110,6 @@ public class SVGDocument extends Component {
 
         //render background hexes
         defs.add(SVGBackgroundFactory.getHex());
-
 
         List<DomContent> background = new ArrayList<>(
                 //SVGBackgroundFactory.getBackgroundTiles(dimension)
@@ -123,10 +125,10 @@ public class SVGDocument extends Component {
                 .attr("version", "1.1")
                 .attr("xmlns", "http://www.w3.org/2000/svg")
                 .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
-                .attr("width", dimension.cartesian.horMax)
-                .attr("height", dimension.cartesian.vertMax)
+                .attr(WIDTH, dimension.cartesian.horMax)
+                .attr(HEIGHT, dimension.cartesian.vertMax)
                 .attr("viewBox", dimension.cartesian.asViewBox())
-                .attr("class", "map")
+                .attr(CLASS, "map")
 
                 .with(background)
                 .with(logo, title)
@@ -141,14 +143,15 @@ public class SVGDocument extends Component {
     @Nullable
     private DomContent getLogo(SVGDimension dimension) {
         DomContent logo = null;
-        String logoUrl = landscape.getIcon(); //has been set by appearance resolver
-        if (!StringUtils.isEmpty(logoUrl)) {
+        String logoUrl = landscape.getLabel(Label._icondata); //has been set by appearance resolver
+        if (StringUtils.hasLength(logoUrl)) {
             logo = SvgTagCreator.image()
                     .attr("xlink:href", logoUrl)
                     .attr("x", dimension.cartesian.horMin - dimension.cartesian.padding)
                     .attr("y", dimension.cartesian.vertMin - dimension.cartesian.padding + 80)
-                    .attr("width", LABEL_WIDTH)
-                    .attr("height", LABEL_WIDTH);
+                    .attr(WIDTH, LABEL_WIDTH)
+                    .attr(HEIGHT, LABEL_WIDTH)
+                    .attr(CLASS, "logo");
         }
         return logo;
     }
@@ -157,7 +160,7 @@ public class SVGDocument extends Component {
         return SvgTagCreator.text(landscape.getName())
                 .attr("x", dimension.cartesian.horMin - dimension.cartesian.padding)
                 .attr("y", dimension.cartesian.vertMin - dimension.cartesian.padding + 60)
-                .attr("class", "title");
+                .attr(CLASS, "title");
     }
 
     /**
@@ -165,17 +168,15 @@ public class SVGDocument extends Component {
      */
     private List<SVGRelation> getRelations(LayoutedComponent layouted) {
         List<SVGRelation> relations = new ArrayList<>();
-        layouted.getChildren().forEach(layoutedGroup -> {
-            layoutedGroup.getChildren().forEach(layoutedItem -> {
-                Item item = (Item) layoutedItem.getComponent();
-                LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
-                item.getRelations().stream()
-                        .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
-                        .map(rel -> getSvgRelation(layoutedItem, item, rel))
-                        .filter(Objects::nonNull)
-                        .forEach(relations::add);
-            });
-        });
+        layouted.getChildren().forEach(layoutedGroup -> layoutedGroup.getChildren().forEach(layoutedItem -> {
+            Item item = (Item) layoutedItem.getComponent();
+            LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
+            item.getRelations().stream()
+                    .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
+                    .map(rel -> getSvgRelation(layoutedItem, item, rel))
+                    .filter(Objects::nonNull)
+                    .forEach(relations::add);
+        }));
 
         return relations;
     }
@@ -195,4 +196,3 @@ public class SVGDocument extends Component {
         return render().render();
     }
 }
-

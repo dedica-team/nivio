@@ -13,6 +13,11 @@ Describes a low-level interface of an item.
      - Remarks
      - Example
 
+   * - deprecated
+     - Boolean
+     - 
+     - optional, defaults to null
+     - null
    * - description
      - String
      - A brief description.
@@ -23,27 +28,12 @@ Describes a low-level interface of an item.
      - The payload format.
      - optional, defaults to null
      - null
-   * - url
-     - String
-     - A URL describing the endpoint.
-     - optional, defaults to null
-     - null
-   * - protection
-     - String
-     - A description of the interface protection method.
-     - optional, defaults to null
-     - null
-   * - deprecated
-     - Boolean
-     - 
-     - optional, defaults to null
-     - null
    * - name
      - String
      - 
      - optional, defaults to null
      - null
-   * - payload
+   * - parameters
      - String
      - 
      - optional, defaults to null
@@ -53,14 +43,24 @@ Describes a low-level interface of an item.
      - 
      - optional, defaults to null
      - null
+   * - payload
+     - String
+     - 
+     - optional, defaults to null
+     - null
+   * - protection
+     - String
+     - A description of the interface protection method.
+     - optional, defaults to null
+     - null
    * - summary
      - String
      - 
      - optional, defaults to null
      - null
-   * - parameters
+   * - url
      - String
-     - 
+     - A URL describing the endpoint.
      - optional, defaults to null
      - null
 

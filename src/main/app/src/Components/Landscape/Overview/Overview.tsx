@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 
-import { ILandscape, ILandscapeLinks } from '../../../interfaces';
+import {ILandscape, ILandscapeLinks} from '../../../interfaces';
 import OverviewLayout from './OverviewLayout';
-import { get } from '../../../utils/API/APIClient';
+import {get} from '../../../utils/API/APIClient';
 import Events from '../../Events/Events';
-import { createStyles, darken, Theme } from '@material-ui/core';
-import { Redirect } from 'react-router-dom';
+import {createStyles, darken, Theme} from '@material-ui/core';
+import {Redirect} from 'react-router-dom';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { withBasePath } from '../../../utils/API/BasePath';
+import {withBasePath} from '../../../utils/API/BasePath';
 import Avatar from '@material-ui/core/Avatar';
 
 /**

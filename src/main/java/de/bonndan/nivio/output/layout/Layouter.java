@@ -6,9 +6,8 @@ import org.springframework.lang.NonNull;
 /**
  * Layouts / arranges landscapes.
  *
- * @param <T> type where layout values are stored
  */
-public interface Layouter<T> {
+public interface Layouter {
 
     /**
      * Arranges the landscape components.

@@ -39,9 +39,9 @@ public class ItemMatcher {
 
         ItemMatcher fqi = new ItemMatcher();
         fqi.landscape = StringUtils.trimAllWhitespace(landscapeIdentifier == null ? "" : landscapeIdentifier.toLowerCase());
-        if (!StringUtils.isEmpty(groupIdentifier))
+        if (StringUtils.hasLength(groupIdentifier))
             fqi.group = StringUtils.trimAllWhitespace(groupIdentifier.toLowerCase());
-        if (!StringUtils.isEmpty(itemIdentifier))
+        if (StringUtils.hasLength(itemIdentifier))
             fqi.item = StringUtils.trimAllWhitespace(itemIdentifier.toLowerCase());
 
         return fqi;
@@ -65,7 +65,7 @@ public class ItemMatcher {
         }
 
         if (URLHelper.getURL(string).isPresent()) {
-            LOGGER.debug(String.format("ItemMatcher does not work with URLs: %s", string));
+            LOGGER.debug("ItemMatcher does not work with URLs: {}", string);
             return Optional.empty();
         }
 

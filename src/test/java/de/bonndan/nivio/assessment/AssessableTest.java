@@ -2,16 +2,15 @@ package de.bonndan.nivio.assessment;
 
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.output.dto.RangeApiModel;
+import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;
 
 import java.util.*;
+import java.util.function.Function;
 
-import static de.bonndan.nivio.assessment.StatusValue.SUMMARY_LABEL;
+import static de.bonndan.nivio.assessment.Assessable.getWorst;
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,42 +23,40 @@ class AssessableTest {
         var child1 = new TestAssessable(null);
 
         List<StatusValue> statusValues = List.of(
-                new StatusValue("test1", Status.GREEN),
-                new StatusValue("test2", Status.GREEN),
-                new StatusValue("test3", Status.RED, "worst")
+                new StatusValue("foo", "test1", Status.GREEN, ""),
+                new StatusValue("foo", "test2", Status.GREEN, ""),
+                new StatusValue("foo", "test2", Status.ORANGE, ""),
+                new StatusValue("foo", "test3", Status.RED, "broken"),
+                new StatusValue("foo", "test4", Status.RED, "out of order")
         );
 
-        StatusValue max = statusValues.stream()
-                .filter(Objects::nonNull)
-                .max(new StatusValue.Comparator())
-                .orElse(new StatusValue(SUMMARY_LABEL, Status.UNKNOWN));
+        List<StatusValue> max = getWorst(new ArrayList<>(statusValues));
 
-        StatusValue summary = StatusValue.summary(SUMMARY_LABEL + "." + child1.getIdentifier(), max);
+        StatusValue summary = StatusValue.summary("foo", max);
         assertNotNull(summary);
         assertEquals(Status.RED, summary.getStatus());
-        assertEquals("worst", summary.getMessage());
-        assertEquals("test3", summary.getMaxField());
+        assertEquals("foo test3: broken; foo test4: out of order", summary.getMessage());
     }
 
     @Test
     void skipsDisabledKPIs() {
         var child1 = new TestAssessable(null);
-        child1.setStatusValue(new StatusValue("test", Status.GREEN));
-        child1.setStatusValue(new StatusValue("test2", Status.YELLOW));
+        child1.setStatusValue(new StatusValue("foo", "test", Status.GREEN, ""));
+        child1.setStatusValue(new StatusValue("foo", "test2", Status.YELLOW, ""));
         var child2 = new TestAssessable(null);
-        child2.setStatusValue(new StatusValue("test", Status.GREEN));
+        child2.setStatusValue(new StatusValue("foo", "test", Status.GREEN, ""));
         var parent = new TestAssessable(List.of(child1, child2));
 
         Map<String, KPI> kpis = new HashMap<>();
-        kpis.put("on", new AbstractKPI(component -> null, null) {
+        kpis.put("on", new TestKPI(component -> null, null) {
             @Override
-            protected List<StatusValue> getStatusValues(String value, String message) {
+            protected List<StatusValue> getStatusValues(Assessable assessable, String value, String message) {
                 return new ArrayList<>();
             }
         });
-        var disabled = new AbstractKPI(component -> null, null) {
+        var disabled = new TestKPI(component -> null, null) {
             @Override
-            protected List<StatusValue> getStatusValues(String value, String message) {
+            protected List<StatusValue> getStatusValues(Assessable assessable, String value, String message) {
                 throw new RuntimeException("This should never happen.");
             }
         };
@@ -70,30 +67,29 @@ class AssessableTest {
     }
 
     @Test
-    public void withItem() {
+    void withItem() {
         Item item = getTestItem("foo", "bar");
         item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
         item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
 
         Map<String, KPI> kpis = new HashMap<>();
-        kpis.put("on", new AbstractKPI(component -> null, null) {
+        kpis.put("on", new TestKPI(component -> null, null) {
             @Override
-            protected List<StatusValue> getStatusValues(String value, String message) {
+            protected List<StatusValue> getStatusValues(Assessable assessable, String value, String message) {
                 return new ArrayList<>();
             }
         });
 
         //when
-        Map<FullyQualifiedIdentifier, List<StatusValue>> assessmentMap = item.applyKPIs(kpis);
+        Map<String, List<StatusValue>> assessmentMap = item.applyKPIs(kpis);
 
         //then
         assertNotNull(assessmentMap);
-        List<StatusValue> itemStatuses = assessmentMap.get(item.getFullyQualifiedIdentifier());
+        List<StatusValue> itemStatuses = assessmentMap.get(item.getFullyQualifiedIdentifier().toString());
         assertNotNull(itemStatuses);
 
-        StatusValue statusValue = itemStatuses.stream().filter(statusValue1 -> statusValue1.getField().equals("summary.bar")).findFirst().orElse(null);
+        StatusValue statusValue = itemStatuses.stream().filter(statusValue1 -> statusValue1.getField().equals(StatusValue.SUMMARY_FIELD_VALUE)).findFirst().orElse(null);
         assertNotNull(statusValue);
-        assertEquals("summary.bar", statusValue.getField());
 
         StatusValue something = itemStatuses.stream().filter(statusValue1 -> statusValue1.getField().equals("something")).findFirst().orElse(null);
         assertNotNull(something);
@@ -103,27 +99,27 @@ class AssessableTest {
     }
 
     @Test
-    public void uniqueStatusLists() {
+    void uniqueStatusLists() {
         Item item = getTestItem("foo", "bar");
         item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
         item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
 
         Map<String, KPI> kpis = new HashMap<>();
-        kpis.put("on", new AbstractKPI(component -> null, null) {
+        kpis.put("on", new TestKPI(component -> null, null) {
             @Override
-            protected List<StatusValue> getStatusValues(String value, String message) {
+            protected List<StatusValue> getStatusValues(Assessable assessable, String value, String message) {
                 return List.of(
-                        new StatusValue("something", Status.RED, "newer value")
+                        new StatusValue(item.getAssessmentIdentifier(), "something", Status.RED, "newer value")
                 );
             }
         });
 
         //when
-        Map<FullyQualifiedIdentifier, List<StatusValue>> assessmentMap = item.applyKPIs(kpis);
+        Map<String, List<StatusValue>> assessmentMap = item.applyKPIs(kpis);
 
         //then
         assertNotNull(assessmentMap);
-        List<StatusValue> itemStatuses = assessmentMap.get(item.getFullyQualifiedIdentifier());
+        List<StatusValue> itemStatuses = assessmentMap.get(item.getFullyQualifiedIdentifier().toString());
         assertNotNull(itemStatuses);
 
         assertThat(itemStatuses).hasSize(2);
@@ -133,45 +129,45 @@ class AssessableTest {
     }
 
     @Test
-    public void groupSummary() {
+    void groupSummary() {
         Item item = getTestItem("foo", "bar");
-        item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
-        item.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
+        item.setLabel(Label.withPrefix(Label.status, "someKPI", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
+        item.setLabel(Label.withPrefix(Label.status, "someKPI", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
 
         Item item2 = getTestItem("foo", "baz");
-        item2.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_STATUS), Status.RED.getName());
-        item2.setLabel(Label.withPrefix(Label.status, "something", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
+        item2.setLabel(Label.withPrefix(Label.status, "someKPI", StatusValue.LABEL_SUFFIX_STATUS), Status.RED.getName());
+        item2.setLabel(Label.withPrefix(Label.status, "someKPI", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
 
-        Group foo = new Group("foo", "landscapeIdentifier");
-        foo.addItem(item);
-        foo.addItem(item2);
+        Group foo = new Group("foo", "test");
+        foo.addOrReplaceItem(item);
+        foo.addOrReplaceItem(item2);
+
+        AssessableGroup assessableGroup = new AssessableGroup(foo, Set.of(item, item2));
 
         Map<String, KPI> kpis = new HashMap<>();
-        kpis.put("on", new AbstractKPI(component -> null, null) {
+        kpis.put("on", new TestKPI(component -> null, null) {
             @Override
-            protected List<StatusValue> getStatusValues(String value, String message) {
+            protected List<StatusValue> getStatusValues(@NonNull final Assessable assessable, String value, String message) {
                 return new ArrayList<>();
             }
         });
 
         //when
-        Map<FullyQualifiedIdentifier, List<StatusValue>> groupStatuses = foo.applyKPIs(kpis);
+        Map<String, List<StatusValue>> groupStatuses = assessableGroup.applyKPIs(kpis);
 
         //then
-        List<StatusValue> statusValues = groupStatuses.get(foo.getFullyQualifiedIdentifier());
+        List<StatusValue> statusValues = groupStatuses.get(assessableGroup.getAssessmentIdentifier());
         assertNotNull(statusValues);
 
         //group summary
-        StatusValue statusValue = statusValues.stream().filter(statusValue1 -> statusValue1.getField().equals("summary.foo")).findFirst().orElse(null);
+        StatusValue statusValue = statusValues.stream().filter(statusValue1 -> statusValue1.getField().equals(StatusValue.SUMMARY_FIELD_VALUE)).findFirst().orElse(null);
         assertNotNull(statusValue);
-        assertEquals("summary.foo", statusValue.getField());
         assertEquals(Status.BROWN, statusValue.getStatus());
-        assertEquals("very bad", statusValue.getMessage());
-        assertEquals("summary.bar", statusValue.getMaxField());
+        assertEquals("test/foo/bar somekpi: very bad", statusValue.getMessage());
     }
 
     @Test
-    public void isSorted() {
+    void isSorted() {
         Item item = getTestItem("foo", "bar");
         item.setLabel(Label.withPrefix(Label.status, "foo", StatusValue.LABEL_SUFFIX_STATUS), Status.BROWN.getName());
         item.setLabel(Label.withPrefix(Label.status, "foo", StatusValue.LABEL_SUFFIX_MESSAGE), "very bad");
@@ -183,18 +179,18 @@ class AssessableTest {
         item.setLabel(Label.withPrefix(Label.status, "baz", StatusValue.LABEL_SUFFIX_MESSAGE), "not so bad");
 
         Map<String, KPI> kpis = new HashMap<>();
-        kpis.put("on", new AbstractKPI(component -> null, null) {
+        kpis.put("on", new TestKPI(component -> null, null) {
             @Override
-            protected List<StatusValue> getStatusValues(String value, String message) {
+            protected List<StatusValue> getStatusValues(Assessable assessable, String value, String message) {
                 return new ArrayList<>();
             }
         });
 
         //when
-        Map<FullyQualifiedIdentifier, List<StatusValue>> statuses = item.applyKPIs(kpis);
+        Map<String, List<StatusValue>> statuses = item.applyKPIs(kpis);
 
         //then
-        List<StatusValue> statusValues = statuses.get(item.getFullyQualifiedIdentifier());
+        List<StatusValue> statusValues = statuses.get(item.getFullyQualifiedIdentifier().toString());
         assertNotNull(statusValues);
         assertEquals(4, statusValues.size());
         StatusValue summary = statusValues.get(0);
@@ -207,9 +203,9 @@ class AssessableTest {
         assertThat(s2.getStatus().compareTo(s3.getStatus())).isEqualTo(1);
     }
 
-    class TestAssessable implements Assessable {
+    static class TestAssessable implements Assessable {
 
-        private Set<StatusValue> statusValues = new HashSet<>();
+        private final Set<StatusValue> statusValues = new HashSet<>();
         private final List<? extends Assessable> children;
 
         TestAssessable(List<? extends Assessable> children) {
@@ -225,54 +221,35 @@ class AssessableTest {
             getAdditionalStatusValues().add(statusValue);
         }
 
-        @Override
+        @NonNull
         public String getIdentifier() {
             return "test";
         }
 
         @Override
-        public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
-            return FullyQualifiedIdentifier.build("test", null, null);
-        }
-
-        @Override
-        public String getName() {
+        public String getAssessmentIdentifier() {
             return "test";
-        }
-
-        @Override
-        public String getContact() {
-            return "test";
-        }
-
-        @Override
-        public String getDescription() {
-            return "test";
-        }
-
-        @Override
-        public String getOwner() {
-            return null;
-        }
-
-        @Override
-        public String getIcon() {
-            return null;
-        }
-
-        @Override
-        public String getColor() {
-            return null;
-        }
-
-        @Override
-        public String getAddress() {
-            return null;
         }
 
         @Override
         public List<? extends Assessable> getChildren() {
             return children;
+        }
+    }
+
+    private abstract static class TestKPI extends AbstractKPI {
+        public TestKPI(Function<Assessable, String> valueFunction, Function<Assessable, String> msgFunction) {
+            super(valueFunction, msgFunction);
+        }
+
+        @Override
+        public Map<Status, RangeApiModel> getRanges() {
+            return null;
+        }
+
+        @Override
+        public Map<Status, List<String>> getMatches() {
+            return null;
         }
     }
 }

@@ -30,18 +30,18 @@ class SVGRelationTest {
 
     @BeforeEach
     void setup() {
-         landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
-         foo = getTestItem(Group.COMMON, "foo", landscape);
-         bar = getTestItem(Group.COMMON, "bar", landscape);
-         hexpath = new HexPath(List.of(new Hex(1,2), new Hex(1,3)));
-         statusValue = new StatusValue("foo", Status.GREEN);
+        landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
+        foo = getTestItem(Group.COMMON, "foo", landscape);
+        bar = getTestItem(Group.COMMON, "bar", landscape);
+        hexpath = new HexPath(List.of(new Hex(1, 2), new Hex(1, 3)));
+        statusValue = new StatusValue("foo", "bar", Status.GREEN, "");
     }
 
     @Test
     @DisplayName("items without groups use proper fqi")
-    public void relationContainsBothEnds() {
+    void relationContainsBothEnds() {
 
-        Relation itemRelationItem = new Relation(foo, bar);
+        Relation itemRelationItem = RelationFactory.createForTesting(foo, bar);
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
         DomContent render = svgRelation.render();
         String render1 = render.render();
@@ -52,7 +52,7 @@ class SVGRelationTest {
     }
 
     @Test
-    public void providerRelationsContainsEndpoint() {
+    void providerRelationsContainsEndpoint() {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
 
@@ -67,7 +67,7 @@ class SVGRelationTest {
 
     @Disabled // dataflow has no endpoint marker anymore/yet
     @Test
-    public void dataflowRelationsContainsEndpoint() {
+    void dataflowRelationsContainsEndpoint() {
 
         //given
         Relation relation = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
@@ -82,7 +82,7 @@ class SVGRelationTest {
     }
 
     @Test
-    public void relationIsNotDashedWhenNotPlanned() {
+    void relationIsNotDashedWhenNotPlanned() {
 
         //only works with provider relations, because dataflow inner path is dashed
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
@@ -97,7 +97,7 @@ class SVGRelationTest {
     }
 
     @Test
-    public void dataflowRelationIsDashed() {
+    void dataflowRelationIsDashed() {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
 
@@ -111,7 +111,7 @@ class SVGRelationTest {
     }
 
     @Test
-    public void supportsVisualFocus() {
+    void supportsVisualFocus() {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
@@ -126,12 +126,27 @@ class SVGRelationTest {
     }
 
     @Test
+    void weightDeterminesStrokeWidth() {
+
+        Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
+        itemRelationItem.setLabel(Label.weight, "2.44");
+
+        //when
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
+        DomContent render = svgRelation.render();
+
+        //then
+        String render1 = render.render();
+        var width = Math.round(5 * 2.44f);
+        assertThat(render1).contains("stroke-width=\"" + width + "\"");
+    }
+
+    @Test
     @DisplayName("The dataflow marker is not null")
-    public void marker() {
+    void marker() {
         ContainerTag containerTag = SVGRelation.dataflowMarker();
         assertThat(containerTag).isNotNull();
         assertThat(containerTag.getTagName()).isEqualTo("marker");
-
     }
 
 }

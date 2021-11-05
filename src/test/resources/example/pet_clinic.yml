@@ -2,6 +2,7 @@ identifier: petclinic
 name: ACME Pet Clinic
 contact: mail@acme.io
 description: The Pet clinic IT landscape
+icon: https://dedica.team/images/logo_orange_weiss.png
 
 config:
   greedy: false
@@ -9,11 +10,12 @@ config:
     radiation:
       description: Radiation level in mrem
       label: radiation
-      messageTemplate: "Level: %s mrem"
+      messageTemplate: "level: %s mrem"
       ranges:
         GREEN: 0;99.999999
         YELLOW: 100;199.999999
-        RED: 200;499.999999
+        ORANGE: 200;399.999999
+        RED: 400;499.999999
         BROWN: 500;1000000
 
 

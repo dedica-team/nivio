@@ -34,7 +34,7 @@ public class KPIConfig {
             example = "RED: BAD;err.*")
     public Map<String, String> matches = new HashMap<>();
 
-    @Schema(description = "A flag indicating that the KPI is active. Can be used to disable default kpis.")
+    @Schema(description = "A flag indicating that the KPI is active. Can be used to disable default KPIs.")
     public boolean enabled = true;
 
 }

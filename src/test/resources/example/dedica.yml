@@ -5,11 +5,11 @@ identifier: dedica.team
 name: The dedica Consulting Team
 contact: info@dedica.team
 description: The IT consulting team.
+icon: https://dedica.team/images/logo.png
 
 config:
   branding:
     mapStylesheet: http://localhost:8080/css/dedica_map.css
-    mapLogo: https://dedica.team/images/logo.png
 
 groups:
   dedica:
@@ -58,5 +58,19 @@ items:
     name: Marvin Schöning
     group: dedica
     fill: http://dedica.team/images/marvinschoening.jpeg
+    providedBy:
+      - dedica
+
+  - identifier: daniel2
+    name: Daniel Brünker
+    group: dedica
+    fill: http://dedica.team/images/danielbruenker.jpeg
+    providedBy:
+      - dedica
+
+  - identifier: jennifer
+    name: Jennifer Arps
+    group: dedica
+    fill: http://dedica.team/images/jenniferarps.jpeg
     providedBy:
       - dedica

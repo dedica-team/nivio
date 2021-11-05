@@ -34,7 +34,7 @@ class LabeledTest {
     }
 
     @Test
-    public void setPrefixed() {
+    void setPrefixed() {
         ItemDescription itemDescription = new ItemDescription();
         itemDescription.setPrefixed(Label.network, "foo");
         assertEquals(1, itemDescription.getLabels(Label.network).size());
@@ -44,7 +44,7 @@ class LabeledTest {
     }
 
     @Test
-    public void setLabelsDoesNotOverwriteExistingOnes() {
+    void setLabelsDoesNotOverwriteExistingOnes() {
         ItemDescription itemDescription = new ItemDescription();
         itemDescription.setLabel("foo", "bar");
 
@@ -56,14 +56,14 @@ class LabeledTest {
     }
 
     @Test
-    public void withoutPrefixes() {
+    void withoutPrefixes() {
         ItemDescription itemDescription = new ItemDescription();
         itemDescription.setLabel(Label.costs, "123");
         itemDescription.setPrefixed(Label.network, "foo");
         itemDescription.setPrefixed(Label.status, "bar");
-        itemDescription.setPrefixed(Label.condition, "bar");
+        itemDescription.setPrefixed(Label._condition, "bar");
 
-        Map<String, String> stringStringMap = Labeled.withoutKeys(itemDescription.getLabels(), Label.condition.name(), Label.status.name());
+        Map<String, String> stringStringMap = Labeled.withoutKeys(itemDescription.getLabels(), Label._condition.name(), Label.status.name());
         assertThat(stringStringMap).isNotNull();
         assertThat(stringStringMap.size()).isEqualTo(2);
         assertThat(stringStringMap.get(Label.costs.name())).isEqualTo("123");
@@ -96,17 +96,15 @@ class LabeledTest {
     }
 
     @Test
-    void diffIgnoresAppearanceLabels() {
+    void diffIgnoresInternalLabels() {
         //given
         ItemDescription before = new ItemDescription();
-        before.setLabel(Label.color, "123");
-        before.setLabel(Label.fill, "aaff33");
-        before.setLabel(Label.icon, "foo");
+        before.setLabel(Label._filldata, "aaff33");
+        before.setLabel(Label._icondata, "foo");
 
         ItemDescription after = new ItemDescription();
-        after.setLabel(Label.color, "");
-        after.setLabel(Label.fill, "");
-        after.setLabel(Label.icon, "");
+        after.setLabel(Label._filldata, "");
+        after.setLabel(Label._icondata, "");
 
         //when
         List<String> diff = after.diff(before);
@@ -130,5 +128,42 @@ class LabeledTest {
 
         //then
         assertThat(i.getLabel("foo")).isEqualTo("1");
+    }
+
+    @Test
+    void merge() {
+        ItemDescription i = new ItemDescription();
+        i.setLabel("foo1", 1L);
+        i.setLabel("foo2", 1L);
+        ItemDescription target = new ItemDescription();
+        i.setLabel("foo1", 2L);
+        i.setLabel("bar", 2L);
+
+        //when
+        Labeled.merge(i, target);
+
+        //then
+        assertThat(target.getLabel("foo1")).isEqualTo("2");
+        assertThat(target.getLabel("foo2")).isEqualTo("1");
+        assertThat(target.getLabel("bar")).isEqualTo("2");
+    }
+
+    @Test
+    void add() {
+        ItemDescription i = new ItemDescription();
+        i.setLabel("foo1", "after");
+        i.setLabel("foo2", 1L);
+
+        ItemDescription target = new ItemDescription();
+        i.setLabel("foo1", "before");
+        i.setLabel("bar", 2L);
+
+        //when
+        Labeled.add(i, target);
+
+        //then
+        assertThat(target.getLabel("foo1")).isEqualTo("before");
+        assertThat(target.getLabel("foo2")).isEqualTo("1");
+        assertThat(target.getLabel("bar")).isEqualTo("2");
     }
 }

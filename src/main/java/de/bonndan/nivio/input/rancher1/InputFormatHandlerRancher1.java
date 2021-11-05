@@ -1,19 +1,20 @@
 package de.bonndan.nivio.input.rancher1;
 
 import de.bonndan.nivio.input.InputFormatHandler;
-import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -23,11 +24,11 @@ public class InputFormatHandlerRancher1 implements InputFormatHandler {
 
     @Override
     public List<String> getFormats() {
-        return Arrays.asList("rancher1-prometheus");
+        return Collections.singletonList("rancher1-prometheus");
     }
 
     @Override
-    public void applyData(SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
+    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
 
         String landscape = reference.getLandscapeDescription().getIdentifier();
 
@@ -42,8 +43,12 @@ public class InputFormatHandlerRancher1 implements InputFormatHandler {
     }
 
     @Override
-    public InputFormatObserver getObserver(InputFormatObserver inner, SourceReference sourceReference) {
-        //TODO add observer
-        return null;
+    public InputFormatObserver getObserver(@NonNull final ApplicationEventPublisher eventPublisher,
+                                           @NonNull final Landscape landscape,
+                                           @NonNull final SourceReference sourceReference) {
+        //TODO add observer, or maybe not, since it is deprecated
+        return () -> {
+
+        };
     }
 }

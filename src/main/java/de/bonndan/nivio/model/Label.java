@@ -15,18 +15,22 @@ public enum Label {
     capability("The capability the service provides for the business or, in case of infrastructure," +
             " the technical capability like enabling service discovery, configuration, secrets, or persistence."),
 
-    color("A hex color code to override the inherited group color"),
+    color("A hex color code (items inherit group colors as default)"),
 
     costs("Running costs of the item."),
 
     fill("Background image (for displaying purposes)."),
+    _filldata("Background image resolved to a data-url."),
 
     framework("A map of used frameworks (key is name, value is version).", true),
     frameworks("A comma-separated list of frameworks as key-value pairs (key is name, value is version)."),
 
     icon("Icon/image (for displaying purposes)."),
+    _icondata("Icon/image resolved to a data-url"),
 
     health("Description of the item's health status."),
+
+    label("A custom label (like a note, but very short)."),
 
     layer("A technical layer."),
 
@@ -46,8 +50,6 @@ public enum Label {
 
     team("Name of the responsible team (e.g. technical owner)."),
 
-    type("The type (service, database, queue, load balancer, etc.)."),
-
     version("The version (e.g. software version or protocol version)."),
 
     visibility("Visibility to other items."),
@@ -56,13 +58,22 @@ public enum Label {
 
     status("Prefix for status labels. Can be used as prefix for all other labels to mark a status for the label.", true),
 
-    condition("Prefix for condition labels.", true);
+    _condition("Prefix for condition labels.", true),
+
+    weight("Importance or relations. Used as factor for drawn width if numbers between 0 and 5 are given.")
+
+   ;
 
     /**
      * Separator for label key parts.
      * Should not be used outside this package. Use key() methods instead.
      */
-    static final String DELIMITER = ".";
+    public static final String DELIMITER = ".";
+
+    /**
+     * Internal labels start with an underscore. They are not diffed and not part of the public api.
+     */
+    public static final String INTERNAL_LABEL_PREFIX = "_";
 
     public final String meaning;
     public final boolean isPrefix;
@@ -113,6 +124,7 @@ public enum Label {
         List<Label> sortedLabels = Arrays.stream(Label.values()).sorted(Comparator.comparing(Enum::name)).collect(Collectors.toList());
         sortedLabels.stream()
                 .filter(label -> includePrefixes || !label.isPrefix)
+                .filter(label -> !label.name().startsWith(INTERNAL_LABEL_PREFIX))
                 .forEach(label -> labelExport.put(label.name(), label.meaning));
 
         return labelExport;

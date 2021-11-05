@@ -1,9 +1,11 @@
 package de.bonndan.nivio.assessment.kpi;
 
+import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
+import org.springframework.lang.NonNull;
 
 import java.util.*;
 
@@ -18,20 +20,25 @@ public class LifecycleKPI extends CustomKPI {
         super();
         label = Label.lifecycle.name();
         msgFunction = component -> Optional.ofNullable(Lifecycle.from(valueFunction.apply(component)))
-                .map(lifecycle -> "Phase: " + lifecycle.name().toLowerCase(Locale.ROOT).replace("_", " "))
+                .map(lifecycle -> "phase: " + lifecycle.name().toLowerCase(Locale.ROOT).replace("_", " "))
                 .orElse("unknown");
 
-        setDescription("This KPI evaluates the lifecycle label for known values (PLANNED, PRODUCTION).");
+        matchers = Map.of(
+                Status.GREEN, List.of(Lifecycle.PRODUCTION.name()),
+                Status.ORANGE, List.of(Lifecycle.END_OF_LIFE.name())
+        );
+
+        setDescription("Evaluates the lifecycle label for known values (e.g. PLANNED, PRODUCTION, etc.).");
     }
 
     @Override
-    protected List<StatusValue> getStatusValues(String value, String message) {
-        Lifecycle lifecycle = Lifecycle.from(value);
+    protected List<StatusValue> getStatusValues(@NonNull final Assessable assessable, String value, String message) {
+        var lifecycle = Lifecycle.from(value);
         if (Lifecycle.PRODUCTION.equals(lifecycle)) {
-            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.GREEN, message));
+            return Collections.singletonList(new StatusValue(assessable.getAssessmentIdentifier(), Label.lifecycle.name(), Status.GREEN, message));
         }
         if (Lifecycle.END_OF_LIFE.equals(lifecycle)) {
-            return Collections.singletonList(new StatusValue(Label.lifecycle.name(), Status.ORANGE, message));
+            return Collections.singletonList(new StatusValue(assessable.getAssessmentIdentifier(), Label.lifecycle.name(), Status.ORANGE, message));
         }
 
         return new ArrayList<>();

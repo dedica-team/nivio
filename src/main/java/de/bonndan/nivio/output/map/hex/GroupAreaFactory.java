@@ -3,7 +3,6 @@ package de.bonndan.nivio.output.map.hex;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.svg.HexPath;
-import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +18,8 @@ public class GroupAreaFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupAreaFactory.class);
 
+    private GroupAreaFactory(){}
+
     /**
      * Builds an areas of hex tiles belonging to a group.
      * <p>
@@ -32,15 +33,17 @@ public class GroupAreaFactory {
      * @param group        the group
      * @return all hexes the group consists of (an area)
      */
-    public static Set<Hex> getGroup(Map<Object, Hex> itemsToHexes, Group group) {
+    public static Set<Hex> getGroup(Map<Object, Hex> itemsToHexes, Group group, Set<Item> items) {
 
-        Set<Item> items = group.getItems();
         Set<Hex> inArea = new HashSet<>();
 
         if (!items.iterator().hasNext()) {
             LOGGER.warn("Could not determine group area for group {} because of missing items.", group);
             return inArea;
         }
+
+        //simple occupations per item
+        addItemsAndNeighbours(itemsToHexes, items, inArea);
 
         //build the area by adding paths
         addPathsBetweenClosestItems(itemsToHexes, items, inArea);
@@ -55,6 +58,21 @@ public class GroupAreaFactory {
         //set group identifier to all
         inArea.forEach(hex -> hex.group = group.getFullyQualifiedIdentifier().toString());
         return inArea;
+    }
+
+    /**
+     * Every item itself and its neighbours are added
+     */
+    private static void addItemsAndNeighbours(Map<Object, Hex> itemsToHexes,
+                                              Set<Item> items,
+                                              Set<Hex> inArea
+    ) {
+        items.forEach(next -> {
+            LOGGER.debug("adding {} to group area", next);
+            Hex hex = itemsToHexes.get(next);
+            inArea.add(hex);
+            inArea.addAll(hex.neighbours());
+        });
     }
 
     /**
@@ -74,13 +92,6 @@ public class GroupAreaFactory {
 
             LOGGER.debug("adding {} to group area", next);
             Hex hex = itemsToHexes.get(next);
-            //the item itself is added automatically
-            inArea.add(hex);
-            //every "unregistered" neighbour is added automatically
-            hex.neighbours().forEach(neigh -> {
-                if (!itemsToHexes.containsKey(neigh))
-                    inArea.add(neigh);
-            });
 
             Optional<Item> closest = getClosestItem(next, items, itemsToHexes, connected);
             if (closest.isEmpty()) {
@@ -191,7 +202,7 @@ public class GroupAreaFactory {
      *
      * @param sidesWithNeighbours numbers of sides having a same-group neighbour (0..5)
      */
-    static private boolean hasOppositeNeighbours(List<Integer> sidesWithNeighbours) {
+    private static boolean hasOppositeNeighbours(List<Integer> sidesWithNeighbours) {
 
         for (int i = 0; i < sidesWithNeighbours.size(); i++) {
             Integer integer = sidesWithNeighbours.get(i);

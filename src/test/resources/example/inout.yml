@@ -1,11 +1,11 @@
 identifier: inout
 name: Input and Output
 description: Misuses the landscape graph to show the input and output possibilities of nivio.
+icon: https://dedica.team/images/logo_orange_weiss.png
 
 config:
   branding:
     mapStylesheet: http://localhost:8080/css/inout.css
-    mapLogo: https://dedica.team/images/logo_orange_weiss.png
 
 groups:
   output:

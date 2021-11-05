@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HexTest {
 
     @Test
-    public void topLeft() {
+    void topLeft() {
         Hex center = new Hex(0,0, 0);
         List<Hex> area = new ArrayList<>();
         area.add(center);
@@ -20,9 +20,16 @@ class HexTest {
         Hex hex = Hex.topLeft(area);
 
         //then
-        assertThat(hex).isNotNull();
-        assertThat(hex.q).isEqualTo(0);
-        assertThat(hex.r).isEqualTo(-1);
+        assertThat(hex).isNotNull().isEqualTo(new Hex(0,-1));
     }
 
+    @Test
+    void getNeighboursDirections() {
+        //given
+        Hex center = new Hex(4,3);
+        List<Hex> neighbours = center.neighbours();
+
+        //when
+        assertThat(center.getDirectionTo(neighbours.get(0))).isEqualTo(Hex.SOUTH_EAST);
+    }
 }

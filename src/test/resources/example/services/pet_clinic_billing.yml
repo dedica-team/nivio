@@ -23,6 +23,8 @@ items:
     relations:
       - type: dataflow
         target: emailer
+        description: Sends PDF invoices to customers
+        weight: 2.3
     tags:
       - java
       - backend

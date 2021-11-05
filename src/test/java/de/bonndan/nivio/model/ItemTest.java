@@ -1,5 +1,7 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
+import de.bonndan.nivio.assessment.Assessable;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,10 +13,10 @@ import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ItemTest {
+class ItemTest {
 
     @Test
-    public void equalsWithGroup() {
+    void equalsWithGroup() {
 
         Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
@@ -36,7 +38,7 @@ public class ItemTest {
     }
 
     @Test
-    public void equalsWithLandscape() {
+    void equalsWithLandscape() {
 
         Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
@@ -51,22 +53,10 @@ public class ItemTest {
         assertNotEquals(s1, s3);
     }
 
-    @Test
-    public void labelsAreNotGroupedInApi() {
 
-        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
-
-        Item s1 = getTestItem("g1", "a", landscape);
-        s1.getLabels().put("foo.one", "one");
-        s1.getLabels().put("foo.two", "two");
-
-        Map<String, String> labels = s1.getJSONLabels();
-        assertThat(labels).containsKey("foo.one");
-        assertThat(labels).containsKey("foo.two");
-    }
 
     @Test
-    public void getChangesInLabels() {
+    void getChangesInLabels() {
         Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
         Item s1 = getTestItem("g1", "a", landscape);
@@ -81,7 +71,7 @@ public class ItemTest {
     }
 
     @Test
-    public void getChangesInName() {
+    void getChangesInName() {
 
         Item s1 = getTestItemBuilder("g1", "a")
                 .withName("foo")
@@ -97,7 +87,7 @@ public class ItemTest {
     }
 
     @Test
-    public void getChangesInDescription() {
+    void getChangesInDescription() {
 
         Item s1 = getTestItemBuilder("g1", "a")
                 .withDescription("foo")
@@ -113,7 +103,7 @@ public class ItemTest {
     }
 
     @Test
-    public void getChangesInOwner() {
+    void getChangesInOwner() {
 
         Item s1 = getTestItemBuilder("g1", "a")
                 .withOwner("foo")
@@ -129,7 +119,7 @@ public class ItemTest {
     }
 
     @Test
-    public void getChangesInLinks() {
+    void getChangesInLinks() {
 
         Item s1 = getTestItemBuilder("g1", "a")
                 .withLinks(Map.of("foo", new Link("https://acme.com")))
@@ -145,17 +135,32 @@ public class ItemTest {
     }
 
     @Test
-    public void setRelations() {
+    void setRelations() {
 
         Item s1 = getTestItemBuilder("g1", "a").build();
         Item s2 = getTestItemBuilder("g1", "b").build();
         Item s3 = getTestItemBuilder("g1", "c").build();
 
-        s1.setRelations(Set.of(new Relation(s1, s2)));
+        s1.setRelations(Set.of(RelationFactory.createForTesting(s1, s2)));
         assertThat(s1.getRelations()).hasSize(1);
 
         //when
-        s1.setRelations(Set.of(new Relation(s1, s3)));
+        s1.setRelations(Set.of(RelationFactory.createForTesting(s1, s3)));
         assertThat(s1.getRelations()).hasSize(1);
+    }
+
+    @Test
+    void relationsAsAssessmentChildren() {
+
+        Item s1 = getTestItemBuilder("g1", "a").build();
+        Item s2 = getTestItemBuilder("g2", "b").build();
+        Relation forTesting = RelationFactory.createForTesting(s1, s2);
+        s1.addOrReplace(forTesting);
+
+        //when
+        List<? extends Assessable> children = s1.getChildren();
+        assertThat(children).hasSize(1);
+        assertThat(children.get(0)).isEqualTo(forTesting);
+
     }
 }

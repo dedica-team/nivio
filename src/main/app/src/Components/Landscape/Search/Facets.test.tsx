@@ -51,7 +51,7 @@ describe('<Facets />', () => {
     const { container, queryByText, getByText } = render(
       <Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />
     );
-    fireEvent.click(getByTitle(container, "KPIs"));
+    fireEvent.click(getByTitle(container, 'KPIs'));
 
     expect(queryByText('owner')).toBeNull();
     expect(getByText('security')).toBeInTheDocument();

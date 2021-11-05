@@ -15,6 +15,9 @@ spring:
           auth: true
           starttls.enable: true
 
+  mustache:
+    check-template-location: false
+
 logging:
   level:
     root: INFO
@@ -40,14 +43,44 @@ management:
 
 nivio:
   baseUrl: ${NIVIO_BASE_URL:}
-  version: #project.version#
+  version: ^project.version^-^git.commit.id.abbrev^
   pollingMilliseconds: 30000 # 30 secs
   # iconFolder: /a/local/path
   brandingForeground: ${NIVIO_BRANDING_FOREGROUND:7022F2}
   brandingBackground: ${NIVIO_BRANDING_BACKGROUND:161618}
   brandingSecondary: ${NIVIO_BRANDING_SECONDARY:22F2C2}
   brandingLogoUrl: ${NIVIO_BRANDING_LOGO_URL:}
-  brandingMessage: ${NIVIO_BRANDING_MESSAGE:Welcome to nivio}
+  brandingMessage: ${NIVIO_BRANDING_MESSAGE:All Landscapes}
+  seed: ${SEED:}
+  demo: ${DEMO:}
+
+
+observerconfig:
+  scanDelay:
+    KubernetesObserver: 1
+
+
+gitlab: # add new environment variables
+  hostUrl: ${GITLAB_HOST_URL:}
+  personalAccessToken: ${GITLAB_PERSONAL_ACCESS_TOKEN:}
+  username: ${GITLAB_USERNAME:}
+  password: ${GITLAB_PASSWORD:}
+
+
+github: # add new environment variables
+  login: ${GITHUB_LOGIN:}
+  password: ${GITHUB_PASSWORD:}
+  oauth: ${GITHUB_OAUTH:}
+  jwt: ${GITHUB_JWT:}
+
+sonar: # add new environment variables
+  serverUrl: ${SONAR_SERVER_URL:}
+  login: ${SONAR_LOGIN:}
+  password: ${SONAR_PASSWORD:}
+  proxyHost: ${SONAR_PROXY_HOST:}
+  proxyPort: ${SONAR_PROXY_PORT:}
+
+
 
 ---
 spring:

@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.Status;
-import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
@@ -12,35 +11,36 @@ import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SVGGroupAreaOutlineFactoryTest {
 
     @Test
     @DisplayName("Ensure that items far apart have one outline")
-    public void twoSeparateHexe() {
+    void twoSeparateHexes() {
         Hex e1 = new Hex(0, 10, -10);
         Hex e2 = new Hex(0, 20, -20);
-        Set<Hex> occupied = Set.of(e1, e2);
 
         Item item1 = getTestItem("foo", "bar");
         Item item2 = getTestItem("foo", "baz");
 
-        Group foo = new Group("foo", "landscapeIdentifier", null, null, null, null, "005500");
-        foo.addItem(item1);
-        foo.addItem(item2);
+        Group foo = new Group("foo", "landscapeIdentifier", null, null, null, "005500");
+        foo.addOrReplaceItem(item1);
+        foo.addOrReplaceItem(item2);
 
         BidiMap<Hex, Object> hexesToItems = new DualHashBidiMap<>();
         hexesToItems.put(e1, item1);
         hexesToItems.put(e2, item2);
 
 
-        Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), foo);
+        Set<Hex> area = GroupAreaFactory.getGroup(hexesToItems.inverseBidiMap(), foo, Set.of(item1, item2));
 
-        SVGGroupArea group = SVGGroupArea.forGroup(foo, area, new StatusValue("foo", Status.GREEN), false);
+        SVGGroupArea group = SVGGroupArea.forGroup(foo, area, Status.GREEN, false);
         Set<Hex> groupArea = group.getGroupArea();
 
         //when
