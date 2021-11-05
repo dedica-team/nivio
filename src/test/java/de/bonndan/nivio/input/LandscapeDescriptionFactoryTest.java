@@ -71,7 +71,8 @@ class LandscapeDescriptionFactoryTest {
 
     @Test
     void readFails() {
-        assertThrows(ReadingException.class, () -> new LandscapeDescriptionFactory(mock(FileFetcher.class))
+        LandscapeDescriptionFactory landscapeDescriptionFactory = new LandscapeDescriptionFactory(mock(FileFetcher.class));
+        assertThrows(ReadingException.class, () -> landscapeDescriptionFactory
                 .fromString("", ""));
     }
 
@@ -275,7 +276,8 @@ class LandscapeDescriptionFactoryTest {
     @Test
     @DisplayName("Unknown field in yaml")
     void testUnknownProperty() {
-        assertThrows(ReadingException.class, () -> factory.fromYaml(new File(FILE_PATH + "example_typo.yml")));
+        File file = new File(FILE_PATH + "example_typo.yml");
+        assertThrows(ReadingException.class, () -> factory.fromYaml(file));
     }
 
     @Test

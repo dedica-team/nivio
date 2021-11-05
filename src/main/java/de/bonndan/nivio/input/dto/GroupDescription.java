@@ -1,7 +1,6 @@
 package de.bonndan.nivio.input.dto;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
@@ -72,12 +71,6 @@ public class GroupDescription implements ComponentDescription {
     public String getOwner() {
         return owner;
     }
-
-//    @JsonIgnore
-//    @Override
-//    public String getIcon() {
-//        return null;
-//    }
 
     @JsonIgnore
     @Override
