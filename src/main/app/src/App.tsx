@@ -1,14 +1,14 @@
-import React, {ReactElement, useEffect, useState} from 'react';
-import {HashRouter as Router, Route, Switch} from 'react-router-dom';
+import React, { ReactElement, useEffect, useState } from 'react';
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 
 import LandscapeOverview from './Components/Landscape/Overview/Overview';
 import LandscapeMap from './Components/Landscape/Map/Map';
 import Man from './Components/Manual/Man';
 import Layout from './Components/Layout/Layout';
-import {Routes} from './interfaces';
-import {Box, CssBaseline, Theme} from '@material-ui/core';
-import {createTheme, ThemeOptions, ThemeProvider} from '@material-ui/core/styles';
-import {get} from './utils/API/APIClient';
+import { Routes } from './interfaces';
+import { Box, CssBaseline, Theme } from '@material-ui/core';
+import { createTheme, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
+import { get } from './utils/API/APIClient';
 import defaultThemeVariables from './Resources/styling/theme';
 import { FrontendMappingProvider } from './Context/FrontendMappingContext';
 
