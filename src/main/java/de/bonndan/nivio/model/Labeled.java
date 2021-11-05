@@ -2,7 +2,6 @@ package de.bonndan.nivio.model;
 
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
-import de.bonndan.nivio.input.ProcessingException;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;

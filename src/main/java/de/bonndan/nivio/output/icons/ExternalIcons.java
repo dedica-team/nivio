@@ -44,7 +44,7 @@ public class ExternalIcons {
      */
     public Optional<String> getUrl(String vendor) {
 
-        if (StringUtils.isEmpty(vendor) || !vendorIconUrls.containsKey(vendor.toLowerCase())) {
+        if (!StringUtils.hasLength(vendor) || !vendorIconUrls.containsKey(vendor.toLowerCase())) {
             LOGGER.warn("Unknown vendor icon {}", vendor);
             return Optional.empty();
         }

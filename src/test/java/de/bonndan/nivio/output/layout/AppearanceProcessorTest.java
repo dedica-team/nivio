@@ -54,10 +54,10 @@ class AppearanceProcessorTest {
     }
 
     @Test
-    void setItemIcons_LabelIcon() throws MalformedURLException {
+    void setItemIcons_LabelIcon() {
         Item s1 = landscape.getItems().pick("s1", "g1");
         s1.setLabel(Label.icon, "https://dedica.team/images/logo_orange_weiss.png");
-        when(iconService.getExternalUrl(new URL(s1.getLabel(Label.icon)))).thenReturn(java.util.Optional.of(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo"));
+        when(iconService.getIconUrl(s1)).thenReturn(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
 
         // when
         resolver.process(landscape);
@@ -84,7 +84,6 @@ class AppearanceProcessorTest {
 
         // given
         landscape.setLabel(Label.icon, "https://dedica.team/images/logo_orange_weiss.png");
-//        landscape.setLabel(Label.icon, "/Users/jenni/nivio/src/test/java/de/bonndan/nivio/output/layout/AppearanceProcessorTest.java");
         when(iconService.getExternalUrl(new URL(landscape.getLabel(Label.icon)))).thenReturn(java.util.Optional.of(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo"));
 
         // when
