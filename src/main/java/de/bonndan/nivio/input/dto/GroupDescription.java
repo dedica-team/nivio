@@ -151,16 +151,6 @@ public class GroupDescription implements ComponentDescription {
         return labels.get(key);
     }
 
-    public void setLabel(String key, String value) {
-        labels.put(key, value);
-    }
-
-    @JsonAnySetter
-    @Override
-    public void setLabel(@NonNull String key, Object value) {
-        ComponentDescription.super.setLabel(key, value);
-    }
-
     public void setEnvironment(String environment) {
         this.environment = environment;
     }

@@ -325,17 +325,6 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
         return labels.get(key);
     }
 
-    @Override
-    public void setLabel(String key, String value) {
-        labels.put(key, value);
-    }
-
-    @JsonAnySetter
-    @Override
-    public void setLabel(@NonNull String key, Object value) {
-        ComponentDescription.super.setLabel(key, value);
-    }
-
     /**
      * Setter for framework map.
      *

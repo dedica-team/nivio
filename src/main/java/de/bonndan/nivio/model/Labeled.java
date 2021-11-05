@@ -79,49 +79,6 @@ public interface Labeled {
         setLabel(key.name().toLowerCase(), value);
     }
 
-    /**
-     * Any-setter default implementation for deserialization.
-     *
-     * @param key   label key
-     * @param value label value (string|string[]|number|list|map)
-     */
-    default void setLabel(@NonNull final String key, final Object value) {
-        if (!StringUtils.hasLength(key)) {
-            throw new IllegalArgumentException("Label key is empty.");
-        }
-
-        if (value instanceof String) {
-            getLabels().put(key.toLowerCase(), (String) value);
-            return;
-        }
-
-        if (value instanceof Number) {
-            getLabels().put(key.toLowerCase(), String.valueOf(value));
-            return;
-        }
-
-        if (value instanceof String[]) {
-            Arrays.stream(((String[]) value)).forEach(s -> setPrefixed(key, s));
-            return;
-        }
-
-        if (value instanceof List) {
-            try {
-                //noinspection unchecked,rawtypes
-                ((List) value).forEach(s -> setPrefixed(key, (String) s));
-                return;
-            } catch (ClassCastException e) {
-                throw new ProcessingException(String.format("Cannot set '%s' to list '%s'. Is this a list-like structure", key, value), e);
-            }
-        }
-
-        if (value instanceof Map) {
-            throw new IllegalArgumentException(String.format("Cannot use the value of '%s' as map ('%s'). Please check the spelling of", key, value));
-        }
-
-        getLabels().put(key, String.valueOf(value));
-    }
-
     static Map<String, String> withPrefix(String prefix, Map<String, String> all) {
         return all.entrySet().stream()
                 .filter(stringStringEntry -> stringStringEntry.getValue() != null)

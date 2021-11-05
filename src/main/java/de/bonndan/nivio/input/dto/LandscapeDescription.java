@@ -290,19 +290,8 @@ public class LandscapeDescription implements ComponentDescription {
         return labels;
     }
 
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
-    }
-
     @Override
     public String getLabel(String key) {
         return getLabels().get(key);
     }
-
-    @JsonAnySetter
-    @Override
-    public void setLabel(String key, String value) {
-        getLabels().put(key, value);
-    }
-
 }

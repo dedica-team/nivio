@@ -13,6 +13,7 @@ import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.RootPath;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -272,8 +273,9 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
+    @DisplayName("Unknown field in yaml")
     void testUnknownProperty() {
-        factory.fromYaml(new File(FILE_PATH + "example_typo.yml"));
+        assertThrows(ReadingException.class, () -> factory.fromYaml(new File(FILE_PATH + "example_typo.yml")));
     }
 
     @Test
