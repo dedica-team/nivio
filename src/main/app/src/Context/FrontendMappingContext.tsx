@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {get} from "../utils/API/APIClient";
 
 
@@ -11,11 +11,13 @@ export const FrontendMappingContext = React.createContext<FrontendMappingContext
 });
 
 const FrontendMappingProvider: React.FC = ({children}) => {
-    const [frontendMapping, setFrontendMapping] = useState(new Map);
+    const [frontendMapping, setFrontendMapping] = useState(new Map());
 
-    get(`/api/mapping`).then((response) => {
-        setFrontendMapping(new Map(Object.entries(response)));
-    });
+    useEffect(() => {
+        get(`/api/mapping`).then((response) => {
+            setFrontendMapping(new Map(Object.entries(response)));
+        });
+    })
 
     return (<FrontendMappingContext.Provider value={{
         frontendMapping: frontendMapping

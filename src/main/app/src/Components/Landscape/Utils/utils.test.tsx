@@ -1,8 +1,10 @@
 import {IItem} from '../../../interfaces';
 import {render} from '@testing-library/react';
 import React from 'react';
-import {getLabels, getLabelsWithPrefix} from './utils';
+import {getLabels, getLabelsWithPrefix, getMappedLabels} from './utils';
 import {getByText} from "@testing-library/dom/types/queries";
+import {FrontendMappingContext} from "../../../Context/FrontendMappingContext";
+import frontendMappingContextType from "../../../utils/testing/FrontendMappingContextType";
 
 const item: IItem = {
     contact: 'marvin',
@@ -52,3 +54,11 @@ describe('getLabelsWithPrefix', () => {
     });
 });
 
+describe('frontendMapping', () => {
+    it('should map the labels from the mapping API', () => {
+        const {getByText} = render(<FrontendMappingContext.Provider
+            value={frontendMappingContextType}>{getMappedLabels(item)}</FrontendMappingContext.Provider>);
+        expect(getByText('short name')).toBeInTheDocument();
+        expect(getByText('end of life')).toBeInTheDocument();
+    });
+});
