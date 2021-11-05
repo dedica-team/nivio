@@ -194,7 +194,6 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   };
 
   const loadMap = useCallback(() => {
-
     const route = withBasePath(`/render/${identifier}/map.svg`);
     get(route).then((svg) => {
       const parser = new DOMParser();
@@ -247,7 +246,7 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
    * Reload map on notification messages.
    */
   useEffect(() => {
-    console.debug("reloading map", landscapeContext.assessment);
+    console.debug('reloading map', landscapeContext.assessment);
     loadMap();
   }, [landscapeContext.assessment, landscapeContext.identifier, loadMap]);
 

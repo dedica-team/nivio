@@ -6,6 +6,7 @@
     .title {
         display: none;
     }
+
     .logo {
         display: none;
     }
@@ -21,7 +22,6 @@
     cursor: pointer;
 }
 
-
 .map g.relation {
     cursor: pointer;
 }
@@ -35,16 +35,16 @@
 }
 
 .map g.item.unselected:hover circle {
-    stroke: #C0C0C0;
+    stroke: #c0c0c0;
 }
 
 .map g.item.unselected:hover polygon {
-    stroke: #C0C0C0;
+    stroke: #c0c0c0;
 }
 
 /* hexagon */
 .map g.groupArea.unselected polygon {
-    fill-opacity: 0.05
+    fill-opacity: 0.05;
 }
 
 .map g.item.unselected circle {
@@ -178,7 +178,7 @@
 
 .landscapeMapContainer .highlightLabel {
     /* box-shadow: 0 0 0 2px #FF4081;
-     */
+       */
     -webkit-animation: highlightLabel 1s linear;
     -o-animation: highlightLabel 1s linear;
     animation: highlightLabel 1s linear;
@@ -189,7 +189,7 @@
 
 .landscapeMapContainer .highlightRelation {
     /* box-shadow: 0 0 0 2px #FF4081;
-     */
+       */
     -webkit-animation: highlightRelation 1s linear;
     -o-animation: highlightRelation 1s linear;
     animation: highlightRelation 1s linear;
@@ -211,11 +211,11 @@
 }
 
 .landscapeMapContainer .map g.groupArea.unselected:hover polygon {
-    fill-opacity: 0.2
+    fill-opacity: 0.2;
 }
 
 .map g.relation.unselected path:hover {
-    stroke: #C0C0C0;
+    stroke: #c0c0c0;
     stroke-width: 13;
     stroke-opacity: 1;
 }

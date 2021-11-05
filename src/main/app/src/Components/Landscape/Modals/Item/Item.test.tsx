@@ -1,9 +1,8 @@
 import React from 'react';
-import { fireEvent, getByTitle, render, waitFor, waitForElement } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import * as APIClient from '../../../../utils/API/APIClient';
 import Item from './Item';
 import { IItem } from '../../../../interfaces';
-import { act } from 'react-dom/test-utils';
 
 describe('<Item />', () => {
   const IRelations = {

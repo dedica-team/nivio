@@ -6,6 +6,7 @@ export interface LocateFunctionContextType {
   locateFunction: (fqi: string) => void;
   setLocateFunction: (locateFunction: () => void) => void;
 }
+
 export const LocateFunctionContext = React.createContext<LocateFunctionContextType>({
   locateFunction: initialLocateFunction,
   setLocateFunction: () => {},

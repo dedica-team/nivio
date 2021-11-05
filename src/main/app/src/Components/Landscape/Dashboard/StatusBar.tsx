@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import StatusBarLayout from './StatusBarLayout';
-import { ILandscape, IAssessment, IItem, IGroup } from '../../../interfaces';
+import { IAssessment, IGroup, IItem, ILandscape } from '../../../interfaces';
 import Group from '../Modals/Group/Group';
 import Item from '../Modals/Item/Item';
 import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';

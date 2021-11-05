@@ -6,10 +6,8 @@ import { MemoryRouter } from 'react-router-dom';
 it('should render LandscapeOverview component', () => {
   const { getByText } = render(
     <MemoryRouter>
-      <Overview setPageTitle={() => { }} setSidebarContent={() => { }} welcomeMessage={'foo'}/>
+      <Overview setPageTitle={() => {}} setSidebarContent={() => {}} welcomeMessage={'foo'} />
     </MemoryRouter>
   );
   expect(getByText('Loading landscapes ...')).toBeInTheDocument();
 });
-
-

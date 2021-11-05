@@ -1,25 +1,15 @@
-import React, { useContext, useState } from 'react';
-import { IGroup } from '../../../interfaces';
+import React, {useContext, useState} from 'react';
+import {IGroup} from '../../../interfaces';
 import StatusChip from '../../StatusChip/StatusChip';
 import Button from '@material-ui/core/Button';
-import {
-  AppBar,
-  Card,
-  CardHeader,
-  Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Tabs,
-} from '@material-ui/core';
-import { LandscapeContext } from '../../../Context/LandscapeContext';
+import {AppBar, Card, CardHeader, Tab, Table, TableBody, TableCell, TableRow, Tabs,} from '@material-ui/core';
+import {LandscapeContext} from '../../../Context/LandscapeContext';
 import componentStyles from '../../../Resources/styling/ComponentStyles';
 import IconButton from '@material-ui/core/IconButton';
-import { Close, Settings, Warning } from '@material-ui/icons';
+import {Close, Settings, Warning} from '@material-ui/icons';
 import ItemAvatar from '../Modals/Item/ItemAvatar';
 import GroupAvatar from '../Modals/Group/GroupAvatar';
-import { a11yProps, TabPanel } from '../Utils/TabUtils';
+import {a11yProps, TabPanel} from '../Utils/TabUtils';
 import CardContent from '@material-ui/core/CardContent';
 import KPIConfigLayout from './KPIConfigLayout';
 
@@ -108,7 +98,10 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
             {group.name}
           </TableCell>
           <TableCell>
-            <StatusChip name={`${groupAssessment.identifier}: ${groupAssessment.field}`} status={groupAssessment.status} />
+            <StatusChip
+              name={`${groupAssessment.identifier}: ${groupAssessment.field}`}
+              status={groupAssessment.status}
+            />
             {groupAssessment.message}
           </TableCell>
         </TableRow>

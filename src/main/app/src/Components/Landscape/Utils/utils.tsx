@@ -10,19 +10,19 @@ import MappedString from './MappedString';
  * @param fullyQualifiedIdentifier string to identify the item
  */
 export const getItem = (landscape: ILandscape, fullyQualifiedIdentifier: string): IItem | null => {
-         let item: IItem | null = null;
-         for (const value of landscape.groups) {
-           for (let i = 0; i < value.items.length; i++) {
-             let value1 = value.items[i];
-             if (value1.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
-               item = value1;
-               break;
-             }
-           }
-         }
+  let item: IItem | null = null;
+  for (const value of landscape.groups) {
+    for (let i = 0; i < value.items.length; i++) {
+      let value1 = value.items[i];
+      if (value1.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
+        item = value1;
+        break;
+      }
+    }
+  }
 
-         return item;
-       };
+  return item;
+};
 
 /**
  * Find a group by its fully qualified identifier.

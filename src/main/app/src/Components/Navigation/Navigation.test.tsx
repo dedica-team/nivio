@@ -2,10 +2,11 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import Navigation from './Navigation';
 import { MemoryRouter } from 'react-router-dom';
-import { TextEncoder, TextDecoder } from 'util'
-global.TextEncoder = TextEncoder
+import { TextDecoder, TextEncoder } from 'util';
+
+global.TextEncoder = TextEncoder;
 // @ts-ignore
-global.TextDecoder = TextDecoder
+global.TextDecoder = TextDecoder;
 
 it('should render Home link', () => {
   const { getByText } = render(

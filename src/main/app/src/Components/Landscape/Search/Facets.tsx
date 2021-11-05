@@ -46,7 +46,8 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
                   addFacet(facet.dim, lv.label);
                 }}
                 variant={'default'}
-                color={'primary'} style={{margin: 1}}
+                color={'primary'}
+                style={{ margin: 1 }}
                 size={'small'}
                 key={facet.dim + '' + lv.label}
                 label={lv.label}
@@ -94,9 +95,9 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
   const exportCurrent = () => {
     const elementById = document.getElementById('report-title');
     // @ts-ignore
-    const title = elementById != null ? elementById.value :'';
-    saveSearch({reportType: 'owners', title: title})
-  }
+    const title = elementById != null ? elementById.value : '';
+    saveSearch({ reportType: 'owners', title: title });
+  };
 
   return (
     <>
@@ -142,11 +143,18 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
       </TabPanel>
 
       <TabPanel value={value} index={2} prefix={'search'}>
-        <TextField id="report-title" label="Report title" variant="standard" fullWidth={true} /><br />
-        <br/>
-        <Button title={'Export as report'} fullWidth={true} onClick={() => exportCurrent()} variant={"outlined"}>Export as report</Button>
+        <TextField id='report-title' label='Report title' variant='standard' fullWidth={true} />
+        <br />
+        <br />
+        <Button
+          title={'Export as report'}
+          fullWidth={true}
+          onClick={() => exportCurrent()}
+          variant={'outlined'}
+        >
+          Export as report
+        </Button>
       </TabPanel>
-
     </>
   );
 };
