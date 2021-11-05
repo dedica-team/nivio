@@ -132,9 +132,9 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
     if (identifier == null) {
       return;
     }
-    const result: IFacet[] | null = await get(
-      '/api/landscape/' + identifier + '/facets/'
-    ).catch((reason) => console.warn(reason));
+    const result: IFacet[] | null = await get('/api/landscape/' + identifier + '/facets/').catch(
+      (reason) => console.warn(reason)
+    );
 
     if (!result) return;
     setFacets(result);

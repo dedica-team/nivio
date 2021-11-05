@@ -1,17 +1,17 @@
-import React, {ReactElement} from 'react';
+import React, { ReactElement } from 'react';
 
 import Navigation from '../Navigation/Navigation';
-import {Drawer, Theme} from '@material-ui/core';
-import {createStyles, makeStyles} from '@material-ui/core/styles';
+import { Drawer, Theme } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Search from '../Landscape/Search/Search';
 
 interface Props {
-    children: string | ReactElement | ReactElement[];
-    sidebarContent: string | ReactElement | ReactElement[];
-    setSidebarContent: Function;
-    pageTitle?: string;
-    logo?: string;
-    version?: string;
+  children: string | ReactElement | ReactElement[];
+  sidebarContent: string | ReactElement | ReactElement[];
+  setSidebarContent: Function;
+  pageTitle?: string;
+  logo?: string;
+  version?: string;
 }
 
 const searchSupportWidth = 360;
@@ -61,46 +61,46 @@ const useStyles = makeStyles((theme: Theme) =>
  * @param param0
  */
 const Layout: React.FC<Props> = ({
-                                     children,
-                                     sidebarContent,
-                                     setSidebarContent,
-                                     pageTitle,
-                                     logo,
-                                     version,
-                                 }) => {
-    const classes = useStyles();
-    const [searchSupport, setSearchSupport] = React.useState<boolean>(false);
+  children,
+  sidebarContent,
+  setSidebarContent,
+  pageTitle,
+  logo,
+  version,
+}) => {
+  const classes = useStyles();
+  const [searchSupport, setSearchSupport] = React.useState<boolean>(false);
 
-    return (
-        <div className={classes.outer}>
-            <main className={classes.main}>
-                <Navigation
-                    logo={logo}
-                    version={version}
-                    setSidebarContent={setSidebarContent}
+  return (
+    <div className={classes.outer}>
+      <main className={classes.main}>
+        <Navigation
+          logo={logo}
+          version={version}
+          setSidebarContent={setSidebarContent}
           setSearchSupport={setSearchSupport}
           searchSupport={searchSupport}
           pageTitle={pageTitle}
         />
-                <div className={classes.content}>
-                    <div className={classes.sideBar}>{sidebarContent}</div>
-                    {children}
-                </div>
-            </main>
-            <Drawer
-                classes={{
-                    paper: classes.searchSupport,
-                }}
-                style={{width: searchSupport ? searchSupportWidth : 0}}
-                anchor={'right'}
-                variant={'persistent'}
-                open={searchSupport}
-                onClose={() => {
-                    setSearchSupport(false);
-                }}
-            >
-                <Search setSidebarContent={setSidebarContent} showSearch={setSearchSupport}/>
-            </Drawer>
+        <div className={classes.content}>
+          <div className={classes.sideBar}>{sidebarContent}</div>
+          {children}
+        </div>
+      </main>
+      <Drawer
+        classes={{
+          paper: classes.searchSupport,
+        }}
+        style={{ width: searchSupport ? searchSupportWidth : 0 }}
+        anchor={'right'}
+        variant={'persistent'}
+        open={searchSupport}
+        onClose={() => {
+          setSearchSupport(false);
+        }}
+      >
+        <Search setSidebarContent={setSidebarContent} showSearch={setSearchSupport} />
+      </Drawer>
     </div>
   );
 };

@@ -1,9 +1,9 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {ILandscape} from '../../../../interfaces';
-import {get} from '../../../../utils/API/APIClient';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ILandscape } from '../../../../interfaces';
+import { get } from '../../../../utils/API/APIClient';
 
 import LevelChip from '../../../LevelChip/LevelChip';
-import {Card, CardHeader} from '@material-ui/core';
+import { Card, CardHeader } from '@material-ui/core';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import CardContent from '@material-ui/core/CardContent';
 

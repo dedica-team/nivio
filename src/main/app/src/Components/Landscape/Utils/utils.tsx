@@ -30,21 +30,18 @@ export const getItem = (landscape: ILandscape, fullyQualifiedIdentifier: string)
  * @param landscape object
  * @param fullyQualifiedIdentifier string to identify the group
  */
-export const getGroup = (
-         landscape: ILandscape,
-         fullyQualifiedIdentifier: string
-       ): IGroup | null => {
-         let group: IGroup | null = null;
-         for (let i = 0; i < landscape.groups.length; i++) {
-           let value = landscape.groups[i];
-           if (value.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
-             group = value;
-             break;
-           }
-         }
+export const getGroup = (landscape: ILandscape, fullyQualifiedIdentifier: string): IGroup | null => {
+  let group: IGroup | null = null;
+  for (let i = 0; i < landscape.groups.length; i++) {
+    let value = landscape.groups[i];
+    if (value.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
+      group = value;
+      break;
+    }
+  }
 
-         return group;
-       };
+  return group;
+};
 
 /**
  * Renders the links of a component as buttons.

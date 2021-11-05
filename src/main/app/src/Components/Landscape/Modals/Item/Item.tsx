@@ -53,8 +53,8 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-    small?: boolean;
-    fullyQualifiedItemIdentifier?: string;
+  small?: boolean;
+  fullyQualifiedItemIdentifier?: string;
 }
 
 /**
