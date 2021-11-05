@@ -107,7 +107,7 @@ const LandscapeContextProvider: React.FC<{}> = (props) => {
     }
 
     get(`/assessment/${identifier}`).then((response) => {
-      console.log(`Loaded assessment data for ${identifier}`, response);
+      console.debug(`Loaded assessment data for ${identifier}`, response);
       setAssessment(response);
     });
   }, [identifier, notification]);
