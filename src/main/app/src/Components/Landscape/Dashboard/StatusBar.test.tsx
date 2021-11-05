@@ -5,7 +5,6 @@ import { LandscapeContext } from '../../../Context/LandscapeContext';
 import landscapeContextValue from '../../../utils/testing/LandscapeContextValue';
 
 describe('<StatusBarLayout />', () => {
-
   it('should display', () => {
     const { getByText } = render(
       <LandscapeContext.Provider value={landscapeContextValue}>
