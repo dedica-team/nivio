@@ -196,6 +196,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
 
     @NonNull
     @Override
+    @JsonAnyGetter
     public Map<String, String> getLabels() {
         return labels;
     }
@@ -320,7 +321,6 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     }
 
     @Override
-    @JsonAnyGetter
     public String getLabel(String key) {
         return labels.get(key);
     }

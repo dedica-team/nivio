@@ -18,4 +18,6 @@ public interface ComponentDescription extends Component, Labeled, Linked {
     void setOwner(String owner);
 
     void setContact(String contact);
+
+    void setIcon(String icon);
 }

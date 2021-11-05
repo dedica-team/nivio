@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Link;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
@@ -72,10 +73,20 @@ public class GroupDescription implements ComponentDescription {
         return owner;
     }
 
+//    @JsonIgnore
+//    @Override
+//    public String getIcon() {
+//        return null;
+//    }
+
     @JsonIgnore
     @Override
     public String getIcon() {
-        return null;
+        return getLabel(Label.icon);
+    }
+
+    public void setIcon(String icon) {
+        setLabel(Label.icon, icon);
     }
 
     public void setOwner(String owner) {
@@ -130,12 +141,12 @@ public class GroupDescription implements ComponentDescription {
     }
 
     @NonNull
+    @JsonAnyGetter
     public Map<String, String> getLabels() {
         return labels;
     }
 
     @Override
-    @JsonAnyGetter
     public String getLabel(String key) {
         return labels.get(key);
     }
