@@ -1,7 +1,6 @@
 package de.bonndan.nivio.input.dto;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -182,7 +181,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     public void setLifecycle(String lifecycle) {
 
         //try to standardize using enum values
-        if (!StringUtils.isEmpty(lifecycle)) {
+        if (StringUtils.hasLength(lifecycle)) {
             Lifecycle from = Lifecycle.from(lifecycle);
             if (from != null) {
                 lifecycle = from.name();
@@ -196,6 +195,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
 
     @NonNull
     @Override
+    @JsonAnyGetter
     public Map<String, String> getLabels() {
         return labels;
     }
@@ -233,7 +233,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     @JsonIgnore
     public void setRelations(List<String> relations) {
         relations.stream()
-                .filter(s -> !StringUtils.isEmpty(s))
+                .filter(StringUtils::hasLength)
                 .map(s -> RelationFactory.createDataflowDescription(this, s))
                 .forEach(this::addOrReplaceRelation);
     }
@@ -284,7 +284,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
      */
     @Override
     public String toString() {
-        if (StringUtils.isEmpty(environment)) {
+        if (!StringUtils.hasLength(environment)) {
             return identifier;
         }
 
@@ -320,20 +320,8 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     }
 
     @Override
-    @JsonAnyGetter
     public String getLabel(String key) {
         return labels.get(key);
-    }
-
-    @Override
-    public void setLabel(String key, String value) {
-        labels.put(key, value);
-    }
-
-    @JsonAnySetter
-    @Override
-    public void setLabel(@NonNull String key, Object value) {
-        ComponentDescription.super.setLabel(key, value);
     }
 
     /**

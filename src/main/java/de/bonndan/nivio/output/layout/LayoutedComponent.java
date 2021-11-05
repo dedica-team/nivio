@@ -13,7 +13,7 @@ import java.util.Objects;
 
 /**
  * A value object to hold dimensions and position data of rendered {@link Component}s.
- *
+ * <p>
  * Also holds children to allow recursive operations.
  */
 public class LayoutedComponent {
@@ -119,6 +119,6 @@ public class LayoutedComponent {
     }
 
     public void setDefaultColor(String color) {
-        this.defaultColor =color;
+        this.defaultColor = color;
     }
 }

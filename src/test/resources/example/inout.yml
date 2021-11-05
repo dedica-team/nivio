@@ -1,8 +1,7 @@
 identifier: inout
 name: Input and Output
 description: Misuses the landscape graph to show the input and output possibilities of nivio.
-labels:
-  icon: https://dedica.team/images/logo_orange_weiss.png
+icon: https://dedica.team/images/logo_orange_weiss.png
 
 config:
   branding:

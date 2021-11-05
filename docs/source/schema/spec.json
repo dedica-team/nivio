@@ -54,10 +54,9 @@
           "labels" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string",
-              "description" : "Labels related to the group."
+              "type" : "string"
             },
-            "description" : "Labels related to the group."
+            "writeOnly" : true
           },
           "links" : {
             "type" : "object",
@@ -176,10 +175,9 @@
           "labels" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string",
-              "description" : "Key-value pair labels for an item."
+              "type" : "string"
             },
-            "description" : "Key-value pair labels for an item."
+            "writeOnly" : true
           },
           "lifecycle" : {
             "type" : "string",
@@ -390,10 +388,9 @@
           "labels" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string",
-              "description" : "Additional labels for the landscape."
+              "type" : "string"
             },
-            "description" : "Additional labels for the landscape."
+            "writeOnly" : true
           },
           "links" : {
             "type" : "object",
