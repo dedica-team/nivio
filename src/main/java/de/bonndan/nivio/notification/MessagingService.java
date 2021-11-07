@@ -63,7 +63,7 @@ public class MessagingService {
     public void broadcast(ProcessingEvent event) {
         EventNotification eventNotification = EventNotification.from(event);
         fifo.add(eventNotification);
-        LOGGER.debug(String.format("Broadcasting %s event.", event.getClass().getSimpleName()));
+        LOGGER.debug("Broadcasting {} event.", event.getClass().getSimpleName());
         this.template.convertAndSend(WebSocketConfig.TOPIC + EVENTS, eventNotification);
     }
 
