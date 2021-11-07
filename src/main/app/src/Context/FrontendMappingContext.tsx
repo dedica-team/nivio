@@ -16,7 +16,7 @@ const FrontendMappingProvider: React.FC = ({ children }) => {
     get(`/api/mapping`).then((response) => {
       setFrontendMapping(new Map(Object.entries(response)));
     });
-  });
+  }, []);
 
   return (
     <FrontendMappingContext.Provider
