@@ -6,7 +6,7 @@ import { IFacet, IItem } from '../../../interfaces';
 import Item from '../Modals/Item/Item';
 import { Backspace, Close, SearchOutlined } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import componentStyles from '../../../Resources/styling/ComponentStyles';
 import HelpTooltip from '../../Help/HelpTooltip';
 import Facets from './Facets';
@@ -52,6 +52,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
   const componentClasses = componentStyles();
   const searchInput = React.useRef<HTMLDivElement>(null);
   const landscapeContext = useContext(LandscapeContext);
+  const theme = useTheme();
 
   /**
    * Search on search term change, set results.
@@ -75,6 +76,17 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
       });
   }, [searchTerm, landscapeContext.identifier]);
 
+  useEffect(() => {
+    facets.forEach((facet) => {
+      facet.labelValues.forEach((chipValue) => {
+        if (searchTerm.indexOf(facet.dim + ':' + chipValue.label) === -1) {
+          chipValue.color = theme.palette.primary.main;
+        } else {
+          chipValue.color = theme.palette.secondary.main;
+        }
+      });
+    });
+  }, [searchTerm, facets]);
   /**
    * loading of facets
    *
@@ -84,12 +96,17 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
     const addFacet = (dim: string, label: string): string => {
       let current = searchInput.current;
       if (current && dim.length && label.length) {
-        if (searchTerm.indexOf(dim + ':' + label) === -1) {
-          if (label.indexOf(' ') !== -1) {
-            label = `"${label}"`; //to handle whitespace
-          }
+        if (label.indexOf(' ') !== -1) {
+          label = `"${label}"`; //to handle whitespace
+        }
+        if (searchTerm.length === 0) {
+          setSearchTerm(`${dim}:${label}`);
+          setRender(true);
+        } else if (searchTerm.indexOf(dim + ':' + label) === -1) {
           setSearchTerm(`${searchTerm} ${dim}:${label}`);
           setRender(true);
+        } else {
+          setSearchTerm(searchTerm.replace(`${dim}:${label}`, '').trim());
         }
         current.focus();
       }
@@ -137,6 +154,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
     );
 
     if (!result) return;
+
     setFacets(result);
   }
 

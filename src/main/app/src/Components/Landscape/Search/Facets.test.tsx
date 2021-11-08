@@ -12,10 +12,12 @@ describe('<Facets />', () => {
         {
           label: 'green',
           value: 12,
+          color: '',
         },
         {
           label: 'red',
           value: 7,
+          color: '',
         },
       ],
     },
@@ -26,10 +28,12 @@ describe('<Facets />', () => {
         {
           label: 'foo',
           value: 5,
+          color: '',
         },
         {
           label: 'bar',
           value: 7,
+          color: '',
         },
       ],
     },
@@ -84,7 +88,6 @@ describe('<Facets />', () => {
     const { getByText } = render(
       <Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />
     );
-
     fireEvent.click(getByText('foo'));
     expect(addFacet.mock.calls.length).toBe(1);
   });
