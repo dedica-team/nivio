@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { IAssessment, IAssessmentProps, ILandscape, INotificationMessage } from '../interfaces';
+import { IAssessment, IAssessmentProps, IChanges, ILandscape, INotificationMessage } from "../interfaces";
 import { get } from '../utils/API/APIClient';
 import { withBasePath } from '../utils/API/BasePath';
 import { Client, StompSubscription } from '@stomp/stompjs';
@@ -9,6 +9,7 @@ export interface LandscapeContextType {
   readonly assessment: IAssessment | null;
   readonly identifier: string | null;
   readonly notification: INotificationMessage | null;
+  readonly changes: IChanges | null;
   next: (identifier: string | null) => void;
   getAssessmentSummary: (fqi: string) => IAssessmentProps | null;
 }
@@ -18,6 +19,7 @@ export const LandscapeContext = React.createContext<LandscapeContextType>({
   assessment: null,
   identifier: null,
   notification: null,
+  changes: null,
   next: () => {},
   getAssessmentSummary: () => {
     return null;
@@ -33,10 +35,11 @@ export const LandscapeContext = React.createContext<LandscapeContextType>({
  * @param props
  * @constructor
  */
-const LandscapeContextProvider: React.FC<{}> = (props) => {
+const LandscapeContextProvider: React.FC = (props) => {
   const [landscape, setLandscape] = useState<ILandscape | null>(null);
   const [assessment, setAssessment] = useState<IAssessment | null>(null);
   const [notification, setNotification] = useState<INotificationMessage | null>(null);
+  const [changes, setChanges] = useState<IChanges | null>(null);
   const [identifier, setIdentifier] = useState<string | null>(null);
 
   const backendUrl = withBasePath('/subscribe');
@@ -55,8 +58,12 @@ const LandscapeContextProvider: React.FC<{}> = (props) => {
         const subscriptions: StompSubscription[] = [];
         const eventSubscription = client.subscribe('/topic/events', (message) => {
           const notificationMessage: INotificationMessage = JSON.parse(message.body);
+
           if (notificationMessage.type === 'LayoutChangedEvent') {
             setNotification(notificationMessage);
+          }
+          if (notificationMessage.type === 'ProcessingFinishedEvent') {
+            setChanges(notificationMessage.changelog.changes);
           }
         });
 
@@ -119,6 +126,7 @@ const LandscapeContextProvider: React.FC<{}> = (props) => {
         assessment: assessment,
         identifier: identifier,
         notification: notification,
+        changes: changes,
         next: (nextId) => {
           if (identifier === nextId) return;
           console.debug('New identifier', nextId);
