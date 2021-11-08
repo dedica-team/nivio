@@ -33,9 +33,11 @@ class OwnersReportGeneratorTest {
         map.put("test", conditionKpi);
         URI uri = URI.create("https://www.nivio.com/");
         String[] tags = Arrays.array("auth", "ui");
+        String[] networks = Arrays.array("network1", "network2");
         var landscape = LandscapeFactory.createForTesting("test", "test").build();
         Item foo = ItemBuilder.anItem().withLandscape(landscape).withIdentifier("nivio").withGroup("nivio").withAddress(uri).build();
         foo.setTags(tags);
+        foo.setItemNetworks(networks);
         landscape.setItems(Set.of(foo));
         var assessment = AssessmentFactory.createAssessment(landscape, map);
         var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}));
@@ -48,6 +50,7 @@ class OwnersReportGeneratorTest {
                 .contains(searchConfig.getTitle())
                 .contains("Address: https://www.nivio.com/")
                 .contains("Tags: auth, ui")
+                .contains("Networks: network2, network1")
                 .doesNotContain("Null");
     }
 }

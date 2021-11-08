@@ -222,6 +222,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
     : null;
   const assessmentStatus = assessments ? getItemAssessments(assessments) : [];
   const frameworks: ReactElement | null = item ? getLabelsWithPrefix('framework', item) : null;
+  const networks: ReactElement | null = item ? getLabelsWithPrefix('networks', item) : null;
   const interfaces: ReactElement | null = item ? getInterfaces(item) : null;
 
   const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
@@ -410,6 +411,13 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
                 <div className='frameworks'>
                   <Typography variant={'h6'}>Frameworks</Typography>
                   {frameworks}
+                </div>
+              ) : null}
+
+              {networks ? (
+                <div className='networks'>
+                  <Typography variant={'h6'}>Networks</Typography>
+                  {networks}
                 </div>
               ) : null}
 

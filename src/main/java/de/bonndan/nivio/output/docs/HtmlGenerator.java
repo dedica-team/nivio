@@ -110,6 +110,7 @@ public abstract class HtmlGenerator {
                                 , iff(hasLength(item.getContact()), li("Contact: " + FormatUtils.nice(item.getContact())))
                                 , iff(hasLength(item.getOwner()), li("Owner: " + FormatUtils.nice(item.getOwner())))
                                 , iff(item.getTags().length > 0, li("Tags: " + String.join(", ", item.getTags())))
+                                , iff(item.getItemNetworks().length > 0, li("Networks: " + String.join(", ", item.getItemNetworks())))
                                 , iff(hasLength(item.getType()), li("Type: " + item.getType()))
                                 , iff(hasLength(item.getAddress()), li("Address: " + item.getAddress()))
                                 , iff(links.size() > 1, li("Links: ").with(links))
