@@ -22,6 +22,7 @@ import { SearchOutlined } from '@material-ui/icons';
 import componentStyles from '../../Resources/styling/ComponentStyles';
 import LandscapeWatcher from '../Landscape/Dashboard/LandscapeWatcher';
 import { LandscapeContext } from '../../Context/LandscapeContext';
+import Search from "../Landscape/Search/Search";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -47,8 +48,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   setSidebarContent: Function;
-  setSearchSupport: Function;
-  searchSupport: boolean;
   pageTitle?: string;
   logo?: string;
   version?: string;
@@ -59,8 +58,6 @@ interface Props {
  */
 const Navigation: React.FC<Props> = ({
   setSidebarContent,
-  setSearchSupport,
-  searchSupport,
   pageTitle,
   logo,
   version,
@@ -136,7 +133,7 @@ const Navigation: React.FC<Props> = ({
       {landscapeContext.identifier ? (
         <IconButton
           className={componentClasses.navigationButton}
-          onClick={() => setSearchSupport(!searchSupport)}
+          onClick={() => setSidebarContent(<Search setSidebarContent={setSidebarContent} />)}
           title={'Toggle search'}
         >
           <SearchOutlined />

@@ -118,7 +118,6 @@ const App: React.FC = () => {
                 path={Routes.MAP_ROUTE}
                 render={(props) => (
                   <LandscapeMap
-                    setSidebarContent={setSidebarContent}
                     setPageTitle={setPageTitle}
                     {...props}
                   />

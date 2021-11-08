@@ -38,10 +38,9 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface PropsInterface {
   setSidebarContent: Function;
-  showSearch: Function;
 }
 
-const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => {
+const Search: React.FC<PropsInterface> = ({ setSidebarContent }) => {
   const [currentLandscape, setCurrentLandscape] = useState<string>('');
   const [results, setResults] = useState<IItem[]>([]);
   const [facets, setFacets] = useState<IFacet[]>([]);
@@ -125,8 +124,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
         fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier}
       />
     ));
-    setSidebarContent(<>{searchResult}</>);
-  }, [results, setSidebarContent, render]);
+  }, [results,  render]);
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
@@ -143,7 +141,6 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
   function clear() {
     setSearchTerm('');
     setResults([]);
-    setSidebarContent(null);
   }
 
   useEffect(() => {
@@ -166,7 +163,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
         <IconButton size={'small'}>
           <HelpTooltip style={{ float: 'right', padding: 2 }} content={<SearchHelp />} />
         </IconButton>
-        <IconButton size={'small'} onClick={() => showSearch(false)} title={'Close search'}>
+        <IconButton size={'small'} onClick={() => setSidebarContent(null)} title={'Close search'}>
           <Close />
         </IconButton>
       </div>
