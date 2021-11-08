@@ -17,7 +17,7 @@ interface Props {
  */
 const Notification: React.FC<Props> = ({ setSidebarContent }) => {
   const classes = componentStyles();
-  const [newChanges, setNewChanges] = useState<Boolean>(false);
+  const [newChanges, setNewChanges] = useState<boolean>(false);
   const [renderedChanges, setRenderedChanges] = useState<ReactElement | null>(null);
   const landscapeContext = useContext(LandscapeContext);
 
@@ -25,10 +25,10 @@ const Notification: React.FC<Props> = ({ setSidebarContent }) => {
    * render changes,
    */
   useEffect(() => {
-    if (landscapeContext.notification == null) return;
-    setRenderedChanges(<Changes notification={landscapeContext.notification} />);
+    if (landscapeContext.changes == null) return;
+    setRenderedChanges(<Changes />);
     setNewChanges(true);
-  }, [landscapeContext.notification]);
+  }, [landscapeContext.changes]);
 
   return (
     <Badge

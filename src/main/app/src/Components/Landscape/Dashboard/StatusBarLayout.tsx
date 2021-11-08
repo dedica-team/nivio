@@ -76,7 +76,6 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
 
     return groups.map((group) => {
       if (group.items.length === 0) {
-        console.log('Skipping group without items');
         return null;
       }
 
