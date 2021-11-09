@@ -79,7 +79,11 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
   useEffect(() => {
     facets.forEach((facet) => {
       facet.labelValues.forEach((chipValue) => {
-        if (searchTerm.indexOf(facet.dim + ':' + chipValue.label) === -1) {
+        let label = chipValue.label;
+        if (label.indexOf(' ') !== -1) {
+          label = `"${label}"`; //to handle whitespace
+        }
+        if (searchTerm.indexOf(facet.dim + ':' + label) === -1) {
           chipValue.color = theme.palette.primary.main;
         } else {
           chipValue.color = theme.palette.secondary.main;
