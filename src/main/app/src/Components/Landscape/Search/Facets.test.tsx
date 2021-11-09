@@ -12,12 +12,12 @@ describe('<Facets />', () => {
         {
           label: 'green',
           value: 12,
-          color: '',
+          color: '#161618',
         },
         {
           label: 'red',
           value: 7,
-          color: '',
+          color: '#161618',
         },
       ],
     },
@@ -33,7 +33,7 @@ describe('<Facets />', () => {
         {
           label: 'bar',
           value: 7,
-          color: '',
+          color: '#161618',
         },
       ],
     },
@@ -92,7 +92,7 @@ describe('<Facets />', () => {
     expect(addFacet.mock.calls.length).toBe(1);
   });
 
-  it('', () => {
+  it('should call addFacet', () => {
     const { getByText } = render(
       <Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />
     );
