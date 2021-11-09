@@ -1,5 +1,5 @@
 import React from 'react';
-import {fireEvent, getByTitle, queryByText, render, waitFor} from '@testing-library/react';
+import { fireEvent, getByTitle, queryByText, render, waitFor } from '@testing-library/react';
 import * as APIClient from '../../../../utils/API/APIClient';
 import Item from './Item';
 import { IItem } from '../../../../interfaces';
@@ -25,7 +25,7 @@ describe('<Item />', () => {
     contact: 'foo',
     relations: Irelations,
     interfaces: [],
-    labels: {'networks.content': 'network1', 'framework.spring boot': '2.2', 'team': 'ops guys',},
+    labels: { 'networks.content': 'network1', 'framework.spring boot': '2.2', 'team': 'ops guys' },
     type: 'foo',
     fullyQualifiedIdentifier: 'foo',
     tags: [],
@@ -64,7 +64,7 @@ describe('<Item />', () => {
     mock.mockReturnValue(Promise.resolve(useItem));
 
     //when
-    const { container, queryByText} = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
+    const { container, queryByText } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
     fireEvent.click(getByTitle(container, 'API / Interfaces'));
 
     //then
@@ -73,6 +73,5 @@ describe('<Item />', () => {
     await waitFor(() => expect(queryByText('network1')).toBeInTheDocument());
     await waitFor(() => expect(queryByText('spring boot')).toBeInTheDocument());
     await waitFor(() => expect(queryByText('ops guys')).toBeInTheDocument());
-
   });
 });

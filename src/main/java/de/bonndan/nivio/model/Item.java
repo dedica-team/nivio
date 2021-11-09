@@ -22,7 +22,7 @@ import static de.bonndan.nivio.model.ComponentDiff.*;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "fullyQualifiedIdentifier")
 //needed when internal models are serialized for debugging
-public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent, ItemNetworks {
+public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent {
 
     public static final String LAYER_INFRASTRUCTURE = "infrastructure";
     public static final String LAYER_APPLICATION = "applications";
