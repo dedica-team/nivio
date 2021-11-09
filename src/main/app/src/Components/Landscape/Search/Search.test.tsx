@@ -5,8 +5,6 @@ import { LandscapeContext } from '../../../Context/LandscapeContext';
 import landscapeContextValue from '../../../utils/testing/LandscapeContextValue';
 import { createTheme, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
 import defaultThemeVariables from '../../../Resources/styling/theme';
-import * as APIClient from '../../../utils/API/APIClient';
-import { IFacet } from '../../../interfaces';
 
 function MockTheme({ children }: any) {
   const tv: ThemeOptions = defaultThemeVariables;
@@ -22,40 +20,6 @@ function MockTheme({ children }: any) {
 }
 
 describe('<Search />', () => {
-  const facets: IFacet[] = [
-    {
-      dim: 'kpi_security',
-      value: 19,
-      labelValues: [
-        {
-          label: 'green',
-          value: 12,
-          color: '',
-        },
-        {
-          label: 'red',
-          value: 7,
-          color: '',
-        },
-      ],
-    },
-    {
-      dim: 'owner',
-      value: 12,
-      labelValues: [
-        {
-          label: 'foo',
-          value: 5,
-          color: '',
-        },
-        {
-          label: 'bar',
-          value: 7,
-          color: '',
-        },
-      ],
-    },
-  ];
   it('should render', () => {
     const { getByText } = render(
       <LandscapeContext.Provider value={landscapeContextValue}>
@@ -65,17 +29,5 @@ describe('<Search />', () => {
       </LandscapeContext.Provider>
     );
     expect(getByText('Search')).toBeInTheDocument();
-  });
-  it('should render', () => {
-    const mock = jest.spyOn(APIClient, 'get');
-    mock.mockReturnValue(Promise.resolve(facets));
-    const { getByText } = render(
-      <LandscapeContext.Provider value={landscapeContextValue}>
-        <MockTheme>
-          <Search showSearch={() => {}} setSidebarContent={() => {}} />
-        </MockTheme>
-      </LandscapeContext.Provider>
-    );
-    expect(getByText('foo')).toBeInTheDocument();
   });
 });
