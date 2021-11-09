@@ -91,4 +91,12 @@ describe('<Facets />', () => {
     fireEvent.click(getByText('foo'));
     expect(addFacet.mock.calls.length).toBe(1);
   });
+
+  it('', () => {
+    const { getByText } = render(
+      <Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />
+    );
+    fireEvent.click(getByText('foo'));
+    expect(addFacet).toBeCalled();
+  });
 });
