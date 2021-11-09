@@ -15,7 +15,6 @@ const items: IItem[] = [
     tags: [],
     type: 'service',
     icon: '',
-    networks: [],
   },
 ];
 

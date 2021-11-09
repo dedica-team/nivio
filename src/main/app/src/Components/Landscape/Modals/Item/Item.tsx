@@ -258,6 +258,13 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
         ))
       : null;
 
+    // const networks =
+    //     item?.tags && item?.tags.length
+    //         ? item.tags.map((value) => (
+    //             <Chip size={'small'} label={value} key={value} className={extraClasses.tag} />
+    //         ))
+    //         : null;
+
   if (!visible) return null;
 
   return (
