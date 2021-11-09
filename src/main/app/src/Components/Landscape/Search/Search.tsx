@@ -90,7 +90,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
         }
       });
     });
-  }, [searchTerm, facets]);
+  }, [searchTerm, facets, theme]);
   /**
    * loading of facets
    *
