@@ -1,4 +1,4 @@
-import { IAssessment, IGroup, IItem, ILandscape } from '../../interfaces';
+import { IAssessment, IChanges, IGroup, IItem, ILandscape } from "../../interfaces";
 import { LandscapeContextType } from '../../Context/LandscapeContext';
 
 const items: IItem[] = [
@@ -70,10 +70,15 @@ const assessments: IAssessment = {
   },
 };
 
+const changes: IChanges = {
+
+}
+
 const landscapeContextValue: LandscapeContextType = {
   identifier: 'test',
   landscape: landscape,
   assessment: assessments,
+  changes: changes,
   next: typeof jest != 'undefined' ? jest.fn() : () => {},
   getAssessmentSummary: (fqi) => {
     return assessments.results[fqi].find((assessmentResult) => assessmentResult.summary) || null;

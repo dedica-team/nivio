@@ -35,24 +35,17 @@ public class EventNotification {
      * @throws NullPointerException if a required processing event field is empty
      */
     public static EventNotification from(ProcessingEvent processingEvent) {
-        return new EventNotification(
-                processingEvent.getSource(),
-                processingEvent.getType(),
-                processingEvent.getLevel(),
-                processingEvent.getTimestamp(),
-                processingEvent.getMessage(),
-                null
-        );
-    }
 
-    public static EventNotification from(ProcessingFinishedEvent processingEvent) {
+        var changelog = (processingEvent instanceof ProcessingFinishedEvent) ?
+                ((ProcessingFinishedEvent)processingEvent).getChangelog() : null;
+
         return new EventNotification(
                 processingEvent.getSource(),
                 processingEvent.getType(),
                 processingEvent.getLevel(),
                 processingEvent.getTimestamp(),
                 processingEvent.getMessage(),
-                processingEvent.getChangelog()
+                changelog
         );
     }
 
