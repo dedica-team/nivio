@@ -4,7 +4,7 @@ import { Input, InputAdornment, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import { IFacet, IItem } from '../../../interfaces';
 import Item from '../Modals/Item/Item';
-import { Backspace, Close, SearchOutlined } from '@material-ui/icons';
+import { Backspace, SearchOutlined } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import componentStyles from '../../../Resources/styling/ComponentStyles';
@@ -84,15 +84,26 @@ const Search: React.FC = () => {
   }, [searchTerm, landscapeContext.identifier]);
 
   useEffect(() => {
-    const renderedResults = results.map((value1: IItem) => (
-      <Item
-        small={true}
-        closable={false}
-        key={`item_${value1.fullyQualifiedIdentifier}_${Math.random()}`}
-        fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier}
-      />
-    ));
-    setRenderedResults(renderedResults);
+    if (results && results.length > 0) {
+      setRenderedResults(
+        results.map((value1: IItem) => (
+          <Item
+            small={true}
+            closable={false}
+            key={`item_${value1.fullyQualifiedIdentifier}_${Math.random()}`}
+            fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier}
+          />
+        ))
+      );
+      return;
+    }
+
+    let msg = "...";
+    if (searchTerm && searchTerm.length) {
+      msg ="No results found.";
+    }
+    setRenderedResults(<>{msg}</>)
+
   }, [results]);
 
   /**
