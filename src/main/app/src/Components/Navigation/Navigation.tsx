@@ -133,7 +133,7 @@ const Navigation: React.FC<Props> = ({
       {landscapeContext.identifier ? (
         <IconButton
           className={componentClasses.navigationButton}
-          onClick={() => setSidebarContent(<Search setSidebarContent={setSidebarContent} />)}
+          onClick={() => setSidebarContent(<Search />)}
           title={'Toggle search'}
         >
           <SearchOutlined />

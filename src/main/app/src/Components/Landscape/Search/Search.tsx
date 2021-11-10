@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 
-import { Box, Input, InputAdornment, Theme } from '@material-ui/core';
+import { Input, InputAdornment, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import { IFacet, IItem } from '../../../interfaces';
 import Item from '../Modals/Item/Item';
@@ -48,13 +48,10 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface PropsInterface {
-  setSidebarContent: Function;
-}
-
-const Search: React.FC<PropsInterface> = () => {
+const Search: React.FC = () => {
   const [currentLandscape, setCurrentLandscape] = useState<string>('');
   const [results, setResults] = useState<IItem[]>([]);
+  const [renderedResults, setRenderedResults] = useState<any>([]);
   const [facets, setFacets] = useState<IFacet[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchSupport, setSearchSupport] = useState<any>(null);
@@ -85,6 +82,18 @@ const Search: React.FC<PropsInterface> = () => {
         console.warn(reason);
       });
   }, [searchTerm, landscapeContext.identifier]);
+
+  useEffect(() => {
+    const renderedResults = results.map((value1: IItem) => (
+      <Item
+        small={true}
+        closable={false}
+        key={`item_${value1.fullyQualifiedIdentifier}_${Math.random()}`}
+        fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier}
+      />
+    ));
+    setRenderedResults(renderedResults);
+  }, [results]);
 
   /**
    * loading of facets
@@ -156,15 +165,6 @@ const Search: React.FC<PropsInterface> = () => {
     setCurrentLandscape(landscapeContext.identifier);
   }
 
-  const renderedResults = results.map((value1: IItem) => (
-    <Item
-      small={true}
-      closable={false}
-      key={`item_${value1.fullyQualifiedIdentifier}_${Math.random()}`}
-      fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier}
-    />
-  ));
-
   return (
     <div className={classes.searchContainer}>
       <div>
@@ -185,19 +185,17 @@ const Search: React.FC<PropsInterface> = () => {
           ref={searchInput}
           placeholder={'...'}
           onChange={(event) => setSearchTerm(event.target.value)}
-          startAdornment={
-            <IconButton size={'small'} onClick={() => setRender(!render)} title={'Show results'}>
-              <SearchOutlined />
-            </IconButton>
-          }
           endAdornment={
-            searchTerm.length ? (
-              <InputAdornment position='end'>
-                <IconButton size={'small'} onClick={() => clear()} title={'Clear'}>
-                  <Backspace />
-                </IconButton>
-              </InputAdornment>
-            ) : null
+            <InputAdornment position='end'>
+              {searchTerm.length ? (
+              <IconButton size={'small'} onClick={() => clear()} title={'Clear'}>
+                <Backspace />
+              </IconButton>
+              ) : <></>}
+              <IconButton size={'small'} onClick={() => setRender(!render)} title={'Show results'}>
+                <SearchOutlined />
+              </IconButton>
+            </InputAdornment>
           }
         />
       </div>
