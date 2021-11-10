@@ -8,8 +8,6 @@ import { CloseSharp } from '@material-ui/icons';
 
 interface Props {
   children: string | ReactElement | ReactElement[];
-  sidebarContent: string | ReactElement | ReactElement[];
-  setSidebarContent: Function;
   pageTitle?: string;
   logo?: string;
   version?: string;
@@ -49,13 +47,12 @@ const useStyles = makeStyles((theme: Theme) =>
  */
 const Layout: React.FC<Props> = ({
   children,
-  sidebarContent,
-  setSidebarContent,
   pageTitle,
   logo,
   version,
 }) => {
   const classes = useStyles();
+  const [sidebarContent, setSidebarContent] = useState<ReactElement[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -82,7 +79,7 @@ const Layout: React.FC<Props> = ({
         variant={'persistent'}
         open={sidebarOpen}
       >
-        <div style={{float: 'right', textAlign: 'right'}}>
+        <div style={{position: 'absolute', right: '0.5em'}}>
           <IconButton onClick={() => setSidebarOpen(false)} size={"small"}>
             <CloseSharp />
           </IconButton>
