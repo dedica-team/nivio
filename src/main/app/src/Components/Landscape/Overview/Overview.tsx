@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from "react";
 
 import {ILandscape, ILandscapeLinks} from '../../../interfaces';
 import OverviewLayout from './OverviewLayout';
@@ -15,7 +15,6 @@ import Avatar from '@material-ui/core/Avatar';
  */
 
 interface Props {
-  setSidebarContent: Function;
   setPageTitle: Function;
   welcomeMessage: string;
 }
@@ -46,11 +45,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Overview: React.FC<Props> = ({ setSidebarContent, setPageTitle, welcomeMessage }) => {
+const Overview: React.FC<Props> = ({ setPageTitle, welcomeMessage }) => {
   const [landscapes, setLandscapes] = useState<ILandscape[]>([]);
   const [landscapeLinks, setLandscapeLinks] = useState<ILandscapeLinks | null>();
   const [loadLandscapes, setLoadLandscapes] = useState<boolean>(true);
   const [landscapesCount, setLandscapesCount] = useState<Number>(0);
+  const [sidebarContent, setSidebarContent] = useState<ReactElement[]>([]);
   const classes = useStyles();
 
   const getLandscapes = useCallback(async () => {
@@ -73,9 +73,9 @@ const Overview: React.FC<Props> = ({ setSidebarContent, setPageTitle, welcomeMes
 
   useEffect(() => {
     getLandscapes();
-    setSidebarContent(<Events />);
+    //setSidebarContent(<Events />);
     setPageTitle(welcomeMessage);
-  }, [getLandscapes, setSidebarContent, setPageTitle, welcomeMessage]);
+  }, [getLandscapes, setPageTitle, welcomeMessage]);
 
   const loading = (
     <div className={classes.loading}>

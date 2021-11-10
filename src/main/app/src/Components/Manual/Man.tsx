@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, { Fragment, ReactElement, useCallback, useEffect, useState } from "react";
 import { Link, useParams } from 'react-router-dom';
 import ReactHtmlParser, { domToReact } from 'html-react-parser';
 
@@ -27,14 +27,13 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  setSidebarContent: Function;
   setPageTitle: Function;
 }
 
 /**
  * Renders nivio manual, depending on which url param is given
  */
-const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
+const Man: React.FC<Props> = ({ setPageTitle }) => {
   const classes = useStyles();
   const [html, setHtml] = useState<JSX.Element | JSX.Element[]>(
     <React.Fragment>
@@ -45,6 +44,7 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   if (usage == null || typeof usage == 'undefined') usage = 'index';
   const [topic, setTopic] = useState<string>(usage + '');
   const [side, setSide] = useState<any>(null);
+  const [sidebarContent, setSidebarContent] = useState<ReactElement[]>([]);
   const [emptyManual, setemptyManual] = useState<boolean>(false);
 
   const handleSphinxSidebar = useCallback(
@@ -95,7 +95,7 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   );
 
   useEffect(() => {
-    setSidebarContent(null);
+   // setSidebarContent(null);
     setPageTitle('Manual');
   }, [setSidebarContent, setPageTitle]);
 
@@ -106,7 +106,7 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   }, [usage]);
 
   useEffect(() => {
-    setSidebarContent(side);
+    //setSidebarContent(side);
   }, [side, setSidebarContent]);
 
   useEffect(() => {

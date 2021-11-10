@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 
 import LandscapeOverview from './Components/Landscape/Overview/Overview';
@@ -27,7 +27,7 @@ interface Index {
 }
 
 const App: React.FC = () => {
-  const [sidebarContent, setSidebarContent] = useState<ReactElement[]>([]);
+
   const [pageTitle, setPageTitle] = useState<string>('');
   const [logo, setLogo] = useState<string>('');
   const [message, setMessage] = useState<string>('');
@@ -95,8 +95,6 @@ const App: React.FC = () => {
         <Router hashType='slash'>
           <Switch>
             <Layout
-              sidebarContent={sidebarContent}
-              setSidebarContent={setSidebarContent}
               logo={logo}
               pageTitle={pageTitle}
               version={version}
@@ -106,7 +104,6 @@ const App: React.FC = () => {
                 path='/'
                 render={(props) => (
                   <LandscapeOverview
-                    setSidebarContent={setSidebarContent}
                     setPageTitle={setPageTitle}
                     welcomeMessage={message}
                     {...props}
@@ -128,7 +125,6 @@ const App: React.FC = () => {
                 path='/man/:usage'
                 render={(props) => (
                   <Man
-                    setSidebarContent={setSidebarContent}
                     setPageTitle={setPageTitle}
                     {...props}
                   />

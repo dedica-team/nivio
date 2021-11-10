@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginTop: '1em',
       flexGrow: 1,
       flexShrink: 1,
-      overflowY: 'auto'
+      overflowY: 'auto',
     },
   })
 );
@@ -52,7 +52,7 @@ interface PropsInterface {
   setSidebarContent: Function;
 }
 
-const Search: React.FC<PropsInterface> = ({ setSidebarContent }) => {
+const Search: React.FC<PropsInterface> = () => {
   const [currentLandscape, setCurrentLandscape] = useState<string>('');
   const [results, setResults] = useState<IItem[]>([]);
   const [facets, setFacets] = useState<IFacet[]>([]);
@@ -159,6 +159,7 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent }) => {
   const renderedResults = results.map((value1: IItem) => (
     <Item
       small={true}
+      closable={false}
       key={`item_${value1.fullyQualifiedIdentifier}_${Math.random()}`}
       fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier}
     />
@@ -167,12 +168,12 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent }) => {
   return (
     <div className={classes.searchContainer}>
       <div>
-        <div style={{ float: 'right', padding: 2 }}>
+        <Typography variant={'h5'}>
+          Search
           <IconButton size={'small'}>
             <HelpTooltip style={{ float: 'right', padding: 2 }} content={<SearchHelp />} />
           </IconButton>
-        </div>
-        <Typography variant={'h5'}>Search</Typography>
+        </Typography>
       </div>
 
       <div className={classes.search}>
