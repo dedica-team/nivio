@@ -23,7 +23,7 @@ import {
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../../interfaces';
-import { getItem, getLabelsWithPrefix, getMappedLabels } from '../../Utils/utils';
+import { getItem, getLabelsWithPrefix, getMappedLabels, getNetworks } from '../../Utils/utils';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import { Close, Details, ExpandMore, Info, MoreVertSharp, Power } from '@material-ui/icons';
@@ -34,6 +34,7 @@ import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import ItemAvatar from './ItemAvatar';
 import { LandscapeContext } from '../../../../Context/LandscapeContext';
 import { a11yProps, TabPanel } from '../../Utils/TabUtils';
+import {keys} from "@material-ui/core/styles/createBreakpoints";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -222,8 +223,8 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
     : null;
   const assessmentStatus = assessments ? getItemAssessments(assessments) : [];
   const frameworks: ReactElement | null = item ? getLabelsWithPrefix('framework', item) : null;
-  const networks: ReactElement | null = item ? getLabelsWithPrefix('networks', item) : null;
   const interfaces: ReactElement | null = item ? getInterfaces(item) : null;
+  const networks: ReactElement | null = item ? getLabelsWithPrefix('networks', item) : null;
 
   const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
@@ -257,14 +258,6 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
           <Chip size={'small'} label={value} key={value} className={extraClasses.tag} />
         ))
       : null;
-
-  // const networks =
-  //     item?.tags && item?.tags.length
-  //         ? item.tags.map((value) => (
-  //             <Chip size={'small'} label={value} key={value} className={extraClasses.tag} />
-  //         ))
-  //         : null;
-
   if (!visible) return null;
 
   return (

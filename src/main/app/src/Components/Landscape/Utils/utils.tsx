@@ -159,10 +159,24 @@ export const getLabelsWithPrefix = (prefix: string, element: IGroup | IItem) => 
     .forEach((key) => {
       const value = element.labels?.[key] || null;
       if (!value) return;
-      const primary = key.replace(prefix + '.', '');
+
+      // for case key = prefix.value: value (i.e. value equals value) only the value should be displayed in GUI
+      // this is the case for e.g. prefix = 'networks'
+      const regexpKey = new RegExp(prefix + '\\.(.*)');
+      const match = key.match(regexpKey);
+      let primary = '';
+      let secondary = '';
+      if (match && value === match[1]) {
+        primary = value.substr(0, 150);
+
+      // for all other labels with prefixes, e.g. prefix = 'frameworks'
+      } else {
+        primary = key.replace(prefix + '.', '');
+        secondary=value.substr(0, 150);
+      }
       labels.push(
         <ListItem key={key}>
-          <ListItemText primary={primary} secondary={value.substr(0, 150)} title={value} />
+          <ListItemText primary={primary} secondary={secondary} title={value} />
         </ListItem>
       );
     });
@@ -177,4 +191,30 @@ export const getItemIcon = (item: IItem) => {
     return item.labels['fill'] ? item.labels['fill'] : item.icon;
   }
   return item.icon;
+};
+
+/**
+ * create ListItem for each network
+ * @param element
+ */
+export const getNetworks = (element: IItem) => {
+  if (!element || !element?.labels) return null;
+  let networkListItem: ReactElement[] = [];
+  const keys = Object.keys(element.labels);
+  keys
+    .filter((key) => key.startsWith('networks'))
+    .forEach((key) => {
+      const networkValues = element.labels?.[key] || null;
+      if (!networkValues) return;
+      const primary = networkValues?.substr(0, 150);
+      networkListItem.push(
+        <ListItem key={key}>
+          <ListItemText primary={primary} title={networkValues} />
+        </ListItem>
+      );
+    });
+  if (networkListItem.length === 0) {
+    return null;
+  }
+  return <List dense={true}>{networkListItem}</List>;
 };
