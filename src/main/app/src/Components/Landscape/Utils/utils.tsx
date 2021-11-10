@@ -169,10 +169,10 @@ export const getLabelsWithPrefix = (prefix: string, element: IGroup | IItem) => 
       if (match && value === match[1]) {
         primary = value.substr(0, 150);
 
-      // for all other labels with prefixes, e.g. prefix = 'frameworks'
+        // for all other labels with prefixes, e.g. prefix = 'frameworks'
       } else {
         primary = key.replace(prefix + '.', '');
-        secondary=value.substr(0, 150);
+        secondary = value.substr(0, 150);
       }
       labels.push(
         <ListItem key={key}>
@@ -194,27 +194,28 @@ export const getItemIcon = (item: IItem) => {
 };
 
 /**
- * create ListItem for each network
- * @param element
+ * creates one ListItem for all networks
+ *
  */
 export const getNetworks = (element: IItem) => {
   if (!element || !element?.labels) return null;
-  let networkListItem: ReactElement[] = [];
+  let networkListItem: string[] = [];
   const keys = Object.keys(element.labels);
   keys
     .filter((key) => key.startsWith('networks'))
     .forEach((key) => {
       const networkValues = element.labels?.[key] || null;
       if (!networkValues) return;
-      const primary = networkValues?.substr(0, 150);
-      networkListItem.push(
-        <ListItem key={key}>
-          <ListItemText primary={primary} title={networkValues} />
-        </ListItem>
-      );
+      networkListItem.push(networkValues);
     });
   if (networkListItem.length === 0) {
     return null;
   }
-  return <List dense={true}>{networkListItem}</List>;
+  return (
+    <List dense={true}>
+      <ListItem>
+        <ListItemText primary={networkListItem.join(" ")} />
+      </ListItem>
+    </List>
+  );
 };
