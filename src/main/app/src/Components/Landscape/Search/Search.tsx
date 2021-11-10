@@ -18,8 +18,14 @@ import { LandscapeContext } from '../../../Context/LandscapeContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    searchContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+    },
     search: {
       margin: 0,
+      marginBottom: '1em',
       padding: 0,
       borderRadius: 50,
       height: '2.5em',
@@ -32,6 +38,12 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingLeft: 5,
       paddingRight: 5,
       width: '100%',
+    },
+    searchResults: {
+      marginTop: '1em',
+      flexGrow: 1,
+      flexShrink: 1,
+      overflowY: 'auto'
     },
   })
 );
@@ -113,26 +125,13 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent }) => {
     setSearchSupport(<Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />);
   }, [setSearchSupport, searchTerm, facets, componentClasses.card, currentLandscape]);
 
-  /**
-   * Update rendered search results
-   */
-  useEffect(() => {
-    const searchResult = results.map((value1: IItem) => (
-      <Item
-        small={true}
-        key={`item_${value1.fullyQualifiedIdentifier}_${Math.random()}`}
-        fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier}
-      />
-    ));
-  }, [results,  render]);
-
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
       return;
     }
-    const result: IFacet[] | null = await get('/api/landscape/' + identifier + '/facets/').catch(
-      (reason) => console.warn(reason)
-    );
+    const result: IFacet[] | null = await get(
+      '/api/landscape/' + identifier + '/facets/'
+    ).catch((reason) => console.warn(reason));
 
     if (!result) return;
     setFacets(result);
@@ -157,18 +156,26 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent }) => {
     setCurrentLandscape(landscapeContext.identifier);
   }
 
+  const renderedResults = results.map((value1: IItem) => (
+    <Item
+      small={true}
+      key={`item_${value1.fullyQualifiedIdentifier}_${Math.random()}`}
+      fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier}
+    />
+  ));
+
   return (
-    <div>
-      <div style={{ float: 'right', padding: 2 }}>
-        <IconButton size={'small'}>
-          <HelpTooltip style={{ float: 'right', padding: 2 }} content={<SearchHelp />} />
-        </IconButton>
-        <IconButton size={'small'} onClick={() => setSidebarContent(null)} title={'Close search'}>
-          <Close />
-        </IconButton>
+    <div className={classes.searchContainer}>
+      <div>
+        <div style={{ float: 'right', padding: 2 }}>
+          <IconButton size={'small'}>
+            <HelpTooltip style={{ float: 'right', padding: 2 }} content={<SearchHelp />} />
+          </IconButton>
+        </div>
+        <Typography variant={'h5'}>Search</Typography>
       </div>
-      <Typography variant={'h5'}>Search</Typography>
-      <Box className={classes.search}>
+
+      <div className={classes.search}>
         <Input
           disableUnderline={true}
           className={classes.searchField}
@@ -192,8 +199,12 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent }) => {
             ) : null
           }
         />
-        {searchSupport}
-      </Box>
+      </div>
+      {searchSupport}
+      <div className={classes.searchResults}>
+        <Typography variant={'h5'}>Results</Typography>
+        {renderedResults}
+      </div>
     </div>
   );
 };

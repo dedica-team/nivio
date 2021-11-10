@@ -1,8 +1,10 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect, useState } from "react";
 
 import Navigation from '../Navigation/Navigation';
-import { Button, Drawer, Theme } from "@material-ui/core";
+import { Drawer, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import { CloseSharp } from '@material-ui/icons';
 
 interface Props {
   children: string | ReactElement | ReactElement[];
@@ -54,6 +56,11 @@ const Layout: React.FC<Props> = ({
   version,
 }) => {
   const classes = useStyles();
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    setSidebarOpen(sidebarContent != null);
+  }, [sidebarContent]);
 
   return (
     <div className={classes.outer}>
@@ -70,15 +77,18 @@ const Layout: React.FC<Props> = ({
         classes={{
           paper: classes.sidebar,
         }}
-        style={{ width: sidebarContent != null ? searchSupportWidth : 0 }}
+        style={{ width: sidebarOpen ? searchSupportWidth : 0 }}
         anchor={'right'}
         variant={'persistent'}
-        open={sidebarContent != null}
-        onClose={() => {
-          setSidebarContent(null);
-        }}
-        children={sidebarContent}
-      />
+        open={sidebarOpen}
+      >
+        <div style={{float: 'right', textAlign: 'right'}}>
+          <IconButton onClick={() => setSidebarOpen(false)} size={"small"}>
+            <CloseSharp />
+          </IconButton>
+        </div>
+        {sidebarContent}
+      </Drawer>
     </div>
   );
 };
