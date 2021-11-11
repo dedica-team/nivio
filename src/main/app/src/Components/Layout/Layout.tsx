@@ -13,7 +13,7 @@ interface Props {
   version?: string;
 }
 
-const searchSupportWidth = 360;
+const drawerWidth = 360;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     sidebar: {
       backgroundColor: theme.palette.primary.dark,
-      width: searchSupportWidth,
+      width: drawerWidth,
       padding: 5,
       top: 0,
       marginTop: -30,
@@ -55,7 +55,6 @@ const Layout: React.FC<Props> = ({ children, pageTitle, logo, version }) => {
 
   useEffect(() => {
     const isOpen = sidebarContent != null;
-    console.log('isOpen', isOpen);
     setSidebarOpen(isOpen);
   }, [sidebarContent]);
 
@@ -74,7 +73,7 @@ const Layout: React.FC<Props> = ({ children, pageTitle, logo, version }) => {
             paper: classes.sidebar,
           }}
           style={{
-            width: sidebarOpen ? searchSupportWidth : 0,
+            width: sidebarOpen ? drawerWidth : 0,
             marginTop: 30,
             position: 'relative',
           }}

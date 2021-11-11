@@ -27,7 +27,6 @@ interface Index {
 }
 
 const App: React.FC = () => {
-
   const [pageTitle, setPageTitle] = useState<string>('');
   const [logo, setLogo] = useState<string>('');
   const [message, setMessage] = useState<string>('');
@@ -94,11 +93,7 @@ const App: React.FC = () => {
         <CssBaseline />
         <Router hashType='slash'>
           <Switch>
-            <Layout
-              logo={logo}
-              pageTitle={pageTitle}
-              version={version}
-            >
+            <Layout logo={logo} pageTitle={pageTitle} version={version}>
               <Route
                 exact
                 path='/'
@@ -113,22 +108,12 @@ const App: React.FC = () => {
               <Route
                 exact
                 path={Routes.MAP_ROUTE}
-                render={(props) => (
-                  <LandscapeMap
-                    setPageTitle={setPageTitle}
-                    {...props}
-                  />
-                )}
+                render={(props) => <LandscapeMap setPageTitle={setPageTitle} {...props} />}
               />
               <Route
                 exact
                 path='/man/:usage'
-                render={(props) => (
-                  <Man
-                    setPageTitle={setPageTitle}
-                    {...props}
-                  />
-                )}
+                render={(props) => <Man setPageTitle={setPageTitle} {...props} />}
               />
             </Layout>
           </Switch>
