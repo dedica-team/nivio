@@ -61,7 +61,7 @@ const SearchField: React.FC<Props> = ({ setSidebarContent }) => {
         ref={searchInput}
         placeholder={'...'}
         onChange={(event) => setSearchTerm(event.target.value)}
-        onFocus={setSidebarContent(search)}
+        onFocus={() => setSidebarContent(search)}
         endAdornment={
           <InputAdornment position='end'>
             {searchTerm.length ? (

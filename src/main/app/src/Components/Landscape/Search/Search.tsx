@@ -167,7 +167,6 @@ const Search: React.FC<SearchProps> = ({setSearchTerm, searchTerm}) => {
 
   if (currentLandscape == null || currentLandscape !== landscapeContext.identifier) {
     setFacets([]);
-    setSearchTerm('');
     setCurrentLandscape(landscapeContext.identifier);
   }
 
