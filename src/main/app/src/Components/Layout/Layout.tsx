@@ -39,7 +39,6 @@ const useStyles = makeStyles((theme: Theme) =>
       width: drawerWidth,
       padding: 5,
       top: 0,
-      marginTop: -30,
       position: 'absolute',
     },
   })
@@ -74,7 +73,6 @@ const Layout: React.FC<Props> = ({ children, pageTitle, logo, version }) => {
           }}
           style={{
             width: sidebarOpen ? drawerWidth : 0,
-            marginTop: 30,
             position: 'relative',
           }}
           anchor={'right'}

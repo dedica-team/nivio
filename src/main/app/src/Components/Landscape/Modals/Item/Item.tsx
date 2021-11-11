@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   small?: boolean;
-  closable?: boolean;
+  sticky?: boolean;
   fullyQualifiedItemIdentifier?: string;
 }
 
@@ -63,7 +63,7 @@ interface Props {
  *
  *
  */
-const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, closable }) => {
+const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) => {
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const [compact, setCompact] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(true);
@@ -237,7 +237,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, closable }
           <MoreVertSharp />
         </IconButton>
       ) : null}
-      {closable ? (
+      {!sticky ? (
         <IconButton
           size={'small'}
           onClick={() => {

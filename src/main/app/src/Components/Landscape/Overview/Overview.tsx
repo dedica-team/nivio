@@ -1,23 +1,13 @@
-import React, { ReactElement, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {ILandscape, ILandscapeLinks} from '../../../interfaces';
 import OverviewLayout from './OverviewLayout';
 import {get} from '../../../utils/API/APIClient';
-import Events from '../../Events/Events';
 import {createStyles, darken, Theme} from '@material-ui/core';
 import {Redirect} from 'react-router-dom';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import {withBasePath} from '../../../utils/API/BasePath';
 import Avatar from '@material-ui/core/Avatar';
-
-/**
- * Logic Component to display all available landscapes
- */
-
-interface Props {
-  setPageTitle: Function;
-  welcomeMessage: string;
-}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,12 +35,20 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+
+interface Props {
+  setPageTitle: Function;
+  welcomeMessage: string;
+}
+
+/**
+ * Logic Component to display all available landscapes
+ */
 const Overview: React.FC<Props> = ({ setPageTitle, welcomeMessage }) => {
   const [landscapes, setLandscapes] = useState<ILandscape[]>([]);
   const [landscapeLinks, setLandscapeLinks] = useState<ILandscapeLinks | null>();
   const [loadLandscapes, setLoadLandscapes] = useState<boolean>(true);
   const [landscapesCount, setLandscapesCount] = useState<Number>(0);
-  const [sidebarContent, setSidebarContent] = useState<ReactElement[]>([]);
   const classes = useStyles();
 
   const getLandscapes = useCallback(async () => {
@@ -73,7 +71,6 @@ const Overview: React.FC<Props> = ({ setPageTitle, welcomeMessage }) => {
 
   useEffect(() => {
     getLandscapes();
-    //setSidebarContent(<Events />);
     setPageTitle(welcomeMessage);
   }, [getLandscapes, setPageTitle, welcomeMessage]);
 
@@ -92,7 +89,7 @@ const Overview: React.FC<Props> = ({ setPageTitle, welcomeMessage }) => {
 
   return landscapes.length > 0 ? (
     landscapesCount > 1 ? (
-      <OverviewLayout landscapes={landscapes} setSidebarContent={setSidebarContent} />
+      <OverviewLayout landscapes={landscapes} />
     ) : (
       <Redirect to={`/landscape/${landscapes[0]?.identifier}`} />
     )

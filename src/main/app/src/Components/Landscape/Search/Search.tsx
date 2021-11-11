@@ -94,7 +94,7 @@ const Search: React.FC<SearchProps> = ({setSearchTerm, searchTerm}) => {
         results.map((value1: IItem) => (
           <Item
             small={true}
-            closable={false}
+            sticky={true}
             key={`item_${value1.fullyQualifiedIdentifier}_${Math.random()}`}
             fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier}
           />
