@@ -4,7 +4,6 @@ import { Input, InputAdornment, Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import { IFacet, IItem } from '../../../interfaces';
 import Item from '../Modals/Item/Item';
-import { Backspace, SearchOutlined } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import componentStyles from '../../../Resources/styling/ComponentStyles';
@@ -48,17 +47,20 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Search: React.FC = () => {
+interface SearchProps {
+  searchTerm: string;
+  setSearchTerm: Function;
+}
+
+const Search: React.FC<SearchProps> = ({setSearchTerm, searchTerm}) => {
   const [currentLandscape, setCurrentLandscape] = useState<string>('');
   const [results, setResults] = useState<IItem[]>([]);
   const [renderedResults, setRenderedResults] = useState<any>([]);
   const [facets, setFacets] = useState<IFacet[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [searchSupport, setSearchSupport] = useState<any>(null);
   const [render, setRender] = useState<boolean>(false);
   const classes = useStyles();
   const componentClasses = componentStyles();
-  const searchInput = React.useRef<HTMLDivElement>(null);
   const landscapeContext = useContext(LandscapeContext);
 
   /**
@@ -98,13 +100,12 @@ const Search: React.FC = () => {
       return;
     }
 
-    let msg = "...";
+    let msg = '...';
     if (searchTerm && searchTerm.length) {
-      msg ="No results found.";
+      msg = 'No results found.';
     }
-    setRenderedResults(<>{msg}</>)
-
-  }, [results]);
+    setRenderedResults(<>{msg}</>);
+  }, [results, searchTerm]);
 
   /**
    * loading of facets
@@ -113,8 +114,6 @@ const Search: React.FC = () => {
    */
   useEffect(() => {
     const addFacet = (dim: string, label: string): string => {
-      let current = searchInput.current;
-      if (current && dim.length && label.length) {
         if (searchTerm.indexOf(dim + ':' + label) === -1) {
           if (label.indexOf(' ') !== -1) {
             label = `"${label}"`; //to handle whitespace
@@ -122,8 +121,6 @@ const Search: React.FC = () => {
           setSearchTerm(`${searchTerm} ${dim}:${label}`);
           setRender(true);
         }
-        current.focus();
-      }
 
       return searchTerm;
     };
@@ -157,11 +154,6 @@ const Search: React.FC = () => {
     setFacets(result);
   }
 
-  function clear() {
-    setSearchTerm('');
-    setResults([]);
-  }
-
   useEffect(() => {
     if (landscapeContext.identifier) loadFacets(landscapeContext.identifier);
   }, [landscapeContext.identifier, landscapeContext.assessment]);
@@ -187,32 +179,9 @@ const Search: React.FC = () => {
         </Typography>
       </div>
 
-      <div className={classes.search}>
-        <Input
-          disableUnderline={true}
-          className={classes.searchField}
-          type={'text'}
-          value={searchTerm}
-          ref={searchInput}
-          placeholder={'...'}
-          onChange={(event) => setSearchTerm(event.target.value)}
-          endAdornment={
-            <InputAdornment position='end'>
-              {searchTerm.length ? (
-              <IconButton size={'small'} onClick={() => clear()} title={'Clear'}>
-                <Backspace />
-              </IconButton>
-              ) : <></>}
-              <IconButton size={'small'} onClick={() => setRender(!render)} title={'Show results'}>
-                <SearchOutlined />
-              </IconButton>
-            </InputAdornment>
-          }
-        />
-      </div>
       {searchSupport}
       <div className={classes.searchResults}>
-        <Typography variant={'h5'}>Results</Typography>
+        <Typography variant={'h5'}>Results for '{searchTerm}'</Typography>
         {renderedResults}
       </div>
     </div>
