@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from 'react';
 
 import Navigation from '../Navigation/Navigation';
 import { Drawer, Theme } from '@material-ui/core';
@@ -21,14 +21,16 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
     },
     outer: {
-      display: 'flex',
-      flexDirection: 'row',
     },
     flexItem: {
       flexShrink: 1,
       flexGrow: 1,
     },
     main: {
+      display: 'flex',
+      flexDirection: 'row',
+    },
+    children: {
       flexShrink: 1,
       flexGrow: 2,
       width: '1000px',
@@ -37,55 +39,52 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.primary.dark,
       width: searchSupportWidth,
       padding: 5,
+      top: 0,
+      marginTop: -30,
+      position: 'absolute'
     },
   })
 );
 
 /**
  * Contains our site layout, Navigation on top, content below
- * @param param0
  */
-const Layout: React.FC<Props> = ({
-  children,
-  pageTitle,
-  logo,
-  version,
-}) => {
+const Layout: React.FC<Props> = ({ children, pageTitle, logo, version }) => {
   const classes = useStyles();
   const [sidebarContent, setSidebarContent] = useState<ReactElement[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    setSidebarOpen(sidebarContent != null);
+    setSidebarOpen(sidebarContent && sidebarContent.length > 0);
   }, [sidebarContent]);
 
   return (
     <div className={classes.outer}>
+      <Navigation
+        logo={logo}
+        version={version}
+        setSidebarContent={setSidebarContent}
+        pageTitle={pageTitle}
+      />
       <main className={classes.main}>
-        <Navigation
-          logo={logo}
-          version={version}
-          setSidebarContent={setSidebarContent}
-          pageTitle={pageTitle}
-        />
-        {children}
+        <div className={classes.children}>{children}</div>
+        <Drawer
+          classes={{
+            paper: classes.sidebar,
+          }}
+          style={{ width: sidebarOpen ? searchSupportWidth : 0 , marginTop: 30, position: 'relative'}}
+          anchor={'right'}
+          variant={'persistent'}
+          open={sidebarOpen}
+        >
+          <div style={{ position: 'absolute', right: '0.5em' }}>
+            <IconButton onClick={() => setSidebarOpen(false)} size={'small'}>
+              <CloseSharp />
+            </IconButton>
+          </div>
+          {sidebarContent}
+        </Drawer>
       </main>
-      <Drawer
-        classes={{
-          paper: classes.sidebar,
-        }}
-        style={{ width: sidebarOpen ? searchSupportWidth : 0 }}
-        anchor={'right'}
-        variant={'persistent'}
-        open={sidebarOpen}
-      >
-        <div style={{position: 'absolute', right: '0.5em'}}>
-          <IconButton onClick={() => setSidebarOpen(false)} size={"small"}>
-            <CloseSharp />
-          </IconButton>
-        </div>
-        {sidebarContent}
-      </Drawer>
     </div>
   );
 };
