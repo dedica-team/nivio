@@ -20,8 +20,7 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       display: 'flex',
     },
-    outer: {
-    },
+    outer: {},
     flexItem: {
       flexShrink: 1,
       flexGrow: 1,
@@ -41,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 5,
       top: 0,
       marginTop: -30,
-      position: 'absolute'
+      position: 'absolute',
     },
   })
 );
@@ -51,11 +50,13 @@ const useStyles = makeStyles((theme: Theme) =>
  */
 const Layout: React.FC<Props> = ({ children, pageTitle, logo, version }) => {
   const classes = useStyles();
-  const [sidebarContent, setSidebarContent] = useState<ReactElement[]>([]);
+  const [sidebarContent, setSidebarContent] = useState<ReactElement | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    setSidebarOpen(sidebarContent && sidebarContent.length > 0);
+    const isOpen = sidebarContent != null;
+    console.log('isOpen', isOpen);
+    setSidebarOpen(isOpen);
   }, [sidebarContent]);
 
   return (
@@ -72,7 +73,11 @@ const Layout: React.FC<Props> = ({ children, pageTitle, logo, version }) => {
           classes={{
             paper: classes.sidebar,
           }}
-          style={{ width: sidebarOpen ? searchSupportWidth : 0 , marginTop: 30, position: 'relative'}}
+          style={{
+            width: sidebarOpen ? searchSupportWidth : 0,
+            marginTop: 30,
+            position: 'relative',
+          }}
           anchor={'right'}
           variant={'persistent'}
           open={sidebarOpen}
