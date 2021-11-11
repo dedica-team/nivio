@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 
-import { Input, InputAdornment, Theme } from '@material-ui/core';
+import { Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import { IFacet, IItem } from '../../../interfaces';
 import Item from '../Modals/Item/Item';
@@ -67,7 +67,10 @@ const Search: React.FC<SearchProps> = ({setSearchTerm, searchTerm}) => {
    * Search on search term change, set results.
    */
   useEffect(() => {
-    if (searchTerm.length < 2) return;
+    if (searchTerm.length < 2) {
+      setResults([]);
+      return;
+    }
 
     get(
       '/api/landscape/' +
@@ -83,7 +86,7 @@ const Search: React.FC<SearchProps> = ({setSearchTerm, searchTerm}) => {
       .catch((reason) => {
         console.warn(reason);
       });
-  }, [searchTerm, landscapeContext.identifier]);
+  }, [searchTerm, landscapeContext.identifier, render]);
 
   useEffect(() => {
     if (results && results.length > 0) {
@@ -140,7 +143,7 @@ const Search: React.FC<SearchProps> = ({setSearchTerm, searchTerm}) => {
     };
 
     setSearchSupport(<Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />);
-  }, [setSearchSupport, searchTerm, facets, componentClasses.card, currentLandscape]);
+  }, [setSearchSupport, searchTerm, setSearchTerm, facets, componentClasses.card, currentLandscape]);
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
