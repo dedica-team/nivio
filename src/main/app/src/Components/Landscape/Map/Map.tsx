@@ -87,7 +87,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
   const [sidebarContent, setSidebarContent] = useState<Element | Element[] | null>([]);
   const [renderWithTransition, setRenderWithTransition] = useState(false);
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
-  const [visualFocus, setVisualFocus] = useState<String | null>(null);
+  const [visualFocus, setVisualFocus] = useState<string | null>(null);
   const { identifier } = useParams<{ identifier: string }>();
 
   const [isFirstRender, setIsFirstRender] = useState(true);

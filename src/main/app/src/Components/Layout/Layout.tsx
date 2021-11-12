@@ -1,10 +1,11 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 
 import Navigation from '../Navigation/Navigation';
 import { Drawer, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import { CloseSharp } from '@material-ui/icons';
+import { LandscapeContext } from "../../Context/LandscapeContext";
 
 interface Props {
   children: string | ReactElement | ReactElement[];
@@ -51,11 +52,12 @@ const Layout: React.FC<Props> = ({ children, pageTitle, logo, version }) => {
   const classes = useStyles();
   const [sidebarContent, setSidebarContent] = useState<ReactElement | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const landscapeContext = useContext(LandscapeContext);
 
   useEffect(() => {
-    const isOpen = sidebarContent != null;
+    const isOpen = sidebarContent != null && landscapeContext.identifier != null;
     setSidebarOpen(isOpen);
-  }, [sidebarContent]);
+  }, [sidebarContent, landscapeContext]);
 
   return (
     <div className={classes.outer}>
