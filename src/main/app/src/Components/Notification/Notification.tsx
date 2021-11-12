@@ -1,10 +1,10 @@
-import React, {ReactElement, useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
-import {Badge} from '@material-ui/core';
-import {Notifications} from '@material-ui/icons';
+import { Badge } from '@material-ui/core';
+import { Notifications } from '@material-ui/icons';
 import Changes from './Changes';
 import componentStyles from '../../Resources/styling/ComponentStyles';
-import {LandscapeContext} from '../../Context/LandscapeContext';
+import { LandscapeContext } from '../../Context/LandscapeContext';
 
 interface Props {
   setSidebarContent: Function;

@@ -1,4 +1,11 @@
-import { IAssessment, IChanges, IGroup, IItem, ILandscape } from "../../interfaces";
+import {
+  IAssessment,
+  IChanges,
+  IGroup,
+  IItem,
+  ILandscape,
+  INotificationMessage,
+} from '../../interfaces';
 import { LandscapeContextType } from '../../Context/LandscapeContext';
 
 const items: IItem[] = [
@@ -70,9 +77,14 @@ const assessments: IAssessment = {
   },
 };
 
-const changes: IChanges = {
-
-}
+const changes: INotificationMessage = {
+  timestamp: '',
+  date: new Date(),
+  landscape: 'test',
+  level: 'info',
+  type: 'ProcessingFinishedEvent',
+  changelog: { changes: {} },
+};
 
 const landscapeContextValue: LandscapeContextType = {
   identifier: 'test',

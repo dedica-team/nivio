@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Landscape;
 import org.springframework.lang.NonNull;
 
@@ -64,5 +65,10 @@ public class ProcessingFinishedEvent extends ProcessingEvent {
     @NonNull
     public ProcessingChangelog getChangelog() {
         return changelog;
+    }
+
+    @Override
+    public FullyQualifiedIdentifier getSource() {
+        return landscape.getFullyQualifiedIdentifier();
     }
 }
