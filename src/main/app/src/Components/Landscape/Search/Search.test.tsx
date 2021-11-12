@@ -8,7 +8,7 @@ describe('<Search />', () => {
   it('should render', () => {
     const { getByText } = render(
       <LandscapeContext.Provider value={landscapeContextValue}>
-        <Search showSearch={() => {}} setSidebarContent={() => {}} />
+        <Search searchTerm={'foo'} setSearchTerm={() => {}}/>
       </LandscapeContext.Provider>
     );
     expect(getByText('Search')).toBeInTheDocument();
