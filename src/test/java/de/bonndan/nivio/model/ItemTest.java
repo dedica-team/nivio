@@ -163,4 +163,37 @@ class ItemTest {
         assertThat(children.get(0)).isEqualTo(forTesting);
 
     }
+
+    @Test
+    void getNetworks() {
+
+        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
+        Item s1 = getTestItem("g1", "a", landscape);
+        String[] setNetworks = {"lan", "vpn"};
+        s1.setNetworks(setNetworks);
+
+//        Item s1 = getTestItemBuilder("g1", "a")
+//                .withNetworks(new String[]{"lan", "vpn"})
+//                .build();
+
+        String[] networks = s1.getNetworks();
+        assertThat(networks.length).isEqualTo(2);
+        assertThat(networks).isEqualTo(new String[]{"lan", "vpn"});
+    }
+
+    @Test
+    void setNetworks() {
+
+        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
+        Item s1 = getTestItem("g1", "a", landscape);
+
+//        Item s1 = getTestItemBuilder("g1", "a")
+//                .withNetworks(new String[]{"lan", "vpn"})
+//                .build();
+        String[] networks = {"lan", "vpn"};
+        s1.setNetworks(networks);
+        assertThat(networks.length).isEqualTo(2);
+        assertThat(networks).isEqualTo(new String[]{"lan", "vpn"});
+    }
+
 }

@@ -97,7 +97,7 @@ class ItemApiModelTest {
         Item s1 = itemTemplate.build();
         ItemApiModel itemApiModel = new ItemApiModel(s1, group);
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
-        assertThat(itemApiModel.getName()).isEqualTo("");
+        assertThat(itemApiModel.getName()).isEmpty();
     }
 
     @Test

@@ -337,6 +337,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
                 network = network.toLowerCase();
                 setLabel("networks." + network, network);
             }
+            else networks = null;
         }
     }
 
