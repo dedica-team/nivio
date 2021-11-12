@@ -40,18 +40,18 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
         <TableRow key={facet.dim}>
           <TableCell style={{ width: '25%' }}>{facet.dim}</TableCell>
           <TableCell>
-            {facet.labelValues.map((lv) => (
+            {facet.labelValues.map((cv) => (
               <Chip
                 onClick={() => {
-                  addFacet(facet.dim, lv.label);
+                  addFacet(facet.dim, cv.label);
                 }}
                 variant={'default'}
                 color={'primary'}
-                style={{ margin: 1 }}
+                style={{ margin: 1, backgroundColor: cv.color }}
                 size={'small'}
-                key={facet.dim + '' + lv.label}
-                label={lv.label}
-                avatar={<Avatar>{lv.value}</Avatar>}
+                key={facet.dim + '' + cv.label}
+                label={cv.label}
+                avatar={<Avatar>{cv.value}</Avatar>}
               />
             ))}
           </TableCell>
@@ -74,17 +74,17 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
         <TableRow key={facet.dim}>
           <TableCell style={{ width: '35%' }}>{getLabel(facet)}</TableCell>
           <TableCell>
-            {facet.labelValues.map((lv) => (
+            {facet.labelValues.map((cv) => (
               <Chip
                 onClick={() => {
-                  addFacet(facet.dim, lv.label);
+                  addFacet(facet.dim, cv.label);
                 }}
                 variant={'default'}
                 size={'small'}
-                key={facet.dim + '' + lv.label}
-                label={lv.label}
-                style={{ backgroundColor: lv.label, color: 'black', margin: 1 }}
-                avatar={<Avatar>{lv.value}</Avatar>}
+                key={facet.dim + '' + cv.label}
+                label={cv.label}
+                style={{ backgroundColor: cv.label, color: 'black', margin: 1 }}
+                avatar={<Avatar>{cv.value}</Avatar>}
               />
             ))}
           </TableCell>
