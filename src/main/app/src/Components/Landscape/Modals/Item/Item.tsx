@@ -226,10 +226,10 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
 
   const networks =
     item?.networks && item?.networks.length
-      ? item.networks.map((value) => (
+      ? item.networks.map((networkValue) => (
           <List dense={true}>
             <ListItem>
-              <ListItemText primary={value} />
+              <ListItemText primary={networkValue} />
             </ListItem>
           </List>
         ))
@@ -263,8 +263,8 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
     : null;
   const tags =
     item?.tags && item?.tags.length
-      ? item.tags.map((value) => (
-          <Chip size={'small'} label={value} key={value} className={extraClasses.tag} />
+      ? item.tags.map((tagValue) => (
+          <Chip size={'small'} label={tagValue} key={tagValue} className={extraClasses.tag} />
         ))
       : null;
   if (!visible) return null;
