@@ -183,7 +183,8 @@ const Search: React.FC<SearchProps> = ({setSearchTerm, searchTerm}) => {
 
       {searchSupport}
       <div className={classes.searchResults}>
-        <Typography variant={'h5'}>Results for '{searchTerm}'</Typography>
+        <Typography variant={'h5'}>Results</Typography>
+        <Typography variant={'h6'}>{searchTerm}</Typography>
         {renderedResults}
       </div>
     </div>
