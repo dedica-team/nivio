@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingLeft: 5,
       paddingRight: 5,
       width: '100%',
-    }
+    },
   })
 );
 
@@ -40,12 +40,15 @@ interface Props {
 const SearchField: React.FC<Props> = ({ setSidebarContent }) => {
   const classes = useStyles();
   const [searchTerm, setSearchTerm] = useState('');
-  const [search, setSearch] = useState<any>(undefined);
   const searchInput = React.useRef<HTMLDivElement>(null);
 
+  const update = () => {
+    setSidebarContent(<Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />);
+  };
+
   useEffect(() => {
-    setSearch(<Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />);
-  }, [searchTerm]);
+    setSidebarContent(<Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />);
+  }, [searchTerm, setSidebarContent]);
 
   function clear() {
     setSearchTerm('');
@@ -61,7 +64,7 @@ const SearchField: React.FC<Props> = ({ setSidebarContent }) => {
         ref={searchInput}
         placeholder={'...'}
         onChange={(event) => setSearchTerm(event.target.value)}
-        onFocus={() => setSidebarContent(search)}
+        onFocus={() => update()}
         endAdornment={
           <InputAdornment position='end'>
             {searchTerm.length ? (
@@ -71,11 +74,7 @@ const SearchField: React.FC<Props> = ({ setSidebarContent }) => {
             ) : (
               <></>
             )}
-            <IconButton
-              size={'small'}
-              onClick={() => setSidebarContent(search)}
-              title={'Show results'}
-            >
+            <IconButton size={'small'} onClick={() => update()} title={'Show results'}>
               <SearchOutlined />
             </IconButton>
           </InputAdornment>
