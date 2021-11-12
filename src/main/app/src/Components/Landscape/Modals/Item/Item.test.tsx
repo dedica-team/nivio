@@ -25,13 +25,14 @@ describe('<Item />', () => {
     contact: 'foo',
     relations: Irelations,
     interfaces: [],
-    labels: { 'networks.content': 'network1', 'framework.spring boot': '2.2', 'team': 'ops guys' },
+    labels: {'framework.spring boot': '2.2', 'team': 'ops guys' },
     type: 'foo',
     fullyQualifiedIdentifier: 'foo',
     tags: [],
     color: 'foo',
     icon: 'foo',
     _links: { homepage: { href: 'http://acme.com' } },
+    networks: ["vpn"],
   };
 
   it('should avoid displaying undefined and null value', () => {
@@ -67,10 +68,11 @@ describe('<Item />', () => {
     const { container, queryByText } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
     fireEvent.click(getByTitle(container, 'API / Interfaces'));
 
+    console.log(mock);
     //then
     await waitFor(() => expect(mock).toHaveBeenCalledTimes(1));
-    await waitFor(() => expect(queryByText('content')).toBeInTheDocument());
-    await waitFor(() => expect(queryByText('network1')).toBeInTheDocument());
+    await waitFor(() => expect(queryByText('vpn')).toBeInTheDocument());
+    await waitFor(() => expect(queryByText('Networks')).toBeInTheDocument());
     await waitFor(() => expect(queryByText('spring boot')).toBeInTheDocument());
     await waitFor(() => expect(queryByText('ops guys')).toBeInTheDocument());
   });
