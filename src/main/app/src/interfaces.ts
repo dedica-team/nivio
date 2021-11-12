@@ -217,10 +217,11 @@ export interface IFacet {
   /**
    * different label counts
    */
-  labelValues: ILabelValue[];
+  labelValues: IChipValue[];
 }
 
-export interface ILabelValue {
+export interface IChipValue {
   label: string;
   value: number;
+  color: string;
 }
