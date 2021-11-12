@@ -224,16 +224,16 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
   const frameworks: ReactElement | null = item ? getLabelsWithPrefix('framework', item) : null;
   const interfaces: ReactElement | null = item ? getInterfaces(item) : null;
 
+  let network: ReactElement[] = [];
+  item?.networks.forEach((networkValue) =>
+    network.push(
+      <ListItem key={networkValue}>
+        <ListItemText primary={networkValue} />
+      </ListItem>
+    )
+  );
   const networks =
-    item?.networks && item?.networks.length
-      ? item.networks.map((networkValue) => (
-          <List dense={true}>
-            <ListItem>
-              <ListItemText primary={networkValue} />
-            </ListItem>
-          </List>
-        ))
-      : null;
+    item?.networks && item?.networks.length ? <List dense={true}> {network}</List> : null;
 
   const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
