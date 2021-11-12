@@ -110,4 +110,8 @@ public class ItemApiModel extends ComponentApiModel {
         return getFullyQualifiedIdentifier().toString();
     }
 
+    public String[] getNetworks() {
+        return item.getNetworks();
+    }
+
 }

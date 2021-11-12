@@ -321,5 +321,24 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         return changes;
     }
 
+    public String[] getNetworks() {
+        return getLabels("networks.").values().toArray(new String[0]);
+    }
+
+    /**
+     * Adds all networks.
+     *
+     * @param networks to add
+     */
+    public void setNetworks(String[] networks) {
+
+        for (String network : networks) {
+            if (StringUtils.hasLength(network)) {
+                network = network.toLowerCase();
+                setLabel("networks." + network, network);
+            }
+        }
+    }
+
 
 }
