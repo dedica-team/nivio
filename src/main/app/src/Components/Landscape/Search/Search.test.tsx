@@ -70,7 +70,7 @@ describe('<Search />', () => {
     const { container, getByText, getByDisplayValue } = render(
       <LandscapeContext.Provider value={landscapeContextValue}>
         <MockTheme>
-          <Search showSearch={() => {}} setSidebarContent={() => {}} />
+          <Search searchTerm={''} setSearchTerm={() => {}} />
         </MockTheme>
       </LandscapeContext.Provider>
     );
@@ -80,8 +80,5 @@ describe('<Search />', () => {
     await waitFor(() => getByText('foo'));
     const fooFacetChip = getByText('foo');
     expect(fooFacetChip).toBeInTheDocument();
-
-    fireEvent.click(fooFacetChip);
-    expect(getByDisplayValue('owner:foo')).toBeInTheDocument();
   });
 });

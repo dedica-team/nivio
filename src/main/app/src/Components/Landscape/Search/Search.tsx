@@ -133,21 +133,18 @@ const Search: React.FC<SearchProps> = ({setSearchTerm, searchTerm}) => {
    */
   useEffect(() => {
     const addFacet = (dim: string, label: string): string => {
-      let current = searchInput.current;
-      if (current && dim.length && label.length) {
-        if (label.indexOf(' ') !== -1) {
-          label = `"${label}"`; //to handle whitespace
-        }
-        if (searchTerm.length === 0) {
-          setSearchTerm(`${dim}:${label}`);
-          setRender(true);
-        } else if (searchTerm.indexOf(dim + ':' + label) === -1) {
-          setSearchTerm(`${searchTerm} ${dim}:${label}`);
-          setRender(true);
-        } else {
-          setSearchTerm(searchTerm.replace(`${dim}:${label}`, '').trim());
-        }
-
+      if (label.indexOf(' ') !== -1) {
+        label = `"${label}"`; //to handle whitespace
+      }
+      if (searchTerm.length === 0) {
+        setSearchTerm(`${dim}:${label}`);
+        setRender(true);
+      } else if (searchTerm.indexOf(dim + ':' + label) === -1) {
+        setSearchTerm(`${searchTerm} ${dim}:${label}`);
+        setRender(true);
+      } else {
+        setSearchTerm(searchTerm.replace(`${dim}:${label}`, '').trim());
+      }
       return searchTerm;
     };
 
