@@ -1,4 +1,4 @@
-import React, { Fragment, ReactElement, useCallback, useEffect, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ReactHtmlParser, { domToReact } from 'html-react-parser';
 
@@ -14,8 +14,14 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     manualContainer: {
       overflowY: 'scroll',
-      height: '90vh',
-      marginRight: 340,
+      height: '99vh',
+      padding: 10,
+      display: 'flex',
+    },
+    sidebar: {
+      width: 330,
+      flexShrink: 1,
+      flexGrow: 1,
     },
     link: {
       color: theme.palette.primary.contrastText,
@@ -44,7 +50,7 @@ const Man: React.FC<Props> = ({ setPageTitle }) => {
   if (usage == null || typeof usage == 'undefined') usage = 'index';
   const [topic, setTopic] = useState<string>(usage + '');
   const [side, setSide] = useState<any>(null);
-  const [sidebarContent, setSidebarContent] = useState<ReactElement[]>([]);
+  const [sidebarContent, setSidebarContent] = useState<any>([]);
   const [emptyManual, setemptyManual] = useState<boolean>(false);
 
   const handleSphinxSidebar = useCallback(
@@ -95,7 +101,7 @@ const Man: React.FC<Props> = ({ setPageTitle }) => {
   );
 
   useEffect(() => {
-   // setSidebarContent(null);
+    setSidebarContent(null);
     setPageTitle('Manual');
   }, [setSidebarContent, setPageTitle]);
 
@@ -106,7 +112,7 @@ const Man: React.FC<Props> = ({ setPageTitle }) => {
   }, [usage]);
 
   useEffect(() => {
-    //setSidebarContent(side);
+    setSidebarContent(side);
   }, [side, setSidebarContent]);
 
   useEffect(() => {
@@ -191,6 +197,7 @@ const Man: React.FC<Props> = ({ setPageTitle }) => {
   return (
     <Box className={emptyManual ? classes.manualContainer : classes.emptyManualContainer}>
       {html}
+      <div className={classes.sidebar}>{sidebarContent}</div>
     </Box>
   );
 };
