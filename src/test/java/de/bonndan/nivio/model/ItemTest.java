@@ -1,6 +1,5 @@
 package de.bonndan.nivio.model;
 
-import de.bonndan.nivio.input.kubernetes.InputFormatHandlerKubernetes;
 import de.bonndan.nivio.assessment.Assessable;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +10,8 @@ import java.util.Set;
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class ItemTest {
 
@@ -52,7 +52,6 @@ class ItemTest {
 
         assertNotEquals(s1, s3);
     }
-
 
 
     @Test
@@ -165,35 +164,17 @@ class ItemTest {
     }
 
     @Test
-    void getNetworks() {
+    void getAndSetNetworks() {
 
         Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
         Item s1 = getTestItem("g1", "a", landscape);
         String[] setNetworks = {"lan", "vpn"};
         s1.setNetworks(setNetworks);
-
-//        Item s1 = getTestItemBuilder("g1", "a")
-//                .withNetworks(new String[]{"lan", "vpn"})
-//                .build();
-
         String[] networks = s1.getNetworks();
-        assertThat(networks.length).isEqualTo(2);
-        assertThat(networks).isEqualTo(new String[]{"lan", "vpn"});
+        assertThat(networks)
+                .hasSize(2)
+                .isEqualTo(new String[]{"lan", "vpn"});
     }
 
-    @Test
-    void setNetworks() {
-
-        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
-        Item s1 = getTestItem("g1", "a", landscape);
-
-//        Item s1 = getTestItemBuilder("g1", "a")
-//                .withNetworks(new String[]{"lan", "vpn"})
-//                .build();
-        String[] networks = {"lan", "vpn"};
-        s1.setNetworks(networks);
-        assertThat(networks.length).isEqualTo(2);
-        assertThat(networks).isEqualTo(new String[]{"lan", "vpn"});
-    }
 
 }

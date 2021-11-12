@@ -23,7 +23,6 @@ public final class ItemBuilder {
     private String type;
     private URI address;
     private Map<String, String> labels = new HashMap<>();
-//    private String[] networks;
 
     private ItemBuilder() {
     }
@@ -109,7 +108,6 @@ public final class ItemBuilder {
         item.getLabels().putAll(labels);
         item.setRelations(relations);
         item.setInterfaces(interfaces);
-//        item.setNetworks(networks);
         return item;
     }
 
@@ -117,11 +115,6 @@ public final class ItemBuilder {
         this.labels = labels;
         return this;
     }
-
-//    public ItemBuilder withNetworks(String[] networks) {
-//        this.networks = networks;
-//        return this;
-//    }
 
     public String getGroup() {
         return group;
