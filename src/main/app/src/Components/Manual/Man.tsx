@@ -14,8 +14,14 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     manualContainer: {
       overflowY: 'scroll',
-      height: '90vh',
-      marginRight: 340,
+      height: '99vh',
+      padding: 10,
+      display: 'flex',
+    },
+    sidebar: {
+      width: 330,
+      flexShrink: 1,
+      flexGrow: 1,
     },
     link: {
       color: theme.palette.primary.contrastText,
@@ -27,14 +33,13 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  setSidebarContent: Function;
   setPageTitle: Function;
 }
 
 /**
  * Renders nivio manual, depending on which url param is given
  */
-const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
+const Man: React.FC<Props> = ({ setPageTitle }) => {
   const classes = useStyles();
   const [html, setHtml] = useState<JSX.Element | JSX.Element[]>(
     <React.Fragment>
@@ -45,6 +50,7 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   if (usage == null || typeof usage == 'undefined') usage = 'index';
   const [topic, setTopic] = useState<string>(usage + '');
   const [side, setSide] = useState<any>(null);
+  const [sidebarContent, setSidebarContent] = useState<any>([]);
   const [emptyManual, setemptyManual] = useState<boolean>(false);
 
   const handleSphinxSidebar = useCallback(
@@ -191,6 +197,7 @@ const Man: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
   return (
     <Box className={emptyManual ? classes.manualContainer : classes.emptyManualContainer}>
       {html}
+      <div className={classes.sidebar}>{sidebarContent}</div>
     </Box>
   );
 };

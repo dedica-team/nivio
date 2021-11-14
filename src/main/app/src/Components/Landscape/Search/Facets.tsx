@@ -101,8 +101,6 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
 
   return (
     <>
-      <br />
-      <br />
       <AppBar position={'static'}>
         <Tabs value={value} onChange={changeTab} variant={'fullWidth'} aria-label={'search tabs'}>
           <Tab

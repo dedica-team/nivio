@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   small?: boolean;
+  sticky?: boolean;
   fullyQualifiedItemIdentifier?: string;
 }
 
@@ -62,7 +63,7 @@ interface Props {
  *
  *
  */
-const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
+const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) => {
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const [compact, setCompact] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(true);
@@ -236,15 +237,17 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
           <MoreVertSharp />
         </IconButton>
       ) : null}
-      <IconButton
-        size={'small'}
-        onClick={() => {
-          setItem(undefined);
-          setVisible(false);
-        }}
-      >
-        <Close />
-      </IconButton>
+      {!sticky ? (
+        <IconButton
+          size={'small'}
+          onClick={() => {
+            setItem(undefined);
+            setVisible(false);
+          }}
+        >
+          <Close />
+        </IconButton>
+      ) : null}
     </>
   );
   const assessmentSummary = item

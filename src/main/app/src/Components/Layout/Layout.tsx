@@ -1,106 +1,94 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 
 import Navigation from '../Navigation/Navigation';
 import { Drawer, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Search from '../Landscape/Search/Search';
+import IconButton from '@material-ui/core/IconButton';
+import { CloseSharp } from '@material-ui/icons';
+import { LandscapeContext } from "../../Context/LandscapeContext";
 
 interface Props {
   children: string | ReactElement | ReactElement[];
-  sidebarContent: string | ReactElement | ReactElement[];
-  setSidebarContent: Function;
   pageTitle?: string;
   logo?: string;
   version?: string;
 }
 
-const searchSupportWidth = 360;
-const sidebarWidth = 280;
+const drawerWidth = 360;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       display: 'flex',
     },
-    sideBar: {
-      position: 'absolute',
-      right: 0,
-      top: 5,
-      width: sidebarWidth,
-      overflow: 'auto',
-      maxHeight: 'calc(100vh - 50px)',
-      zIndex: 5000,
-    },
-
-    outer: {
-      display: 'flex',
-      flexDirection: 'row',
-    },
-    content: {
-      position: 'relative',
-    },
+    outer: {},
     flexItem: {
       flexShrink: 1,
       flexGrow: 1,
     },
     main: {
+      display: 'flex',
+      flexDirection: 'row',
+    },
+    children: {
       flexShrink: 1,
       flexGrow: 2,
       width: '1000px',
     },
-    searchSupport: {
+    sidebar: {
       backgroundColor: theme.palette.primary.dark,
-      width: searchSupportWidth,
+      width: drawerWidth,
       padding: 5,
+      top: 0,
+      position: 'absolute',
     },
   })
 );
 
 /**
  * Contains our site layout, Navigation on top, content below
- * @param param0
  */
-const Layout: React.FC<Props> = ({
-  children,
-  sidebarContent,
-  setSidebarContent,
-  pageTitle,
-  logo,
-  version,
-}) => {
+const Layout: React.FC<Props> = ({ children, pageTitle, logo, version }) => {
   const classes = useStyles();
-  const [searchSupport, setSearchSupport] = React.useState<boolean>(false);
+  const [sidebarContent, setSidebarContent] = useState<ReactElement | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const landscapeContext = useContext(LandscapeContext);
+
+  useEffect(() => {
+    const isOpen = sidebarContent != null && landscapeContext.identifier != null;
+    setSidebarOpen(isOpen);
+  }, [sidebarContent, landscapeContext]);
 
   return (
     <div className={classes.outer}>
+      <Navigation
+        logo={logo}
+        version={version}
+        setSidebarContent={setSidebarContent}
+        pageTitle={pageTitle}
+      />
       <main className={classes.main}>
-        <Navigation
-          logo={logo}
-          version={version}
-          setSidebarContent={setSidebarContent}
-          setSearchSupport={setSearchSupport}
-          searchSupport={searchSupport}
-          pageTitle={pageTitle}
-        />
-        <div className={classes.content}>
-          <div className={classes.sideBar}>{sidebarContent}</div>
-          {children}
-        </div>
+        <div className={classes.children}>{children}</div>
+        <Drawer
+          classes={{
+            paper: classes.sidebar,
+          }}
+          style={{
+            width: sidebarOpen ? drawerWidth : 0,
+            position: 'relative',
+          }}
+          anchor={'right'}
+          variant={'persistent'}
+          open={sidebarOpen}
+        >
+          <div style={{ position: 'absolute', right: '0.5em' }}>
+            <IconButton onClick={() => setSidebarOpen(false)} size={'small'}>
+              <CloseSharp />
+            </IconButton>
+          </div>
+          {sidebarContent}
+        </Drawer>
       </main>
-      <Drawer
-        classes={{
-          paper: classes.searchSupport,
-        }}
-        style={{ width: searchSupport ? searchSupportWidth : 0 }}
-        anchor={'right'}
-        variant={'persistent'}
-        open={searchSupport}
-        onClose={() => {
-          setSearchSupport(false);
-        }}
-      >
-        <Search setSidebarContent={setSidebarContent} showSearch={setSearchSupport} />
-      </Drawer>
     </div>
   );
 };

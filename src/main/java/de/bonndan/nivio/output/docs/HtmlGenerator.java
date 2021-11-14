@@ -168,11 +168,11 @@ public abstract class HtmlGenerator {
                         //interfaces
                         iff(hasInterfaces, h4("Interfaces")),
                         iff(hasInterfaces, ul().with(
-                                item.getInterfaces().stream().map(interfaceItem -> li(
+                                item.getInterfaces().stream().filter(Objects::nonNull).map(interfaceItem -> li(
                                         span(interfaceItem.getDescription()),
                                         iff(StringUtils.hasLength(interfaceItem.getFormat()), span(", format: " + interfaceItem.getFormat())),
                                         iff(interfaceItem.getUrl() != null && StringUtils.hasLength(interfaceItem.getUrl().toString()),
-                                                span(", ").with(a(interfaceItem.getUrl().toString()).attr("href", interfaceItem.getUrl().toString()))
+                                                span(", ").with(a(String.valueOf(interfaceItem.getUrl())).attr("href", String.valueOf(interfaceItem.getUrl())))
                                         )
                                 ))
                         ))

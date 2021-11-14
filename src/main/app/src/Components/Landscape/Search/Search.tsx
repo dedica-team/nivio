@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 
-import { Box, Input, InputAdornment, Theme } from '@material-ui/core';
+import { Theme } from '@material-ui/core';
 import { get } from '../../../utils/API/APIClient';
 import { IFacet, IItem } from '../../../interfaces';
 import Item from '../Modals/Item/Item';
-import { Backspace, Close, SearchOutlined } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import componentStyles from '../../../Resources/styling/ComponentStyles';
@@ -18,8 +17,14 @@ import { LandscapeContext } from '../../../Context/LandscapeContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    searchContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+    },
     search: {
       margin: 0,
+      marginBottom: '1em',
       padding: 0,
       borderRadius: 50,
       height: '2.5em',
@@ -33,24 +38,29 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingRight: 5,
       width: '100%',
     },
+    searchResults: {
+      marginTop: '1em',
+      flexGrow: 1,
+      flexShrink: 1,
+      overflowY: 'auto',
+    },
   })
 );
 
-interface PropsInterface {
-  setSidebarContent: Function;
-  showSearch: Function;
+interface SearchProps {
+  searchTerm: string;
+  setSearchTerm: Function;
 }
 
-const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => {
+const Search: React.FC<SearchProps> = ({setSearchTerm, searchTerm}) => {
   const [currentLandscape, setCurrentLandscape] = useState<string>('');
   const [results, setResults] = useState<IItem[]>([]);
+  const [renderedResults, setRenderedResults] = useState<any>([]);
   const [facets, setFacets] = useState<IFacet[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [searchSupport, setSearchSupport] = useState<any>(null);
   const [render, setRender] = useState<boolean>(false);
   const classes = useStyles();
   const componentClasses = componentStyles();
-  const searchInput = React.useRef<HTMLDivElement>(null);
   const landscapeContext = useContext(LandscapeContext);
   const theme = useTheme();
 
@@ -58,7 +68,10 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
    * Search on search term change, set results.
    */
   useEffect(() => {
-    if (searchTerm.length < 2) return;
+    if (searchTerm.length < 2) {
+      setResults([]);
+      return;
+    }
 
     get(
       '/api/landscape/' +
@@ -74,7 +87,29 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
       .catch((reason) => {
         console.warn(reason);
       });
-  }, [searchTerm, landscapeContext.identifier]);
+  }, [searchTerm, landscapeContext.identifier, render]);
+
+  useEffect(() => {
+    if (results && results.length > 0) {
+      setRenderedResults(
+        results.map((value1: IItem) => (
+          <Item
+            small={true}
+            sticky={true}
+            key={`item_${value1.fullyQualifiedIdentifier}_${Math.random()}`}
+            fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier}
+          />
+        ))
+      );
+      return;
+    }
+
+    let msg = '...';
+    if (searchTerm && searchTerm.length) {
+      msg = 'No results found.';
+    }
+    setRenderedResults(<>{msg}</>);
+  }, [results, searchTerm]);
 
   useEffect(() => {
     facets.forEach((facet) => {
@@ -98,23 +133,18 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
    */
   useEffect(() => {
     const addFacet = (dim: string, label: string): string => {
-      let current = searchInput.current;
-      if (current && dim.length && label.length) {
-        if (label.indexOf(' ') !== -1) {
-          label = `"${label}"`; //to handle whitespace
-        }
-        if (searchTerm.length === 0) {
-          setSearchTerm(`${dim}:${label}`);
-          setRender(true);
-        } else if (searchTerm.indexOf(dim + ':' + label) === -1) {
-          setSearchTerm(`${searchTerm} ${dim}:${label}`);
-          setRender(true);
-        } else {
-          setSearchTerm(searchTerm.replace(`${dim}:${label}`, '').trim());
-        }
-        current.focus();
+      if (label.indexOf(' ') !== -1) {
+        label = `"${label}"`; //to handle whitespace
       }
-
+      if (searchTerm.length === 0) {
+        setSearchTerm(`${dim}:${label}`);
+        setRender(true);
+      } else if (searchTerm.indexOf(dim + ':' + label) === -1) {
+        setSearchTerm(`${searchTerm} ${dim}:${label}`);
+        setRender(true);
+      } else {
+        setSearchTerm(searchTerm.replace(`${dim}:${label}`, '').trim());
+      }
       return searchTerm;
     };
 
@@ -133,39 +163,19 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
     };
 
     setSearchSupport(<Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />);
-  }, [setSearchSupport, searchTerm, facets, componentClasses.card, currentLandscape]);
-
-  /**
-   * Update rendered search results
-   */
-  useEffect(() => {
-    const searchResult = results.map((value1: IItem) => (
-      <Item
-        small={true}
-        key={`item_${value1.fullyQualifiedIdentifier}_${Math.random()}`}
-        fullyQualifiedItemIdentifier={value1.fullyQualifiedIdentifier}
-      />
-    ));
-    setSidebarContent(<>{searchResult}</>);
-  }, [results, setSidebarContent, render]);
+  }, [setSearchSupport, searchTerm, setSearchTerm, facets, componentClasses.card, currentLandscape]);
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
       return;
     }
-    const result: IFacet[] | null = await get('/api/landscape/' + identifier + '/facets/').catch(
-      (reason) => console.warn(reason)
-    );
+    const result: IFacet[] | null = await get(
+      '/api/landscape/' + identifier + '/facets/'
+    ).catch((reason) => console.warn(reason));
 
     if (!result) return;
 
     setFacets(result);
-  }
-
-  function clear() {
-    setSearchTerm('');
-    setResults([]);
-    setSidebarContent(null);
   }
 
   useEffect(() => {
@@ -178,47 +188,26 @@ const Search: React.FC<PropsInterface> = ({ setSidebarContent, showSearch }) => 
 
   if (currentLandscape == null || currentLandscape !== landscapeContext.identifier) {
     setFacets([]);
-    setSearchTerm('');
     setCurrentLandscape(landscapeContext.identifier);
   }
 
   return (
-    <div>
-      <div style={{ float: 'right', padding: 2 }}>
-        <IconButton size={'small'}>
-          <HelpTooltip style={{ float: 'right', padding: 2 }} content={<SearchHelp />} />
-        </IconButton>
-        <IconButton size={'small'} onClick={() => showSearch(false)} title={'Close search'}>
-          <Close />
-        </IconButton>
+    <div className={classes.searchContainer}>
+      <div>
+        <Typography variant={'h5'}>
+          Search
+          <IconButton size={'small'}>
+            <HelpTooltip style={{ float: 'right', padding: 2 }} content={<SearchHelp />} />
+          </IconButton>
+        </Typography>
       </div>
-      <Typography variant={'h5'}>Search</Typography>
-      <Box className={classes.search}>
-        <Input
-          disableUnderline={true}
-          className={classes.searchField}
-          type={'text'}
-          value={searchTerm}
-          ref={searchInput}
-          placeholder={'...'}
-          onChange={(event) => setSearchTerm(event.target.value)}
-          startAdornment={
-            <IconButton size={'small'} onClick={() => setRender(!render)} title={'Show results'}>
-              <SearchOutlined />
-            </IconButton>
-          }
-          endAdornment={
-            searchTerm.length ? (
-              <InputAdornment position='end'>
-                <IconButton size={'small'} onClick={() => clear()} title={'Clear'}>
-                  <Backspace />
-                </IconButton>
-              </InputAdornment>
-            ) : null
-          }
-        />
-        {searchSupport}
-      </Box>
+
+      {searchSupport}
+      <div className={classes.searchResults}>
+        <Typography variant={'h5'}>Results</Typography>
+        <Typography variant={'h6'}>{searchTerm}</Typography>
+        {renderedResults}
+      </div>
     </div>
   );
 };
