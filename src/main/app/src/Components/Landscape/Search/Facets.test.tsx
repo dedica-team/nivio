@@ -78,7 +78,7 @@ describe('<Facets />', () => {
     );
 
     fireEvent.click(getByTitle(container, 'Export current search as report'));
-    expect(getByText('Report')).toBeInTheDocument();
+    expect(getByText('report')).toBeInTheDocument();
 
     fireEvent.click(getByTitle(container, 'Export as report'));
     expect(saveSearch.mock.calls.length).toBe(1);
