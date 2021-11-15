@@ -123,9 +123,9 @@ public abstract class HtmlGenerator {
                                 statusValues.stream().map(statusItem ->
                                         join(
                                                 dt(FormatUtils.nice(
-                                                                statusItem.getField().endsWith("." + item.getIdentifier())
-                                                                        ? statusItem.getField().replace("." + item.getIdentifier(), "")
-                                                                        : statusItem.getField()
+                                                        statusItem.getField().endsWith("." + item.getIdentifier())
+                                                                ? statusItem.getField().replace("." + item.getIdentifier(), "")
+                                                                : statusItem.getField()
                                                         ) + " "
                                                 ).with(
                                                         span(" " + statusItem.getStatus() + " ")

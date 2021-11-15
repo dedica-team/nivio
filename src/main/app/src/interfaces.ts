@@ -109,6 +109,7 @@ export interface IItem {
   color?: string;
   icon: string;
   _links?: ILinks;
+  networks: Array<string>;
 }
 
 export interface IInterfaces {

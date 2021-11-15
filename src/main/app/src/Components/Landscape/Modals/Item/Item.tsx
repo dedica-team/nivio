@@ -225,6 +225,17 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
   const frameworks: ReactElement | null = item ? getLabelsWithPrefix('framework', item) : null;
   const interfaces: ReactElement | null = item ? getInterfaces(item) : null;
 
+  let network: ReactElement[] = [];
+  item?.networks.forEach((networkValue) =>
+    network.push(
+      <ListItem key={networkValue}>
+        <ListItemText primary={networkValue} />
+      </ListItem>
+    )
+  );
+  const networks =
+    item?.networks && item?.networks.length ? <List dense={true}> {network}</List> : null;
+
   const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
   };
@@ -255,11 +266,10 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
     : null;
   const tags =
     item?.tags && item?.tags.length
-      ? item.tags.map((value) => (
-          <Chip size={'small'} label={value} key={value} className={extraClasses.tag} />
+      ? item.tags.map((tagValue) => (
+          <Chip size={'small'} label={tagValue} key={tagValue} className={extraClasses.tag} />
         ))
       : null;
-
   if (!visible) return null;
 
   return (
@@ -413,6 +423,13 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                 <div className='frameworks'>
                   <Typography variant={'h6'}>Frameworks</Typography>
                   {frameworks}
+                </div>
+              ) : null}
+
+              {networks ? (
+                <div className='networks'>
+                  <Typography variant={'h6'}>Networks</Typography>
+                  {networks}
                 </div>
               ) : null}
 
