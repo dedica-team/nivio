@@ -7,9 +7,9 @@ assignees: ''
 
 ---
 
-- [] check screenshots
-- [] test-click through app, reports
-- [] check docs
-- [] gather changelog
-- [] merge to master and tag
-- [] AFTER release increment pom and package.json versions
+- [ ] check screenshots
+- [ ] test-click through app, reports
+- [ ] check docs
+- [ ] gather changelog
+- [ ] merge to master and tag
+- [ ] AFTER release increment pom and package.json versions
