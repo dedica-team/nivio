@@ -108,21 +108,21 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
         <Tabs value={value} onChange={changeTab} variant={'fullWidth'} aria-label={'search tabs'}>
           <Tab
             icon={<ListAlt />}
-            label={'fields'}
+            label={<MappedString mapKey={'fields'} />}
             style={{ minWidth: 50 }}
             title={'Fields'}
             {...a11yProps(0, 'search')}
           />
           <Tab
             icon={<Speed />}
-            label={'kpis'}
+            label={<MappedString mapKey={'kpis'} />}
             style={{ minWidth: 50 }}
             title={'KPIs'}
             {...a11yProps(1, 'search')}
           />
           <Tab
             icon={<Print />}
-            label={'Report'}
+            label={<MappedString mapKey={'report'} />}
             title={'Export current search as report'}
             style={{ minWidth: 50 }}
             {...a11yProps(2, 'search')}
