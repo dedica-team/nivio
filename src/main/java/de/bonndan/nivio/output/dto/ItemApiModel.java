@@ -111,7 +111,7 @@ public class ItemApiModel extends ComponentApiModel {
     }
 
     public String[] getNetworks() {
-        return item.getNetworks();
+        return item.getLabels(Label.network).values().toArray(new String[0]);
     }
 
 }

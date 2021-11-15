@@ -162,19 +162,4 @@ class ItemTest {
         assertThat(children.get(0)).isEqualTo(forTesting);
 
     }
-
-    @Test
-    void getAndSetNetworks() {
-
-        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
-        Item s1 = getTestItem("g1", "a", landscape);
-        String[] setNetworks = {"lan", "vpn"};
-        s1.setNetworks(setNetworks);
-        String[] networks = s1.getNetworks();
-        assertThat(networks)
-                .hasSize(2)
-                .isEqualTo(new String[]{"lan", "vpn"});
-    }
-
-
 }
