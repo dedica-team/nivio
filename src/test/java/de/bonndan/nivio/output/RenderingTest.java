@@ -9,9 +9,10 @@ import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
+import de.bonndan.nivio.output.icons.ExternalIcons;
+import de.bonndan.nivio.output.icons.ExternalIconsProvider;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
-import de.bonndan.nivio.output.icons.ExternalIcons;
 import de.bonndan.nivio.output.layout.AppearanceProcessor;
 import de.bonndan.nivio.output.layout.LayoutService;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
@@ -21,6 +22,7 @@ import de.bonndan.nivio.output.map.svg.MapStyleSheetFactory;
 import de.bonndan.nivio.output.map.svg.SVGRenderer;
 import de.bonndan.nivio.util.RootPath;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
@@ -66,13 +68,14 @@ public abstract class RenderingTest {
         /*
          rendering stuff
          */
-        IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService));
+        ExternalIcons externalIcons = integrationTestSupport.getExternalIcons();
+        IconService iconService = new IconService(new LocalIcons(), externalIcons);
 
         MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
         when(mapStyleSheetFactory.getMapStylesheet(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn("");
-        appearanceProcessor = new AppearanceProcessor(new IconService(new LocalIcons(""), new ExternalIcons(httpService)));
+        appearanceProcessor = new AppearanceProcessor(iconService);
         layoutService = new LayoutService(
-                new AppearanceProcessor(iconService),
+                appearanceProcessor,
                 new OrganicLayouter(),
                 new SVGRenderer(mapStyleSheetFactory),
                 new RenderingRepository(),

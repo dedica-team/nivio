@@ -11,10 +11,13 @@ import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
+import de.bonndan.nivio.output.icons.ExternalIcons;
+import de.bonndan.nivio.output.icons.ExternalIconsProvider;
 import de.bonndan.nivio.util.RootPath;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -35,6 +38,7 @@ public class IntegrationTestSupport {
     private final Indexer indexer;
     private final ObjectMapper objectMapper;
     private final FileFetcher fileFetcher;
+    private final ExternalIcons externalIcons;
 
     public IntegrationTestSupport() {
         httpService = mock(HttpService.class);
@@ -53,6 +57,9 @@ public class IntegrationTestSupport {
         linkHandlerFactory = mock(LinkHandlerFactory.class);
         indexer = new Indexer(landscapeRepository, linkHandlerFactory, eventPublisher);
         objectMapper = new ApplicationConfig(null).jackson2ObjectMapperBuilder().build();
+        ExternalIconsProvider icons = new ExternalIconsProvider();
+        icons.setUrls(new HashMap<>());
+        externalIcons = new ExternalIcons(httpService, icons);
     }
 
     /**
@@ -104,6 +111,10 @@ public class IntegrationTestSupport {
      */
     public FileFetcher getFileFetcher() {
         return fileFetcher;
+    }
+
+    public ExternalIcons getExternalIcons() {
+        return externalIcons;
     }
 
     /**

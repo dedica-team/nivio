@@ -45,7 +45,7 @@ LandscapeDescription
      - null
    * - icon
      - String
-     - 
+     - An icon or logo url
      - optional, defaults to null
      - null
    * - identifier
@@ -60,7 +60,7 @@ LandscapeDescription
      - null
    * - labels
      - Map
-     - Additional labels for the landscape.
+     - 
      - optional, defaults to null
      - null
    * - links

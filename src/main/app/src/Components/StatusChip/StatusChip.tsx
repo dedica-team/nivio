@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme: Theme) =>
       borderRadius: 5,
       backgroundColor: theme.palette.secondary.dark,
       display: 'flex',
-      justifyContent: 'center'
+      justifyContent: 'center',
     },
     green: {
       backgroundColor: 'green',

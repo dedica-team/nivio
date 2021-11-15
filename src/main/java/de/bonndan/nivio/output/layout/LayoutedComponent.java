@@ -77,8 +77,8 @@ public class LayoutedComponent {
         this.opposites = opposites;
     }
 
-    public LayoutedComponent(@NonNull final Component component) {
-        this.component = Objects.requireNonNull(component);
+    public LayoutedComponent(Component component) {
+        this.component = component;
         opposites = new ArrayList<>();
     }
 

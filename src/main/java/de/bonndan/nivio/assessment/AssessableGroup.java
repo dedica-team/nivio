@@ -3,17 +3,15 @@ package de.bonndan.nivio.assessment;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.Labeled;
 import org.springframework.lang.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This is a decorator for {@link Group} when creating {@link de.bonndan.nivio.assessment.Assessment}s.
  */
-public class AssessableGroup implements Assessable {
+public class AssessableGroup implements Assessable, Labeled {
 
     @NonNull
     private final Group group;
@@ -42,5 +40,21 @@ public class AssessableGroup implements Assessable {
     @NonNull
     public List<? extends Assessable> getChildren() {
         return items;
+    }
+
+    @Override
+    public String getLabel(String key) {
+        return group.getLabel(key);
+    }
+
+    @Override
+    @NonNull
+    public Map<String, String> getLabels() {
+        return group.getLabels();
+    }
+
+    @Override
+    public void setLabel(String key, String value) {
+        // the decorator is not meant to be modified
     }
 }

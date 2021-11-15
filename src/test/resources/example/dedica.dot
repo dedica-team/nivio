@@ -43,10 +43,26 @@ digraph G {
         nivio_fill= "http://dedica.team/images/marvinschoening.jpeg"
     ]
 
+     daniel2 [
+                nivio_name = "Daniel Brünker",
+                nivio_contact= "daniel.bruenker@dedica.team",
+                nivio_group= dedica
+                nivio_fill= "https://dedica.team/images/danielbruenker.jpeg"
+            ]
+
+    jennifer [
+            nivio_name = "Jennifer Arps",
+            nivio_contact= "jennifer@dedica.team",
+            nivio_group= dedica
+            nivio_fill= "https://dedica.team/images/jenniferarps.jpg"
+        ]
+
   dedica -> matthias [nivio_type = provider]
   dedica -> daniel [nivio_type = provider]
   dedica -> jan [nivio_type = provider]
   dedica -> michelle [nivio_type = provider]
   dedica -> marvin [nivio_type = provider]
+  dedica -> daniel2 [nivio_type = provider]
+  dedica -> jennifer [nivio_type = provider]
 
 }

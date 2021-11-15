@@ -1,26 +1,23 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { IGroup } from '../../../interfaces';
 import StatusChip from '../../StatusChip/StatusChip';
 import Button from '@material-ui/core/Button';
 import {
   AppBar,
-  Card,
-  CardHeader,
+  Box,
   Tab,
   Table,
   TableBody,
   TableCell,
   TableRow,
   Tabs,
+  Typography,
 } from '@material-ui/core';
 import { LandscapeContext } from '../../../Context/LandscapeContext';
-import componentStyles from '../../../Resources/styling/ComponentStyles';
-import IconButton from '@material-ui/core/IconButton';
-import { Close, Settings, Warning } from '@material-ui/icons';
+import { Settings, Warning } from '@material-ui/icons';
 import ItemAvatar from '../Modals/Item/ItemAvatar';
 import GroupAvatar from '../Modals/Group/GroupAvatar';
 import { a11yProps, TabPanel } from '../Utils/TabUtils';
-import CardContent from '@material-ui/core/CardContent';
 import KPIConfigLayout from './KPIConfigLayout';
 
 interface Props {
@@ -33,8 +30,6 @@ interface Props {
  */
 const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
   const context = useContext(LandscapeContext);
-  const componentClasses = componentStyles();
-  const [visible, setVisible] = useState<boolean>(true);
   const [currentTab, setCurrentTab] = React.useState(0);
 
   const getItems = (group: IGroup) => {
@@ -76,7 +71,6 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
 
     return groups.map((group) => {
       if (group.items.length === 0) {
-        console.log('Skipping group without items');
         return null;
       }
 
@@ -108,7 +102,10 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
             {group.name}
           </TableCell>
           <TableCell>
-            <StatusChip name={`${groupAssessment.identifier}: ${groupAssessment.field}`} status={groupAssessment.status} />
+            <StatusChip
+              name={`${groupAssessment.identifier}: ${groupAssessment.field}`}
+              status={groupAssessment.status}
+            />
             {groupAssessment.message}
           </TableCell>
         </TableRow>
@@ -119,8 +116,6 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
   const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
     setCurrentTab(newValue);
   };
-
-  if (!visible) return null;
 
   const kpiConfig = context.landscape?.kpis;
   let kpis: JSX.Element[] = [];
@@ -134,19 +129,10 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
   }
 
   return (
-    <Card className={componentClasses.card}>
-      <CardHeader
-        title={'Status'}
-        action={
-          <IconButton
-            onClick={() => {
-              setVisible(false);
-            }}
-          >
-            <Close />
-          </IconButton>
-        }
-      />
+    <Box>
+      <div>
+        <Typography variant={'h5'}>Status</Typography>
+      </div>
       <AppBar position={'static'}>
         <Tabs
           value={currentTab}
@@ -170,20 +156,18 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
           />
         </Tabs>
       </AppBar>
-      <CardContent>
-        <TabPanel value={currentTab} index={0} prefix={'statusbar'}>
-          <Table>
-            <TableBody>
-              {context.landscape ? getGroups(context.landscape.groups) : null}
-              {context.landscape?.groups.map((group) => getItems(group))}
-            </TableBody>
-          </Table>
-        </TabPanel>
-        <TabPanel value={currentTab} index={1} prefix={'statusbar'}>
-          {kpis}
-        </TabPanel>
-      </CardContent>
-    </Card>
+      <TabPanel value={currentTab} index={0} prefix={'statusbar'}>
+        <Table>
+          <TableBody>
+            {context.landscape ? getGroups(context.landscape.groups) : null}
+            {context.landscape?.groups.map((group) => getItems(group))}
+          </TableBody>
+        </Table>
+      </TabPanel>
+      <TabPanel value={currentTab} index={1} prefix={'statusbar'}>
+        {kpis}
+      </TabPanel>
+    </Box>
   );
 };
 

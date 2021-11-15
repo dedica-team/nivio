@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.dto;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.Source;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,8 @@ class LandscapeApiModelTest {
         landscapeConfig = Mockito.mock(LandscapeConfig.class);
         processLog = Mockito.mock(ProcessLog.class);
         var landscape = new Landscape("test", Map.of(), "testName", "testContact", "testOwner", "testDescription", source, landscapeConfig, processLog, Map.of());
-        landscape.setLabel("icon", "icon");
+        landscape.setLabel(Label.icon, "icon");
+        landscape.setLabel(Label._icondata, "icon,base64");
         landscapeApiModel = new LandscapeApiModel(landscape);
     }
 
@@ -67,7 +69,7 @@ class LandscapeApiModelTest {
 
     @Test
     void getIcon() {
-        assertThat(landscapeApiModel.getIcon()).isEqualTo("icon");
+        assertThat(landscapeApiModel.getIcon()).isEqualTo("icon,base64");
     }
 
     @Test

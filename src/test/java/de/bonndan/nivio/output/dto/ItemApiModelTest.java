@@ -4,8 +4,10 @@ import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 
@@ -97,7 +99,7 @@ class ItemApiModelTest {
         Item s1 = itemTemplate.build();
         ItemApiModel itemApiModel = new ItemApiModel(s1, group);
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
-        assertThat(itemApiModel.getName()).isEqualTo("");
+        assertThat(itemApiModel.getName()).isEmpty();
     }
 
     @Test
@@ -170,6 +172,16 @@ class ItemApiModelTest {
         ItemApiModel itemApiModel = new ItemApiModel(s1, group);
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
         assertThat(itemApiModel.getTags()).isEqualTo(new String[0]);
+    }
+
+    @Test
+    void hasLinks() throws MalformedURLException {
+        Item s1 = itemTemplate.withLinks(Map.of("foo", new Link(new URL("http://acme.mcom")))).build();
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        assertThat(itemApiModel.getLinks()).hasSize(1);
+        assertThat(itemApiModel.getLinks().get("foo"))
+                .isNotNull()
+                .satisfies(link -> assertThat(link.getHref().toString()).hasToString("http://acme.mcom"));
     }
 
     @Test

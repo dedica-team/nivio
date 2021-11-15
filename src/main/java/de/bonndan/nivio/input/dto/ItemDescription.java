@@ -1,7 +1,6 @@
 package de.bonndan.nivio.input.dto;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -199,6 +198,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
 
     @NonNull
     @Override
+    @JsonAnyGetter
     public Map<String, String> getLabels() {
         return labels;
     }
@@ -323,20 +323,8 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     }
 
     @Override
-    @JsonAnyGetter
     public String getLabel(String key) {
         return labels.get(key);
-    }
-
-    @Override
-    public void setLabel(String key, String value) {
-        labels.put(key, value);
-    }
-
-    @JsonAnySetter
-    @Override
-    public void setLabel(@NonNull String key, Object value) {
-        ComponentDescription.super.setLabel(key, value);
     }
 
     /**

@@ -2,6 +2,7 @@ identifier: petclinic
 name: ACME Pet Clinic
 contact: mail@acme.io
 description: The Pet clinic IT landscape
+icon: https://dedica.team/images/logo_orange_weiss.png
 
 config:
   greedy: false

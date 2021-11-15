@@ -268,7 +268,7 @@ class SeedConfigurationFactoryTest {
 
     @Test
     void testUnknownProperty() {
-        assertDoesNotThrow(() ->factory.fromFile(new File(FILE_PATH + "example_typo.yml")));
+        assertThrows(ReadingException.class, () ->factory.fromFile(new File(FILE_PATH + "example_typo.yml")));
     }
 
     @Test

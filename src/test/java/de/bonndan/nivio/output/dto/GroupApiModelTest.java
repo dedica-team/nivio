@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.dto;
 
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Label;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,8 +17,9 @@ class GroupApiModelTest {
 
     @BeforeEach
     void setUp() {
-        var group = new Group("test", "test", "testOwner", "testDescription", "testContact", "testIcon", "testColor");
+        var group = new Group("test", "test", "testOwner", "testDescription", "testContact", "testColor");
         groupApiModel = new GroupApiModel(group, new HashSet<>());
+        group.setLabel(Label._icondata, "iconurl,base64");
     }
 
     @Test
@@ -67,7 +69,7 @@ class GroupApiModelTest {
 
     @Test
     void getIcon() {
-        assertThat(groupApiModel.getIcon()).isEqualTo("testIcon");
+        assertThat(groupApiModel.getIcon()).isEqualTo("iconurl,base64");
     }
 
     @Test

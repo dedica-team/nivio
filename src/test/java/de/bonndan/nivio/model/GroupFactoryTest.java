@@ -5,14 +5,14 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GroupFactoryTest {
+class GroupFactoryTest {
 
 
     @Test
-    public void testMerge() {
-        Group one = new Group("a", "test", "Joe", "a", null, null, "#123123");
+    void testMerge() {
+        Group one = new Group("a", "test", "Joe", null, "mail", "#123123");
 
-        Group two = new Group("a", "test", "Matt", null, "mail", null, null);
+        Group two = new Group("a", "test", "Matt", "a", null, null);
 
         Group merged = GroupFactory.merge(one, two);
 
@@ -23,8 +23,8 @@ public class GroupFactoryTest {
     }
 
     @Test
-    public void usesExistingValues() {
-        Group in = new Group("a", "foo", "Matt", "abc", "mail", "one", "00ffee");
+    void usesExistingValues() {
+        Group in = new Group("a", "foo", "Matt", "mail", "one", "00ffee");
 
         Group merge = GroupFactory.merge(in, null);
         assertThat(merge).isNotNull();
@@ -38,9 +38,9 @@ public class GroupFactoryTest {
     }
 
     @Test
-    public void mergeSetsDefaultColor() {
-        Group one = new Group("a", "test", "Matt", null, "mail", null, null);
-        Group two = new Group("a", "test", "Matt", null, "mail", null, null);
+    void mergeSetsDefaultColor() {
+        Group one = new Group("a", "test", "Matt", "mail", null, null);
+        Group two = new Group("a", "test", "Matt", "mail", null, null);
 
         Group merge = GroupFactory.merge(one, two);
         assertThat(merge).isNotNull();

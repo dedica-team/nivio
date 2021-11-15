@@ -1,4 +1,4 @@
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import { Badge } from '@material-ui/core';
 import { Notifications } from '@material-ui/icons';
@@ -16,30 +16,32 @@ interface Props {
  *
  */
 const Notification: React.FC<Props> = ({ setSidebarContent }) => {
-
   const classes = componentStyles();
-  const [newChanges, setNewChanges] = useState<Boolean>(false);
-  const [renderedChanges, setRenderedChanges] = useState<ReactElement | null>(null);
+  const [newChanges, setNewChanges] = useState<boolean>(false);
   const landscapeContext = useContext(LandscapeContext);
-  
 
   /**
    * render changes,
    */
   useEffect(() => {
-    if (landscapeContext.notification == null) return;
-    setRenderedChanges(<Changes notification={landscapeContext.notification} />);
+    if (landscapeContext.changes == null) return;
     setNewChanges(true);
-  }, [landscapeContext.notification]);
+  }, [landscapeContext.changes]);
 
   return (
-    <Badge color='secondary' variant='dot' overlap='circular' invisible={!newChanges} title={'Recent changes'}>
+    <Badge
+      color='secondary'
+      variant='dot'
+      overlap='circular'
+      invisible={!newChanges}
+      title={'Recent changes'}
+    >
       <IconButton
         size={'small'}
         className={classes.navigationButton}
         onClick={() => {
           setNewChanges(false);
-          return setSidebarContent(renderedChanges);
+          return setSidebarContent(<Changes />);
         }}
       >
         <Notifications />

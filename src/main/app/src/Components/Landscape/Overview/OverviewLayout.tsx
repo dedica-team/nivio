@@ -7,8 +7,7 @@ import { ILandscape } from '../../../interfaces';
 import dateFormat from 'dateformat';
 import { withBasePath } from '../../../utils/API/BasePath';
 import IconButton from '@material-ui/core/IconButton';
-import { Assignment, FormatListBulleted, MapOutlined } from '@material-ui/icons';
-import Log from '../Modals/Log/Log';
+import { Assignment, MapOutlined } from '@material-ui/icons';
 import CardContent from '@material-ui/core/CardContent';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import componentStyles from '../../../Resources/styling/ComponentStyles';
@@ -16,9 +15,11 @@ import componentStyles from '../../../Resources/styling/ComponentStyles';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     overview: {
-      marginLeft: 10,
-      width: 'calc(100% - 300px)',
-      paddingTop: 0
+      margin: '0.5em',
+      marginRight: '0.5em',
+      marginLeft: '0em',
+      paddingRight: '0.5em',
+      width: '100vw',
     },
     card: {
       marginBottom: 5,
@@ -41,20 +42,18 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   landscapes: ILandscape[] | null | undefined;
-  setSidebarContent: Function;
 }
 
 /**
  * Displays all available landscapes and provides all needed navigation
  */
 
-const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
+const OverviewLayout: React.FC<Props> = ({ landscapes }) => {
   const classes = useStyles();
   const componentClasses = componentStyles();
   let content: ReactElement[] = [<Box>Loading landscapes...</Box>];
 
   if (Array.isArray(landscapes) && landscapes.length) {
-
     content = landscapes.map((landscape) => {
       let itemCount = 0;
       landscape.groups?.forEach((group) => (itemCount += group.items.length));
@@ -76,13 +75,6 @@ const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
             classes={{ subheader: componentClasses.cardSubheader }}
             action={
               <React.Fragment>
-                <IconButton
-                  aria-label='log'
-                  title={'process log'}
-                  onClick={() => setSidebarContent(<Log landscape={landscape} />)}
-                >
-                  <FormatListBulleted />
-                </IconButton>
                 <IconButton
                   aria-label='map'
                   title={'SVG Export'}
@@ -123,7 +115,6 @@ const OverviewLayout: React.FC<Props> = ({ landscapes, setSidebarContent }) => {
         </Card>
       );
     });
-
   }
 
   return (

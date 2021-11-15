@@ -2,6 +2,8 @@ identifier: dedica.team
 name: The dedica Consulting Team
 contact: info@dedica.team
 description: The IT consulting team.
+icon: https://dedica.team/images/logo_orange_weiss.png
+
 
 config:
   branding:

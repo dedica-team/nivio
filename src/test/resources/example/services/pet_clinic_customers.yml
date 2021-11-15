@@ -3,6 +3,7 @@ groups:
     owner: Louis Armstrong
     description: The customer portal and self service
     color: "#234234"
+    icon: https://dedica.team/images/logo_orange_weiss.png
 
 items:
   - identifier: web

@@ -40,17 +40,18 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
         <TableRow key={facet.dim}>
           <TableCell style={{ width: '25%' }}>{facet.dim}</TableCell>
           <TableCell>
-            {facet.labelValues.map((lv) => (
+            {facet.labelValues.map((cv) => (
               <Chip
                 onClick={() => {
-                  addFacet(facet.dim, lv.label);
+                  addFacet(facet.dim, cv.label);
                 }}
                 variant={'default'}
-                color={'primary'} style={{margin: 1}}
+                color={'primary'}
+                style={{ margin: 1, backgroundColor: cv.color }}
                 size={'small'}
-                key={facet.dim + '' + lv.label}
-                label={lv.label}
-                avatar={<Avatar>{lv.value}</Avatar>}
+                key={facet.dim + '' + cv.label}
+                label={cv.label}
+                avatar={<Avatar>{cv.value}</Avatar>}
               />
             ))}
           </TableCell>
@@ -73,17 +74,17 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
         <TableRow key={facet.dim}>
           <TableCell style={{ width: '35%' }}>{getLabel(facet)}</TableCell>
           <TableCell>
-            {facet.labelValues.map((lv) => (
+            {facet.labelValues.map((cv) => (
               <Chip
                 onClick={() => {
-                  addFacet(facet.dim, lv.label);
+                  addFacet(facet.dim, cv.label);
                 }}
                 variant={'default'}
                 size={'small'}
-                key={facet.dim + '' + lv.label}
-                label={lv.label}
-                style={{ backgroundColor: lv.label, color: 'black', margin: 1 }}
-                avatar={<Avatar>{lv.value}</Avatar>}
+                key={facet.dim + '' + cv.label}
+                label={cv.label}
+                style={{ backgroundColor: cv.label, color: 'black', margin: 1 }}
+                avatar={<Avatar>{cv.value}</Avatar>}
               />
             ))}
           </TableCell>
@@ -94,14 +95,12 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
   const exportCurrent = () => {
     const elementById = document.getElementById('report-title');
     // @ts-ignore
-    const title = elementById != null ? elementById.value :'';
-    saveSearch({reportType: 'owners', title: title})
-  }
+    const title = elementById != null ? elementById.value : '';
+    saveSearch({ reportType: 'owners', title: title });
+  };
 
   return (
     <>
-      <br />
-      <br />
       <AppBar position={'static'}>
         <Tabs value={value} onChange={changeTab} variant={'fullWidth'} aria-label={'search tabs'}>
           <Tab
@@ -142,11 +141,18 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
       </TabPanel>
 
       <TabPanel value={value} index={2} prefix={'search'}>
-        <TextField id="report-title" label="Report title" variant="standard" fullWidth={true} /><br />
-        <br/>
-        <Button title={'Export as report'} fullWidth={true} onClick={() => exportCurrent()} variant={"outlined"}>Export as report</Button>
+        <TextField id='report-title' label='Report title' variant='standard' fullWidth={true} />
+        <br />
+        <br />
+        <Button
+          title={'Export as report'}
+          fullWidth={true}
+          onClick={() => exportCurrent()}
+          variant={'outlined'}
+        >
+          Export as report
+        </Button>
       </TabPanel>
-
     </>
   );
 };

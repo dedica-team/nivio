@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeConfig;
 import org.springframework.lang.NonNull;
@@ -73,7 +74,7 @@ public class LandscapeApiModel extends ComponentApiModel {
     }
 
     public String getIcon() {
-        return landscape.getIcon();
+        return landscape.getLabel(Label._icondata);
     }
 
     /**

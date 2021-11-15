@@ -34,30 +34,31 @@ const defaultThemeVariables: ThemeOptions = {
     h6: {
       fontFamily: 'monospace',
       textTransform: 'uppercase',
-      fontSize: '1rem'
+      fontSize: '1rem',
     },
   },
   overrides: {
     MuiTableCell: {
-      root: {  //This can be referred from Material UI API documentation.
+      root: {
+        //This can be referred from Material UI API documentation.
         padding: '5px',
       },
     },
     MuiCssBaseline: {
-      "@global": {
-        "*::-webkit-scrollbar": {
-          maxWidth: "5px"
+      '@global': {
+        '*::-webkit-scrollbar': {
+          maxWidth: '5px',
         },
-        "*::-webkit-scrollbar-thumb": {
-          backgroundColor: 'rgba(255, 255, 255, 0.75)'
+        '*::-webkit-scrollbar-thumb': {
+          backgroundColor: 'rgba(255, 255, 255, 0.75)',
         },
-        "*:hover": {
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: 'rgba(255, 255, 255, 0.75)'
-          }
-        }
-      }
-    }
-  }
+        '*:hover': {
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'rgba(255, 255, 255, 0.75)',
+          },
+        },
+      },
+    },
+  },
 };
 export default defaultThemeVariables;

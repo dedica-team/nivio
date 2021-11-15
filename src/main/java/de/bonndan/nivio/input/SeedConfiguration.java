@@ -4,12 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.bonndan.nivio.input.dto.ComponentDescription;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.Source;
-import de.bonndan.nivio.model.IdentifierValidation;
-import de.bonndan.nivio.model.LandscapeConfig;
-import de.bonndan.nivio.model.Link;
+import de.bonndan.nivio.model.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,7 @@ import java.util.*;
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
 @JsonIgnoreType
-public class SeedConfiguration {
+public class SeedConfiguration implements ComponentDescription {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SeedConfiguration.class);
 
@@ -104,6 +103,11 @@ public class SeedConfiguration {
         return identifier;
     }
 
+    @Override
+    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
+        return FullyQualifiedIdentifier.from(getIdentifier());
+    }
+
     @Nullable
     public String getName() {
         return name;
@@ -120,6 +124,11 @@ public class SeedConfiguration {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        this.setLabel(Label.icon, icon);
     }
 
     public String getDescription() {

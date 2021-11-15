@@ -1,49 +1,49 @@
-import React, {ReactElement, useContext, useEffect, useState} from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    AppBar,
-    Card,
-    CardHeader,
-    Link,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    Tab,
-    Table,
-    TableBody,
-    TableCell,
-    TableRow,
-    Tabs,
-    Theme,
-    Typography,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  AppBar,
+  Card,
+  CardHeader,
+  Link,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  Tabs,
+  Theme,
+  Typography,
 } from '@material-ui/core';
-import {get} from '../../../../utils/API/APIClient';
+import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
-import {IAssessmentProps, IItem} from '../../../../interfaces';
-import {getItem, getLabels, getLabelsWithPrefix} from '../../Utils/utils';
+import { IAssessmentProps, IItem } from '../../../../interfaces';
+import { getItem, getLabelsWithPrefix, getMappedLabels } from '../../Utils/utils';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
-import {Close, Details, ExpandMore, Info, MoreVertSharp, Power} from '@material-ui/icons';
+import { Close, Details, ExpandMore, Info, MoreVertSharp, Power } from '@material-ui/icons';
 import Chip from '@material-ui/core/Chip';
-import {createStyles, makeStyles} from '@material-ui/core/styles';
-import {LocateFunctionContext} from '../../../../Context/LocateFunctionContext';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import ItemAvatar from './ItemAvatar';
-import {LandscapeContext} from '../../../../Context/LandscapeContext';
-import {a11yProps, TabPanel} from '../../Utils/TabUtils';
+import { LandscapeContext } from '../../../../Context/LandscapeContext';
+import { a11yProps, TabPanel } from '../../Utils/TabUtils';
 
 const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        labels: {
-            backgroundColor: theme.palette.primary.main,
-        },
-        tag: {
-            backgroundColor: theme.palette.primary.dark,
-            padding: 0,
-            fontSize: '0.7rem',
+  createStyles({
+    labels: {
+      backgroundColor: theme.palette.primary.main,
+    },
+    tag: {
+      backgroundColor: theme.palette.primary.dark,
+      padding: 0,
+      fontSize: '0.7rem',
       height: 16,
     },
     interfaces: {
@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   small?: boolean;
+  sticky?: boolean;
   fullyQualifiedItemIdentifier?: string;
 }
 
@@ -62,7 +63,7 @@ interface Props {
  *
  *
  */
-const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
+const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) => {
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const [compact, setCompact] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(true);
@@ -141,12 +142,9 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
   };
 
   useEffect(() => {
-    const reset = (item: IItem) => {
-      setItem(item);
-    };
     if (!item && fullyQualifiedItemIdentifier) {
       get(`/api/${fullyQualifiedItemIdentifier}`).then((loaded) => {
-        reset(loaded);
+        setItem(loaded);
       });
     }
   }, [item, fullyQualifiedItemIdentifier]);
@@ -231,7 +229,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
     setValue(newValue);
   };
 
-  const labels = item ? getLabels(item) : null;
+  const labels = item ? getMappedLabels(item) : null;
   const extend = (
     <>
       {small ? (
@@ -239,15 +237,17 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
           <MoreVertSharp />
         </IconButton>
       ) : null}
-      <IconButton
-        size={'small'}
-        onClick={() => {
-          setItem(undefined);
-          setVisible(false);
-        }}
-      >
-        <Close />
-      </IconButton>
+      {!sticky ? (
+        <IconButton
+          size={'small'}
+          onClick={() => {
+            setItem(undefined);
+            setVisible(false);
+          }}
+        >
+          <Close />
+        </IconButton>
+      ) : null}
     </>
   );
   const assessmentSummary = item
@@ -380,11 +380,11 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
 
               {assessmentStatus.length > 0 ? (
                 <>
-                    <br/>
-                    <Typography variant={'h6'}>Status</Typography>
-                    <Table>
-                        <TableBody>{assessmentStatus}</TableBody>
-                    </Table>
+                  <br />
+                  <Typography variant={'h6'}>Status</Typography>
+                  <Table>
+                    <TableBody>{assessmentStatus}</TableBody>
+                  </Table>
                 </>
               ) : null}
             </TabPanel>

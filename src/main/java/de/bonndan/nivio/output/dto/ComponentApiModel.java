@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.model.Link;
@@ -13,6 +14,7 @@ public abstract class ComponentApiModel {
     protected Map<String, Link> hateoasLinks = new HashMap<>();
 
     @Schema(name = "_links")
+    @JsonProperty("_links")
     public Map<String, Link> getLinks() {
         return hateoasLinks;
     }

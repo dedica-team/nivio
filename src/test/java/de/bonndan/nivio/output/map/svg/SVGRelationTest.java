@@ -70,22 +70,6 @@ class SVGRelationTest {
         assertTrue(render1.contains("circle"));
     }
 
-    //@Disabled // dataflow has no endpoint marker anymore/yet
-    @Test
-    void dataflowRelationsContainsEndpoint() {
-
-        //given
-        Relation relation = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
-
-        //when
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", relation, statusValue);
-        DomContent render = svgRelation.render();
-
-        //then
-        String render1 = render.render();
-        assertTrue(render1.contains("url(#" + SVGRelation.MARKER_ID + ")"));
-    }
-
     @Test
     void relationIsNotDashedWhenNotPlanned() {
 
@@ -126,8 +110,9 @@ class SVGRelationTest {
 
         //then
         String render1 = render.render();
-        assertThat(render1).contains(DATA_IDENTIFIER);
-        assertThat(render1).contains(VISUAL_FOCUS_UNSELECTED);
+        assertThat(render1)
+                .contains(DATA_IDENTIFIER)
+                .contains(VISUAL_FOCUS_UNSELECTED);
     }
 
     @Test

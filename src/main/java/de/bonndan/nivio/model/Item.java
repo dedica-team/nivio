@@ -1,6 +1,9 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.input.ItemRelationProcessor;
@@ -88,8 +91,8 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         this.owner = owner;
         this.contact = contact;
         this.description = description;
-        this.address = address;
         this.type = type;
+        this.address = address;
         this.layer = layer;
 
         //these are effectively mutable

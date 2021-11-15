@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ILandscape } from '../../../../interfaces';
 import { get } from '../../../../utils/API/APIClient';
 

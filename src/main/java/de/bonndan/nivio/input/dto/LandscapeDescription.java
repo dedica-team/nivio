@@ -3,6 +3,7 @@ package de.bonndan.nivio.input.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.input.ComponentDescriptionValues;
 import de.bonndan.nivio.model.LandscapeConfig;
@@ -73,7 +74,7 @@ public class LandscapeDescription implements ComponentDescription {
     private final Map<String, Link> links = new HashMap<>();
 
     @Schema(description = "Additional labels for the landscape.")
-    private Map<String, String> labels = new HashMap<>();
+    private final Map<String, String> labels = new HashMap<>();
 
     private final Map<String, List<String>> assignTemplates = new HashMap<>();
 
@@ -139,8 +140,13 @@ public class LandscapeDescription implements ComponentDescription {
         return owner;
     }
 
+    @Schema(description = "An icon or logo url")
     public String getIcon() {
-        return null;
+        return getLabel(Label.icon);
+    }
+
+    public void setIcon(String icon) {
+        setLabel(Label.icon, icon);
     }
 
     public String getColor() {
@@ -270,23 +276,14 @@ public class LandscapeDescription implements ComponentDescription {
     }
 
     @NonNull
+    @JsonAnyGetter
     public Map<String, String> getLabels() {
         return labels;
     }
 
     @Override
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
-    }
-
-    @Override
     public String getLabel(String key) {
         return getLabels().get(key);
-    }
-
-    @Override
-    public void setLabel(String key, String value) {
-        getLabels().put(key, value);
     }
 
     public Map<String, ItemDescription> getTemplates() {

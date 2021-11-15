@@ -5,11 +5,9 @@ import HelpTooltip from './HelpTooltip';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 
 it('should render HelpTooltip with given content', () => {
-  const baseDom = render(
-    <HelpTooltip content={<div>foo</div>} />
-  );
+  const baseDom = render(<HelpTooltip content={<div>foo</div>} />);
   const icon = baseDom.getByLabelText('help');
   fireEvent.mouseOver(icon);
 
-  waitFor(() => expect(baseDom.findByText("foo")).toBeInTheDocument())
+  waitFor(() => expect(baseDom.findByText('foo')).toBeInTheDocument());
 });
