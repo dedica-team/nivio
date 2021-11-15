@@ -25,14 +25,14 @@ describe('<Item />', () => {
     contact: 'foo',
     relations: Irelations,
     interfaces: [],
-    labels: {'framework.spring boot': '2.2', 'team': 'ops guys' },
+    labels: { 'framework.spring boot': '2.2', 'team': 'ops guys' },
     type: 'foo',
     fullyQualifiedIdentifier: 'foo',
     tags: [],
     color: 'foo',
     icon: 'foo',
     _links: { homepage: { href: 'http://acme.com' } },
-    networks: ["vpn"],
+    networks: ['vpn'],
   };
 
   it('should avoid displaying undefined and null value', () => {
