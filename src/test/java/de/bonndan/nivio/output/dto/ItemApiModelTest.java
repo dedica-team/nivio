@@ -190,12 +190,10 @@ class ItemApiModelTest {
         assertThat(itemApiModel.toString()).hasToString("l1/g1/a");
     }
 
-//    @Test
-//    void getNetworks() {
-//        Item s1 = itemTemplate.build();
-//        s1.setNetworks(new String[]{"vpn"});
-//        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
-//        assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
-//        assertThat(itemApiModel.getNetworks()).isEqualTo(new String[]{"vpn"});
-//    }
+    @Test
+    void getNetworks() {
+        Item s1 = itemTemplate.build();
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        assertThat(itemApiModel.getNetworks()).isEqualTo(new String[0]);
+    }
 }
