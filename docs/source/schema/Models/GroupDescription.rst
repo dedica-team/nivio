@@ -40,7 +40,7 @@ A group of items. Could be used as bounded context, for instance.
      - shipping
    * - labels
      - Map
-     - Labels related to the group.
+     - 
      - optional, defaults to null
      - null
    * - links

@@ -1,24 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from "react";
 
-import { ILandscape, ILandscapeLinks } from '../../../interfaces';
+import {ILandscape, ILandscapeLinks} from '../../../interfaces';
 import OverviewLayout from './OverviewLayout';
-import { get } from '../../../utils/API/APIClient';
-import Events from '../../Events/Events';
-import { createStyles, darken, Theme } from '@material-ui/core';
-import { Redirect } from 'react-router-dom';
+import {get} from '../../../utils/API/APIClient';
+import {createStyles, darken, Theme} from '@material-ui/core';
+import {Redirect} from 'react-router-dom';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { withBasePath } from '../../../utils/API/BasePath';
+import {withBasePath} from '../../../utils/API/BasePath';
 import Avatar from '@material-ui/core/Avatar';
-
-/**
- * Logic Component to display all available landscapes
- */
-
-interface Props {
-  setSidebarContent: Function;
-  setPageTitle: Function;
-  welcomeMessage: string;
-}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,7 +35,16 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Overview: React.FC<Props> = ({ setSidebarContent, setPageTitle, welcomeMessage }) => {
+
+interface Props {
+  setPageTitle: Function;
+  welcomeMessage: string;
+}
+
+/**
+ * Logic Component to display all available landscapes
+ */
+const Overview: React.FC<Props> = ({ setPageTitle, welcomeMessage }) => {
   const [landscapes, setLandscapes] = useState<ILandscape[]>([]);
   const [landscapeLinks, setLandscapeLinks] = useState<ILandscapeLinks | null>();
   const [loadLandscapes, setLoadLandscapes] = useState<boolean>(true);
@@ -73,9 +71,8 @@ const Overview: React.FC<Props> = ({ setSidebarContent, setPageTitle, welcomeMes
 
   useEffect(() => {
     getLandscapes();
-    setSidebarContent(<Events />);
     setPageTitle(welcomeMessage);
-  }, [getLandscapes, setSidebarContent, setPageTitle, welcomeMessage]);
+  }, [getLandscapes, setPageTitle, welcomeMessage]);
 
   const loading = (
     <div className={classes.loading}>
@@ -92,7 +89,7 @@ const Overview: React.FC<Props> = ({ setSidebarContent, setPageTitle, welcomeMes
 
   return landscapes.length > 0 ? (
     landscapesCount > 1 ? (
-      <OverviewLayout landscapes={landscapes} setSidebarContent={setSidebarContent} />
+      <OverviewLayout landscapes={landscapes} />
     ) : (
       <Redirect to={`/landscape/${landscapes[0]?.identifier}`} />
     )

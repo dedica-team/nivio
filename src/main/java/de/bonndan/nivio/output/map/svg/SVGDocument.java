@@ -1,10 +1,7 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.*;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.Relation;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexMap;
@@ -146,7 +143,7 @@ public class SVGDocument extends Component {
     @Nullable
     private DomContent getLogo(SVGDimension dimension) {
         DomContent logo = null;
-        String logoUrl = landscape.getIcon(); //has been set by appearance resolver
+        String logoUrl = landscape.getLabel(Label._icondata); //has been set by appearance resolver
         if (StringUtils.hasLength(logoUrl)) {
             logo = SvgTagCreator.image()
                     .attr("xlink:href", logoUrl)

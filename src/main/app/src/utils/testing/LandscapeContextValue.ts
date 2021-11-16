@@ -1,4 +1,11 @@
-import { IAssessment, IGroup, IItem, ILandscape } from '../../interfaces';
+import {
+  IAssessment,
+  IChanges,
+  IGroup,
+  IItem,
+  ILandscape,
+  INotificationMessage,
+} from '../../interfaces';
 import { LandscapeContextType } from '../../Context/LandscapeContext';
 
 const items: IItem[] = [
@@ -15,6 +22,7 @@ const items: IItem[] = [
     tags: [],
     type: 'service',
     icon: '',
+    networks: [],
   },
 ];
 
@@ -70,10 +78,20 @@ const assessments: IAssessment = {
   },
 };
 
+const changes: INotificationMessage = {
+  timestamp: '',
+  date: new Date(),
+  landscape: 'test',
+  level: 'info',
+  type: 'ProcessingFinishedEvent',
+  changelog: { changes: {} },
+};
+
 const landscapeContextValue: LandscapeContextType = {
   identifier: 'test',
   landscape: landscape,
   assessment: assessments,
+  changes: changes,
   next: typeof jest != 'undefined' ? jest.fn() : () => {},
   getAssessmentSummary: (fqi) => {
     return assessments.results[fqi].find((assessmentResult) => assessmentResult.summary) || null;

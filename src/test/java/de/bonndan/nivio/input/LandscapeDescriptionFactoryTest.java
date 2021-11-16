@@ -13,6 +13,7 @@ import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.util.RootPath;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -35,6 +36,7 @@ class LandscapeDescriptionFactoryTest {
     final private String FILE_PATH = RootPath.get() + SEPARATOR + "src" + SEPARATOR + "test" + SEPARATOR + "resources" + SEPARATOR + "example" + SEPARATOR;
     final private String FILE_PATH_ENV = FILE_PATH + "example_env.yml";
     final private String FILE_PATH_TEMPLATES = FILE_PATH + "example_templates.yml";
+
 
     private LandscapeDescriptionFactory factory;
 
@@ -69,7 +71,8 @@ class LandscapeDescriptionFactoryTest {
 
     @Test
     void readFails() {
-        assertThrows(ReadingException.class, () -> new LandscapeDescriptionFactory(mock(FileFetcher.class))
+        LandscapeDescriptionFactory landscapeDescriptionFactory = new LandscapeDescriptionFactory(mock(FileFetcher.class));
+        assertThrows(ReadingException.class, () -> landscapeDescriptionFactory
                 .fromString("", ""));
     }
 
@@ -271,8 +274,10 @@ class LandscapeDescriptionFactoryTest {
     }
 
     @Test
+    @DisplayName("Unknown field in yaml")
     void testUnknownProperty() {
-        factory.fromYaml(new File(FILE_PATH + "example_typo.yml"));
+        File file = new File(FILE_PATH + "example_typo.yml");
+        assertThrows(ReadingException.class, () -> factory.fromYaml(file));
     }
 
     @Test
@@ -316,4 +321,18 @@ class LandscapeDescriptionFactoryTest {
         assertThat(sourceReference.getFormat()).isEqualTo("nivio");
         assertThat(sourceReference.getContent()).isEqualTo("body");
     }
+
+    @Test
+    void addLogoLandscape() throws IOException {
+        // given
+        File file = new File(FILE_PATH + "inout.yml");
+        String yaml = new String(Files.readAllBytes(file.toPath()));
+
+        // when
+        LandscapeDescription landscapeDescription = factory.fromString(yaml, file.toString());
+
+        // then
+        assertThat(landscapeDescription.getIcon()).isEqualTo("https://dedica.team/images/logo_orange_weiss.png");
+    }
+
 }

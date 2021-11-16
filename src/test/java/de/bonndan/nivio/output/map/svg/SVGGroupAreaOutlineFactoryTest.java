@@ -29,7 +29,7 @@ class SVGGroupAreaOutlineFactoryTest {
         Item item1 = getTestItem("foo", "bar");
         Item item2 = getTestItem("foo", "baz");
 
-        Group foo = new Group("foo", "landscapeIdentifier", null, null, null, null, "005500");
+        Group foo = new Group("foo", "landscapeIdentifier", null, null, null, "005500");
         foo.addOrReplaceItem(item1);
         foo.addOrReplaceItem(item2);
 

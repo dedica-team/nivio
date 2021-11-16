@@ -42,7 +42,6 @@ public class Group implements Component, Labeled, Linked {
     private final String owner;
     private final String description;
     private final String contact;
-    private final String icon;
     private final String color;
 
     /**
@@ -51,7 +50,6 @@ public class Group implements Component, Labeled, Linked {
      * @param owner               owner
      * @param description         description
      * @param contact             contact
-     * @param icon                icon
      * @param color               color, usually member items inherit it
      */
     public Group(@NonNull final String identifier,
@@ -59,7 +57,6 @@ public class Group implements Component, Labeled, Linked {
                  @Nullable final String owner,
                  @Nullable final String description,
                  @Nullable final String contact,
-                 @Nullable final String icon,
                  @Nullable final String color
     ) {
         if (!StringUtils.hasLength(identifier)) {
@@ -74,12 +71,11 @@ public class Group implements Component, Labeled, Linked {
         this.owner = owner;
         this.description = description;
         this.contact = contact;
-        this.icon = icon;
         this.color = Color.safe(color);
     }
 
     public Group(@NonNull final String identifier, @NonNull final String landscapeIdentifier) {
-        this(identifier, landscapeIdentifier, null, null, null, null, Color.getGroupColor(identifier));
+        this(identifier, landscapeIdentifier, null, null, null, Color.getGroupColor(identifier));
     }
 
     @Override
@@ -156,7 +152,7 @@ public class Group implements Component, Labeled, Linked {
 
     @Override
     public String getIcon() {
-        return icon;
+        return getLabel(Label._icondata);
     }
 
     @Override

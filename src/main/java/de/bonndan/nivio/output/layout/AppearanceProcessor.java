@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.util.URLHelper;
@@ -13,8 +14,6 @@ import java.util.Objects;
 
 /**
  * Resolves color and icons for {@link de.bonndan.nivio.model.Component}
- *
- *
  */
 @Service
 public class AppearanceProcessor {
@@ -26,18 +25,31 @@ public class AppearanceProcessor {
     }
 
     public void process(@NonNull final Landscape landscape) {
-        Objects.requireNonNull(landscape).getGroupItems().forEach(group -> landscape.getItems().retrieve(group.getItems()).forEach(this::setItemAppearance));
+        Objects.requireNonNull(landscape).getGroupItems().forEach(group -> {
+            setIconFillAppearance(group);
+            landscape.getItems().retrieve(group.getItems()).forEach(this::setIconFillAppearance);
+        });
+        setIconFillAppearance(landscape);
     }
 
-    private void setItemAppearance(Item item) {
+    private void setIconFillAppearance(Labeled labeled) {
 
-        item.setLabel(Label._icondata, iconService.getIconUrl(item));
+        if (labeled instanceof Item) {
+            labeled.setLabel(Label._icondata, iconService.getIconUrl((Item) labeled));
+        } else {
+            String icon = labeled.getLabel(Label.icon);
+            if (StringUtils.hasLength(icon)) {
+                URLHelper.getURL(icon)
+                        .flatMap(iconService::getExternalUrl)
+                        .ifPresent(s -> labeled.setLabel(Label._icondata, s));
+            }
+        }
 
-        String fill = item.getLabel(Label.fill);
+        String fill = labeled.getLabel(Label.fill);
         if (StringUtils.hasLength(fill)) {
             URLHelper.getURL(fill)
                     .flatMap(iconService::getExternalUrl)
-                    .ifPresent(s -> item.setLabel(Label._filldata, s));
+                    .ifPresent(s -> labeled.setLabel(Label._filldata, s));
         }
     }
 }

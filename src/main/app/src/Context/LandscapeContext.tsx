@@ -9,6 +9,7 @@ export interface LandscapeContextType {
   readonly assessment: IAssessment | null;
   readonly identifier: string | null;
   readonly notification: INotificationMessage | null;
+  readonly changes: INotificationMessage | null;
   next: (identifier: string | null) => void;
   getAssessmentSummary: (fqi: string) => IAssessmentProps | null;
 }
@@ -18,6 +19,7 @@ export const LandscapeContext = React.createContext<LandscapeContextType>({
   assessment: null,
   identifier: null,
   notification: null,
+  changes: null,
   next: () => {},
   getAssessmentSummary: () => {
     return null;
@@ -33,10 +35,11 @@ export const LandscapeContext = React.createContext<LandscapeContextType>({
  * @param props
  * @constructor
  */
-const LandscapeContextProvider: React.FC<{}> = (props) => {
+const LandscapeContextProvider: React.FC = (props) => {
   const [landscape, setLandscape] = useState<ILandscape | null>(null);
   const [assessment, setAssessment] = useState<IAssessment | null>(null);
   const [notification, setNotification] = useState<INotificationMessage | null>(null);
+  const [changes, setChanges] = useState<INotificationMessage | null>(null);
   const [identifier, setIdentifier] = useState<string | null>(null);
 
   const backendUrl = withBasePath('/subscribe');
@@ -55,8 +58,13 @@ const LandscapeContextProvider: React.FC<{}> = (props) => {
         const subscriptions: StompSubscription[] = [];
         const eventSubscription = client.subscribe('/topic/events', (message) => {
           const notificationMessage: INotificationMessage = JSON.parse(message.body);
+
           if (notificationMessage.type === 'LayoutChangedEvent') {
             setNotification(notificationMessage);
+          }
+
+          if (notificationMessage.type === 'ProcessingFinishedEvent') {
+            setChanges(notificationMessage);
           }
         });
 
@@ -95,6 +103,7 @@ const LandscapeContextProvider: React.FC<{}> = (props) => {
       setAssessment(response);
       console.debug(`Loaded assessment data after identifier change: ${identifier}`);
     });
+    setChanges(null);
   }, [identifier]);
 
   /**
@@ -107,7 +116,7 @@ const LandscapeContextProvider: React.FC<{}> = (props) => {
     }
 
     get(`/assessment/${identifier}`).then((response) => {
-      console.log(`Loaded assessment data for ${identifier}`, response);
+      console.debug(`Loaded assessment data for ${identifier}`, response);
       setAssessment(response);
     });
   }, [identifier, notification]);
@@ -119,6 +128,7 @@ const LandscapeContextProvider: React.FC<{}> = (props) => {
         assessment: assessment,
         identifier: identifier,
         notification: notification,
+        changes: changes,
         next: (nextId) => {
           if (identifier === nextId) return;
           console.debug('New identifier', nextId);

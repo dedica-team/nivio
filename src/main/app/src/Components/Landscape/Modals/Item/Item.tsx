@@ -23,7 +23,7 @@ import {
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
 import { IAssessmentProps, IItem } from '../../../../interfaces';
-import { getItem, getLabels, getLabelsWithPrefix } from '../../Utils/utils';
+import { getItem, getLabelsWithPrefix, getMappedLabels } from '../../Utils/utils';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
 import { Close, Details, ExpandMore, Info, MoreVertSharp, Power } from '@material-ui/icons';
@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   small?: boolean;
+  sticky?: boolean;
   fullyQualifiedItemIdentifier?: string;
 }
 
@@ -62,7 +63,7 @@ interface Props {
  *
  *
  */
-const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
+const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) => {
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const [compact, setCompact] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(true);
@@ -224,11 +225,22 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
   const frameworks: ReactElement | null = item ? getLabelsWithPrefix('framework', item) : null;
   const interfaces: ReactElement | null = item ? getInterfaces(item) : null;
 
+  let network: ReactElement[] = [];
+  item?.networks.forEach((networkValue) =>
+    network.push(
+      <ListItem key={networkValue}>
+        <ListItemText primary={networkValue} />
+      </ListItem>
+    )
+  );
+  const networks =
+    item?.networks && item?.networks.length ? <List dense={true}> {network}</List> : null;
+
   const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
   };
 
-  const labels = item ? getLabels(item) : null;
+  const labels = item ? getMappedLabels(item) : null;
   const extend = (
     <>
       {small ? (
@@ -236,15 +248,17 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
           <MoreVertSharp />
         </IconButton>
       ) : null}
-      <IconButton
-        size={'small'}
-        onClick={() => {
-          setItem(undefined);
-          setVisible(false);
-        }}
-      >
-        <Close />
-      </IconButton>
+      {!sticky ? (
+        <IconButton
+          size={'small'}
+          onClick={() => {
+            setItem(undefined);
+            setVisible(false);
+          }}
+        >
+          <Close />
+        </IconButton>
+      ) : null}
     </>
   );
   const assessmentSummary = item
@@ -252,11 +266,10 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
     : null;
   const tags =
     item?.tags && item?.tags.length
-      ? item.tags.map((value) => (
-          <Chip size={'small'} label={value} key={value} className={extraClasses.tag} />
+      ? item.tags.map((tagValue) => (
+          <Chip size={'small'} label={tagValue} key={tagValue} className={extraClasses.tag} />
         ))
       : null;
-
   if (!visible) return null;
 
   return (
@@ -410,6 +423,13 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
                 <div className='frameworks'>
                   <Typography variant={'h6'}>Frameworks</Typography>
                   {frameworks}
+                </div>
+              ) : null}
+
+              {networks ? (
+                <div className='networks'>
+                  <Typography variant={'h6'}>Networks</Typography>
+                  {networks}
                 </div>
               ) : null}
 

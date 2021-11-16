@@ -60,7 +60,7 @@ List of configuration sources. Handled in the given order, latter extend/overwri
      - null
    * - labels
      - Map
-     - Key-value pair labels for an item.
+     - 
      - optional, defaults to null
      - null
    * - lifecycle

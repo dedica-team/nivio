@@ -48,6 +48,7 @@ class MessagingServiceTest {
         assertThat(value.getLevel()).isEqualTo("info");
         assertThat(value.getType()).isEqualTo("ProcessingFinishedEvent");
         assertThat(value.getLandscape()).isEqualTo("test");
+        assertThat(value.getChangelog()).isNotNull();
     }
 
     @Test

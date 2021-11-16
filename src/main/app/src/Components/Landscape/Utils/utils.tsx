@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
-import { IGroup, IItem, ILandscape, IRelation } from "../../../interfaces";
+import { IGroup, IItem, ILandscape, IRelation } from '../../../interfaces';
 import { Button, Link, List, ListItem, ListItemText } from '@material-ui/core';
+import MappedString from './MappedString';
 
 /**
  * Find an item by its fully qualified identifier.
@@ -72,7 +73,7 @@ export const getLinks = (element: IGroup | IItem): ReactElement[] => {
   return links;
 };
 
-export const getLabels = (element: IGroup | IItem | IRelation ) => {
+export const getLabels = (element: IGroup | IItem | IRelation) => {
   let labels: ReactElement[] = [];
   if (!element?.labels) {
     return null;
@@ -107,6 +108,41 @@ export const getLabels = (element: IGroup | IItem | IRelation ) => {
   return <List dense={true}>{labels}</List>;
 };
 
+export const getMappedLabels = (element: IGroup | IItem | IRelation) => {
+  let labels: ReactElement[] = [];
+  if (!element?.labels) {
+    return null;
+  }
+  Object.keys(element.labels).forEach((key) => {
+    if (element && element.labels && element.labels[key]) {
+      if (
+        key.startsWith('icon') ||
+        key.startsWith('fill') ||
+        key.startsWith('tag') ||
+        key.startsWith('framework') ||
+        key.startsWith('network') ||
+        key === 'color'
+      )
+        return;
+      if (element.labels[key] === '*') return;
+
+      labels.push(
+        <ListItem key={key}>
+          <ListItemText
+            primary={<MappedString mapKey={key} />}
+            secondary={<MappedString mapKey={element.labels[key]} />}
+            title={element.labels[key]}
+          />
+        </ListItem>
+      );
+    }
+  });
+  if (labels.length === 0) {
+    return null;
+  }
+  return <List dense={true}>{labels}</List>;
+};
+
 /**
  * Returns only the labels having the given prefix.
  * @param prefix the label prefix to filter for
@@ -124,9 +160,10 @@ export const getLabelsWithPrefix = (prefix: string, element: IGroup | IItem) => 
       const value = element.labels?.[key] || null;
       if (!value) return;
       const primary = key.replace(prefix + '.', '');
+      const secondary = value.substr(0, 150);
       labels.push(
         <ListItem key={key}>
-          <ListItemText primary={primary} secondary={value.substr(0, 150)} title={value} />
+          <ListItemText primary={primary} secondary={secondary} title={value} />
         </ListItem>
       );
     });

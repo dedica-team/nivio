@@ -12,10 +12,12 @@ describe('<Facets />', () => {
         {
           label: 'green',
           value: 12,
+          color: '#161618',
         },
         {
           label: 'red',
           value: 7,
+          color: '#161618',
         },
       ],
     },
@@ -26,10 +28,12 @@ describe('<Facets />', () => {
         {
           label: 'foo',
           value: 5,
+          color: '',
         },
         {
           label: 'bar',
           value: 7,
+          color: '#161618',
         },
       ],
     },
@@ -51,7 +55,7 @@ describe('<Facets />', () => {
     const { container, queryByText, getByText } = render(
       <Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />
     );
-    fireEvent.click(getByTitle(container, "KPIs"));
+    fireEvent.click(getByTitle(container, 'KPIs'));
 
     expect(queryByText('owner')).toBeNull();
     expect(getByText('security')).toBeInTheDocument();
@@ -84,8 +88,15 @@ describe('<Facets />', () => {
     const { getByText } = render(
       <Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />
     );
-
     fireEvent.click(getByText('foo'));
     expect(addFacet.mock.calls.length).toBe(1);
+  });
+
+  it('should call addFacet', () => {
+    const { getByText } = render(
+      <Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />
+    );
+    fireEvent.click(getByText('foo'));
+    expect(addFacet).toBeCalled();
   });
 });

@@ -2,6 +2,7 @@ identifier: nivio.internals
 name: Internal Workflows
 contact: info@dedica.team
 description: The workflow end to end
+icon: https://dedica.team/images/logo_orange_weiss.png
 
 groups:
   start:

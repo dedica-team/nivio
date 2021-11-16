@@ -1,48 +1,35 @@
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
-import { IChange, INotificationMessage } from '../../interfaces';
-import { Card, CardHeader, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
+import { IChange } from '../../interfaces';
+import { Box, Table, TableBody, TableCell, TableRow, Typography } from '@material-ui/core';
 import { get } from '../../utils/API/APIClient';
 import IconButton from '@material-ui/core/IconButton';
 import ItemAvatar from '../Landscape/Modals/Item/ItemAvatar';
 import componentStyles from '../../Resources/styling/ComponentStyles';
 import { LocateFunctionContext } from '../../Context/LocateFunctionContext';
 import GroupAvatar from '../Landscape/Modals/Group/GroupAvatar';
-import { Close, LinkOutlined } from '@material-ui/icons';
+import { LinkOutlined } from '@material-ui/icons';
 import Button from '@material-ui/core/Button';
 import { LandscapeContext } from '../../Context/LandscapeContext';
-
-interface Props {
-  notification: INotificationMessage;
-}
 
 /**
  * Displays the changes of an ProcessingFinishedEvent
  *
- * @param notification
  * @constructor
  */
-const Changes: React.FC<Props> = ({ notification }) => {
+const Changes: React.FC = () => {
   const componentClasses = componentStyles();
-  const [changes, setChanges] = useState<ReactElement[]>([]);
+  const [renderedChanges, setRenderedChanges] = useState<ReactElement[]>([]);
   const locateFunctionContext = useContext(LocateFunctionContext);
   const landscapeContext = useContext(LandscapeContext);
-  const [visible, setVisible] = useState<boolean>(true);
-
-  const close = (
-    <IconButton
-      onClick={() => {
-        setVisible(false);
-      }}
-    >
-      <Close />
-    </IconButton>
-  );
 
   /**
    * render changes, calling api for component info
    */
   useEffect(() => {
-    if (notification == null) return;
+    if (landscapeContext.changes == null || landscapeContext.changes.landscape !== landscapeContext.identifier) {
+      setRenderedChanges([]);
+      return;
+    }
 
     const getItemChange = (key: string, change: IChange): Promise<any> => {
       if (change.changeType === 'DELETED') {
@@ -137,38 +124,41 @@ const Changes: React.FC<Props> = ({ notification }) => {
       );
     };
 
-    if (notification.changelog != null) {
-      let promises: Promise<any>[] = [];
-      for (let key of Object.keys(notification.changelog.changes)) {
-        let change = notification.changelog.changes[key];
+    let promises: Promise<any>[] = [];
+    for (let key of Object.keys(landscapeContext.changes.changelog.changes)) {
+      let change = landscapeContext.changes.changelog.changes[key];
 
-        switch (change.componentType) {
-          case 'Item':
-            promises.push(getItemChange(key, change));
-            break;
-          case 'Group':
-            promises.push(getGroupChange(key, change));
-            break;
-          case 'Relation':
-            promises.push(getRelationChange(key, change));
-            break;
-        }
+      switch (change.componentType) {
+        case 'Item':
+          promises.push(getItemChange(key, change));
+          break;
+        case 'Group':
+          promises.push(getGroupChange(key, change));
+          break;
+        case 'Relation':
+          promises.push(getRelationChange(key, change));
+          break;
       }
-      Promise.all<ReactElement>(promises).then((rows) => {
-        setChanges(rows);
-      });
     }
-  }, [notification, componentClasses.card, locateFunctionContext, landscapeContext]);
-
-  if (!visible) return null;
+    Promise.all<ReactElement>(promises).then((rows) => {
+      setRenderedChanges(rows);
+    });
+  }, [componentClasses.card, locateFunctionContext, landscapeContext]);
 
   return (
-    <Card className={componentClasses.card}>
-      <CardHeader title={'Latest changes in ' + notification.landscape} action={close} />
-      <Table aria-label={'changes'} style={{ tableLayout: 'fixed' }}>
-        <TableBody>{notification.changelog != null ? changes : null}</TableBody>
-      </Table>
-    </Card>
+    <Box>
+      <div>
+        <Typography variant={'h5'}>Latest changes</Typography>
+        <Typography variant={'h6'}>{landscapeContext.landscape?.name}</Typography>
+      </div>
+      {landscapeContext.changes != null ? (
+        <Table aria-label={'changes'} style={{ tableLayout: 'fixed' }}>
+          <TableBody>{renderedChanges}</TableBody>
+        </Table>
+      ) : (
+        <Typography>No changes recorded yet.</Typography>
+      )}
+    </Box>
   );
 };
 

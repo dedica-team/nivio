@@ -1,9 +1,6 @@
 package de.bonndan.nivio.input.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.bonndan.nivio.input.ComponentDescriptionValues;
 import de.bonndan.nivio.model.LandscapeConfig;
@@ -21,7 +18,7 @@ import java.util.*;
 
 /**
  * Input DTO for a landscape.
- *
+ * <p>
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
  */
 @JsonIgnoreType
@@ -146,7 +143,11 @@ public class LandscapeDescription implements ComponentDescription {
     }
 
     public String getIcon() {
-        return null;
+        return getLabel(Label.icon);
+    }
+
+    public void setIcon(String icon) {
+        setLabel(Label.icon, icon);
     }
 
     public String getColor() {
@@ -189,8 +190,9 @@ public class LandscapeDescription implements ComponentDescription {
 
     /**
      * Merges the incoming items with existing ones.
-     *
+     * <p>
      * Already existing ones are updated.
+     *
      * @param incoming new data
      */
     public void mergeItems(@Nullable Collection<ItemDescription> incoming) {
@@ -212,8 +214,9 @@ public class LandscapeDescription implements ComponentDescription {
 
     /**
      * Merges the incoming groups with existing ones.
-     *
+     * <p>
      * Already existing ones are updated.
+     *
      * @param incoming new data
      */
     public void mergeGroups(@Nullable Map<String, GroupDescription> incoming) {
@@ -221,7 +224,7 @@ public class LandscapeDescription implements ComponentDescription {
             return;
         }
 
-        incoming.forEach( (identifier, groupDescription) -> {
+        incoming.forEach((identifier, groupDescription) -> {
             groupDescription.setEnvironment(this.identifier);
 
             GroupDescription existing = groups.get(identifier);
@@ -263,7 +266,7 @@ public class LandscapeDescription implements ComponentDescription {
     public void setGroups(Map<String, GroupDescription> groups) {
 
         groups.forEach((s, groupItem) -> {
-            if (!s.equals(groupItem.getIdentifier()) && !StringUtils.isEmpty(groupItem.getIdentifier())) {
+            if (!s.equals(groupItem.getIdentifier()) && StringUtils.hasLength(groupItem.getIdentifier())) {
                 LOGGER.warn("Group map key {} and identifier {} are both set and differ. Overriding with map key.", s, groupItem.getIdentifier());
             }
             groupItem.setIdentifier(s);
@@ -282,23 +285,13 @@ public class LandscapeDescription implements ComponentDescription {
     }
 
     @NonNull
+    @JsonAnyGetter
     public Map<String, String> getLabels() {
         return labels;
-    }
-
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
     }
 
     @Override
     public String getLabel(String key) {
         return getLabels().get(key);
     }
-
-    @Override
-    public void setLabel(String key, String value) {
-        getLabels().put(key, value);
-    }
-
-
 }

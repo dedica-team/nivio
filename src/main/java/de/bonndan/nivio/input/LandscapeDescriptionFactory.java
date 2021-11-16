@@ -76,7 +76,7 @@ public class LandscapeDescriptionFactory {
     @NonNull
     public LandscapeDescription fromString(String yaml, String origin) {
 
-        if (StringUtils.isEmpty(yaml)) {
+        if (!StringUtils.hasLength(yaml)) {
             throw new ReadingException("Failed to create an environment from empty yaml input string.", new IllegalArgumentException("Got an empty string."));
         }
 
