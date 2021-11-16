@@ -1,15 +1,15 @@
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
-import { IChange } from '../../interfaces';
-import { Box, Table, TableBody, TableCell, TableRow, Typography } from '@material-ui/core';
-import { get } from '../../utils/API/APIClient';
+import React, {ReactElement, useContext, useEffect, useState} from 'react';
+import {IChange} from '../../interfaces';
+import {Box, Table, TableBody, TableCell, TableRow, Typography} from '@material-ui/core';
+import {get} from '../../utils/API/APIClient';
 import IconButton from '@material-ui/core/IconButton';
 import ItemAvatar from '../Landscape/Modals/Item/ItemAvatar';
 import componentStyles from '../../Resources/styling/ComponentStyles';
-import { LocateFunctionContext } from '../../Context/LocateFunctionContext';
+import {LocateFunctionContext} from '../../Context/LocateFunctionContext';
 import GroupAvatar from '../Landscape/Modals/Group/GroupAvatar';
-import { LinkOutlined } from '@material-ui/icons';
+import {LinkOutlined} from '@material-ui/icons';
 import Button from '@material-ui/core/Button';
-import { LandscapeContext } from '../../Context/LandscapeContext';
+import {LandscapeContext} from '../../Context/LandscapeContext';
 
 /**
  * Displays the changes of an ProcessingFinishedEvent
@@ -26,7 +26,10 @@ const Changes: React.FC = () => {
    * render changes, calling api for component info
    */
   useEffect(() => {
-    if (landscapeContext.changes == null || landscapeContext.changes.landscape !== landscapeContext.identifier) {
+    if (
+      landscapeContext.changes == null ||
+      landscapeContext.changes.landscape !== landscapeContext.identifier
+    ) {
       setRenderedChanges([]);
       return;
     }

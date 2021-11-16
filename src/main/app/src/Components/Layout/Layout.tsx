@@ -1,11 +1,11 @@
-import React, { ReactElement, useContext, useEffect, useState } from "react";
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
 
 import Navigation from '../Navigation/Navigation';
 import { Drawer, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import { CloseSharp } from '@material-ui/icons';
-import { LandscapeContext } from "../../Context/LandscapeContext";
+import { LandscapeContext } from '../../Context/LandscapeContext';
 
 interface Props {
   children: string | ReactElement | ReactElement[];

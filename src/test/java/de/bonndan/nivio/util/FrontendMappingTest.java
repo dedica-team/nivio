@@ -24,8 +24,8 @@ class FrontendMappingTest {
     @Test
     @Order(1)
     void getKeys() {
-        var testMap = Map.of("shortname", "short name", "END_OF_LIFE", "end of life");
-        assertThat(frontendMapping.getKeys()).isEqualTo(testMap);
+        assertThat(frontendMapping.getKeys()).containsEntry("END_OF_LIFE", "end of life");
+        assertThat(frontendMapping.getKeys()).containsEntry("shortname", "short name");
     }
 
     @Test
