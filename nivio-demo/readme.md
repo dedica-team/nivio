@@ -2,7 +2,15 @@
 
 This folder contains sources to construct a demo landscape for [https://github.com/dedica-team/nivio]
 
-## Usage
+## Quick Start
+
+Just run 
+
+    DEMO=1 docker-compose up
+
+and then head to http://localhost:8080
+
+## Custom Input
 
 ### Setup
 
@@ -20,7 +28,7 @@ You can try one of these:
     php -S 127.0.0.1:3000
     ruby -run -ehttpd . -p3000
 
-### Running the Demo manually 
+### Running the Demo manually with specific files
 
 * First create a landscape:
 
