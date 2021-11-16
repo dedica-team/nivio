@@ -75,7 +75,7 @@ public class StatusValue {
         Status status = maxValues.stream().findFirst().map(StatusValue::getStatus).orElse(Status.UNKNOWN);
 
         //skipping the child summaries
-        String message = maxValues.stream()
+        String message  = maxValues.stream()
                 .filter(statusValue -> !statusValue.summary)
                 .map(statusValue -> String.format("%s %s: %s", statusValue.getIdentifier(), statusValue.getField(), statusValue.getMessage()))
                 .collect(Collectors.joining("; "));
@@ -157,12 +157,20 @@ public class StatusValue {
 
     @Override
     public String toString() {
-        return "StatusValue{" +
-                "identifier='" + identifier + '\'' +
+        return
+               /**
+                "StatusValue{" +
+               "identifier='" + identifier + '\'' +
                 ", field='" + field + '\'' +
                 ", status=" + status +
                 ", message='" + message + '\'' +
-                ", summary=" + summary +
-                '}';
+               ", summary=" + summary +
+               '}';
+                */
+
+           "status =" + status;
+
+
     }
+
 }
