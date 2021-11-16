@@ -34,6 +34,7 @@ import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import ItemAvatar from './ItemAvatar';
 import { LandscapeContext } from '../../../../Context/LandscapeContext';
 import { a11yProps, TabPanel } from '../../Utils/TabUtils';
+import MappedString from '../../Utils/MappedString';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,6 +52,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
+
 
 interface Props {
   small?: boolean;
@@ -94,6 +96,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
+                paddingLeft: 10,
               }}
             >
               {iface.name || iface.path}
@@ -114,24 +117,68 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                 <br />
               </div>
             ) : null}
-            Path: {iface.path || '-'}
-            <br />
-            <br />
-            Params: {iface.parameters || '-'}
-            <br />
-            <br />
-            Format: {iface.format || '-'}
-            <br />
-            <br />
-            Payload: {iface.payload || '-'}
-            <br />
-            <br />
-            Protection: {iface.protection || '-'}
-            <br />
-            <br />
-            Deprecated: {iface.deprecated ? 'Yes' : '-'}
-            <br />
-            <br />
+            <List>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                }}
+              >
+                Path: {iface.path || '-'}
+              </ListItemText>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                }}
+              >
+                Params: {iface.parameters || '-'}
+              </ListItemText>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                }}
+              >
+                Format: {iface.format || '-'}
+              </ListItemText>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                }}
+              >
+                Payload: {iface.payload || '-'}
+              </ListItemText>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                }}
+              >
+                Protection: {iface.protection || '-'}
+              </ListItemText>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                }}
+              >
+                Deprecated: {iface.deprecated ? 'Yes' : '-'}
+              </ListItemText>
+            </List>
           </AccordionDetails>
         </Accordion>
       );
@@ -202,7 +249,9 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
         .map((assessment) => {
           return (
             <TableRow key={assessment.field}>
-              <TableCell>{assessment.field}</TableCell>
+              <TableCell>
+                <MappedString mapKey={assessment.field} />
+              </TableCell>
               <TableCell>
                 <StatusChip
                   status={assessment.status}
@@ -308,21 +357,21 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
             <Tabs value={value} onChange={changeTab} variant={'fullWidth'} aria-label={'item tabs'}>
               <Tab
                 icon={<Info />}
-                label={'info'}
+                label={<MappedString mapKey={'info'} />}
                 style={{ minWidth: 50 }}
                 title={'Info'}
                 {...a11yProps(0, 'item')}
               />
               <Tab
                 icon={<Power />}
-                label={'relations'}
+                label={<MappedString mapKey={'relations'} />}
                 style={{ minWidth: 50 }}
                 title={'Relations'}
                 {...a11yProps(1, 'item')}
               />
               <Tab
                 icon={<Details />}
-                label={'Details'}
+                label={<MappedString mapKey={'details'} />}
                 title={'API / Interfaces'}
                 style={{ minWidth: 50 }}
                 {...a11yProps(2, 'item')}
@@ -335,37 +384,49 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                 <TableBody>
                   {item?.group ? (
                     <TableRow key={'group'}>
-                      <TableCell style={{ width: '33%' }}>Group</TableCell>
+                      <TableCell style={{ width: '33%' }}>
+                        <MappedString mapKey={'Group'} />
+                      </TableCell>
                       <TableCell>{item?.group}</TableCell>
                     </TableRow>
                   ) : null}
                   {item?.type ? (
                     <TableRow key={'type'}>
-                      <TableCell>Type</TableCell>
+                      <TableCell>
+                        <MappedString mapKey={'Type'} />
+                      </TableCell>
                       <TableCell>{item?.type}</TableCell>
                     </TableRow>
                   ) : null}
                   {item?.description ? (
                     <TableRow key={'description'}>
-                      <TableCell>Info</TableCell>
+                      <TableCell>
+                        <MappedString mapKey={'Info'} />
+                      </TableCell>
                       <TableCell>{item?.description}</TableCell>
                     </TableRow>
                   ) : null}
                   {item?.owner ? (
                     <TableRow key={'owner'}>
-                      <TableCell>Owner</TableCell>
+                      <TableCell>
+                        <MappedString mapKey={'Owner'} />
+                      </TableCell>
                       <TableCell>{item?.owner}</TableCell>
                     </TableRow>
                   ) : null}
                   {item?.contact ? (
                     <TableRow key={'contact'}>
-                      <TableCell>Contact</TableCell>
+                      <TableCell>
+                        <MappedString mapKey={'Contact'} />
+                      </TableCell>
                       <TableCell>{item?.contact}</TableCell>
                     </TableRow>
                   ) : null}
                   {item?.address ? (
                     <TableRow key={'address'}>
-                      <TableCell>Address</TableCell>
+                      <TableCell>
+                        <MappedString mapKey={'Address'} />
+                      </TableCell>
                       <TableCell>{item?.address}</TableCell>
                     </TableRow>
                   ) : null}
@@ -375,7 +436,9 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                         if (data[0] === 'self') return null;
                         return (
                           <TableRow key={'link_' + data[0]}>
-                            <TableCell>{data[0]}</TableCell>
+                            <TableCell>
+                              <MappedString mapKey={data[0]} />
+                            </TableCell>
                             <TableCell>
                               <Link href={data[1].href} className={classes.link}>
                                 {data[1].href}
@@ -391,7 +454,9 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
               {assessmentStatus.length > 0 ? (
                 <>
                   <br />
-                  <Typography variant={'h6'}>Status</Typography>
+                  <Typography variant={'h6'}>
+                    <MappedString mapKey={'Status'} />
+                  </Typography>
                   <Table>
                     <TableBody>{assessmentStatus}</TableBody>
                   </Table>
@@ -402,7 +467,9 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
             <TabPanel value={value} index={1} prefix={'item'}>
               {inboundRelations && inboundRelations.length ? (
                 <div>
-                  <Typography variant={'h6'}>Inbound</Typography>
+                  <Typography variant={'h6'}>
+                    <MappedString mapKey={'Inbound'} />
+                  </Typography>
                   <List dense={true}>{inboundRelations}</List>
                 </div>
               ) : (
@@ -410,7 +477,9 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
               )}
               {outboundRelations && outboundRelations.length ? (
                 <div>
-                  <Typography variant={'h6'}>Outbound</Typography>
+                  <Typography variant={'h6'}>
+                    <MappedString mapKey={'Outbound'} />
+                  </Typography>
                   <List dense={true}>{outboundRelations}</List>
                 </div>
               ) : (
@@ -421,28 +490,36 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
             <TabPanel value={value} index={2} prefix={'item'}>
               {frameworks ? (
                 <div className='frameworks'>
-                  <Typography variant={'h6'}>Frameworks</Typography>
+                  <Typography variant={'h6'}>
+                    <MappedString mapKey={'Frameworks'} />
+                  </Typography>
                   {frameworks}
                 </div>
               ) : null}
 
               {networks ? (
                 <div className='networks'>
-                  <Typography variant={'h6'}>Networks</Typography>
+                  <Typography variant={'h6'}>
+                    <MappedString mapKey={'Networks'} />
+                  </Typography>
                   {networks}
                 </div>
               ) : null}
 
               {labels ? (
                 <>
-                  <Typography variant={'h6'}>Labels</Typography>
+                  <Typography variant={'h6'}>
+                    <MappedString mapKey={'Labels'} />
+                  </Typography>
                   {labels}
                 </>
               ) : null}
 
               {interfaces != null ? (
                 <div className='interfaces'>
-                  <Typography variant={'h6'}>Interfaces</Typography>
+                  <Typography variant={'h6'}>
+                    <MappedString mapKey={'Interfaces'} />
+                  </Typography>
                   {interfaces}
                 </div>
               ) : null}
