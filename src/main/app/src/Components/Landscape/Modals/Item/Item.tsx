@@ -95,6 +95,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
+                paddingLeft: 10,
               }}
             >
               {iface.name || iface.path}
@@ -115,24 +116,74 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                 <br />
               </div>
             ) : null}
-            Path: {iface.path || '-'}
-            <br />
-            <br />
-            Params: {iface.parameters || '-'}
-            <br />
-            <br />
-            Format: {iface.format || '-'}
-            <br />
-            <br />
-            Payload: {iface.payload || '-'}
-            <br />
-            <br />
-            Protection: {iface.protection || '-'}
-            <br />
-            <br />
-            Deprecated: {iface.deprecated ? 'Yes' : '-'}
-            <br />
-            <br />
+            <List>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                  whiteSpace: 'normal',
+                }}
+              >
+                Path: {iface.path || '-'}
+              </ListItemText>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                  whiteSpace: 'normal',
+                }}
+              >
+                Params: {iface.parameters || '-'}
+              </ListItemText>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                  whiteSpace: 'normal',
+                }}
+              >
+                Format: {iface.format || '-'}
+              </ListItemText>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                  whiteSpace: 'normal',
+                }}
+              >
+                Payload: {iface.payload || '-'}
+              </ListItemText>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                  whiteSpace: 'normal',
+                }}
+              >
+                Protection: {iface.protection || '-'}
+              </ListItemText>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                  whiteSpace: 'normal',
+                }}
+              >
+                Deprecated: {iface.deprecated ? 'Yes' : '-'}
+              </ListItemText>
+            </List>
           </AccordionDetails>
         </Accordion>
       );
@@ -394,7 +445,14 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                               <MappedString mapKey={data[0]} />
                             </TableCell>
                             <TableCell>
-                              <Link href={data[1].href} className={classes.link}>
+                              <Link
+                                href={data[1].href}
+                                className={classes.link}
+                                style={{
+                                  whiteSpace: 'normal',
+                                  wordWrap: 'break-word',
+                                }}
+                              >
                                 {data[1].href}
                               </Link>
                             </TableCell>
