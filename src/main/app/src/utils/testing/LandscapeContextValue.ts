@@ -1,4 +1,11 @@
-import { IAssessment, IGroup, IItem, ILandscape, INotificationMessage } from '../../interfaces';
+import {
+  IAssessment,
+  IChanges,
+  IGroup,
+  IItem,
+  ILandscape,
+  INotificationMessage,
+} from '../../interfaces';
 import { LandscapeContextType } from '../../Context/LandscapeContext';
 
 const items: IItem[] = [
