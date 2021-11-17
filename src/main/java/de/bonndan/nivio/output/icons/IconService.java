@@ -28,7 +28,7 @@ public class IconService {
 
     /**
      * Returns the proper icon url for an item.
-     * <p>
+     *
      * item.icon has precedence over item label "type".
      *
      * @param item landscape item
