@@ -24,13 +24,13 @@ public class AppearanceProcessor {
 
     public void process(@NonNull final Landscape landscape) {
         Objects.requireNonNull(landscape).getGroupItems().forEach(group -> {
-            setIconFillAppearance(group);
-            landscape.getItems().retrieve(group.getItems()).forEach(this::setIconFillAppearance);
+            setIconAndFillAppearance(group);
+            landscape.getItems().retrieve(group.getItems()).forEach(this::setIconAndFillAppearance);
         });
-        setIconFillAppearance(landscape);
+        setIconAndFillAppearance(landscape);
     }
 
-    private void setIconFillAppearance(Labeled labeled) {
+    private void setIconAndFillAppearance(Labeled labeled) {
 
         if (labeled instanceof Item) {
             labeled.setLabel(Label._icondata, iconService.getIconUrl((Item) labeled));
