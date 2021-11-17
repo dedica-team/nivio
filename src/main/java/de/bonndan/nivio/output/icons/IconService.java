@@ -1,6 +1,5 @@
 package de.bonndan.nivio.output.icons;
 
-import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class IconService {
 
     /**
      * Returns the proper icon url for an item.
-     *
+     * <p>
      * item.icon has precedence over item label "type".
      *
      * @param item landscape item
@@ -73,42 +72,6 @@ public class IconService {
         //fallback to item.type
         String iconName = iconMapping.getIcon(type.toLowerCase()).orElseGet(type::toLowerCase);
         return localIcons.getIconUrl(iconName).orElse(localIcons.getDefaultIcon());
-    }
-
-
-    @Nullable
-    public String getGroupIconUrl(Group group) {
-
-        //icon label based
-        String icon = group.getIcon();
-        if (StringUtils.hasLength(icon)) {
-
-            if (icon.startsWith(DataUrlHelper.DATA_IMAGE)) {
-                return icon;
-            }
-
-            if (icon.startsWith(ExternalIcons.VENDOR_PREFIX)) {
-                String key = icon.replace(ExternalIcons.VENDOR_PREFIX, "").toLowerCase();
-                return externalIcons.getUrl(key).orElse(localIcons.getDefaultGroupIcon());
-            }
-
-            Optional<String> iconUrl = localIcons.getIconUrl(icon);
-            if (iconUrl.isPresent()) {
-                if (iconUrl.get().startsWith("http")) {
-                    try {
-                        return externalIcons.getUrl(new URL(iconUrl.get())).orElse(iconUrl.get());
-                    } catch (MalformedURLException ignored) {
-
-                    }
-                    return iconUrl.get();
-                }
-            }
-
-        } else {
-            return localIcons.getDefaultGroupIcon();
-        }
-        return icon;
-
     }
 
     /**

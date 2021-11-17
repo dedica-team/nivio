@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.IconService;
+import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.util.URLHelper;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -33,15 +34,16 @@ public class AppearanceProcessor {
 
         if (labeled instanceof Item) {
             labeled.setLabel(Label._icondata, iconService.getIconUrl((Item) labeled));
-        }
-        if (labeled instanceof Group) {
-            labeled.setLabel(Label._icondata, iconService.getGroupIconUrl((Group) labeled));
         } else {
             String icon = labeled.getLabel(Label.icon);
             if (StringUtils.hasLength(icon)) {
                 URLHelper.getURL(icon)
                         .flatMap(iconService::getExternalUrl)
                         .ifPresent(s -> labeled.setLabel(Label._icondata, s));
+            }
+            if (!StringUtils.hasLength(icon) && labeled instanceof Group) {
+                LocalIcons localIcons = new LocalIcons();
+                labeled.setLabel(Label._icondata, localIcons.getDefaultGroupIcon());
             }
         }
 

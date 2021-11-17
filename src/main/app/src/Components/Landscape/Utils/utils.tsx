@@ -1,6 +1,6 @@
-import React, { ReactElement } from 'react';
-import { IGroup, IItem, ILandscape, IRelation } from '../../../interfaces';
-import { Button, Link, List, ListItem, ListItemText } from '@material-ui/core';
+import React, {ReactElement} from 'react';
+import {IGroup, IItem, ILandscape, IRelation} from '../../../interfaces';
+import {Button, Link, List, ListItem, ListItemText} from '@material-ui/core';
 import MappedString from './MappedString';
 
 /**
@@ -178,8 +178,4 @@ export const getItemIcon = (item: IItem) => {
     return item.labels['fill'] ? item.labels['fill'] : item.icon;
   }
   return item.icon;
-};
-
-export const getGroupIcon = (group: IGroup) => {
-  return group.icon;
 };

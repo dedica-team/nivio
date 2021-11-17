@@ -3,7 +3,6 @@ import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import StatusBadge from '../../Utils/StatusBadge';
-import {getGroupIcon} from '../../Utils/utils';
 
 interface Props {
   group: IGroup;
@@ -31,8 +30,9 @@ const GroupAvatar: React.FC<Props> = ({ group, statusColor }) => {
         title={'Click to highlight the group.'}
         style={{
           backgroundColor: '#' + group.color,
+          paddingLeft: 1,
         }}
-        src={getGroupIcon(group)}
+        src={group.icon}
       >
         {group.identifier[0].toUpperCase()}
       </Avatar>
