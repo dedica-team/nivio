@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.icons;
 
+import de.bonndan.nivio.util.IconCannotBeLoadedException;
 import de.bonndan.nivio.util.URLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
