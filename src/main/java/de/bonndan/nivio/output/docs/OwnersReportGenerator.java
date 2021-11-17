@@ -1,8 +1,6 @@
 package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.assessment.Assessment;
-import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.GroupedBy;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
@@ -15,7 +13,9 @@ import org.springframework.util.StringUtils;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static j2html.TagCreator.*;
@@ -35,23 +35,20 @@ public class OwnersReportGenerator extends HtmlGenerator {
         }
 
         final Optional<String> searchTerm = searchConfig != null && !StringUtils.isEmpty(searchConfig.getSearchTerm()) ? Optional.ofNullable(searchConfig.getSearchTerm()) : Optional.empty();
-        final Optional<String> groupBy = searchConfig != null  && !StringUtils.isEmpty(searchConfig.getGroupedBy()) ?  Optional.ofNullable(searchConfig.getGroupedBy()) : Optional.empty();
+        final Optional<String> groupBy = searchConfig != null && !StringUtils.isEmpty(searchConfig.getGroupedBy()) ? Optional.ofNullable(searchConfig.getGroupedBy()) : Optional.empty();
         List<Item> items = new ArrayList<>(searchTerm.map(landscape::search).orElse(landscape.getItems().all()));
         String groupedBy = "";
-        if(groupBy.isPresent() && groupBy.get().equals("owner")){
+        if (groupBy.isPresent() && groupBy.get().equals("owner")) {
             groupedBy = writeOwnerGroups(GroupedBy.by(Item::getOwner, items), assessment);
+        } else if (groupBy.isPresent() && groupBy.get().equals("groups")) {
+            groupedBy = writeGroupGroups(GroupedBy.by(item -> item.getGroup(), items), assessment);
+        } else if (groupBy.isPresent() && groupBy.get().equals("labels")) {
+            groupedBy = writeLabelsGroups(GroupedBy.newBy(item -> item.getLabels(), items), assessment);
+        } else if (groupBy.isPresent() && groupBy.get().equals("status")) {
+            groupedBy = writeStatusGroups(GroupedBy.newFunc(item -> assessment.getResults(), items), assessment);
         }
-       else if(groupBy.isPresent() && groupBy.get().equals("groups")){
-           groupedBy = writeGroupGroups(GroupedBy.by(item-> item.getGroup(),items),assessment);
-        }
-       else if(groupBy.isPresent() && groupBy.get().equals("labels")){
-           groupedBy = writeLabelsGroups(GroupedBy.newBy(item -> item.getLabels(),items),assessment);
-        }
-       else if(groupBy.isPresent() && groupBy.get().equals("status")){
-         groupedBy = writeStatusGroups(GroupedBy.newFunc(item->assessment.getResults(),items),assessment);
-       }
 
-       return html(
+        return html(
                 getHead(landscape),
                 body(
                         h1(title),
@@ -76,7 +73,8 @@ public class OwnersReportGenerator extends HtmlGenerator {
 
         return builder.toString();
     }
-    private String writeGroupGroups(GroupedBy groupGroups, Assessment assessment){
+
+    private String writeGroupGroups(GroupedBy groupGroups, Assessment assessment) {
         final StringBuilder builder = new StringBuilder();
         groupGroups.getAll().forEach((group, items) -> {
             builder.append(
@@ -88,11 +86,12 @@ public class OwnersReportGenerator extends HtmlGenerator {
         });
         return builder.toString();
     }
-    private String writeLabelsGroups(GroupedBy labelsGroups, Assessment assessment){
+
+    private String writeLabelsGroups(GroupedBy labelsGroups, Assessment assessment) {
         final StringBuilder builder = new StringBuilder();
-        labelsGroups.getAll().forEach((label,items) -> {
+        labelsGroups.getAll().forEach((label, items) -> {
             builder.append(
-                    h2("Label: " + label).render()
+                    h2("Lifecycle: " + label).render()
             );
             List<ContainerTag> collect = items.stream().map(item -> div(writeItem(item, assessment, items)).withClass("col-sm")).collect(Collectors.toList());
             builder.append(div().withClass("row").with(collect).render());
@@ -100,9 +99,10 @@ public class OwnersReportGenerator extends HtmlGenerator {
         });
         return builder.toString();
     }
-    private String writeStatusGroups(GroupedBy statusGroups, Assessment assessment){
+
+    private String writeStatusGroups(GroupedBy statusGroups, Assessment assessment) {
         final StringBuilder builder = new StringBuilder();
-        statusGroups.getAll().forEach((status,items) -> {
+        statusGroups.getAll().forEach((status, items) -> {
             builder.append(
                     h2("StatusValue: " + status).render()
             );

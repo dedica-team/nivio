@@ -1,10 +1,9 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.assessment.StatusValue;
+
 import java.net.URI;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class ItemBuilder {
@@ -23,6 +22,8 @@ public final class ItemBuilder {
     private String type;
     private URI address;
     private Map<String, String> labels = new HashMap<>();
+
+
 
     private ItemBuilder() {
     }
@@ -115,8 +116,8 @@ public final class ItemBuilder {
         this.labels = labels;
         return this;
     }
-
     public String getGroup() {
         return group;
     }
+
 }

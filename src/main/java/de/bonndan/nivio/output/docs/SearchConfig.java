@@ -10,7 +10,7 @@ class SearchConfig {
 
     private String searchTerm;
     private String title;
-    private String groupBy;
+    private String groupBy; // the attribute for the grouping the criterion
 
     public SearchConfig(@NonNull final Map<String, String[]> parameterMap) {
         Map<String, String[]> map = Objects.requireNonNullElse(parameterMap, new HashMap<>());
@@ -20,7 +20,7 @@ class SearchConfig {
         if (map.containsKey("title")) {
             this.title = map.get("title")[0];
         }
-        if (map.containsKey("groupBy")){
+        if (map.containsKey("groupBy")) {
             this.groupBy = map.get("groupBy")[0];
         }
     }
@@ -33,5 +33,7 @@ class SearchConfig {
         return title;
     }
 
-    public String getGroupedBy(){return groupBy;}
+    public String getGroupedBy() {
+        return groupBy;
+    }
 }
