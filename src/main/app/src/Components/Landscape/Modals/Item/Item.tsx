@@ -53,7 +53,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-
 interface Props {
   small?: boolean;
   sticky?: boolean;
@@ -124,6 +123,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                   wordBreak: 'break-word',
                   overflowWrap: 'break-word',
                   wordWrap: 'break-word',
+                  whiteSpace: 'normal',
                 }}
               >
                 Path: {iface.path || '-'}
@@ -134,6 +134,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                   wordBreak: 'break-word',
                   overflowWrap: 'break-word',
                   wordWrap: 'break-word',
+                  whiteSpace: 'normal',
                 }}
               >
                 Params: {iface.parameters || '-'}
@@ -144,6 +145,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                   wordBreak: 'break-word',
                   overflowWrap: 'break-word',
                   wordWrap: 'break-word',
+                  whiteSpace: 'normal',
                 }}
               >
                 Format: {iface.format || '-'}
@@ -154,6 +156,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                   wordBreak: 'break-word',
                   overflowWrap: 'break-word',
                   wordWrap: 'break-word',
+                  whiteSpace: 'normal',
                 }}
               >
                 Payload: {iface.payload || '-'}
@@ -164,6 +167,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                   wordBreak: 'break-word',
                   overflowWrap: 'break-word',
                   wordWrap: 'break-word',
+                  whiteSpace: 'normal',
                 }}
               >
                 Protection: {iface.protection || '-'}
@@ -174,6 +178,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                   wordBreak: 'break-word',
                   overflowWrap: 'break-word',
                   wordWrap: 'break-word',
+                  whiteSpace: 'normal',
                 }}
               >
                 Deprecated: {iface.deprecated ? 'Yes' : '-'}
@@ -440,7 +445,14 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                               <MappedString mapKey={data[0]} />
                             </TableCell>
                             <TableCell>
-                              <Link href={data[1].href} className={classes.link}>
+                              <Link
+                                href={data[1].href}
+                                className={classes.link}
+                                style={{
+                                  whiteSpace: 'normal',
+                                  wordWrap: 'break-word',
+                                }}
+                              >
                                 {data[1].href}
                               </Link>
                             </TableCell>
