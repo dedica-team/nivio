@@ -179,3 +179,7 @@ export const getItemIcon = (item: IItem) => {
   }
   return item.icon;
 };
+
+export const getGroupIcon = (group: IGroup) => {
+  return group.icon;
+};

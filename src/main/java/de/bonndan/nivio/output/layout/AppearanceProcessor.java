@@ -1,9 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.Labeled;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.util.URLHelper;
 import org.springframework.lang.NonNull;
@@ -36,6 +33,9 @@ public class AppearanceProcessor {
 
         if (labeled instanceof Item) {
             labeled.setLabel(Label._icondata, iconService.getIconUrl((Item) labeled));
+        }
+        if (labeled instanceof Group) {
+            labeled.setLabel(Label._icondata, iconService.getGroupIconUrl((Group) labeled));
         } else {
             String icon = labeled.getLabel(Label.icon);
             if (StringUtils.hasLength(icon)) {

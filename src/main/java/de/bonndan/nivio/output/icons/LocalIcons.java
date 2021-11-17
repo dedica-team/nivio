@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static de.bonndan.nivio.output.icons.IconMapping.DEFAULT_GROUP_ICON;
 import static de.bonndan.nivio.output.icons.IconMapping.DEFAULT_ICON;
 
 /**
@@ -29,6 +30,8 @@ public class LocalIcons {
      * default icon data url
      */
     private final String defaultIcon;
+
+    private final String defaultGroupIcon;
 
     private final String iconFolder;
 
@@ -51,6 +54,11 @@ public class LocalIcons {
         defaultIcon = getIconUrl(DEFAULT_ICON).orElseThrow(() -> {
             throw new RuntimeException(String.format(initErrorMsg, this.iconFolder));
         });
+
+        defaultGroupIcon = getIconUrl(DEFAULT_GROUP_ICON).orElseThrow(() -> {
+            throw new RuntimeException(String.format(initErrorMsg, this.iconFolder));
+        });
+
     }
 
     public LocalIcons() {
@@ -84,6 +92,10 @@ public class LocalIcons {
 
     public String getDefaultIcon() {
         return defaultIcon;
+    }
+
+    public String getDefaultGroupIcon() {
+        return defaultGroupIcon;
     }
 
     /**
