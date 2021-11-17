@@ -16,6 +16,7 @@ import Button from '@material-ui/core/Button';
 import { SaveSearchConfig } from './SaveSearchConfig';
 import { IFacet } from '../../../interfaces';
 import { a11yProps, TabPanel } from '../Utils/TabUtils';
+import MappedString from '../Utils/MappedString';
 
 interface FacetsProps {
   addFacet: (dim: string, label: string) => string;
@@ -38,7 +39,9 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
     .forEach((facet: IFacet) =>
       facetsHtml.push(
         <TableRow key={facet.dim}>
-          <TableCell style={{ width: '25%' }}>{facet.dim}</TableCell>
+          <TableCell style={{ width: '25%' }}>
+            <MappedString mapKey={facet.dim} />
+          </TableCell>
           <TableCell>
             {facet.labelValues.map((cv) => (
               <Chip
@@ -50,7 +53,7 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
                 style={{ margin: 1, backgroundColor: cv.color }}
                 size={'small'}
                 key={facet.dim + '' + cv.label}
-                label={cv.label}
+                label={<MappedString mapKey={cv.label} />}
                 avatar={<Avatar>{cv.value}</Avatar>}
               />
             ))}
@@ -105,21 +108,21 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
         <Tabs value={value} onChange={changeTab} variant={'fullWidth'} aria-label={'search tabs'}>
           <Tab
             icon={<ListAlt />}
-            label={'fields'}
+            label={<MappedString mapKey={'fields'} />}
             style={{ minWidth: 50 }}
             title={'Fields'}
             {...a11yProps(0, 'search')}
           />
           <Tab
             icon={<Speed />}
-            label={'kpis'}
+            label={<MappedString mapKey={'kpis'} />}
             style={{ minWidth: 50 }}
             title={'KPIs'}
             {...a11yProps(1, 'search')}
           />
           <Tab
             icon={<Print />}
-            label={'Report'}
+            label={<MappedString mapKey={'report'} />}
             title={'Export current search as report'}
             style={{ minWidth: 50 }}
             {...a11yProps(2, 'search')}
