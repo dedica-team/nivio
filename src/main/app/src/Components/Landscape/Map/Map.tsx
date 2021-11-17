@@ -33,6 +33,7 @@ import {
   TOOL_AUTO,
   Value,
 } from 'react-svg-pan-zoom';
+
 const sidebarWidth = 280;
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -379,7 +380,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
             )}
           />
         </div>
-          <div className={classes.sideBar}>{sidebarContent}</div>
+        <div className={classes.sideBar}>{sidebarContent}</div>
       </div>
     );
   }

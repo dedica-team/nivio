@@ -52,7 +52,7 @@ interface SearchProps {
   setSearchTerm: Function;
 }
 
-const Search: React.FC<SearchProps> = ({setSearchTerm, searchTerm}) => {
+const Search: React.FC<SearchProps> = ({ setSearchTerm, searchTerm }) => {
   const [currentLandscape, setCurrentLandscape] = useState<string>('');
   const [results, setResults] = useState<IItem[]>([]);
   const [renderedResults, setRenderedResults] = useState<any>([]);
@@ -163,15 +163,22 @@ const Search: React.FC<SearchProps> = ({setSearchTerm, searchTerm}) => {
     };
 
     setSearchSupport(<Facets facets={facets} addFacet={addFacet} saveSearch={saveSearch} />);
-  }, [setSearchSupport, searchTerm, setSearchTerm, facets, componentClasses.card, currentLandscape]);
+  }, [
+    setSearchSupport,
+    searchTerm,
+    setSearchTerm,
+    facets,
+    componentClasses.card,
+    currentLandscape,
+  ]);
 
   async function loadFacets(identifier: string | undefined) {
     if (identifier == null) {
       return;
     }
-    const result: IFacet[] | null = await get(
-      '/api/landscape/' + identifier + '/facets/'
-    ).catch((reason) => console.warn(reason));
+    const result: IFacet[] | null = await get('/api/landscape/' + identifier + '/facets/').catch(
+      (reason) => console.warn(reason)
+    );
 
     if (!result) return;
 
