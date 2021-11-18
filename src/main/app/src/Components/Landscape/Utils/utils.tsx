@@ -1,6 +1,6 @@
-import React, { ReactElement } from 'react';
-import { IGroup, IItem, ILandscape, IRelation } from '../../../interfaces';
-import { Button, Link, List, ListItem, ListItemText } from '@material-ui/core';
+import React, {ReactElement} from 'react';
+import {IGroup, IItem, ILandscape, IRelation} from '../../../interfaces';
+import {Button, Link, List, ListItem, ListItemText} from '@material-ui/core';
 import MappedString from './MappedString';
 
 /**

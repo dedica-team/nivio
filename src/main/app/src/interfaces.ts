@@ -90,6 +90,7 @@ export interface IGroup {
   labels?: ILabels;
   _links?: ILinks;
   items: IItem[];
+  icon: string;
 }
 
 export interface IItem {

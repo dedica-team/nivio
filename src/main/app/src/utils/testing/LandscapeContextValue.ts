@@ -32,6 +32,7 @@ const groups: IGroup[] = [
     name: 'A Group',
     items: items,
     identifier: 'groupA',
+    icon: '',
   },
 ];
 
