@@ -90,6 +90,7 @@ export interface IGroup {
   labels?: ILabels;
   _links?: ILinks;
   items: IItem[];
+  icon: string;
 }
 
 export interface IItem {
@@ -109,6 +110,7 @@ export interface IItem {
   color?: string;
   icon: string;
   _links?: ILinks;
+  networks: Array<string>;
 }
 
 export interface IInterfaces {

@@ -5,3 +5,7 @@ a.reference.external {
 .highlight {
     background-color: #333333;
 }
+
+.footer {
+    display: none;
+}

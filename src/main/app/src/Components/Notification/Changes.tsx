@@ -1,15 +1,15 @@
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
-import { IChange } from '../../interfaces';
-import { Card, CardHeader, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
-import { get } from '../../utils/API/APIClient';
+import React, {ReactElement, useContext, useEffect, useState} from 'react';
+import {IChange} from '../../interfaces';
+import {Box, Table, TableBody, TableCell, TableRow, Typography} from '@material-ui/core';
+import {get} from '../../utils/API/APIClient';
 import IconButton from '@material-ui/core/IconButton';
 import ItemAvatar from '../Landscape/Modals/Item/ItemAvatar';
 import componentStyles from '../../Resources/styling/ComponentStyles';
-import { LocateFunctionContext } from '../../Context/LocateFunctionContext';
+import {LocateFunctionContext} from '../../Context/LocateFunctionContext';
 import GroupAvatar from '../Landscape/Modals/Group/GroupAvatar';
-import { Close, LinkOutlined } from '@material-ui/icons';
+import {LinkOutlined} from '@material-ui/icons';
 import Button from '@material-ui/core/Button';
-import { LandscapeContext } from '../../Context/LandscapeContext';
+import {LandscapeContext} from '../../Context/LandscapeContext';
 
 /**
  * Displays the changes of an ProcessingFinishedEvent
@@ -21,23 +21,18 @@ const Changes: React.FC = () => {
   const [renderedChanges, setRenderedChanges] = useState<ReactElement[]>([]);
   const locateFunctionContext = useContext(LocateFunctionContext);
   const landscapeContext = useContext(LandscapeContext);
-  const [visible, setVisible] = useState<boolean>(true);
-
-  const close = (
-    <IconButton
-      onClick={() => {
-        setVisible(false);
-      }}
-    >
-      <Close />
-    </IconButton>
-  );
 
   /**
    * render changes, calling api for component info
    */
   useEffect(() => {
-    if (landscapeContext.changes == null) return;
+    if (
+      landscapeContext.changes == null ||
+      landscapeContext.changes.landscape !== landscapeContext.identifier
+    ) {
+      setRenderedChanges([]);
+      return;
+    }
 
     const getItemChange = (key: string, change: IChange): Promise<any> => {
       if (change.changeType === 'DELETED') {
@@ -133,8 +128,8 @@ const Changes: React.FC = () => {
     };
 
     let promises: Promise<any>[] = [];
-    for (let key of Object.keys(landscapeContext.changes)) {
-      let change = landscapeContext.changes[key];
+    for (let key of Object.keys(landscapeContext.changes.changelog.changes)) {
+      let change = landscapeContext.changes.changelog.changes[key];
 
       switch (change.componentType) {
         case 'Item':
@@ -151,17 +146,22 @@ const Changes: React.FC = () => {
     Promise.all<ReactElement>(promises).then((rows) => {
       setRenderedChanges(rows);
     });
-  }, [ componentClasses.card, locateFunctionContext, landscapeContext]);
-
-  if (!visible) return null;
+  }, [componentClasses.card, locateFunctionContext, landscapeContext]);
 
   return (
-    <Card className={componentClasses.card}>
-      <CardHeader title={'Latest changes in ' + landscapeContext.landscape?.name} action={close} />
-      <Table aria-label={'changes'} style={{ tableLayout: 'fixed' }}>
-        <TableBody>{landscapeContext.changes != null ? renderedChanges : null}</TableBody>
-      </Table>
-    </Card>
+    <Box>
+      <div>
+        <Typography variant={'h5'}>Latest changes</Typography>
+        <Typography variant={'h6'}>{landscapeContext.landscape?.name}</Typography>
+      </div>
+      {landscapeContext.changes != null ? (
+        <Table aria-label={'changes'} style={{ tableLayout: 'fixed' }}>
+          <TableBody>{renderedChanges}</TableBody>
+        </Table>
+      ) : (
+        <Typography>No changes recorded yet.</Typography>
+      )}
+    </Box>
   );
 };
 

@@ -1,10 +1,10 @@
-import React, {ReactElement, useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
-import {Badge} from '@material-ui/core';
-import {Notifications} from '@material-ui/icons';
+import { Badge } from '@material-ui/core';
+import { Notifications } from '@material-ui/icons';
 import Changes from './Changes';
 import componentStyles from '../../Resources/styling/ComponentStyles';
-import {LandscapeContext} from '../../Context/LandscapeContext';
+import { LandscapeContext } from '../../Context/LandscapeContext';
 
 interface Props {
   setSidebarContent: Function;
@@ -18,7 +18,6 @@ interface Props {
 const Notification: React.FC<Props> = ({ setSidebarContent }) => {
   const classes = componentStyles();
   const [newChanges, setNewChanges] = useState<boolean>(false);
-  const [renderedChanges, setRenderedChanges] = useState<ReactElement | null>(null);
   const landscapeContext = useContext(LandscapeContext);
 
   /**
@@ -26,7 +25,6 @@ const Notification: React.FC<Props> = ({ setSidebarContent }) => {
    */
   useEffect(() => {
     if (landscapeContext.changes == null) return;
-    setRenderedChanges(<Changes />);
     setNewChanges(true);
   }, [landscapeContext.changes]);
 
@@ -43,7 +41,7 @@ const Notification: React.FC<Props> = ({ setSidebarContent }) => {
         className={classes.navigationButton}
         onClick={() => {
           setNewChanges(false);
-          return setSidebarContent(renderedChanges);
+          return setSidebarContent(<Changes />);
         }}
       >
         <Notifications />

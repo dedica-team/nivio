@@ -12,8 +12,6 @@ import java.util.Optional;
 
 /**
  * Provides the builtin icons (shipped with nivio) and vendor icons (loaded form remote locations) as embeddable data.
- *
- *
  */
 @Service
 public class IconService {
@@ -53,7 +51,7 @@ public class IconService {
             }
 
             Optional<String> iconUrl = localIcons.getIconUrl(icon);
-            if(iconUrl.isPresent()) {
+            if (iconUrl.isPresent()) {
                 if (iconUrl.get().startsWith("http")) {
                     try {
                         return externalIcons.getUrl(new URL(iconUrl.get())).orElse(iconUrl.get());

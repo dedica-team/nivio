@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 
 import LandscapeOverview from './Components/Landscape/Overview/Overview';
@@ -27,7 +27,6 @@ interface Index {
 }
 
 const App: React.FC = () => {
-  const [sidebarContent, setSidebarContent] = useState<ReactElement[]>([]);
   const [pageTitle, setPageTitle] = useState<string>('');
   const [logo, setLogo] = useState<string>('');
   const [message, setMessage] = useState<string>('');
@@ -94,19 +93,12 @@ const App: React.FC = () => {
         <CssBaseline />
         <Router hashType='slash'>
           <Switch>
-            <Layout
-              sidebarContent={sidebarContent}
-              setSidebarContent={setSidebarContent}
-              logo={logo}
-              pageTitle={pageTitle}
-              version={version}
-            >
+            <Layout logo={logo} pageTitle={pageTitle} version={version}>
               <Route
                 exact
                 path='/'
                 render={(props) => (
                   <LandscapeOverview
-                    setSidebarContent={setSidebarContent}
                     setPageTitle={setPageTitle}
                     welcomeMessage={message}
                     {...props}
@@ -116,24 +108,12 @@ const App: React.FC = () => {
               <Route
                 exact
                 path={Routes.MAP_ROUTE}
-                render={(props) => (
-                  <LandscapeMap
-                    setSidebarContent={setSidebarContent}
-                    setPageTitle={setPageTitle}
-                    {...props}
-                  />
-                )}
+                render={(props) => <LandscapeMap setPageTitle={setPageTitle} {...props} />}
               />
               <Route
                 exact
                 path='/man/:usage'
-                render={(props) => (
-                  <Man
-                    setSidebarContent={setSidebarContent}
-                    setPageTitle={setPageTitle}
-                    {...props}
-                  />
-                )}
+                render={(props) => <Man setPageTitle={setPageTitle} {...props} />}
               />
             </Layout>
           </Switch>

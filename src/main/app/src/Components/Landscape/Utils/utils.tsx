@@ -1,6 +1,6 @@
-import React, { ReactElement } from 'react';
-import { IGroup, IItem, ILandscape, IRelation } from '../../../interfaces';
-import { Button, Link, List, ListItem, ListItemText } from '@material-ui/core';
+import React, {ReactElement} from 'react';
+import {IGroup, IItem, ILandscape, IRelation} from '../../../interfaces';
+import {Button, Link, List, ListItem, ListItemText} from '@material-ui/core';
 import MappedString from './MappedString';
 
 /**
@@ -160,9 +160,10 @@ export const getLabelsWithPrefix = (prefix: string, element: IGroup | IItem) => 
       const value = element.labels?.[key] || null;
       if (!value) return;
       const primary = key.replace(prefix + '.', '');
+      const secondary = value.substr(0, 150);
       labels.push(
         <ListItem key={key}>
-          <ListItemText primary={primary} secondary={value.substr(0, 150)} title={value} />
+          <ListItemText primary={primary} secondary={secondary} title={value} />
         </ListItem>
       );
     });
