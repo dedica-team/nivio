@@ -18,27 +18,24 @@ import IconButton from '@material-ui/core/IconButton';
 import Avatar from '@material-ui/core/Avatar';
 import { withBasePath } from '../../utils/API/BasePath';
 import Notification from '../Notification/Notification';
-import { SearchOutlined } from '@material-ui/icons';
 import componentStyles from '../../Resources/styling/ComponentStyles';
 import LandscapeWatcher from '../Landscape/Dashboard/LandscapeWatcher';
 import { LandscapeContext } from '../../Context/LandscapeContext';
+import SearchField from '../Landscape/Search/SearchField';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    grow: {
-      flexGrow: 1,
-    },
     pageTitle: {
       padding: 11,
       paddingLeft: 16,
       paddingRight: 16,
+      flexGrow: 1,
     },
     logo: {
       height: '1.5em',
       width: '1.5em',
     },
     appBar: {
-      zIndex: theme.zIndex.drawer + 1,
       position: 'relative',
       backgroundColor: theme.palette.primary.main,
     },
@@ -47,8 +44,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   setSidebarContent: Function;
-  setSearchSupport: Function;
-  searchSupport: boolean;
   pageTitle?: string;
   logo?: string;
   version?: string;
@@ -57,14 +52,7 @@ interface Props {
 /**
  * Header Component
  */
-const Navigation: React.FC<Props> = ({
-  setSidebarContent,
-  setSearchSupport,
-  searchSupport,
-  pageTitle,
-  logo,
-  version,
-}) => {
+const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, version }) => {
   const classes = useStyles();
   const componentClasses = componentStyles();
   const landscapeContext = useContext(LandscapeContext);
@@ -110,12 +98,14 @@ const Navigation: React.FC<Props> = ({
             className={classes.logo}
             imgProps={{ style: { objectFit: 'contain' } }}
             src={logo}
+            alt={'logo'}
           />
         ) : (
           <Avatar
             className={classes.logo}
             imgProps={{ style: { objectFit: 'contain' } }}
             src={withBasePath('icons/svg/nivio.svg')}
+            alt={'logo'}
           />
         )}
       </IconButton>
@@ -133,17 +123,11 @@ const Navigation: React.FC<Props> = ({
       <Box className={classes.pageTitle}>
         <Typography variant='h6'>{pageTitle}</Typography>
       </Box>
-      {landscapeContext.identifier ? (
-        <IconButton
-          className={componentClasses.navigationButton}
-          onClick={() => setSearchSupport(!searchSupport)}
-          title={'Toggle search'}
-        >
-          <SearchOutlined />
-        </IconButton>
-      ) : null}{' '}
-      <Notification setSidebarContent={setSidebarContent} />
+      {landscapeContext.identifier ? <Notification setSidebarContent={setSidebarContent} /> : null}
       <LandscapeWatcher setSidebarContent={setSidebarContent} />
+      {landscapeContext.identifier ? (
+        <SearchField setSidebarContent={setSidebarContent} />
+      ) : null}{' '}
     </Toolbar>
   );
 };

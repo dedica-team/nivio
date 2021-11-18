@@ -97,7 +97,7 @@ class ItemApiModelTest {
         Item s1 = itemTemplate.build();
         ItemApiModel itemApiModel = new ItemApiModel(s1, group);
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
-        assertThat(itemApiModel.getName()).isEqualTo("");
+        assertThat(itemApiModel.getName()).isEmpty();
     }
 
     @Test
@@ -188,5 +188,12 @@ class ItemApiModelTest {
         ItemApiModel itemApiModel = new ItemApiModel(s1, group);
         assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
         assertThat(itemApiModel.toString()).hasToString("l1/g1/a");
+    }
+
+    @Test
+    void getNetworks() {
+        Item s1 = itemTemplate.build();
+        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        assertThat(itemApiModel.getNetworks()).isEqualTo(new String[0]);
     }
 }

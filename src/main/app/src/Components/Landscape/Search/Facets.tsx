@@ -16,6 +16,7 @@ import Button from '@material-ui/core/Button';
 import { SaveSearchConfig } from './SaveSearchConfig';
 import { IFacet } from '../../../interfaces';
 import { a11yProps, TabPanel } from '../Utils/TabUtils';
+import MappedString from '../Utils/MappedString';
 
 interface FacetsProps {
   addFacet: (dim: string, label: string) => string;
@@ -38,20 +39,22 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
     .forEach((facet: IFacet) =>
       facetsHtml.push(
         <TableRow key={facet.dim}>
-          <TableCell style={{ width: '25%' }}>{facet.dim}</TableCell>
+          <TableCell style={{ width: '25%' }}>
+            <MappedString mapKey={facet.dim} />
+          </TableCell>
           <TableCell>
-            {facet.labelValues.map((lv) => (
+            {facet.labelValues.map((cv) => (
               <Chip
                 onClick={() => {
-                  addFacet(facet.dim, lv.label);
+                  addFacet(facet.dim, cv.label);
                 }}
                 variant={'default'}
                 color={'primary'}
-                style={{ margin: 1 }}
+                style={{ margin: 1, backgroundColor: cv.color }}
                 size={'small'}
-                key={facet.dim + '' + lv.label}
-                label={lv.label}
-                avatar={<Avatar>{lv.value}</Avatar>}
+                key={facet.dim + '' + cv.label}
+                label={<MappedString mapKey={cv.label} />}
+                avatar={<Avatar>{cv.value}</Avatar>}
               />
             ))}
           </TableCell>
@@ -74,17 +77,17 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
         <TableRow key={facet.dim}>
           <TableCell style={{ width: '35%' }}>{getLabel(facet)}</TableCell>
           <TableCell>
-            {facet.labelValues.map((lv) => (
+            {facet.labelValues.map((cv) => (
               <Chip
                 onClick={() => {
-                  addFacet(facet.dim, lv.label);
+                  addFacet(facet.dim, cv.label);
                 }}
                 variant={'default'}
                 size={'small'}
-                key={facet.dim + '' + lv.label}
-                label={lv.label}
-                style={{ backgroundColor: lv.label, color: 'black', margin: 1 }}
-                avatar={<Avatar>{lv.value}</Avatar>}
+                key={facet.dim + '' + cv.label}
+                label={cv.label}
+                style={{ backgroundColor: cv.label, color: 'black', margin: 1 }}
+                avatar={<Avatar>{cv.value}</Avatar>}
               />
             ))}
           </TableCell>
@@ -101,27 +104,25 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
 
   return (
     <>
-      <br />
-      <br />
       <AppBar position={'static'}>
         <Tabs value={value} onChange={changeTab} variant={'fullWidth'} aria-label={'search tabs'}>
           <Tab
             icon={<ListAlt />}
-            label={'fields'}
+            label={<MappedString mapKey={'fields'} />}
             style={{ minWidth: 50 }}
             title={'Fields'}
             {...a11yProps(0, 'search')}
           />
           <Tab
             icon={<Speed />}
-            label={'kpis'}
+            label={<MappedString mapKey={'kpis'} />}
             style={{ minWidth: 50 }}
             title={'KPIs'}
             {...a11yProps(1, 'search')}
           />
           <Tab
             icon={<Print />}
-            label={'Report'}
+            label={<MappedString mapKey={'report'} />}
             title={'Export current search as report'}
             style={{ minWidth: 50 }}
             {...a11yProps(2, 'search')}

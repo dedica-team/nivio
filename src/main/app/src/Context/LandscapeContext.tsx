@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { IAssessment, IAssessmentProps, IChanges, ILandscape, INotificationMessage } from "../interfaces";
+import { IAssessment, IAssessmentProps, ILandscape, INotificationMessage } from '../interfaces';
 import { get } from '../utils/API/APIClient';
 import { withBasePath } from '../utils/API/BasePath';
 import { Client, StompSubscription } from '@stomp/stompjs';
@@ -9,7 +9,7 @@ export interface LandscapeContextType {
   readonly assessment: IAssessment | null;
   readonly identifier: string | null;
   readonly notification: INotificationMessage | null;
-  readonly changes: IChanges | null;
+  readonly changes: INotificationMessage | null;
   next: (identifier: string | null) => void;
   getAssessmentSummary: (fqi: string) => IAssessmentProps | null;
 }
@@ -39,7 +39,7 @@ const LandscapeContextProvider: React.FC = (props) => {
   const [landscape, setLandscape] = useState<ILandscape | null>(null);
   const [assessment, setAssessment] = useState<IAssessment | null>(null);
   const [notification, setNotification] = useState<INotificationMessage | null>(null);
-  const [changes, setChanges] = useState<IChanges | null>(null);
+  const [changes, setChanges] = useState<INotificationMessage | null>(null);
   const [identifier, setIdentifier] = useState<string | null>(null);
 
   const backendUrl = withBasePath('/subscribe');
@@ -62,8 +62,9 @@ const LandscapeContextProvider: React.FC = (props) => {
           if (notificationMessage.type === 'LayoutChangedEvent') {
             setNotification(notificationMessage);
           }
+
           if (notificationMessage.type === 'ProcessingFinishedEvent') {
-            setChanges(notificationMessage.changelog.changes);
+            setChanges(notificationMessage);
           }
         });
 
@@ -102,6 +103,7 @@ const LandscapeContextProvider: React.FC = (props) => {
       setAssessment(response);
       console.debug(`Loaded assessment data after identifier change: ${identifier}`);
     });
+    setChanges(null);
   }, [identifier]);
 
   /**
@@ -113,10 +115,12 @@ const LandscapeContextProvider: React.FC = (props) => {
       return;
     }
 
-    get(`/assessment/${identifier}`).then((response) => {
-      console.debug(`Loaded assessment data for ${identifier}`, response);
-      setAssessment(response);
-    });
+    if (identifier === notification?.landscape) {
+      get(`/assessment/${identifier}`).then((response) => {
+        console.debug(`Loaded assessment data for ${identifier}`, response);
+        setAssessment(response);
+      });
+    }
   }, [identifier, notification]);
 
   return (

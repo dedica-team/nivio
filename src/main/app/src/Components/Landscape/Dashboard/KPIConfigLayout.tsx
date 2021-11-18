@@ -65,20 +65,18 @@ const KPIConfigLayout: React.FC<Props> = ({ name, kpi }) => {
   }
 
   return (
-    <Box key={`kpi_${kpi.label}`}>
-      <Accordion key={name} style={{ boxShadow: 'none' }}>
+    <Box key={`kpi_${kpi.label}`} padding={1}>
+      <Typography variant={'h5'}>{name}</Typography>
+      <Accordion key={name} style={{ boxShadow: 'none', background: 'none' }}>
         <AccordionSummary
-          style={{ padding: 2 }}
           expandIcon={<ExpandMore />}
           aria-controls={'panel_kpi' + name + 'bh-content'}
           id={'panel_kpi' + name + 'bh-header'}
         >
-          <Typography variant={'h6'}>{name}</Typography>
+          {kpi.description}
         </AccordionSummary>
-        <AccordionDetails style={{ display: 'block', padding: 2 }}>
-          <div style={{ width: '100%' }}>{kpi.description}</div>
+        <AccordionDetails style={{ display: 'block', padding: 5 }}>
           <br />
-
           {ranges.length ? (
             <Table>
               <TableBody>{ranges}</TableBody>

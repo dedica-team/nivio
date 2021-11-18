@@ -1,10 +1,8 @@
 package de.bonndan.nivio.output.layout;
 
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.Labeled;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.IconService;
+import de.bonndan.nivio.output.icons.LocalIcons;
 import de.bonndan.nivio.util.URLHelper;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -26,13 +24,13 @@ public class AppearanceProcessor {
 
     public void process(@NonNull final Landscape landscape) {
         Objects.requireNonNull(landscape).getGroupItems().forEach(group -> {
-            setIconFillAppearance(group);
-            landscape.getItems().retrieve(group.getItems()).forEach(this::setIconFillAppearance);
+            setIconAndFillAppearance(group);
+            landscape.getItems().retrieve(group.getItems()).forEach(this::setIconAndFillAppearance);
         });
-        setIconFillAppearance(landscape);
+        setIconAndFillAppearance(landscape);
     }
 
-    private void setIconFillAppearance(Labeled labeled) {
+    private void setIconAndFillAppearance(Labeled labeled) {
 
         if (labeled instanceof Item) {
             labeled.setLabel(Label._icondata, iconService.getIconUrl((Item) labeled));
@@ -42,6 +40,10 @@ public class AppearanceProcessor {
                 URLHelper.getURL(icon)
                         .flatMap(iconService::getExternalUrl)
                         .ifPresent(s -> labeled.setLabel(Label._icondata, s));
+            }
+            if (!StringUtils.hasLength(icon) && labeled instanceof Group) {
+                LocalIcons localIcons = new LocalIcons();
+                labeled.setLabel(Label._icondata, localIcons.getDefaultGroupIcon());
             }
         }
 

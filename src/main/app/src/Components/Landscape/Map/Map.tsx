@@ -34,6 +34,7 @@ import {
   Value,
 } from 'react-svg-pan-zoom';
 
+const sidebarWidth = 280;
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     menuIcon: {
@@ -44,11 +45,22 @@ const useStyles = makeStyles((theme: Theme) =>
       top: 20,
       backgroundColor: darken(theme.palette.primary.main, 0.2),
     },
+    sideBar: {
+      position: 'absolute',
+      right: 0,
+      top: 5,
+      width: sidebarWidth,
+      overflow: 'auto',
+      maxHeight: 'calc(100vh - 50px)',
+      zIndex: 5000,
+    },
+    content: {
+      position: 'relative',
+    },
   })
 );
 
 interface Props {
-  setSidebarContent: Function;
   setPageTitle: Function;
 }
 
@@ -63,20 +75,20 @@ interface SVGData {
 /**
  * Displays a chosen landscape as interactive SVG
  *
- * @param setSidebarContent function to set sidebar/drawer content
  * @param setLocateFunction function to use to find an item. make sure to pass an anon func returning the actually used function
  * @param setPageTitle can be used to set the page title in parent state
  */
-const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
+const Map: React.FC<Props> = ({ setPageTitle }) => {
   const classes = useStyles();
   // It wants a value or null but if we defined it as null it throws an error that shouldn't use null
   // In their own documentation, they initialize it with {}, but that will invoke a typescript error
   // @ts-ignore
   const [value, setValue] = useState<Value>({});
   const [data, setData] = useState<SVGData | null>(null);
+  const [sidebarContent, setSidebarContent] = useState<Element | Element[] | null>([]);
   const [renderWithTransition, setRenderWithTransition] = useState(false);
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
-  const [visualFocus, setVisualFocus] = useState<String | null>(null);
+  const [visualFocus, setVisualFocus] = useState<string | null>(null);
   const { identifier } = useParams<{ identifier: string }>();
 
   const [isFirstRender, setIsFirstRender] = useState(true);
@@ -116,13 +128,14 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
     if (fqi && landscapeContext.landscape) {
       let item = getItem(landscapeContext.landscape, fqi);
-      if (item)
-        setSidebarContent(
-          <Item
+      if (item) {
+        // @ts-ignore
+        setSidebarContent(<Item
             fullyQualifiedItemIdentifier={item.fullyQualifiedIdentifier}
             key={`item_${item.fullyQualifiedIdentifier}_${Math.random()}`}
           />
         );
+      }
     }
   };
 
@@ -132,7 +145,10 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
 
     if (fqi && landscapeContext.landscape) {
       let group = getGroup(landscapeContext.landscape, fqi);
-      if (group) setSidebarContent(<Group group={group} key={`group_${fqi}_${Math.random()}`} />);
+      if (group) {
+        // @ts-ignore
+        setSidebarContent(<Group group={group} key={`group_${fqi}_${Math.random()}`} />);
+      }
     }
   };
 
@@ -182,8 +198,8 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     if (source && target && dataTarget) {
       const relId = source.fullyQualifiedIdentifier + ';' + dataTarget;
       let relation = source.relations[relId];
-      setSidebarContent(
-        <MapRelation
+      // @ts-ignore
+      setSidebarContent(<MapRelation
           relation={relation}
           source={source}
           target={target}
@@ -296,72 +312,75 @@ const Map: React.FC<Props> = ({ setSidebarContent, setPageTitle }) => {
     }
 
     return (
-      <div className='landscapeMapContainer'>
-        {isZoomed && (
-          <IconButton
-            className={classes.menuIcon}
-            title={'Click to reset view'}
-            onClick={() => {
-              // @ts-ignore
-              setValue(fitToViewer(value, 'center', 'center'));
-              setIsZoomed(false);
-            }}
-            size={'small'}
-          >
-            <ZoomOutIcon />
-          </IconButton>
-        )}
-        <ReactSvgPanZoomLoaderXML
-          xml={data.xml}
-          proxy={
-            <>
-              <SvgLoaderSelectElement
-                selector='.item'
-                onMouseUp={onItemClick}
-                onTouchEnd={onItemClick}
-              />
-              <SvgLoaderSelectElement
-                selector='.relation'
-                onMouseUp={onRelationClick}
-                onTouchEnd={onRelationClick}
-              />
-              <SvgLoaderSelectElement
-                selector='.groupArea'
-                onMouseUp={onGroupClick}
-                onTouchEnd={onGroupClick}
-              />
-            </>
-          }
-          render={(content: ReactElement[]) => (
-            <ReactSVGPanZoom
-              key={'panzoom'}
-              width={window.innerWidth}
-              height={window.innerHeight - 50}
-              background={'transparent'}
-              miniatureProps={{
-                position: 'none',
-                background: '#616264',
-                width: 200,
-                height: 300,
+      <div className={classes.content}>
+        <div className='landscapeMapContainer'>
+          {isZoomed && (
+            <IconButton
+              className={classes.menuIcon}
+              title={'Click to reset view'}
+              onClick={() => {
+                // @ts-ignore
+                setValue(fitToViewer(value, 'center', 'center'));
+                setIsZoomed(false);
               }}
-              preventPanOutside={false}
-              toolbarProps={{ position: 'none' }}
-              detectAutoPan={false}
-              onZoom={() => {
-                setIsZoomed(true);
-              }}
-              tool={TOOL_AUTO}
-              onChangeValue={(newValue: Value) => setValue(newValue)}
-              onChangeTool={() => {}}
-              value={value}
-              className={`ReactSVGPanZoom ${renderWithTransition ? 'with-transition' : ''}`}
+              size={'small'}
             >
-              <svg width={data?.width} height={data?.height}>
-                {content}
-              </svg>
-            </ReactSVGPanZoom>
+              <ZoomOutIcon />
+            </IconButton>
           )}
-        />
+          <ReactSvgPanZoomLoaderXML
+            xml={data.xml}
+            proxy={
+              <>
+                <SvgLoaderSelectElement
+                  selector='.item'
+                  onMouseUp={onItemClick}
+                  onTouchEnd={onItemClick}
+                />
+                <SvgLoaderSelectElement
+                  selector='.relation'
+                  onMouseUp={onRelationClick}
+                  onTouchEnd={onRelationClick}
+                />
+                <SvgLoaderSelectElement
+                  selector='.groupArea'
+                  onMouseUp={onGroupClick}
+                  onTouchEnd={onGroupClick}
+                />
+              </>
+            }
+            render={(content: ReactElement[]) => (
+              <ReactSVGPanZoom
+                key={'panzoom'}
+                width={window.innerWidth}
+                height={window.innerHeight - 50}
+                background={'transparent'}
+                miniatureProps={{
+                  position: 'none',
+                  background: '#616264',
+                  width: 200,
+                  height: 300,
+                }}
+                preventPanOutside={false}
+                toolbarProps={{ position: 'none' }}
+                detectAutoPan={false}
+                onZoom={() => {
+                  setIsZoomed(true);
+                }}
+                tool={TOOL_AUTO}
+                onChangeValue={(newValue: Value) => setValue(newValue)}
+                onChangeTool={() => {}}
+                value={value}
+                className={`ReactSVGPanZoom ${renderWithTransition ? 'with-transition' : ''}`}
+              >
+                <svg width={data?.width} height={data?.height}>
+                  {content}
+                </svg>
+              </ReactSVGPanZoom>
+            )}
+          />
+        </div>
+        <div className={classes.sideBar}>{sidebarContent}</div>
       </div>
     );
   }

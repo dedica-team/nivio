@@ -34,6 +34,7 @@ import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import ItemAvatar from './ItemAvatar';
 import { LandscapeContext } from '../../../../Context/LandscapeContext';
 import { a11yProps, TabPanel } from '../../Utils/TabUtils';
+import MappedString from '../../Utils/MappedString';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,6 +55,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   small?: boolean;
+  sticky?: boolean;
   fullyQualifiedItemIdentifier?: string;
 }
 
@@ -62,7 +64,7 @@ interface Props {
  *
  *
  */
-const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
+const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) => {
   const [item, setItem] = useState<IItem | undefined>(undefined);
   const [compact, setCompact] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(true);
@@ -93,6 +95,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
+                paddingLeft: 10,
               }}
             >
               {iface.name || iface.path}
@@ -113,24 +116,74 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
                 <br />
               </div>
             ) : null}
-            Path: {iface.path || '-'}
-            <br />
-            <br />
-            Params: {iface.parameters || '-'}
-            <br />
-            <br />
-            Format: {iface.format || '-'}
-            <br />
-            <br />
-            Payload: {iface.payload || '-'}
-            <br />
-            <br />
-            Protection: {iface.protection || '-'}
-            <br />
-            <br />
-            Deprecated: {iface.deprecated ? 'Yes' : '-'}
-            <br />
-            <br />
+            <List>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                  whiteSpace: 'normal',
+                }}
+              >
+                Path: {iface.path || '-'}
+              </ListItemText>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                  whiteSpace: 'normal',
+                }}
+              >
+                Params: {iface.parameters || '-'}
+              </ListItemText>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                  whiteSpace: 'normal',
+                }}
+              >
+                Format: {iface.format || '-'}
+              </ListItemText>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                  whiteSpace: 'normal',
+                }}
+              >
+                Payload: {iface.payload || '-'}
+              </ListItemText>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                  whiteSpace: 'normal',
+                }}
+              >
+                Protection: {iface.protection || '-'}
+              </ListItemText>
+              <ListItemText
+                aria-multiline={true}
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordWrap: 'break-word',
+                  whiteSpace: 'normal',
+                }}
+              >
+                Deprecated: {iface.deprecated ? 'Yes' : '-'}
+              </ListItemText>
+            </List>
           </AccordionDetails>
         </Accordion>
       );
@@ -201,7 +254,9 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
         .map((assessment) => {
           return (
             <TableRow key={assessment.field}>
-              <TableCell>{assessment.field}</TableCell>
+              <TableCell>
+                <MappedString mapKey={assessment.field} />
+              </TableCell>
               <TableCell>
                 <StatusChip
                   status={assessment.status}
@@ -224,6 +279,17 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
   const frameworks: ReactElement | null = item ? getLabelsWithPrefix('framework', item) : null;
   const interfaces: ReactElement | null = item ? getInterfaces(item) : null;
 
+  let network: ReactElement[] = [];
+  item?.networks.forEach((networkValue) =>
+    network.push(
+      <ListItem key={networkValue}>
+        <ListItemText primary={networkValue} />
+      </ListItem>
+    )
+  );
+  const networks =
+    item?.networks && item?.networks.length ? <List dense={true}> {network}</List> : null;
+
   const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
   };
@@ -236,15 +302,17 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
           <MoreVertSharp />
         </IconButton>
       ) : null}
-      <IconButton
-        size={'small'}
-        onClick={() => {
-          setItem(undefined);
-          setVisible(false);
-        }}
-      >
-        <Close />
-      </IconButton>
+      {!sticky ? (
+        <IconButton
+          size={'small'}
+          onClick={() => {
+            setItem(undefined);
+            setVisible(false);
+          }}
+        >
+          <Close />
+        </IconButton>
+      ) : null}
     </>
   );
   const assessmentSummary = item
@@ -252,11 +320,10 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
     : null;
   const tags =
     item?.tags && item?.tags.length
-      ? item.tags.map((value) => (
-          <Chip size={'small'} label={value} key={value} className={extraClasses.tag} />
+      ? item.tags.map((tagValue) => (
+          <Chip size={'small'} label={tagValue} key={tagValue} className={extraClasses.tag} />
         ))
       : null;
-
   if (!visible) return null;
 
   return (
@@ -295,21 +362,21 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
             <Tabs value={value} onChange={changeTab} variant={'fullWidth'} aria-label={'item tabs'}>
               <Tab
                 icon={<Info />}
-                label={'info'}
+                label={<MappedString mapKey={'info'} />}
                 style={{ minWidth: 50 }}
                 title={'Info'}
                 {...a11yProps(0, 'item')}
               />
               <Tab
                 icon={<Power />}
-                label={'relations'}
+                label={<MappedString mapKey={'relations'} />}
                 style={{ minWidth: 50 }}
                 title={'Relations'}
                 {...a11yProps(1, 'item')}
               />
               <Tab
                 icon={<Details />}
-                label={'Details'}
+                label={<MappedString mapKey={'details'} />}
                 title={'API / Interfaces'}
                 style={{ minWidth: 50 }}
                 {...a11yProps(2, 'item')}
@@ -322,37 +389,49 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
                 <TableBody>
                   {item?.group ? (
                     <TableRow key={'group'}>
-                      <TableCell style={{ width: '33%' }}>Group</TableCell>
+                      <TableCell style={{ width: '33%' }}>
+                        <MappedString mapKey={'Group'} />
+                      </TableCell>
                       <TableCell>{item?.group}</TableCell>
                     </TableRow>
                   ) : null}
                   {item?.type ? (
                     <TableRow key={'type'}>
-                      <TableCell>Type</TableCell>
+                      <TableCell>
+                        <MappedString mapKey={'Type'} />
+                      </TableCell>
                       <TableCell>{item?.type}</TableCell>
                     </TableRow>
                   ) : null}
                   {item?.description ? (
                     <TableRow key={'description'}>
-                      <TableCell>Info</TableCell>
+                      <TableCell>
+                        <MappedString mapKey={'Info'} />
+                      </TableCell>
                       <TableCell>{item?.description}</TableCell>
                     </TableRow>
                   ) : null}
                   {item?.owner ? (
                     <TableRow key={'owner'}>
-                      <TableCell>Owner</TableCell>
+                      <TableCell>
+                        <MappedString mapKey={'Owner'} />
+                      </TableCell>
                       <TableCell>{item?.owner}</TableCell>
                     </TableRow>
                   ) : null}
                   {item?.contact ? (
                     <TableRow key={'contact'}>
-                      <TableCell>Contact</TableCell>
+                      <TableCell>
+                        <MappedString mapKey={'Contact'} />
+                      </TableCell>
                       <TableCell>{item?.contact}</TableCell>
                     </TableRow>
                   ) : null}
                   {item?.address ? (
                     <TableRow key={'address'}>
-                      <TableCell>Address</TableCell>
+                      <TableCell>
+                        <MappedString mapKey={'Address'} />
+                      </TableCell>
                       <TableCell>{item?.address}</TableCell>
                     </TableRow>
                   ) : null}
@@ -362,9 +441,18 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
                         if (data[0] === 'self') return null;
                         return (
                           <TableRow key={'link_' + data[0]}>
-                            <TableCell>{data[0]}</TableCell>
                             <TableCell>
-                              <Link href={data[1].href} className={classes.link}>
+                              <MappedString mapKey={data[0]} />
+                            </TableCell>
+                            <TableCell>
+                              <Link
+                                href={data[1].href}
+                                className={classes.link}
+                                style={{
+                                  whiteSpace: 'normal',
+                                  wordWrap: 'break-word',
+                                }}
+                              >
                                 {data[1].href}
                               </Link>
                             </TableCell>
@@ -378,7 +466,9 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
               {assessmentStatus.length > 0 ? (
                 <>
                   <br />
-                  <Typography variant={'h6'}>Status</Typography>
+                  <Typography variant={'h6'}>
+                    <MappedString mapKey={'Status'} />
+                  </Typography>
                   <Table>
                     <TableBody>{assessmentStatus}</TableBody>
                   </Table>
@@ -389,7 +479,9 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
             <TabPanel value={value} index={1} prefix={'item'}>
               {inboundRelations && inboundRelations.length ? (
                 <div>
-                  <Typography variant={'h6'}>Inbound</Typography>
+                  <Typography variant={'h6'}>
+                    <MappedString mapKey={'Inbound'} />
+                  </Typography>
                   <List dense={true}>{inboundRelations}</List>
                 </div>
               ) : (
@@ -397,7 +489,9 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
               )}
               {outboundRelations && outboundRelations.length ? (
                 <div>
-                  <Typography variant={'h6'}>Outbound</Typography>
+                  <Typography variant={'h6'}>
+                    <MappedString mapKey={'Outbound'} />
+                  </Typography>
                   <List dense={true}>{outboundRelations}</List>
                 </div>
               ) : (
@@ -408,21 +502,36 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small }) => {
             <TabPanel value={value} index={2} prefix={'item'}>
               {frameworks ? (
                 <div className='frameworks'>
-                  <Typography variant={'h6'}>Frameworks</Typography>
+                  <Typography variant={'h6'}>
+                    <MappedString mapKey={'Frameworks'} />
+                  </Typography>
                   {frameworks}
+                </div>
+              ) : null}
+
+              {networks ? (
+                <div className='networks'>
+                  <Typography variant={'h6'}>
+                    <MappedString mapKey={'Networks'} />
+                  </Typography>
+                  {networks}
                 </div>
               ) : null}
 
               {labels ? (
                 <>
-                  <Typography variant={'h6'}>Labels</Typography>
+                  <Typography variant={'h6'}>
+                    <MappedString mapKey={'Labels'} />
+                  </Typography>
                   {labels}
                 </>
               ) : null}
 
               {interfaces != null ? (
                 <div className='interfaces'>
-                  <Typography variant={'h6'}>Interfaces</Typography>
+                  <Typography variant={'h6'}>
+                    <MappedString mapKey={'Interfaces'} />
+                  </Typography>
                   {interfaces}
                 </div>
               ) : null}
