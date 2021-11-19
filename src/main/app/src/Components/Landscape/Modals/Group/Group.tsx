@@ -46,7 +46,10 @@ const Group: React.FC<Props> = ({ group }) => {
               }
             }}
           >
-            <ItemAvatar item={item} statusColor={itemStatus.status} />
+            <ItemAvatar
+              item={item}
+              statusColor={itemStatus.status === 'UNKNOWN' ? 'WHITE' : itemStatus.status}
+            />
             &nbsp;
             {item.identifier}
           </Button>

@@ -19,6 +19,7 @@ public class IconMapping {
     private static final Logger LOGGER = LoggerFactory.getLogger(IconMapping.class);
 
     public static final String DEFAULT_ICON = "cog";
+    public static final String DEFAULT_GROUP_ICON = "hexagon-multiple-outline";
 
     public static final String BACKEND = "backend";
     public static final String CACHE = "cache";

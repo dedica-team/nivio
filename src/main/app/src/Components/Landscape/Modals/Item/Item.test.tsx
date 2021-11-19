@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { fireEvent, getByTitle, queryByText, render, waitFor } from '@testing-library/react';
 import * as APIClient from '../../../../utils/API/APIClient';
 import Item from './Item';
 import { IItem } from '../../../../interfaces';
@@ -25,13 +25,14 @@ describe('<Item />', () => {
     contact: 'foo',
     relations: Irelations,
     interfaces: [],
-    labels: { foo: 'foo' },
+    labels: { 'framework.spring boot': '2.2', 'team': 'ops guys' },
     type: 'foo',
     fullyQualifiedIdentifier: 'foo',
     tags: [],
     color: 'foo',
     icon: 'foo',
     _links: { homepage: { href: 'http://acme.com' } },
+    networks: ['vpn'],
   };
 
   it('should avoid displaying undefined and null value', () => {
@@ -56,5 +57,23 @@ describe('<Item />', () => {
     //then
     await waitFor(() => expect(mock).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(getByText('homepage')).toBeInTheDocument());
+  });
+
+  it('should display networks, frameworks and other labels', async () => {
+    //given
+    const mock = jest.spyOn(APIClient, 'get');
+    mock.mockReturnValue(Promise.resolve(useItem));
+
+    //when
+    const { container, queryByText } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
+    fireEvent.click(getByTitle(container, 'API / Interfaces'));
+
+    console.log(mock);
+    //then
+    await waitFor(() => expect(mock).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(queryByText('vpn')).toBeInTheDocument());
+    await waitFor(() => expect(queryByText('Networks')).toBeInTheDocument());
+    await waitFor(() => expect(queryByText('spring boot')).toBeInTheDocument());
+    await waitFor(() => expect(queryByText('ops guys')).toBeInTheDocument());
   });
 });

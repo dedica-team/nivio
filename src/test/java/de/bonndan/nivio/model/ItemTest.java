@@ -56,7 +56,6 @@ class ItemTest {
     }
 
 
-
     @Test
     void getChangesInLabels() {
         Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();

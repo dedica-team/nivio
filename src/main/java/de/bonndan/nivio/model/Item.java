@@ -328,6 +328,4 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
 
         return changes;
     }
-
-
 }

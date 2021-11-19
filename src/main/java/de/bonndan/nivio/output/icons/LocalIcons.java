@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static de.bonndan.nivio.output.icons.IconMapping.DEFAULT_GROUP_ICON;
 import static de.bonndan.nivio.output.icons.IconMapping.DEFAULT_ICON;
 
 /**
@@ -21,7 +22,7 @@ import static de.bonndan.nivio.output.icons.IconMapping.DEFAULT_ICON;
 public class LocalIcons {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalIcons.class);
-    private static final String initErrorMsg = "Default icon could not be loaded from icon set folder %s." +
+    private static final String INIT_ERROR_MSG = "Default icon could not be loaded from icon set folder %s." +
             " Make sure all npm dependencies are installed (or run mvn package).";
     public static final String DEFAULT_ICONS_FOLDER = "/static/icons/svg/";
 
@@ -29,6 +30,8 @@ public class LocalIcons {
      * default icon data url
      */
     private final String defaultIcon;
+
+    private final String defaultGroupIcon;
 
     private final String iconFolder;
 
@@ -49,8 +52,13 @@ public class LocalIcons {
             this.iconFolder = DEFAULT_ICONS_FOLDER;
         }
         defaultIcon = getIconUrl(DEFAULT_ICON).orElseThrow(() -> {
-            throw new RuntimeException(String.format(initErrorMsg, this.iconFolder));
+            throw new IconCannotBeLoadedException(String.format(INIT_ERROR_MSG, this.iconFolder));
         });
+
+        defaultGroupIcon = getIconUrl(DEFAULT_GROUP_ICON).orElseThrow(() -> {
+            throw new IconCannotBeLoadedException(String.format(INIT_ERROR_MSG, this.iconFolder));
+        });
+
     }
 
     public LocalIcons() {
@@ -84,6 +92,10 @@ public class LocalIcons {
 
     public String getDefaultIcon() {
         return defaultIcon;
+    }
+
+    public String getDefaultGroupIcon() {
+        return defaultGroupIcon;
     }
 
     /**

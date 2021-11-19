@@ -22,6 +22,7 @@ const items: IItem[] = [
     tags: [],
     type: 'service',
     icon: '',
+    networks: [],
   },
 ];
 
@@ -31,6 +32,7 @@ const groups: IGroup[] = [
     name: 'A Group',
     items: items,
     identifier: 'groupA',
+    icon: '',
   },
 ];
 
@@ -76,21 +78,28 @@ const assessments: IAssessment = {
     ],
   },
 };
-
-const changes: INotificationMessage = {
-  timestamp: '',
-  date: new Date(),
+const changes: IChanges = {
+  test: {
+    changeType: '',
+    componentType: '',
+    message: '',
+  },
+};
+const notification: INotificationMessage = {
+  timestamp: 'test',
   landscape: 'test',
-  level: 'info',
-  type: 'ProcessingFinishedEvent',
-  changelog: { changes: {} },
+  message: 'test',
+  level: 'success',
+  type: 'test',
+  date: new Date(),
+  changelog: { changes },
 };
 
 const landscapeContextValue: LandscapeContextType = {
   identifier: 'test',
   landscape: landscape,
   assessment: assessments,
-  changes: changes,
+  changes: notification,
   next: typeof jest != 'undefined' ? jest.fn() : () => {},
   getAssessmentSummary: (fqi) => {
     return assessments.results[fqi].find((assessmentResult) => assessmentResult.summary) || null;

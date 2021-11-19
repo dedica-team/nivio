@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.layout;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.DataUrlHelper;
 import de.bonndan.nivio.output.icons.IconService;
+import de.bonndan.nivio.output.icons.LocalIcons;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,12 +11,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -24,6 +23,7 @@ class AppearanceProcessorTest {
     private AppearanceProcessor resolver;
     private Landscape landscape;
     private IconService iconService;
+    private LocalIcons localIcons;
     private Group g1;
     private ArrayList<Item> items;
 
@@ -31,6 +31,7 @@ class AppearanceProcessorTest {
     public void setup() {
 
         iconService = mock(IconService.class);
+        localIcons = mock(LocalIcons.class);
         landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
         resolver = new AppearanceProcessor(iconService);
 
@@ -54,7 +55,7 @@ class AppearanceProcessorTest {
     }
 
     @Test
-    void setItemIcons_LabelIcon() {
+    void item_icon_setIconAndFillAppearance() {
         Item s1 = landscape.getItems().pick("s1", "g1");
         s1.setLabel(Label.icon, "https://dedica.team/images/logo_orange_weiss.png");
         when(iconService.getIconUrl(s1)).thenReturn(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
@@ -67,7 +68,7 @@ class AppearanceProcessorTest {
     }
 
     @Test
-    void setItemIcons_LabelFill() throws MalformedURLException {
+    void item_fill_setIconAndFillAppearance() throws MalformedURLException {
         Item s1 = landscape.getItems().pick("s1", "g1");
         s1.setLabel(Label.fill, "http://dedica.team/images/portrait.jpeg");
         when(iconService.getExternalUrl(new URL(s1.getLabel(Label.fill)))).thenReturn(java.util.Optional.of(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo"));
@@ -80,7 +81,7 @@ class AppearanceProcessorTest {
     }
 
     @Test
-    void setLandscapeIcons_LabelIcon() throws MalformedURLException {
+    void landscape_icon_setIconAndFillAppearance() throws MalformedURLException {
 
         // given
         landscape.setLabel(Label.icon, "https://dedica.team/images/logo_orange_weiss.png");
@@ -94,7 +95,7 @@ class AppearanceProcessorTest {
     }
 
     @Test
-    void setLandscapeIcons_LabelFill() throws MalformedURLException {
+    void landscape_fill_setIconAndFillAppearance() throws MalformedURLException {
 
         // given
         landscape.setLabel(Label.fill, "http://dedica.team/images/portrait.jpeg");
@@ -108,7 +109,7 @@ class AppearanceProcessorTest {
     }
 
     @Test
-    void setGroupIcons_LabelIcon() throws MalformedURLException {
+    void group_icon_setIconAndFillAppearance() throws MalformedURLException {
 
         // given
         g1.setLabel(Label.icon, "https://dedica.team/images/logo_orange_weiss.png");
@@ -122,7 +123,7 @@ class AppearanceProcessorTest {
     }
 
     @Test
-    void setGroupIcons_LabelFill() throws MalformedURLException {
+    void group_fill_setIconAndFillAppearance() throws MalformedURLException {
 
         // given
         g1.setLabel(Label.fill, "http://dedica.team/images/portrait.jpeg");
@@ -133,6 +134,20 @@ class AppearanceProcessorTest {
 
         // then
         assertThat(g1.getLabel(Label._filldata)).isEqualTo(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
+    }
+
+    @Test
+    void group_setDefaultIcon_setIconAndFillAppearance() {
+
+        // given
+        // default group icon
+        when(localIcons.getDefaultGroupIcon()).thenReturn(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "PD94bWwg");
+
+        // when
+        resolver.process(landscape);
+
+        // then
+        assertThat(g1.getIcon()).startsWith(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "PD94bWwg");
     }
 
 }

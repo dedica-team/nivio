@@ -25,7 +25,7 @@ public class ItemFactory {
     }
 
     public static Item getTestItem(String group, String identifier, Landscape landscape) {
-        return new Item(identifier, landscape, group, null,null,null,
+        return new Item(identifier, landscape, group, null, null, null,
                 null, null, null, null, null, null);
     }
 
