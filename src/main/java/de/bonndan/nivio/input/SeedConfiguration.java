@@ -22,7 +22,9 @@ import java.util.*;
 /**
  * Input DTO for a landscape.
  *
- * Think of a group of servers and apps, like a "project", "workspace" or stage.
+ * Preliminary stage of a {@link de.bonndan.nivio.input.dto.LandscapeDescription} with unresolved sources. Opposed to a
+ * landscape description is has many {@link SourceReference}s which must be resolved into input data by the
+ * {@link SourceReferencesResolver}. A single seed config can result in multiple landscape description dtos.
  */
 @JsonIgnoreType
 public class SeedConfiguration implements ComponentDescription {
