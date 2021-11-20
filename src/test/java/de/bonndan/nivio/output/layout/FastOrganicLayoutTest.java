@@ -101,11 +101,11 @@ class FastOrganicLayoutTest {
         //then
         double dispX = layout.dispX[0];
         double dispY = layout.dispY[0];
-        assertThat(dispX).isEqualTo(-19, Offset.offset(1D));
+        assertThat(dispX).isEqualTo(-11, Offset.offset(1D));
         assertThat(dispY)
                 .isLessThan(0)
                 .isLessThan(dispX)
-                .isEqualTo(-398, Offset.offset(1D));
+                .isEqualTo(-224, Offset.offset(1D));
     }
 
     @Test

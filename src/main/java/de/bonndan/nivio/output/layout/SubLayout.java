@@ -13,20 +13,20 @@ import java.util.Set;
 
 /**
  * Layout for one group (for the items INSIDE the group).
+ *
  */
 public class SubLayout {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubLayout.class);
 
     //higher means more space between items
-    public static final int FORCE_CONSTANT = 200;
+    public static final int FORCE_CONSTANT = 150;
 
     //distance when repulsion has no more effect
-    public static final int MAX_DISTANCE_LIMIT = 300;
+    public static final int MAX_DISTANCE_LIMIT = 350;
 
-    //affects iterations, think of cooling down
     public static final int INITIAL_TEMP = 300;
-    public static final int MIN_DISTANCE_LIMIT = 2;
+    public static final int MIN_DISTANCE_LIMIT = 100;
 
     private FastOrganicLayout layout;
     private Component parent;
@@ -44,7 +44,7 @@ public class SubLayout {
 
         layout = new FastOrganicLayout(
                 components,
-                new OriginalForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT, FORCE_CONSTANT),
+                new CollisionRegardingForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT),
                 INITIAL_TEMP
         );
         layout.setDebug(debug);
