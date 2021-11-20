@@ -70,7 +70,7 @@ public class SeedConfiguration implements ComponentDescription {
     private final Map<String, Link> links = new HashMap<>();
 
     @Schema(description = "Additional labels for the landscape.")
-    private Map<String, String> labels = new HashMap<>();
+    private final Map<String, String> labels = new HashMap<>();
 
     private List<ItemDescription> items = new ArrayList<>();
 
@@ -106,6 +106,7 @@ public class SeedConfiguration implements ComponentDescription {
     }
 
     @Override
+    @NonNull
     public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
         return FullyQualifiedIdentifier.from(getIdentifier());
     }
@@ -228,16 +229,8 @@ public class SeedConfiguration implements ComponentDescription {
         return labels;
     }
 
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
-    }
-
     public String getLabel(String key) {
         return getLabels().get(key);
-    }
-
-    public void setLabel(String key, String value) {
-        getLabels().put(key, value);
     }
 
     public void setBaseUrl(URL baseUrl) {
