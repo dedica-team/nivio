@@ -1,15 +1,15 @@
-import React, {useContext, useState} from 'react';
-import {Card, CardHeader, Table, TableBody, TableCell, TableRow} from '@material-ui/core';
+import React, { useContext, useState } from 'react';
+import { Card, CardHeader, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
-import {IItem, IRelation} from '../../../../interfaces';
+import { IItem, IRelation } from '../../../../interfaces';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import {LocateFunctionContext} from '../../../../Context/LocateFunctionContext';
+import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import ItemAvatar from '../../Modals/Item/ItemAvatar';
-import {Close, HelpRounded} from '@material-ui/icons';
-import {LandscapeContext} from '../../../../Context/LandscapeContext';
-import {getLabels} from '../../Utils/utils';
+import { Close, InfoOutlined } from '@material-ui/icons';
+import { LandscapeContext } from '../../../../Context/LandscapeContext';
+import { getLabels } from '../../Utils/utils';
 
 interface Props {
   source: IItem;
@@ -60,14 +60,14 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
           <TableBody>
             <TableRow key={'Type'}>
               <TableCell style={{ width: '33%' }}>Type</TableCell>
-              <TableCell>
+              <TableCell style={{ display: 'flex', justifyContent: 'space-between' }}>
                 {relation.type}
                 <span
                   title={
                     'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
                   }
                 >
-                  <HelpRounded />
+                  <InfoOutlined color='action' fontSize='small' />
                 </span>
               </TableCell>
             </TableRow>
