@@ -34,18 +34,18 @@ public class OwnersReportGenerator extends HtmlGenerator {
             title = searchConfig.getTitle();
         }
 
-        final Optional<String> searchTerm = searchConfig != null && !StringUtils.isEmpty(searchConfig.getSearchTerm()) ? Optional.ofNullable(searchConfig.getSearchTerm()) : Optional.empty();
-        final Optional<String> groupBy = searchConfig != null && !StringUtils.isEmpty(searchConfig.getGroupedBy()) ? Optional.ofNullable(searchConfig.getGroupedBy()) : Optional.empty();
+        final Optional<String> searchTerm = searchConfig != null && StringUtils.hasLength(searchConfig.getSearchTerm()) ? Optional.ofNullable(searchConfig.getSearchTerm()) : Optional.empty();
+        final Optional<String> reportType = searchConfig != null && StringUtils.hasLength(searchConfig.getReportType()) ? Optional.ofNullable(searchConfig.getReportType()) : Optional.empty();
         List<Item> items = new ArrayList<>(searchTerm.map(landscape::search).orElse(landscape.getItems().all()));
         String groupedBy = "";
-        if (groupBy.isPresent() && groupBy.get().equals("owner")) {
-            groupedBy = writeOwnerGroups(GroupedBy.by(Item::getOwner, items), assessment);
-        } else if (groupBy.isPresent() && groupBy.get().equals("groups")) {
-            groupedBy = writeGroupGroups(GroupedBy.by(item -> item.getGroup(), items), assessment);
-        } else if (groupBy.isPresent() && groupBy.get().equals("labels")) {
-            groupedBy = writeLabelsGroups(GroupedBy.newBy(item -> item.getLabels(), items), assessment);
-        } else if (groupBy.isPresent() && groupBy.get().equals("status")) {
-            groupedBy = writeStatusGroups(GroupedBy.newFunc(item -> assessment.getResults(), items), assessment);
+        if (reportType.isPresent() && reportType.get().equals("owners")) {
+            groupedBy = writeGroups(GroupedBy.by(Item::getOwner, items), assessment, "Owners");
+        } else if (reportType.isPresent() && reportType.get().equals("groups")) {
+            groupedBy = writeGroups(GroupedBy.by(Item::getGroup, items), assessment, "Groups");
+        } else if (reportType.isPresent() && reportType.get().equals("lifecycle")) {
+            groupedBy = writeGroups(GroupedBy.newBy(Item::getLabels, items), assessment, "Lifecycle");
+        } else if (reportType.isPresent() && reportType.get().equals("status")) {
+            groupedBy = writeGroups(GroupedBy.newFunc(item -> assessment.getResults(), items), assessment, "Status");
         }
 
         return html(
@@ -61,55 +61,16 @@ public class OwnersReportGenerator extends HtmlGenerator {
         ).renderFormatted();
     }
 
-    private String writeOwnerGroups(GroupedBy ownerGroups, Assessment assessment) {
+    private String writeGroups(GroupedBy groupedByGroups, Assessment assessment, String groupBy) {
         final StringBuilder builder = new StringBuilder();
-        ownerGroups.getAll().forEach((owner, items) -> {
+        groupedByGroups.getAll().forEach((groupByObject, items) -> {
             builder.append(
-                    h2("Owner: " + owner).render()
+                    h2(groupBy + ": " + groupByObject).render()
             );
             List<ContainerTag> collect = items.stream().map(item -> div(writeItem(item, assessment, items)).withClass("col-sm")).collect(Collectors.toList());
             builder.append(div().withClass("row").with(collect).render());
         });
 
-        return builder.toString();
-    }
-
-    private String writeGroupGroups(GroupedBy groupGroups, Assessment assessment) {
-        final StringBuilder builder = new StringBuilder();
-        groupGroups.getAll().forEach((group, items) -> {
-            builder.append(
-                    h2("Group: " + group).render()
-            );
-            List<ContainerTag> collect = items.stream().map(item -> div(writeItem(item, assessment, items)).withClass("col-sm")).collect(Collectors.toList());
-            builder.append(div().withClass("row").with(collect).render());
-
-        });
-        return builder.toString();
-    }
-
-    private String writeLabelsGroups(GroupedBy labelsGroups, Assessment assessment) {
-        final StringBuilder builder = new StringBuilder();
-        labelsGroups.getAll().forEach((label, items) -> {
-            builder.append(
-                    h2("Lifecycle: " + label).render()
-            );
-            List<ContainerTag> collect = items.stream().map(item -> div(writeItem(item, assessment, items)).withClass("col-sm")).collect(Collectors.toList());
-            builder.append(div().withClass("row").with(collect).render());
-
-        });
-        return builder.toString();
-    }
-
-    private String writeStatusGroups(GroupedBy statusGroups, Assessment assessment) {
-        final StringBuilder builder = new StringBuilder();
-        statusGroups.getAll().forEach((status, items) -> {
-            builder.append(
-                    h2("StatusValue: " + status).render()
-            );
-            List<ContainerTag> collect = items.stream().map(item -> div(writeItem(item, assessment, items)).withClass("col-sm")).collect(Collectors.toList());
-            builder.append(div().withClass("row").with(collect).render());
-
-        });
         return builder.toString();
     }
 

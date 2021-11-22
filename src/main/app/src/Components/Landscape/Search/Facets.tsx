@@ -1,6 +1,9 @@
 import React from 'react';
 import {
   AppBar,
+  FormControlLabel,
+  FormGroup,
+  Switch,
   Tab,
   Table,
   TableBody,
@@ -24,10 +27,16 @@ interface FacetsProps {
   facets: IFacet[];
 }
 
+
 const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
   const facetsHtml: JSX.Element[] = [];
   const kpiHtml: JSX.Element[] = [];
   const [value, setValue] = React.useState(0);
+  const [groupSwitch, setGroupSwitch] = React.useState(false);
+  const [ownerSwitch, setOwnerSwitch] = React.useState(true);
+  const [lifecycleSwitch, setLifecycleSwitch] = React.useState(false);
+  const [kpiSwitch, setKpiSwitch] = React.useState(false);
+  const [reportType, setReportType] = React.useState('owners');
 
   const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
@@ -99,7 +108,8 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
     const elementById = document.getElementById('report-title');
     // @ts-ignore
     const title = elementById != null ? elementById.value : '';
-    saveSearch({ reportType: 'owners', title: title });
+
+    saveSearch({ reportType: reportType, title: title });
   };
 
   return (
@@ -144,8 +154,6 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
       </TabPanel>
 
       <TabPanel value={value} index={2} prefix={'search'}>
-        <TextField id='report-title' label='Report title' variant='standard' fullWidth={true} />
-        <br />
         <br />
         <Button
           title={'Export as report'}
@@ -155,6 +163,72 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
         >
           Export as report
         </Button>
+        <br />
+        <TextField id='report-title' label='Report title' variant='standard' fullWidth={true} />
+        <br />
+        <br />
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={groupSwitch}
+                onChange={() => {
+                  setGroupSwitch(!groupSwitch);
+                  setOwnerSwitch(false);
+                  setLifecycleSwitch(false);
+                  setKpiSwitch(false);
+                  setReportType('groups');
+                }}
+              />
+            }
+            label='Groups'
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={ownerSwitch}
+                onChange={() => {
+                  setGroupSwitch(false);
+                  setOwnerSwitch(!ownerSwitch);
+                  setLifecycleSwitch(false);
+                  setKpiSwitch(false);
+                  setReportType('owners');
+                }}
+              />
+            }
+            label='Owners'
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={lifecycleSwitch}
+                onChange={() => {
+                  setGroupSwitch(false);
+                  setOwnerSwitch(false);
+                  setLifecycleSwitch(!lifecycleSwitch);
+                  setKpiSwitch(false);
+                  setReportType('lifecycle');
+                }}
+              />
+            }
+            label='Lifecycle'
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={kpiSwitch}
+                onChange={() => {
+                  setGroupSwitch(false);
+                  setOwnerSwitch(false);
+                  setLifecycleSwitch(false);
+                  setKpiSwitch(!kpiSwitch);
+                  setReportType('kpi');
+                }}
+              />
+            }
+            label='KPI'
+          />
+        </FormGroup>
       </TabPanel>
     </>
   );
