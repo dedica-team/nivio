@@ -21,7 +21,7 @@ import Notification from '../Notification/Notification';
 import componentStyles from '../../Resources/styling/ComponentStyles';
 import LandscapeWatcher from '../Landscape/Dashboard/LandscapeWatcher';
 import { LandscapeContext } from '../../Context/LandscapeContext';
-import SearchField from "../Landscape/Search/SearchField";
+import SearchField from '../Landscape/Search/SearchField';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
