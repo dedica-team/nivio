@@ -98,7 +98,7 @@ class SearchDocumentFactoryTest {
         statusValues.add(foo);
         StatusValue bar = new StatusValue("test", "bar", Status.GREEN, "bar");
         statusValues.add(bar);
-        StatusValue summary = StatusValue.summary("test", List.of(foo, bar));
+        StatusValue summary = StatusValue.summary("test", new ArrayList<>(List.of(foo, bar)));
         statusValues.add(summary);
 
         //when
