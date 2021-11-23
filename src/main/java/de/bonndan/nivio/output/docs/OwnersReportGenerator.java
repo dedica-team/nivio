@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.GroupedBy;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
@@ -37,17 +38,6 @@ public class OwnersReportGenerator extends HtmlGenerator {
         final Optional<String> searchTerm = searchConfig != null && StringUtils.hasLength(searchConfig.getSearchTerm()) ? Optional.ofNullable(searchConfig.getSearchTerm()) : Optional.empty();
         final Optional<String> reportType = searchConfig != null && StringUtils.hasLength(searchConfig.getReportType()) ? Optional.ofNullable(searchConfig.getReportType()) : Optional.empty();
         List<Item> items = new ArrayList<>(searchTerm.map(landscape::search).orElse(landscape.getItems().all()));
-        String groupedBy = "";
-        if (reportType.isPresent() && reportType.get().equals("owners")) {
-            groupedBy = writeGroups(GroupedBy.by(Item::getOwner, items), assessment, "Owners");
-        } else if (reportType.isPresent() && reportType.get().equals("groups")) {
-            groupedBy = writeGroups(GroupedBy.by(Item::getGroup, items), assessment, "Groups");
-        } else if (reportType.isPresent() && reportType.get().equals("lifecycle")) {
-            groupedBy = writeGroups(GroupedBy.newBy(Item::getLabels, items), assessment, "Lifecycle");
-        } else if (reportType.isPresent() && reportType.get().equals("status")) {
-            groupedBy = writeGroups(GroupedBy.newFunc(item -> assessment.getResults(), items), assessment, "Status");
-        }
-
         return html(
                 getHead(landscape),
                 body(
@@ -56,9 +46,24 @@ public class OwnersReportGenerator extends HtmlGenerator {
                         h6("Date: " + ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)),
                         iff(searchTerm.isPresent(), h6("Search term: " + (searchTerm.orElse(null)))),
                         br(),
-                        rawHtml(groupedBy)
+                        rawHtml(groupBy(reportType.orElse(""), assessment, items))
                 )
         ).renderFormatted();
+    }
+
+    private String groupBy(String reportType, Assessment assessment, List<Item> items) {
+        switch (reportType) {
+            case "owners":
+                return writeGroups(GroupedBy.by(Item::getOwner, items), assessment, "Owners");
+            case "groups":
+                return writeGroups(GroupedBy.by(Item::getGroup, items), assessment, "Groups");
+            case "lifecycle":
+                return writeGroups(GroupedBy.by(item -> item.getLabel("lifecycle"), items), assessment, "Lifecycle");
+            case "kpis":
+                return writeGroups(GroupedBy.by(item -> StatusValue.summary(item.getAssessmentIdentifier(), assessment.getResults().get(item.getAssessmentIdentifier())).getStatus().toString(), items), assessment, "KPIs");
+            default:
+                return "";
+        }
     }
 
     private String writeGroups(GroupedBy groupedByGroups, Assessment assessment, String groupBy) {

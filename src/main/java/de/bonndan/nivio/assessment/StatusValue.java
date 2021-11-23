@@ -67,15 +67,24 @@ public class StatusValue {
      * Creates a summary status value.
      *
      * @param identifier assessment identifier (e.g. item fqi)
-     * @param maxValues  max/highest status values
+     * @param values status values
      * @return summary
      */
     @NonNull
-    public static StatusValue summary(@NonNull final String identifier, @NonNull final List<StatusValue> maxValues) {
-        Status status = maxValues.stream().findFirst().map(StatusValue::getStatus).orElse(Status.UNKNOWN);
+    public static StatusValue summary(@NonNull final String identifier, @NonNull final List<StatusValue> values) {
+        //order from worst to best
+        List<StatusValue> sortedValues;
+        values.sort(new StatusValue.Comparator());
+        if (!values.isEmpty()){
+            Status worstStatus = values.get(values.size()-1).getStatus();
+            sortedValues = values.stream().filter(statusValue -> statusValue.getStatus().equals(worstStatus)).collect(Collectors.toUnmodifiableList());
+        } else {
+            sortedValues = new ArrayList<>();
+        }
+        Status status = sortedValues.stream().findFirst().map(StatusValue::getStatus).orElse(Status.UNKNOWN);
 
         //skipping the child summaries
-        String message = maxValues.stream()
+        String message = sortedValues.stream()
                 .filter(statusValue -> !statusValue.summary)
                 .map(statusValue -> String.format("%s %s: %s", statusValue.getIdentifier(), statusValue.getField(), statusValue.getMessage()))
                 .collect(Collectors.joining("; "));

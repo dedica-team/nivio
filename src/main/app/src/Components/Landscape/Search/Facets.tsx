@@ -27,7 +27,6 @@ interface FacetsProps {
   facets: IFacet[];
 }
 
-
 const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
   const facetsHtml: JSX.Element[] = [];
   const kpiHtml: JSX.Element[] = [];
@@ -222,11 +221,11 @@ const Facets: React.FC<FacetsProps> = ({ facets, addFacet, saveSearch }) => {
                   setOwnerSwitch(false);
                   setLifecycleSwitch(false);
                   setKpiSwitch(!kpiSwitch);
-                  setReportType('kpi');
+                  setReportType('kpis');
                 }}
               />
             }
-            label='KPI'
+            label='KPIs'
           />
         </FormGroup>
       </TabPanel>
