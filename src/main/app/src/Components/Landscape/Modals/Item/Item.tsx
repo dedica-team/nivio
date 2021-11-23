@@ -247,14 +247,21 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
               <ItemAvatar item={other} statusColor={status?.status || ''} />
             </IconButton>
           </ListItemIcon>
-          <ListItemText primary={primary} secondary={secondary} />
-          <span
-            title={
-              'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
+          <ListItemText
+            primary={primary}
+            secondary={
+              <div>
+                <span>{secondary}</span>
+                <span
+                  title={
+                    'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
+                  }
+                >
+                  <InfoOutlined style={{ color: '#42a5f5' }} fontSize='small' />
+                </span>
+              </div>
             }
-          >
-            <InfoOutlined style={{ color: '#42a5f5' }} fontSize='small' />
-          </span>{' '}
+          />
         </ListItem>
       );
       if (isInbound) inboundRelations.push(listItem);

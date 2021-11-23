@@ -61,7 +61,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
           <TableBody>
             <TableRow key={'Type'}>
               <TableCell style={{ width: '33%' }}>Type</TableCell>
-              <TableCell style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <TableCell>
                 {relation.type}
                 <span
                   title={
