@@ -10,6 +10,7 @@ import ItemAvatar from '../../Modals/Item/ItemAvatar';
 import { Close, InfoOutlined } from '@material-ui/icons';
 import { LandscapeContext } from '../../../../Context/LandscapeContext';
 import { getLabels } from '../../Utils/utils';
+import MappedString from '../../Utils/MappedString';
 
 interface Props {
   source: IItem;
@@ -43,7 +44,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
       <CardHeader
         title={title}
         className={classes.cardHeader}
-        subheader={'Relation'}
+        subheader={<MappedString mapKey={'Relation'} />}
         action={
           <IconButton
             size={'small'}
@@ -67,7 +68,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
                     'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
                   }
                 >
-                  <InfoOutlined color='action' fontSize='small' />
+                  <InfoOutlined style={{ color: '#42a5f5' }} fontSize='small' />
                 </span>
               </TableCell>
             </TableRow>

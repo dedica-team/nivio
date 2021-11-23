@@ -26,7 +26,15 @@ import { IAssessmentProps, IItem } from '../../../../interfaces';
 import { getItem, getLabelsWithPrefix, getMappedLabels } from '../../Utils/utils';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
-import { Close, Details, ExpandMore, Info, MoreVertSharp, Power } from '@material-ui/icons';
+import {
+  Close,
+  Details,
+  ExpandMore,
+  Info,
+  InfoOutlined,
+  MoreVertSharp,
+  Power,
+} from '@material-ui/icons';
 import Chip from '@material-ui/core/Chip';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
@@ -240,6 +248,13 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
             </IconButton>
           </ListItemIcon>
           <ListItemText primary={primary} secondary={secondary} />
+          <span
+            title={
+              'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
+            }
+          >
+            <InfoOutlined style={{ color: '#42a5f5' }} fontSize='small' />
+          </span>{' '}
         </ListItem>
       );
       if (isInbound) inboundRelations.push(listItem);

@@ -1,4 +1,4 @@
-import {IGroup} from '../../../../interfaces';
+import { IGroup } from '../../../../interfaces';
 import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
@@ -30,7 +30,7 @@ const GroupAvatar: React.FC<Props> = ({ group, statusColor }) => {
         title={'Click to highlight the group.'}
         style={{
           backgroundColor: '#' + group.color,
-          paddingLeft: 1,
+          paddingLeft: 1.5,
         }}
         src={group.icon}
       >
