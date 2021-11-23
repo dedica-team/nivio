@@ -7,6 +7,7 @@ import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
+import de.bonndan.nivio.util.FrontendMapping;
 import j2html.tags.ContainerTag;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -16,20 +17,22 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static j2html.TagCreator.*;
 
-public class OwnersReportGenerator extends HtmlGenerator {
+public class GroupingReportGenerator extends HtmlGenerator {
 
-    public OwnersReportGenerator(LocalServer localServer, IconService iconService) {
+    public GroupingReportGenerator(LocalServer localServer, IconService iconService) {
         super(localServer, iconService);
     }
 
     @Override
-    public String toDocument(@NonNull final Landscape landscape, @NonNull final Assessment assessment, @Nullable final SearchConfig searchConfig) {
+    public String toDocument(@NonNull final Landscape landscape, @NonNull final Assessment assessment, @Nullable final SearchConfig searchConfig, @NonNull final FrontendMapping frontendMapping) {
 
+        Map<String, String> frontendMap = frontendMapping.getKeys();
         String title = "Report";
         if (searchConfig != null && !StringUtils.isEmpty(searchConfig.getTitle())) {
             title = searchConfig.getTitle();
@@ -46,21 +49,21 @@ public class OwnersReportGenerator extends HtmlGenerator {
                         h6("Date: " + ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)),
                         iff(searchTerm.isPresent(), h6("Search term: " + (searchTerm.orElse(null)))),
                         br(),
-                        rawHtml(groupBy(reportType.orElse(""), assessment, items))
+                        rawHtml(groupBy(reportType.orElse(""), assessment, items, frontendMap))
                 )
         ).renderFormatted();
     }
 
-    private String groupBy(String reportType, Assessment assessment, List<Item> items) {
+    private String groupBy(String reportType, Assessment assessment, List<Item> items, Map<String, String> frontendMap) {
         switch (reportType) {
             case "owners":
-                return writeGroups(GroupedBy.by(Item::getOwner, items), assessment, "Owners");
+                return writeGroups(GroupedBy.by(Item::getOwner, items), assessment, frontendMap.getOrDefault("Owners", "Owners"));
             case "groups":
-                return writeGroups(GroupedBy.by(Item::getGroup, items), assessment, "Groups");
+                return writeGroups(GroupedBy.by(Item::getGroup, items), assessment, frontendMap.getOrDefault("Groups", "Groups"));
             case "lifecycle":
-                return writeGroups(GroupedBy.by(item -> item.getLabel("lifecycle"), items), assessment, "Lifecycle");
+                return writeGroups(GroupedBy.by(item -> item.getLabel("lifecycle"), items), assessment, frontendMap.getOrDefault("Lifecycle", "Lifecycle"));
             case "kpis":
-                return writeGroups(GroupedBy.by(item -> StatusValue.summary(item.getAssessmentIdentifier(), assessment.getResults().get(item.getAssessmentIdentifier())).getStatus().toString(), items), assessment, "KPIs");
+                return writeGroups(GroupedBy.by(item -> StatusValue.summary(item.getAssessmentIdentifier(), assessment.getResults().get(item.getAssessmentIdentifier())).getStatus().toString(), items), assessment, frontendMap.getOrDefault("KPIs", "KPIs"));
             default:
                 return "";
         }

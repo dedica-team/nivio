@@ -28,7 +28,7 @@ public class Assessment {
         return new Assessment(Map.of());
     }
 
-    public  Map<String, List<StatusValue>> getResults() {
+    public Map<String, List<StatusValue>> getResults() {
         return results;
     }
 

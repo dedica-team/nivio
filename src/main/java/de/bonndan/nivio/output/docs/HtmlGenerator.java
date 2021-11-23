@@ -10,6 +10,7 @@ import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.FormatUtils;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
+import de.bonndan.nivio.util.FrontendMapping;
 import j2html.tags.ContainerTag;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -47,7 +48,7 @@ public abstract class HtmlGenerator {
      * @param searchConfig configuration for the report
      * @return rendered html
      */
-    public abstract String toDocument(@NonNull final Landscape landscape, @NonNull final Assessment assessment, @Nullable final SearchConfig searchConfig);
+    public abstract String toDocument(@NonNull final Landscape landscape, @NonNull final Assessment assessment, @Nullable final SearchConfig searchConfig, @NonNull final FrontendMapping frontendMapping);
 
     protected HtmlGenerator(@NonNull final LocalServer localServer, @NonNull final IconService iconService) {
         this.localServer = Objects.requireNonNull(localServer);
