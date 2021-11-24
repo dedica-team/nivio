@@ -63,7 +63,7 @@ public class DocsController {
 
     }
 
-    @GetMapping(path = "/{landscape}/grouping.html")
+    @GetMapping(path = "/{landscape}/report/grouping.html")
     public ResponseEntity<String> owners(@PathVariable(name = "landscape") final String landscapeIdentifier, final HttpServletRequest request) {
 
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(

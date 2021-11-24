@@ -34,7 +34,7 @@ public class GroupingReportGenerator extends HtmlGenerator {
 
         Map<String, String> frontendMap = frontendMapping.getKeys();
         String title = "Report";
-        if (searchConfig != null && !StringUtils.isEmpty(searchConfig.getTitle())) {
+        if (searchConfig != null && StringUtils.hasLength(searchConfig.getTitle())) {
             title = searchConfig.getTitle();
         }
 

@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 /**
  * One specific property/kpi/key ... carrying a status.
- * <p>
+ *
  * Status (see {@link Status}) is an ordered set of status represented as colors
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -34,6 +34,33 @@ public class StatusValue {
 
     private boolean summary;
 
+
+    /**
+     * New StatusValue with message.
+     *
+     * @param identifier assessment identifier (e.g. item fqi)
+     * @param field      field / label name
+     * @param status     current status
+     * @param message    additional message
+     */
+    public StatusValue(@NonNull final String identifier,
+                       @NonNull final String field,
+                       @Nullable final Status status,
+                       @Nullable final String message
+    ) {
+        if (!StringUtils.hasLength(identifier)) {
+            throw new IllegalArgumentException("Assessment identifier is empty");
+        }
+        if (!StringUtils.hasLength(field)) {
+            throw new IllegalArgumentException("Status value has no field");
+        }
+
+        this.identifier = identifier;
+        this.field = field;
+        this.status = status == null ? Status.UNKNOWN : status;
+        this.message = message;
+        this.summary = false;
+    }
 
     /**
      * Turns a map of strings indexed by (KPI-)field into StatusValue objects.
@@ -67,7 +94,7 @@ public class StatusValue {
      * Creates a summary status value.
      *
      * @param identifier assessment identifier (e.g. item fqi)
-     * @param values status values
+     * @param values     status values
      * @return summary
      */
     @NonNull
@@ -75,8 +102,8 @@ public class StatusValue {
         //order from worst to best
         List<StatusValue> sortedValues;
         values.sort(new StatusValue.Comparator());
-        if (!values.isEmpty()){
-            Status worstStatus = values.get(values.size()-1).getStatus();
+        if (!values.isEmpty()) {
+            Status worstStatus = values.get(values.size() - 1).getStatus();
             sortedValues = values.stream().filter(statusValue -> statusValue.getStatus().equals(worstStatus)).collect(Collectors.toUnmodifiableList());
         } else {
             sortedValues = new ArrayList<>();
@@ -91,33 +118,6 @@ public class StatusValue {
         StatusValue statusValue = new StatusValue(identifier, SUMMARY_FIELD_VALUE, status, message);
         statusValue.summary = true;
         return statusValue;
-    }
-
-    /**
-     * New StatusValue with message.
-     *
-     * @param identifier assessment identifier (e.g. item fqi)
-     * @param field      field / label name
-     * @param status     current status
-     * @param message    additional message
-     */
-    public StatusValue(@NonNull final String identifier,
-                       @NonNull final String field,
-                       @Nullable final Status status,
-                       @Nullable final String message
-    ) {
-        if (!StringUtils.hasLength(identifier)) {
-            throw new IllegalArgumentException("Assessment identifier is empty");
-        }
-        if (!StringUtils.hasLength(field)) {
-            throw new IllegalArgumentException("Status value has no field");
-        }
-
-        this.identifier = identifier;
-        this.field = field;
-        this.status = status == null ? Status.UNKNOWN : status;
-        this.message = message;
-        this.summary = false;
     }
 
     @NonNull
@@ -153,12 +153,6 @@ public class StatusValue {
         return false;
     }
 
-    public static class Comparator implements java.util.Comparator<StatusValue> {
-        public int compare(StatusValue s1, StatusValue s2) {
-            return Objects.requireNonNull(s1.status).compareTo(Objects.requireNonNull(s2.status));
-        }
-    }
-
     @Override
     public int hashCode() {
         return Objects.hash(field);
@@ -175,6 +169,12 @@ public class StatusValue {
                         ", summary=" + summary +
                         '}';
 
+    }
+
+    public static class Comparator implements java.util.Comparator<StatusValue> {
+        public int compare(StatusValue s1, StatusValue s2) {
+            return Objects.requireNonNull(s1.status).compareTo(Objects.requireNonNull(s2.status));
+        }
     }
 
 }

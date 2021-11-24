@@ -205,7 +205,7 @@ class GroupingReportGeneratorTest {
         foo.setTags(tags);
         landscape.setItems(Set.of(foo));
         var assessment = AssessmentFactory.createAssessment(landscape, map);
-        var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{""}, "searchTerm", new String[]{"xyz"}));
+        var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{""}));
 
         //  when
         String document = groupingReportGenerator.toDocument(landscape, assessment, searchConfig, frontendMapping);
@@ -213,6 +213,31 @@ class GroupingReportGeneratorTest {
         // then
         assertThat(document).contains("Date: ")
                 .contains(searchConfig.getTitle())
+                .doesNotContain("Address: https://www.nivio.com/")
+                .doesNotContain("Tags: auth, ui")
+                .doesNotContain("<h2>Owners: common</h2>");
+
+    }
+
+    @Test
+    void toDocumentNoSearchConfig() {
+        // given
+        Mockito.when(frontendMapping.getKeys()).thenReturn(Map.of());
+        map.put("test/nivio/nivio", conditionKpi);
+        URI uri = URI.create("https://www.nivio.com/");
+        String[] tags = Arrays.array("auth", "ui");
+        var landscape = LandscapeFactory.createForTesting("test", "test").build();
+        Item foo = ItemBuilder.anItem().withLandscape(landscape).withIdentifier("nivio").withGroup("nivio").withAddress(uri).build();
+        foo.setTags(tags);
+        landscape.setItems(Set.of(foo));
+        var assessment = AssessmentFactory.createAssessment(landscape, map);
+
+        //  when
+        String document = groupingReportGenerator.toDocument(landscape, assessment, null, frontendMapping);
+
+        // then
+        assertThat(document).contains("Date: ")
+                .contains("Report")
                 .doesNotContain("Address: https://www.nivio.com/")
                 .doesNotContain("Tags: auth, ui")
                 .doesNotContain("<h2>Owners: common</h2>");
