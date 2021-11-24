@@ -35,7 +35,8 @@ public class DataUrlHelper {
         }
 
         try (InputStream resourceAsStream = DataUrlHelper.class.getResourceAsStream(path)) {
-            if (resourceAsStream == null) throw new RuntimeException(String.format("File %s does not exist or is empty.", path));
+            if (resourceAsStream == null)
+                throw new RuntimeException(String.format("File %s does not exist or is empty.", path));
             byte[] bytes = StreamUtils.copyToByteArray(resourceAsStream);
             return asBase64(bytes);
         } catch (IOException | RuntimeException e) {

@@ -19,9 +19,9 @@ public class SafeAssign {
     /**
      * Passes the first arg to the consumer if it is not null and the second arg is null.
      *
-     * @param s value
+     * @param s      value
      * @param absent null val
-     * @param c value consumer
+     * @param c      value consumer
      */
     public static void assignSafeIfAbsent(String s, String absent, Consumer<String> c) {
         if (s != null && absent == null) c.accept(s);

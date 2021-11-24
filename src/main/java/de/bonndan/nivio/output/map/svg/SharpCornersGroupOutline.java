@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SharpCornersGroupOutline {

@@ -104,7 +104,7 @@ public interface Assessable {
         }
 
         values.sort(new StatusValue.Comparator());
-        Status worstStatus = values.get(values.size()-1).getStatus();
+        Status worstStatus = values.get(values.size() - 1).getStatus();
 
         return values.stream().filter(statusValue -> statusValue.getStatus().equals(worstStatus)).collect(Collectors.toUnmodifiableList());
     }

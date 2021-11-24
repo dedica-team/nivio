@@ -2,7 +2,9 @@ package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.assessment.AssessmentController;
 import de.bonndan.nivio.config.NivioConfigProperties;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.Link;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.docs.DocsController;
 import de.bonndan.nivio.output.dto.GroupApiModel;
@@ -13,7 +15,10 @@ import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 import static de.bonndan.nivio.model.Link.LinkBuilder.linkTo;

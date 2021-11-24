@@ -18,7 +18,7 @@ public class SonarLinkHandler implements ExternalLinkHandler {
     private final Optional<SonarClient> sonarClient;
     private final String sonarApiEndpoint;
 
-    public SonarLinkHandler(Optional<SonarClient> sonarClient,String sonarApiEndpoint) {
+    public SonarLinkHandler(Optional<SonarClient> sonarClient, String sonarApiEndpoint) {
         this.sonarClient = sonarClient;
 
         this.sonarApiEndpoint = sonarApiEndpoint;
@@ -26,6 +26,7 @@ public class SonarLinkHandler implements ExternalLinkHandler {
 
     /**
      * https://medium.com/@shanchathusanda/https-medium-com-shanchathusanda-integrating-sonarqube-apis-with-a-java-application-de8fdc8b951f
+     *
      * @param link
      * @return
      */

@@ -46,10 +46,10 @@ import static de.bonndan.nivio.search.SearchDocumentFactory.*;
  */
 public class SearchIndex {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SearchIndex.class);
     public static final String WILDCARD = "*";
     public static final String WHITESPACE = " ";
     public static final String FACET_DELIMITER = ":";
+    private static final Logger LOGGER = LoggerFactory.getLogger(SearchIndex.class);
     private static final String[] MULTI_FIELD_QUERY_FIELDS = {
             LUCENE_FIELD_IDENTIFIER,
             LUCENE_FIELD_NAME,
@@ -122,7 +122,7 @@ public class SearchIndex {
                     .map(doc -> FullyQualifiedIdentifier.from(doc.get(LUCENE_FIELD_FQI)))
                     .collect(Collectors.toSet());
         } catch (IOException | ParseException e) {
-            throw new SearchEngineException(String.format("Failed to execute search for '%s'", queryString));
+            throw new SearchEngineException(String.format("Failed to execute search for '%s'", queryString), e);
         }
     }
 

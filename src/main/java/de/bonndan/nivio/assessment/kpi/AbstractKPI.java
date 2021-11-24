@@ -60,8 +60,8 @@ public abstract class AbstractKPI implements KPI {
      * Returns the status values
      *
      * @param assessable to assess
-     * @param value   the value to assess. Can be null if no value is present or the KPI is not applicable.
-     * @param message the optional message
+     * @param value      the value to assess. Can be null if no value is present or the KPI is not applicable.
+     * @param message    the optional message
      * @return a status value if assessed
      */
     protected abstract List<StatusValue> getStatusValues(@NonNull final Assessable assessable, @Nullable final String value, @Nullable final String message);
