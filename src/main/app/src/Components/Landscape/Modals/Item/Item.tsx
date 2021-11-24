@@ -19,6 +19,7 @@ import {
   Tabs,
   Theme,
   Typography,
+  useTheme,
 } from '@material-ui/core';
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
@@ -84,6 +85,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
   const extraClasses = useStyles();
   let inboundRelations: ReactElement[] = [];
   let outboundRelations: ReactElement[] = [];
+  const theme = useTheme();
 
   const getInterfaces = (element: IItem): ReactElement | null => {
     if (!element?.interfaces) return null;
@@ -248,18 +250,19 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
             </IconButton>
           </ListItemIcon>
           <ListItemText
+            data-testid={'testInfoIcon'}
             primary={primary}
             secondary={
-              <div>
+              <>
                 <span>{secondary}</span>
                 <span
                   title={
                     'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
                   }
                 >
-                  <InfoOutlined style={{ color: '#42a5f5' }} fontSize='small' />
+                  <InfoOutlined style={{ color: theme.palette.info.main }} fontSize='small' data-testid={'testInfoIcon'} />
                 </span>
-              </div>
+              </>
             }
           />
         </ListItem>

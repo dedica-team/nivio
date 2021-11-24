@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Card, CardHeader, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
+import {Card, CardHeader, Table, TableBody, TableCell, TableRow, useTheme} from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import { IItem, IRelation } from '../../../../interfaces';
 import Typography from '@material-ui/core/Typography';
@@ -24,6 +24,7 @@ interface Props {
  */
 const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
   const classes = componentStyles();
+  const theme = useTheme();
 
   const [visible, setVisible] = useState<boolean>(true);
   const locateFunctionContext = useContext(LocateFunctionContext);
@@ -68,7 +69,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
                     'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
                   }
                 >
-                  <InfoOutlined style={{ color: '#42a5f5' }} fontSize='small' />
+                  <InfoOutlined style={{color:theme.palette.info.main}} fontSize='small' />
                 </span>
               </TableCell>
             </TableRow>

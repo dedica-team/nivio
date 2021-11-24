@@ -82,12 +82,12 @@ describe('<Item />', () => {
     mock.mockReturnValue(Promise.resolve(useItem));
 
     //when
-    const { container, queryByText } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
+    const { container, queryByTestId } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
     fireEvent.click(getByTitle(container, 'Relations'));
 
-    console.log(container);
+
     // then
-    // await waitFor(() => expect(queryByText('A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.')).toBeInTheDocument());
+    await waitFor(() => expect(queryByTestId('testInfoIcon')).toBeInTheDocument());
   });
 
 
