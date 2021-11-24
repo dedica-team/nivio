@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import org.springframework.lang.NonNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,15 +25,13 @@ public class TemplateResolver extends Resolver {
      * @param landscape the landscape containing all(!) items. Querying happens on these items.
      */
     @Override
-    public void resolve(LandscapeDescription landscape) {
+    public void resolve(@NonNull final LandscapeDescription landscape) {
 
         Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
-        landscape.getSourceReferences().forEach(ref -> {
-            ref.getAssignTemplates().forEach((key, identifiers) -> {
-                ItemDescription template = landscape.getTemplates().get(key);
-                template.setName(null);
-                templatesAndTargets.put(template, identifiers);
-            });
+        landscape.getAssignTemplates().forEach((key, identifiers) -> {
+            ItemDescription template = landscape.getTemplates().get(key);
+            template.setName(null);
+            templatesAndTargets.put(template, identifiers);
         });
 
         templatesAndTargets.forEach((template, identifiers) -> applyTemplateValues(template, identifiers, landscape));

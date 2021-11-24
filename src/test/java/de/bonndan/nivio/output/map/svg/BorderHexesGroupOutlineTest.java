@@ -25,6 +25,6 @@ class BorderHexesGroupOutlineTest {
         String path = BorderHexesGroupOutline.getPath(borderHexes, groupArea);
 
         //then
-        assertThat(path).isEqualTo("M 300.0 373.2,250.0 459.8,300.0 546.4,250.0 633.0,150.0 633.0,100.0 546.4,150.0 459.8 Z");
+        assertThat(path).isEqualTo("M 150.0 459.8,100.0 373.2,150.0 286.6,250.0 286.6,300.0 373.2,250.0 459.8,300.0 546.4,250.0 633.0,150.0 633.0,100.0 546.4 Z");
     }
 }

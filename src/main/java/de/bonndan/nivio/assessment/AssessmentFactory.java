@@ -2,6 +2,8 @@ package de.bonndan.nivio.assessment;
 
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.Landscape;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
 import java.util.HashMap;
@@ -10,6 +12,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class AssessmentFactory {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AssessmentFactory.class);
 
     static final String ASSESSMENT_ERROR_NULL = "Assessments can't be created from a null value";
 
@@ -25,6 +29,7 @@ public class AssessmentFactory {
      */
     public static Assessment createAssessment(@NonNull Landscape landscape) {
         var testedLandscape = Objects.requireNonNull(landscape, ASSESSMENT_ERROR_NULL);
+        LOGGER.info("Creating assessment for landscape {}", landscape.getIdentifier());
         return new Assessment(testedLandscape.applyKPIs(testedLandscape.getKpis()));
     }
 

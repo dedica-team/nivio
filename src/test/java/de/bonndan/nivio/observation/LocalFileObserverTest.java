@@ -31,13 +31,13 @@ class LocalFileObserverTest {
 
     @Test
     void checksFileExists() {
-        assertThrows(Exception.class, () -> new LocalFileObserver(landscape, publisher, new File("boohoo")));
+        assertThrows(Exception.class, () -> new LocalFileObserver(publisher, new File("boohoo")));
     }
 
     @Test
     void detectsFileChange() throws IOException, InterruptedException {
         Path tempFile = Files.createTempFile("foo", "bar");
-        LocalFileObserver localFileObserver = new LocalFileObserver(landscape, publisher, tempFile.toFile());
+        LocalFileObserver localFileObserver = new LocalFileObserver(publisher, tempFile.toFile());
         Thread thread = new Thread(localFileObserver);
         thread.start();
 
@@ -57,7 +57,7 @@ class LocalFileObserverTest {
     @Test
     void ignoresChangesWithinGracePeriod() throws IOException, InterruptedException {
         Path tempFile = Files.createTempFile("foo", "bar");
-        LocalFileObserver localFileObserver = new LocalFileObserver(landscape, publisher, tempFile.toFile());
+        LocalFileObserver localFileObserver = new LocalFileObserver(publisher, tempFile.toFile());
         Thread thread = new Thread(localFileObserver);
         thread.start();
 
@@ -79,7 +79,7 @@ class LocalFileObserverTest {
     void doesNotCareAboutOtherFileChange() throws IOException, InterruptedException {
         Path tempFile = Files.createTempFile("foo", "bar");
         Path tempFile2 = Files.createTempFile("foo", "baz");
-        LocalFileObserver localFileObserver = new LocalFileObserver(landscape, publisher, tempFile.toFile());
+        LocalFileObserver localFileObserver = new LocalFileObserver(publisher, tempFile.toFile());
         Thread thread = new Thread(localFileObserver);
         thread.start();
         Thread.sleep(1000);

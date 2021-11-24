@@ -1,16 +1,10 @@
 package de.bonndan.nivio.output.layout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.Indexer;
-import de.bonndan.nivio.input.InputFormatHandlerFactory;
-import de.bonndan.nivio.input.csv.InputFormatHandlerCSV;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.input.external.LinkHandlerFactory;
-import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.RenderingTest;
 import de.bonndan.nivio.output.icons.ExternalIcons;
@@ -18,6 +12,7 @@ import de.bonndan.nivio.output.icons.ExternalIconsProvider;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationEventPublisher;
@@ -27,10 +22,10 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
 
 class OrganicLayouterTest extends RenderingTest {
 
@@ -40,10 +35,6 @@ class OrganicLayouterTest extends RenderingTest {
     }
 
     private LayoutedComponent debugRender(String path) throws IOException {
-        return debugRender(path, true);
-    }
-
-    private LayoutedComponent debugRender(String path, boolean debugMode) throws IOException {
         Landscape landscape = getLandscape(path + ".yml");
         return debugRenderLandscape(path, landscape);
     }
@@ -64,36 +55,75 @@ class OrganicLayouterTest extends RenderingTest {
     }
 
     @Test
+    void debugRenderDedica() throws IOException {
+        debugRender("/src/test/resources/example/dedica");
+    }
+
+    @Test
+    void debugRenderPetClinic() throws IOException {
+        debugRender("/src/test/resources/example/pet_clinic");
+    }
+
+    @Test
     void renderInout() throws IOException {
         String path = "/src/test/resources/example/inout";
         Landscape landscape = getLandscape(path + ".yml");
         debugRenderLandscape(path, landscape);
     }
 
+    // run this test manually, it creates a really large map
+    @Disabled
     @Test
     void debugRenderLargeGraph() throws IOException {
 
         LandscapeDescription input = new LandscapeDescription("largetest", "largetest", null);
 
         int g = 0;
-        while (g < 30) {
+        List<ItemDescription> descriptionList = new ArrayList<>();
+        while (g < 10) {
 
             int i = 0;
-            int max = g % 2 > 0 ? 5 : 8;
+            int max = g % 2 > 0 ? 10 : 40;
             GroupDescription gd = new GroupDescription();
             String groupIdentifier = "group" + g;
             gd.setIdentifier(groupIdentifier);
+            gd.setEnvironment(input.getIdentifier());
             input.getGroups().put(groupIdentifier, gd);
             while (i < max) {
                 ItemDescription itemDescription = new ItemDescription();
+                itemDescription.setEnvironment(input.getIdentifier());
                 itemDescription.setIdentifier(groupIdentifier + "_item_" + i);
                 itemDescription.setGroup(groupIdentifier);
                 input.getItemDescriptions().add(itemDescription);
+                descriptionList.add(itemDescription);
                 i++;
             }
             g++;
         }
 
+        Random r = new Random();
+        int low = 0;
+        int high = descriptionList.size() - 1;
+
+        // relations
+        for (int i = 0, descriptionListSize = descriptionList.size(); i < descriptionListSize; i++) {
+            ItemDescription itemDescription = descriptionList.get(i);
+            List<ItemDescription> targets = new ArrayList<>();
+            int j = 0;
+            while (j < 5) {
+                int rand = r.nextInt(high - low) + low;
+                if (rand == i)
+                    continue;
+                targets.add(descriptionList.get(j));
+                j++;
+            }
+            targets.forEach(target -> {
+                RelationDescription rel = new RelationDescription(itemDescription.getFullyQualifiedIdentifier().toString(), target.getFullyQualifiedIdentifier().toString());
+                itemDescription.addOrReplaceRelation(rel);
+            });
+        }
+
+        // index
         indexer.index(input);
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
 
@@ -166,14 +196,7 @@ class OrganicLayouterTest extends RenderingTest {
 
     @Test
     void renderCSV() throws IOException {
-        var externalIconsProvider = Mockito.mock(ExternalIconsProvider.class);
-        HttpService httpService = new HttpService();
-        IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(httpService, externalIconsProvider));
-        formatFactory = new InputFormatHandlerFactory(List.of(new InputFormatHandlerCSV(new FileFetcher(httpService))));
-        LinkHandlerFactory linkHandlerFactory = mock(LinkHandlerFactory.class);
-        indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, mock(ApplicationEventPublisher.class));
-
-        debugRender("/src/test/resources/example/example_csv", false);
+        debugRender("/src/test/resources/example/example_csv");
     }
 
     @Test
@@ -192,7 +215,7 @@ class OrganicLayouterTest extends RenderingTest {
         assertNotNull(itemComponent);
 
         //check items are shifted
-        assertEquals(691.4090488048637, itemComponent.getX()); //margin + group offset + own offset
-        assertEquals(1459.8723644530933, itemComponent.getY()); //margin + group offset + own offset
+        assertEquals(5162, itemComponent.getX()); //margin + group offset + own offset
+        assertEquals(4497, itemComponent.getY()); //margin + group offset + own offset
     }
 }

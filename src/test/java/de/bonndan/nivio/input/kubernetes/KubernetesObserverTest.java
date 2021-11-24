@@ -3,8 +3,7 @@ package de.bonndan.nivio.input.kubernetes;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeFactory;
+import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.observation.InputChangedEvent;
 import de.bonndan.nivio.observation.KubernetesObserver;
 import io.fabric8.kubernetes.api.model.OwnerReferenceBuilder;
@@ -18,6 +17,8 @@ import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,13 +32,12 @@ class KubernetesObserverTest {
     ApplicationEventPublisher eventPublisher;
     KubernetesClient kubernetesClient;
     KubernetesObserver kubernetesObserver;
-    Landscape landscape;
+    SourceReference sourceReference;
 
     @BeforeEach
-    void setUp() {
-        landscape = LandscapeFactory.createForTesting("foo", "bar").build();
+    void setUp() throws MalformedURLException {
+        sourceReference = new SourceReference(new URL("http://foo.com"));
         eventPublisher = mock(ApplicationEventPublisher.class);
-
     }
 
     @Test
@@ -50,7 +50,7 @@ class KubernetesObserverTest {
         Mockito.when(kubernetesClientException.apps()).thenThrow(KubernetesClientException.class);
 
         //when
-        kubernetesObserver = new KubernetesObserver(landscape, eventPublisher, kubernetesClientException);
+        kubernetesObserver = new KubernetesObserver(sourceReference, eventPublisher, kubernetesClientException);
 
         //then
         int logSize = logWatcher.list.size();
@@ -60,7 +60,7 @@ class KubernetesObserverTest {
 
     @Test
     void run() {
-        kubernetesObserver = new KubernetesObserver(landscape, eventPublisher, kubernetesClient);
+        kubernetesObserver = new KubernetesObserver(sourceReference, eventPublisher, kubernetesClient);
         var deployment = new DeploymentBuilder()
                 .withNewMetadata().withName("deployment").withCreationTimestamp("testCreation").withUid("testUid").withLabels(Map.of("testLabelKey", "testLabelValue")).withOwnerReferences(new OwnerReferenceBuilder().withUid("testOwnerUid").build()).withNamespace("test").endMetadata()
                 .withNewSpec().withNewStrategy().withNewType("strategyType").endStrategy().endSpec()

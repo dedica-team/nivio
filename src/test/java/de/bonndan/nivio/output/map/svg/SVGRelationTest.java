@@ -4,10 +4,12 @@ import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.output.map.hex.HexPath;
+import de.bonndan.nivio.output.map.hex.MapTile;
+import de.bonndan.nivio.output.map.hex.PathTile;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,11 +19,11 @@ import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SVGRelationTest {
 
-    private Landscape landscape;
     private Item foo;
     private Item bar;
     private HexPath hexpath;
@@ -30,10 +32,13 @@ class SVGRelationTest {
 
     @BeforeEach
     void setup() {
-        landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
-        foo = getTestItem(Group.COMMON, "foo", landscape);
-        bar = getTestItem(Group.COMMON, "bar", landscape);
-        hexpath = new HexPath(List.of(new Hex(1, 2), new Hex(1, 3)));
+        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
+        foo = getTestItem(Layer.domain.name(), "foo", landscape);
+        bar = getTestItem(Layer.domain.name(), "bar", landscape);
+        hexpath = new HexPath(List.of(
+                new PathTile(new MapTile(new Hex(1, 2))),
+                new PathTile(new MapTile(new Hex(1, 3))))
+        );
         statusValue = new StatusValue("foo", "bar", Status.GREEN, "");
     }
 
@@ -45,9 +50,9 @@ class SVGRelationTest {
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
         DomContent render = svgRelation.render();
         String render1 = render.render();
-        assertTrue(render1.contains("l1/common/foo"));
+        assertTrue(render1.contains("l1/domain/foo"));
         assertFalse(render1.contains("l1//foo"));
-        assertTrue(render1.contains("l1/common/bar"));
+        assertTrue(render1.contains("l1/domain/bar"));
         assertFalse(render1.contains("l1//bar"));
     }
 
@@ -63,22 +68,6 @@ class SVGRelationTest {
         //then
         String render1 = render.render();
         assertTrue(render1.contains("circle"));
-    }
-
-    @Disabled // dataflow has no endpoint marker anymore/yet
-    @Test
-    void dataflowRelationsContainsEndpoint() {
-
-        //given
-        Relation relation = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
-
-        //when
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", relation, statusValue);
-        DomContent render = svgRelation.render();
-
-        //then
-        String render1 = render.render();
-        assertTrue(render1.contains("url(#" + SVGRelation.MARKER_ID + ")"));
     }
 
     @Test
@@ -121,8 +110,9 @@ class SVGRelationTest {
 
         //then
         String render1 = render.render();
-        assertThat(render1).contains(DATA_IDENTIFIER);
-        assertThat(render1).contains(VISUAL_FOCUS_UNSELECTED);
+        assertThat(render1)
+                .contains(DATA_IDENTIFIER)
+                .contains(VISUAL_FOCUS_UNSELECTED);
     }
 
     @Test
@@ -149,4 +139,24 @@ class SVGRelationTest {
         assertThat(containerTag.getTagName()).isEqualTo("marker");
     }
 
+    @Test
+    @DisplayName("Is translated based on port count")
+    void hasTranslation() {
+        Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
+        List<PathTile> tiles = hexpath.getTiles();
+        hexpath.setPortCount(20);
+        PathTile penultimate = tiles.get(tiles.size() - 2);
+        for (int i = 0; i < 30; i++) {
+            penultimate.getMapTile().incrementPortCount();
+        }
+
+        //when
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
+        DomContent render = svgRelation.render();
+
+        //then
+        String render1 = render.render();
+        assertThat(render1).contains("translate(0 -13)");
+
+    }
 }

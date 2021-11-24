@@ -1,8 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.config.SeedProperties;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.LandscapeSource;
+import de.bonndan.nivio.input.dto.Source;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -11,7 +10,6 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -20,7 +18,7 @@ import static org.mockito.Mockito.*;
 
 class StartupListenerTest {
 
-    private LandscapeDescriptionFactory factory;
+    private SeedConfigurationFactory factory;
     private ApplicationEventPublisher publisher;
     private StartupListener startupListener;
     private SeedProperties seedProperties = new SeedProperties("src/test/resources/example/inout.yml","1");
@@ -29,33 +27,33 @@ class StartupListenerTest {
 
     @BeforeEach
     public void setup() {
-        factory = mock(LandscapeDescriptionFactory.class);
+        factory = mock(SeedConfigurationFactory.class);
         publisher = mock(ApplicationEventPublisher.class);
         seedProperties = mock(SeedProperties.class);
-        startupListener = new StartupListener(factory, publisher, seed, seedProperties);
+        startupListener = new StartupListener(factory, publisher, seed);
     }
 
     @Test
     void fires() throws MalformedURLException {
         //given
         seed = new Seed("https://dedica.team", seedProperties.getDemo());
-        startupListener = new StartupListener(factory, publisher, seed,seedProperties);
+        startupListener = new StartupListener(factory, publisher, seed);
 
-        LandscapeDescription landscapeDescription = new LandscapeDescription("foo", "bar", null);
-        landscapeDescription.setSource(new LandscapeSource(new URL("https://dedica.team")));
-        when(factory.from(any(URL.class))).thenReturn(landscapeDescription);
+        SeedConfiguration configuration = new SeedConfiguration("foo", "bar", null);
+        configuration.setSource(new Source(new URL("https://dedica.team")));
+        when(factory.from(any(URL.class))).thenReturn(configuration);
 
 
         //when
         startupListener.onApplicationEvent(mock(ApplicationReadyEvent.class));
 
         //then
-        ArgumentCaptor<IndexEvent> captor = ArgumentCaptor.forClass(IndexEvent.class);
+        ArgumentCaptor<SeedConfigurationChangeEvent> captor = ArgumentCaptor.forClass(SeedConfigurationChangeEvent.class);
         verify(publisher).publishEvent(captor.capture());
 
-        IndexEvent first = captor.getValue();
+        SeedConfigurationChangeEvent first = captor.getValue();
         assertNotNull(first);
-        assertEquals("foo", first.getLandscapeDescription().getIdentifier());
+        assertEquals("foo", first.getConfiguration().getIdentifier());
 
     }
 }

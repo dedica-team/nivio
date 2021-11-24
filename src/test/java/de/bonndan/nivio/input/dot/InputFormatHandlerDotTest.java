@@ -1,23 +1,23 @@
 package de.bonndan.nivio.input.dot;
 
-import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.input.LabelToFieldResolver;
-import de.bonndan.nivio.input.ProcessingException;
+import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.search.ItemIndex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -29,9 +29,10 @@ class InputFormatHandlerDotTest {
     private InputFormatHandlerDot handler;
     private FileFetcher fileFetcher;
     private LandscapeDescription description;
+    private SourceReference sourceReference;
 
     @BeforeEach
-    void setup() {
+    void setup() throws MalformedURLException {
         graph = "graph {\n" +
                 "    { rank=same; white}\n" +
                 "    { rank=same; cyan; yellow; pink}\n" +
@@ -66,15 +67,19 @@ class InputFormatHandlerDotTest {
         fileFetcher = mock(FileFetcher.class);
         handler = new InputFormatHandlerDot(fileFetcher);
 
-        when(fileFetcher.get(any(SourceReference.class), any())).thenReturn(graph);
+        when(fileFetcher.get(any(SourceReference.class))).thenReturn(graph);
         description = new LandscapeDescription("test");
+
+        sourceReference = new SourceReference(new URL("http://test.com"));
+        sourceReference.setConfig(new SeedConfiguration("test"));
     }
+
 
     @Test
     void setsItemData() {
 
         //when
-        handler.applyData(mock(SourceReference.class), null, description);
+        handler.applyData(sourceReference, description);
 
         //then
         Set<ItemDescription> itemDescriptions = description.getItemDescriptions().all();
@@ -94,7 +99,7 @@ class InputFormatHandlerDotTest {
     void setsRelations() {
 
         //when
-        handler.applyData(mock(SourceReference.class), null, description);
+        handler.applyData(sourceReference, description);
 
         //then
         ItemDescription white = description.getItemDescriptions().pick("white", null);
@@ -119,7 +124,7 @@ class InputFormatHandlerDotTest {
     void setsRelationDetails() {
 
         //when
-        handler.applyData(mock(SourceReference.class), null, description);
+        handler.applyData(sourceReference, description);
 
         //then
         ItemDescription white = description.getItemDescriptions().pick("white", null);
@@ -137,10 +142,10 @@ class InputFormatHandlerDotTest {
     @Test
     void readsDigraph() {
 
-        when(fileFetcher.get(any(SourceReference.class), any())).thenReturn(digraph);
+        when(fileFetcher.get(any(SourceReference.class))).thenReturn(digraph);
 
         //when
-        handler.applyData(mock(SourceReference.class), null, description);
+        handler.applyData(sourceReference, description);
 
         //then
         ItemIndex<ItemDescription> itemDescriptions = description.getItemDescriptions();
@@ -151,9 +156,9 @@ class InputFormatHandlerDotTest {
     @Test
     void brokenInput() {
 
-        when(fileFetcher.get(any(SourceReference.class), any())).thenReturn(broken);
+        when(fileFetcher.get(sourceReference)).thenReturn(broken);
 
-        assertThrows(ProcessingException.class, () -> {handler.applyData(mock(SourceReference.class), null, description);});
+        assertThrows(ProcessingException.class, () -> handler.applyData(sourceReference, description));
 
     }
 

@@ -23,18 +23,18 @@ public class Hex {
     /**
      * starting at east, right before the first neighbour (which is southeast (r+1) in clockwise direction)
      */
-    public static final int startAngle = 0;
+    public static final int START_ANGLE = 0;
 
     /**
      * clockwise neighbours, starting with "southeast"
      */
     public static final List<Hex> DIRECTIONS = List.of(
-            new Hex(1, 0, -1),
-            new Hex(0, 1, -1), //south
-            new Hex(-1, 1, 0),
-            new Hex(-1, 0, 1),
-            new Hex(0, -1, 1), //north
-            new Hex(1, -1, 0)
+            new Hex(1, 0),
+            new Hex(0, 1), //south
+            new Hex(-1, 1),
+            new Hex(-1, 0),
+            new Hex(0, -1), //north
+            new Hex(1, -1)
     );
 
     //double DEFAULT_ICON_SIZE
@@ -64,72 +64,22 @@ public class Hex {
      */
     public final int s;
 
-    public String item;
-    public String group;
-
-    /**
-     * Using this constructor is discouraged, since only q and r are needed.
-     */
-    public Hex(int q, int r, int s) {
-        if (q + r + s != 0) {
-            throw new IllegalArgumentException("q + r + s must be 0");
-        }
-        this.q = q;
-        this.r = r;
-        this.s = s;
-    }
-
     /**
      * https://www.redblobgames.com/grids/hexagons/implementation.html
      *
      * TLDR: q and r and like x and y and sufficient to describe a hex position. s is a third axis orthogonal to q and r.
+     *
      * @param q coordinate
      * @param r coordinate
      */
     public Hex(int q, int r) {
-        this(q, r, (r + q) * -1);
+        this.q = q;
+        this.r = r;
+        this.s = (r + q) * -1;
     }
 
     /**
-     * Creates a hexmap coord representation of the given coordinates.
-     *
-     * @param x map item x coord
-     * @param y map item y coord
-     * @return hex with q,r coordinates derived from x,y coords (rounded)
-     */
-    public static Hex of(long x, long y) {
-        return of(x, y, 1f);
-    }
-
-    public static Hex of(long x, long y, float scaling) {
-        var q = (2. / 3 * x) / (DEFAULT_ICON_SIZE * scaling);
-        var r = (-1. / 3 * x + Math.sqrt(3) / 3 * y) / (DEFAULT_ICON_SIZE * scaling);
-
-        double s = -q - r;
-        if (Math.round(q + r + s) != 0) {
-            throw new IllegalArgumentException("q + r + s must be 0");
-        }
-
-        int qi = (int) Math.round(q);
-        int ri = (int) Math.round(r);
-        int si = (int) Math.round(s);
-
-        var q_diff = Math.abs(qi - q);
-        var r_diff = Math.abs(ri - r);
-        var s_diff = Math.abs(si - s);
-
-        if (q_diff > r_diff && q_diff > s_diff) {
-            qi = -ri - si;
-        } else if (r_diff > s_diff) {
-            ri = -qi - si;
-        } else {
-            si = -qi - ri;
-        }
-        return new Hex(qi, ri, si);
-    }
-
-    /**
-     * Returns the distance to the target hex in number of tiles.
+     * Returns the distance to the target hex as number of tiles.
      *
      * https://www.redblobgames.com/grids/hexagons/#distances
      *
@@ -137,16 +87,23 @@ public class Hex {
      * @return number of tiles
      */
     public int distance(Hex target) {
-        Hex hex = this.subtract(target);
+        Hex hex = new Hex(this.q - target.q, this.r - target.r);
         double l = (Math.abs(hex.q) + Math.abs(hex.r) + Math.abs(hex.s)) / 2.0;
         return (int) Math.round(l);
     }
 
+    /**
+     * Returns hexes unrelated to a map
+     *
+     * @param hex center
+     * @return neighbours, not for use with map operations!
+     */
     @NonNull
-    public List<Hex> neighbours() {
+    public static List<Hex> neighbours(Hex hex) {
         List<Hex> n = new ArrayList<>();
         for (var i = 0; i < DIRECTIONS.size(); i += 1) {
-            n.add(neighbour(this, i));
+            Hex dir = DIRECTIONS.get((6 + i % 6) % 6);
+            n.add(new Hex(hex.q + dir.q, hex.r + dir.r));
         }
         return n;
     }
@@ -155,7 +112,6 @@ public class Hex {
      * Return the leftmost (q coord) of the highest (r coord) hexes.
      *
      * @param area all hexes in the area (unsorted)
-     * @return
      */
     public static Hex topLeft(Collection<Hex> area) {
         AtomicInteger q = new AtomicInteger(Integer.MAX_VALUE);
@@ -180,15 +136,14 @@ public class Hex {
     }
 
     public int getDirectionTo(@NonNull final Hex hex) {
-        List<Hex> neighbours = neighbours();
+        List<Hex> neighbours = Hex.neighbours(this);
         for (int i = 0, neighboursSize = neighbours.size(); i < neighboursSize; i++) {
             Hex hex1 = neighbours.get(i);
-            if (hex1.equals(hex)) return i;
+            if (hex1.q == hex.q && hex1.r == hex.r) return i;
         }
 
-        throw new IllegalArgumentException("Not an adjacent hex given.");
+        throw new IllegalArgumentException(String.format("Hex %s: not an adjacent hex %s given to determine direction.", this, hex));
     }
-
 
     /**
      * flat orientation (flat top)
@@ -206,48 +161,30 @@ public class Hex {
         return new Point2D.Double(x + origin.x, y + origin.y);
     }
 
-    private static Hex add(Hex a, Hex b) {
-        return new Hex(a.q + b.q, a.r + b.r, a.s + b.s);
-    }
-
-    private Hex subtract(Hex b) {
-        return new Hex(this.q - b.q, this.r - b.r, this.s - b.s);
-    }
-
-    private Hex neighbour(Hex hex, int direction) {
-        return add(hex, this.direction(direction));
-    }
-
-    private Hex direction(int _direction) {
-        return DIRECTIONS.get((6 + _direction % 6) % 6);
-    }
-
     /**
      * see https://www.redblobgames.com/grids/hexagons/implementation.html#hex-geometry
      *
      * @param corner number
-     * @param size hex size
+     * @param size   hex size
      */
     public static Point2D.Double getCornerCoordinates(float corner, int size) {
         Point2D.Double point = new Point2D.Double(size, size);
-        double angle = 2.0 * Math.PI * (startAngle + corner) / 6;
+        double angle = 2.0 * Math.PI * (START_ANGLE + corner) / 6;
         return new Point2D.Double(point.x * Math.cos(angle), point.y * Math.sin(angle));
     }
 
     /**
      * Returns the outline (corners) of a flat top hex as points.
      *
-     * @param size
-     * @return
      */
-    public ArrayList<Point2D.Double> asPoints(int size) {
+    public List<Point2D.Double> asPoints(int size) {
 
         ArrayList<Point2D.Double> corners = new ArrayList<>();
         Point2D.Double center = toPixel();
         for (int i = 0; i < 6; i++) {
             Point2D.Double offset = getCornerCoordinates(i, size);
             corners.add(
-                    new Point2D.Double(Math.round((center.x + offset.x)*10)/10f, Math.round((center.y + offset.y)*10)/10f)
+                    new Point2D.Double(Math.round((center.x + offset.x) * 10) / 10f, Math.round((center.y + offset.y) * 10) / 10f)
             );
         }
         return corners;
@@ -258,8 +195,6 @@ public class Hex {
         return "Hex{" +
                 "q=" + q +
                 ", r=" + r +
-                ", s=" + s +
-                ", id='" + item + '\'' +
                 '}';
     }
 

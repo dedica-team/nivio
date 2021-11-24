@@ -1,13 +1,14 @@
 package de.bonndan.nivio.output.layout;
 
-import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -22,18 +23,36 @@ public class SubLayout {
     public static final int FORCE_CONSTANT = 150;
 
     //distance when repulsion has no more effect
-    public static final int MAX_DISTANCE_LIMIT = 300;
+    public static final int MAX_DISTANCE_LIMIT = 350;
 
-    //affects iterations, think of cooling down
-    private static final int INITIAL_TEMP = 300;
+    public static final int INITIAL_TEMP = 300;
+    public static final int MIN_DISTANCE_LIMIT = 100;
 
-    private final FastOrganicLayout layout;
-    private final Component parent;
+    private FastOrganicLayout layout;
+    private Component parent;
+    private final boolean debug;
 
-    public SubLayout(Component group, Set<Item> items, LandscapeConfig.LayoutConfig itemLayoutConfig) {
+    public SubLayout(boolean debug) {
+        this.debug = debug;
+    }
+
+    public void render(@NonNull final Component group, @NonNull final Set<Item> items) {
+        this.parent = Objects.requireNonNull(group);
         String name = group.getName();
-        this.parent = group;
 
+        List<LayoutedComponent> components = getLayoutedComponents(group, items);
+
+        layout = new FastOrganicLayout(
+                components,
+                new CollisionRegardingForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT),
+                INITIAL_TEMP
+        );
+        layout.setDebug(debug);
+        layout.execute();
+        LOGGER.debug("Subgraph {} layouted items: {}", name, layout.getNodes());
+    }
+
+    static List<LayoutedComponent> getLayoutedComponents(Component group, Set<Item> items) {
         List<LayoutedComponent> list = new ArrayList<>();
         items.forEach(item -> {
             List<Component> relationTargets = new ArrayList<>();
@@ -42,13 +61,6 @@ public class SubLayout {
                     return;
 
                 Item other = relationItem.getTarget();
-                if (item.getGroup() == null) {
-                    throw new IllegalStateException(String.format("Item %s has no group", item));
-                }
-                if (other.getGroup() == null) {
-                    throw new IllegalStateException(String.format("Item %s has no group", other));
-                }
-
                 if (item.getGroup().equals(other.getGroup())) {
                     relationTargets.add(other);
                 }
@@ -58,18 +70,10 @@ public class SubLayout {
             e.setDefaultColor(group.getColor());
             list.add(e);
         });
-
-
-        layout = new FastOrganicLayout(list);
-        layout.setForceConstant(FORCE_CONSTANT);
-        layout.setMaxDistanceLimit(MAX_DISTANCE_LIMIT);
-        layout.setInitialTemp(INITIAL_TEMP);
-        layout.configure(itemLayoutConfig);
-        layout.execute();
-        LOGGER.debug("Subgraph {} layouted items: {}", name, layout.getBounds());
+        return list;
     }
 
     public LayoutedComponent getOuterBounds() {
-        return layout.getOuterBounds(parent);
+        return LayoutedComponent.from(parent, layout.nodes);
     }
 }

@@ -36,6 +36,8 @@ items:
     description: Config files are loaded from all locations (file system, remote URLs, git repos)
     group: start
     icon: file-multiple
+    service: SeedConfigurationFactory
+    result: SeedConfiguration
     relations:
       - target: sources/parsing
         type: dataflow
@@ -53,6 +55,7 @@ items:
   - identifier: parsing
     group: sources
     description: Iterate all the sources and determine proper formats (nivio, k8s...)
+    service: SourceReferenceResolver
     icon: file-cog
     relations:
       - target: sources/factory
@@ -61,7 +64,7 @@ items:
   - identifier: factory
     group: sources
     description: For each format a factory provides a handler that can extract data and provides DTOs.
-    note: See "xxxDescription.java"
+    result: one or more LandscapeDescription DTOs
     icon: factory
     relations:
       - target: sources/environment

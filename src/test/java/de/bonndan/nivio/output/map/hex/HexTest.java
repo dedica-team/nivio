@@ -11,10 +11,10 @@ class HexTest {
 
     @Test
     void topLeft() {
-        Hex center = new Hex(0,0, 0);
+        Hex center = new Hex(0,0);
         List<Hex> area = new ArrayList<>();
         area.add(center);
-        area.addAll(center.neighbours());
+        area.addAll(Hex.neighbours(center));
 
         //when
         Hex hex = Hex.topLeft(area);
@@ -27,9 +27,10 @@ class HexTest {
     void getNeighboursDirections() {
         //given
         Hex center = new Hex(4,3);
-        List<Hex> neighbours = center.neighbours();
+        List<Hex> neighbours = Hex.neighbours(center);
 
         //when
         assertThat(center.getDirectionTo(neighbours.get(0))).isEqualTo(Hex.SOUTH_EAST);
+        assertThat(center.getDirectionTo(neighbours.get(1))).isEqualTo(Hex.SOUTH);
     }
 }

@@ -84,11 +84,15 @@ sonar: # add new environment variables
 
 ---
 spring:
-  profiles: test
+  config:
+    activate:
+      on-profile: test
 
 ---
 spring:
-  profiles: local
+  config:
+    activate:
+      on-profile: local
 
 server:
   port: 8080

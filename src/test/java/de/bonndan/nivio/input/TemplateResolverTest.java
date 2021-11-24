@@ -1,47 +1,35 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.compose2.InputFormatHandlerCompose2;
+import de.bonndan.nivio.IntegrationTestSupport;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Tagged;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
-import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TemplateResolverTest {
 
     private TemplateResolver templateResolver;
-    private LandscapeDescriptionFactory factory;
-
-    @Mock
-    ProcessLog log;
+    private ProcessLog log;
+    private IntegrationTestSupport testSupport;
 
     @BeforeEach
     public void setup() {
         log = new ProcessLog(LoggerFactory.getLogger(TemplateResolver.class), "test");
-        templateResolver = new TemplateResolver(mock(ProcessLog.class));
-        FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
-        factory = new LandscapeDescriptionFactory(fileFetcher);
+        templateResolver = new TemplateResolver(log);
+        testSupport = new IntegrationTestSupport();
     }
 
 
     @Test
-    public void assignTemplateToAll() {
+    void assignTemplateToAll() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates.yml");
         templateResolver.resolve(landscapeDescription);
@@ -62,7 +50,7 @@ class TemplateResolverTest {
 
 
     @Test
-    public void assignTemplateWithRegex() {
+    void assignTemplateWithRegex() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates2.yml");
         templateResolver.resolve(landscapeDescription);
@@ -81,7 +69,7 @@ class TemplateResolverTest {
     }
 
     @Test
-    public void assignsAllValues() {
+    void assignsAllValues() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates.yml");
         templateResolver.resolve(landscapeDescription);
@@ -101,7 +89,7 @@ class TemplateResolverTest {
     }
 
     @Test
-    public void assignsOnlyToGivenTargets() {
+    void assignsOnlyToGivenTargets() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates.yml");
         templateResolver.resolve(landscapeDescription);
@@ -113,13 +101,7 @@ class TemplateResolverTest {
 
     private LandscapeDescription getLandscapeDescription(String s) {
         File file = new File(RootPath.get() + s);
-        InputFormatHandlerFactory formatFactory = new InputFormatHandlerFactory(
-                new ArrayList<>(Arrays.asList(new InputFormatHandlerNivio(new FileFetcher(new HttpService())), InputFormatHandlerCompose2.forTesting()))
-        );
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(formatFactory, new ProcessLog(mock(Logger.class), "test"), mock(ApplicationEventPublisher.class));
-        LandscapeDescription landscapeDescription = factory.fromYaml(file);
-        sourceReferencesResolver.resolve(landscapeDescription);
-        return landscapeDescription;
+        return testSupport.getFirstLandscapeDescription(file);
     }
 
 }

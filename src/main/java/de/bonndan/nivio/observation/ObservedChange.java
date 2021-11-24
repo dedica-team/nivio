@@ -12,18 +12,12 @@ import java.util.List;
  */
 public class ObservedChange {
 
-    private final Landscape landscape;
     private final List<ProcessingException> errors = new ArrayList<>();
     private List<String> changes;
     private boolean error;
 
-    public ObservedChange(final Landscape landscape, final String change) {
-        this.landscape = landscape;
+    public ObservedChange(final String change) {
         this.changes = List.of(change);
-    }
-
-    public Landscape getLandscape() {
-        return landscape;
     }
 
     public void setChanges(List<String> changes) {

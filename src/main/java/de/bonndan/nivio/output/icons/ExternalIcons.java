@@ -29,12 +29,10 @@ public class ExternalIcons {
     private final Map<String, CachedResponse> imageCache = new ConcurrentHashMap<>();
     private final HttpService httpService;
 
-
     public ExternalIcons(HttpService httpService, ExternalIconsProvider icons) {
         this.httpService = httpService;
         vendorIconUrls.putAll(icons.getUrls());
     }
-
 
     /**
      * Returns the original url of a vendor product icon.

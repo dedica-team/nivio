@@ -2,8 +2,6 @@ package de.bonndan.nivio.output.map.hex;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.output.map.svg.HexPath;
-import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,13 +27,13 @@ public class GroupAreaFactory {
      * <p>
      * There is clearly much room for improvement here. It's only that I haven't found a better approach so far.
      *
-     * @param itemsToHexes tiles occupied by items
-     * @param group        the group
+     * @param hexMap the current hex map
+     * @param group  the group
      * @return all hexes the group consists of (an area)
      */
-    public static Set<Hex> getGroup(Map<Object, Hex> itemsToHexes, Group group, Set<Item> items) {
+    public static Set<MapTile> getGroup(HexMap hexMap, Group group, Set<Item> items) {
 
-        Set<Hex> inArea = new HashSet<>();
+        Set<MapTile> inArea = new HashSet<>();
 
         if (!items.iterator().hasNext()) {
             LOGGER.warn("Could not determine group area for group {} because of missing items.", group);
@@ -43,76 +41,73 @@ public class GroupAreaFactory {
         }
 
         //simple occupations per item
-        addItemsAndNeighbours(itemsToHexes, items, inArea);
+        addItemsAndNeighbours(hexMap, items, inArea);
 
         //build the area by adding paths
-        addPathsBetweenClosestItems(itemsToHexes, items, inArea);
+        addPathsBetweenClosestItems(hexMap, items, inArea);
 
         // enlarge area by adding hexes with many sides adjacent to group area until no more can be added
-        Set<Hex> bridges = getBridges(inArea, 2);
-        while (!bridges.isEmpty()) {
+        Set<MapTile> bridges = getBridges(hexMap, inArea, 2);
+        int temp = 9; //seems a good tradeoff. small groups are still convex, but larger one are not too fractal
+        while (!bridges.isEmpty() && temp > 0) {
             inArea.addAll(bridges);
-            bridges = getBridges(inArea, 3); // 2 might be too aggressive and collide with other group areas
+            bridges = getBridges(hexMap, inArea, 3); // 2 might be too aggressive and collide with other group areas
+            temp--;
         }
 
-        //set group identifier to all
-        inArea.forEach(hex -> hex.group = group.getFullyQualifiedIdentifier().toString());
         return inArea;
     }
 
     /**
      * Every item itself and its neighbours are added
      */
-    private static void addItemsAndNeighbours(Map<Object, Hex> itemsToHexes,
+    private static void addItemsAndNeighbours(HexMap hexMap,
                                               Set<Item> items,
-                                              Set<Hex> inArea
+                                              Set<MapTile> inArea
     ) {
         items.forEach(next -> {
             LOGGER.debug("adding {} to group area", next);
-            Hex hex = itemsToHexes.get(next);
-            inArea.add(hex);
-            inArea.addAll(hex.neighbours());
+            MapTile tile = hexMap.getTileForItem(next);
+            inArea.add(tile);
+            inArea.addAll(hexMap.getNeighbours(tile.getHex()));
         });
     }
 
     /**
      * Generates paths between each item and its closest neighbour and added tiles of the paths to the group area.
      *
-     * @param itemsToHexes hex tiles occupied by items
-     * @param items        group items
-     * @param inArea       area hex tiles
+     * @param hexMap hex tiles occupied by items
+     * @param items  group items
+     * @param inArea area hex tiles
      */
-    private static void addPathsBetweenClosestItems(Map<Object, Hex> itemsToHexes,
+    private static void addPathsBetweenClosestItems(HexMap hexMap,
                                                     Set<Item> items,
-                                                    Set<Hex> inArea
+                                                    Set<MapTile> inArea
     ) {
         List<Item> connected = new ArrayList<>();
         Item next = items.iterator().next();
+
+        // we dont care for occupied tiles here, since we just want the closest item within group, and non-group
+        // items cannot be anywhere nearby (other types of obstacles do not exist yet)
+        PathFinder pathFinder = PathFinder.withEmptyMap();
+
         while (next != null) {
 
             LOGGER.debug("adding {} to group area", next);
-            Hex hex = itemsToHexes.get(next);
+            MapTile hex = hexMap.getTileForItem(next);
 
-            Optional<Item> closest = getClosestItem(next, items, itemsToHexes, connected);
+            Optional<Item> closest = getClosestItem(next, items, hexMap, connected);
             if (closest.isEmpty()) {
                 LOGGER.debug("no closest item found for {}", next);
                 break;
             }
 
-            // we dont care for occupied tiles here, since we just want the closest item within group, and non-group
-            // items cannot be anywhere nearby (other types of obstacles do not exist yet)
-            PathFinder pathFinder = new PathFinder(new DualHashBidiMap<>());
-
-            Hex destination = itemsToHexes.get(closest.get());
+            MapTile destination = hexMap.getTileForItem(closest.get());
             Optional<HexPath> path = pathFinder.getPath(hex, destination);
-            if (path.isPresent()) {
-                Set<Hex> padded = new HashSet<>(); //pad to avoid thin bridges, also workaround for svg outline issue
-                path.get().getHexes().forEach(pathTile -> {
-                    padded.add(pathTile);
-                    padded.addAll(pathTile.neighbours());
-                });
-                padded.stream().filter(hex1 -> !itemsToHexes.containsKey(hex1)).forEach(inArea::add);
-            }
+            path.ifPresent(hexPath -> hexPath.getTiles().forEach(pathTile -> {
+                inArea.add(pathTile.getMapTile());
+                inArea.addAll(hexMap.getNeighbours(pathTile.getMapTile().getHex()));
+            }));
 
             connected.add(next);
             // stop if the next one has been connected already
@@ -133,23 +128,23 @@ public class GroupAreaFactory {
      */
     private static Optional<Item> getClosestItem(Item item,
                                                  Set<Item> items,
-                                                 Map<Object, Hex> allVertexHexes,
+                                                 HexMap allVertexHexes,
                                                  List<Item> connected
     ) {
-        Hex start = allVertexHexes.get(item);
+        MapTile start = allVertexHexes.getTileForItem(item);
         AtomicInteger minDist = new AtomicInteger(Integer.MAX_VALUE);
         AtomicReference<Item> min = new AtomicReference<>(null);
-        items.stream()
-                .filter(otherGroupItem -> !item.equals(otherGroupItem))
-                .filter(otherGroupItem -> !connected.contains(otherGroupItem))
-                .forEach(otherGroupItem -> {
-                    Hex dest = allVertexHexes.get(otherGroupItem);
-                    int distance = start.distance(dest);
-                    if (distance < minDist.get()) {
-                        minDist.set(distance);
-                        min.set(otherGroupItem);
-                    }
-                });
+        for (Item otherGroupItem : items) {
+            if (item.equals(otherGroupItem) || connected.contains(otherGroupItem)) {
+                continue;
+            }
+            MapTile dest = allVertexHexes.getTileForItem(otherGroupItem);
+            int distance = start.getHex().distance(dest.getHex());
+            if (distance < minDist.get()) {
+                minDist.set(distance);
+                min.set(otherGroupItem);
+            }
+        }
 
         return Optional.ofNullable(min.get());
     }
@@ -157,30 +152,21 @@ public class GroupAreaFactory {
     /**
      * Finds neighbours of in-area tiles which have in-area neighbours at adjacent sides (gaps).
      *
+     * @param hexMap   the current map
      * @param inArea   all hexes in area
      * @param minSides min number of sides having in-group neighbours to be added as "bridge"
      * @return all hexes which fill gaps
      */
-    static Set<Hex> getBridges(Set<Hex> inArea, int minSides) {
+    static Set<MapTile> getBridges(HexMap hexMap, Set<MapTile> inArea, int minSides) {
 
-        Set<Hex> bridges = new HashSet<>();
-        inArea.forEach(hex -> {
-            hex.neighbours().forEach(neighbour -> {
+        Set<MapTile> bridges = new HashSet<>();
+        inArea.forEach(mapTile -> {
+            hexMap.getNeighbours(mapTile.getHex()).forEach(neighbour -> {
                 if (inArea.contains(neighbour))
                     return;
 
                 int i = 0;
-                List<Integer> sidesWithNeighbours = new ArrayList<>();
-                for (Hex nn : neighbour.neighbours()) {
-                    if (sidesWithNeighbours.size() > minSides)
-                        break;
-
-                    //check on in-area tiles
-                    if (inArea.contains(nn)) {
-                        sidesWithNeighbours.add(i);
-                    }
-                    i++;
-                }
+                List<Integer> sidesWithNeighbours = getSidesWithNeighbours(inArea, minSides, hexMap.getNeighbours(neighbour.getHex()), i);
 
                 if (sidesWithNeighbours.size() < 2)
                     return;
@@ -195,6 +181,21 @@ public class GroupAreaFactory {
             });
         });
         return bridges;
+    }
+
+    private static List<Integer> getSidesWithNeighbours(Set<MapTile> inArea, int minSides, List<MapTile> neighbours, int i) {
+        List<Integer> sidesWithNeighbours = new ArrayList<>();
+        for (MapTile nn : neighbours) {
+            if (sidesWithNeighbours.size() > minSides)
+                break;
+
+            //check on in-area tiles
+            if (inArea.contains(nn)) {
+                sidesWithNeighbours.add(i);
+            }
+            i++;
+        }
+        return sidesWithNeighbours;
     }
 
     /**

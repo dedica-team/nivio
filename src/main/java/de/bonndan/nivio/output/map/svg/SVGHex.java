@@ -5,7 +5,8 @@ import j2html.tags.DomContent;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
-import java.util.stream.Collectors;
+import java.awt.geom.Point2D;
+import java.util.StringJoiner;
 
 /**
  * A hexagon.
@@ -41,8 +42,11 @@ public class SVGHex extends Component {
     }
 
     private String asPoints(Hex hex) {
-        return hex.asPoints(Hex.HEX_SIZE).stream()
-                .map(aDouble -> round(aDouble.x) + " " + round(aDouble.y))
-                .collect(Collectors.joining(","));
+        StringJoiner joiner = new StringJoiner(",");
+        for (Point2D.Double aDouble : hex.asPoints(Hex.HEX_SIZE)) {
+            String s = round(aDouble.x) + " " + round(aDouble.y);
+            joiner.add(s);
+        }
+        return joiner.toString();
     }
 }

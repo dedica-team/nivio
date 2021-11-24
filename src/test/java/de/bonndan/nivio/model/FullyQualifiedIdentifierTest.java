@@ -37,7 +37,7 @@ public class FullyQualifiedIdentifierTest {
         assertEquals("l1", fqi4.jsonValue());
 
         var fqi5 = FullyQualifiedIdentifier.build("l1", null, "d1");
-        assertEquals("l1/" + Group.COMMON + "/d1", fqi5.jsonValue());
+        assertEquals("l1/" + Layer.domain.name() + "/d1", fqi5.jsonValue());
 
     }
 

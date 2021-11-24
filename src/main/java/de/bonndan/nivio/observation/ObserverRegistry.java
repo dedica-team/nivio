@@ -1,9 +1,7 @@
 package de.bonndan.nivio.observation;
 
-import de.bonndan.nivio.input.IndexingDispatcher;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.input.SeedConfigurationProcessedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -11,7 +9,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,22 +20,18 @@ public class ObserverRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObserverRegistry.class);
 
+    private final Map<String, ObserverPool> observerMap = new ConcurrentHashMap<>();
 
-    private final Map<String, LandscapeObserverPool> observerMap = new ConcurrentHashMap<>();
-
-    private final LandscapeObserverFactory landscapeObserverPoolFactory;
+    private final ObserverFactory observerPoolFactory;
     private final ThreadPoolTaskScheduler taskScheduler;
-    private final IndexingDispatcher indexingDispatcher;
     private final ObserverConfigProperties observerConfigProperties;
 
-    public ObserverRegistry(LandscapeObserverFactory landscapeObserverPoolFactory,
+    public ObserverRegistry(ObserverFactory observerPoolFactory,
                             ThreadPoolTaskScheduler taskScheduler,
-                            IndexingDispatcher indexingDispatcher,
                             ObserverConfigProperties observerConfigProperties
     ) {
-        this.landscapeObserverPoolFactory = landscapeObserverPoolFactory;
+        this.observerPoolFactory = observerPoolFactory;
         this.taskScheduler = taskScheduler;
-        this.indexingDispatcher = indexingDispatcher;
         this.observerConfigProperties = observerConfigProperties;
     }
 
@@ -47,31 +40,18 @@ public class ObserverRegistry {
      *
      * On processing success, {@link ProcessingFinishedEvent} is fired and read here to register the landscape.
      */
-    @EventListener(ProcessingFinishedEvent.class)
-    public void onProcessingFinishedEvent(ProcessingFinishedEvent event) {
-        LandscapeDescription landscapeDescription = event.getInput();
-        Landscape landscape = Objects.requireNonNull(event.getLandscape());
-
-        LandscapeObserverPool pool = observerMap.computeIfAbsent(landscape.getIdentifier(), s -> {
-            LOGGER.info("Registered landscape {} for observation.", landscapeDescription);
-            return new LandscapeObserverPool(taskScheduler, observerConfigProperties);
+    @EventListener(SeedConfigurationProcessedEvent.class)
+    public void onProcessingFinishedEvent(SeedConfigurationProcessedEvent event) {
+        event.getSource().getSource().getURL().ifPresent(url -> {
+            ObserverPool pool = observerMap.computeIfAbsent(url.toString(), url1 -> {
+                LOGGER.info("Registered seed config {} for observation.", url1);
+                return new ObserverPool(taskScheduler, observerConfigProperties);
+            });
+            pool.updateObservers(observerPoolFactory.getObserversFor(event.getSource()));
         });
-        pool.updateObservers(landscapeObserverPoolFactory.getObserversFor(landscape, landscapeDescription));
     }
 
-    @EventListener(InputChangedEvent.class)
-    public void onInputChangedEvent(InputChangedEvent event) {
-        ObservedChange observedChange = event.getSource();
-        Landscape landscape = observedChange.getLandscape();
-        LOGGER.info("Observed change in landscape {}: {}", landscape.getIdentifier(), String.join("; ", observedChange.getChanges()));
-        indexingDispatcher.fromIncoming(landscape);
-        LOGGER.info("Triggered new IndexingEvent for landscape {}", landscape.getIdentifier());
-    }
-
-    /**
-     * @return the currently observed landscapes.
-     */
-    Set<String> getObservedLandscapes() {
+    Set<String> getObserved() {
         return observerMap.keySet();
     }
 

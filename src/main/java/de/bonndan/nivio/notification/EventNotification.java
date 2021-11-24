@@ -14,7 +14,6 @@ import org.springframework.lang.Nullable;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Objects;
 
 /**
  * Api model for internal events. This object is published via http and websockets.
@@ -51,24 +50,24 @@ public class EventNotification {
 
     public static EventNotification from(InputChangedEvent inputChangedEvent) {
         return new EventNotification(
-                inputChangedEvent.getSource().getLandscape().getFullyQualifiedIdentifier(),
+                null,
                 InputChangedEvent.class.getSimpleName(),
                 ProcessingEvent.LOG_LEVEL_INFO,
                 inputChangedEvent.getTimestamp(),
-                String.join("; ", inputChangedEvent.getSource().getChanges()),
+                String.join("; ", inputChangedEvent.getObservedChange().getChanges()),
                 null
         );
     }
 
     private EventNotification(
-            @NonNull final FullyQualifiedIdentifier landscapeIdentifier,
+            @Nullable final FullyQualifiedIdentifier landscapeIdentifier,
             @NonNull final String type,
             @NonNull final String level,
             final long timestamp,
             @Nullable final String message,
             @Nullable final ProcessingChangelog changelog
     ) {
-        this.landscapeIdentifier = Objects.requireNonNull(landscapeIdentifier);
+        this.landscapeIdentifier = landscapeIdentifier;
         this.message = message;
         this.level = level;
         this.type = type;
@@ -102,7 +101,7 @@ public class EventNotification {
 
     @Schema(description = "The landscape identifier (can be used as url part)")
     public String getLandscape() {
-        return landscapeIdentifier.jsonValue();
+        return landscapeIdentifier != null ? landscapeIdentifier.jsonValue() : "";
     }
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
