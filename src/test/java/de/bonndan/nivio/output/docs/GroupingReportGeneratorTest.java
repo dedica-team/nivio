@@ -60,7 +60,7 @@ class GroupingReportGeneratorTest {
                 .contains(searchConfig.getTitle())
                 .contains("Address: https://www.nivio.com/")
                 .contains("Tags: auth, ui")
-                .contains("<h2>Owners: common</h2>");
+                .contains("<h2>Owners: domain</h2>");
     }
 
     @Test
@@ -189,7 +189,7 @@ class GroupingReportGeneratorTest {
                 .contains(searchConfig.getTitle())
                 .contains("Address: https://www.nivio.com/")
                 .contains("Tags: auth, ui")
-                .contains("<h2>test: common</h2>");
+                .contains("<h2>test: domain</h2>");
 
     }
 
@@ -240,7 +240,7 @@ class GroupingReportGeneratorTest {
                 .contains("Report")
                 .doesNotContain("Address: https://www.nivio.com/")
                 .doesNotContain("Tags: auth, ui")
-                .doesNotContain("<h2>Owners: common</h2>");
+                .doesNotContain("<h2>Owners: domain</h2>");
 
     }
 }
