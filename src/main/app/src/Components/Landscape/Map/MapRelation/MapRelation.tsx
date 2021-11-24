@@ -69,7 +69,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
                     'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
                   }
                 >
-                  <InfoOutlined style={{color:theme.palette.info.main}} fontSize='small' />
+                  <InfoOutlined style={{color:theme.palette.info.main}} fontSize='small' data-testid={'InfoIconRelation'}/>
                 </span>
               </TableCell>
             </TableRow>

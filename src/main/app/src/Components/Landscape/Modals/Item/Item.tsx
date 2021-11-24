@@ -260,7 +260,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                     'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
                   }
                 >
-                  <InfoOutlined style={{ color: theme.palette.info.main }} fontSize='small' data-testid={'testInfoIcon'} />
+                  <InfoOutlined style={{ color: theme.palette.info.main }} fontSize='small' data-testid={'InfoIcon'} />
                 </span>
               </>
             }
