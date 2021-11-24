@@ -10,10 +10,11 @@ describe('<Item />', () => {
     target: 'foo',
     description: 'foo',
     format: 'foo',
-    name: 'foo',
+    name: 'web',
     id: 'foo',
-    direction: 'foo',
+    direction: 'outbound',
     labels: {},
+    type: 'PROVIDER',
   };
   const Irelations = { foo: IRelations };
   const useItem: IItem = {
@@ -82,12 +83,12 @@ describe('<Item />', () => {
     mock.mockReturnValue(Promise.resolve(useItem));
 
     //when
-    const { container, queryByTestId } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
+    const { container, getByTestId } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
     fireEvent.click(getByTitle(container, 'Relations'));
 
 
     // then
-    await waitFor(() => expect(queryByTestId('testInfoIcon')).toBeInTheDocument());
+    await waitFor(() => expect(getByTestId('testInfoIcon')));
   });
 
 
