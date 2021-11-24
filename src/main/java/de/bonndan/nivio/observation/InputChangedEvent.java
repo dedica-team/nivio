@@ -2,6 +2,8 @@ package de.bonndan.nivio.observation;
 
 import org.springframework.context.ApplicationEvent;
 
+import java.net.URL;
+
 /**
  * Event is fired when an input source has changed.
  *
@@ -9,12 +11,19 @@ import org.springframework.context.ApplicationEvent;
  */
 public class InputChangedEvent extends ApplicationEvent {
 
-    public InputChangedEvent(ObservedChange source) {
-        super(source);
+    private final ObservedChange observedChange;
+
+    public InputChangedEvent(URL url, ObservedChange observedChange) {
+        super(url);
+        this.observedChange = observedChange;
     }
 
     @Override
-    public ObservedChange getSource() {
-        return (ObservedChange) super.getSource();
+    public URL getSource() {
+        return (URL) super.getSource();
+    }
+
+    public ObservedChange getObservedChange() {
+        return observedChange;
     }
 }

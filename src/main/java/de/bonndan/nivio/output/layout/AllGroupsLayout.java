@@ -1,10 +1,13 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.util.RootPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -13,23 +16,31 @@ import java.util.*;
 public class AllGroupsLayout {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AllGroupsLayout.class);
-    public static final int FORCE_CONSTANT = 300;
+
     public static final int MAX_DISTANCE_LIMIT = 1000;
 
-    private final Map<Group, LayoutedComponent> groupNodes = new LinkedHashMap<>();
-    private final FastOrganicLayout layout;
-    private final Landscape landscape;
+    //results in more iterations and better layouts for larger graphs
+    public static final int INITIAL_TEMP = 300 * 3;
 
-    public AllGroupsLayout(Landscape landscape, Map<String, Group> groups, Map<String, SubLayout> subgraphs) {
-        this.landscape = landscape;
+    private final boolean debug;
+
+    public AllGroupsLayout(boolean debug) {
+        this.debug = debug;
+    }
+
+    /**
+     * Renders the landscape using {@link FastOrganicLayout}.
+     */
+    public LayoutedComponent getRendered(Landscape landscape, Map<String, Group> groups, Map<String, SubLayout> subgraphs) {
 
         LOGGER.debug("Subgraphs sequence: {}", subgraphs);
-
+        Map<Group, LayoutedComponent> groupNodes = new LinkedHashMap<>();
         List<Item> items = new ArrayList<>();
-        groups.forEach((groupName, groupItem) -> {
+        var sorted = new TreeMap<>(groups);
+        sorted.forEach((groupName, groupItem) -> {
 
-            //do not layout the default group if empty
-            if (Group.COMMON.equals(groupName) && groupItem.getItems().size() == 0) {
+            //do not layout the group if empty
+            if (groupItem.getItems().isEmpty()) {
                 return;
             }
 
@@ -40,41 +51,45 @@ public class AllGroupsLayout {
             groupNodes.put(groupItem, groupGeometry);
             items.addAll(landscape.getItems().retrieve(groupItem.getItems()));
         });
-        LOGGER.debug("Group node sequence: {}", groupNodes);
+        if (debug) LOGGER.debug("Group node sequence: {}", groupNodes);
 
-        addVirtualEdgesBetweenGroups(items);
+        addVirtualEdgesBetweenGroups(items, groupNodes);
 
-        layout = new FastOrganicLayout(new ArrayList<>(groupNodes.values()));
-        //layout.setDebug(true);
-        layout.setForceConstant(FORCE_CONSTANT);
-        layout.setMaxDistanceLimit(MAX_DISTANCE_LIMIT);
-
-        //results in more iterations and better layouts for larger graphs
-        layout.setInitialTemp((int) (layout.initialTemp * 3));
-
-        layout.configure(landscape.getConfig().getGroupLayoutConfig());
+        int minDistanceLimit = Hex.HEX_SIZE / 2;
+        var layout = new FastOrganicLayout(
+                new ArrayList<>(groupNodes.values()),
+                new CollisionRegardingForces(minDistanceLimit, MAX_DISTANCE_LIMIT),
+                INITIAL_TEMP
+        );
+        layout.setDebug(debug);
 
         layout.execute();
-        LOGGER.debug("AllGroupsLayout bounds: {}", layout.getBounds());
+        if (debug) {
+            try {
+                String name = landscape.getName();
+                layout.getLayoutLogger().traceLocations(new File(RootPath.get() + "/src/test/dump/" + name + ".svg"));
+                layout.getLayoutLogger().dump(new File(RootPath.get() + "/src/test/dump/" + name + ".txt"));
+            } catch (IOException e) {
+                LOGGER.warn("Failed to write debug information", e);
+            }
+        }
+        layout.assertMinDistanceIsKept(minDistanceLimit);
+        if (debug) LOGGER.debug("AllGroupsLayout bounds: {}", layout.getNodes());
+
+        return LayoutedComponent.from(landscape, layout.getNodes());
     }
 
 
     /**
      * Virtual edges between group containers enable organic layout of groups.
      */
-    private void addVirtualEdgesBetweenGroups(List<Item> items) {
+    private void addVirtualEdgesBetweenGroups(List<Item> items, Map<Group, LayoutedComponent> groupNodes) {
 
         GroupConnections groupConnections = new GroupConnections();
 
         items.forEach(item -> {
-            final String group;
-            if (!StringUtils.hasLength(item.getGroup())) {
-                LOGGER.warn("Item {} has no group, using " + Group.COMMON, item);
-                group = Group.COMMON;
-            } else {
-                group = item.getGroup();
-            }
-            LayoutedComponent groupNode = findGroupBounds(group);
+            final String group = item.getGroup();
+            LayoutedComponent groupNode = findGroupBounds(group, groupNodes);
 
             item.getRelations().forEach(relationItem -> {
                 Item targetItem = relationItem.getTarget();
@@ -83,8 +98,8 @@ public class AllGroupsLayout {
                     return;
                 }
 
-                String targetGroup = targetItem.getGroup() == null ? Group.COMMON : targetItem.getGroup();
-                LayoutedComponent targetGroupNode = findGroupBounds(targetGroup);
+                String targetGroup = targetItem.getGroup();
+                LayoutedComponent targetGroupNode = findGroupBounds(targetGroup, groupNodes);
 
                 if (groupConnections.canConnect(group, targetGroup)) {
                     groupNode.getOpposites().add(targetGroupNode.getComponent());
@@ -95,22 +110,12 @@ public class AllGroupsLayout {
         });
     }
 
-    private LayoutedComponent findGroupBounds(String group) {
-
-        if (StringUtils.isEmpty(group))
-            group = Group.COMMON;
-
-        String finalGroup = group;
+    private LayoutedComponent findGroupBounds(String group, Map<Group, LayoutedComponent> groupNodes) {
         return groupNodes.entrySet().stream()
-                .filter(entry -> finalGroup.equals(entry.getKey().getIdentifier()))
-                .findFirst().map(Map.Entry::getValue).orElseThrow(() -> new RuntimeException("Group " + finalGroup + " not found."));
-    }
-
-    /**
-     * Returns the layouted landscape.
-     */
-    public LayoutedComponent getRendered() {
-        return layout.getOuterBounds(landscape);
+                .filter(entry -> group.equals(entry.getKey().getIdentifier()))
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElseThrow(() -> new RuntimeException(String.format("Group %s not found.", group)));
     }
 
 }

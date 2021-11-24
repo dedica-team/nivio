@@ -31,17 +31,17 @@ public class ReadingException extends ProcessingException {
      * @param source the input file/string
      * @param e the exception
      */
-    public static ReadingException from(String source, JsonMappingException e) {
+    public static ReadingException fromMappingException(String source, JsonMappingException e) {
 
         if (e instanceof UnrecognizedPropertyException) {
             UnrecognizedPropertyException ex = (UnrecognizedPropertyException) e;
             String path = Arrays.stream(ex.getPathReference().split("->"))
                     .map(s -> s.substring(s.indexOf("[")).replace("[", "").replace("]", "").replace("\"", ""))
                     .collect(Collectors.joining("/"));
-            return new ReadingException(source +" contains unknown field '" + ex.getPropertyName() + "' in " + path, e);
+            return new ReadingException(String.format("%s contains unknown field '%s' in %s", source, ex.getPropertyName(), path), e);
         }
 
-        return from(source, e.getMessage(), e);
+        return fromMappingException(source, e.getMessage(), e);
     }
 
     /**
@@ -51,7 +51,7 @@ public class ReadingException extends ProcessingException {
      * @param message a custom message
      * @param e the exception
      */
-    public static ReadingException from(@NonNull final String source, @NonNull final String message, @NonNull final Throwable e) {
+    public static ReadingException fromMappingException(@NonNull final String source, @NonNull final String message, @NonNull final Throwable e) {
         return new ReadingException(String.format("%s in %s", Objects.requireNonNull(message), source), e);
     }
 }

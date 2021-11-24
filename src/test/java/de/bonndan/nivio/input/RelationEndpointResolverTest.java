@@ -1,50 +1,41 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.compose2.InputFormatHandlerCompose2;
+import de.bonndan.nivio.IntegrationTestSupport;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
 import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.slf4j.Logger;
-import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class RelationEndpointResolverTest {
 
     private RelationEndpointResolver relationEndpointResolver;
-    private LandscapeDescriptionFactory factory;
 
-    @Mock
-    ProcessLog log;
+    private IntegrationTestSupport testSupport;
 
 
     @BeforeEach
     public void setup() {
-        log = new ProcessLog(Mockito.mock(Logger.class), "test");
+        ProcessLog log = new ProcessLog(mock(Logger.class), "test");
         relationEndpointResolver = new RelationEndpointResolver(log);
-        FileFetcher fileFetcher = new FileFetcher(mock(HttpService.class));
-        factory = new LandscapeDescriptionFactory(fileFetcher);
+        testSupport = new IntegrationTestSupport();
     }
 
     @Test
-    public void assignTemplateWithRegex() {
+    void assignTemplateWithRegex() {
 
-        LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates("/src/test/resources/example/example_templates2.yml");
+        LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates();
         relationEndpointResolver.resolve(landscapeDescription);
 
         ItemDescription one = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
@@ -62,9 +53,9 @@ class RelationEndpointResolverTest {
 
 
     @Test
-    public void resolvesTemplatePlaceholdersInProviders() {
+    void resolvesTemplatePlaceholdersInProviders() {
 
-        LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates("/src/test/resources/example/example_templates2.yml");
+        LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates();
         relationEndpointResolver.resolve(landscapeDescription);
 
         //the provider has been resolved using a query instead of naming a service
@@ -81,9 +72,9 @@ class RelationEndpointResolverTest {
     }
 
     @Test
-    public void resolvesTemplatePlaceholdersInDataflow() {
+    void resolvesTemplatePlaceholdersInDataflow() {
 
-        LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates("/src/test/resources/example/example_templates2.yml");
+        LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates();
         relationEndpointResolver.resolve(landscapeDescription);
 
         ItemDescription hasdataFlow = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
@@ -97,20 +88,13 @@ class RelationEndpointResolverTest {
         assertEquals("nivio:templates2/beta/other_crappy_name-2343a", next.getTarget());
     }
 
-    private LandscapeDescription getLandscapeDescriptionWithAppliedTemplates(String s) {
-        File file = new File(RootPath.get() + s);
-        LandscapeDescription landscapeDescription = factory.fromYaml(file);
-
-        InputFormatHandlerFactory formatFactory = new InputFormatHandlerFactory(
-                new ArrayList<>(Arrays.asList(new InputFormatHandlerNivio(new FileFetcher(new HttpService())), InputFormatHandlerCompose2.forTesting()))
-        );
+    private LandscapeDescription getLandscapeDescriptionWithAppliedTemplates() {
+        File file = new File(RootPath.get() + "/src/test/resources/example/example_templates2.yml");
+        LandscapeDescription resolved = testSupport.getFirstLandscapeDescription(file);
         ProcessLog logger = new ProcessLog(mock(Logger.class), "test");
-        SourceReferencesResolver sourceReferencesResolver = new SourceReferencesResolver(formatFactory, logger, mock(ApplicationEventPublisher.class));
-        sourceReferencesResolver.resolve(landscapeDescription);
-
-        new TemplateResolver(logger).resolve(landscapeDescription);
-
-        return landscapeDescription;
+        assertThat(resolved.getTemplates()).isNotEmpty();
+        new TemplateResolver(logger).resolve(resolved);
+        return resolved;
     }
 
 }

@@ -1,6 +1,5 @@
 package de.bonndan.nivio.output.layout;
 
-import de.bonndan.nivio.model.LandscapeConfig;
 import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.Test;
 
@@ -55,21 +54,24 @@ class AllGroupsLayoutTest {
         landscape.getGroups().forEach(groupMap::put);
 
         //when
-        AllGroupsLayout allGroupsLayout = new AllGroupsLayout(landscape, groupMap, map);
+        AllGroupsLayout allGroupsLayout = new AllGroupsLayout(true);
 
         //then
-        assertNotNull(allGroupsLayout);
-        LayoutedComponent layoutedLandscape = allGroupsLayout.getRendered();
+        LayoutedComponent layoutedLandscape = allGroupsLayout.getRendered(landscape, landscape.getGroups(), map);
         assertNotNull(layoutedLandscape);
         assertEquals(landscape, layoutedLandscape.getComponent());
         assertEquals(3, layoutedLandscape.getChildren().size());
 
         //assert position is always the same
-        assertEquals(-541, Math.round(layoutedLandscape.getChildren().get(0).getX()));
-        assertEquals(175, Math.round(layoutedLandscape.getChildren().get(0).getY()));
+        LayoutedComponent child0 = layoutedLandscape.getChildren().get(0);
+        assertEquals("test/a", child0.getComponent().getFullyQualifiedIdentifier().toString());
+        assertEquals(944, Math.round(child0.getX()));
+        assertEquals(1637, Math.round(child0.getY()));
     }
 
     private SubLayout getSubLayout(Group group, Set<Item> items) {
-        return new SubLayout(group, items, new LandscapeConfig.LayoutConfig());
+        SubLayout subLayout = new SubLayout(true);
+        subLayout.render(group, items);
+        return subLayout;
     }
 }

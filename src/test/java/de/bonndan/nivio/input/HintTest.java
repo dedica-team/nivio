@@ -20,10 +20,8 @@ class HintTest {
 
     @BeforeEach
     void setup() {
-        source = new ItemDescription();
-        source.setIdentifier("foo");
-        target = new ItemDescription();
-        source.setIdentifier("bar");
+        source = new ItemDescription("foo");
+        target = new ItemDescription("bar");
     }
 
     @Test

@@ -1,23 +1,26 @@
 package de.bonndan.nivio.output.map.hex;
 
+import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
-import de.bonndan.nivio.output.map.svg.HexPath;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static de.bonndan.nivio.output.map.hex.Hex.NORTH;
+import static de.bonndan.nivio.output.map.hex.Hex.NORTH_WEST;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class HexMapTest {
 
 
     @Test
-    public void getPath() {
+    void getPath() {
         Item bar = getTestItem("foo", "bar");
+
         LayoutedComponent barComponent = new LayoutedComponent(bar);
         barComponent.x = 0;
         barComponent.y = 0;
@@ -27,15 +30,26 @@ class HexMapTest {
         barComponent.x = 500;
         barComponent.y = 500;
 
-        HexMap hexMap = new HexMap(false);
-        hexMap.add(barComponent);
-        hexMap.add(bazComponent);
+        HexMap hexMap = new HexMap();
+        hexMap.add(bar, hexMap.findFreeSpot(barComponent));
+        hexMap.add(baz, hexMap.findFreeSpot(bazComponent));
 
         //when
-        Optional<HexPath> path = hexMap.getPath(bar, baz);
+        Optional<HexPath> path = hexMap.getPath(bar, baz, true);
 
         //then
         assertThat(path).isNotEmpty();
+
+        List<PathTile> tiles = path.get().getTiles();
+        tiles.forEach(pathTile -> assertThat(pathTile.getMapTile().getPathDirections()).isNotNull());
+
+        List<Integer> pathTileDirs = path.get().getDirections();
+        assertThat(pathTileDirs).isEqualTo(List.of(NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH, NORTH, NORTH));
+
+
+        PathTile port = tiles.get(tiles.size() - 2);
+        assertThat(port.getMapTile().incrementPortCount()).isEqualTo(1);
+
     }
 
     @Test
@@ -45,13 +59,37 @@ class HexMapTest {
         barComponent.x = 0;
         barComponent.y = 0;
 
-        HexMap hexMap = new HexMap(false);
+        HexMap hexMap = new HexMap();
 
         //when
-        Hex added = hexMap.add(barComponent);
+        MapTile added = hexMap.add(bar, hexMap.findFreeSpot(barComponent));
 
         //then
         assertThat(added).isNotNull();
-        assertThat(added.item).isEqualTo(bar.getFullyQualifiedIdentifier().toString());
+        assertThat(added.getItem()).isEqualTo(bar.getFullyQualifiedIdentifier());
+    }
+
+    @Test
+    void allAreaHexesHaveCorrectGroup() {
+        MapTile one = new MapTile(new Hex(1, 1));
+        MapTile two = new MapTile(new Hex(3, 3));
+
+        Item landscapeItem = getTestItem("group", "landscapeItem");
+        Item target = getTestItem("group", "target");
+
+        Group group = new Group("group", "landscapeIdentifier");
+        group.addOrReplaceItem(landscapeItem);
+        group.addOrReplaceItem(target);
+
+        HexMap hexMap = new HexMap();
+        hexMap.add(landscapeItem, one);
+        hexMap.add(target, two);
+
+        //when
+        Set<MapTile> groupArea = hexMap.getGroupArea(group, Set.of(landscapeItem, target));
+
+        //then
+        long count = groupArea.stream().filter(hex -> hex.getGroup() != null).count();
+        assertThat(count).isEqualTo(groupArea.size());
     }
 }

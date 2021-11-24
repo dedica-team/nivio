@@ -1,15 +1,16 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.Assessment;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -39,13 +40,11 @@ class SVGRendererTest {
 
 
         LayoutedComponent lc = new LayoutedComponent(foo);
-        lc.setChildren(new ArrayList<>());
 
         Group group = new Group("bar", "landscapeIdentifier");
         foo.addGroup(group);
 
         LayoutedComponent glc = new LayoutedComponent(group);
-        glc.setChildren(new ArrayList<>());
         glc.setWidth(100);
         glc.setHeight(100);
         glc.setX(100);

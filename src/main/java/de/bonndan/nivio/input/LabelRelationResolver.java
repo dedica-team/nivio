@@ -43,7 +43,7 @@ public class LabelRelationResolver extends Resolver {
         return itemDescription.getLabels().entrySet().stream()
                 //skip the blacklisted labels
                 .filter(entry -> blacklistSpecs.stream().noneMatch(spec -> spec.apply(entry.getKey())))
-                .filter(entry -> !StringUtils.isEmpty(entry.getValue()))
+                .filter(entry -> StringUtils.hasLength(entry.getValue()))
                 .map(entry -> hintFactory.createForLabel(landscape, itemDescription, entry.getKey()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)

@@ -1,16 +1,14 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.output.map.hex.MapTile;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -21,7 +19,6 @@ class SVGGroupAreaOutlineFactory {
     private final GroupAreaStyle groupAreaStyle;
 
     private boolean debug = false;
-
 
     SVGGroupAreaOutlineFactory(@NonNull final GroupAreaStyle groupAreaStyle) {
         this.groupAreaStyle = groupAreaStyle;
@@ -35,10 +32,9 @@ class SVGGroupAreaOutlineFactory {
      * @param groupArea all hexes in the group area
      * @param fillId    fill color
      * @return all svg elements forming the group outline
-     *
      */
     @NonNull
-    public List<DomContent> getOutline(@NonNull final Set<Hex> groupArea, @NonNull final String fillId) {
+    public List<DomContent> getOutline(@NonNull final Set<MapTile> groupArea, @NonNull final String fillId) {
 
         if (!groupArea.iterator().hasNext()) {
             return new ArrayList<>();
@@ -46,32 +42,29 @@ class SVGGroupAreaOutlineFactory {
 
         //find left top
         //start with left top
-        Hex start = Hex.topLeft(groupArea);
-        return getOutline(start, groupArea, fillId);
+        Set<Hex> hexes = groupArea.stream().map(MapTile::getHex).collect(Collectors.toUnmodifiableSet());
+        Hex start = Hex.topLeft(hexes);
+        return getOutline(start, hexes, fillId);
     }
 
     private List<DomContent> getOutline(@NonNull final Hex start, @NonNull final Set<Hex> groupArea, String fillId) {
 
-        if (groupArea.containsAll(start.neighbours())) {
+        if (groupArea.containsAll(Hex.neighbours(start))) {
             throw new IllegalArgumentException(String.format("Starting point %s for outline is not on border.", start));
         }
 
         LinkedHashMap<Hex, Position> borderHexes = getBorderHexes(start, groupArea);
-        List<Point2D.Double> centers = borderHexes.keySet().stream()
-                .map(Hex::toPixel)
-                .collect(Collectors.toList());
-
         List<DomContent> containerTags = new ArrayList<>();
         String pointsPath = null;
         switch (groupAreaStyle) {
             case SHARP:
-                pointsPath = SharpCornersGroupOutline.getPath(centers);
+                pointsPath = SharpCornersGroupOutline.getPath(getCenters(borderHexes));
                 break;
             case SMOOTH:
-                pointsPath = SmoothCornersGroupOutline.getPath(centers);
+                pointsPath = SmoothCornersGroupOutline.getPath(getCenters(borderHexes));
                 break;
             case WOBBLY:
-                pointsPath = WobblyGroupOutline.getPath(centers);
+                pointsPath = WobblyGroupOutline.getPath(getCenters(borderHexes));
                 break;
             case HEXES:
                 pointsPath = BorderHexesGroupOutline.getPath(borderHexes, groupArea);
@@ -87,7 +80,7 @@ class SVGGroupAreaOutlineFactory {
         /* DEBUG path point order */
         if (debug) {
             int i = 0;
-            for (Point2D.Double aDouble : centers) {
+            for (Point2D.Double aDouble : getCenters(borderHexes)) {
                 containerTags.add(SvgTagCreator.text(i + "")
                         .attr("x", aDouble.x)
                         .attr("y", aDouble.y));
@@ -107,9 +100,16 @@ class SVGGroupAreaOutlineFactory {
         return containerTags;
     }
 
+    private List<Point2D.Double> getCenters(LinkedHashMap<Hex, Position> borderHexes) {
+        return borderHexes.keySet().stream()
+                .map(Hex::toPixel)
+                .collect(Collectors.toList());
+    }
+
     static LinkedHashMap<Hex, Position> getBorderHexes(Hex start, Set<Hex> groupArea) {
         LinkedHashMap<Hex, Position> borderHexes = new LinkedHashMap<>();
-        Position next = new Position(start, 0);
+        int startRotationOffset = getStartRotationOffset(start, groupArea);
+        Position next = new Position(start, startRotationOffset);
         while (next != null) {
             //end
             if (borderHexes.containsKey(next.hex)) {
@@ -123,6 +123,32 @@ class SVGGroupAreaOutlineFactory {
     }
 
     /**
+     * Finds the starting point on the path of the first hexagon.
+     *
+     * We follow the hex path counter-clockwise up to the side of the hex where the last element of the path attaches.
+     *
+     * @param start     starting point of the group outline
+     * @param groupArea all in area
+     * @return rotation offset of the hexagon path to start from
+     */
+    private static int getStartRotationOffset(Hex start, Set<Hex> groupArea) {
+        List<Hex> neighbours = Hex.neighbours(start);
+        Collections.reverse(neighbours); //now starting with north-east
+
+        // going counter-clockwise
+        var rotationOffset = 5;
+        for (int i = 0; i < neighbours.size(); i++) {
+            Hex neighbour = neighbours.get(i);
+            Hex next = neighbours.get(i + 1);
+            if (!groupArea.contains(neighbour) && groupArea.contains(next))
+                return rotationOffset;
+            rotationOffset--;
+        }
+
+        return 0;
+    }
+
+    /**
      * @param startPosition hex to find path around and point to start from on circumference of hex
      * @param allInGroup    all hexes in the group area
      * @return the position to continue with
@@ -130,7 +156,7 @@ class SVGGroupAreaOutlineFactory {
     private static Position getNext(@NonNull Position startPosition, Set<Hex> allInGroup) {
 
         Hex start = startPosition.hex;
-        final List<Hex> neighbours = start.neighbours();
+        final List<Hex> neighbours = Hex.neighbours(start);
         if (allInGroup.containsAll(neighbours)) {
             throw new IllegalArgumentException(String.format("Fully enclosed hex %s passed as starting point.", start));
         }
@@ -143,9 +169,7 @@ class SVGGroupAreaOutlineFactory {
 
             //return the first group item in rotation direction
             if (allInGroup.contains(neighbour)) {
-                //Since we rotate clockwise we know that the hex adjacent to both start and neighbour must be free (otherwise
-                //that one would have been returned). Hence the next search should start there.
-                return new Position(neighbour, i - 1);
+                return getNextPosition(start, i, neighbour);
             }
 
             //5 is end, but if we're still here we need to do one more round
@@ -159,7 +183,28 @@ class SVGGroupAreaOutlineFactory {
             }
         }
 
-        throw new IllegalStateException("getNext starting at " + start + " could not find neighbour to follow " + neighbours);
+        throw new IllegalStateException(String.format("getNext starting at %s could not find neighbour to follow %s", start, neighbours));
+    }
+
+    /**
+     * Determines the next position for the path to follow.
+     *
+     * Since we rotate clockwise we know that the hex adjacent to both start and neighbour must be free (otherwise
+     * that one would have been returned). Hence, the next search should start there.
+     *
+     * We also need to consider the coordinates of the next hex. If one is equal to the current, rotation offset needs
+     * to be decreased more.
+     *
+     * @param current         current hex
+     * @param currentRotation current rotation offset
+     * @param next            which is the next border tile
+     */
+    private static Position getNextPosition(Hex current, int currentRotation, Hex next) {
+        int setBack = next.r == current.r || next.q == current.q ? 2 : 1;
+        int rotationOffset = currentRotation - setBack;
+        if (rotationOffset < 0)
+            rotationOffset = 6 + rotationOffset;
+        return new Position(next, rotationOffset);
     }
 
     static class Position {
@@ -167,11 +212,9 @@ class SVGGroupAreaOutlineFactory {
         final Hex hex;
         final int rotationOffset;
 
-        Position(@NonNull Hex hex, int rotationOffset) {
+        Position(@NonNull final Hex hex, final int rotationOffset) {
             this.hex = hex;
-            if (rotationOffset == -1)
-                rotationOffset = 5;
-            this.rotationOffset = rotationOffset;
+            this.rotationOffset = rotationOffset == -1 ? 5 : rotationOffset;
         }
     }
 

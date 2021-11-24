@@ -152,7 +152,7 @@
           },
           "group" : {
             "type" : "string",
-            "description" : "The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to common.",
+            "description" : "The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to its layer.",
             "example" : "shipping"
           },
           "icon" : {
@@ -160,7 +160,7 @@
             "description" : "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work)."
           },
           "identifier" : {
-            "pattern" : "^[a-zA-Z0-9\\.\\:_-]{2,256}$",
+            "pattern" : "^[\\w][\\w.:_-]{0,255}$",
             "type" : "string",
             "description" : "Immutable unique identifier (maybe use an URN). Primary means to identify items in searches."
           },
@@ -178,6 +178,11 @@
               "type" : "string"
             },
             "writeOnly" : true
+          },
+          "layer" : {
+            "type" : "string",
+            "description" : "The technical layer",
+            "example" : "infrastructure"
           },
           "lifecycle" : {
             "type" : "string",
@@ -318,12 +323,6 @@
               "example" : ".*infra.*"
             }
           },
-          "groupLayoutConfig" : {
-            "$ref" : "#/components/schemas/LayoutConfig"
-          },
-          "itemLayoutConfig" : {
-            "$ref" : "#/components/schemas/LayoutConfig"
-          },
           "kpis" : {
             "type" : "object",
             "additionalProperties" : {
@@ -348,6 +347,15 @@
         "required" : [ "identifier", "name" ],
         "type" : "object",
         "properties" : {
+          "assignTemplates" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          },
           "color" : {
             "type" : "string"
           },
@@ -370,10 +378,11 @@
             "description" : "Description of item groups (optional, can also be given in sources)."
           },
           "icon" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "An icon or logo url"
           },
           "identifier" : {
-            "pattern" : "^[a-zA-Z0-9\\.\\:_-]{2,256}$",
+            "pattern" : "^[\\w][\\w.:_-]{0,255}$",
             "type" : "string",
             "description" : "Immutable unique identifier. Maybe use an URN."
           },
@@ -412,13 +421,6 @@
             "type" : "boolean",
             "description" : "marks that the landscape is not complete, but an update"
           },
-          "sources" : {
-            "type" : "array",
-            "writeOnly" : true,
-            "items" : {
-              "$ref" : "#/components/schemas/SourceReference"
-            }
-          },
           "templates" : {
             "type" : "object",
             "additionalProperties" : {
@@ -427,32 +429,6 @@
             "description" : "Item descriptions to be used as templates. All values except identifier and name will be applied to the assigned items."
           }
         }
-      },
-      "LayoutConfig" : {
-        "type" : "object",
-        "properties" : {
-          "forceConstantFactor" : {
-            "type" : "number",
-            "description" : "A factor to influence the attracting and repulsive forces in a layout.",
-            "format" : "float"
-          },
-          "maxDistanceLimitFactor" : {
-            "type" : "number",
-            "description" : "A factor to influence maximum distance where forces are applied.",
-            "format" : "float"
-          },
-          "maxIterations" : {
-            "type" : "integer",
-            "description" : "The maximum number of iterations. More iterations theoretically lead to better results.",
-            "format" : "int32"
-          },
-          "minDistanceLimitFactor" : {
-            "type" : "number",
-            "description" : "A factor to influence minimum distance where forces are applied.",
-            "format" : "float"
-          }
-        },
-        "description" : "Layout configuration. See https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxFastOrganicLayout.html"
       },
       "Link" : {
         "required" : [ "href" ],
@@ -509,86 +485,6 @@
         },
         "description" : "A link to an external resource. Contains a href (URL) plus various attributes for authentication and/or hateoas.",
         "example" : "github: https://github.com/dedica-team/nivio"
-      },
-      "SourceReference" : {
-        "required" : [ "href" ],
-        "type" : "object",
-        "properties" : {
-          "assignTemplates" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "array",
-              "description" : "A map with template identifier as key and item identifier matchers as value",
-              "example" : "endOfLife: [web, \"java6*\"]",
-              "items" : {
-                "type" : "string",
-                "description" : "A map with template identifier as key and item identifier matchers as value",
-                "example" : "endOfLife: [web, \"java6*\"]"
-              }
-            },
-            "description" : "A map with template identifier as key and item identifier matchers as value",
-            "example" : "endOfLife: [web, \"java6*\"]"
-          },
-          "basicAuthPassword" : {
-            "type" : "string",
-            "writeOnly" : true
-          },
-          "basicAuthUsername" : {
-            "type" : "string",
-            "writeOnly" : true
-          },
-          "deprecation" : {
-            "type" : "string",
-            "description" : "deprecation info (typically used in OpenAPI specs)"
-          },
-          "format" : {
-            "type" : "string",
-            "description" : "The input format.",
-            "enum" : [ "nivio", "csv", "k8s", "rancher", "docker-compose-v2" ]
-          },
-          "headerTokenName" : {
-            "type" : "string",
-            "writeOnly" : true
-          },
-          "headerTokenValue" : {
-            "type" : "string",
-            "writeOnly" : true
-          },
-          "href" : {
-            "type" : "string",
-            "description" : "The link target.",
-            "format" : "url"
-          },
-          "hreflang" : {
-            "type" : "string",
-            "description" : "hateoas language"
-          },
-          "media" : {
-            "type" : "string",
-            "description" : "hateoas media type"
-          },
-          "name" : {
-            "type" : "string",
-            "description" : "HateOAS / OpenAPI name"
-          },
-          "rel" : {
-            "type" : "string",
-            "description" : "hateoas relation type"
-          },
-          "title" : {
-            "type" : "string",
-            "description" : "hateoas title"
-          },
-          "type" : {
-            "type" : "string"
-          },
-          "url" : {
-            "type" : "string",
-            "description" : "A URL, but can also be a relative path.",
-            "example" : "./a/items.yaml"
-          }
-        },
-        "description" : "This is a reference to a configuration file."
       }
     }
   }

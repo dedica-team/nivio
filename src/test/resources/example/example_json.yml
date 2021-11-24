@@ -1,0 +1,14 @@
+identifier: example:customjson
+name: Custom JSON example
+sources:
+  - format: customJSON
+    url: ./services/items.json
+    mapping:
+      items: "$.items"
+      item:
+        identifier: "$.id"
+        environment: "$.landscape"
+        name: '$.moreThanAName|find "([\w\s]*),"'
+        endOfLife: "$.end_of_life.date"
+        nivio.link.homepage: "$.a_named_link"
+        nivio.relations.upstream: "$.@dependencies.@upstream|fetch|$.items[*].id"

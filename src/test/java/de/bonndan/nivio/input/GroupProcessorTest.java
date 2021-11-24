@@ -36,7 +36,7 @@ class GroupProcessorTest {
         ProcessingChangelog process = groupProcessor.process(input, landscape);
 
         //then
-        assertEquals(3, landscape.getGroups().size());
+        assertEquals(4, landscape.getGroups().size());
     }
 
     @Test
@@ -52,7 +52,7 @@ class GroupProcessorTest {
         ProcessingChangelog process = groupProcessor.process(input, landscape);
 
         //then
-        assertEquals(4, landscape.getGroups().size());
+        assertEquals(5, landscape.getGroups().size());
         assertThat(process.changes).hasSize(3);
         assertThat(process.changes).containsKey("test/foobar");
         assertThat(process.changes.get("test/foobar").getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.CREATED.name());
@@ -69,32 +69,32 @@ class GroupProcessorTest {
 
         groupProcessor.process(input, landscape);
 
-        assertEquals(3, landscape.getGroups().size());
-        assertTrue(landscape.getGroups().containsKey(Group.COMMON));
+        assertEquals(4, landscape.getGroups().size());
+        assertTrue(landscape.getGroups().containsKey(Layer.domain.name()));
     }
 
     @Test
-    public void testBlacklistOnGroups() {
+    void testBlacklistOnGroups() {
         LandscapeDescription input = getLandscapeDescription();
         input.getConfig().getGroupBlacklist().add("test2");
 
         groupProcessor.process(input, landscape);
-        assertEquals(2, landscape.getGroups().size()); //COMMON is always present
+        assertEquals(3, landscape.getGroups().size()); //COMMON is always present
         assertTrue(landscape.getGroup("test1").isPresent());
         assertEquals("test1", landscape.getGroup("test1").get().getIdentifier());
     }
 
     @Test
-    public void testBlacklistOnGroupsWithRegex() {
+    void testBlacklistOnGroupsWithRegex() {
         LandscapeDescription input = getLandscapeDescription();
         input.getConfig().getGroupBlacklist().add("^test[0-9].*");
 
         groupProcessor.process(input, landscape);
-        assertEquals(1, landscape.getGroups().size()); //COMMON only
+        assertEquals(2, landscape.getGroups().size()); //COMMON only
     }
 
     @Test
-    public void testBlacklistOnItems() {
+    void testBlacklistOnItems() {
         LandscapeDescription input = getLandscapeDescription();
         input.getConfig().getGroupBlacklist().add("test2");
 
@@ -115,7 +115,7 @@ class GroupProcessorTest {
         //when
         groupProcessor.process(input, landscape);
 
-        assertEquals(2, landscape.getGroups().size()); //incl COMMON
+        assertEquals(3, landscape.getGroups().size()); //incl COMMON
 
         //deletes item of blacklisted group
         assertEquals(0, landscape.getItems().all().size());

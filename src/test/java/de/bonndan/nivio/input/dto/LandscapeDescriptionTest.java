@@ -12,6 +12,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class LandscapeDescriptionTest {
 
     @Test
+    void validatesIdentifier() {
+        assertThrows(IllegalArgumentException.class, () -> new LandscapeDescription("1/1$"));
+    }
+
+    @Test
     void mergeItemsAddsEnv() {
         LandscapeDescription landscapeDescription = new LandscapeDescription("identifier", "name", null);
         ItemDescription d = new ItemDescription();

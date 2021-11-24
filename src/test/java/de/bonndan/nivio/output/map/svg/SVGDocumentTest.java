@@ -40,7 +40,7 @@ class SVGDocumentTest extends RenderingTest {
         String svg = renderLandscape(path, landscape);
         assertTrue(svg.contains("svg version=\"1.1\""));
         assertTrue(svg.contains("class=\"title\">Input and Output</text>"));
-        assertTrue(svg.contains("class=\"logo\""));
+        assertThat(svg).contains("class=\"logo\"");
         assertThat(svg).contains("<g data-identifier=\"inout/output/svg\" class=\"item");
         assertTrue(svg.contains(">Docker Compose files</text>"));
     }

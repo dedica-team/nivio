@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -31,7 +32,7 @@ public class LocalServer implements EnvironmentAware {
     private final String baseUrl;
 
     public LocalServer(@Value("${nivio.baseUrl:}") String baseUrl) {
-        if (!StringUtils.isEmpty(baseUrl)) {
+        if (StringUtils.hasLength(baseUrl)) {
             this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
         } else {
             this.baseUrl = "http://" + host() + ":" + port();
@@ -80,7 +81,7 @@ public class LocalServer implements EnvironmentAware {
     }
 
     @Override
-    public void setEnvironment(Environment environment) {
+    public void setEnvironment(@NonNull Environment environment) {
         env = environment;
     }
 }

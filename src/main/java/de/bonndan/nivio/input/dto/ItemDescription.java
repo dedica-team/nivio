@@ -33,7 +33,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
 
     @Schema(required = true,
             description = "Immutable unique identifier (maybe use an URN). Primary means to identify items in searches.",
-            pattern = Item.IDENTIFIER_VALIDATION)
+            pattern = IdentifierValidation.PATTERN)
     @NotEmpty
     private String identifier;
 
@@ -49,9 +49,12 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     @Schema(description = "The primary way to contact a responsible person or team. Preferably use an email address.", example = "johnson@acme.com")
     private String contact;
 
-    @Schema(description = "The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to " + Group.COMMON + ".",
+    @Schema(description = "The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to its layer.",
             example = "shipping")
     private String group;
+
+    @Schema(description = "The technical layer", example = "infrastructure")
+    private String layer;
 
     @Schema(description = "A collection of low level interfaces. Can be used to describe HTTP API endpoints for instance.")
     @JsonDeserialize(contentAs = InterfaceDescription.class)
@@ -76,7 +79,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     }
 
     public ItemDescription(String identifier) {
-        this.identifier = identifier;
+        this.identifier = IdentifierValidation.getValidIdentifier(identifier);
     }
 
     public ItemDescription(FullyQualifiedIdentifier fqi) {
@@ -90,7 +93,7 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
     }
 
     public void setIdentifier(String identifier) {
-        this.identifier = StringUtils.trimAllWhitespace(identifier);
+        this.identifier = IdentifierValidation.getValidIdentifier(identifier);
     }
 
     @Schema(hidden = true)
@@ -337,5 +340,14 @@ public class ItemDescription implements ComponentDescription, Labeled, Linked, T
 
     public void setFramework(@NonNull final String key, String value) {
         setLabel(Label.framework.withPrefix(key), value);
+    }
+
+    @Override
+    public String getLayer() {
+        return layer;
+    }
+
+    public void setLayer(String layer) {
+        this.layer = layer;
     }
 }

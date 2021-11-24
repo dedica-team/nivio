@@ -58,6 +58,20 @@ class ItemDescriptionValuesTest {
     }
 
     @Test
+    public void incrementAddsLayer() {
+
+        ItemDescription sd1 = new ItemDescription();
+        sd1.setIdentifier("sd1");
+
+        ItemDescription increment = new ItemDescription();
+        increment.setIdentifier("sd1");
+        increment.setLayer("foo");
+        ItemDescriptionValues.assignNotNull(sd1, increment);
+
+        assertEquals("foo", sd1.getLayer());
+    }
+
+    @Test
     public void incrementAddsAddressSafely() {
 
         ItemDescription sd1 = new ItemDescription();

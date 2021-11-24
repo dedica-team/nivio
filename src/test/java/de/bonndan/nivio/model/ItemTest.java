@@ -3,6 +3,8 @@ package de.bonndan.nivio.model;
 import de.bonndan.nivio.assessment.Assessable;
 import org.junit.jupiter.api.Test;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +29,7 @@ class ItemTest {
 
         Item s3 = getTestItem("g2", "a", landscape);
 
-        Item s4 = getTestItem(Group.COMMON, "a", landscape);
+        Item s4 = getTestItem(Layer.domain.name(), "a", landscape);
 
         assertEquals(s1, s2);
         assertEquals(s2, s1);
@@ -118,14 +120,14 @@ class ItemTest {
     }
 
     @Test
-    void getChangesInLinks() {
+    void getChangesInLinks() throws MalformedURLException {
 
         Item s1 = getTestItemBuilder("g1", "a")
-                .withLinks(Map.of("foo", new Link("https://acme.com")))
+                .withLinks(Map.of("foo", new Link(new URL("https://acme.com"))))
                 .build();
 
         Item s2 = getTestItemBuilder("g1", "a")
-                .withLinks(Map.of("bar", new Link("https://acme.com")))
+                .withLinks(Map.of("bar", new Link(new URL("https://acme.com"))))
                 .build();
 
         List<String> changes = s1.getChanges(s2);

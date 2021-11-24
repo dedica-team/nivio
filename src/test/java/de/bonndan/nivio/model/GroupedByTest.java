@@ -59,7 +59,7 @@ public class GroupedByTest {
         List<Item> b = all.get("B");
         assertEquals(1, b.size());
 
-        List<Item> common = all.get(Group.COMMON);
+        List<Item> common = all.get(Layer.domain.name());
         assertEquals(1, common.size());
     }
 
@@ -78,7 +78,7 @@ public class GroupedByTest {
         GroupedBy ownerGroups = GroupedBy.by(Item::getOwner, services);
         Map<String, List<Item>> all = ownerGroups.getAll();
         assertEquals(2, all.size());
-        assertFalse(all.containsKey(Group.COMMON));
+        assertFalse(all.containsKey(Layer.domain.name()));
         assertFalse(all.containsKey("content"));
     }
 }

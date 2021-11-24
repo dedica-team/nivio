@@ -30,8 +30,8 @@ public class ProcessingChangelog {
             @Nullable final String message
     ) {
         String id = Objects.requireNonNull(component).getFullyQualifiedIdentifier().toString();
-        if (StringUtils.isEmpty(id)) {
-            throw new RuntimeException("Could not create a changelog entry id for " + component);
+        if (!StringUtils.hasLength(id)) {
+            throw new IllegalArgumentException("Could not create a changelog entry id for " + component);
         }
         Entry entry = new Entry(
                 component.getClass().getSimpleName(),

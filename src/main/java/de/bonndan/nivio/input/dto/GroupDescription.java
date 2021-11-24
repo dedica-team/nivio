@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static de.bonndan.nivio.model.IdentifierValidation.getValidIdentifier;
+
 @Schema(description = "A group of items. Could be used as bounded context, for instance.")
 public class GroupDescription implements ComponentDescription {
 
@@ -50,7 +52,7 @@ public class GroupDescription implements ComponentDescription {
     }
 
     public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+        this.identifier = getValidIdentifier(identifier);
     }
 
     @Schema(hidden = true, description = "Computed value")
@@ -65,7 +67,7 @@ public class GroupDescription implements ComponentDescription {
 
     @Override
     public void setName(String name) {
-        identifier = name;
+        identifier = getValidIdentifier(name);
     }
 
     public String getOwner() {

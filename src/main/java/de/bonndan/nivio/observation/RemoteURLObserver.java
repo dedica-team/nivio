@@ -1,9 +1,8 @@
 package de.bonndan.nivio.observation;
 
-import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.FileFetcher;
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.util.URLHelper;
+import de.bonndan.nivio.input.ProcessingException;
+import de.bonndan.nivio.util.URLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -11,7 +10,6 @@ import org.springframework.lang.NonNull;
 
 import java.net.URL;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Observer for URLs (downloadable files).
@@ -24,13 +22,12 @@ public class RemoteURLObserver extends BaseObserver  {
     private final URL url;
     private String content;
 
-    public RemoteURLObserver(@NonNull final Landscape landscape,
-                             @NonNull final ApplicationEventPublisher eventPublisher,
+    public RemoteURLObserver(@NonNull final ApplicationEventPublisher eventPublisher,
                              @NonNull final FileFetcher fileFetcher,
                              @NonNull final URL url
     ) {
-        super(landscape, eventPublisher);
-        if (URLHelper.isLocal(url)) {
+        super(eventPublisher);
+        if (URLFactory.isLocal(url)) {
             throw new IllegalArgumentException(String.format("Given url is local: %s, use FileObserver instead.", url));
         }
         this.fileFetcher = Objects.requireNonNull(fileFetcher);
@@ -49,7 +46,7 @@ public class RemoteURLObserver extends BaseObserver  {
         }
         content = downloaded;
         LOGGER.debug("Found change in url {}", url);
-        eventPublisher.publishEvent(new InputChangedEvent(new ObservedChange(landscape, url.toString())));
+        eventPublisher.publishEvent(new InputChangedEvent(url, new ObservedChange(url.toString())));
     }
 
     private String getContent() {

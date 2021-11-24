@@ -1,12 +1,11 @@
 package de.bonndan.nivio.input.demo;
 
-import de.bonndan.nivio.input.IndexEvent;
-import de.bonndan.nivio.input.LandscapeDescriptionFactory;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.IndexingDispatcher;
+import de.bonndan.nivio.input.SeedConfiguration;
+import de.bonndan.nivio.input.SeedConfigurationFactory;
 import de.bonndan.nivio.model.LandscapeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -20,18 +19,18 @@ public class ChangeTrigger {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChangeTrigger.class);
 
-    private final LandscapeDescriptionFactory landscapeDescriptionFactory;
+    private final SeedConfigurationFactory configurationFactory;
     private final LandscapeRepository landscapeRepository;
-    private final ApplicationEventPublisher eventPublisher;
+    private final IndexingDispatcher indexingDispatcher;
 
     public ChangeTrigger(
             LandscapeRepository landscapeRepository,
-            LandscapeDescriptionFactory landscapeDescriptionFactory,
-            ApplicationEventPublisher eventPublisher
+            SeedConfigurationFactory configurationFactory,
+            IndexingDispatcher indexingDispatcher
     ) {
-        this.landscapeDescriptionFactory = landscapeDescriptionFactory;
+        this.configurationFactory = configurationFactory;
         this.landscapeRepository = landscapeRepository;
-        this.eventPublisher = eventPublisher;
+        this.indexingDispatcher = indexingDispatcher;
     }
 
     @Scheduled(initialDelay = 20000, fixedDelay = 30000)
@@ -41,10 +40,10 @@ public class ChangeTrigger {
             return;
         }
 
-        getDemoLandscapeDescription().ifPresent(petClinic -> eventPublisher.publishEvent(new IndexEvent(petClinic, "Demo update")));
+        getDemoLandscapeDescription().ifPresent(indexingDispatcher::handle);
     }
 
-    private Optional<LandscapeDescription> getDemoLandscapeDescription() {
+    private Optional<SeedConfiguration> getDemoLandscapeDescription() {
         String absPath = Paths.get("").toAbsolutePath().toString();
         String demoFile = absPath + "/src/test/resources/example/pet_clinic.yml";
         File file = new File(demoFile);
@@ -53,6 +52,7 @@ public class ChangeTrigger {
             return Optional.empty();
         }
 
-        return Optional.of(landscapeDescriptionFactory.fromYaml(file));
+
+        return Optional.of(configurationFactory.fromFile(file));
     }
 }

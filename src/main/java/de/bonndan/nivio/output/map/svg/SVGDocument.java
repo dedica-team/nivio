@@ -3,8 +3,9 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.assessment.*;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
-import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexMap;
+import de.bonndan.nivio.output.map.hex.HexPath;
+import de.bonndan.nivio.output.map.hex.MapTile;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import j2html.tags.UnescapedText;
@@ -59,7 +60,7 @@ public class SVGDocument extends Component {
         List<DomContent> defs = new ArrayList<>();
         List<DomContent> items = new ArrayList<>();
 
-        hexMap = new HexMap(this.debug);
+        hexMap = new HexMap();
 
         defs.add(SVGStatus.glowFilter());
         defs.add(SVGStatus.patternFor(Status.UNKNOWN));
@@ -70,12 +71,13 @@ public class SVGDocument extends Component {
         defs.add(SVGStatus.patternFor(Status.BROWN));
         //transform all item positions to hex map positions
         layouted.getChildren().forEach(group -> {
-            LOGGER.info("rendering group {} with items {}", group.getComponent().getIdentifier(), group.getChildren());
+            if (debug) LOGGER.debug("rendering group {} with items {}", group.getComponent().getIdentifier(), group.getChildren());
             group.getChildren().forEach(layoutedItem -> {
 
-                hexMap.add(layoutedItem);
-
+                MapTile freeSpot = hexMap.findFreeSpot(layoutedItem);
                 Item item = (Item) layoutedItem.getComponent();
+                hexMap.add(item, freeSpot);
+
                 //collect patterns for icons
                 if (StringUtils.hasLength(layoutedItem.getFill())) {
                     SVGPattern svgPattern = new SVGPattern(layoutedItem.getFill());
@@ -84,7 +86,7 @@ public class SVGDocument extends Component {
 
                 //render icons
                 SVGItemLabel label = new SVGItemLabel(item);
-                Point2D.Double pos = hexMap.hexForItem(item).toPixel();
+                Point2D.Double pos = hexMap.getTileForItem(item).getHex().toPixel();
 
                 List<StatusValue> itemStatuses = assessment.getResults().get(item.getFullyQualifiedIdentifier().toString());
                 SVGItem svgItem = new SVGItem(label.render(), layoutedItem, itemStatuses, pos);
@@ -95,7 +97,7 @@ public class SVGDocument extends Component {
         List<SVGGroupArea> groupAreas = new ArrayList<>();
         List<DomContent> groups = layouted.getChildren().stream().map(groupLayout -> {
             Group group = (Group) groupLayout.getComponent();
-            Set<Hex> groupArea = hexMap.getGroupArea(group, landscape.getItems().retrieve(group.getItems()));
+            Set<MapTile> groupArea = hexMap.getGroupArea(group, landscape.getItems().retrieve(group.getItems()));
             List<StatusValue> groupStatuses = assessment.getResults().get(group.getFullyQualifiedIdentifier().toString());
             Status groupStatus = Assessable.getWorst(groupStatuses).stream().map(StatusValue::getStatus).findFirst().orElse(Status.UNKNOWN);
             SVGGroupArea area = SVGGroupArea.forGroup(group, groupArea, groupStatus, debug);
@@ -168,21 +170,25 @@ public class SVGDocument extends Component {
      */
     private List<SVGRelation> getRelations(LayoutedComponent layouted) {
         List<SVGRelation> relations = new ArrayList<>();
-        layouted.getChildren().forEach(layoutedGroup -> layoutedGroup.getChildren().forEach(layoutedItem -> {
-            Item item = (Item) layoutedItem.getComponent();
-            LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
-            item.getRelations().stream()
-                    .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
-                    .map(rel -> getSvgRelation(layoutedItem, item, rel))
-                    .filter(Objects::nonNull)
-                    .forEach(relations::add);
-        }));
+        layouted.getChildren().forEach(layoutedGroup -> {
+            layoutedGroup.getChildren().forEach(layoutedItem -> {
+                Item item = (Item) layoutedItem.getComponent();
+                LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
+                //parallel streaming enables must faster rendering with the drawback that two paths more likely use the
+                // same track.
+                item.getRelations().parallelStream()
+                        .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
+                        .map(rel -> getSvgRelation(layoutedItem, item, rel))
+                        .filter(Objects::nonNull)
+                        .forEach(relations::add);
+            });
+        });
 
         return relations;
     }
 
     private SVGRelation getSvgRelation(LayoutedComponent layoutedItem, Item source, Relation rel) {
-        Optional<HexPath> bestPath = hexMap.getPath(source, rel.getTarget());
+        Optional<HexPath> bestPath = hexMap.getPath(source, rel.getTarget(), debug);
         if (bestPath.isPresent()) {
             SVGRelation svgRelation = new SVGRelation(bestPath.get(), layoutedItem.getColor(), rel, null);
             LOGGER.debug("Added path for item {} relation {} -> {}", source, rel.getSource(), rel.getTarget());

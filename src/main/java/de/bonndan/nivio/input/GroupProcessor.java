@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.GroupFactory;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.Layer;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
@@ -59,8 +60,8 @@ public class GroupProcessor extends Processor {
         copy.forEach(item -> {
 
             String group = item.getGroup();
-            if (StringUtils.isEmpty(item.getGroup())) {
-                group = Group.COMMON;
+            if (!StringUtils.hasLength(item.getGroup())) {
+                group = Layer.of(item.getLayer()).name();
             }
 
             if (!isBlacklisted(group, specs)) {

@@ -78,7 +78,7 @@ items:
 - identifier: wordpress-web
   description: Webserver
   icon: vendor://apache/httpd
-  layer: ingress
+  layer: infra
   software: Apache
   version: 2.4
   machine: Pentium 1 512MB RAM

@@ -2,13 +2,10 @@ package de.bonndan.nivio.input.rancher1;
 
 import de.bonndan.nivio.input.InputFormatHandler;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.observation.InputFormatObserver;
-import de.bonndan.nivio.util.URLHelper;
+import de.bonndan.nivio.input.SourceReference;
+import de.bonndan.nivio.util.URLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -28,27 +25,17 @@ public class InputFormatHandlerRancher1 implements InputFormatHandler {
     }
 
     @Override
-    public void applyData(@NonNull SourceReference reference, URL baseUrl, LandscapeDescription landscapeDescription) {
+    public List<LandscapeDescription> applyData(@NonNull final SourceReference reference, @NonNull final LandscapeDescription landscapeDescription) {
 
-        String landscape = reference.getLandscapeDescription().getIdentifier();
-
-        String combine = URLHelper.combine(baseUrl, reference.getUrl());
+        String identifier = reference.getSeedConfig().getIdentifier();
+        String combine = URLFactory.combine(reference.getSeedConfig().getBaseUrl(), reference.getUrl().toString());
         try {
             URL url = new URL(combine);
-            PrometheusExporter prometheusExporter = new PrometheusExporter(landscape, url);
+            PrometheusExporter prometheusExporter = new PrometheusExporter(identifier, url);
             landscapeDescription.mergeItems(prometheusExporter.getDescriptions());
         } catch (MalformedURLException e) {
             logger.error("Could not work on prometheus url {}", combine);
         }
-    }
-
-    @Override
-    public InputFormatObserver getObserver(@NonNull final ApplicationEventPublisher eventPublisher,
-                                           @NonNull final Landscape landscape,
-                                           @NonNull final SourceReference sourceReference) {
-        //TODO add observer, or maybe not, since it is deprecated
-        return () -> {
-
-        };
+        return Collections.singletonList(landscapeDescription);
     }
 }

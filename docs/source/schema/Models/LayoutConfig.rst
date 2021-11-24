@@ -13,11 +13,6 @@ Layout configuration. See https://jgraph.github.io/mxgraph/java/docs/com/mxgraph
      - Remarks
      - Example
 
-   * - forceConstantFactor
-     - Float
-     - A factor to influence the attracting and repulsive forces in a layout.
-     - optional, defaults to null
-     - null
    * - maxDistanceLimitFactor
      - Float
      - A factor to influence maximum distance where forces are applied.

@@ -1,7 +1,7 @@
 package de.bonndan.nivio.output.dto;
 
 import de.bonndan.nivio.input.ProcessLog;
-import de.bonndan.nivio.input.dto.LandscapeSource;
+import de.bonndan.nivio.input.dto.Source;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Landscape;
@@ -17,16 +17,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class LandscapeApiModelTest {
     LandscapeApiModel landscapeApiModel;
-    LandscapeSource landscapeSource;
+    Source source;
     LandscapeConfig landscapeConfig;
     ProcessLog processLog;
 
     @BeforeEach
     void setUp() {
-        landscapeSource = Mockito.mock(LandscapeSource.class);
+        source = Mockito.mock(Source.class);
         landscapeConfig = Mockito.mock(LandscapeConfig.class);
         processLog = Mockito.mock(ProcessLog.class);
-        var landscape = new Landscape("test", Map.of(), "testName", "testContact", "testOwner", "testDescription", landscapeSource, landscapeConfig, processLog, Map.of());
+        var landscape = new Landscape("test", Map.of(), "testName", "testContact", "testOwner", "testDescription", source, landscapeConfig, processLog, Map.of());
         landscape.setLabel(Label.icon, "icon");
         landscape.setLabel(Label._icondata, "icon,base64");
         landscapeApiModel = new LandscapeApiModel(landscape);
