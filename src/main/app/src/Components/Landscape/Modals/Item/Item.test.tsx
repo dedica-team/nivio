@@ -68,7 +68,6 @@ describe('<Item />', () => {
     const { container, queryByText } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
     fireEvent.click(getByTitle(container, 'API / Interfaces'));
 
-    console.log(mock);
     //then
     await waitFor(() => expect(mock).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(queryByText('vpn')).toBeInTheDocument());
@@ -76,4 +75,20 @@ describe('<Item />', () => {
     await waitFor(() => expect(queryByText('spring boot')).toBeInTheDocument());
     await waitFor(() => expect(queryByText('ops guys')).toBeInTheDocument());
   });
+
+  it('check if mui info icon appears', async() => {
+    // given
+    const mock = jest.spyOn(APIClient, 'get');
+    mock.mockReturnValue(Promise.resolve(useItem));
+
+    //when
+    const { container, queryByText } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
+    fireEvent.click(getByTitle(container, 'Relations'));
+
+    console.log(container);
+    // then
+    // await waitFor(() => expect(queryByText('A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.')).toBeInTheDocument());
+  });
+
+
 });
