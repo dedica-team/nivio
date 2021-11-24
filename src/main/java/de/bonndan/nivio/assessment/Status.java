@@ -25,8 +25,9 @@ public enum Status {
 
     @JsonCreator
     public static Status from(String status) {
-        if (StringUtils.isEmpty(status))
+        if (!StringUtils.hasLength(status)) {
             return UNKNOWN;
+        }
 
         switch (status.toLowerCase().trim()) {
             case "green":

@@ -8,9 +8,12 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LandscapeFactory {
+
+    public static final List<String> DEFAULT_GROUP_NAMES = List.of(Layer.infrastructure.name(), Layer.domain.name());
 
     private static final KPIFactory kpiFactory = new KPIFactory();
 
@@ -45,7 +48,7 @@ public class LandscapeFactory {
 
     private static Map<String, Group> getGroups(final String landscapeIdentifier) {
         Map<String, Group> groups = new HashMap<>();
-        groups.put(Group.COMMON, new Group(Group.COMMON, landscapeIdentifier));
+        DEFAULT_GROUP_NAMES.forEach(s -> groups.put(s, new Group(s, landscapeIdentifier)));
         return groups;
     }
 
@@ -59,7 +62,7 @@ public class LandscapeFactory {
         return LandscapeBuilder.aLandscape()
                 .withIdentifier(identifier)
                 .withName(name)
-                .withGroups(new HashMap<>(Map.of(Group.COMMON, new Group(Group.COMMON, identifier))));
+                .withGroups(getGroups(identifier));
     }
 
     /**

@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "id": "asd",
+      "contact": "John Doe",
+      "a_named_link": "https://foo.bar.com",
+      "end_of_life": {
+        "date": "2022-12-31T00:00:00+01:00"
+      },
+      "@dependencies": {
+        "@upstream": "https://foo.bar.com totally broken"
+      }
+    }
+  ]
+}

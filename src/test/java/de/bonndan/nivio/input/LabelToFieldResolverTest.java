@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Link;
+import de.bonndan.nivio.model.RelationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -73,7 +75,7 @@ class LabelToFieldResolverTest {
 
     @Test
     @DisplayName("Ensure providedBy label is case insensitive")
-    public void providedbyLowercase() {
+    void providedbyLowercase() {
         ItemDescription item1 = new ItemDescription();
         item1.getLabels().put("NIVIO.providedby", "baz ");
 
@@ -89,7 +91,7 @@ class LabelToFieldResolverTest {
 
     @Test
     @DisplayName("Ensure relations can be set via labels")
-    public void relations() {
+    void relations() {
         ItemDescription item1 = new ItemDescription();
         item1.getLabels().put("nivio.relations", "bar, baz");
 
@@ -109,8 +111,52 @@ class LabelToFieldResolverTest {
     }
 
     @Test
+    @DisplayName("Ensure provider relations can be set via labels")
+    void extendedRelationsProvider() {
+        ItemDescription item1 = new ItemDescription();
+        item1.getLabels().put("nivio.relations.provider", "foo, bar");
+
+        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
+        input.getItemDescriptions().add(item1);
+
+        //when
+        processor.resolve(input);
+
+        //then
+        assertEquals(2, item1.getRelations().size());
+        RelationDescription[] actual = item1.getRelations().toArray(RelationDescription[]::new);
+
+        Optional<RelationDescription> foo = Arrays.stream(actual).filter(relationDescription -> relationDescription.getSource().equals("foo")).findFirst();
+        assertThat(foo).isPresent().map(RelationDescription::getType).get().isEqualTo(RelationType.PROVIDER);
+
+        Optional<RelationDescription> bar = Arrays.stream(actual).filter(relationDescription -> relationDescription.getSource().equals("bar")).findFirst();
+        assertThat(bar).isPresent().map(RelationDescription::getType).get().isEqualTo(RelationType.PROVIDER);
+    }
+
+    @Test
+    @DisplayName("Ensure inbound relations can be set via labels")
+    void extendedRelationsInbound() {
+        ItemDescription item1 = new ItemDescription("foo");
+        item1.getLabels().put("nivio.relations.inbound", "foo, bar");
+
+        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
+        input.getItemDescriptions().add(item1);
+
+        //when
+        processor.resolve(input);
+
+        //then
+        assertEquals(2, item1.getRelations().size());
+        RelationDescription[] actual = item1.getRelations().toArray(RelationDescription[]::new);
+        boolean matchesBar = Arrays.stream(actual).anyMatch(relationDescription -> relationDescription.getSource().equals("foo"));
+        assertThat(matchesBar).isTrue();
+        boolean matchesBaz = Arrays.stream(actual).anyMatch(relationDescription -> relationDescription.getSource().equals("bar"));
+        assertThat(matchesBaz).isTrue();
+    }
+
+    @Test
     @DisplayName("Ensure comma separated strings are parsed properly")
-    public void listFieldLabelWithoutDelimiter() {
+    void listFieldLabelWithoutDelimiter() {
         ItemDescription item1 = new ItemDescription();
         item1.getLabels().put("a", "b");
         item1.getLabels().put("nivio.name", "foo");
@@ -131,7 +177,7 @@ class LabelToFieldResolverTest {
 
     @Test
     @DisplayName("Ensure comma separated links are parsed properly")
-    public void deprecatedLinks() {
+    void deprecatedLinks() {
         ItemDescription item1 = new ItemDescription();
         item1.getLabels().put("a", "b");
         item1.getLabels().put("nivio.links", "http://one.com, https://two.net");
@@ -158,7 +204,7 @@ class LabelToFieldResolverTest {
 
     @Test
     @DisplayName("Ensure links with keys are parsed")
-    public void links() {
+    void links() {
         ItemDescription item1 = new ItemDescription();
         item1.getLabels().put("a", "b");
         item1.getLabels().put("nivio.link.wiki", "http://one.com");
@@ -186,7 +232,7 @@ class LabelToFieldResolverTest {
 
     @Test
     @DisplayName("Ensure frameworks with a map structure are parsed")
-    public void frameworks() {
+    void frameworks() {
         ItemDescription item1 = new ItemDescription();
         item1.getLabels().put("a", "b");
         item1.getLabels().put("nivio." + Label.framework.name() + ".java", "8");
@@ -209,7 +255,7 @@ class LabelToFieldResolverTest {
 
     @Test
     @DisplayName("Ensure comma separated frameworks are parsed properly")
-    public void commaSeparatedFrameworks() {
+    void commaSeparatedFrameworks() {
         ItemDescription item1 = new ItemDescription();
         item1.getLabels().put("a", "b");
         item1.getLabels().put("nivio." + Label.frameworks.name(), "java:8, angular:6");
@@ -231,7 +277,7 @@ class LabelToFieldResolverTest {
 
     @Test
     @DisplayName("Ensure comma separated links are parsed properly")
-    public void labelsToLabels() {
+    void labelsToLabels() {
         ItemDescription item1 = new ItemDescription();
         item1.getLabels().put("a", "b");
         item1.getLabels().put("nivio.visibility", "public");

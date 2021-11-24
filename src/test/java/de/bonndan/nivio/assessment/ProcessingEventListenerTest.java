@@ -1,6 +1,5 @@
 package de.bonndan.nivio.assessment;
 
-import de.bonndan.nivio.input.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.ProcessingChangelog;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;

@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
  */
 public class BorderHexesGroupOutline {
 
+    private BorderHexesGroupOutline() {}
+
     public static String getPath(@NonNull final LinkedHashMap<Hex, SVGGroupAreaOutlineFactory.Position> borderHexes,
                                  @NonNull final Set<Hex> groupArea
     ) {
@@ -19,7 +21,7 @@ public class BorderHexesGroupOutline {
         Objects.requireNonNull(borderHexes).forEach((hex, position) -> path.addAll(getPathPointsFor(position, Objects.requireNonNull(groupArea))));
 
         String points = path.stream()
-                .map(aDouble -> String.format("%s %s", (float)aDouble.x, (float)aDouble.y)) //float is enough precision for pixels
+                .map(point -> String.format("%s %s", (float)point.x, (float)point.y)) //float is enough precision for pixels
                 .collect(Collectors.joining(","));
 
         return String.format("M %s Z", points);
@@ -33,7 +35,7 @@ public class BorderHexesGroupOutline {
 
         final List<Point2D.Double> ownSegments = new ArrayList<>();
         final List<Point2D.Double> points = start.hex.asPoints(Hex.HEX_SIZE);
-        final List<Hex> neighbours = start.hex.neighbours();
+        final List<Hex> neighbours = Hex.neighbours(start.hex);
 
         Hex neighbour;
         Point2D.Double currentPoint;
@@ -45,7 +47,7 @@ public class BorderHexesGroupOutline {
             currentPoint = points.get(i);
 
             //not found any segment yet, then continue
-            if (ownSegments.size() == 0 && groupArea.contains(neighbour))
+            if (ownSegments.isEmpty() && groupArea.contains(neighbour))
                 continue;
 
             //found a segment because neighbour is free tile

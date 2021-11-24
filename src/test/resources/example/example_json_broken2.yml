@@ -1,0 +1,7 @@
+identifier: example:customjson
+name: Custom JSON example
+sources:
+  - format: customJSON
+    url: ./services/items_broken.json
+    mapping:
+      items: "$.items"

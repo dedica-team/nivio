@@ -1,6 +1,5 @@
 package de.bonndan.nivio.observation;
 
-import de.bonndan.nivio.model.Landscape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -8,6 +7,7 @@ import org.springframework.lang.NonNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.*;
 import java.util.Objects;
 
@@ -26,13 +26,12 @@ public class LocalFileObserver extends BaseObserver {
     /**
      * grace period (2s) to ignore multiple (duplicate) events
      */
-    private static final long gracePeriod = 2000;
+    private static final long GRACE_PERIOD = 2000;
 
-    public LocalFileObserver(@NonNull final Landscape landscape,
-                             @NonNull final ApplicationEventPublisher eventPublisher,
+    public LocalFileObserver(@NonNull final ApplicationEventPublisher eventPublisher,
                              @NonNull final File file
     ) {
-        super(landscape, eventPublisher);
+        super(eventPublisher);
         if (!file.isFile()) {
             throw new IllegalArgumentException(String.format("Given arg must be a file: %s.", file));
         }
@@ -53,7 +52,7 @@ public class LocalFileObserver extends BaseObserver {
         }
 
         Path path = file.getParentFile().toPath();
-        LOGGER.info(String.format("Watching path %s for changes.", path));
+        LOGGER.info("Watching path {} for changes.", path);
 
         try {
             path.register(watchService, ENTRY_MODIFY);
@@ -62,12 +61,13 @@ public class LocalFileObserver extends BaseObserver {
                 WatchKey key = watchService.take();
                 for (WatchEvent<?> event : key.pollEvents()) {
                     final Path changed = (Path) event.context();
-                    long lastModified = path.toFile().lastModified();
-                    boolean isWatchedFile = changed.endsWith(file.getName());
-                    boolean triggersEvent = (path.toFile().length() > 0) && (lastModified - this.lastModified) > gracePeriod;
+                    File file = path.toFile();
+                    long lastModified = file.lastModified();
+                    boolean isWatchedFile = changed.endsWith(this.file.getName());
+                    boolean triggersEvent = (file.length() > 0) && (lastModified - this.lastModified) > GRACE_PERIOD;
                     if (isWatchedFile && triggersEvent) {
                         this.lastModified = lastModified;
-                        triggerChange();
+                        triggerChange(file);
                     } else {
                         LOGGER.debug("Ignoring event");
                     }
@@ -91,7 +91,11 @@ public class LocalFileObserver extends BaseObserver {
         }
     }
 
-    private void triggerChange() {
-        eventPublisher.publishEvent(new InputChangedEvent(new ObservedChange(landscape, file.toString())));
+    private void triggerChange(File file) {
+        try {
+            eventPublisher.publishEvent(new InputChangedEvent(file.toURI().toURL(), new ObservedChange(file.toString())));
+        } catch (MalformedURLException e) {
+            LOGGER.error("Failed to convert file {} to URL", file);
+        }
     }
 }

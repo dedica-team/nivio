@@ -1,0 +1,141 @@
+package de.bonndan.nivio.output.layout;
+
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.ItemFactory;
+import de.bonndan.nivio.model.RelationFactory;
+import de.bonndan.nivio.util.RootPath;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+class ExtremeLayoutTest {
+
+    private static final int MIN_DISTANCE_LIMIT = 50;
+    private static final int MAX_DISTANCE_LIMIT = 250;
+    private CollisionRegardingForces collisionRegardingForces;
+    private OriginalForces originalForces;
+
+    @BeforeEach
+    void setup() {
+        collisionRegardingForces = new CollisionRegardingForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT);
+        originalForces = new OriginalForces(2, MAX_DISTANCE_LIMIT, SubLayout.FORCE_CONSTANT);
+    }
+
+    @Test
+    void originalSimple() throws IOException {
+        testSimple(originalForces, "original");
+    }
+
+    @Test
+    void newSimple() throws IOException {
+        testSimple(collisionRegardingForces, "new");
+    }
+
+    @Test
+    void originalExtremeFails() {
+        assertThatThrownBy(() -> testSingleLargeGroupWithRelations(originalForces, "original")).isInstanceOf(LayoutException.class);
+    }
+
+    @Test
+    void newExtreme() throws IOException {
+        testSingleLargeGroupWithRelations(collisionRegardingForces, "new");
+    }
+
+    void testSimple(Forces forces, String filePrefix) throws IOException {
+
+        List<Item> items = new ArrayList<>();
+        int i = 0;
+        Group group = new Group("group0", "test");
+        while (i < 3) {
+            Item testItem = ItemFactory.getTestItem("test", "c" + i);
+            items.add(testItem);
+            i++;
+        }
+
+        // relations
+        var descriptionListSize = items.size();
+        for (i = 0; i < descriptionListSize; i++) {
+            Item item = items.get(i);
+            List<Item> targets = new ArrayList<>();
+            int j = 0;
+                    Item other = items.get(j);
+                    if (!other.equals(item))
+                        targets.add(other);
+            targets.forEach(target -> {
+                item.addOrReplace(RelationFactory.createForTesting(item, target));
+            });
+        }
+
+        var components = SubLayout.getLayoutedComponents(group, new HashSet<>(items));
+
+        var layout = new FastOrganicLayout(components, forces, SubLayout.INITIAL_TEMP);
+        layout.setDebug(true);
+
+        //when
+        try {
+            layout.execute();
+        } finally {
+            layout.getLayoutLogger().traceLocations(new File(RootPath.get() + "/src/test/dump/" + filePrefix + "-simple.svg"));
+            layout.getLayoutLogger().dump(new File(RootPath.get() + "/src/test/dump/" + filePrefix + "-simple.txt"));
+        }
+
+        //then
+        layout.assertMinDistanceIsKept(MIN_DISTANCE_LIMIT);
+    }
+
+    void testSingleLargeGroupWithRelations(Forces forces, String filePrefix) throws IOException {
+
+        List<Item> items = new ArrayList<>();
+        int i = 0;
+        Group group = new Group("group0", "test");
+        while (i < 20) {
+            Item testItem = ItemFactory.getTestItem("test", "c" + i);
+            items.add(testItem);
+            i++;
+        }
+
+        // relations
+        var descriptionListSize = items.size();
+        for (i = 0; i < descriptionListSize; i++) {
+            Item item = items.get(i);
+            List<Item> targets = new ArrayList<>();
+            int j = 0;
+            while (j < 5) {
+                if (j != i) {
+                    Item other = items.get(j);
+                    if (!other.equals(item))
+                        targets.add(other);
+                }
+
+                j++;
+            }
+            targets.forEach(target -> {
+                item.addOrReplace(RelationFactory.createForTesting(item, target));
+            });
+        }
+
+        var components = SubLayout.getLayoutedComponents(group, new HashSet<>(items));
+
+        var layout = new FastOrganicLayout(components, forces, SubLayout.INITIAL_TEMP);
+        layout.setDebug(true);
+
+        //when
+        try {
+            layout.execute();
+        } finally {
+            layout.getLayoutLogger().traceLocations(new File(RootPath.get() + "/src/test/dump/" + filePrefix + "-singleLargeGroupWithRelations.svg"));
+            layout.getLayoutLogger().dump(new File(RootPath.get() + "/src/test/dump/" + filePrefix + "-singleLargeGroupWithRelations.txt"));
+        }
+
+        //then
+        layout.assertMinDistanceIsKept(MIN_DISTANCE_LIMIT);
+    }
+}

@@ -84,6 +84,7 @@ public class SearchIndex {
      * @param assessment the current assessment (status are indexed, too)
      */
     public void indexForSearch(@NonNull final Landscape landscape, @NonNull final Assessment assessment) {
+        LOGGER.info("Indexing landscape {} for search.", landscape.getIdentifier());
         Set<Item> items = Objects.requireNonNull(landscape).getItems().all();
         indexItems(items, Objects.requireNonNull(assessment).getResults());
     }

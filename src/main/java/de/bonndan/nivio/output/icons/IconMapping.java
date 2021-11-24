@@ -40,6 +40,9 @@ public class IconMapping {
     private final Map<String, String> iconsAndAliases = new HashMap<>();
 
     public IconMapping() {
+        iconsAndAliases.put("ext", "application");
+        iconsAndAliases.put("system", "server");
+        iconsAndAliases.put("service", "application");
         iconsAndAliases.put("webservice", "application");
         iconsAndAliases.put(CACHE, "flash-circle");
         iconsAndAliases.put(FIREWALL, "wall");

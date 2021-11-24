@@ -7,9 +7,6 @@ sources:
   - url: "./services/dashboard.yml"
     format: nivio
 
-config:
-  greedy: false
-
 groups:
   content:
     color: "24a0ed"

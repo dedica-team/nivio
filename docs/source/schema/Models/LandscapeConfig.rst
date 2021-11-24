@@ -28,16 +28,6 @@ Configuration of key performance indicators (i.e. status indicators) and layouti
      - Names or patterns of groups that should be excluded from the landscape. Used to improve automatic scanning results.
      - optional, defaults to null
      - .*infra.*
-   * - groupLayoutConfig
-     - LayoutConfig<LayoutConfig>
-     - 
-     - optional, defaults to null
-     - null
-   * - itemLayoutConfig
-     - LayoutConfig<LayoutConfig>
-     - 
-     - optional, defaults to null
-     - null
    * - kpis
      - Map<KPIConfig>
      - Key performance indicator configs. Each KPI must have a unique identifier.

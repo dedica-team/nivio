@@ -4,8 +4,10 @@ import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 
@@ -173,8 +175,8 @@ class ItemApiModelTest {
     }
 
     @Test
-    void hasLinks() {
-        Item s1 = itemTemplate.withLinks(Map.of("foo", new Link("http://acme.mcom"))).build();
+    void hasLinks() throws MalformedURLException {
+        Item s1 = itemTemplate.withLinks(Map.of("foo", new Link(new URL("http://acme.mcom")))).build();
         ItemApiModel itemApiModel = new ItemApiModel(s1, group);
         assertThat(itemApiModel.getLinks()).hasSize(1);
         assertThat(itemApiModel.getLinks().get("foo"))

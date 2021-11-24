@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -52,10 +55,10 @@ class MessagingServiceTest {
     }
 
     @Test
-    void onInputChangedEvent() {
-        InputChangedEvent event = new InputChangedEvent(
-                new ObservedChange(LandscapeFactory.createForTesting("test", "testLandscape").build(), "foo")
-        );
+    void onInputChangedEvent() throws MalformedURLException {
+        InputChangedEvent event = new InputChangedEvent(new URL("http:/foo.com"), new ObservedChange("foo"));
+
+        //when
         messagingService.onInputChangedEvent(event);
 
         ArgumentCaptor<EventNotification> captor = ArgumentCaptor.forClass(EventNotification.class);
@@ -65,7 +68,6 @@ class MessagingServiceTest {
         assertNotNull(value);
         assertThat(value.getLevel()).isEqualTo("info");
         assertThat(value.getType()).isEqualTo("InputChangedEvent");
-        assertThat(value.getLandscape()).isEqualTo("test");
         assertThat(value.getMessage()).isEqualTo("foo");
     }
 

@@ -5,7 +5,6 @@ import de.bonndan.nivio.input.dto.ComponentDescription;
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.external.ExternalLinkHandler;
-import de.bonndan.nivio.input.external.sonar.SonarLinkHandler;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.model.Link;
 import io.swagger.v3.oas.integration.IntegrationObjectMapperFactory;
@@ -18,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
+import java.net.URL;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -31,7 +32,7 @@ public class OpenAPILinkHandler implements ExternalLinkHandler {
 
     public static final String NAMESPACE = "openapi";
 
-    private final Logger LOGGER = LoggerFactory.getLogger(SonarLinkHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpenAPILinkHandler.class);
 
     private final HttpService httpService;
     private final ObjectMapper mapper;
@@ -61,7 +62,7 @@ public class OpenAPILinkHandler implements ExternalLinkHandler {
         //external doc to link
         Optional.ofNullable(openAPI.getExternalDocs()).ifPresent(externalDocumentation -> {
             try {
-                Link link1 = new Link(externalDocumentation.getUrl());
+                Link link1 = new Link(new URL(externalDocumentation.getUrl()));
                 link1.setProperty("description", externalDocumentation.getDescription());
                 desc.getLinks().put(NAMESPACE + "_externaldoc", link1);
             } catch (Exception e) {
@@ -89,7 +90,7 @@ public class OpenAPILinkHandler implements ExternalLinkHandler {
         desc.setDescription(openAPI.getInfo().getDescription());
         if (openAPI.getInfo().getContact() != null) {
             desc.setContact(openAPI.getInfo().getContact().getEmail());
-            if (StringUtils.isEmpty(desc.getContact())) {
+            if (!StringUtils.hasLength(desc.getContact())) {
                 desc.setContact(openAPI.getInfo().getContact().getName());
             }
         }
@@ -117,7 +118,10 @@ public class OpenAPILinkHandler implements ExternalLinkHandler {
         iface.setDescription(op.getDescription());
         iface.setPath(path);
         if (op.getParameters() != null) {
-            iface.setParameters(op.getParameters().stream().map(Parameter::getName).collect(Collectors.joining(", ")));
+            iface.setParameters(op.getParameters().stream()
+                    .filter(Objects::nonNull)
+                    .map(Parameter::getName)
+                    .collect(Collectors.joining(", ")));
         }
         if (op.getRequestBody() != null && op.getRequestBody().get$ref() != null) {
             iface.setPayload(op.getRequestBody().get$ref());

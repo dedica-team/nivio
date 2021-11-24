@@ -3,10 +3,6 @@ name: Landscape example
 contact: mail@acme.org
 
 config:
-  groupLayoutConfig:
-
-    # the higher, the longer the edges between groups
-    forceConstantFactor: 8
-
-    # higher value is cpu intensive, but can lead to better layouts
-    #maxIterations: 1000
+  branding:
+    mapStylesheet: http://localhost:8080/css/dedica_map.css
+    mapLogo: https://dedica.team/images/logo.png

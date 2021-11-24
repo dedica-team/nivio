@@ -1,52 +1,54 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
+import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
-public class FileFetcherTest {
+class FileFetcherTest {
 
     FileFetcher fileFetcher;
-
-    @Mock
     HttpService httpService;
 
     @BeforeEach
     public void setup() {
-        initMocks(this);
+        httpService = mock(HttpService.class);
         fileFetcher = new FileFetcher(httpService);
     }
 
     @Test
-    public void testRelativeUrlWithBaseUrl() throws IOException, URISyntaxException {
-        SourceReference ref = new SourceReference();
-        ref.setUrl("./files/one.yml");
+    void readFile() {
+        File file = new File(RootPath.get() + "/src/test/resources/example/services/wordpress.yml");
 
-        fileFetcher.get(ref, new URL("http://acme.org/somedir"));
-        ArgumentCaptor<URL> urlArgumentCaptor = ArgumentCaptor.forClass(URL.class);
-        Mockito.verify(httpService, Mockito.times(1)).get(urlArgumentCaptor.capture());
+        //when
+        String s = FileFetcher.readFile(file);
 
-        String s = urlArgumentCaptor.getValue().toString();
-        assertEquals("http://acme.org/somedir/files/one.yml", s);
+        //then
+        assertThat(s).isNotEmpty();
     }
 
     @Test
-    public void testRelativeUrlWithBaseUrl2() throws IOException, URISyntaxException {
-        SourceReference ref = new SourceReference();
-        ref.setUrl("files/one.yml");
+    void readFileThrows() {
+        assertThrows(ReadingException.class, () -> FileFetcher.readFile(new File("foobar")));
+    }
 
-        fileFetcher.get(ref, new URL("http://acme.org/somedir"));
+    @Test
+    void testRelativeUrlWithBaseUrl() throws IOException, URISyntaxException {
+
+        String s1 = fileFetcher.get("./files/one.yml", new URL("http://acme.org/somedir"));
+
         ArgumentCaptor<URL> urlArgumentCaptor = ArgumentCaptor.forClass(URL.class);
         Mockito.verify(httpService, Mockito.times(1)).get(urlArgumentCaptor.capture());
 

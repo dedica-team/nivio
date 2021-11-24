@@ -7,12 +7,18 @@ import static org.junit.jupiter.api.Assertions.*;
 class GroupDescriptionTest {
 
     @Test
+    void validatesIdentifier() {
+        assertThrows(IllegalArgumentException.class, () -> new GroupDescription().setName("1/1$"));
+        assertThrows(IllegalArgumentException.class, () -> new GroupDescription().setIdentifier("1/1$"));
+    }
+
+    @Test
     public void testNotEquals() {
         GroupDescription groupDescription = new GroupDescription();
-        groupDescription.setIdentifier("1");
+        groupDescription.setIdentifier("11");
 
         GroupDescription groupDescription2 = new GroupDescription();
-        groupDescription2.setIdentifier("2");
+        groupDescription2.setIdentifier("12");
 
         assertNotEquals(groupDescription, groupDescription2);
     }
@@ -21,10 +27,10 @@ class GroupDescriptionTest {
     @Test
     public void testEquals() {
         GroupDescription groupDescription = new GroupDescription();
-        groupDescription.setIdentifier("1");
+        groupDescription.setIdentifier("11");
 
         GroupDescription groupDescription2 = new GroupDescription();
-        groupDescription2.setIdentifier("1");
+        groupDescription2.setIdentifier("11");
 
         assertEquals(groupDescription, groupDescription2);
     }

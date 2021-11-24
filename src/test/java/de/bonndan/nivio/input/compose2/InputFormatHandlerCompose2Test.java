@@ -4,13 +4,14 @@ import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.SourceReference;
+import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.search.ItemIndex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -27,13 +28,13 @@ class InputFormatHandlerCompose2Test {
     }
 
     @Test
-    public void readCompose() {
-        SourceReference file = new SourceReference(new File(getRootPath() + "/src/test/resources/example/services/docker-compose.yml").toURI().toString());
+     void readCompose() throws MalformedURLException {
+        SourceReference file = new SourceReference(new File(getRootPath() + "/src/test/resources/example/services/docker-compose.yml").toURI().toURL());
         InputFormatHandlerCompose2 factoryCompose2 = new InputFormatHandlerCompose2(fileFetcher);
         LandscapeDescription landscapeDescription = new LandscapeDescription("test");
 
         //when
-       factoryCompose2.applyData(file, null, landscapeDescription);
+        factoryCompose2.applyData(file, landscapeDescription);
 
         //then
         ItemIndex<ItemDescription> services = landscapeDescription.getItemDescriptions();

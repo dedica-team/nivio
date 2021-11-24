@@ -4,7 +4,7 @@ import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.ReadingException;
 import de.bonndan.nivio.model.LandscapeConfig;
-import de.bonndan.nivio.util.URLHelper;
+import de.bonndan.nivio.util.URLFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -29,13 +29,13 @@ public class MapStyleSheetFactory {
     public String getMapStylesheet(LandscapeConfig landscapeConfig, @NonNull ProcessLog processLog) {
 
         String mapStylesheet = landscapeConfig.getBranding().getMapStylesheet();
-        if (StringUtils.isEmpty(mapStylesheet)) {
+        if (!StringUtils.hasLength(mapStylesheet)) {
             return "";
         }
 
         try {
             processLog.debug("Loading customer stylesheet: " + mapStylesheet);
-            return URLHelper.getURL(mapStylesheet).map(url -> fileFetcher.get(url)).orElse("");
+            return URLFactory.getURL(mapStylesheet).map(fileFetcher::get).orElse("");
         } catch (ReadingException e) {
             processLog.warn("Failed to load customer stylesheet " + mapStylesheet + ": " + e.getMessage());
             return "";

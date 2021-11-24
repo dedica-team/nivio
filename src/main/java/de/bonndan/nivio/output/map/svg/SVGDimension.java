@@ -20,7 +20,11 @@ public class SVGDimension {
         this.cartesian = cartesian;
     }
 
-    static class BoundingBox {
+    public BoundingBox getCartesianBox() {
+        return cartesian;
+    }
+
+    public static class BoundingBox {
         int padding = 3 * Hex.HEX_SIZE;
         final int horMin;
         final int vertMin;
@@ -54,6 +58,14 @@ public class SVGDimension {
                     vertMin - padding,
                     horMax - horMin + 2 * padding,
                     vertMax - vertMin + 2 * padding);
+        }
+
+        public int getHeight() {
+            return vertMax - vertMin;
+        }
+
+        public int getWidth() {
+            return horMax - horMin;
         }
     }
 }

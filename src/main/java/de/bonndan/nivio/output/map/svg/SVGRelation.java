@@ -6,6 +6,8 @@ import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
+import de.bonndan.nivio.output.map.hex.HexPath;
+import de.bonndan.nivio.output.map.hex.PathTile;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.slf4j.Logger;
@@ -14,6 +16,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 import static de.bonndan.nivio.output.map.hex.Hex.SOUTH;
@@ -92,10 +95,12 @@ class SVGRelation extends Component {
                     .attr("stroke-width", Math.round(BASIC_STROKE_WIDTH * factor));
         }
 
+        int translation = getTranslation();
         ContainerTag path = SvgTagCreator.path()
                 .attr("d", points)
                 .attr("stroke", fillId)
-                .attr("stroke-width", innerStrokeWidth);
+                .attr("stroke-width", innerStrokeWidth)
+                .attr("transform", String.format("translate(0 %d)", translation));
 
         if (Lifecycle.isPlanned(relation.getSource()) || Lifecycle.isPlanned(relation.getTarget())) {
             path.attr("opacity", "0.5");
@@ -111,6 +116,15 @@ class SVGRelation extends Component {
         ContainerTag endMarker = marker.render();
 
         return addAttributes(g(shadow, path, endMarker, label(relation.getLabel(Label.label), bezierPath, fillId)), relation);
+    }
+
+    private int getTranslation() {
+        var total = hexPath.getTotalPortCount();
+        if (total < 2) return 0;
+
+        float factor = (hexPath.getPortCount() - 1f) / total * 20;
+        int dir = hexPath.getPortCount() % 2 > 0 ? 1 : -1;
+        return Math.round(factor * dir);
     }
 
     public HexPath getHexPath() {
