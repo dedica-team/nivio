@@ -153,7 +153,7 @@ class GroupingReportGeneratorTest {
         foo.setTags(tags);
         landscape.setItems(Set.of(foo));
         var assessment = AssessmentFactory.createAssessment(landscape, map);
-        var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{"owners"}, "searchTerm", new String[]{"xyz"}));
+        var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{"owners"}, "searchTerm", new String[]{"ownerz"}));
 
         //  when
         String document = groupingReportGenerator.toDocument(landscape, assessment, searchConfig, frontendMapping);
