@@ -142,32 +142,6 @@ class GroupingReportGeneratorTest {
     }
 
     @Test
-    void toDocumentSearch() {
-        // given
-        Mockito.when(frontendMapping.getKeys()).thenReturn(Map.of());
-        map.put("test/nivio/nivio", conditionKpi);
-        URI uri = URI.create("https://www.nivio.com/");
-        String[] tags = Arrays.array("auth", "ui");
-        var landscape = LandscapeFactory.createForTesting("test", "test").build();
-        Item foo = ItemBuilder.anItem().withLandscape(landscape).withIdentifier("nivio").withGroup("nivio").withAddress(uri).build();
-        foo.setTags(tags);
-        landscape.setItems(Set.of(foo));
-        var assessment = AssessmentFactory.createAssessment(landscape, map);
-        var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{"owners"}, "searchTerm", new String[]{"ownerz"}));
-
-        //  when
-        String document = groupingReportGenerator.toDocument(landscape, assessment, searchConfig, frontendMapping);
-
-        // then
-        assertThat(document).contains("Date: ")
-                .contains(searchConfig.getTitle())
-                .doesNotContain("Address: https://www.nivio.com/")
-                .doesNotContain("Tags: auth, ui")
-                .doesNotContain("<h2>Owners: common</h2>");
-
-    }
-
-    @Test
     void toDocumentMapping() {
         // given
         Mockito.when(frontendMapping.getKeys()).thenReturn(Map.of("Owners", "test"));
