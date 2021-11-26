@@ -77,4 +77,22 @@ describe('<Item />', () => {
     await waitFor(() => expect(queryByText('ops guys')).toBeInTheDocument());
   });
 
+
+  it('check if mui info icon appears', async() => {
+    // given
+    const mock = jest.spyOn(APIClient, 'get');
+    mock.mockReturnValue(Promise.resolve(useItem));
+
+    //when
+    const { container, getByTestId } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
+    fireEvent.click(getByTitle(container, 'Relations'));
+
+
+    // then
+    await waitFor(() => expect(getByTestId('InfoIcon')));
+  });
+
+
+
+
 });
