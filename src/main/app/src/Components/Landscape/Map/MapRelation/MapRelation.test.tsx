@@ -41,9 +41,12 @@ it('should render mapRelation component', () => {
     name: 'bar',
     labels: {},
   };
-  const { getByText } = render(<MapRelation source={source} target={target} relation={relation} />);
+  const { getByText, getByTestId } = render(
+    <MapRelation source={source} target={target} relation={relation} />
+  );
   expect(getByText('fooName')).toBeInTheDocument();
   expect(getByText('barName')).toBeInTheDocument();
   expect(getByText('Type')).toBeInTheDocument();
   expect(getByText('PROVIDER')).toBeInTheDocument();
+  expect(getByTestId('InfoIconRelation')).toBeInTheDocument();
 });

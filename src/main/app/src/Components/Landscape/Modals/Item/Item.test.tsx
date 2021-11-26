@@ -3,11 +3,13 @@ import { fireEvent, getByTitle, queryByText, render, waitFor } from '@testing-li
 import * as APIClient from '../../../../utils/API/APIClient';
 import Item from './Item';
 import { IItem } from '../../../../interfaces';
+import { LandscapeContext } from '../../../../Context/LandscapeContext';
+import landscapeContextValue from '../../../../utils/testing/LandscapeContextValue';
 
 describe('<Item />', () => {
   const IRelations = {
     source: 'foo',
-    target: 'foo',
+    target: 'test/groupA/foo',
     description: 'foo',
     format: 'foo',
     name: 'web',
@@ -77,4 +79,21 @@ describe('<Item />', () => {
     await waitFor(() => expect(queryByText('ops guys')).toBeInTheDocument());
   });
 
+  it('check if mui info icon appears', async () => {
+    // given
+    const mock = jest.spyOn(APIClient, 'get');
+    mock.mockReturnValue(Promise.resolve(useItem));
+
+    //when
+    const { container, getByTestId } = render(
+      <LandscapeContext.Provider value={landscapeContextValue}>
+        <Item fullyQualifiedItemIdentifier={'foo'} />
+      </LandscapeContext.Provider>
+    );
+
+    fireEvent.click(getByTitle(container, 'Relations'));
+
+    // then
+    await waitFor(() => expect(getByTestId('InfoIcon')));
+  });
 });

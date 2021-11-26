@@ -1,5 +1,13 @@
 import React, { useContext, useState } from 'react';
-import {Card, CardHeader, Table, TableBody, TableCell, TableRow, useTheme} from '@material-ui/core';
+import {
+  Card,
+  CardHeader,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  useTheme,
+} from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import { IItem, IRelation } from '../../../../interfaces';
 import Typography from '@material-ui/core/Typography';
@@ -19,6 +27,7 @@ interface Props {
 }
 
 /**
+ /**
  * Returns a chosen Map Relation
  *
  */
@@ -69,7 +78,11 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
                     'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
                   }
                 >
-                  <InfoOutlined style={{color:theme.palette.info.main}} fontSize='small' data-testid={'InfoIconRelation'}/>
+                  <InfoOutlined
+                    style={{ color: theme.palette.info.main }}
+                    fontSize='small'
+                    data-testid={'InfoIconRelation'}
+                  />
                 </span>
               </TableCell>
             </TableRow>
