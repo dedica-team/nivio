@@ -1,15 +1,24 @@
-import React, {useContext, useState} from 'react';
-import {Card, CardHeader, Table, TableBody, TableCell, TableRow} from '@material-ui/core';
+import React, { useContext, useState } from 'react';
+import {
+  Card,
+  CardHeader,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  useTheme,
+} from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
-import {IItem, IRelation} from '../../../../interfaces';
+import { IItem, IRelation } from '../../../../interfaces';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import {LocateFunctionContext} from '../../../../Context/LocateFunctionContext';
+import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import ItemAvatar from '../../Modals/Item/ItemAvatar';
-import {Close, HelpRounded} from '@material-ui/icons';
-import {LandscapeContext} from '../../../../Context/LandscapeContext';
-import {getLabels} from '../../Utils/utils';
+import { Close, InfoOutlined } from '@material-ui/icons';
+import { LandscapeContext } from '../../../../Context/LandscapeContext';
+import { getLabels } from '../../Utils/utils';
+import MappedString from '../../Utils/MappedString';
 
 interface Props {
   source: IItem;
@@ -18,11 +27,13 @@ interface Props {
 }
 
 /**
+ /**
  * Returns a chosen Map Relation
  *
  */
 const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
   const classes = componentStyles();
+  const theme = useTheme();
 
   const [visible, setVisible] = useState<boolean>(true);
   const locateFunctionContext = useContext(LocateFunctionContext);
@@ -43,7 +54,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
       <CardHeader
         title={title}
         className={classes.cardHeader}
-        subheader={'Relation'}
+        subheader={<MappedString mapKey={'Relation'} />}
         action={
           <IconButton
             size={'small'}
@@ -67,7 +78,11 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
                     'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
                   }
                 >
-                  <HelpRounded />
+                  <InfoOutlined
+                    style={{ color: theme.palette.info.main }}
+                    fontSize='small'
+                    data-testid={'InfoIconRelation'}
+                  />
                 </span>
               </TableCell>
             </TableRow>
