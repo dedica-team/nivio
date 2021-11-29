@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.docs;
 
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.assessment.AssessmentFactory;
 import de.bonndan.nivio.assessment.kpi.ConditionKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
@@ -9,6 +10,7 @@ import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
+import de.bonndan.nivio.search.SearchIndex;
 import de.bonndan.nivio.util.FrontendMapping;
 import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
@@ -154,6 +156,10 @@ class GroupingReportGeneratorTest {
         landscape.setItems(Set.of(foo));
         var assessment = AssessmentFactory.createAssessment(landscape, map);
         var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{"owners"}, "searchTerm", new String[]{"ownerz"}));
+
+        //items need to be indexed before the search can execute
+        SearchIndex searchIndex = landscape.getSearchIndex();
+        searchIndex.indexForSearch(landscape, new Assessment(new HashMap<>()));
 
         //  when
         String document = groupingReportGenerator.toDocument(landscape, assessment, searchConfig, frontendMapping);
