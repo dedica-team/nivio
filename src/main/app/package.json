@@ -30,7 +30,8 @@
     "react-svg-pan-zoom-loader": "^1.4.1",
     "react-transition-group": "^4.4.2",
     "svg-path-properties": "^1.0.10",
-    "typescript": "~3.9.10"
+    "typescript": "~3.9.10",
+    "react-social-login-buttons": "3.6.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.1",

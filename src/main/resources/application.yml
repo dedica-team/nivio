@@ -3,6 +3,13 @@ spring:
     name: nivio
   main:
     lazy-initialization: true
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: f0133aefdb952142be83
+            clientSecret: 9db52631e23224a98093d07868877b169ee9e479
 
   mail:
     host: ${NIVIO_MAIL_HOST:}
