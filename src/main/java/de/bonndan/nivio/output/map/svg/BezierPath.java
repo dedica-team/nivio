@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
 import java.awt.geom.Point2D;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,13 +29,13 @@ public class BezierPath {
         final Matcher matchPathCmd = Pattern.compile("([MmLlHhVvAaQqTtCcSsZz])|([-+]?((\\d*\\.\\d+)|(\\d+))([eE][-+]?\\d+)?)").matcher(list);
 
         //Tokenize
-        LinkedList<String> tokens = new LinkedList<String>();
+        LinkedList<String> tokens = new LinkedList<>();
         while (matchPathCmd.find()) {
             tokens.addLast(matchPathCmd.group());
         }
 
         char curCmd = 'Z';
-        while (tokens.size() != 0) {
+        while (!tokens.isEmpty()) {
             String curToken = tokens.removeFirst();
             char initChar = curToken.charAt(0);
             if ((initChar >= 'A' && initChar <= 'Z') || (initChar >= 'a' && initChar <= 'z')) {
@@ -117,7 +116,7 @@ public class BezierPath {
         }
     }
 
-    static protected float nextFloat(LinkedList<String> l) {
+    protected static float nextFloat(LinkedList<String> l) {
         String s = l.removeFirst();
         return Float.parseFloat(s);
     }
@@ -131,9 +130,7 @@ public class BezierPath {
 
 
         double curLength = path.curveLength * interp;
-        for (Iterator<Bezier> it = path.bezierSegs.iterator(); it.hasNext(); ) {
-            Bezier bez = it.next();
-
+        for (Bezier bez : path.bezierSegs) {
             double bezLength = bez.getLength();
             if (curLength < bezLength) {
                 double param = curLength / bezLength;

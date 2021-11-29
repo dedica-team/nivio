@@ -1,9 +1,10 @@
 package de.bonndan.nivio.model;
 
-import de.bonndan.nivio.assessment.StatusValue;
-
 import java.net.URI;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class ItemBuilder {
