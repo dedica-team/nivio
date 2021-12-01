@@ -2,15 +2,16 @@ package de.bonndan.nivio.assessment;
 
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.output.dto.RangeApiModel;
-import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.lang.NonNull;
 
 import java.util.*;
 import java.util.function.Function;
 
-import static de.bonndan.nivio.assessment.Assessable.getWorst;
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,9 +31,7 @@ class AssessableTest {
                 new StatusValue("foo", "test4", Status.RED, "out of order")
         );
 
-        List<StatusValue> max = getWorst(new ArrayList<>(statusValues));
-
-        StatusValue summary = StatusValue.summary("foo", max);
+        StatusValue summary = StatusValue.summary("foo", new ArrayList<>(statusValues));
         assertNotNull(summary);
         assertEquals(Status.RED, summary.getStatus());
         assertEquals("foo test3: broken; foo test4: out of order", summary.getMessage());

@@ -14,8 +14,6 @@ import java.util.Map;
 
 /**
  * Base interface for input DTOs, which are mutable objects.
- *
- *
  */
 public interface ComponentDescription extends Component, Labeled, Linked {
 
@@ -29,7 +27,7 @@ public interface ComponentDescription extends Component, Labeled, Linked {
 
     void setIcon(String icon);
 
-    default void setLabel(String key, String value){
+    default void setLabel(String key, String value) {
         setLabel(key, (Object) value);
     }
 

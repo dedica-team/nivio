@@ -20,7 +20,7 @@ public class CompositeHealthDeserializer extends JsonDeserializer<JsonCompositeH
         TextNode status = (TextNode) treeNode.get("status");
         Map<String, JsonCompositeHealth> components = (Map<String, JsonCompositeHealth>) treeNode.get("components");
         Map<String, String> details = (Map<String, String>) treeNode.get("details");
-        return new JsonCompositeHealth( status.toString(), components,  details);
+        return new JsonCompositeHealth(status.toString(), components, details);
     }
 
 }

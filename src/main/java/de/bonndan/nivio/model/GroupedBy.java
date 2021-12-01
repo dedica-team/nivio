@@ -12,10 +12,11 @@ import static org.springframework.util.StringUtils.hasLength;
  */
 public class GroupedBy {
 
-    private final Map<String, List<Item>> groups = new HashMap<>();
+    private final Map<String, List<Item>> groups = new TreeMap<>();
+
 
     /**
-     * Groups services by any string field (e.g. owner).
+     * Groups services by any string field (e.g. owner or group).
      *
      * @param supplier function providing the group key for each item
      * @param items    items to group

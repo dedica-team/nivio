@@ -1,10 +1,10 @@
 package de.bonndan.nivio.assessment.kpi;
 
-import de.bonndan.nivio.assessment.Assessable;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.Status;
-import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.output.dto.RangeApiModel;
 import org.springframework.lang.NonNull;

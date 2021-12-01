@@ -11,6 +11,7 @@ import de.bonndan.nivio.output.icons.ExternalIcons;
 import de.bonndan.nivio.output.icons.ExternalIconsProvider;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.icons.LocalIcons;
+import de.bonndan.nivio.util.FrontendMapping;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -38,7 +39,7 @@ class DocsControllerTest {
         var externalIconsProvider = Mockito.mock(ExternalIconsProvider.class);
         LocalServer localServer = new LocalServer("test");
         IconService iconService = new IconService(new LocalIcons(), new ExternalIcons(new HttpService(), externalIconsProvider));
-        docsController = new DocsController(landscapeRepository, localServer, iconService, assessmentRepository);
+        docsController = new DocsController(landscapeRepository, localServer, iconService, assessmentRepository, new FrontendMapping());
     }
 
     @Test
