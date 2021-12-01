@@ -22,6 +22,7 @@ import componentStyles from '../../Resources/styling/ComponentStyles';
 import LandscapeWatcher from '../Landscape/Dashboard/LandscapeWatcher';
 import { LandscapeContext } from '../../Context/LandscapeContext';
 import SearchField from '../Landscape/Search/SearchField';
+import { GithubLoginButton } from 'react-social-login-buttons';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -123,6 +124,9 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
       <Box className={classes.pageTitle}>
         <Typography variant='h6'>{pageTitle}</Typography>
       </Box>
+      <a href={`/oauth2/authorization/github`}>
+        <GithubLoginButton />
+      </a>
       {landscapeContext.identifier ? <Notification setSidebarContent={setSidebarContent} /> : null}
       <LandscapeWatcher setSidebarContent={setSidebarContent} />
       {landscapeContext.identifier ? (
