@@ -5,7 +5,6 @@ import org.springframework.lang.NonNull;
 
 /**
  * Layouts / arranges landscapes.
- *
  */
 public interface Layouter {
 

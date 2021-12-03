@@ -47,10 +47,10 @@ public class GitHubConfig {
 
         try {
             Properties properties = new Properties();
-            properties.setProperty("login",gitHubProperties.getLogin());
-            properties.setProperty("password",gitHubProperties.getPassword());
-            properties.setProperty("oauth",gitHubProperties.getOauth());
-            properties.setProperty("jwt",gitHubProperties.getJwt());
+            properties.setProperty("login", gitHubProperties.getLogin());
+            properties.setProperty("password", gitHubProperties.getPassword());
+            properties.setProperty("oauth", gitHubProperties.getOauth());
+            properties.setProperty("jwt", gitHubProperties.getJwt());
             return GitHubBuilder.fromProperties(properties).build();
         } catch (IOException ignored) {
             return null;

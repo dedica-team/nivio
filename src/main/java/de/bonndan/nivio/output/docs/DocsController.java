@@ -7,6 +7,7 @@ import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
+import de.bonndan.nivio.util.FrontendMapping;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +29,14 @@ public class DocsController {
     private final LandscapeRepository landscapeRepository;
     private final LocalServer localServer;
     private final IconService iconService;
+    private final FrontendMapping frontendMapping;
 
-    public DocsController(LandscapeRepository landscapeRepository, LocalServer localServer, IconService iconService, AssessmentRepository assessmentRepository) {
+    public DocsController(LandscapeRepository landscapeRepository, LocalServer localServer, IconService iconService, AssessmentRepository assessmentRepository, FrontendMapping frontendMapping) {
         this.assessmentRepository = assessmentRepository;
         this.landscapeRepository = landscapeRepository;
         this.localServer = localServer;
         this.iconService = iconService;
+        this.frontendMapping = frontendMapping;
     }
 
     private ResponseEntity<String> getResponseEntity(HttpServletRequest request, Landscape landscape, HtmlGenerator generator) {
@@ -41,7 +44,7 @@ public class DocsController {
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html");
         return new ResponseEntity<>(
                 generator.toDocument(landscape, assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier()).orElse(Assessment.empty()),
-                        new SearchConfig(request.getParameterMap())),
+                        new SearchConfig(request.getParameterMap()), frontendMapping),
                 headers,
                 HttpStatus.OK
         );
@@ -60,14 +63,14 @@ public class DocsController {
 
     }
 
-    @GetMapping(path = "/{landscape}/owners.html")
+    @GetMapping(path = "/{landscape}/report/grouping.html")
     public ResponseEntity<String> owners(@PathVariable(name = "landscape") final String landscapeIdentifier, final HttpServletRequest request) {
 
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElseThrow(
                 () -> new NotFoundException("Landscape " + landscapeIdentifier + " not found")
         );
 
-        OwnersReportGenerator generator = new OwnersReportGenerator(localServer, iconService);
+        GroupingReportGenerator generator = new GroupingReportGenerator(localServer, iconService);
 
         return getResponseEntity(request, landscape, generator);
     }

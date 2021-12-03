@@ -21,7 +21,7 @@
         <junit-jupiter.version>5.4.0</junit-jupiter.version>
         <mockito.version>3.11.2</mockito.version>
         <archunit.version>0.20.1</archunit.version>
-        <jacoco.version>0.8.6</jacoco.version>
+        <jacoco.version>0.8.7</jacoco.version>
         <frontend-src-dir>${project.basedir}/src/main/app</frontend-src-dir>
         <node.version>v12.18.2</node.version>
         <yarnVersion>v1.22.4</yarnVersion>
@@ -256,7 +256,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.5.10</version>
+            <version>1.5.11</version>
         </dependency>
 
         <!-- github api https://mvnrepository.com/artifact/org.kohsuke/github-api -->

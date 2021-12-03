@@ -8,6 +8,7 @@ import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.map.MapController;
+import de.bonndan.nivio.util.FrontendMapping;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -30,7 +31,7 @@ public class ReportGenerator extends HtmlGenerator {
     }
 
     @Override
-    public String toDocument(@NonNull final Landscape landscape, @NonNull final Assessment assessment, @Nullable final SearchConfig searchConfig) {
+    public String toDocument(@NonNull final Landscape landscape, @NonNull final Assessment assessment, @Nullable final SearchConfig searchConfig, @NonNull final FrontendMapping frontendMapping) {
         return writeLandscape(Objects.requireNonNull(landscape), Objects.requireNonNull(assessment));
     }
 

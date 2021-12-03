@@ -2,7 +2,6 @@ package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.input.ProcessingEvent;
 import de.bonndan.nivio.model.Landscape;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.lang.NonNull;
 
 public class LayoutChangedEvent extends ProcessingEvent {
