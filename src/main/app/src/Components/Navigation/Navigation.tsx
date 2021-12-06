@@ -66,15 +66,10 @@ const Navigation: React.FC<Props> = ({setSidebarContent, pageTitle, logo, versio
         setAnchorEl(null);
     };
 
-    // <script type="text/javascript">
-    //     $.get("/user", function (data) {
-    //     $("#user").html(data.name);
-    //     $(".unauthenticated").hide()
-    //     $(".authenticated").show()
-    // })
-    // ;
+    function getAuthenticatedUser(data: Object) {
 
-    // </script>
+    }
+
 
     const StyledMenu = withStyles((theme: Theme) =>
         createStyles({
@@ -133,22 +128,18 @@ const Navigation: React.FC<Props> = ({setSidebarContent, pageTitle, logo, versio
             <Box className={classes.pageTitle}>
                 <Typography variant='h6'>{pageTitle}</Typography>
             </Box>
-
-            {/*<Box className={"container unauthenticated"}>*/}
-            {/*    <Typography variant='h6'> With GitHub: <a href="/oauth2/authorization/github">click here</a></Typography>*/}
-            {/*</Box>*/}
-
-            {/*<Box className={"container authenticated"} style={{"display:none"}}>*/}
-            {/*    <Typography variant='h6'> Logged in as: <span id="user"></span></Typography>*/}
-            {/*</Box>*/}
-
+            {/*<div className={'containerUnauthenticated'}>*/}
+            {/*    With GitHub: <a href="/oauth2/authorization/github">click here</a>*/}
+            {/*</div>*/}
+            {/*<div className='containerAuthenticated' style={{display: 'none'}}>*/}
+            {/*    Logged in as: <span id="user"></span>*/}
+            {/*</div>*/}
 
             {landscapeContext.identifier ? <Notification setSidebarContent={setSidebarContent}/> : null}
             <LandscapeWatcher setSidebarContent={setSidebarContent}/>
             {landscapeContext.identifier ? (
                 <SearchField setSidebarContent={setSidebarContent}/>
             ) : null}{' '}
-
         </Toolbar>
     );
 };
