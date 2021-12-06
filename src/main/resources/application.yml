@@ -4,6 +4,14 @@ spring:
   main:
     lazy-initialization: true
 
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: cf182a21bb236a6e532a
+            clientSecret: bae9691c21929c14ad09efe4be633bd351bf65e2
+
   mail:
     host: ${NIVIO_MAIL_HOST:}
     port: ${NIVIO_MAIL_PORT:587}
