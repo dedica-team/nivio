@@ -49,6 +49,34 @@ interface Props {
     version?: string;
 }
 
+var requestURL = "/user";
+var request = new XMLHttpRequest();
+request.open("GET", requestURL, true);
+request.responseType = 'json';
+request.send();
+console.log("TEST: + " + request.response);
+
+request.onload = function() {
+    let data = request.response;
+
+    let user = document.getElementById("user");
+    if( user){
+      console.log("user: + " + data);
+      // user.innerHTML(data.name);
+    }
+    let userUnauthenticated = document.getElementById(".containerUnauthenticated");
+    if (userUnauthenticated){
+        userUnauthenticated.style.display = 'none';
+    }
+    let userAuthenticated = document.getElementById(".containerAuthenticated");
+    if (userAuthenticated) {
+        userAuthenticated.style.display = 'block';
+    }
+};
+
+
+
+
 /**
  * Header Component
  */
@@ -65,11 +93,6 @@ const Navigation: React.FC<Props> = ({setSidebarContent, pageTitle, logo, versio
     const handleClose = () => {
         setAnchorEl(null);
     };
-
-    function getAuthenticatedUser(data: Object) {
-
-    }
-
 
     const StyledMenu = withStyles((theme: Theme) =>
         createStyles({
@@ -128,12 +151,19 @@ const Navigation: React.FC<Props> = ({setSidebarContent, pageTitle, logo, versio
             <Box className={classes.pageTitle}>
                 <Typography variant='h6'>{pageTitle}</Typography>
             </Box>
-            {/*<div className={'containerUnauthenticated'}>*/}
-            {/*    With GitHub: <a href="/oauth2/authorization/github">click here</a>*/}
-            {/*</div>*/}
-            {/*<div className='containerAuthenticated' style={{display: 'none'}}>*/}
-            {/*    Logged in as: <span id="user"></span>*/}
-            {/*</div>*/}
+            <div className="containerUnauthenticated">
+                With GitHub: <a href="/oauth2/authorization/github">click here</a>
+            </div>
+            <div className="containerAuthenticated" style={{display: 'none'}}>
+                Logged in as: <span id="user"></span>
+            </div>
+            {/*<script type="text/javascript">*/}
+            {/*    $.get("/user", function(data) {*/}
+            {/*    $("#user").html(data.name);*/}
+            {/*    $(".unauthenticated").hide()*/}
+            {/*    $(".authenticated").show()*/}
+            {/*});*/}
+            {/*</script>*/}
 
             {landscapeContext.identifier ? <Notification setSidebarContent={setSidebarContent}/> : null}
             <LandscapeWatcher setSidebarContent={setSidebarContent}/>
