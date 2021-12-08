@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import {
   Box,
+  Button,
   createStyles,
   Menu,
   MenuItem,
@@ -21,8 +22,8 @@ import Notification from '../Notification/Notification';
 import componentStyles from '../../Resources/styling/ComponentStyles';
 import LandscapeWatcher from '../Landscape/Dashboard/LandscapeWatcher';
 import { LandscapeContext } from '../../Context/LandscapeContext';
-import SearchField from '../Landscape/Search/SearchField';
-import { GithubLoginButton } from 'react-social-login-buttons';
+import SearchField from"../Landscape/Search/SearchField"';
+import LoginDialog from"./LoginDialog"';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -67,12 +68,20 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
     setAnchorEl(null);
   };
 
+  const logout = () => {
+    return <a href={`/logout`}>
+      <form method="post" name="logoutForm">
+        <input type="submit" value="Logout" />
+      </form>
+    </a>;
+  };
+
   const StyledMenu = withStyles((theme: Theme) =>
     createStyles({
       paper: {
         backgroundColor: theme.palette.primary.main,
-        marginTop: 5,
-      },
+        marginTop: 5
+      }
     })
   )((props: MenuProps) => (
     <Menu
@@ -122,16 +131,16 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
         </MenuItem>
       </StyledMenu>
       <Box className={classes.pageTitle}>
-        <Typography variant='h6'>{pageTitle}</Typography>
+        <Typography variant="h6">{pageTitle}</Typography>
       </Box>
-      <a href={`/oauth2/authorization/github`}>
-        <GithubLoginButton />
-      </a>
+      {window.sessionStorage.getItem("userName") === "anonymous" ? <LoginDialog /> :
+        <a href={`/logout`}><Button onClick={logout}>Logout</Button></a>}
+
       {landscapeContext.identifier ? <Notification setSidebarContent={setSidebarContent} /> : null}
       <LandscapeWatcher setSidebarContent={setSidebarContent} />
       {landscapeContext.identifier ? (
         <SearchField setSidebarContent={setSidebarContent} />
-      ) : null}{' '}
+      ) : null}{" "}
     </Toolbar>
   );
 };

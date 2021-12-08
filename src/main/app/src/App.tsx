@@ -83,6 +83,12 @@ const App: React.FC = () => {
     });
   }, [setTheme, setLogo]);
 
+  get('/api/user').then((value) => {
+    console.log(value);
+    window.sessionStorage.setItem('userName', value);
+    console.log(window.sessionStorage.getItem('userName'));
+  });
+
   if (!theme) {
     return <Box>Loading ...</Box>;
   }
