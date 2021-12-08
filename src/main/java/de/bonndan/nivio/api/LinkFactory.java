@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -135,6 +136,16 @@ public class LinkFactory {
                         index.getLinks().put(landscape.getIdentifier(), link);
                     });
                 });
+
+        Optional<URL> url = localServer.getUrl("/oauth2/authorization/github");
+        url.ifPresent(url1 -> {
+            Link oauth2 = linkTo(url1)
+                    .withRel("oauth2")
+                    .build();
+                    index.getLinks().put("login_github", oauth2);
+        });
+
+
         return index;
     }
 
