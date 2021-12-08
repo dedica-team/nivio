@@ -123,9 +123,9 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
         </MenuItem>
       </StyledMenu>
       <Box className={classes.pageTitle}>
-        <Typography variant"'h"'>{pageTitle}</Typography>
+        <Typography variant='h6'>{pageTitle}</Typography>
       </Box>
-      {window.sessionStorage.getItem"userName"') ==="anonymous"' ? (
+      {window.sessionStorage.getItem('userName') === 'anonymous' ? (
         <LoginDialog />
       ) : (
         <a href={`/logout`}>
@@ -136,7 +136,7 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
       <LandscapeWatcher setSidebarContent={setSidebarContent} />
       {landscapeContext.identifier ? (
         <SearchField setSidebarContent={setSidebarContent} />
-      ) : null}" "'}
+      ) : null}{' '}
     </Toolbar>
   );
 };
