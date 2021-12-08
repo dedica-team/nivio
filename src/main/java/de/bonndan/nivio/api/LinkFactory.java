@@ -116,7 +116,7 @@ public class LinkFactory {
     }
 
     /**
-     * Returns the "root" api response (a list of landscapes).
+     * Returns the "root" api response (a list of landscapes, config and oauth2links).
      *
      * @param landscapes all landscape
      * @return the index
@@ -142,9 +142,8 @@ public class LinkFactory {
             Link oauth2 = linkTo(url1)
                     .withRel("oauth2")
                     .build();
-                    index.getLinks().put("login_github", oauth2);
+            index.getOauth2Links().put("login_github", oauth2);
         });
-
 
         return index;
     }

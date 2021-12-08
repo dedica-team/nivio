@@ -60,6 +60,7 @@ nivio:
   brandingMessage: ${NIVIO_BRANDING_MESSAGE:All Landscapes}
   seed: ${SEED:}
   demo: ${DEMO:}
+#  loginType: ${LOGIN_TYPE:optional}
 
 
 observerconfig:

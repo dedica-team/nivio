@@ -39,8 +39,8 @@ public class ApiController {
     public ApiController(LandscapeRepository landscapeRepository,
                          LinkFactory linkFactory,
                          IndexingDispatcher indexingDispatcher,
-                         FrontendMapping frontendMapping
-    ) {
+                         FrontendMapping frontendMapping) {
+
         this.landscapeRepository = landscapeRepository;
         this.linkFactory = linkFactory;
         this.indexingDispatcher = indexingDispatcher;
@@ -48,7 +48,7 @@ public class ApiController {
     }
 
     /**
-     * Overview on all landscapes.
+     * Overview about config properties, all landscapes and oauth2Links
      */
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -223,7 +223,6 @@ public class ApiController {
                 .map(uri -> ResponseEntity.created(uri).build())
                 .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
     }
-
 
 
     private Optional<URI> getURIForDTO(FullyQualifiedIdentifier fullyQualifiedIdentifier) {
