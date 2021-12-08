@@ -36,6 +36,33 @@ public class StatusValue {
 
 
     /**
+     * New StatusValue with message.
+     *
+     * @param identifier assessment identifier (e.g. item fqi)
+     * @param field      field / label name
+     * @param status     current status
+     * @param message    additional message
+     */
+    public StatusValue(@NonNull final String identifier,
+                       @NonNull final String field,
+                       @Nullable final Status status,
+                       @Nullable final String message
+    ) {
+        if (!StringUtils.hasLength(identifier)) {
+            throw new IllegalArgumentException("Assessment identifier is empty");
+        }
+        if (!StringUtils.hasLength(field)) {
+            throw new IllegalArgumentException("Status value has no field");
+        }
+
+        this.identifier = identifier;
+        this.field = field;
+        this.status = status == null ? Status.UNKNOWN : status;
+        this.message = message;
+        this.summary = false;
+    }
+
+    /**
      * Turns a map of strings indexed by (KPI-)field into StatusValue objects.
      * <p>
      * Example:
@@ -67,48 +94,30 @@ public class StatusValue {
      * Creates a summary status value.
      *
      * @param identifier assessment identifier (e.g. item fqi)
-     * @param maxValues  max/highest status values
+     * @param values     status values
      * @return summary
      */
     @NonNull
-    public static StatusValue summary(@NonNull final String identifier, @NonNull final List<StatusValue> maxValues) {
-        Status status = maxValues.stream().findFirst().map(StatusValue::getStatus).orElse(Status.UNKNOWN);
+    public static StatusValue summary(@NonNull final String identifier, @NonNull final List<StatusValue> values) {
+        //order from worst to best
+        List<StatusValue> sortedValues;
+        values.sort(new StatusValue.Comparator());
+        if (!values.isEmpty()) {
+            Status worstStatus = values.get(values.size() - 1).getStatus();
+            sortedValues = values.stream().filter(statusValue -> statusValue.getStatus().equals(worstStatus)).collect(Collectors.toUnmodifiableList());
+        } else {
+            sortedValues = new ArrayList<>();
+        }
+        Status status = sortedValues.stream().findFirst().map(StatusValue::getStatus).orElse(Status.UNKNOWN);
 
         //skipping the child summaries
-        String message = maxValues.stream()
+        String message = sortedValues.stream()
                 .filter(statusValue -> !statusValue.summary)
                 .map(statusValue -> String.format("%s %s: %s", statusValue.getIdentifier(), statusValue.getField(), statusValue.getMessage()))
                 .collect(Collectors.joining("; "));
         StatusValue statusValue = new StatusValue(identifier, SUMMARY_FIELD_VALUE, status, message);
         statusValue.summary = true;
         return statusValue;
-    }
-
-    /**
-     * New StatusValue with message.
-     *
-     * @param identifier assessment identifier (e.g. item fqi)
-     * @param field      field / label name
-     * @param status     current status
-     * @param message    additional message
-     */
-    public StatusValue(@NonNull final String identifier,
-                       @NonNull final String field,
-                       @Nullable final Status status,
-                       @Nullable final String message
-    ) {
-        if (!StringUtils.hasLength(identifier)) {
-            throw new IllegalArgumentException("Assessment identifier is empty");
-        }
-        if (!StringUtils.hasLength(field)) {
-            throw new IllegalArgumentException("Status value has no field");
-        }
-
-        this.identifier = identifier;
-        this.field = field;
-        this.status = status == null ? Status.UNKNOWN : status;
-        this.message = message;
-        this.summary = false;
     }
 
     @NonNull
@@ -144,12 +153,6 @@ public class StatusValue {
         return false;
     }
 
-    public static class Comparator implements java.util.Comparator<StatusValue> {
-        public int compare(StatusValue s1, StatusValue s2) {
-            return Objects.requireNonNull(s1.status).compareTo(Objects.requireNonNull(s2.status));
-        }
-    }
-
     @Override
     public int hashCode() {
         return Objects.hash(field);
@@ -157,12 +160,21 @@ public class StatusValue {
 
     @Override
     public String toString() {
-        return "StatusValue{" +
-                "identifier='" + identifier + '\'' +
-                ", field='" + field + '\'' +
-                ", status=" + status +
-                ", message='" + message + '\'' +
-                ", summary=" + summary +
-                '}';
+        return
+                "StatusValue{" +
+                        "identifier='" + identifier + '\'' +
+                        ", field='" + field + '\'' +
+                        ", status=" + status +
+                        ", message='" + message + '\'' +
+                        ", summary=" + summary +
+                        '}';
+
     }
+
+    public static class Comparator implements java.util.Comparator<StatusValue> {
+        public int compare(StatusValue s1, StatusValue s2) {
+            return Objects.requireNonNull(s1.status).compareTo(Objects.requireNonNull(s2.status));
+        }
+    }
+
 }

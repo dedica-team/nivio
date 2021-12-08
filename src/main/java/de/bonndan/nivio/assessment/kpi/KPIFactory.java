@@ -10,8 +10,6 @@ import java.util.function.Supplier;
 
 /**
  * Factory for custom and builtin KPIs.
- *
- *
  */
 public class KPIFactory {
 

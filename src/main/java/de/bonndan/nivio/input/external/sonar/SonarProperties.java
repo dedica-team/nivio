@@ -12,7 +12,7 @@ public class SonarProperties {
     private String proxyHost;
     private String proxyPort;
 
-    public SonarProperties(String serverUrl,String login,String password,String proxyHost,String proxyPort){
+    public SonarProperties(String serverUrl, String login, String password, String proxyHost, String proxyPort) {
         this.serverUrl = serverUrl;
         this.login = login;
         this.password = password;

@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationEvent;
  * Refactor to assessment change event, or delete
  * https://github.com/dedica-team/nivio/issues/545
  */
-public class ServiceStateChangeEvent extends ApplicationEvent  {
+public class ServiceStateChangeEvent extends ApplicationEvent {
     private final FullyQualifiedIdentifier fqi;
     private final StatusValue old;
     private final StatusValue current;

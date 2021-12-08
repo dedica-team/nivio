@@ -14,10 +14,11 @@ public class SeedProperties {
         return seed;
     }
 
-    public String getDemo(){return demo;}
+    public String getDemo() {
+        return demo;
+    }
 
-    public SeedProperties(String seed, String demo)
-    {
+    public SeedProperties(String seed, String demo) {
         this.seed = seed;
         this.demo = demo;
     }

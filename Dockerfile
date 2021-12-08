@@ -1,5 +1,5 @@
 # use not slim base image, because libfontmanager needs libfreetype (mfbieber)
-FROM adoptopenjdk/openjdk11:x86_64-alpine-jre-11.0.8_10
+FROM openjdk:17-alpine
 
 ENV JAVA_TOOL_OPTIONS="-Xms100m -Xmx400m"
 VOLUME /tmp

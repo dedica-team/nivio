@@ -7,8 +7,6 @@ import retrofit2.http.Path;
 
 /**
  * Project services api.
- *
- *
  */
 public interface ProjectServices {
 

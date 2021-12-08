@@ -68,20 +68,12 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
     setAnchorEl(null);
   };
 
-  const logout = () => {
-    return <a href={`/logout`}>
-      <form method="post" name="logoutForm">
-        <input type="submit" value="Logout" />
-      </form>
-    </a>;
-  };
-
   const StyledMenu = withStyles((theme: Theme) =>
     createStyles({
       paper: {
         backgroundColor: theme.palette.primary.main,
-        marginTop: 5
-      }
+        marginTop: 5,
+      },
     })
   )((props: MenuProps) => (
     <Menu
@@ -131,7 +123,7 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
         </MenuItem>
       </StyledMenu>
       <Box className={classes.pageTitle}>
-        <Typography variant="h6">{pageTitle}</Typography>
+        <Typography variant='h6'>{pageTitle}</Typography>
       </Box>
       {window.sessionStorage.getItem("userName") === "anonymous" ? <LoginDialog /> :
         <a href={`/logout`}><Button onClick={logout}>Logout</Button></a>}
@@ -140,7 +132,7 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
       <LandscapeWatcher setSidebarContent={setSidebarContent} />
       {landscapeContext.identifier ? (
         <SearchField setSidebarContent={setSidebarContent} />
-      ) : null}{" "}
+      ) : null}{' '}
     </Toolbar>
   );
 };

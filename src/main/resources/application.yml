@@ -11,6 +11,14 @@ spring:
             clientId: f0133aefdb952142be83
             clientSecret: 9db52631e23224a98093d07868877b169ee9e479
 
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: cf182a21bb236a6e532a
+            clientSecret: bae9691c21929c14ad09efe4be633bd351bf65e2
+
   mail:
     host: ${NIVIO_MAIL_HOST:}
     port: ${NIVIO_MAIL_PORT:587}

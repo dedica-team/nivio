@@ -2,7 +2,10 @@ package de.bonndan.nivio.assessment;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static de.bonndan.nivio.assessment.StatusValue.LABEL_SUFFIX_MESSAGE;
 import static de.bonndan.nivio.assessment.StatusValue.LABEL_SUFFIX_STATUS;
@@ -71,5 +74,12 @@ class StatusValueTest {
                 .isEqualTo(new StatusValue("foo", "bar", Status.RED, ""));
         assertThat(new StatusValue("baz", "bar", Status.GREEN, ""))
                 .isNotEqualTo(new StatusValue("foo", "bar", Status.RED, ""));
+    }
+
+    @Test
+    void toStringTest() {
+        //equality on field basis only to guarantee uniqueness
+        assertThat(new StatusValue("foo", "bar", Status.GREEN, "").toString())
+                .isEqualTo("StatusValue{identifier='foo', field='bar', status=green, message='', summary=false}");
     }
 }

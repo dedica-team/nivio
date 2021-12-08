@@ -102,6 +102,9 @@ const landscapeContextValue: LandscapeContextType = {
   changes: notification,
   next: typeof jest != 'undefined' ? jest.fn() : () => {},
   getAssessmentSummary: (fqi) => {
+    if (!assessments.results[fqi]) {
+      return null;
+    }
     return assessments.results[fqi].find((assessmentResult) => assessmentResult.summary) || null;
   },
   notification: null,

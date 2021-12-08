@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Creates a new assessment after a {@link ProcessingFinishedEvent}
- *
- *
  */
 @Component
 public class ProcessingEventListener {

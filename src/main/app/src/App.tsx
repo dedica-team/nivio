@@ -5,7 +5,7 @@ import LandscapeOverview from './Components/Landscape/Overview/Overview';
 import LandscapeMap from './Components/Landscape/Map/Map';
 import Man from './Components/Manual/Man';
 import Layout from './Components/Layout/Layout';
-import { Routes } from './interfaces';
+import {ILandscape, ILinkContent, ILinks, Routes} from './interfaces';
 import { Box, CssBaseline, Theme } from '@material-ui/core';
 import { createTheme, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
 import { get } from './utils/API/APIClient';
@@ -24,6 +24,7 @@ interface Config {
 
 interface Index {
   config: Config;
+  _links: ILinks;
 }
 
 const App: React.FC = () => {
@@ -32,6 +33,7 @@ const App: React.FC = () => {
   const [message, setMessage] = useState<string>('');
   const [version, setVersion] = useState<string>();
   const [theme, setTheme] = useState<Theme>();
+  const [oauthLinks, setOauthLinks] = useState<ILinkContent[]>([]);
 
   useEffect(() => {
     const getColorSafely = (inputColor: string, defaultColor: string) => {
@@ -49,6 +51,13 @@ const App: React.FC = () => {
 
     get('/api/').then((value) => {
       const index: Index = value;
+      const links: ILinkContent[] = [];
+
+      for (const key in value._links) {
+        if(value._links[key].rel === "oauth2") {
+        links.push(value._links[key]);}
+      }
+      setOauthLinks(links);
 
       const back = getColorSafely(index.config.brandingBackground, '#161618');
       const front = getColorSafely(index.config.brandingForeground, '#22F2C2');
