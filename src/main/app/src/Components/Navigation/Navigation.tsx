@@ -22,8 +22,8 @@ import Notification from '../Notification/Notification';
 import componentStyles from '../../Resources/styling/ComponentStyles';
 import LandscapeWatcher from '../Landscape/Dashboard/LandscapeWatcher';
 import { LandscapeContext } from '../../Context/LandscapeContext';
-import SearchField from"../Landscape/Search/SearchField"';
-import LoginDialog from"./LoginDialog"';
+import SearchField from '../Landscape/Search/SearchField';
+import LoginDialog from './LoginDialog';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -123,16 +123,20 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
         </MenuItem>
       </StyledMenu>
       <Box className={classes.pageTitle}>
-        <Typography variant='h6'>{pageTitle}</Typography>
+        <Typography variant"'h"'>{pageTitle}</Typography>
       </Box>
-      {window.sessionStorage.getItem("userName") === "anonymous" ? <LoginDialog /> :
-        <a href={`/logout`}><Button onClick={logout}>Logout</Button></a>}
-
+      {window.sessionStorage.getItem"userName"') ==="anonymous"' ? (
+        <LoginDialog />
+      ) : (
+        <a href={`/logout`}>
+          <Button>Logout</Button>
+        </a>
+      )}
       {landscapeContext.identifier ? <Notification setSidebarContent={setSidebarContent} /> : null}
       <LandscapeWatcher setSidebarContent={setSidebarContent} />
       {landscapeContext.identifier ? (
         <SearchField setSidebarContent={setSidebarContent} />
-      ) : null}{' '}
+      ) : null}" "'}
     </Toolbar>
   );
 };

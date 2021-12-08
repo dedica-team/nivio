@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -225,15 +224,6 @@ public class ApiController {
                 .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
     }
 
-    @CrossOrigin(methods = RequestMethod.GET)
-    @GetMapping(path = "/user")
-    public ResponseEntity<String> whoAmI(OAuth2AuthenticationToken principal) {
-        if (principal != null) {
-            return ResponseEntity.of(Optional.ofNullable(principal.getPrincipal().getAttribute("login")));
-        } else {
-            return ResponseEntity.of(Optional.of("anonymous"));
-        }
-    }
 
 
     private Optional<URI> getURIForDTO(FullyQualifiedIdentifier fullyQualifiedIdentifier) {

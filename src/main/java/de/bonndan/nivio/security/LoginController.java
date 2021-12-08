@@ -1,21 +1,25 @@
 package de.bonndan.nivio.security;
 
-import de.bonndan.nivio.output.map.MapController;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-import java.util.Map;
+import java.util.Optional;
 
 @RestController
 public class LoginController {
 
     @CrossOrigin(methods = RequestMethod.GET)
-    @GetMapping("/user")
-    public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
-        return Collections.singletonMap("name", principal.getAttribute("name"));
+    @GetMapping(path = "/user")
+    public ResponseEntity<String> whoAmI(OAuth2AuthenticationToken principal) {
+        if (principal != null) {
+            return ResponseEntity.of(Optional.ofNullable(principal.getPrincipal().getAttribute("login")));
+        } else {
+            return ResponseEntity.of(Optional.of("anonymous"));
+        }
     }
 
 }

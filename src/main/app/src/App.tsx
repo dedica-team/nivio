@@ -5,7 +5,7 @@ import LandscapeOverview from './Components/Landscape/Overview/Overview';
 import LandscapeMap from './Components/Landscape/Map/Map';
 import Man from './Components/Manual/Man';
 import Layout from './Components/Layout/Layout';
-import {ILandscape, ILinkContent, ILinks, Routes} from './interfaces';
+import { ILinkContent, ILinks, Routes } from './interfaces';
 import { Box, CssBaseline, Theme } from '@material-ui/core';
 import { createTheme, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
 import { get } from './utils/API/APIClient';
@@ -54,11 +54,12 @@ const App: React.FC = () => {
       const links: ILinkContent[] = [];
 
       for (const key in value._links) {
-        if(value._links[key].rel === "oauth2") {
-        links.push(value._links[key]);}
+        if (value._links[key].rel === 'oauth2') {
+          links.push(value._links[key]);
+        }
       }
       setOauthLinks(links);
-
+      console.log(oauthLinks);
       const back = getColorSafely(index.config.brandingBackground, '#161618');
       const front = getColorSafely(index.config.brandingForeground, '#22F2C2');
       const secondary = getColorSafely(index.config.brandingSecondary, '#eeeeee');
@@ -90,7 +91,7 @@ const App: React.FC = () => {
       }
       setTheme(createTheme(tv));
     });
-  }, [setTheme, setLogo]);
+  }, [setTheme, setLogo, oauthLinks]);
 
   get('/api/user').then((value) => {
     console.log(value);
