@@ -1,11 +1,7 @@
 References
 ==========
 
-Nivio is heavily inspired by `pivio.io <http://pivio.io>`_ and uses similar semantics, but has a different focus.
+Similar approaches can be found at our `system graph collection <https://github.com/dedica-team/awesome-system-graphs/>`_.
 
-* https://github.com/AOEpeople/vistecture
-* https://github.com/jgrapht/jgrapht/blob/master/jgrapht-demo/src/main/java/org/jgrapht/demo/GraphMLDemo.java
-* https://github.com/jgrapht/jgrapht/wiki/HelloWorld
-* https://stackoverflow.com/questions/51574/good-java-graph-algorithm-library
-* https://github.com/hootsuite/microservice-graph-explorer
-* https://github.com/duo-labs/cloudmapper
+Nivio has been inspired by `pivio <https://pivio.github.io/>`_ and uses similar semantics, but has a different focus.
+
