@@ -1,20 +1,20 @@
 Getting Started
 ===============
 
-The easiest way to get started is to run Nivio using :program:`Docker`. To compile it, you need Java 11.
-
-The Docker image is about 350MB and can be started with:
+The easiest way to get started is to run Nivio using :program:`Docker`. The Docker image is about 350MB and can be started with:
 
 .. code-block:: bash
 
-    docker run dedica/nivio
+    docker run -p 8080:8080 dedica/nivio
+
+In case you can't use :program:`Docker` you checkout the code and compile and run it yourself. Please refer to https://github.com/dedica-team/nivio/blob/develop/development.md
 
 Demo mode
 ---------
 
 .. code-block:: bash
 
-    docker run -e DEMO=1 dedica/nivio
+    docker run -e DEMO=1 -p 8080:8080 dedica/nivio
 
 In the demo mode Nivio loads sample data for demonstration purposes.
 
@@ -72,20 +72,12 @@ Or you provide a URL that serves the `yml` files to Nivio:
 
 then point your browser to the :abbr:`GUI (Graphical User Interface)` at http://localhost:8080 or the API at http://localhost:8080/api/.
 
-Environment variables
----------------------
-
-The following environment variables can be set to configure nivio:
-
-.. include:: inc_env_config.rst
-
-
-Landscape configuration
------------------------
+Seed configuration
+------------------
 
 The configuration file contains basic data, references to item descriptions ``sources``, which can be local paths or URLs.
 The descriptions can be gathered by HTTP, i.e. it is possible to fetch files from protected sources via authentication headers.
-Think of GitLab or GitHub and the related tokens.
+Think of GitLab or GitHub and the related tokens. To use secrets etc. please refer to :ref:`Environment variables`.
 
 You can also add state providers which are used to gather live data and thereby provide state for the items.
 
@@ -135,3 +127,11 @@ If you deploy Nivio to run under a different path than root (:file:`/`), make su
 
    SERVER_SERVLET_CONTEXT_PATH: /my-landscape
    NIVIO_BASE_URL: https://foo.com/my-landscape/
+
+
+Environment variables
+---------------------
+
+The following environment variables can be set to configure nivio:
+
+.. include:: inc_env_config.rst
