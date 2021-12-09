@@ -6,12 +6,8 @@ HTTP API
 
 The API offers three types of output:
 
-* JSON under :file:`/api`
-* rendered maps under :file:`/render`
-* generated landscape documentation under :file:`/docs`
-* search under :file:`/api/{landscape}/search/{lucene style query}`
-
-Please see the swagger documentation under :file:`/v2/api-docs` (JSON) or :file:`/swagger-ui.html` (HTML GUI) for details.
+* JSON REST API under :file:`/api/`
+* swagger documentation under :file:`/v3/api-docs` (JSON) or :file:`/swagger-ui.html` (HTML GUI) for details.
 
 Searching
 ---------
@@ -27,7 +23,7 @@ Modifying Item Appearance
 Icons by Type
 ^^^^^^^^^^^^^
 
-The icon of an item is determined by its item type (e.g. server, database, ...) and defaults to a cog () .
+The icon of an item is determined by its item type (e.g. server, database, ...) and defaults to a cog symbol.
 
 .. code-block:: yaml
    :linenos:
