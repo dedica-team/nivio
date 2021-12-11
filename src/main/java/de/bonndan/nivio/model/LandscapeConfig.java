@@ -3,24 +3,23 @@ package de.bonndan.nivio.model;
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPIConfig;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.lang.NonNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Global configuration for a landscape.
- *
- *
  */
 public class LandscapeConfig {
 
     @Schema(description = "Flag that enables instant creation items based relation targets that cannot be found in the sources.")
     private boolean greedy = true;
 
+    @Schema(description = "Settings to tweak the positioning of groups in the map")
+    private LayoutConfig layoutConfig = new LayoutConfig();
+
     @Schema(description = "Names or patterns of groups that should be excluded from the landscape. Used to improve automatic scanning results.",
-    example = ".*infra.*")
+            example = ".*infra.*")
     private final List<String> groupBlacklist = new ArrayList<>();
 
     @Schema(description = "Names or patterns of labels that should be ignored. Used to improve automatic scanning results.",
@@ -59,6 +58,7 @@ public class LandscapeConfig {
         return branding;
     }
 
+
     /**
      * The configured KPIs.
      *
@@ -66,6 +66,15 @@ public class LandscapeConfig {
      */
     public Map<String, KPIConfig> getKPIs() {
         return kpis;
+    }
+
+    public void setLayoutConfig(LayoutConfig layoutConfig) {
+        this.layoutConfig = Objects.requireNonNull(layoutConfig);
+    }
+
+    @NonNull
+    public LayoutConfig getLayoutConfig() {
+        return layoutConfig;
     }
 
     /**

@@ -1,10 +1,13 @@
 package de.bonndan.nivio.output.layout;
 
-import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LayoutConfig;
 import de.bonndan.nivio.util.RootPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,15 +20,12 @@ public class AllGroupsLayout {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AllGroupsLayout.class);
 
-    public static final int MAX_DISTANCE_LIMIT = 1000;
-
-    //results in more iterations and better layouts for larger graphs
-    public static final int INITIAL_TEMP = 300 * 3;
-
     private final boolean debug;
+    private final LayoutConfig layoutConfig;
 
-    public AllGroupsLayout(boolean debug) {
+    public AllGroupsLayout(boolean debug, @NonNull final LayoutConfig layoutConfig) {
         this.debug = debug;
+        this.layoutConfig = Objects.requireNonNull(layoutConfig);
     }
 
     /**
@@ -55,11 +55,11 @@ public class AllGroupsLayout {
 
         addVirtualEdgesBetweenGroups(items, groupNodes);
 
-        int minDistanceLimit = Hex.HEX_SIZE / 2;
+
         var layout = new FastOrganicLayout(
                 new ArrayList<>(groupNodes.values()),
-                new CollisionRegardingForces(minDistanceLimit, MAX_DISTANCE_LIMIT),
-                INITIAL_TEMP
+                new CollisionRegardingForces(layoutConfig.getGroupMinDistanceLimit(), layoutConfig.getGroupMaxDistanceLimit()),
+                LayoutConfig.GROUP_LAYOUT_INITIAL_TEMP
         );
         layout.setDebug(debug);
 
@@ -73,7 +73,7 @@ public class AllGroupsLayout {
                 LOGGER.warn("Failed to write debug information", e);
             }
         }
-        layout.assertMinDistanceIsKept(minDistanceLimit);
+        layout.assertMinDistanceIsKept(layoutConfig.getGroupMinDistanceLimit());
         if (debug) LOGGER.debug("AllGroupsLayout bounds: {}", layout.getNodes());
 
         return LayoutedComponent.from(landscape, layout.getNodes());

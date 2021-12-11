@@ -34,5 +34,6 @@ sources, like files and web APIs (e.g. monitoring items) or allows pushing infor
    assessment
    magic
    output
+   troubleshooting
    references
 

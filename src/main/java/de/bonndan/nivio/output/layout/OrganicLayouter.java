@@ -2,10 +2,12 @@ package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LayoutConfig;
 import de.bonndan.nivio.output.map.hex.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Service;
 
 import java.awt.geom.Point2D;
 import java.util.*;
@@ -13,6 +15,7 @@ import java.util.*;
 /**
  * Applies {@link FastOrganicLayout} to landscape components and writes the rendered data to component labels.
  */
+@Service
 public class OrganicLayouter implements Layouter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrganicLayouter.class);
@@ -31,15 +34,16 @@ public class OrganicLayouter implements Layouter {
     public LayoutedComponent layout(@NonNull final Landscape landscape) {
 
         Map<String, SubLayout> subGraphs = new LinkedHashMap<>();
+        LayoutConfig layoutConfig = landscape.getConfig().getLayoutConfig();
         Objects.requireNonNull(landscape).getGroups().forEach((name, group) -> {
             Set<Item> items = landscape.getItems().retrieve(group.getItems());
             if (items.isEmpty()) return;
-            SubLayout subLayout = new SubLayout(debug);
+            SubLayout subLayout = new SubLayout(debug, layoutConfig);
             subLayout.render(group, items);
             subGraphs.put(name, subLayout);
         });
 
-        AllGroupsLayout allGroupsLayout = new AllGroupsLayout(debug);
+        AllGroupsLayout allGroupsLayout = new AllGroupsLayout(debug, layoutConfig);
         LayoutedComponent layoutedComponent = allGroupsLayout.getRendered(landscape, new LinkedHashMap<>(landscape.getGroups()), subGraphs);
         shiftGroupsAndItems(layoutedComponent);
         return layoutedComponent;

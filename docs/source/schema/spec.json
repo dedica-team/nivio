@@ -2,8 +2,7 @@
   "openapi" : "3.0.1",
   "info" : {
     "title" : "Nivio Input Models",
-    "description" : "The models used to generated landscapes and their components.",
-    "version" : "0.4.0"
+    "description" : "The models used to generated landscapes and their components."
   },
   "paths" : { },
   "components" : {
@@ -408,6 +407,9 @@
               "example" : ".*COMPOSITION.*",
               "exampleSetFlag" : true
             }
+          },
+          "layoutConfig" : {
+            "$ref" : "#/components/schemas/LayoutConfig"
           }
         },
         "description" : "Configuration of key performance indicators (i.e. status indicators) and layouting tweaks.",
@@ -516,6 +518,61 @@
             "exampleSetFlag" : false
           }
         },
+        "exampleSetFlag" : false
+      },
+      "LayoutConfig" : {
+        "type" : "object",
+        "properties" : {
+          "groupLayoutInitialTemp" : {
+            "type" : "integer",
+            "description" : "The initial temperature for layouts of groups.",
+            "format" : "int32",
+            "example" : 900,
+            "exampleSetFlag" : true,
+            "default" : 900
+          },
+          "groupMaxDistanceLimit" : {
+            "type" : "integer",
+            "description" : "A maximum distance between groups up to where forces are applied.",
+            "format" : "int32",
+            "example" : 1000,
+            "exampleSetFlag" : true,
+            "default" : 1000
+          },
+          "groupMinDistanceLimit" : {
+            "type" : "integer",
+            "description" : "The minimum distance between groups.",
+            "format" : "int32",
+            "example" : 50,
+            "exampleSetFlag" : true,
+            "default" : 50
+          },
+          "itemLayoutInitialTemp" : {
+            "type" : "integer",
+            "description" : "The initial temperature for layouts of items within groups.",
+            "format" : "int32",
+            "example" : 300,
+            "exampleSetFlag" : true,
+            "default" : 300
+          },
+          "itemMaxDistanceLimit" : {
+            "type" : "integer",
+            "description" : "A maximum distance between items up to where forces are applied.",
+            "format" : "int32",
+            "example" : 350,
+            "exampleSetFlag" : true,
+            "default" : 350
+          },
+          "itemMinDistanceLimit" : {
+            "type" : "integer",
+            "description" : "The minimum distance between items.",
+            "format" : "int32",
+            "example" : 100,
+            "exampleSetFlag" : true,
+            "default" : 100
+          }
+        },
+        "description" : "Layout configuration for landscapes with unusual number or ratios of items, groups and relations.",
         "exampleSetFlag" : false
       },
       "Link" : {

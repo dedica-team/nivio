@@ -1,7 +1,7 @@
 LayoutConfig
 ---------------
 
-Layout configuration. See https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxFastOrganicLayout.html
+Layout configuration for landscapes with unusual number or ratios of items, groups and relations.
 
 
 .. list-table::
@@ -13,19 +13,34 @@ Layout configuration. See https://jgraph.github.io/mxgraph/java/docs/com/mxgraph
      - Remarks
      - Example
 
-   * - maxDistanceLimitFactor
-     - Float
-     - A factor to influence maximum distance where forces are applied.
-     - optional, defaults to null
-     - null
-   * - maxIterations
+   * - groupLayoutInitialTemp
      - Integer
-     - The maximum number of iterations. More iterations theoretically lead to better results.
-     - optional, defaults to null
-     - null
-   * - minDistanceLimitFactor
-     - Float
-     - A factor to influence minimum distance where forces are applied.
-     - optional, defaults to null
-     - null
+     - The initial temperature for layouts of groups.
+     - optional, defaults to 900
+     - 900
+   * - groupMaxDistanceLimit
+     - Integer
+     - A maximum distance between groups up to where forces are applied.
+     - optional, defaults to 1000
+     - 1000
+   * - groupMinDistanceLimit
+     - Integer
+     - The minimum distance between groups.
+     - optional, defaults to 50
+     - 50
+   * - itemLayoutInitialTemp
+     - Integer
+     - The initial temperature for layouts of items within groups.
+     - optional, defaults to 300
+     - 300
+   * - itemMaxDistanceLimit
+     - Integer
+     - A maximum distance between items up to where forces are applied.
+     - optional, defaults to 350
+     - 350
+   * - itemMinDistanceLimit
+     - Integer
+     - The minimum distance between items.
+     - optional, defaults to 100
+     - 100
 
