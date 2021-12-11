@@ -113,20 +113,7 @@ Deleting items
 
 Items not referenced anymore in the descriptions will be deleted automatically on a complete and successful re-index run.
 If an error occurs fetching the source while indexing, the behaviour of the indexer changes to treat the available data as
-partial input. This means only upserts will happen and no deletion.
-
-
-
-Behind a proxy
---------------
-
-If you deploy Nivio to run under a different path than root (:file:`/`), make sure to set the environment variables
-:envvar:`SERVER_SERVLET_CONTEXT_PATH` and :envvar:`NIVIO_BASE_URL` to the path.
-
-.. code-block:: bash
-
-   SERVER_SERVLET_CONTEXT_PATH: /my-landscape
-   NIVIO_BASE_URL: https://foo.com/my-landscape/
+partial input. This means only inserts and updates will happen and no deletion.
 
 
 Environment variables
