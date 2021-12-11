@@ -63,10 +63,11 @@ public class IndexingDispatcher {
         handle(seedConfiguration);
     }
 
-    public LandscapeDescription createLandscapeDescriptionFromBody(String body) {
-        LandscapeDescription env = landscapeDescriptionFactory.fromString(body, "request body");
-        publisher.publishEvent(new IndexEvent(Collections.singletonList(env), null, "Creating landscape from request body"));
-        return env;
+    public LandscapeDescription createLandscapeDescriptionFromBody(@NonNull final String body, boolean partial) {
+        LandscapeDescription dto = landscapeDescriptionFactory.fromString(Objects.requireNonNull(body), "request body");
+        dto.setIsPartial(partial);
+        publisher.publishEvent(new IndexEvent(Collections.singletonList(dto), null, "Creating landscape from request body"));
+        return dto;
     }
 
     public LandscapeDescription createFromLandscapeDescriptionBodyItems(String identifier, String body) {

@@ -8,6 +8,7 @@ import de.bonndan.nivio.output.dto.GroupApiModel;
 import de.bonndan.nivio.output.dto.ItemApiModel;
 import de.bonndan.nivio.output.dto.LandscapeApiModel;
 import de.bonndan.nivio.util.FrontendMapping;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.lucene.facet.FacetResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +50,7 @@ public class ApiController {
         this.frontendMapping = frontendMapping;
     }
 
-    /**
-     * Overview on all landscapes.
-     */
+    @Operation(summary = "Overview on all landscape and global configuration")
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public Index index() {
@@ -59,11 +58,7 @@ public class ApiController {
     }
 
 
-    /**
-     * This resource serves a landscape DTO and can be addressed by using a {@link FullyQualifiedIdentifier}
-     *
-     * @return response entity of landscape
-     */
+    @Operation(summary = "This resource serves a landscape and can be addressed by using a fully qualified identifier")
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/{landscapeIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LandscapeApiModel> landscape(@PathVariable String landscapeIdentifier) {
@@ -77,9 +72,7 @@ public class ApiController {
         return new ResponseEntity<>(landscapeApiModel, HttpStatus.OK);
     }
 
-    /**
-     * This resource serves  a group in a landscape and can be addressed by using a {@link FullyQualifiedIdentifier}
-     */
+    @Operation(summary = "This resource serves a group in a landscape and can be addressed by using a fully qualified identifier")
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/{landscapeIdentifier}/{groupIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GroupApiModel> group(@PathVariable String landscapeIdentifier,
@@ -100,9 +93,7 @@ public class ApiController {
         }
     }
 
-    /**
-     * This resource serves an item in a landscape and can be addressed by using a {@link FullyQualifiedIdentifier}
-     */
+    @Operation(summary = "This resource serves an item in a landscape and can be addressed by using a fully qualified identifier")
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/{landscapeIdentifier}/{groupIdentifier}/{itemIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ItemApiModel> item(@PathVariable String landscapeIdentifier,
@@ -124,18 +115,27 @@ public class ApiController {
         return new ResponseEntity<>(apiModel, HttpStatus.OK);
     }
 
-    /**
-     * Creates a new landscape
-     */
+    @Operation(summary = "Creates or replaces a landscape")
     @PostMapping(path = "/landscape")
     public ResponseEntity<Object> create(@RequestBody String body) {
-        LandscapeDescription env = indexingDispatcher.createLandscapeDescriptionFromBody(body);
+        LandscapeDescription env = indexingDispatcher.createLandscapeDescriptionFromBody(body, false);
         Optional<URI> uriForDTO = getURIForDTO(env.getFullyQualifiedIdentifier());
         return uriForDTO
                 .map(uri -> ResponseEntity.created(uri).build())
                 .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
     }
 
+    @Operation(summary = "Updates a landscape. Values are merged into the current data")
+    @PutMapping(path = "/landscape")
+    public ResponseEntity<Object> update(@RequestBody String body) {
+        LandscapeDescription env = indexingDispatcher.createLandscapeDescriptionFromBody(body, true);
+        Optional<URI> uriForDTO = getURIForDTO(env.getFullyQualifiedIdentifier());
+        return uriForDTO
+                .map(uri -> ResponseEntity.created(uri).build())
+                .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
+    }
+
+    @Operation(summary = "Add items to a landscape")
     @PostMapping(path = "/landscape/{identifier}/items")
     public ResponseEntity<Object> addItems(
             @PathVariable String identifier,
@@ -149,6 +149,7 @@ public class ApiController {
                 .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
     }
 
+    @Operation(summary = "Returns the last processing log")
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/landscape/{identifier}/log")
     public ResponseEntity<ProcessLog> log(@PathVariable String identifier) {
@@ -161,6 +162,7 @@ public class ApiController {
         return new ResponseEntity<>(landscape.getLog(), HttpStatus.OK);
     }
 
+    @Operation(summary = "Returns search results for the given lucene query")
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/landscape/{identifier}/search/{query}", produces = "application/json")
     public ResponseEntity<Set<ItemApiModel>> search(@PathVariable String identifier, @PathVariable String query) {
@@ -183,6 +185,7 @@ public class ApiController {
 
     }
 
+    @Operation(summary = "Returns all search facets for the landscape")
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/landscape/{identifier}/facets", produces = "application/json")
     public ResponseEntity<List<FacetResult>> facets(@PathVariable String identifier) {
@@ -195,23 +198,21 @@ public class ApiController {
         return new ResponseEntity<>(landscape.getSearchIndex().facets(), HttpStatus.OK);
     }
 
-
+    @Operation(summary = "Returns the mapping of internally used terms to terms to be displayed")
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/mapping", produces = "application/json")
     public ResponseEntity<Map<String, String>> mapping() {
         return new ResponseEntity<>(frontendMapping.getKeys(), HttpStatus.OK);
     }
 
-
+    @Operation(summary = "Returns the mapping of internally used terms to terms to be displayed")
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/description", produces = "application/json")
     public ResponseEntity<Map<String, String>> description() {
         return new ResponseEntity<>(frontendMapping.getDescriptions(), HttpStatus.OK);
     }
 
-    /**
-     * Trigger reindexing of a landscape source.
-     */
+    @Operation(summary = "Triggers reindexing of a landscape.")
     @PostMapping(path = "/reindex/{landscape}")
     public ResponseEntity<Object> reindex(@PathVariable String landscape) {
         Landscape existing = landscapeRepository.findDistinctByIdentifier(landscape).orElse(null);
