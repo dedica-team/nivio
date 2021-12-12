@@ -131,7 +131,7 @@ class ApiControllerTest {
         when(linkFactory.generateComponentLink(any())).thenReturn(Optional.of(new Link(new URL("http://foo.bar.com"))));
 
         //when
-        ResponseEntity<Object> objectResponseEntity = apiController.update(body, "foo");
+        ResponseEntity<Object> objectResponseEntity = apiController.update("foo", body);
 
         //then
         assertThat(objectResponseEntity).isNotNull();
