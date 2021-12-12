@@ -43,11 +43,11 @@ class IndexingDispatcherTest {
     @Test
     void createLandscapeDescriptionFromBody() {
 
-        LandscapeDescription dto = new LandscapeDescription("identifier");
+        LandscapeDescription dto = new LandscapeDescription("foo");
         when(landscapeDescriptionFactory.fromString(eq("foo"), anyString())).thenReturn(dto);
 
         //when
-        dispatcher.updateLandscapeDescriptionFromBody("foo", false);
+        dispatcher.updateLandscapeDescriptionFromBody("foo", "foo");
 
         //then
         verify(publisher).publishEvent(eventCaptor.capture());

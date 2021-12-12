@@ -12,6 +12,8 @@ import static de.bonndan.nivio.util.SafeAssign.assignSafeIfAbsent;
 
 public class GroupFactory {
 
+    private GroupFactory() {}
+
     /**
      * Merges all absent values from the second param into the first.
      *
@@ -33,7 +35,7 @@ public class GroupFactory {
             added.getLabels().forEach((s, val) -> builder.getLabels().putIfAbsent(s, val));
         }
 
-        if (StringUtils.isEmpty(builder.getColor())) {
+        if (!StringUtils.hasLength(builder.getColor())) {
             builder.withColor(Color.getGroupColor(builder.getIdentifier()));
         }
 

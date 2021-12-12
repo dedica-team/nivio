@@ -107,7 +107,7 @@ class ApiControllerTest {
         //given
         File file = new File(RootPath.get() + "/src/test/resources/example/example_env.yml");
         String body = Files.read(file, Charset.defaultCharset());
-        when(indexingDispatcher.updateLandscapeDescriptionFromBody(any(), eq(false))).thenReturn(new LandscapeDescription("foo"));
+        when(indexingDispatcher.createLandscapeDescriptionFromBody(any())).thenReturn(new LandscapeDescription("foo"));
         when(linkFactory.generateComponentLink(any())).thenReturn(Optional.of(new Link(new URL("http://foo.bar.com"))));
 
         //when
@@ -117,7 +117,7 @@ class ApiControllerTest {
         assertThat(objectResponseEntity).isNotNull();
         assertThat(objectResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        verify(indexingDispatcher).updateLandscapeDescriptionFromBody(any(), eq(false));
+        verify(indexingDispatcher).createLandscapeDescriptionFromBody(any());
     }
 
     @Test
@@ -127,17 +127,17 @@ class ApiControllerTest {
         //given
         File file = new File(RootPath.get() + "/src/test/resources/example/example_env.yml");
         String body = Files.read(file, Charset.defaultCharset());
-        when(indexingDispatcher.updateLandscapeDescriptionFromBody(any(), eq(true))).thenReturn(new LandscapeDescription("foo"));
+        when(indexingDispatcher.updateLandscapeDescriptionFromBody(any(), eq("foo"))).thenReturn(new LandscapeDescription("foo"));
         when(linkFactory.generateComponentLink(any())).thenReturn(Optional.of(new Link(new URL("http://foo.bar.com"))));
 
         //when
-        ResponseEntity<Object> objectResponseEntity = apiController.update(body);
+        ResponseEntity<Object> objectResponseEntity = apiController.update(body, "foo");
 
         //then
         assertThat(objectResponseEntity).isNotNull();
         assertThat(objectResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        verify(indexingDispatcher).updateLandscapeDescriptionFromBody(any(), eq(true));
+        verify(indexingDispatcher).updateLandscapeDescriptionFromBody(any(), eq("foo"));
     }
 
     @Test
