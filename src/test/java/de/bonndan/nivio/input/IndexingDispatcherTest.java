@@ -47,7 +47,7 @@ class IndexingDispatcherTest {
         when(landscapeDescriptionFactory.fromString(eq("foo"), anyString())).thenReturn(dto);
 
         //when
-        dispatcher.createLandscapeDescriptionFromBody("foo", false);
+        dispatcher.updateLandscapeDescriptionFromBody("foo", false);
 
         //then
         verify(publisher).publishEvent(eventCaptor.capture());

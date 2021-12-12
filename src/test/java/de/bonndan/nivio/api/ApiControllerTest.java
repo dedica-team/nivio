@@ -107,7 +107,7 @@ class ApiControllerTest {
         //given
         File file = new File(RootPath.get() + "/src/test/resources/example/example_env.yml");
         String body = Files.read(file, Charset.defaultCharset());
-        when(indexingDispatcher.createLandscapeDescriptionFromBody(any(), eq(false))).thenReturn(new LandscapeDescription("foo"));
+        when(indexingDispatcher.updateLandscapeDescriptionFromBody(any(), eq(false))).thenReturn(new LandscapeDescription("foo"));
         when(linkFactory.generateComponentLink(any())).thenReturn(Optional.of(new Link(new URL("http://foo.bar.com"))));
 
         //when
@@ -117,7 +117,7 @@ class ApiControllerTest {
         assertThat(objectResponseEntity).isNotNull();
         assertThat(objectResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        verify(indexingDispatcher).createLandscapeDescriptionFromBody(any(), eq(false));
+        verify(indexingDispatcher).updateLandscapeDescriptionFromBody(any(), eq(false));
     }
 
     @Test
@@ -127,7 +127,7 @@ class ApiControllerTest {
         //given
         File file = new File(RootPath.get() + "/src/test/resources/example/example_env.yml");
         String body = Files.read(file, Charset.defaultCharset());
-        when(indexingDispatcher.createLandscapeDescriptionFromBody(any(), eq(true))).thenReturn(new LandscapeDescription("foo"));
+        when(indexingDispatcher.updateLandscapeDescriptionFromBody(any(), eq(true))).thenReturn(new LandscapeDescription("foo"));
         when(linkFactory.generateComponentLink(any())).thenReturn(Optional.of(new Link(new URL("http://foo.bar.com"))));
 
         //when
@@ -137,7 +137,7 @@ class ApiControllerTest {
         assertThat(objectResponseEntity).isNotNull();
         assertThat(objectResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        verify(indexingDispatcher).createLandscapeDescriptionFromBody(any(), eq(true));
+        verify(indexingDispatcher).updateLandscapeDescriptionFromBody(any(), eq(true));
     }
 
     @Test

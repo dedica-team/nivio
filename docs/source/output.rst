@@ -1,13 +1,6 @@
 Output
 ======
 
-HTTP API
---------
-
-The API offers three types of output:
-
-* JSON REST API under :file:`/api/`
-* swagger documentation under :file:`/v3/api-docs` (JSON) or :file:`/swagger-ui.html` (HTML GUI) for details.
 
 Searching
 ---------

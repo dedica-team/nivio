@@ -118,7 +118,7 @@ public class ApiController {
     @Operation(summary = "Creates or replaces a landscape")
     @PostMapping(path = "/landscape")
     public ResponseEntity<Object> create(@RequestBody String body) {
-        LandscapeDescription env = indexingDispatcher.createLandscapeDescriptionFromBody(body, false);
+        LandscapeDescription env = indexingDispatcher.createLandscapeDescriptionFromBody(body);
         Optional<URI> uriForDTO = getURIForDTO(env.getFullyQualifiedIdentifier());
         return uriForDTO
                 .map(uri -> ResponseEntity.created(uri).build())
@@ -126,13 +126,17 @@ public class ApiController {
     }
 
     @Operation(summary = "Updates a landscape. Values are merged into the current data")
-    @PutMapping(path = "/landscape")
-    public ResponseEntity<Object> update(@RequestBody String body) {
-        LandscapeDescription env = indexingDispatcher.createLandscapeDescriptionFromBody(body, true);
-        Optional<URI> uriForDTO = getURIForDTO(env.getFullyQualifiedIdentifier());
-        return uriForDTO
-                .map(uri -> ResponseEntity.created(uri).build())
-                .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
+    @PutMapping(path = "/landscape/{identifier}")
+    public ResponseEntity<Object> update(@PathVariable String identifier, @RequestBody String body) {
+        try {
+            LandscapeDescription env = indexingDispatcher.updateLandscapeDescriptionFromBody(body, identifier);
+            Optional<URI> uriForDTO = getURIForDTO(env.getFullyQualifiedIdentifier());
+            return uriForDTO
+                    .map(uri -> ResponseEntity.created(uri).build())
+                    .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @Operation(summary = "Add items to a landscape")
