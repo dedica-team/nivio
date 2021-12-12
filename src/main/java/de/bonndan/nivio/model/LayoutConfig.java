@@ -2,6 +2,7 @@ package de.bonndan.nivio.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 @Schema(description = "Layout configuration for landscapes with unusual number or ratios of items, groups and relations.")
 public class LayoutConfig {
@@ -27,79 +28,96 @@ public class LayoutConfig {
     @Schema(description = "A maximum distance between items up to where forces are applied.",
             defaultValue = ITEM_MAX_DISTANCE_LIMIT_S,
             example = ITEM_MAX_DISTANCE_LIMIT_S)
-    private Integer itemMaxDistanceLimit;
+    private Integer itemMaxDistanceLimit = ITEM_MAX_DISTANCE_LIMIT;
 
     @Schema(description = "The minimum distance between items.",
             defaultValue = ITEM_MIN_DISTANCE_LIMIT_S,
             example = ITEM_MIN_DISTANCE_LIMIT_S)
-    private Integer itemMinDistanceLimit;
+    private Integer itemMinDistanceLimit = ITEM_MIN_DISTANCE_LIMIT;
 
     @Schema(description = "The minimum distance between groups.",
             defaultValue = GROUP_MIN_DISTANCE_LIMIT_S,
             example = GROUP_MIN_DISTANCE_LIMIT_S)
-    private Integer groupMinDistanceLimit;
+    private Integer groupMinDistanceLimit = GROUP_MIN_DISTANCE_LIMIT;
 
     @Schema(description = "A maximum distance between groups up to where forces are applied.",
             defaultValue = GROUP_MAX_DISTANCE_LIMIT_S,
             example = GROUP_MAX_DISTANCE_LIMIT_S)
-    private Integer groupMaxDistanceLimit;
+    private Integer groupMaxDistanceLimit = GROUP_MAX_DISTANCE_LIMIT;
 
     @Schema(description = "The initial temperature for layouts of items within groups.",
             defaultValue = ITEM_LAYOUT_INITIAL_TEMP_S,
             example = ITEM_LAYOUT_INITIAL_TEMP_S)
-    private Integer itemLayoutInitialTemp;
+    private Integer itemLayoutInitialTemp = ITEM_LAYOUT_INITIAL_TEMP;
 
     @Schema(description = "The initial temperature for layouts of groups.",
             defaultValue = GROUP_LAYOUT_INITIAL_TEMP_S,
             example = GROUP_LAYOUT_INITIAL_TEMP_S)
-    private Integer groupLayoutInitialTemp;
+    private Integer groupLayoutInitialTemp = GROUP_LAYOUT_INITIAL_TEMP;
 
     @NonNull
     public int getItemMaxDistanceLimit() {
-        return itemMaxDistanceLimit == null ? ITEM_MAX_DISTANCE_LIMIT : itemMaxDistanceLimit;
+        return itemMaxDistanceLimit;
     }
 
-    public void setItemMaxDistanceLimit(Integer itemMaxDistanceLimit) {
-        this.itemMaxDistanceLimit = itemMaxDistanceLimit;
+    public void setItemMaxDistanceLimit(@Nullable final Integer itemMaxDistanceLimit) {
+        if (itemMaxDistanceLimit != null) {
+            this.itemMaxDistanceLimit = itemMaxDistanceLimit;
+        }
     }
 
+    @NonNull
     public int getItemMinDistanceLimit() {
-        return itemMinDistanceLimit == null ? ITEM_MIN_DISTANCE_LIMIT : itemMinDistanceLimit;
+        return itemMinDistanceLimit;
     }
 
-    public void setItemMinDistanceLimit(Integer itemMinDistanceLimit) {
-        this.itemMinDistanceLimit = itemMinDistanceLimit;
+    public void setItemMinDistanceLimit(@Nullable final Integer itemMinDistanceLimit) {
+        if (itemMinDistanceLimit != null) {
+            this.itemMinDistanceLimit = itemMinDistanceLimit;
+        }
     }
 
+    @NonNull
     public int getGroupMaxDistanceLimit() {
-        return groupMaxDistanceLimit == null ? GROUP_MAX_DISTANCE_LIMIT : groupMaxDistanceLimit;
+        return groupMaxDistanceLimit;
     }
 
-    public void setGroupMaxDistanceLimit(Integer groupMaxDistanceLimit) {
-        this.groupMaxDistanceLimit = groupMaxDistanceLimit;
+    public void setGroupMaxDistanceLimit(@Nullable final Integer groupMaxDistanceLimit) {
+        if (groupMaxDistanceLimit != null) {
+            this.groupMaxDistanceLimit = groupMaxDistanceLimit;
+        }
     }
 
+    @NonNull
     public int getGroupMinDistanceLimit() {
-        return groupMinDistanceLimit == null ? GROUP_MIN_DISTANCE_LIMIT : groupMinDistanceLimit;
+        return groupMinDistanceLimit;
     }
 
-    public void setGroupMinDistanceLimit(Integer groupMinDistanceLimit) {
-        this.groupMinDistanceLimit = groupMinDistanceLimit;
+    public void setGroupMinDistanceLimit(@Nullable final Integer groupMinDistanceLimit) {
+        if (groupMinDistanceLimit != null) {
+            this.groupMinDistanceLimit = groupMinDistanceLimit;
+        }
     }
 
+    @NonNull
     public int getItemLayoutInitialTemp() {
-        return itemLayoutInitialTemp == null ? ITEM_LAYOUT_INITIAL_TEMP : itemLayoutInitialTemp;
+        return itemLayoutInitialTemp;
     }
 
-    public void setItemLayoutInitialTemp(Integer itemLayoutInitialTemp) {
-        this.itemLayoutInitialTemp = itemLayoutInitialTemp;
+    public void setItemLayoutInitialTemp(@Nullable final Integer itemLayoutInitialTemp) {
+        if (itemLayoutInitialTemp != null) {
+            this.itemLayoutInitialTemp = itemLayoutInitialTemp;
+        }
     }
 
+    @NonNull
     public int getGroupLayoutInitialTemp() {
-        return groupLayoutInitialTemp == null ? GROUP_LAYOUT_INITIAL_TEMP : groupLayoutInitialTemp;
+        return groupLayoutInitialTemp;
     }
 
-    public void setGroupLayoutInitialTemp(Integer groupLayoutInitialTemp) {
-        this.groupLayoutInitialTemp = groupLayoutInitialTemp;
+    public void setGroupLayoutInitialTemp(@Nullable final Integer groupLayoutInitialTemp) {
+        if (groupLayoutInitialTemp != null) {
+            this.groupLayoutInitialTemp = groupLayoutInitialTemp;
+        }
     }
 }

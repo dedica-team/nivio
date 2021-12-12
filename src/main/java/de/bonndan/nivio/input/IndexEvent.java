@@ -40,6 +40,11 @@ public class IndexEvent {
         return message;
     }
 
+    /**
+     * Returns an observable seed config.
+     *
+     * @return config. if present not present data has been pushed
+     */
     public Optional<SeedConfiguration> getSeedConfiguration() {
         return Optional.ofNullable(seedConfiguration);
     }

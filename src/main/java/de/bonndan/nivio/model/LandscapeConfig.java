@@ -4,6 +4,7 @@ import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPIConfig;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -75,6 +76,46 @@ public class LandscapeConfig {
     @NonNull
     public LayoutConfig getLayoutConfig() {
         return layoutConfig;
+    }
+
+    /**
+     * Merges the values of the update if present
+     *
+     * @param update object with values used to overwrite the current
+     * @return a new config
+     */
+    public LandscapeConfig merge(LandscapeConfig update) {
+        LandscapeConfig landscapeConfig = new LandscapeConfig();
+        landscapeConfig.layoutConfig = layoutConfig;
+        landscapeConfig.greedy = greedy;
+        landscapeConfig.groupBlacklist.addAll(groupBlacklist);
+        landscapeConfig.labelBlacklist.addAll(labelBlacklist);
+        landscapeConfig.branding.setMapStylesheet(branding.mapStylesheet);
+        landscapeConfig.kpis.putAll(kpis);
+
+        landscapeConfig.greedy = update.greedy;
+        landscapeConfig.kpis.putAll(update.kpis);
+
+        landscapeConfig.layoutConfig.setItemLayoutInitialTemp(update.layoutConfig.getItemLayoutInitialTemp());
+        landscapeConfig.layoutConfig.setGroupLayoutInitialTemp(update.layoutConfig.getGroupLayoutInitialTemp());
+        landscapeConfig.layoutConfig.setItemMinDistanceLimit(update.layoutConfig.getItemMinDistanceLimit());
+        landscapeConfig.layoutConfig.setItemMaxDistanceLimit(update.layoutConfig.getItemMaxDistanceLimit());
+        landscapeConfig.layoutConfig.setGroupMinDistanceLimit(update.layoutConfig.getGroupMinDistanceLimit());
+        landscapeConfig.layoutConfig.setGroupMaxDistanceLimit(update.layoutConfig.getGroupMaxDistanceLimit());
+
+        if (!update.groupBlacklist.isEmpty()) {
+            landscapeConfig.groupBlacklist.clear();
+            landscapeConfig.groupBlacklist.addAll(update.groupBlacklist);
+        }
+        if (!update.labelBlacklist.isEmpty()) {
+            landscapeConfig.labelBlacklist.clear();
+            landscapeConfig.labelBlacklist.addAll(update.labelBlacklist);
+        }
+        if (StringUtils.hasLength(update.branding.mapStylesheet)) {
+            landscapeConfig.branding.mapStylesheet = update.branding.mapStylesheet;
+        }
+
+        return landscapeConfig;
     }
 
     /**
