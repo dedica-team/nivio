@@ -23,8 +23,8 @@ public class LayoutedComponent {
 
     private final Component component;
 
-    public long x = 0;
-    public long y = 0;
+    private long x = 0;
+    private long y = 0;
     public double width = 50;
     public double height = 50;
     public static double padding = 50;
@@ -42,15 +42,14 @@ public class LayoutedComponent {
 
         LayoutedComponent layoutedComponent = new LayoutedComponent(parent, children, new ArrayList<>());
 
-
         if (children.size() == 1) {
             layoutedComponent.setWidth(children.get(0).getWidth());
             layoutedComponent.setHeight(children.get(0).getHeight());
         } else {
-            var minX = new AtomicLong(0);
-            var maxX = new AtomicLong(0);
-            var minY = new AtomicLong(0);
-            var maxY = new AtomicLong(0);
+            var minX = new AtomicLong(Integer.MAX_VALUE);
+            var maxX = new AtomicLong(Integer.MIN_VALUE);
+            var minY = new AtomicLong(Integer.MAX_VALUE);
+            var maxY = new AtomicLong(Integer.MIN_VALUE);
 
             for (LayoutedComponent b : children) {
                 if (b.x < minX.get()) minX.set(b.x);
@@ -61,6 +60,8 @@ public class LayoutedComponent {
 
             layoutedComponent.setWidth((double) maxX.get() - minX.get() + padding);
             layoutedComponent.setHeight((double) maxY.get() - minY.get() + padding);
+            layoutedComponent.x = minX.get();
+            layoutedComponent.y = minY.get();
         }
 
         return layoutedComponent;

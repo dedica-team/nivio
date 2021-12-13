@@ -1,6 +1,5 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.MapTile;
@@ -15,6 +14,7 @@ import org.springframework.util.StringUtils;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
@@ -34,24 +34,22 @@ class SVGGroupArea extends Component {
     private final Set<MapTile> groupArea;
 
     @Nullable
-    private final List<DomContent> outlines;
-
-    @NonNull
-    private final Status groupStatus;
+    private final List<Component> components;
 
     @NonNull
     private final Point2D.Double anchor;
 
+    private Point2D.Double offset = new Point2D.Double(0, 0);
+
     /**
      * Builds an areas of hex tiles belonging to a group.
-     *  @param group       the group
-     * @param inArea      all hex tiles forming an area
-     * @param groupStatus assessment status summary of the group
-     * @param debug       turn on debugging
+     *
+     * @param group  the group
+     * @param inArea all hex tiles forming an area
+     * @param debug  turn on debugging
      */
     public static SVGGroupArea forGroup(@NonNull final Group group,
                                         @NonNull final Set<MapTile> inArea,
-                                        @NonNull final Status groupStatus,
                                         boolean debug
     ) {
         var fill = Objects.requireNonNull(group).getColor();
@@ -60,19 +58,17 @@ class SVGGroupArea extends Component {
         SVGGroupAreaOutlineFactory outlineFactory = new SVGGroupAreaOutlineFactory(SVGGroupAreaOutlineFactory.GroupAreaStyle.HEXES);
         outlineFactory.setDebug(debug);
 
-        List<DomContent> outlines = outlineFactory.getOutline(inArea, fillId);
-        return new SVGGroupArea(group, inArea, outlines, groupStatus);
+        List<Component> outlines = outlineFactory.getOutline(inArea, fillId);
+        return new SVGGroupArea(group, inArea, outlines);
     }
 
     SVGGroupArea(@NonNull final Group group,
                  @NonNull final Set<MapTile> groupArea,
-                 @NonNull final List<DomContent> outlines,
-                 @NonNull final Status groupStatus
+                 @NonNull final List<Component> components
     ) {
         this.group = Objects.requireNonNull(group);
         this.groupArea = Objects.requireNonNull(groupArea);
-        this.outlines = outlines;
-        this.groupStatus = groupStatus;
+        this.components = components;
 
         AtomicReference<Hex> lowest = new AtomicReference<>(null);
         groupArea.forEach(tile -> {
@@ -81,18 +77,28 @@ class SVGGroupArea extends Component {
                 lowest.set(tile.getHex());
         });
         anchor = lowest.get() != null ? lowest.get().toPixel() : new Point2D.Double(0, 0);
+    }
 
+    @Override
+    protected void applyShift(Point2D.Double offset) {
+        anchor.x = anchor.x + offset.getX();
+        anchor.y = anchor.y + offset.getY();
+        this.offset = offset;
     }
 
     @Override
     public DomContent render() {
-        List<DomContent> territoryHexes = outlines != null ? new ArrayList<>(outlines) : new ArrayList<>();
+        List<Component> territoryHexes = components != null ? new ArrayList<>(components) : new ArrayList<>();
         String fqi = group.getFullyQualifiedIdentifier().jsonValue();
         if (!StringUtils.hasLength(fqi)) {
             // we can still render an svg, but area will not be clickable
             LOGGER.warn("Empty group fqi in SVG group area, group {}", group);
         }
-        return SvgTagCreator.g(territoryHexes.toArray(DomContent[]::new))
+
+        List<DomContent> domContents = territoryHexes.stream()
+                .map(component -> component.shift(offset).render())
+                .collect(Collectors.toList());
+        return SvgTagCreator.g(domContents.toArray(DomContent[]::new))
                 .with(getLabel())
                 .attr("id", fqi)
                 .attr(DATA_IDENTIFIER, fqi)

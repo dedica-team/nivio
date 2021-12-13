@@ -7,7 +7,6 @@ import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.output.map.hex.HexPath;
-import de.bonndan.nivio.output.map.hex.PathTile;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
 import org.slf4j.Logger;
@@ -16,8 +15,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
+import java.awt.geom.Point2D;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.output.map.hex.Hex.SOUTH;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
@@ -42,6 +42,8 @@ class SVGRelation extends Component {
     @Nullable
     private final StatusValue statusValue;
 
+    private Point2D.Double offset = new Point2D.Double(0, 0);
+
     /**
      * @param hexPath     the calculated best path
      * @param fill        color
@@ -63,13 +65,21 @@ class SVGRelation extends Component {
     }
 
     @Override
+    protected void applyShift(Point2D.Double offset) {
+        this.offset = offset;
+    }
+
+    @Override
     public DomContent render() {
 
         var fillId = "#" + fill;
 
-        //the bezier path is only used to interpolate the "stringPath"
+        var points = hexPath.getPoints().stream()
+                .map(pathElement -> pathElement.shift(offset).toString())
+                .collect(Collectors.joining(""));
+
+        //the bezier path is used to interpolate the "stringPath" in order to find the position for the label
         BezierPath bezierPath = new BezierPath();
-        var points = String.join("", hexPath.getPoints());
         bezierPath.parsePathString(points);
 
 
@@ -111,8 +121,13 @@ class SVGRelation extends Component {
             path.attr("stroke-dasharray", 15);
         }
 
-        var lastDirection =hexPath.getDirections().isEmpty() ? SOUTH : hexPath.getDirections().get(hexPath.getDirections().size()-1);
-        SvgRelationEndMarker marker = new SvgRelationEndMarker(hexPath.getEndPoint(), relation.getType(), fillId, lastDirection);
+        var lastDirection = hexPath.getDirections().isEmpty() ? SOUTH : hexPath.getDirections().get(hexPath.getDirections().size() - 1);
+        SvgRelationEndMarker marker = new SvgRelationEndMarker(
+                new Point2D.Double(hexPath.getEndPoint().x + offset.x, hexPath.getEndPoint().y + offset.y),
+                relation.getType(),
+                fillId,
+                lastDirection
+        );
         ContainerTag endMarker = marker.render();
 
         return addAttributes(g(shadow, path, endMarker, label(relation.getLabel(Label.label), bezierPath, fillId)), relation);

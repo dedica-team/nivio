@@ -34,7 +34,7 @@ class SVGGroupAreaOutlineFactory {
      * @return all svg elements forming the group outline
      */
     @NonNull
-    public List<DomContent> getOutline(@NonNull final Set<MapTile> groupArea, @NonNull final String fillId) {
+    public List<Component> getOutline(@NonNull final Set<MapTile> groupArea, @NonNull final String fillId) {
 
         if (!groupArea.iterator().hasNext()) {
             return new ArrayList<>();
@@ -47,17 +47,17 @@ class SVGGroupAreaOutlineFactory {
         return getOutline(start, hexes, fillId);
     }
 
-    private List<DomContent> getOutline(@NonNull final Hex start, @NonNull final Set<Hex> groupArea, String fillId) {
+    private List<Component> getOutline(@NonNull final Hex start, @NonNull final Set<Hex> groupArea, String fillId) {
 
         if (groupArea.containsAll(Hex.neighbours(start))) {
             throw new IllegalArgumentException(String.format("Starting point %s for outline is not on border.", start));
         }
 
         LinkedHashMap<Hex, Position> borderHexes = getBorderHexes(start, groupArea);
-        List<DomContent> containerTags = new ArrayList<>();
+        List<Component> containerTags = new ArrayList<>();
         String pointsPath = null;
         switch (groupAreaStyle) {
-            case SHARP:
+            /*case SHARP:
                 pointsPath = SharpCornersGroupOutline.getPath(getCenters(borderHexes));
                 break;
             case SMOOTH:
@@ -66,18 +66,21 @@ class SVGGroupAreaOutlineFactory {
             case WOBBLY:
                 pointsPath = WobblyGroupOutline.getPath(getCenters(borderHexes));
                 break;
+
+             */
             case HEXES:
-                pointsPath = BorderHexesGroupOutline.getPath(borderHexes, groupArea);
+                var path = BorderHexesGroupOutline.getPath(borderHexes, groupArea);
+                containerTags.add(new SVGPath(path, fillId));
                 /* style of multiple hexes*/
-                List<DomContent> territoryHexes = groupArea.stream()
-                        .map(hex -> new SVGHex(hex, fillId, fillId, debug).render())
+                List<SVGHex> territoryHexes = groupArea.stream()
+                        .map(hex -> new SVGHex(hex, fillId, fillId, debug))
                         .collect(Collectors.toList());
                 containerTags.addAll(territoryHexes);
                 break;
         }
 
 
-        /* DEBUG path point order */
+        /* DEBUG path point order
         if (debug) {
             int i = 0;
             for (Point2D.Double aDouble : getCenters(borderHexes)) {
@@ -94,8 +97,9 @@ class SVGGroupAreaOutlineFactory {
                     .attr("fill", "none")
                     .condAttr(StringUtils.hasLength(fillId), "stroke", fillId)
                     .attr("stroke-width", 3);
-            containerTags.add(svgPath);
+            //containerTags.add(svgPath);
         }
+        * */
 
         return containerTags;
     }

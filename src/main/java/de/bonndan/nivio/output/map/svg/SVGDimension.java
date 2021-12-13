@@ -49,17 +49,6 @@ public class SVGDimension {
             return String.format("%d %d %d %d", horMin, vertMin, horMax, vertMax);
         }
 
-        /**
-         * Returns the proper values for a SVG viewbox.
-         */
-        public String asViewBox() {
-            return String.format("%d %d %d %d",
-                    horMin - padding,
-                    vertMin - padding,
-                    horMax - horMin + 2 * padding,
-                    vertMax - vertMin + 2 * padding);
-        }
-
         public int getHeight() {
             return vertMax - vertMin;
         }

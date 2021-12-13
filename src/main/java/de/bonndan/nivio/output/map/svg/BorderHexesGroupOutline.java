@@ -1,11 +1,13 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.output.map.hex.Hex;
+import de.bonndan.nivio.output.map.hex.PathElement;
 import org.springframework.lang.NonNull;
 
 import java.awt.geom.Point2D;
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static de.bonndan.nivio.output.map.hex.PathElement.cmd;
 
 /**
  * Creates the path around an ordered set of hexes with form a group border.
@@ -14,17 +16,18 @@ public class BorderHexesGroupOutline {
 
     private BorderHexesGroupOutline() {}
 
-    public static String getPath(@NonNull final LinkedHashMap<Hex, SVGGroupAreaOutlineFactory.Position> borderHexes,
-                                 @NonNull final Set<Hex> groupArea
+    public static List<PathElement> getPath(@NonNull final LinkedHashMap<Hex, SVGGroupAreaOutlineFactory.Position> borderHexes,
+                                            @NonNull final Set<Hex> groupArea
     ) {
         LinkedHashSet<Point2D.Double> path = new LinkedHashSet<>();
         Objects.requireNonNull(borderHexes).forEach((hex, position) -> path.addAll(getPathPointsFor(position, Objects.requireNonNull(groupArea))));
 
-        String points = path.stream()
-                .map(point -> String.format("%s %s", (float)point.x, (float)point.y)) //float is enough precision for pixels
-                .collect(Collectors.joining(","));
+        List<PathElement> pathElements = new ArrayList<>();
+        pathElements.add(cmd("M"));
+        path.stream().map(PathElement::pt).forEach(pathElements::add);
+        pathElements.add(cmd("Z"));
 
-        return String.format("M %s Z", points);
+        return pathElements;
     }
 
     /**

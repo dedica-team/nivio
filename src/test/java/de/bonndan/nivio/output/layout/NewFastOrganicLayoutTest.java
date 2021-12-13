@@ -59,15 +59,15 @@ class NewFastOrganicLayoutTest {
         layout.execute();
 
         //then
-        var xDelta1 = a.x - b.x;
-        var yDelta1 = a.y - b.y;
+        var xDelta1 = a.getX() - b.getX();
+        var yDelta1 = a.getY() - b.getY();
         var dist1 = Math.sqrt((xDelta1 * xDelta1) + (yDelta1 * yDelta1)) - 50 - 50; //two times the radius
 
         assertThat(Math.abs(dist1))
                 .isGreaterThan((long) SubLayout.MIN_DISTANCE_LIMIT);
 
-        var xDelta = b.x - c.x;
-        var yDelta = b.y - c.y;
+        var xDelta = b.getX() - c.getX();
+        var yDelta = b.getY()- c.getY();
         var dist = Math.sqrt((xDelta * xDelta) + (yDelta * yDelta)) - 50 - 50; //two times the radius
 
         assertThat(Math.abs(dist))
