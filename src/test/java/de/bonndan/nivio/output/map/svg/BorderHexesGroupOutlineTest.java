@@ -21,7 +21,7 @@ class BorderHexesGroupOutlineTest {
         Hex h2 = new Hex(0,2);
         Set<Hex> groupArea = Set.of(h1, h2);
 
-        LinkedHashMap<Hex, SVGGroupAreaOutlineFactory.Position> borderHexes = SVGGroupAreaOutlineFactory.getBorderHexes(h1, groupArea);
+        LinkedHashMap<Hex, HexGroupAreaOutlineFactory.Position> borderHexes = HexGroupAreaOutlineFactory.getBorderHexes(h1, groupArea);
 
 
         //when

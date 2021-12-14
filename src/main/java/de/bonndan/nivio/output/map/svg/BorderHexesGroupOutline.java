@@ -16,7 +16,7 @@ public class BorderHexesGroupOutline {
 
     private BorderHexesGroupOutline() {}
 
-    public static List<PathElement> getPath(@NonNull final LinkedHashMap<Hex, SVGGroupAreaOutlineFactory.Position> borderHexes,
+    public static List<PathElement> getPath(@NonNull final LinkedHashMap<Hex, HexGroupAreaOutlineFactory.Position> borderHexes,
                                             @NonNull final Set<Hex> groupArea
     ) {
         LinkedHashSet<Point2D.Double> path = new LinkedHashSet<>();
@@ -34,7 +34,7 @@ public class BorderHexesGroupOutline {
      * @param start hex to find path around and point to start from on circumference of hex
      * @return the position to continue with
      */
-    private static Collection<? extends Point2D.Double> getPathPointsFor(SVGGroupAreaOutlineFactory.Position start, Set<Hex> groupArea) {
+    private static Collection<? extends Point2D.Double> getPathPointsFor(HexGroupAreaOutlineFactory.Position start, Set<Hex> groupArea) {
 
         final List<Point2D.Double> ownSegments = new ArrayList<>();
         final List<Point2D.Double> points = start.hex.asPoints(Hex.HEX_SIZE);

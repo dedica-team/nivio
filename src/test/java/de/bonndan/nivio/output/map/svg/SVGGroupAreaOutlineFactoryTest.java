@@ -6,7 +6,6 @@ import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexMap;
 import de.bonndan.nivio.output.map.hex.MapTile;
-import j2html.tags.DomContent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +42,7 @@ class SVGGroupAreaOutlineFactoryTest {
         Set<MapTile> groupArea = group.getGroupArea();
 
         //when
-        SVGGroupAreaOutlineFactory svgGroupAreaOutlineFactory = new SVGGroupAreaOutlineFactory(SVGGroupAreaOutlineFactory.GroupAreaStyle.HEXES);
+        HexGroupAreaOutlineFactory svgGroupAreaOutlineFactory = new HexGroupAreaOutlineFactory();
         List<Component> outline = svgGroupAreaOutlineFactory.getOutline(groupArea, "005500");
 
         //then
