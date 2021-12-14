@@ -25,7 +25,6 @@ import IconButton from '@material-ui/core/IconButton';
 import { createStyles, darken, Theme } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { LandscapeContext } from '../../../Context/LandscapeContext';
-import { getApproximateCenterCoordinates, getCorrected } from './MapUtils';
 import {
   fitToViewer,
   ReactSVGPanZoom,
@@ -67,7 +66,6 @@ interface Props {
 interface SVGData {
   width: number;
   height: number;
-  viewBox: SVGRect;
   xml: string;
   loaded: Date;
 }
@@ -104,15 +102,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
         let dataX = Number(element.getAttribute('data-x'));
         let dataY = Number(element.getAttribute('data-y'));
         if (dataX && dataY && data) {
-          const coords = getApproximateCenterCoordinates(
-            data.viewBox,
-            data.width,
-            data.height,
-            dataX,
-            dataY
-          );
-
-          setValue(setPointOnViewerCenter(value, coords.x, coords.y, 0.5));
+          setValue(setPointOnViewerCenter(value, dataX, dataY, 0.5));
           setRenderWithTransition(true);
           setHighlightElement(element);
           setIsZoomed(true);
@@ -188,10 +178,8 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
       const minY = Math.min(sourceY, targetY);
 
       let centerX = minX + (Math.max(sourceX, targetX) - minX) / 2;
-      const correctedX = getCorrected(data.viewBox.x, centerX, data.width);
       let centerY = minY + (Math.max(sourceY, targetY) - minY) / 2;
-      const correctedY = getCorrected(data.viewBox.y, centerY, data.height);
-      setValue(setPointOnViewerCenter(value, correctedX, correctedY, 0.3));
+      setValue(setPointOnViewerCenter(value, centerX, centerY, 0.3));
       setIsZoomed(true);
     }
 
@@ -216,8 +204,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
       const doc: any = parser.parseFromString(svg, 'image/svg+xml');
       const width = doc.firstElementChild.width.baseVal.value;
       const height = doc.firstElementChild.height.baseVal.value;
-      const viewBox: SVGRect = doc.firstElementChild.viewBox.baseVal;
-      setData({ width: width, height: height, viewBox: viewBox, xml: svg, loaded: new Date() });
+      setData({ width: width, height: height, xml: svg, loaded: new Date() });
     });
   }, [identifier, setData]);
 
@@ -252,9 +239,9 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
     });
 
     const current = document.querySelectorAll("[data-identifier='" + visualFocus + "']");
-    Array.from(current).forEach((visualFocus) => {
-      visualFocus.classList.add('selected');
-      visualFocus.classList.remove('unselected');
+    Array.from(current).forEach((vf) => {
+      vf.classList.add('selected');
+      vf.classList.remove('unselected');
     });
   }, [visualFocus, data]);
 
@@ -369,7 +356,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
                 }}
                 tool={TOOL_AUTO}
                 onChangeValue={(newValue: Value) => setValue(newValue)}
-                onChangeTool={() => {}}
+                onChangeTool={() => { /* disabled */}}
                 value={value}
                 className={`ReactSVGPanZoom ${renderWithTransition ? 'with-transition' : ''}`}
               >

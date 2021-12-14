@@ -35,7 +35,7 @@ class HexPathTest {
     void getPoints() {
         assertThat(hexpath.getPoints()).isNotEmpty().hasSize(17);
         assertThat(hexpath.getPoints().get(0)).isNotNull();
-        assertThat(hexpath.getPoints().get(0).toString()).isEqualTo("M");
+        assertThat(hexpath.getPoints().get(0)).hasToString("M");
     }
 
     @Test
