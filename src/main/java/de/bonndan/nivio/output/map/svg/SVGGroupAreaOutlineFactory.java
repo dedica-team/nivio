@@ -2,10 +2,7 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.MapTile;
-import j2html.tags.ContainerTag;
-import j2html.tags.DomContent;
 import org.springframework.lang.NonNull;
-import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 import java.util.*;
@@ -29,6 +26,8 @@ class SVGGroupAreaOutlineFactory {
     }
 
     /**
+     * Returns all svg components to describe a group outline.
+     *
      * @param groupArea all hexes in the group area
      * @param fillId    fill color
      * @return all svg elements forming the group outline

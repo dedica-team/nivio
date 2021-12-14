@@ -121,8 +121,8 @@ class SVGGroupArea extends Component {
             fontSize = 16;
             //calculate center
             SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(this), Collections.emptyList());
-            x = dimension.cartesian.horMin + (dimension.cartesian.horMax - dimension.cartesian.horMin) / 2f;
-            y = dimension.cartesian.vertMin + (dimension.cartesian.vertMax - dimension.cartesian.vertMin) / 2f;
+            x = dimension.cartesian.horMin + (dimension.cartesian.horMax - dimension.cartesian.horMin) / 2f + offset.x;
+            y = dimension.cartesian.vertMin + (dimension.cartesian.vertMax - dimension.cartesian.vertMin) / 2f + offset.y;
             y += SVGRenderer.DEFAULT_ICON_SIZE;
         }
 

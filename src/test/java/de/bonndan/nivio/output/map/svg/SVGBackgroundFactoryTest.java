@@ -32,7 +32,7 @@ class SVGBackgroundFactoryTest {
         List<ContainerTag> backgroundTiles = SVGBackgroundFactory.getBackgroundTiles(dimension);
         assertThat(backgroundTiles).isNotNull();
         assertThat(backgroundTiles).isNotEmpty();
-        assertThat(backgroundTiles.size()).isEqualTo(343);
+        assertThat(backgroundTiles.size()).isEqualTo(312);
         assertThat(backgroundTiles.get(0).getTagName()).isEqualTo("use");
     }
 

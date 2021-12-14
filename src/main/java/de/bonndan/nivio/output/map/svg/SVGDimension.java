@@ -1,7 +1,5 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.output.map.hex.Hex;
-
 /**
  * Value object representing a svg documents dimensions.
  */
@@ -20,12 +18,7 @@ public class SVGDimension {
         this.cartesian = cartesian;
     }
 
-    public BoundingBox getCartesianBox() {
-        return cartesian;
-    }
-
     public static class BoundingBox {
-        int padding = 3 * Hex.HEX_SIZE;
         final int horMin;
         final int vertMin;
         final int horMax;

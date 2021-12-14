@@ -30,6 +30,7 @@ import static j2html.TagCreator.rawHtml;
  */
 public class SVGDocument extends Component {
 
+    public static final int PADDING = 10;
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGDocument.class);
     public static final int LABEL_WIDTH = 140;
     public static final String VISUAL_FOCUS_UNSELECTED = "unselected";
@@ -162,8 +163,8 @@ public class SVGDocument extends Component {
         if (StringUtils.hasLength(logoUrl)) {
             logo = SvgTagCreator.image()
                     .attr("xlink:href", logoUrl)
-                    .attr("x", dimension.cartesian.horMin - dimension.cartesian.padding + offset.x)
-                    .attr("y", dimension.cartesian.vertMin - dimension.cartesian.padding + offset.x + 80)
+                    .attr("x", dimension.cartesian.horMin + PADDING + offset.x)
+                    .attr("y", dimension.cartesian.vertMin + PADDING + offset.x + 80)
                     .attr(WIDTH, LABEL_WIDTH)
                     .attr(HEIGHT, LABEL_WIDTH)
                     .attr(CLASS, "logo");
@@ -173,8 +174,8 @@ public class SVGDocument extends Component {
 
     private ContainerTag getTitle(SVGDimension dimension, Point2D.Double offset) {
         return SvgTagCreator.text(landscape.getName())
-                .attr("x", dimension.cartesian.horMin - dimension.cartesian.padding + offset.x)
-                .attr("y", dimension.cartesian.vertMin - dimension.cartesian.padding + 60 + offset.y)
+                .attr("x", dimension.cartesian.horMin + PADDING + offset.x)
+                .attr("y", dimension.cartesian.vertMin + PADDING + 60 + offset.y)
                 .attr(CLASS, "title");
     }
 
