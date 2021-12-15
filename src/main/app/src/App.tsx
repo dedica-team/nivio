@@ -88,11 +88,7 @@ const App: React.FC = () => {
       }
       setTheme(createTheme(tv));
     });
-  }, [setTheme, setLogo, oAuth2Links]);
-
-  get('/user').then((value) => {
-    window.sessionStorage.setItem('userName', value);
-  });
+  }, [setTheme, setLogo]);
 
   if (!theme) {
     return <Box>Loading ...</Box>;

@@ -127,7 +127,7 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
       <Box className={classes.pageTitle}>
         <Typography variant='h6'>{pageTitle}</Typography>
       </Box>
-      {window.sessionStorage.getItem('userName') === 'anonymous' ? (
+      {userContext.user === 'anonymous' ? (
         <LoginDialog />
       ) : (
         <a href={`/logout`}>
