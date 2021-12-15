@@ -7,13 +7,13 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@material-ui/core';
-import { GithubLoginButton } from 'react-social-login-buttons';
+import { LoginButtons } from './LoginButtons';
 
 export default function LoginDialog() {
-  const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
     setOpen(true);
   };
+  const [open, setOpen] = React.useState(false);
 
   const handleClose = () => {
     setOpen(false);
@@ -28,9 +28,7 @@ export default function LoginDialog() {
         <DialogTitle>Login options</DialogTitle>
         <DialogContent>
           <DialogContentText>Please select a login option</DialogContentText>
-          <a href={`/oauth2/authorization/github`}>
-            <GithubLoginButton />
-          </a>
+          <LoginButtons />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Close</Button>

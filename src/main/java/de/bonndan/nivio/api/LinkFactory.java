@@ -140,7 +140,7 @@ public class LinkFactory {
         Optional<URL> url = localServer.getUrl("/oauth2/authorization/github");
         url.ifPresent(url1 -> {
             Link oauth2 = linkTo(url1)
-                    .withRel("oauth2")
+                    .withRel("github")
                     .build();
             index.getOauth2Links().put("login_github", oauth2);
         });
