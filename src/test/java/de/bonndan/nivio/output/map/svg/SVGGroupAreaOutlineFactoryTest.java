@@ -1,13 +1,11 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexMap;
 import de.bonndan.nivio.output.map.hex.MapTile;
-import j2html.tags.DomContent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -40,16 +38,16 @@ class SVGGroupAreaOutlineFactoryTest {
 
         Set<MapTile> area = GroupAreaFactory.getGroup(hexMap, foo, Set.of(item1, item2));
 
-        SVGGroupArea group = SVGGroupArea.forGroup(foo, area,  Status.GREEN, false);
+        SVGGroupArea group = SVGGroupArea.forGroup(foo, area, false);
         Set<MapTile> groupArea = group.getGroupArea();
 
         //when
-        SVGGroupAreaOutlineFactory svgGroupAreaOutlineFactory = new SVGGroupAreaOutlineFactory(SVGGroupAreaOutlineFactory.GroupAreaStyle.WOBBLY);
-        List<DomContent> outline = svgGroupAreaOutlineFactory.getOutline(groupArea, "005500");
+        HexGroupAreaOutlineFactory svgGroupAreaOutlineFactory = new HexGroupAreaOutlineFactory();
+        List<Component> outline = svgGroupAreaOutlineFactory.getOutline(groupArea, "005500");
 
         //then
         assertNotNull(outline);
-        assertEquals(1, outline.size());
+        assertEquals(248, outline.size());
     }
 
 }

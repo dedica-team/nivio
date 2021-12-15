@@ -9,13 +9,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static de.bonndan.nivio.output.map.hex.PathElement.cmd;
+import static de.bonndan.nivio.output.map.hex.PathElement.pt;
+
 /**
  * Produces a point path along the centers of the given hexes.
  */
 public class HexPath {
 
     private final List<PathTile> pathTiles;
-    private final List<String> points = new ArrayList<>();
+    private final List<PathElement> points = new ArrayList<>();
     private final Point2D.Double endPoint;
     private final List<Integer> directions;
     private int portCount;
@@ -30,7 +33,7 @@ public class HexPath {
         }
         directions = pathTiles.stream().map(PathTile::getDirectionFromParent).filter(Objects::nonNull).collect(Collectors.toList());
         if (!directions.isEmpty()) {
-            directions.add(directions.get(directions.size()-1)); //copy last
+            directions.add(directions.get(directions.size() - 1)); //copy last
         }
         this.endPoint = calcPoints();
     }
@@ -39,7 +42,7 @@ public class HexPath {
      * @return the endpoint of a list of strings forming a path of cubic curves
      */
     private Point2D.Double calcPoints() {
-        points.add("M");
+        points.add(cmd("M"));
 
         for (var i = 0; i < pathTiles.size(); i++) {
             var pathTile = pathTiles.get(i);
@@ -59,14 +62,14 @@ public class HexPath {
                 newBefore.x = prev.x + (point.x - prev.x) / 2;
                 newBefore.y = prev.y + (point.y - prev.y) / 2;
 
-                points.addAll(List.of(" ", String.valueOf(newBefore.x), ",", String.valueOf(newBefore.y), " "));
-                points.addAll(List.of("Q ", String.valueOf(point.x), ",", String.valueOf(point.y), " "));
+                points.addAll(List.of(cmd(" "), pt(newBefore), cmd(" ")));
+                points.addAll(List.of(cmd("Q "), pt(point), cmd(" ")));
 
                 var newAfter = new Point2D.Double();
                 newAfter.x = next.x + (point.x - next.x) / 2;
                 newAfter.y = next.y + (point.y - next.y) / 2;
 
-                points.addAll(List.of(String.valueOf(newAfter.x), ",", String.valueOf(newAfter.y), " L"));
+                points.addAll(List.of(pt(newAfter), cmd(" L")));
 
             } else {
                 if (isLast) {
@@ -74,11 +77,11 @@ public class HexPath {
                     //2.1 to prevent that the same point is hit as above (results in broken dataflow markers)
                     newAfter.x = point.x - (point.x - prev.x) / 2.1;
                     newAfter.y = point.y - (point.y - prev.y) / 2.1;
-                    points.addAll(List.of(" ", String.valueOf(newAfter.x), ",", String.valueOf(newAfter.y)));
+                    points.addAll(List.of(cmd(" "), pt(newAfter)));
                     return new Point2D.Double(newAfter.x, newAfter.y);
                 }
 
-                points.addAll(List.of(" ", String.valueOf(point.x), ",", String.valueOf(point.y), " L"));
+                points.addAll(List.of(cmd(" "), pt(point), cmd(" L")));
             }
         }
         return null;
@@ -86,7 +89,6 @@ public class HexPath {
 
     /**
      * Returns all tiles which are part of the path.
-     *
      */
     public List<PathTile> getTiles() {
         return Collections.unmodifiableList(pathTiles);
@@ -97,7 +99,7 @@ public class HexPath {
      *
      * @return M...L notation
      */
-    public List<String> getPoints() {
+    public List<PathElement> getPoints() {
         return points;
     }
 
@@ -117,21 +119,21 @@ public class HexPath {
      * Returns the bends from a list of adjacent hexes (a chain).
      *
      *
-    void calcBends() {
-
-        bends = new ArrayList<>();
-        //bends
-        IntStream.range(1, pathTiles.size() - 1).forEach(i -> {
-            var prev = pathTiles.get(i - 1).getMapTile().getHex();
-            var cur = pathTiles.get(i).getMapTile().getHex();
-            var next = pathTiles.get(i + 1).getMapTile().getHex();
-            var qBend = (prev.q == cur.q && next.q != cur.q) || (prev.q != cur.q && next.q == cur.q);
-            var rBend = (prev.r == cur.r && next.r != cur.r) || (prev.r != cur.r && next.r == cur.r);
-            if (qBend || rBend) {
-                bends.add(cur);
-            }
-        });
-    }
+     * void calcBends() {
+     *
+     * bends = new ArrayList<>();
+     * //bends
+     * IntStream.range(1, pathTiles.size() - 1).forEach(i -> {
+     * var prev = pathTiles.get(i - 1).getMapTile().getHex();
+     * var cur = pathTiles.get(i).getMapTile().getHex();
+     * var next = pathTiles.get(i + 1).getMapTile().getHex();
+     * var qBend = (prev.q == cur.q && next.q != cur.q) || (prev.q != cur.q && next.q == cur.q);
+     * var rBend = (prev.r == cur.r && next.r != cur.r) || (prev.r != cur.r && next.r == cur.r);
+     * if (qBend || rBend) {
+     * bends.add(cur);
+     * }
+     * });
+     * }
      */
 
     public List<Integer> getDirections() {
@@ -150,6 +152,7 @@ public class HexPath {
      * Returns the total count of connections on the penultimate tile
      */
     public int getTotalPortCount() {
-        return pathTiles.get(pathTiles.size()-2).getMapTile().getPortCount();
+        return pathTiles.get(pathTiles.size() - 2).getMapTile().getPortCount();
     }
+
 }
