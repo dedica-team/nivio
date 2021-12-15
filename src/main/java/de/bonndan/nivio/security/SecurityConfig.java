@@ -14,12 +14,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${nivio.loginType}")
     private String loginType;
 
-//    private final CustomOAuth2UserService userService;
-//
-//    public SecurityConfig(CustomOAuth2UserService userService) {
-//        this.userService = userService;
-//    }
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
