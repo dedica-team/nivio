@@ -24,6 +24,7 @@ import LandscapeWatcher from '../Landscape/Dashboard/LandscapeWatcher';
 import { LandscapeContext } from '../../Context/LandscapeContext';
 import SearchField from '../Landscape/Search/SearchField';
 import LoginDialog from './LoginDialog';
+import { UserContext } from '../../Context/UserContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -58,6 +59,7 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
   const classes = useStyles();
   const componentClasses = componentStyles();
   const landscapeContext = useContext(LandscapeContext);
+  const userContext = useContext(UserContext);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -129,7 +131,7 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
         <LoginDialog />
       ) : (
         <a href={`/logout`}>
-          <Button>Logout</Button>
+          <Button>Logout, {userContext.user}</Button>
         </a>
       )}
       {landscapeContext.identifier ? <Notification setSidebarContent={setSidebarContent} /> : null}
