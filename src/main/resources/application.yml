@@ -27,7 +27,9 @@ spring:
 
 logging:
   level:
-    root: INFO
+    org:
+      springframework:
+        security: DEBUG
     de:
       bonndan:
         nivio:

@@ -14,11 +14,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${nivio.loginType}")
     private String loginType;
 
-    private final CustomOAuth2UserService userService;
-
-    public SecurityConfig(CustomOAuth2UserService userService) {
-        this.userService = userService;
-    }
+//    private final CustomOAuth2UserService userService;
+//
+//    public SecurityConfig(CustomOAuth2UserService userService) {
+//        this.userService = userService;
+//    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -48,31 +48,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     protected void configureForRequired(HttpSecurity http) throws Exception {
 
-        http.authorizeRequests()
+        http
+                .authorizeRequests()
+                .antMatchers("/login/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .oauth2Login();
+                .oauth2Login().defaultSuccessUrl("/")
+                .loginPage("/login")
+                .and()
+                .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/").permitAll();
 
-
-//        http.authorizeRequests()
-////                .antMatchers("/login/**").permitAll()
-//                .anyRequest().authenticated()
-//                .and().oauth2Login().defaultSuccessUrl("/")
-//                .loginPage("/login");
-//
-////
-////        http
-////                .userInfoEndpoint()
-////                .userService(userService);
-//
-//        http
-//                .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-//                .logoutSuccessUrl("/").permitAll();
     }
 
     protected void configureForNone(HttpSecurity http) throws Exception {
-
     }
-
 
 }

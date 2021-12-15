@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
@@ -25,10 +24,8 @@ public class LoginController {
 
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/login")
-
     public String showLoginPage() {
         return "login";
     }
-
 
 }
