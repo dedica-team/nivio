@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.PathTile;
+import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class SVGDimensionFactory {
      * @param hexes list of hexes
      * @return bounding boxes
      */
-    public static SVGDimension getDimension(List<Hex> hexes) {
+    public static SVGDimension getDimension(@NonNull final List<Hex> hexes) {
 
         AtomicInteger minX = new AtomicInteger(Integer.MAX_VALUE);
         AtomicInteger minY = new AtomicInteger(Integer.MAX_VALUE);

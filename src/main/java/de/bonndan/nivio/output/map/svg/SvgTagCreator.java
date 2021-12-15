@@ -5,6 +5,8 @@ import j2html.tags.DomContent;
 
 public class SvgTagCreator {
 
+    private SvgTagCreator() {}
+
     public static ContainerTag text(String text) {
         return (new ContainerTag("text")).withText(text);
     }
