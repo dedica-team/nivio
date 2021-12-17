@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -7,19 +8,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GroupFactoryTest {
 
-
     @Test
+    @DisplayName("Merged groups uses all updates where not null")
     void testMerge() {
         Group one = new Group("a", "test", "Joe", null, "mail", "#123123");
 
-        Group two = new Group("a", "test", "Matt", "a", null, null);
+        Group added = new Group("a", "test", "Matt", "a", null, null);
 
-        Group merged = GroupFactory.merge(one, two);
+        Group merged = GroupFactory.merge(one, added);
 
-        assertEquals("Joe", merged.getOwner());
+        assertEquals("Matt", merged.getOwner());
         assertEquals("a", merged.getDescription());
         assertEquals("mail", merged.getContact());
-        assertEquals("123123", merged.getColor());
+        assertEquals("610000", merged.getColor());
     }
 
     @Test
