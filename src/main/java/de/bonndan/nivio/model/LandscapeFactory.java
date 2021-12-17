@@ -3,7 +3,6 @@ package de.bonndan.nivio.model;
 import de.bonndan.nivio.assessment.kpi.KPIFactory;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.util.SafeAssign;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
