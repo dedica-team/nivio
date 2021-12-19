@@ -4,6 +4,7 @@ import de.bonndan.nivio.input.IndexingDispatcher;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.output.dto.FrontendMappingApiModel;
 import de.bonndan.nivio.output.dto.GroupApiModel;
 import de.bonndan.nivio.output.dto.ItemApiModel;
 import de.bonndan.nivio.output.dto.LandscapeApiModel;
@@ -198,15 +199,11 @@ public class ApiController {
 
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/mapping", produces = "application/json")
-    public ResponseEntity<Map<String, String>> mapping() {
-        return new ResponseEntity<>(frontendMapping.getKeys(), HttpStatus.OK);
-    }
-
-
-    @CrossOrigin(methods = RequestMethod.GET)
-    @GetMapping(path = "/description", produces = "application/json")
-    public ResponseEntity<Map<String, String>> description() {
-        return new ResponseEntity<>(frontendMapping.getDescriptions(), HttpStatus.OK);
+    public ResponseEntity<FrontendMappingApiModel> mapping() {
+        return new ResponseEntity<>(
+                new FrontendMappingApiModel(frontendMapping.getKeys(), frontendMapping.getDescriptions()),
+                HttpStatus.OK
+        );
     }
 
     /**

@@ -2,6 +2,7 @@ package de.bonndan.nivio.api;
 
 import de.bonndan.nivio.input.IndexingDispatcher;
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.output.dto.FrontendMappingApiModel;
 import de.bonndan.nivio.output.dto.GroupApiModel;
 import de.bonndan.nivio.output.dto.ItemApiModel;
 import de.bonndan.nivio.output.dto.LandscapeApiModel;
@@ -110,13 +111,17 @@ class ApiControllerTest {
 
     @Test
     void mapping() {
-        Mockito.when(frontendMapping.getKeys()).thenReturn(Map.of("testKey", "testValue"));
-        assertThat(apiController.mapping().getBody()).isEqualTo(Map.of("testKey", "testValue"));
-    }
 
-    @Test
-    void description() {
-        Mockito.when(frontendMapping.getDescriptions()).thenReturn(Map.of("testKey", "testValue"));
-        assertThat(apiController.description().getBody()).isEqualTo(Map.of("testKey", "testValue"));
+        //given
+        Mockito.when(frontendMapping.getKeys()).thenReturn(Map.of("testKey", "testValue"));
+        Mockito.when(frontendMapping.getDescriptions()).thenReturn(Map.of("testKey", "description"));
+
+        //when
+        FrontendMappingApiModel body = apiController.mapping().getBody();
+
+        //then
+        assertThat(body).isNotNull();
+        assertThat(body.getKeys()).isEqualTo(Map.of("testKey", "testValue"));
+        assertThat(body.getDescriptions()).isEqualTo(Map.of("testKey", "description"));
     }
 }
