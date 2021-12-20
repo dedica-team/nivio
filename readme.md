@@ -28,7 +28,7 @@ You need [docker](https://docker.com) to run the demo:
 
     docker run -e DEMO=1 -p 8080:8080 dedica/nivio
 
-Point your browser to http://localhost:8080/#/landscape/petclinic to explore the features. An OpenAPI documentation is available under http://localhost:8080/swagger-ui.html.
+Point your browser to http://localhost:8080/#/landscape/petclinic to explore the features. An OpenAPI documentation is available at http://localhost:8080/swagger-ui.html.
 
 
 ### Further Reading
