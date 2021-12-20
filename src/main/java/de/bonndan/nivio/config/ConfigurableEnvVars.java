@@ -9,6 +9,7 @@ public enum ConfigurableEnvVars {
     SEED("A semicolon-separated list of file paths containing landscape configurations."),
 
     NIVIO_BASE_URL("The base URL of Nivio to be used for frontends if running behind a proxy."),
+    NIVIO_ICON_FOLDER("A folder containing icons named similar to material design icons"),
     NIVIO_MAIL_HOST("SMTP mail host."),
     NIVIO_MAIL_PORT("SMTP mail port."),
     NIVIO_MAIL_USERNAME("SMTP mail username."),

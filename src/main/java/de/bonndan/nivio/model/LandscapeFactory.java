@@ -17,7 +17,8 @@ public class LandscapeFactory {
 
     private static final KPIFactory kpiFactory = new KPIFactory();
 
-    private LandscapeFactory() {}
+    private LandscapeFactory() {
+    }
 
     /**
      * Creates a new landscape impl.
@@ -84,15 +85,33 @@ public class LandscapeFactory {
                 .withGroups(existing.getGroups())
                 .withItems(existing.getItems().all());
 
+        final boolean isPartial = input.isPartial();
+
         //overwrite some data which is not handled by resolvers
-        builder.withContact(input.getContact());
-        if (StringUtils.hasLength(input.getName())) {
+        if (!isPartial || input.getContact() != null) {
+            builder.withContact(input.getContact());
+        }
+        if (!isPartial || StringUtils.hasLength(input.getName())) {
             builder.withName(input.getName());
         }
-        builder.withConfig(input.getConfig());
-        builder.withDescription(input.getDescription());
-        builder.withOwner(input.getOwner());
-        builder.withKpis(kpiFactory.getConfiguredKPIs(input.getConfig().getKPIs()));
+        if (!isPartial || input.getDescription() != null) {
+            builder.withDescription(input.getDescription());
+        }
+        if (!isPartial || input.getOwner() != null) {
+            builder.withOwner(input.getOwner());
+        }
+
+        if (isPartial) {
+            builder.withConfig(existing.getConfig().merge(input.getConfig()));
+        } else {
+            builder.withConfig(input.getConfig());
+        }
+
+        if (isPartial) {
+            builder.withKpis(kpiFactory.merge(input.getConfig().getKPIs(), existing.getKpis()));
+        } else {
+            builder.withKpis(kpiFactory.getConfiguredKPIs(input.getConfig().getKPIs()));
+        }
 
         //merge labels
         Map<String, String> labels = existing.getLabels();

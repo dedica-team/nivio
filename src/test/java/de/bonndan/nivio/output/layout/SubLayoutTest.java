@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.LayoutConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +31,7 @@ class SubLayoutTest {
         objects.add(baz);
 
         //when
-        SubLayout subLayout = new SubLayout(true);
+        SubLayout subLayout = new SubLayout(true, new LayoutConfig());
         subLayout.render(foo, objects);
 
         //then
@@ -70,7 +71,7 @@ class SubLayoutTest {
         objects.add(baz);
 
         //when
-        SubLayout subLayout = new SubLayout(true);
+        SubLayout subLayout = new SubLayout(true, new LayoutConfig());
         subLayout.render(foo, objects);
 
         //then

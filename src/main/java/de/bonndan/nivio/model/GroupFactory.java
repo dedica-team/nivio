@@ -8,9 +8,12 @@ import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
-import static de.bonndan.nivio.util.SafeAssign.assignSafeIfAbsent;
+import static de.bonndan.nivio.util.SafeAssign.assignSafe;
 
 public class GroupFactory {
+
+    private GroupFactory() {
+    }
 
     /**
      * Merges all absent values from the second param into the first.
@@ -24,16 +27,16 @@ public class GroupFactory {
         GroupBuilder builder = getBuilder(group);
 
         if (added != null) {
-            assignSafeIfAbsent(added.getColor(), group.getColor(), builder::withColor);
-            assignSafeIfAbsent(added.getContact(), group.getContact(), builder::withContact);
-            assignSafeIfAbsent(added.getDescription(), group.getDescription(), builder::withDescription);
-            assignSafeIfAbsent(added.getOwner(), group.getOwner(), builder::withOwner);
+            assignSafe(added.getColor(), builder::withColor);
+            assignSafe(added.getContact(), builder::withContact);
+            assignSafe(added.getDescription(), builder::withDescription);
+            assignSafe(added.getOwner(), builder::withOwner);
 
             added.getLinks().forEach((s, url) -> group.getLinks().putIfAbsent(s, url));
             added.getLabels().forEach((s, val) -> builder.getLabels().putIfAbsent(s, val));
         }
 
-        if (StringUtils.isEmpty(builder.getColor())) {
+        if (!StringUtils.hasLength(builder.getColor())) {
             builder.withColor(Color.getGroupColor(builder.getIdentifier()));
         }
 

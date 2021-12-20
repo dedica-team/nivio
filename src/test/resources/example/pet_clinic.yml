@@ -17,6 +17,14 @@ config:
         ORANGE: 200;399.999999
         RED: 400;499.999999
         BROWN: 500;1000000
+    health:
+      enabled: true
+    lifecycle:
+      enabled: true
+    scaling:
+      enabled: true
+    condition:
+      enabled: true
 
 
 sources:

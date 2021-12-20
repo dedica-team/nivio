@@ -15,9 +15,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -45,11 +43,11 @@ class IndexingDispatcherTest {
     @Test
     void createLandscapeDescriptionFromBody() {
 
-        LandscapeDescription dto = new LandscapeDescription("identifier");
+        LandscapeDescription dto = new LandscapeDescription("foo");
         when(landscapeDescriptionFactory.fromString(eq("foo"), anyString())).thenReturn(dto);
 
         //when
-        dispatcher.createLandscapeDescriptionFromBody("foo");
+        dispatcher.updateLandscapeDescriptionFromBody("foo", "foo");
 
         //then
         verify(publisher).publishEvent(eventCaptor.capture());

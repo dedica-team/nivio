@@ -1,5 +1,7 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.assessment.kpi.KPI;
+import de.bonndan.nivio.assessment.kpi.KPIConfig;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.Source;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +16,7 @@ import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 class LandscapeFactoryTest {
 
@@ -97,15 +100,20 @@ class LandscapeFactoryTest {
     @Test
     void fromInputAddsKPIs() {
 
+        //given
+        description.getConfig().getKPIs().put("foo", new KPIConfig());
+        description.getConfig().getKPIs().put("bar", new KPIConfig());
+
         //when
         Landscape landscape = LandscapeFactory.createFromInput(description);
-
         assertThat(landscape.getKpis()).isNotEmpty();
-        assertThat(landscape.getKpis()).hasSize(5);
+        assertThat(landscape.getKpis()).hasSize(2);
     }
 
     @Test
     void recreateAddsKPIs() {
+
+        //given
         Landscape existing = LandscapeBuilder.aLandscape()
                 .withIdentifier(description.getIdentifier())
                 .withName("A Test")
@@ -114,11 +122,34 @@ class LandscapeFactoryTest {
                 .withGroups(Map.of("agroup", new Group("agroup", description.getIdentifier())))
                 .withItems(Set.of(getTestItem("agroup", "hihi")))
                 .build();
+        description.getConfig().getKPIs().put("foo", new KPIConfig());
 
         //when
         Landscape landscape = LandscapeFactory.recreate(existing, description);
 
         assertThat(landscape.getKpis()).isNotEmpty();
-        assertThat(landscape.getKpis()).hasSize(5);
+        assertThat(landscape.getKpis()).hasSize(1);
+    }
+
+    @Test
+    void recreatePartialAddsKPIs() {
+        description.setIsPartial(true);
+        description.getConfig().getKPIs().put("foo", new KPIConfig());
+        description.getConfig().getKPIs().put("bar", new KPIConfig());
+        Landscape existing = LandscapeBuilder.aLandscape()
+                .withIdentifier(description.getIdentifier())
+                .withName("A Test")
+                .withContact("foo")
+                .withOwner("bar")
+                .withGroups(Map.of("agroup", new Group("agroup", description.getIdentifier())))
+                .withItems(Set.of(getTestItem("agroup", "hihi")))
+                .withKpis(Map.of("foo", mock(KPI.class), "baz", mock(KPI.class)))
+                .build();
+
+        //when
+        Landscape landscape = LandscapeFactory.recreate(existing, description);
+
+        assertThat(landscape.getKpis()).isNotEmpty();
+        assertThat(landscape.getKpis()).hasSize(3);
     }
 }

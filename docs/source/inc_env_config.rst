@@ -62,6 +62,10 @@ A welcome message on the front page.
 
 Accent color used for active elements (hexadecimal only).
 
+.. envvar:: NIVIO_ICON_FOLDER
+
+A folder containing icons named similar to material design icons
+
 .. envvar:: NIVIO_MAIL_HOST
 
 SMTP mail host.

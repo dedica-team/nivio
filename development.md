@@ -4,9 +4,9 @@
 **Requirements**
 
 To run nivio you need the following software installed:
-- [nodejs v12.6.2 or higher](https://nodejs.org/en/), [How to update node?](https://www.hostingadvice.com/how-to/update-node-js-latest-version/)
+- [nodejs v16 LTS](https://nodejs.org/en/), [How to update node?](https://www.hostingadvice.com/how-to/update-node-js-latest-version/)
 - [Maven](https://maven.apache.org/install.html)
-- Java 11
+- Java 17
 
 ---
 

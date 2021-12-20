@@ -32,7 +32,6 @@ public class SchemaGenerationTest {
         openAPI.setPaths(new Paths());
         openAPI.setInfo(new Info());
         openAPI.getInfo().setTitle("Nivio Input Models");
-        openAPI.getInfo().setVersion("0.4.0");
         openAPI.getInfo().setDescription("The models used to generated landscapes and their components.");
         try {
             String s1 = Json.pretty(openAPI);

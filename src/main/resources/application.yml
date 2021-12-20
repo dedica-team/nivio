@@ -45,7 +45,7 @@ nivio:
   baseUrl: ${NIVIO_BASE_URL:}
   version: ^project.version^-^git.commit.id.abbrev^
   pollingMilliseconds: 30000 # 30 secs
-  # iconFolder: /a/local/path
+  iconFolder: ${NIVIO_ICON_FOLDER:}
   brandingForeground: ${NIVIO_BRANDING_FOREGROUND:7022F2}
   brandingBackground: ${NIVIO_BRANDING_BACKGROUND:161618}
   brandingSecondary: ${NIVIO_BRANDING_SECONDARY:22F2C2}
