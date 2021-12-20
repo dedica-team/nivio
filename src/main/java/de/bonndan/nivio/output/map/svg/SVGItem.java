@@ -58,6 +58,12 @@ class SVGItem extends Component {
         this.id = layoutedComponent.getComponent().getFullyQualifiedIdentifier().jsonValue();
     }
 
+    @Override
+    protected void applyShift(Point2D.Double offset) {
+        pixel.x = pixel.x + offset.x;
+        pixel.y = pixel.y + offset.y;
+    }
+
     /**
      * Renders the fill as background if possible, otherwise tries explicit icon or shortName.
      */
