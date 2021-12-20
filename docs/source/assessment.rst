@@ -87,3 +87,7 @@ label ``foo``.
             RED: "BAD;err.*"
         health:
           description: can be overridden
+
+The pet clinic demo uses a custom KPI which evaluates radiation levels. In this simulation a sensor item (see xray group)
+collects a made up radiation (in mrem) in a label also named ``radiation``. This label is then examined by the custom KPI.
+See https://github.com/dedica-team/nivio/blob/develop/src/test/resources/example/pet_clinic.yml
