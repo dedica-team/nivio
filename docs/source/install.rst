@@ -37,7 +37,7 @@ In YAML, it looks like this:
        name: My first item
 
 
-Upload (POST) this file using curl:
+Create the file tutorial.yaml and upload (POST) this file using curl:
 
 .. code-block:: bash
 
@@ -230,7 +230,7 @@ Bonus: Having Nivio pull your data
 In order to have data automatically observed to changes Nivio expects a seed configuration at start time. You need to set the environment
 variable :envvar:`SEED`. The configuration file contains basic data, references to item descriptions ``sources``, which can be local paths or URLs.
 The descriptions can be gathered by HTTP, i.e. it is possible to fetch files from protected sources via authentication headers.
-Think of GitLab or GitHub and the related tokens. To use secrets etc. please refer to :ref:`Environment variables`.
+Think of GitLab or GitHub and the related tokens. To use secrets etc., please refer to :ref:`Environment variables`.
 
 .. code-block:: yaml
    :linenos:
