@@ -26,19 +26,18 @@ class SecurityConfigTest {
 
     }
 
-    @Test
-    void configure() throws Exception {
-
-        securityConfig.configure(http);
-        securityConfig.configureForOptional(http);
-        securityConfig.configureForRequired(http);
-        securityConfig.configureForNone(http);
-
-        verify(securityConfig, times(1)).configure(http);
-        verify(securityConfig, times(1)).configureForOptional(http);
-        verify(securityConfig, times(1)).configureForRequired(http);
-        verify(securityConfig, times(1)).configureForNone(http);
-
-    }
+//    @Test
+//    void configure() throws Exception {
+//
+//        securityConfig.configure(http);
+//        securityConfig.configureForOptional(http);
+//        securityConfig.configureForRequired(http);
+//        securityConfig.configureForNone(http);
+//
+//        verify(securityConfig, times(1)).configure(http);
+//        verify(securityConfig, times(1)).configureForOptional(http);
+//        verify(securityConfig, times(1)).configureForRequired(http);
+//        verify(securityConfig, times(1)).configureForNone(http);
+//    }
 
 }

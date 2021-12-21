@@ -25,12 +25,12 @@ class LoginControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    @Test
-    void checkShowLoginPage() throws Exception {
-        final MockHttpServletResponse response = mvc.perform(get("/login")).andReturn().getResponse();
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-
-        final String contentTypeHeader = response.getHeader("Content-Type");
-        assertThat(contentTypeHeader).isNotNull();
-    }
+//    @Test
+//    void checkShowLoginPage() throws Exception {
+//        final MockHttpServletResponse response = mvc.perform(get("/login")).andReturn().getResponse();
+//        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+//
+//        final String contentTypeHeader = response.getHeader("Content-Type");
+//        assertThat(contentTypeHeader).isNotNull();
+//    }
 }
