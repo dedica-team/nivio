@@ -24,8 +24,6 @@ class LoginControllerTest {
 
     @Autowired
     private MockMvc mvc;
-    private OAuth2AuthenticationToken principal;
-
 
     @Test
     void checkShowLoginPage() throws Exception {

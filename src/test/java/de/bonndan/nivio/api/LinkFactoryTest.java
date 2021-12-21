@@ -18,9 +18,8 @@ class LinkFactoryTest {
     private LinkFactory linkFactory;
     private List<Landscape> landscapes;
 
-
     @BeforeEach
-    public void setup() {
+    void setup() {
         NivioConfigProperties configProperties = mock(NivioConfigProperties.class);
         LocalServer localServer = mock(LocalServer.class);
         landscapes = List.of(mock(Landscape.class));
