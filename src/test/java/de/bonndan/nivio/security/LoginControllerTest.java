@@ -1,44 +1,31 @@
 package de.bonndan.nivio.security;
 
+import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcTest
-public class LoginControllerTest {
+class LoginControllerTest {
 
     @Autowired
     private MockMvc mvc;
     private OAuth2AuthenticationToken principal;
 
-    @BeforeEach
-    public void setup() {
-        principal = mock(OAuth2AuthenticationToken.class);
-    }
-//
-//    @Test
-//    void checkWhoAmI() throws Exception{
-//
-//        when(principal.getPrincipal().getAttribute("login")).thenReturn("test");
-//        final MockHttpServletResponse response = mvc.perform(get("/user"))
-//                .andReturn()
-//                .getResponse();
-//
-//        final MockMvcRequestBuilders request = mvc.perform(get("/user"))
-//                .principal(principal)
-//
-//        assertThat(response.getStatus()).isEqualTo(HttpStatus.FOUND.value());
-//        assertThat(request.getContentAsString()).isEqualTo("githubUserId");
-//    }
 
     @Test
     void checkShowLoginPage() throws Exception {
