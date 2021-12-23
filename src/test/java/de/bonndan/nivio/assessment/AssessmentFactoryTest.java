@@ -6,6 +6,7 @@ import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.ItemFactory;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -18,6 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class AssessmentFactoryTest {
 
 
+    private AssessmentFactory factory;
+
+    @BeforeEach
+    void setup() {
+        factory = new AssessmentFactory();
+    }
+
     @Test
     void getAssessmentFromFactoryLandscapeAndKPI() {
         var foo = ItemFactory.getTestItem("a", "foo");
@@ -26,7 +34,7 @@ class AssessmentFactoryTest {
         var conditionKpi = new ConditionKPI();
         var map = new HashMap<String, KPI>();
         map.put("test", conditionKpi);
-        var assessment = AssessmentFactory.createAssessment(landscape, map);
+        var assessment = factory.createAssessment(landscape, map);
         assertThat(assessment.getClass()).isEqualTo(Assessment.class);
     }
 
@@ -35,7 +43,7 @@ class AssessmentFactoryTest {
         var foo = ItemFactory.getTestItem("a", "foo");
         var bar = ItemFactory.getTestItem("b", "bar");
         var landscape = LandscapeFactory.createForTesting("test", "test").withItems(Set.of(foo, bar)).build();
-        var assessment = AssessmentFactory.createAssessment(landscape);
+        var assessment = factory.createAssessment(landscape);
         assertThat(assessment.getClass()).isEqualTo(Assessment.class);
     }
 
@@ -45,18 +53,18 @@ class AssessmentFactoryTest {
         var statusList = new ArrayList<StatusValue>();
         var results = new HashMap<String, List<StatusValue>>();
         results.put(fqi.toString(), statusList);
-        var assessment = AssessmentFactory.createAssessment(results);
+        var assessment = factory.createAssessment(results);
         assertThat(assessment.getClass()).isEqualTo(Assessment.class);
     }
 
 
     @Test
     void testNullValues() {
-        var exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment(null, null));
+        var exception = assertThrows(NullPointerException.class, () -> factory.createAssessment(null, null));
         assertThat(exception.getMessage()).isEqualTo(ASSESSMENT_ERROR_NULL);
-        exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment((Landscape) null));
+        exception = assertThrows(NullPointerException.class, () -> factory.createAssessment((Landscape) null));
         assertThat(exception.getMessage()).isEqualTo(ASSESSMENT_ERROR_NULL);
-        exception = assertThrows(NullPointerException.class, () -> AssessmentFactory.createAssessment((Map<String, List<StatusValue>>) null));
+        exception = assertThrows(NullPointerException.class, () -> factory.createAssessment((Map<String, List<StatusValue>>) null));
         assertThat(exception.getMessage()).isEqualTo(ASSESSMENT_ERROR_NULL);
     }
 }

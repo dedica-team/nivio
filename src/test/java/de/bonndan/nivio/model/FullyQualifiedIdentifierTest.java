@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class FullyQualifiedIdentifierTest {
 
     @Test
-    public void testToString() {
+     void testToString() {
         var fqi1 = FullyQualifiedIdentifier.build(null, "g1", "d1");
         assertEquals("/g1/d1", fqi1.toString());
 
@@ -23,7 +23,7 @@ public class FullyQualifiedIdentifierTest {
     }
 
     @Test
-    public void testJsonValue() {
+     void testJsonValue() {
         var fqi1 = FullyQualifiedIdentifier.build(null, "g1", "d1");
         assertEquals("", fqi1.jsonValue());
 
@@ -42,7 +42,7 @@ public class FullyQualifiedIdentifierTest {
     }
 
     @Test
-    public void testEqualsWithGroup() {
+     void testEqualsWithGroup() {
         var fqi1 = FullyQualifiedIdentifier.build(null, "g1", "d1");
 
         ItemDescription desc1 = new ItemDescription();
@@ -63,7 +63,7 @@ public class FullyQualifiedIdentifierTest {
     }
 
     @Test
-    public void testEqualsWithoutGroup() {
+     void testEqualsWithoutGroup() {
         var fqi1 = FullyQualifiedIdentifier.build(null, "g1", "d1");
 
         ItemDescription desc1 = new ItemDescription();
@@ -81,7 +81,7 @@ public class FullyQualifiedIdentifierTest {
     }
 
     @Test
-    public void fromComplete() {
+     void fromComplete() {
 
         String three = "a/b/c";
         FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(three);
@@ -91,7 +91,7 @@ public class FullyQualifiedIdentifierTest {
     }
 
     @Test
-    public void fromLandscapeAndGroup() {
+     void fromLandscapeAndGroup() {
         String two = "b/c";
         FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(two);
         assertEquals("b", fqi.getLandscape());
@@ -99,11 +99,33 @@ public class FullyQualifiedIdentifierTest {
         assertNull(fqi.getItem());
     }
     @Test
-    public void fromLandscape() {
+     void fromLandscape() {
         String one = "c";
         FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(one);
         assertEquals("c", fqi.getLandscape());
         assertNull(fqi.getGroup());
         assertNull(fqi.getItem());
+    }
+
+    @Test
+    void isNotGroup() {
+        assertFalse(FullyQualifiedIdentifier.from("a").isGroup());
+        assertFalse(FullyQualifiedIdentifier.from("a/b/c").isGroup());
+    }
+
+    @Test
+    void isGroup() {
+        assertTrue(FullyQualifiedIdentifier.from("a/b").isGroup());
+    }
+
+    @Test
+    void isItem() {
+        assertTrue(FullyQualifiedIdentifier.from("a/b/c").isItem());
+    }
+
+    @Test
+    void isNotItem() {
+        assertFalse(FullyQualifiedIdentifier.from("a").isItem());
+        assertFalse(FullyQualifiedIdentifier.from("a/b").isItem());
     }
 }

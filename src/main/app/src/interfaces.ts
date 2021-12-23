@@ -186,7 +186,7 @@ export interface IAssessmentProps {
 export interface IChange {
   changeType: string;
   componentType: string;
-  message: string;
+  messages: string[];
 }
 
 /**
