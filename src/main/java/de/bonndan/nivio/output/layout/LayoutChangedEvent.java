@@ -4,6 +4,11 @@ import de.bonndan.nivio.input.ProcessingEvent;
 import de.bonndan.nivio.model.Landscape;
 import org.springframework.lang.NonNull;
 
+/**
+ * Event that is triggered if the landscape graph has changed.
+ *
+ *
+ */
 public class LayoutChangedEvent extends ProcessingEvent {
 
     @NonNull
